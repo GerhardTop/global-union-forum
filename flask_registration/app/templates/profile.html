@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.profile_title }} — MijnApp{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>{{ t.profile_title }}</h1>
+    </div>
+
+    <div class="profile-info">
+        <div class="profile-info__row">
+            <span class="profile-info__label">{{ t.profile_first_name }}</span>
+            <span class="profile-info__value">{{ current_user.first_name }}</span>
+        </div>
+        <div class="profile-info__row">
+            <span class="profile-info__label">{{ t.profile_last_name }}</span>
+            <span class="profile-info__value">{{ current_user.last_name }}</span>
+        </div>
+        <div class="profile-info__row">
+            <span class="profile-info__label">{{ t.profile_email }}</span>
+            <span class="profile-info__value">{{ current_user.email }}</span>
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="card-section-header">
+        <h2>{{ t.profile_change_password }}</h2>
+    </div>
+
+    <form method="POST" action="{{ url_for('main.profile') }}" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            <label for="{{ form.current_password.id }}">{{ t.profile_current_password }}</label>
+            {{ form.current_password() }}
+            {% if form.current_password.errors %}
+                <span class="field-error">{{ t.get(form.current_password.errors[0], form.current_password.errors[0]) }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.new_password.id }}">{{ t.profile_new_password }}</label>
+            {{ form.new_password() }}
+            {% if form.new_password.errors %}
+                <span class="field-error">{{ t.get(form.new_password.errors[0], form.new_password.errors[0]) }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.confirm_new_password.id }}">{{ t.profile_confirm_new_password }}</label>
+            {{ form.confirm_new_password() }}
+            {% if form.confirm_new_password.errors %}
+                <span class="field-error">{{ t.get(form.confirm_new_password.errors[0], form.confirm_new_password.errors[0]) }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ t.profile_save_btn }}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

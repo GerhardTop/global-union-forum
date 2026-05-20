@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.login_title }} — MijnApp{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>{{ t.login_title }}</h1>
+    </div>
+
+    <form method="POST" action="{{ url_for('main.login') }}" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            <label for="{{ form.email.id }}">{{ t.login_email }}</label>
+            {{ form.email(placeholder="jan@voorbeeld.nl") }}
+            {% if form.email.errors %}
+                <span class="field-error">{{ t.get(form.email.errors[0], form.email.errors[0]) }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.password.id }}">{{ t.login_password }}</label>
+            {{ form.password() }}
+            {% if form.password.errors %}
+                <span class="field-error">{{ t.get(form.password.errors[0], form.password.errors[0]) }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ t.login_btn }}</button>
+        </div>
+    </form>
+
+    <p class="form-footer-text">
+        {{ t.login_no_account }}
+        <a href="{{ url_for('main.register') }}">{{ t.login_register_link }}</a>
+    </p>
+</div>
+{% endblock %}

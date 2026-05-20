@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.success_greeting }} {{ name }} — MijnApp{% endblock %}
+
+{% block content %}
+<div class="card card-success">
+    <div class="success-icon">&#10003;</div>
+    <h1>{{ t.success_greeting }} {{ name }}!</h1>
+    <p>{{ t.success_subtitle }}</p>
+    <div class="form-actions" style="display:flex;gap:.75rem;justify-content:center;">
+        <a href="{{ url_for('main.login') }}" class="btn btn-primary">{{ t.success_login_btn }}</a>
+        <a href="{{ url_for('main.register') }}" class="btn btn-secondary">{{ t.success_register_btn }}</a>
+    </div>
+</div>
+{% endblock %}
