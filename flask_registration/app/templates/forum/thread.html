@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% block title %}
+  {%- set tp = thread.title_prefix_nl if lang == 'nl' else thread.title_prefix_en -%}
+  {%- set ta = thread.title_accent_nl if lang == 'nl' else thread.title_accent_en -%}
+  {%- set ts = thread.title_suffix_nl if lang == 'nl' else thread.title_suffix_en -%}
+  {{ tp }}{% if ta %} {{ ta }}{% endif %}{{ ts }} — Global Union
+{% endblock %}
+
+{% block content_outer %}{% block content %}
+<main class="gu-forum" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    {# Breadcrumbs + "Nieuw gesprek" toolbar #}
+    <div class="gu-forum__topbar">
+      <nav class="gu-forum__crumbs" aria-label="breadcrumb">
+        <a href="{{ url_for('main.forum') }}">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</a>
+        <span aria-hidden="true">›</span>
+        <span>{% if lang == 'nl' %}{{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} {{ thread.title_accent_nl }}{% endif %}{{ thread.title_suffix_nl }}{% else %}{{ thread.title_prefix_en }}{% if thread.title_accent_en %} {{ thread.title_accent_en }}{% endif %}{{ thread.title_suffix_en }}{% endif %}</span>
+      </nav>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('main.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
+        <span style="font-size:1.1em;line-height:1">+</span>
+        {% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %}
+      </a>
+      {% endif %}
+    </div>
+
+    {# Thread header #}
+    <header class="gu-forum__threadhead">
+      {% if lang == 'nl' %}
+        <p class="gu-eyebrow">{{ thread.eyebrow_nl }}</p>
+        <h1 class="gu-forum__title">
+          {{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} <em>{{ thread.title_accent_nl }}</em>{% endif %}{{ thread.title_suffix_nl }}
+        </h1>
+      {% else %}
+        <p class="gu-eyebrow">{{ thread.eyebrow_en }}</p>
+        <h1 class="gu-forum__title">
+          {{ thread.title_prefix_en }}{% if thread.title_accent_en %} <em>{{ thread.title_accent_en }}</em>{% endif %}{{ thread.title_suffix_en }}
+        </h1>
+      {% endif %}
+
+      <div class="gu-forum__threadmeta">
+        <span>{{ posts | length }} {% if lang == 'nl' %}reactie{{ 's' if posts|length != 1 else '' }}{% else %}repl{{ 'ies' if posts|length != 1 else 'y' }}{% endif %}</span>
+        {% if posts %}
+          <span aria-hidden="true">·</span>
+          <span>{% if lang == 'nl' %}laatst {% else %}last {% endif %}{{ posts[-1].time_ago[lang] }}</span>
+        {% endif %}
+        {% if thread.is_closed %}
+          <span aria-hidden="true">·</span>
+          <span class="gu-forum__closed-badge">{% if lang == 'nl' %}Gesloten{% else %}Closed{% endif %}</span>
+        {% else %}
+          <span aria-hidden="true">·</span>
+          <span>{% if lang == 'nl' %}Reacties in andere talen kun je vertalen{% else %}Posts in another language can be translated{% endif %}</span>
+        {% endif %}
+      </div>
+
+      {# Moderator toolbar #}
+      {% if current_user.is_authenticated and (current_user.is_moderator or current_user.is_admin) %}
+      <div class="gu-forum__modbar">
+        {% if thread.is_closed %}
+        <form method="POST" action="{{ url_for('main.forum_reopen', thread_id=thread.id) }}" style="display:inline;">
+          <button type="submit" class="gu-forum__modbtn">
+            {% if lang == 'nl' %}Heropen gesprek{% else %}Reopen conversation{% endif %}
+          </button>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('main.forum_close', thread_id=thread.id) }}" style="display:inline;">
+          <button type="submit" class="gu-forum__modbtn gu-forum__modbtn--close">
+            {% if lang == 'nl' %}Sluit gesprek{% else %}Close conversation{% endif %}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+      {% endif %}
+    </header>
+
+    {# Posts — 3 levels: root (0), replies (1), sub-replies (2) #}
+    <div class="gu-thread">
+      {% for root in root_posts %}
+        {% set post = root %}
+        {% set depth = 0 %}
+        {% set level1 = replies_map.get(root.id, []) %}
+        {% include 'forum/_post.html' %}
+
+        {% if level1 %}
+        <div class="gu-thread__replies">
+
+          {# First level-1 reply — always visible #}
+          {% set post = level1[0] %}
+          {% set depth = 1 %}
+          {% include 'forum/_post.html' %}
+          {% set l2_first = replies_map.get(level1[0].id, []) %}
+          {% if l2_first %}
+          <div class="gu-thread__replies">
+            {% for sub in l2_first %}
+              {% set post = sub %}
+              {% set depth = 2 %}
+              {% include 'forum/_post.html' %}
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          {# Remaining level-1 replies — collapsible #}
+          {% if level1|length > 1 %}
+          <div id="more-replies-{{ root.id }}" hidden>
+            {% for reply in level1[1:] %}
+              {% set post = reply %}
+              {% set depth = 1 %}
+              {% include 'forum/_post.html' %}
+              {% set l2 = replies_map.get(reply.id, []) %}
+              {% if l2 %}
+              <div class="gu-thread__replies">
+                {% for sub in l2 %}
+                  {% set post = sub %}
+                  {% set depth = 2 %}
+                  {% include 'forum/_post.html' %}
+                {% endfor %}
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <button class="gu-post__action gu-post__action--ghost gu-thread__replies-toggle"
+                  data-target="more-replies-{{ root.id }}"
+                  data-label-show="{% if lang == 'nl' %}Lees meer reacties ({{ level1|length - 1 }}){% else %}Read more replies ({{ level1|length - 1 }}){% endif %}"
+                  data-label-hide="{% if lang == 'nl' %}Verberg reacties{% else %}Hide replies{% endif %}">
+            {% if lang == 'nl' %}Lees meer reacties ({{ level1|length - 1 }}){% else %}Read more replies ({{ level1|length - 1 }}){% endif %}
+          </button>
+          {% endif %}
+
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {# Composer / closed notice #}
+    {% if thread.is_closed %}
+      {% if current_user.is_authenticated and (current_user.is_moderator or current_user.is_admin) %}
+        {# Reopen button already in modbar — just show notice #}
+      {% endif %}
+      <div class="gu-composer gu-composer--closed">
+        <p>{% if lang == 'nl' %}Dit gesprek is gesloten.{% else %}This conversation is closed.{% endif %}</p>
+      </div>
+    {% elif current_user.is_authenticated %}
+    <form class="gu-composer" id="composer" method="POST" action="{{ url_for('main.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
+      <textarea
+        class="gu-composer__input"
+        name="body"
+        id="composerBody"
+        rows="3"
+        placeholder="{% if lang == 'nl' %}Schrijf je reactie. Wees concreet — een gedachte, een vraag, een tegenwerping.{% else %}Write your reply. Be concrete — a thought, a question, a pushback.{% endif %}"
+      ></textarea>
+      <label class="gu-upload-label gu-upload-label--inline">
+        <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="gu-upload-input gu-composer__imgpick">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span class="gu-upload-chosen" hidden></span>
+      </label>
+      <div class="gu-composer__actions">
+        <span class="gu-composer__hint">
+          {% if lang == 'nl' %}Je post wordt op verzoek vertaald voor andere lezers{% else %}Your post will be translated on request for other readers{% endif %}
+        </span>
+        <button type="submit" class="gu-btn gu-btn--primary" id="composerSubmit" disabled>
+          {% if lang == 'nl' %}Plaats reactie{% else %}Post reply{% endif %} <span class="gu-arrow"></span>
+        </button>
+      </div>
+    </form>
+    {% else %}
+    <div class="gu-composer gu-composer--locked">
+      <p>
+        <a href="{{ url_for('main.login') }}">{% if lang == 'nl' %}Log in{% else %}Log in{% endif %}</a>
+        {% if lang == 'nl' %}om mee te doen aan het gesprek.{% else %}to join the conversation.{% endif %}
+      </p>
+    </div>
+    {% endif %}
+
+  </div>
+</main>
+{% endblock %}
+
+<script>
+  (function () {
+    var ta  = document.getElementById('composerBody');
+    var btn = document.getElementById('composerSubmit');
+    if (ta && btn) {
+      ta.addEventListener('input', function () { btn.disabled = !ta.value.trim(); });
+    }
+
+    // Show chosen filename for all file inputs on the page
+    document.querySelectorAll('.gu-upload-input').forEach(function (inp) {
+      var chosen = inp.closest('label') && inp.closest('label').querySelector('.gu-upload-chosen');
+      if (!chosen) return;
+      inp.addEventListener('change', function () {
+        if (inp.files.length) { chosen.textContent = inp.files[0].name; chosen.hidden = false; }
+        else { chosen.hidden = true; }
+      });
+    });
+
+    // Inline reply forms
+    document.querySelectorAll('.gu-post__reply-btn').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var form = document.getElementById(button.dataset.target);
+        if (!form) return;
+        form.hidden = !form.hidden;
+        if (!form.hidden) form.querySelector('textarea').focus();
+      });
+    });
+    document.querySelectorAll('.gu-post__reply-cancel').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var form = document.getElementById(button.dataset.target);
+        if (form) form.hidden = true;
+      });
+    });
+    document.querySelectorAll('.gu-post__replyform textarea').forEach(function (area) {
+      var submitBtn = area.closest('form').querySelector('button[type="submit"]');
+      area.addEventListener('input', function () { submitBtn.disabled = !area.value.trim(); });
+    });
+
+    // "Lees meer reacties" toggles
+    document.querySelectorAll('.gu-thread__replies-toggle').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var more = document.getElementById(button.dataset.target);
+        if (!more) return;
+        more.hidden = !more.hidden;
+        button.textContent = more.hidden ? button.dataset.labelShow : button.dataset.labelHide;
+      });
+    });
+
+    // Delete confirm
+    var pageLang = {{ lang | tojson }};
+    document.querySelectorAll('.gu-post__delete-form').forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        var msg = pageLang === 'nl' ? 'Bericht verwijderen?' : 'Delete this post?';
+        if (!confirm(msg)) e.preventDefault();
+      });
+    });
+
+    // Inline post edit
+    document.querySelectorAll('.gu-post__edit-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var postId = btn.dataset.postId;
+        var bodyEl = document.getElementById('body-' + postId);
+        var form   = document.getElementById('edit-form-' + postId);
+        if (!bodyEl || !form) return;
+        bodyEl.hidden = true;
+        form.hidden = false;
+        form.querySelector('textarea').focus();
+      });
+    });
+    document.querySelectorAll('.gu-post__edit-cancel').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var postId = btn.dataset.postId;
+        document.getElementById('body-' + postId).hidden = false;
+        document.getElementById('edit-form-' + postId).hidden = true;
+      });
+    });
+    document.querySelectorAll('.gu-post__edit-save').forEach(function (btn) {
+      var postId = btn.dataset.postId;
+      var url    = btn.dataset.url;
+      var form   = document.getElementById('edit-form-' + postId);
+      var ta     = form.querySelector('textarea');
+      var bodyEl = document.getElementById('body-' + postId);
+      ta.addEventListener('input', function () { btn.disabled = !ta.value.trim(); });
+      btn.addEventListener('click', function () {
+        var newBody = ta.value.trim();
+        if (!newBody) return;
+        btn.disabled = true;
+        var fd = new FormData();
+        fd.append('body', newBody);
+        fetch(url, { method: 'POST', body: fd })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (data.error) return;
+            bodyEl.innerHTML = '';
+            (data.body || '').split('\n\n').forEach(function (para) {
+              var p = document.createElement('p');
+              p.textContent = para;
+              bodyEl.appendChild(p);
+            });
+            bodyEl.hidden = false;
+            form.hidden = true;
+            ta.value = data.body;
+          })
+          .finally(function () { btn.disabled = false; });
+      });
+    });
+
+    // Like buttons
+    document.querySelectorAll('.gu-post__like-btn:not([disabled])').forEach(function (button) {
+      var postId   = button.dataset.postId;
+      var countEl  = button.querySelector('.gu-post__like-count');
+      if (button.dataset.liked === 'true') button.classList.add('gu-post__like-btn--liked');
+      button.addEventListener('click', function () {
+        fetch('/forum/like/' + postId, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            countEl.textContent = data.likes;
+            button.classList.toggle('gu-post__like-btn--liked', data.liked);
+            button.dataset.liked = data.liked ? 'true' : 'false';
+          });
+      });
+    });
+
+    document.querySelectorAll('.gu-post__translate-btn').forEach(function (button) {
+      var postId    = button.dataset.postId;
+      var url       = button.dataset.translateUrl;
+      var transBox  = document.getElementById('trans-' + postId);
+      var transBody = transBox ? transBox.querySelector('.gu-post__transbody') : null;
+      var shown     = false;
+
+      button.addEventListener('click', function () {
+        if (shown) {
+          transBox.hidden = true;
+          shown = false;
+          button.textContent = button.dataset.labelTranslate;
+          return;
+        }
+        if (transBody && transBody.innerHTML.trim()) {
+          transBox.hidden = false;
+          shown = true;
+          button.textContent = button.dataset.labelHide;
+          return;
+        }
+        button.textContent = button.dataset.labelLoading;
+        button.disabled = true;
+        fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (transBody) {
+              transBody.innerHTML = (data.translation || '')
+                .split('\n\n').map(function (p) { return '<p>' + p + '</p>'; }).join('');
+            }
+            if (transBox) transBox.hidden = false;
+            shown = true;
+            button.textContent = button.dataset.labelHide;
+          })
+          .catch(function () { button.textContent = button.dataset.labelError; })
+          .finally(function () { button.disabled = false; });
+      });
+    });
+  })();
+</script>
+{% endblock %}

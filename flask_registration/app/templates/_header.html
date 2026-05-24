@@ -1,0 +1,92 @@
+{% set header_variant = header_variant | default('paper') %}
+<header class="gu-header gu-header--{{ header_variant }}" id="siteHeader">
+
+  <a class="gu-header__brand" href="{{ url_for('main.index') }}">
+    <img src="{{ url_for('static', filename='assets/logo-navbar-' + ('dark' if header_variant == 'night' else 'transparent') + '.svg') }}"
+         alt="Global Union" height="60">
+  </a>
+
+  <nav class="gu-header__nav" id="siteNav" aria-label="Navigatie">
+    <a href="{{ url_for('main.forum') }}">Forum</a>
+
+    <a href="{{ url_for('main.manifest') }}">Manifest</a>
+    <a href="{{ url_for('main.about') }}">{% if lang == 'en' %}About{% else %}Over ons{% endif %}</a>
+  </nav>
+
+  <div class="gu-header__end">
+    {% if current_user.is_authenticated %}
+    <div class="gu-header__avatar-wrap" id="avatarWrap">
+      <button class="gu-header__avatar" id="avatarBtn" aria-expanded="false" aria-haspopup="true"
+              title="{{ current_user.first_name }} {{ current_user.last_name }}">
+        {{ current_user.first_name[0] | upper }}{{ current_user.last_name[0] | upper }}
+      </button>
+      <div class="gu-header__dropdown" id="avatarDropdown" hidden>
+        <p class="gu-header__dropdown-name">{{ current_user.first_name }} {{ current_user.last_name }}</p>
+        <a href="{{ url_for('main.profile') }}" class="gu-header__dropdown-item">{{ t.nav_profile }}</a>
+        <div class="gu-header__dropdown-lang">
+          <p class="gu-header__dropdown-label">{% if lang == 'nl' %}Taal{% else %}Language{% endif %}</p>
+          <div class="gu-header__dropdown-langlinks">
+            <a href="{{ url_for('main.set_lang', code='nl') }}"
+               class="gu-header__dropdown-langlink{% if lang == 'nl' %} is-active{% endif %}">Nederlands</a>
+            <span class="gu-footer__lang-sep">·</span>
+            <a href="{{ url_for('main.set_lang', code='en') }}"
+               class="gu-header__dropdown-langlink{% if lang == 'en' %} is-active{% endif %}">English</a>
+          </div>
+        </div>
+        <hr class="gu-header__dropdown-divider">
+        <a href="{{ url_for('main.logout') }}" class="gu-header__dropdown-item">{{ t.nav_logout }}</a>
+      </div>
+    </div>
+    {% else %}
+    <a href="{{ url_for('main.login') }}" class="gu-header__cta">
+      {% if lang == 'en' %}Log in{% else %}Inloggen{% endif %}
+    </a>
+    {% endif %}
+
+    <button class="gu-header__burger" id="navBurger"
+            aria-expanded="false" aria-controls="siteNav" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+</header>
+
+<script>
+  (function () {
+    /* Avatar dropdown */
+    var avatarBtn      = document.getElementById('avatarBtn');
+    var avatarDropdown = document.getElementById('avatarDropdown');
+    if (avatarBtn) {
+      avatarBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = !avatarDropdown.hidden;
+        avatarDropdown.hidden = open;
+        avatarBtn.setAttribute('aria-expanded', String(!open));
+      });
+      document.addEventListener('click', function () {
+        if (!avatarDropdown.hidden) {
+          avatarDropdown.hidden = true;
+          avatarBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+      avatarDropdown.addEventListener('click', function (e) { e.stopPropagation(); });
+    }
+
+    /* Hamburger */
+    var burger     = document.getElementById('navBurger');
+    var siteHeader = document.getElementById('siteHeader');
+    if (burger) {
+      burger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = siteHeader.classList.toggle('gu-header--open');
+        burger.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', function (e) {
+        if (siteHeader.classList.contains('gu-header--open') && !siteHeader.contains(e.target)) {
+          siteHeader.classList.remove('gu-header--open');
+          burger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+  })();
+</script>

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<main class="gu-forum" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    <div class="gu-forum__topbar">
+      <header class="gu-forum__indexhead">
+        <p class="gu-eyebrow">Forum</p>
+        <h1 class="gu-forum__title">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</h1>
+      </header>
+      {% if current_user.is_authenticated %}
+      <div class="gu-forum__topactions">
+        <a href="{{ url_for('main.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
+          <span style="font-size:1.1em;line-height:1">+</span>
+          {% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %}
+        </a>
+        {% if current_user.is_admin or current_user.is_moderator %}
+        <a href="{{ url_for('main.forum_gesloten') }}" class="gu-forum__closed-link">
+          {% if lang == 'nl' %}Gesloten gesprekken{% else %}Closed conversations{% endif %}
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    {% if threads %}
+    <ul class="gu-threadlist">
+      {% for item in threads %}
+      {% set t = item.thread %}
+      <li class="gu-threadlist__row{% if t.is_closed %} gu-threadlist__row--closed{% endif %}">
+        <a class="gu-threadlist__link" href="{{ url_for('main.forum_thread', thread_id=t.id) }}">
+          <span class="gu-threadlist__eyebrow">
+            {{ t.eyebrow_nl if lang == 'nl' else t.eyebrow_en }}
+            {% if t.is_closed %}
+              <span class="gu-forum__closed-badge">{% if lang == 'nl' %}Gesloten{% else %}Closed{% endif %}</span>
+            {% endif %}
+          </span>
+          <span class="gu-threadlist__title">
+            {%- if lang == 'nl' -%}
+              {{ t.title_prefix_nl }}{% if t.title_accent_nl %} <em>{{ t.title_accent_nl }}</em>{% endif %}{{ t.title_suffix_nl }}
+            {%- else -%}
+              {{ t.title_prefix_en }}{% if t.title_accent_en %} <em>{{ t.title_accent_en }}</em>{% endif %}{{ t.title_suffix_en }}
+            {%- endif -%}
+          </span>
+          <span class="gu-threadlist__meta">
+            <span>{{ item.reply_count }} {% if lang == 'nl' %}reactie{{ 's' if item.reply_count != 1 else '' }}{% else %}repl{{ 'ies' if item.reply_count != 1 else 'y' }}{% endif %}</span>
+            {% if item.last_time_ago %}
+              <span aria-hidden="true">·</span>
+              <span>{% if lang == 'nl' %}laatst {% else %}last {% endif %}{{ item.last_time_ago[lang] }}</span>
+            {% endif %}
+          </span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="gu-threadlist__empty">
+      {% if lang == 'nl' %}Nog geen gesprekken. Start het eerste gesprek.{% else %}No conversations yet. Start the first one.{% endif %}
+    </p>
+    {% endif %}
+
+    {% if not current_user.is_authenticated %}
+    <div class="gu-composer gu-composer--locked" style="margin-top:32px;">
+      <p>
+        <a href="{{ url_for('main.login') }}">{% if lang == 'nl' %}Log in{% else %}Log in{% endif %}</a>
+        {% if lang == 'nl' %}om mee te doen aan het gesprek.{% else %}to join the conversation.{% endif %}
+      </p>
+    </div>
+    {% endif %}
+
+  </div>
+</main>
+{% endblock %}{% endblock %}

@@ -1,0 +1,55 @@
+<footer class="gu-footer">
+  <div class="gu-container">
+  <div class="gu-footer__flags">
+    <span class="gu-arrow gu-arrow--lg" style="background: #0077cc"></span>
+    <span class="gu-arrow gu-arrow--lg" style="background: #333333"></span>
+    <span class="gu-arrow gu-arrow--lg" style="background: #ee1c25"></span>
+    <span class="gu-arrow gu-arrow--lg" style="background: #f5a800"></span>
+    <span class="gu-arrow gu-arrow--lg" style="background: #00a551"></span>
+  </div>
+  <div class="gu-footer__grid">
+    <div class="gu-footer__brand">
+      <img src="{{ url_for('static', filename='assets/logo-navbar-dark.svg') }}" alt="Global Union" height="28">
+      <p class="gu-payoff gu-payoff--on-night">Freedom for all</p>
+    </div>
+    <div>
+      <p class="gu-eyebrow gu-eyebrow--on-night">De denktank</p>
+      <ul>
+        <li><a href="#manifest">Manifest</a></li>
+        <li><a href="#principes">Principes</a></li>
+        <li><a href="#scorecard">Scorecard</a></li>
+        <li><a href="#mensen">Mensen</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="gu-eyebrow gu-eyebrow--on-night">Meedoen</p>
+      <ul>
+        <li><a href="#meedoen">Denk mee</a></li>
+        <li><a href="#essays">Essays</a></li>
+        <li><a href="#werksessies">Werksessies</a></li>
+        <li><a href="#nieuwsbrief">Nieuwsbrief</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="gu-eyebrow gu-eyebrow--on-night">Contact</p>
+      <ul>
+        <li><a href="mailto:gerhard.top@globalunionforum.org">gerhard.top@globalunionforum.org</a></li>
+        <li>Nederland</li>
+      </ul>
+    </div>
+  </div>
+  <div class="gu-footer__legal">
+    <span>&copy; 2026 Global Union Forum<br>een beweging in opbouw</span>
+    <span><a href="#">Privacy</a> &middot; <a href="#">Cookies</a></span>
+  </div>
+  {% if not current_user.is_authenticated %}
+  <div class="gu-footer__lang">
+    <a href="{{ url_for('main.set_lang', code='nl') }}"
+       class="{% if lang == 'nl' %}is-active{% endif %}">NL</a>
+    <span class="gu-footer__lang-sep">|</span>
+    <a href="{{ url_for('main.set_lang', code='en') }}"
+       class="{% if lang == 'en' %}is-active{% endif %}">EN</a>
+  </div>
+  {% endif %}
+  </div>
+</footer>

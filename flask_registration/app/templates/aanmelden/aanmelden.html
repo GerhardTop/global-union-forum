@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'en' %}Join us{% else %}Doe mee{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<main class="gu-join-page">
+  <div class="gu-join-page__inner">
+
+    <form class="gu-join__panel" method="POST" action="{{ url_for('main.aanmelden') }}" novalidate>
+
+      <h2 class="gu-join__h2">
+        {% if lang == 'en' %}Join the conversation.{% else %}Doe mee aan het gesprek.{% endif %}
+      </h2>
+      <p class="gu-join__sub">
+        {% if lang == 'en' %}
+          Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free. We ask for a one-time &euro;&nbsp;0.01 payment to verify your identity.
+        {% else %}
+          Global Union Forum is een open platform voor iedereen die het gesprek serieus voert — expert of leek, 17 of 70. Deelname is gratis. We vragen eenmalig &euro;&nbsp;0,01 ter verificatie van je identiteit.
+        {% endif %}
+      </p>
+
+      <div class="gu-join__field gu-join__field--row">
+        <div class="gu-join__sub-field">
+          <label for="first_name">{% if lang == 'en' %}First name{% else %}Voornaam{% endif %}</label>
+          <input id="first_name" name="first_name" type="text"
+                 class="gu-input{% if errors.first_name %} gu-input--error{% endif %}"
+                 value="{{ form_data.first_name }}" placeholder="Sara" required autofocus>
+          {% if errors.first_name %}
+          <p class="gu-join__formError">{% if lang == 'en' %}Required.{% else %}Verplicht.{% endif %}</p>
+          {% endif %}
+        </div>
+        <div class="gu-join__sub-field">
+          <label for="last_name">{% if lang == 'en' %}Last name{% else %}Achternaam{% endif %}</label>
+          <input id="last_name" name="last_name" type="text"
+                 class="gu-input{% if errors.last_name %} gu-input--error{% endif %}"
+                 value="{{ form_data.last_name }}" placeholder="De Vries" required>
+          {% if errors.last_name %}
+          <p class="gu-join__formError">{% if lang == 'en' %}Required.{% else %}Verplicht.{% endif %}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="gu-join__field">
+        <label for="email">{% if lang == 'en' %}Email address{% else %}E-mailadres{% endif %}</label>
+        <input id="email" name="email" type="email"
+               class="gu-input{% if errors.email or errors.email_in_use %} gu-input--error{% endif %}"
+               value="{{ form_data.email }}" placeholder="naam@voorbeeld.nl" required>
+        {% if errors.email_in_use %}
+        <p class="gu-join__formError">
+          {% if lang == 'en' %}This email is already in use.
+            <a href="{{ url_for('main.login') }}">Log in instead?</a>
+          {% else %}Dit e-mailadres is al in gebruik.
+            <a href="{{ url_for('main.login') }}">Inloggen?</a>
+          {% endif %}
+        </p>
+        {% elif errors.email %}
+        <p class="gu-join__formError">
+          {% if lang == 'en' %}Enter a valid email address.{% else %}Vul een geldig e-mailadres in.{% endif %}
+        </p>
+        {% endif %}
+      </div>
+
+      <div class="gu-join__field">
+        <label for="password">{% if lang == 'en' %}Password{% else %}Wachtwoord{% endif %}</label>
+        <input id="password" name="password" type="password"
+               class="gu-input{% if errors.password %} gu-input--error{% endif %}"
+               placeholder="{% if lang == 'en' %}At least 8 characters{% else %}Minimaal 8 tekens{% endif %}" required>
+        {% if errors.password %}
+        <p class="gu-join__formError">
+          {% if lang == 'en' %}Password must be at least 8 characters.{% else %}Minimaal 8 tekens.{% endif %}
+        </p>
+        {% endif %}
+      </div>
+
+      <div class="gu-join__field">
+        <label for="password_confirm">{% if lang == 'en' %}Confirm password{% else %}Bevestig wachtwoord{% endif %}</label>
+        <input id="password_confirm" name="password_confirm" type="password"
+               class="gu-input{% if errors.password_confirm %} gu-input--error{% endif %}"
+               placeholder="{% if lang == 'en' %}Repeat your password{% else %}Herhaal je wachtwoord{% endif %}" required>
+        {% if errors.password_confirm %}
+        <p class="gu-join__formError">
+          {% if lang == 'en' %}Passwords do not match.{% else %}Wachtwoorden komen niet overeen.{% endif %}
+        </p>
+        {% endif %}
+      </div>
+
+      <div class="gu-join__actions gu-join__actions--right">
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">
+          {% if lang == 'en' %}Create account{% else %}Account aanmaken{% endif %}
+          <span class="gu-arrow"></span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</main>
+{% endblock %}{% endblock %}

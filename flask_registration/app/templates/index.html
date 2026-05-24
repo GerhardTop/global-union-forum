@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+
+{# ── Hero ─────────────────────────────────────────────── #}
+<section class="gu-hero">
+  <div class="gu-hero__inner">
+    <p class="gu-eyebrow">Freedom for all</p>
+    <h1 class="gu-display">
+      Een unie van<br><em>functionerende democratieën</em>.
+    </h1>
+    <p class="gu-lead">
+      {% if lang == 'en' %}
+      The European Union has been a great success in many ways; many countries
+      with formerly authoritarian regimes joined its ranks. People wanted to be
+      part of the EU — for prosperity and for freedom. The EU is not finished,
+      and there is much to improve. That does not change the fact that we can
+      and must already expand beyond Europe to countries that are functioning
+      democracies, such as Canada and Australia, and to (candidate) countries
+      working hard to qualify.
+      {% else %}
+      De Europese Unie is in veel opzichten een groot succes; veel landen met
+      voorheen dictatoriale regimes sloten zich aan. De mensen wilden bij de EU.
+      Voor welvaart en voor vrijheid. De EU is niet af en valt er veel te
+      verbeteren. Dat neemt niet weg dat we nu al kunnen en moeten uitbreiden
+      buiten Europa met andere landen die al functionerende democratieën zijn,
+      zoals Canada en Australië en met (kandidaat) landen die hard aan de slag
+      gaan om erbij te horen.
+      {% endif %}
+    </p>
+    <p class="gu-lead">
+      {% if lang == 'en' %}
+      The think tank Global Union Forum investigates whether the same model can
+      work worldwide: a cooperation of countries that take democracy, the rule
+      of law, sustainability and human rights seriously.
+      {% else %}
+      De denktank Global Union Forum onderzoekt of hetzelfde model wereldwijd
+      kan werken: een samenwerking van landen die democratie, rechtsstaat,
+      duurzaamheid en mensenrechten serieus nemen.
+      {% endif %}
+    </p>
+    {% if not current_user.is_authenticated %}
+    <p class="gu-lead" style="font-size: 16px; margin-top: -8px;">
+      We zoeken mensen die meedenken — experts én leken, 17 of 70,
+      overtuigd of sceptisch. Iedereen die het gesprek serieus voert.
+    </p>
+    <div class="gu-hero__cta">
+      <a class="gu-btn gu-btn--primary" href="{{ url_for('main.aanmelden') }}">
+        Doe mee aan het gesprek <span class="gu-arrow"></span>
+      </a>
+      <a class="gu-btn gu-btn--ghost" href="#manifest">Lees het manifest</a>
+    </div>
+    {% endif %}
+    <div class="gu-hero__flags">
+      <span class="gu-arrow gu-arrow--lg" style="background: #0077cc"></span>
+      <span class="gu-arrow gu-arrow--lg" style="background: #333333"></span>
+      <span class="gu-arrow gu-arrow--lg" style="background: #ee1c25"></span>
+      <span class="gu-arrow gu-arrow--lg" style="background: #f5a800"></span>
+      <span class="gu-arrow gu-arrow--lg" style="background: #00a551"></span>
+      <span style="font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+                   color: var(--gu-fg-3); font-weight: 300; margin-left: 8px;">
+        Een wereldwijde beweging
+      </span>
+    </div>
+  </div>
+  <img class="gu-hero__symbol"
+       src="{{ url_for('static', filename='assets/logo-symbol.svg') }}" alt="">
+</section>
+
+{# ── CampaignGrid ─────────────────────────────────────── #}
+<section class="gu-section gu-section--soft" id="idee">
+  <div class="gu-container">
+  <div class="gu-section__head">
+    <p class="gu-eyebrow">Het idee, in vier stukken</p>
+    <h2 class="gu-h2">Niet uit dwang,<br><em>maar uit aantrekkingskracht.</em></h2>
+    <p class="gu-lead" style="max-width: 64ch;">
+      Wie meedoet, wint perspectief en welvaart. Wie buiten blijft,
+      voelt de druk van onderaf. Hetzelfde mechanisme dat Oost-Europa
+      uit dictaturen heeft getrokken — maar dan toegepast op de wereld.
+    </p>
+  </div>
+  <div class="gu-principle-grid">
+
+    <article class="gu-card gu-principle">
+      <div class="gu-principle__head">
+        <span class="gu-principle__n" style="color: #0077cc">01</span>
+        <span class="gu-arrow gu-arrow--lg" style="background: #0077cc"></span>
+      </div>
+      <h3 class="gu-principle__title">Handelen op gedrag</h3>
+      <p class="gu-principle__body">
+        Eén tarievensysteem op basis van een scorecard per land — corruptie,
+        vrijheid, mensenrechten, duurzaamheid, internationale rechtsorde.
+        Voldoe je volledig? 0% invoerrechten. Pleeg je agressie? Uitgesloten.
+      </p>
+    </article>
+
+    <article class="gu-card gu-principle">
+      <div class="gu-principle__head">
+        <span class="gu-principle__n" style="color: #ee1c25">02</span>
+        <span class="gu-arrow gu-arrow--lg" style="background: #ee1c25"></span>
+      </div>
+      <h3 class="gu-principle__title">Vreedzaam, maar niet naïef</h3>
+      <p class="gu-principle__body">
+        Geen oorlog, wel doortastende sancties. Volken moeten zelf in opstand
+        komen — als dat wordt neergeslagen, staan we klaar. Landen die schade
+        lijden worden gezamenlijk gecompenseerd.
+      </p>
+    </article>
+
+    <article class="gu-card gu-principle">
+      <div class="gu-principle__head">
+        <span class="gu-principle__n" style="color: #f5a800">03</span>
+        <span class="gu-arrow gu-arrow--lg" style="background: #f5a800"></span>
+      </div>
+      <h3 class="gu-principle__title">Vrije informatie</h3>
+      <p class="gu-principle__body">
+        Onafhankelijke journalistiek in lokale talen, naar het model van de BBC.
+        Beschermde technologie die mensen losmaakt van staatsgecontroleerd
+        internet. Vrijheid begint bij weten.
+      </p>
+    </article>
+
+    <article class="gu-card gu-principle">
+      <div class="gu-principle__head">
+        <span class="gu-principle__n" style="color: #00a551">04</span>
+        <span class="gu-arrow gu-arrow--lg" style="background: #00a551"></span>
+      </div>
+      <h3 class="gu-principle__title">Eén handelszone — geen open grenzen</h3>
+      <p class="gu-principle__body">
+        Gemeenschappelijke tarieven, ja. Vrij personenverkeer, nee. Zo voorkomen
+        we ongewenste migratiestromen en houden we landen zelf verantwoordelijk
+        voor hun welvaart.
+      </p>
+    </article>
+
+  </div>
+  </div>
+</section>
+
+
+
+{% endblock %}{% endblock %}

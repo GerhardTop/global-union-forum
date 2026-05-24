@@ -1,29 +1,41 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t.dashboard_title }} — MijnApp{% endblock %}
-{% block container_class %}container-wide{% endblock %}
+{% block title %}{{ t.dashboard_title }} — Global Union{% endblock %}
 
 {% block content %}
-<div class="dashboard-header">
-    <h1>{{ t.dashboard_title }}</h1>
-    <p>{{ t.dashboard_welcome.format(name=current_user.first_name) }}</p>
-</div>
+<div class="gu-dashboard">
 
-<div class="dashboard-grid">
-    <div class="dashboard-card">
-        <div class="dashboard-card__icon">&#128196;</div>
-        <h2>Placeholder A</h2>
-        <p>{{ t.dashboard_placeholder_text }}</p>
+  <div class="gu-dashboard__head">
+    <p class="gu-eyebrow">Global Union</p>
+    <h1 class="gu-dashboard__title">
+      {% if lang == 'en' %}Welcome back, {{ current_user.first_name }}.{% else %}Welkom terug, {{ current_user.first_name }}.{% endif %}
+    </h1>
+    <p class="gu-dashboard__sub">
+      {% if lang == 'en' %}Your account is active.{% else %}Je account is actief.{% endif %}
+    </p>
+  </div>
+
+  <div class="gu-dashboard__grid">
+
+    <div class="gu-dashboard__card">
+      <p class="gu-eyebrow">{% if lang == 'en' %}Membership{% else %}Lidmaatschap{% endif %}</p>
+      <h2 class="gu-dashboard__card-title">Placeholder A</h2>
+      <p class="gu-dashboard__card-body">{{ t.dashboard_placeholder_text }}</p>
     </div>
-    <div class="dashboard-card">
-        <div class="dashboard-card__icon">&#128202;</div>
-        <h2>Placeholder B</h2>
-        <p>{{ t.dashboard_placeholder_text }}</p>
+
+    <div class="gu-dashboard__card">
+      <p class="gu-eyebrow">{% if lang == 'en' %}Activity{% else %}Activiteit{% endif %}</p>
+      <h2 class="gu-dashboard__card-title">Placeholder B</h2>
+      <p class="gu-dashboard__card-body">{{ t.dashboard_placeholder_text }}</p>
     </div>
-    <div class="dashboard-card">
-        <div class="dashboard-card__icon">&#9881;</div>
-        <h2>Placeholder C</h2>
-        <p>{{ t.dashboard_placeholder_text }}</p>
+
+    <div class="gu-dashboard__card">
+      <p class="gu-eyebrow">{% if lang == 'en' %}Settings{% else %}Instellingen{% endif %}</p>
+      <h2 class="gu-dashboard__card-title">Placeholder C</h2>
+      <p class="gu-dashboard__card-body">{{ t.dashboard_placeholder_text }}</p>
     </div>
+
+  </div>
+
 </div>
 {% endblock %}

@@ -1,62 +1,94 @@
 {% extends "base.html" %}
+{% block title %}{{ t.register_title }} — Global Union{% endblock %}
 
-{% block title %}{{ t.register_title }} — MijnApp{% endblock %}
+{% block content_outer %}{% block content %}
+<div class="gu-auth-page">
+  <div class="gu-auth-panel gu-auth-panel--wide">
 
-{% block content %}
-<div class="card">
-    <div class="card-header">
-        <h1>{{ t.register_title }}</h1>
-        <p>{{ t.register_subtitle }}</p>
+    <div class="gu-auth__brand">
+      <img src="{{ url_for('static', filename='assets/logo-symbol.svg') }}" height="28" alt="">
+      <p class="gu-eyebrow" style="margin: 0;">Global Union</p>
     </div>
 
-    <form method="POST" action="{{ url_for('main.register') }}" novalidate>
-        {{ form.hidden_tag() }}
+    <p class="gu-eyebrow">{{ t.register_title }}</p>
+    <h2 class="gu-join__h2">{% if lang == 'en' %}Create your account.{% else %}Maak je account aan.{% endif %}</h2>
+    <p class="gu-join__sub">{{ t.register_subtitle }}</p>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="{{ form.first_name.id }}">{{ t.register_first_name }}</label>
-                {{ form.first_name(placeholder="Jan") }}
-                {% if form.first_name.errors %}
-                    <span class="field-error">{{ t.get(form.first_name.errors[0], form.first_name.errors[0]) }}</span>
-                {% endif %}
-            </div>
+    <form method="POST" action="{{ url_for('main.register') }}" novalidate style="margin-top: 24px;">
+      {{ form.hidden_tag() }}
 
-            <div class="form-group">
-                <label for="{{ form.last_name.id }}">{{ t.register_last_name }}</label>
-                {{ form.last_name(placeholder="Janssen") }}
-                {% if form.last_name.errors %}
-                    <span class="field-error">{{ t.get(form.last_name.errors[0], form.last_name.errors[0]) }}</span>
-                {% endif %}
-            </div>
+      <div class="gu-join__field gu-join__field--row">
+        <div class="gu-join__sub-field">
+          <label for="{{ form.first_name.id }}">{{ t.register_first_name }}</label>
+          {{ form.first_name(
+              class="gu-input" ~ (" gu-input--error" if form.first_name.errors else ""),
+              placeholder=t.ph_first_name
+          ) }}
+          {% if form.first_name.errors %}
+            <p class="gu-join__formError">{{ t.get(form.first_name.errors[0], form.first_name.errors[0]) }}</p>
+          {% endif %}
         </div>
 
-        <div class="form-group">
-            <label for="{{ form.email.id }}">{{ t.register_email }}</label>
-            {{ form.email(placeholder=t.ph_email) }}
-            {% if form.email.errors %}
-                <span class="field-error">{{ t.get(form.email.errors[0], form.email.errors[0]) }}</span>
-            {% endif %}
+        <div class="gu-join__sub-field">
+          <label for="{{ form.last_name.id }}">{{ t.register_last_name }}</label>
+          {{ form.last_name(
+              class="gu-input" ~ (" gu-input--error" if form.last_name.errors else ""),
+              placeholder=t.ph_last_name
+          ) }}
+          {% if form.last_name.errors %}
+            <p class="gu-join__formError">{{ t.get(form.last_name.errors[0], form.last_name.errors[0]) }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="gu-join__field">
+        <label for="{{ form.email.id }}">{{ t.register_email }}</label>
+        {{ form.email(
+            class="gu-input" ~ (" gu-input--error" if form.email.errors else ""),
+            placeholder=t.ph_email
+        ) }}
+        {% if form.email.errors %}
+          <p class="gu-join__formError">{{ t.get(form.email.errors[0], form.email.errors[0]) }}</p>
+        {% endif %}
+      </div>
+
+      <div class="gu-join__field gu-join__field--row">
+        <div class="gu-join__sub-field">
+          <label for="{{ form.password.id }}">{{ t.register_password }}</label>
+          {{ form.password(
+              class="gu-input" ~ (" gu-input--error" if form.password.errors else ""),
+              placeholder=t.ph_password
+          ) }}
+          {% if form.password.errors %}
+            <p class="gu-join__formError">{{ t.get(form.password.errors[0], form.password.errors[0]) }}</p>
+          {% endif %}
         </div>
 
-        <div class="form-group">
-            <label for="{{ form.password.id }}">{{ t.register_password }}</label>
-            {{ form.password(placeholder=t.ph_password) }}
-            {% if form.password.errors %}
-                <span class="field-error">{{ t.get(form.password.errors[0], form.password.errors[0]) }}</span>
-            {% endif %}
+        <div class="gu-join__sub-field">
+          <label for="{{ form.confirm_password.id }}">{{ t.register_confirm_password }}</label>
+          {{ form.confirm_password(
+              class="gu-input" ~ (" gu-input--error" if form.confirm_password.errors else ""),
+              placeholder=t.ph_confirm_password
+          ) }}
+          {% if form.confirm_password.errors %}
+            <p class="gu-join__formError">{{ t.get(form.confirm_password.errors[0], form.confirm_password.errors[0]) }}</p>
+          {% endif %}
         </div>
+      </div>
 
-        <div class="form-group">
-            <label for="{{ form.confirm_password.id }}">{{ t.register_confirm_password }}</label>
-            {{ form.confirm_password(placeholder=t.ph_confirm_password) }}
-            {% if form.confirm_password.errors %}
-                <span class="field-error">{{ t.get(form.confirm_password.errors[0], form.confirm_password.errors[0]) }}</span>
-            {% endif %}
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">{{ t.register_btn }}</button>
-        </div>
+      <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
+              style="width: 100%; justify-content: center; margin-top: 8px;">
+        {{ t.register_btn }} <span class="gu-arrow"></span>
+      </button>
     </form>
+
+    <hr class="gu-auth__divider">
+
+    <p class="gu-auth__footer">
+      {% if lang == 'en' %}Already have an account?{% else %}Al een account?{% endif %}
+      <a href="{{ url_for('main.login') }}">{{ t.login_btn }}</a>
+    </p>
+
+  </div>
 </div>
-{% endblock %}
+{% endblock %}{% endblock %}

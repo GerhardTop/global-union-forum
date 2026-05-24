@@ -1,0 +1,207 @@
+/* ============================================================
+   GLOBAL UNION — Colors & Type
+   Foundation tokens. Import this file first.
+   ============================================================ */
+
+/* Inter — Google Fonts (Light 300 / Regular 400 / Medium 500 / SemiBold 600) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  /* ---------- BRAND CORE -------------------------------------------------- */
+  --gu-globe:        #3ab0f0;   /* Aardbol / globe blue — hero accent */
+  --gu-globe-deep:   #0077cc;   /* Deeper blue, used for Europe arrow */
+  --gu-ink:          #1a1a1a;   /* GLOBAL wordmark — near-black ink */
+  --gu-night:        #0f1923;   /* Donkere achtergrond — deep navy */
+  --gu-paper:        #ffffff;   /* Paper white */
+  --gu-payoff:       #aaaaaa;   /* Payoff & secondary text grey */
+
+  /* ---------- CONTINENT ACCENTS ------------------------------------------ */
+  /* Five-flag system. Each arrow stands for one continent. Use sparingly,  */
+  /* together they form the full set — never invent a sixth.                */
+  --gu-europe:       #0077cc;   /* Europe   — blue   */
+  --gu-asia:         #333333;   /* Asia     — black  */
+  --gu-americas:     #ee1c25;   /* Americas — red    */
+  --gu-africa:       #f5a800;   /* Africa   — yellow */
+  --gu-oceania:      #00a551;   /* Oceania  — green  */
+
+  /* ---------- NEUTRAL SCALE ---------------------------------------------- */
+  /* Cool slate scale, anchored on --gu-night.                              */
+  --gu-n-50:  #f6f8fa;
+  --gu-n-100: #eceff3;
+  --gu-n-200: #d8dde4;
+  --gu-n-300: #b9c1cc;
+  --gu-n-400: #8a95a3;
+  --gu-n-500: #5e6877;
+  --gu-n-600: #3f4753;
+  --gu-n-700: #2a313b;
+  --gu-n-800: #1a212b;
+  --gu-n-900: #0f1923;
+
+  /* ---------- SEMANTIC ---------------------------------------------------- */
+  --gu-bg:           var(--gu-paper);
+  --gu-bg-soft:      var(--gu-n-50);
+  --gu-bg-night:     var(--gu-night);
+
+  --gu-fg-1:         var(--gu-ink);          /* primary text */
+  --gu-fg-2:         var(--gu-n-600);        /* secondary text */
+  --gu-fg-3:         var(--gu-payoff);       /* tertiary / payoff */
+  --gu-fg-on-night:  var(--gu-paper);
+  --gu-fg-on-night-2:#cbd3dd;
+
+  --gu-border:       var(--gu-n-200);
+  --gu-border-strong:var(--gu-n-300);
+  --gu-border-night: rgba(255,255,255,0.12);
+
+  --gu-link:         var(--gu-globe-deep);
+  --gu-link-hover:   #005ea3;
+
+  --gu-success:      var(--gu-oceania);
+  --gu-warning:      var(--gu-africa);
+  --gu-danger:       var(--gu-americas);
+  --gu-info:         var(--gu-globe);
+
+  /* ---------- TYPE -------------------------------------------------------- */
+  --gu-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --gu-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Weights — the wordmark mixes 500 (GLOBAL) + 300 (UNION). Honor that.  */
+  --gu-w-light:    300;
+  --gu-w-regular:  400;
+  --gu-w-medium:   500;
+  --gu-w-semibold: 600;
+
+  /* Display sizes — pair light + medium for the GLOBAL/UNION rhythm.       */
+  --gu-fs-display: 88px;   --gu-lh-display: 0.95;
+  --gu-fs-h1:      56px;   --gu-lh-h1: 1.05;
+  --gu-fs-h2:      40px;   --gu-lh-h2: 1.1;
+  --gu-fs-h3:      28px;   --gu-lh-h3: 1.2;
+  --gu-fs-h4:      20px;   --gu-lh-h4: 1.3;
+  --gu-fs-body-lg: 18px;   --gu-lh-body-lg: 1.55;
+  --gu-fs-body:    16px;   --gu-lh-body: 1.55;
+  --gu-fs-small:   14px;   --gu-lh-small: 1.5;
+  --gu-fs-caption: 12px;   --gu-lh-caption: 1.4;
+
+  /* The payoff style: tracked, all-caps, light grey. A signature. */
+  --gu-track-payoff:  0.25em;   /* 12px @ 3px ≈ 0.25em */
+  --gu-track-tight:  -0.02em;   /* display headings */
+  --gu-track-eyebrow: 0.18em;   /* eyebrow / labels */
+
+  /* ---------- SPACING & SHAPE -------------------------------------------- */
+  --gu-space-1: 4px;
+  --gu-space-2: 8px;
+  --gu-space-3: 12px;
+  --gu-space-4: 16px;
+  --gu-space-5: 24px;
+  --gu-space-6: 32px;
+  --gu-space-7: 48px;
+  --gu-space-8: 64px;
+  --gu-space-9: 96px;
+
+  --gu-radius-sm: 4px;
+  --gu-radius-md: 8px;
+  --gu-radius-lg: 14px;
+  --gu-radius-pill: 999px;
+
+  /* Shadows — restrained. The brand is editorial, not material. */
+  --gu-shadow-sm: 0 1px 2px rgba(15, 25, 35, 0.06);
+  --gu-shadow-md: 0 4px 14px rgba(15, 25, 35, 0.08);
+  --gu-shadow-lg: 0 18px 40px -12px rgba(15, 25, 35, 0.18);
+  --gu-shadow-ring: 0 0 0 4px rgba(58, 176, 240, 0.20);
+
+  /* Motion */
+  --gu-ease:        cubic-bezier(.2,.7,.2,1);
+  --gu-ease-out:    cubic-bezier(.16,1,.3,1);
+  --gu-dur-fast:    120ms;
+  --gu-dur:         220ms;
+  --gu-dur-slow:    420ms;
+}
+
+/* ============================================================
+   SEMANTIC ELEMENT STYLES
+   These apply when you opt into them via a wrapping `.gu` class
+   so the design system can coexist with host styles in previews.
+   ============================================================ */
+
+.gu {
+  font-family: var(--gu-font-sans);
+  font-size: var(--gu-fs-body);
+  line-height: var(--gu-lh-body);
+  color: var(--gu-fg-1);
+  background: var(--gu-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.gu h1, .gu .h1,
+.gu h2, .gu .h2,
+.gu h3, .gu .h3,
+.gu h4, .gu .h4 {
+  font-family: var(--gu-font-sans);
+  color: var(--gu-fg-1);
+  margin: 0 0 0.4em;
+  text-wrap: balance;
+}
+
+.gu .display {
+  font-size: var(--gu-fs-display);
+  line-height: var(--gu-lh-display);
+  letter-spacing: var(--gu-track-tight);
+  font-weight: var(--gu-w-medium);
+}
+.gu h1, .gu .h1 { font-size: var(--gu-fs-h1); line-height: var(--gu-lh-h1); font-weight: var(--gu-w-medium); letter-spacing: var(--gu-track-tight); }
+.gu h2, .gu .h2 { font-size: var(--gu-fs-h2); line-height: var(--gu-lh-h2); font-weight: var(--gu-w-medium); letter-spacing: -0.01em; }
+.gu h3, .gu .h3 { font-size: var(--gu-fs-h3); line-height: var(--gu-lh-h3); font-weight: var(--gu-w-medium); }
+.gu h4, .gu .h4 { font-size: var(--gu-fs-h4); line-height: var(--gu-lh-h4); font-weight: var(--gu-w-medium); }
+
+.gu p, .gu .p {
+  font-size: var(--gu-fs-body);
+  line-height: var(--gu-lh-body);
+  color: var(--gu-fg-1);
+  text-wrap: pretty;
+  margin: 0 0 1em;
+}
+.gu .lead {
+  font-size: var(--gu-fs-body-lg);
+  line-height: var(--gu-lh-body-lg);
+  font-weight: var(--gu-w-light);
+  color: var(--gu-fg-2);
+}
+.gu small, .gu .small { font-size: var(--gu-fs-small); line-height: var(--gu-lh-small); color: var(--gu-fg-2); }
+.gu .caption { font-size: var(--gu-fs-caption); line-height: var(--gu-lh-caption); color: var(--gu-fg-3); }
+
+/* Signature tracked-caps label, mirrors the wordmark payoff. */
+.gu .eyebrow,
+.gu .payoff {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: var(--gu-w-light);
+  letter-spacing: var(--gu-track-payoff);
+  text-transform: uppercase;
+  color: var(--gu-fg-3);
+}
+.gu .eyebrow { letter-spacing: var(--gu-track-eyebrow); }
+
+.gu a {
+  color: var(--gu-link);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  transition: color var(--gu-dur) var(--gu-ease);
+}
+.gu a:hover { color: var(--gu-link-hover); }
+
+.gu code, .gu kbd, .gu pre {
+  font-family: var(--gu-font-mono);
+  font-size: 0.92em;
+}
+.gu code { background: var(--gu-n-100); padding: 0.1em 0.35em; border-radius: 4px; }
+
+/* Dark surface modifier — flip foreground tokens. */
+.gu--night {
+  background: var(--gu-bg-night);
+  color: var(--gu-fg-on-night);
+}
+.gu--night h1, .gu--night h2, .gu--night h3, .gu--night h4 { color: var(--gu-fg-on-night); }
+.gu--night .lead { color: var(--gu-fg-on-night-2); }
+.gu--night .eyebrow, .gu--night .payoff { color: var(--gu-fg-on-night-2); }
+.gu--night a { color: var(--gu-globe); }
+.gu--night code { background: rgba(255,255,255,0.08); color: var(--gu-fg-on-night); }

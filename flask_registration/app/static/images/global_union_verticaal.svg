@@ -1,0 +1,25 @@
+<svg width="380" height="288" viewBox="0 0 380 288" xmlns="http://www.w3.org/2000/svg">
+  <title>Global Union — verticaal</title>
+  <defs>
+    <clipPath id="g"><circle cx="190" cy="100" r="80"/></clipPath>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500&amp;display=swap');</style>
+  </defs>
+  <circle cx="190" cy="100" r="80" fill="#3ab0f0"/>
+  <g clip-path="url(#g)">
+    <ellipse cx="190" cy="100" rx="33" ry="80" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.6"/>
+    <ellipse cx="190" cy="100" rx="61" ry="80" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.45"/>
+    <line x1="110" y1="100" x2="270" y2="100" stroke="#ffffff" stroke-width="1.2" opacity="0.6"/>
+    <line x1="121" y1="60" x2="259" y2="60" stroke="#ffffff" stroke-width="0.9" opacity="0.45"/>
+    <line x1="121" y1="140" x2="259" y2="140" stroke="#ffffff" stroke-width="0.9" opacity="0.45"/>
+    <line x1="150" y1="31" x2="230" y2="31" stroke="#ffffff" stroke-width="0.7" opacity="0.35"/>
+    <line x1="150" y1="169" x2="230" y2="169" stroke="#ffffff" stroke-width="0.7" opacity="0.35"/>
+  </g>
+  <circle cx="190" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+  <path d="M114,194 L114,216 L136,205 Z" fill="#0077CC" stroke="#0077CC" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M144,194 L144,216 L166,205 Z" fill="#333333" stroke="#333333" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M174,194 L174,216 L196,205 Z" fill="#EE1C25" stroke="#EE1C25" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M204,194 L204,216 L226,205 Z" fill="#F5A800" stroke="#F5A800" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M234,194 L234,216 L256,205 Z" fill="#00A551" stroke="#00A551" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="190" y="254" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="38" font-weight="500" letter-spacing="-1" fill="#1a1a1a" text-anchor="middle">GLOBAL UNION</text>
+  <text x="190" y="278" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="12" font-weight="300" letter-spacing="3" fill="#aaaaaa" text-anchor="middle">for the freedom of people</text>
+</svg>

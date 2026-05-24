@@ -1,0 +1,224 @@
+{#
+  Partial: forum/_post.html
+  Context: post, depth (0/1/2), thread, replies_map, like_counts, liked_ids
+#}
+{% if post.body == '[bericht verwijderd]' %}
+  {% set is_deleted = true %}
+  {% set display_body = '[bericht verwijderd]' %}
+  {% set is_pretranslated = false %}
+  {% set is_foreign = false %}
+{% elif post.body_nl and post.body_en %}
+  {% set is_deleted = false %}
+  {% set is_pretranslated = true %}
+  {% set display_body = post.body_nl if lang == 'nl' else post.body_en %}
+  {% set is_foreign = false %}
+{% else %}
+  {% set is_deleted = false %}
+  {% set is_pretranslated = false %}
+  {% set display_body = post.body %}
+  {% set is_foreign = post.source_lang != lang %}
+{% endif %}
+
+{% set time = post.time_ago[lang] %}
+{% set badge = (post.author_badge_nl if lang == 'nl' else post.author_badge_en) %}
+{% set is_own = current_user.is_authenticated and post.user_id == current_user.id %}
+{% set can_edit = not is_deleted and current_user.is_authenticated and (post.user_id == current_user.id or current_user.is_moderator or current_user.is_admin) %}
+{% set can_delete = not is_deleted and current_user.is_authenticated and (post.user_id == current_user.id or current_user.is_moderator or current_user.is_admin) and (not post.is_op or current_user.is_moderator or current_user.is_admin) %}
+
+<article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}"
+         id="post-{{ post.id }}">
+
+  <header class="gu-post__head">
+    <div class="gu-post__author">
+      <div class="gu-post__avatar">{{ post.author_name[0] | upper }}</div>
+      <div class="gu-post__authormeta">
+        <div class="gu-post__name">
+          {{ post.author_name }}{% if post.author_age %}<span class="gu-post__age"> · {{ post.author_age }}</span>{% endif %}
+        </div>
+        <div class="gu-post__sub">
+          {% if post.author_role == 'founder' %}
+            <span class="gu-post__role gu-post__role--founder">{% if lang == 'nl' %}Initiatiefnemer{% else %}Initiator{% endif %}</span>
+          {% elif post.author_role == 'expert' %}
+            <span class="gu-post__role gu-post__role--expert">Expert</span>
+          {% endif %}
+          {% if badge %}<span class="gu-post__badge">{{ badge }}</span>{% endif %}
+          <span class="gu-post__time">{{ time }}</span>
+        </div>
+      </div>
+    </div>
+    {% if post.vote_count %}
+    <div class="gu-post__votes" title="{{ post.vote_count }} {% if lang == 'nl' %}stemmen{% else %}votes{% endif %}">
+      <span class="gu-post__vote-arrow">▲</span>
+      <span>{{ post.vote_count }}</span>
+    </div>
+    {% endif %}
+  </header>
+
+  {% if is_foreign and not is_deleted %}
+  <div class="gu-post__foreignbanner">
+    <span class="gu-arrow" style="background:var(--gu-fg-3)"></span>
+    <span>{% if lang == 'nl' %}Origineel in {% if post.source_lang == 'en' %}Engels{% else %}{{ post.source_lang | upper }}{% endif %}{% else %}Original in {% if post.source_lang == 'nl' %}Dutch{% else %}{{ post.source_lang | upper }}{% endif %}{% endif %}</span>
+  </div>
+  {% endif %}
+
+  <div class="gu-post__body{% if is_deleted %} gu-post__body--deleted{% endif %}"
+       id="body-{{ post.id }}"
+       lang="{{ lang if is_pretranslated else post.source_lang }}">
+    {% if display_body %}
+      {% for para in display_body.split('\n\n') %}
+        <p>{{ para | linkify }}</p>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  {% if post.image_url and not is_deleted %}
+  <div class="gu-post__image">
+    <img src="{{ post.image_url }}" alt="" loading="lazy">
+  </div>
+  {% endif %}
+
+  {% if not is_deleted %}
+
+  <div class="gu-post__translation" id="trans-{{ post.id }}" hidden aria-live="polite" lang="{{ lang }}">
+    <div class="gu-post__transhead">
+      <span class="gu-arrow" style="background:var(--gu-globe)"></span>
+      <span>{% if lang == 'nl' %}Vertaling{% else %}Translation{% endif %}</span>
+      <span class="gu-post__transhint">{% if lang == 'nl' %}Automatisch vertaald{% else %}Automatically translated{% endif %}</span>
+    </div>
+    <div class="gu-post__transbody"></div>
+  </div>
+
+  <footer class="gu-post__actions">
+
+    {# Like button — hidden for own posts #}
+    {% if not is_own %}
+      {% set like_count = like_counts.get(post.id, 0) %}
+      <button class="gu-post__action gu-post__like-btn{% if post.id in liked_ids %} gu-post__like-btn--liked{% endif %}"
+              data-post-id="{{ post.id }}"
+              data-liked="{{ 'true' if post.id in liked_ids else 'false' }}"
+              {% if not current_user.is_authenticated %}disabled{% endif %}>
+        <span class="gu-post__like-icon">{% if post.id in liked_ids %}♥{% else %}♡{% endif %}</span>
+        <span class="gu-post__like-count">{{ like_count }}</span>
+      </button>
+    {% endif %}
+
+    {# Reply count (root posts only) #}
+    {% if depth == 0 %}
+      {% set reply_count = replies_map.get(post.id, [])|length %}
+      {% if reply_count %}
+      <span class="gu-post__replycount">
+        {{ reply_count }} {% if lang == 'nl' %}reactie{{ 's' if reply_count != 1 else '' }}{% else %}repl{{ 'ies' if reply_count != 1 else 'y' }}{% endif %}
+      </span>
+      {% endif %}
+    {% endif %}
+
+    {# Translate button #}
+    {% if is_foreign %}
+    <button class="gu-post__action gu-post__translate-btn"
+            data-post-id="{{ post.id }}"
+            data-translate-url="{{ url_for('main.forum_translate', post_id=post.id) }}"
+            data-label-translate="{% if lang == 'nl' %}Vertaal naar Nederlands{% else %}Translate to English{% endif %}"
+            data-label-hide="{% if lang == 'nl' %}Verberg vertaling{% else %}Hide translation{% endif %}"
+            data-label-loading="{% if lang == 'nl' %}Bezig…{% else %}Translating…{% endif %}"
+            data-label-error="{% if lang == 'nl' %}Mislukt — probeer opnieuw{% else %}Failed — try again{% endif %}">
+      {% if lang == 'nl' %}Vertaal naar Nederlands{% else %}Translate to English{% endif %}
+    </button>
+    {% endif %}
+
+    {# Edit icon #}
+    {% if can_edit %}
+    <button class="gu-post__action gu-post__action--icon gu-post__edit-btn"
+            data-post-id="{{ post.id }}"
+            data-url="{{ url_for('main.forum_post_bewerken', post_id=post.id) }}"
+            aria-label="{% if lang == 'nl' %}Bewerken{% else %}Edit{% endif %}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+      </svg>
+    </button>
+    {% endif %}
+
+    {# Delete icon #}
+    {% if can_delete %}
+    <form method="POST" action="{{ url_for('main.forum_post_verwijderen', post_id=post.id) }}"
+          class="gu-post__delete-form" style="display:inline;">
+      <button type="submit" class="gu-post__action gu-post__action--icon gu-post__delete-btn"
+              aria-label="{% if lang == 'nl' %}Verwijderen{% else %}Delete{% endif %}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+      </button>
+    </form>
+    {% endif %}
+
+    {# Reageer button (depth < 2, not own post, logged in, thread open) #}
+    {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own %}
+    <button class="gu-post__action gu-post__action--ghost gu-post__reply-btn"
+            data-target="reply-form-{{ post.id }}">
+      {% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
+    </button>
+    {% endif %}
+
+  </footer>
+
+  {# Inline edit form #}
+  {% if can_edit %}
+  <div class="gu-post__editform" id="edit-form-{{ post.id }}" hidden>
+    <textarea class="gu-composer__input" rows="4">{{ post.body or '' }}</textarea>
+    <div class="gu-post__replyactions">
+      <button type="button" class="gu-btn gu-btn--ghost gu-post__edit-cancel"
+              data-post-id="{{ post.id }}">
+        {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
+      </button>
+      <button type="button" class="gu-btn gu-btn--primary gu-post__edit-save"
+              data-post-id="{{ post.id }}"
+              data-url="{{ url_for('main.forum_post_bewerken', post_id=post.id) }}"
+              disabled>
+        {% if lang == 'nl' %}Opslaan{% else %}Save{% endif %} <span class="gu-arrow"></span>
+      </button>
+    </div>
+  </div>
+  {% endif %}
+
+  {# Inline reply form #}
+  {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own %}
+  <div class="gu-post__replyform" id="reply-form-{{ post.id }}" hidden>
+    <form method="POST" action="{{ url_for('main.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
+      <input type="hidden" name="parent_id" value="{{ post.id }}">
+      <textarea
+        class="gu-composer__input"
+        name="body"
+        rows="3"
+        placeholder="{% if lang == 'nl' %}Schrijf je reactie…{% else %}Write your reply…{% endif %}"
+      ></textarea>
+      <label class="gu-upload-label gu-upload-label--inline">
+        <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="gu-upload-input">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span class="gu-upload-chosen" hidden></span>
+      </label>
+      <div class="gu-post__replyactions">
+        <button type="button" class="gu-btn gu-btn--ghost gu-post__reply-cancel"
+                data-target="reply-form-{{ post.id }}">
+          {% if lang == 'nl' %}Annuleer{% else %}Cancel {% endif %}
+        </button>
+        <button type="submit" class="gu-btn gu-btn--primary" disabled>
+          {% if lang == 'nl' %}Plaats reactie{% else %}Post reply{% endif %} <span class="gu-arrow"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  {% endif %}{# end if not is_deleted #}
+
+</article>

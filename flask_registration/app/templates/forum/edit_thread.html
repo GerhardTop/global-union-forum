@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'nl' %}Gesprek bewerken{% else %}Edit conversation{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<main class="gu-forum" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
+      <a href="{{ url_for('main.forum') }}">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</a>
+      <span aria-hidden="true">›</span>
+      <a href="{{ url_for('main.forum_thread', thread_id=thread.id) }}">
+        {% if lang == 'nl' %}{{ thread.title_prefix_nl }}{% else %}{{ thread.title_prefix_en }}{% endif %}
+      </a>
+      <span aria-hidden="true">›</span>
+      <span>{% if lang == 'nl' %}Bewerken{% else %}Edit{% endif %}</span>
+    </nav>
+
+    <header class="gu-forum__threadhead">
+      <p class="gu-eyebrow">Forum</p>
+      <h1 class="gu-forum__title">
+        {% if lang == 'nl' %}Gesprek bewerken{% else %}Edit conversation{% endif %}
+      </h1>
+    </header>
+
+    <form class="gu-forum__newform" method="POST" action="{{ url_for('main.forum_bewerken', thread_id=thread.id) }}">
+
+      <div class="gu-forum__newfield">
+        <label for="title">{% if lang == 'nl' %}Titel{% else %}Title{% endif %}</label>
+        <input
+          type="text"
+          name="title"
+          id="title"
+          class="gu-input"
+          required
+          maxlength="300"
+          value="{{ title }}"
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="gu-forum__newfield">
+        <label for="body">{% if lang == 'nl' %}Eerste bericht{% else %}First post{% endif %}</label>
+        <textarea
+          name="body"
+          id="body"
+          class="gu-composer__input"
+          required
+          rows="6"
+        >{{ op_body }}</textarea>
+        <span class="gu-composer__hint">
+          {% if lang == 'nl' %}Je post wordt op verzoek vertaald voor andere lezers{% else %}Your post will be translated on request for other readers{% endif %}
+        </span>
+      </div>
+
+      <div class="gu-forum__newactions">
+        <a href="{{ url_for('main.forum_thread', thread_id=thread.id) }}" class="gu-btn gu-btn--ghost">
+          {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
+        </a>
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg" id="editSubmit">
+          {% if lang == 'nl' %}Wijzigingen opslaan{% else %}Save changes{% endif %} <span class="gu-arrow"></span>
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</main>
+{% endblock %}
+
+<script>
+  (function () {
+    var titleInput = document.getElementById('title');
+    var bodyInput  = document.getElementById('body');
+    var btn        = document.getElementById('editSubmit');
+    function check() {
+      btn.disabled = !(titleInput.value.trim() && bodyInput.value.trim());
+    }
+    titleInput.addEventListener('input', check);
+    bodyInput.addEventListener('input', check);
+    check();
+  })();
+</script>
+{% endblock %}

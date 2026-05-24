@@ -57,6 +57,8 @@ TRANSLATIONS = {
         'flash_wrong_password': 'Huidig wachtwoord is onjuist.',
 
         # Placeholders registratieformulier
+        'ph_first_name': 'Jan',
+        'ph_last_name': 'Janssen',
         'ph_email': 'jan.jansen@voorbeeld.nl',
         'ph_password': 'Minimaal 8 tekens',
         'ph_confirm_password': 'Herhaal uw wachtwoord',
@@ -125,6 +127,8 @@ TRANSLATIONS = {
         'flash_wrong_password': 'Current password is incorrect.',
 
         # Registration form placeholders
+        'ph_first_name': 'John',
+        'ph_last_name': 'Doe',
         'ph_email': 'john.doe@example.com',
         'ph_password': 'At least 8 characters',
         'ph_confirm_password': 'Repeat your password',

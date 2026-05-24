@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<main class="gu-forum" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
+      <a href="{{ url_for('main.forum') }}">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</a>
+      <span aria-hidden="true">›</span>
+      <span>{% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %}</span>
+    </nav>
+
+    <header class="gu-forum__threadhead">
+      <p class="gu-eyebrow">Forum</p>
+      <h1 class="gu-forum__title">
+        {% if lang == 'nl' %}Nieuw gesprek starten{% else %}Start a new conversation{% endif %}
+      </h1>
+    </header>
+
+    <form class="gu-forum__newform" method="POST" action="{{ url_for('main.forum_nieuw') }}" enctype="multipart/form-data">
+
+      <div class="gu-forum__newfield">
+        <label for="title">{% if lang == 'nl' %}Titel{% else %}Title{% endif %}</label>
+        <input
+          type="text"
+          name="title"
+          id="title"
+          class="gu-input"
+          required
+          maxlength="300"
+          placeholder="{% if lang == 'nl' %}Formuleer je vraag of stelling…{% else %}Phrase your question or statement…{% endif %}"
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="gu-forum__newfield">
+        <label for="body">{% if lang == 'nl' %}Eerste bericht{% else %}First post{% endif %}</label>
+        <textarea
+          name="body"
+          id="body"
+          class="gu-composer__input"
+          required
+          rows="6"
+          placeholder="{% if lang == 'nl' %}Licht je vraag toe. Wees concreet — geef context, een standpunt, of een tegenwerping.{% else %}Explain your question. Be concrete — give context, a position, or a pushback.{% endif %}"
+        ></textarea>
+        <span class="gu-composer__hint">
+          {% if lang == 'nl' %}Je post wordt op verzoek vertaald voor andere lezers{% else %}Your post will be translated on request for other readers{% endif %}
+        </span>
+      </div>
+
+      <div class="gu-forum__newfield">
+        <label class="gu-upload-label">
+          <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="gu-upload-input">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span class="gu-upload-chosen" hidden></span>
+        </label>
+      </div>
+
+      <div class="gu-forum__newactions">
+        <a href="{{ url_for('main.forum') }}" class="gu-btn gu-btn--ghost">
+          {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
+        </a>
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg" id="newSubmit" disabled>
+          {% if lang == 'nl' %}Gesprek starten{% else %}Start conversation{% endif %} <span class="gu-arrow"></span>
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</main>
+{% endblock %}
+
+<script>
+  (function () {
+    var titleInput = document.getElementById('title');
+    var bodyInput  = document.getElementById('body');
+    var btn        = document.getElementById('newSubmit');
+    function check() {
+      btn.disabled = !(titleInput.value.trim() && bodyInput.value.trim());
+    }
+    titleInput.addEventListener('input', check);
+    bodyInput.addEventListener('input', check);
+
+    var fileInput  = document.querySelector('.gu-upload-input');
+    var chosenSpan = document.querySelector('.gu-upload-chosen');
+    if (fileInput && chosenSpan) {
+      fileInput.addEventListener('change', function () {
+        if (fileInput.files.length) {
+          chosenSpan.textContent = fileInput.files[0].name;
+          chosenSpan.hidden = false;
+        } else {
+          chosenSpan.hidden = true;
+        }
+      });
+    }
+  })();
+</script>
+{% endblock %}

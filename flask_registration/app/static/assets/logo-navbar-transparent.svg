@@ -1,0 +1,25 @@
+<svg width="184" height="83" viewBox="0 0 184 83" xmlns="http://www.w3.org/2000/svg">
+  <title>Global Union — navbar transparant</title>
+  <defs>
+    <clipPath id="c"><circle cx="33" cy="33" r="28"></circle></clipPath>
+    
+  </defs>
+  <circle cx="33" cy="33" r="28" fill="#3ab0f0"></circle>
+  <g clip-path="url(#c)">
+    <ellipse cx="33" cy="33" rx="12" ry="28" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.6"></ellipse>
+    <ellipse cx="33" cy="33" rx="21" ry="28" fill="none" stroke="#ffffff" stroke-width="0.8" opacity="0.45"></ellipse>
+    <line x1="5" y1="33" x2="61" y2="33" stroke="#ffffff" stroke-width="1" opacity="0.6"></line>
+    <line x1="9" y1="19" x2="57" y2="19" stroke="#ffffff" stroke-width="0.7" opacity="0.45"></line>
+    <line x1="9" y1="47" x2="57" y2="47" stroke="#ffffff" stroke-width="0.7" opacity="0.45"></line>
+    <line x1="19" y1="9" x2="47" y2="9" stroke="#ffffff" stroke-width="0.5" opacity="0.35"></line>
+    <line x1="19" y1="57" x2="47" y2="57" stroke="#ffffff" stroke-width="0.5" opacity="0.35"></line>
+  </g>
+  <circle cx="33" cy="33" r="28" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1"></circle>
+  <path d="M6,66 L6,78 L14,72 Z" fill="#0077CC"></path>
+  <path d="M18,66 L18,78 L26,72 Z" fill="#333333"></path>
+  <path d="M30,66 L30,78 L38,72 Z" fill="#EE1C25"></path>
+  <path d="M42,66 L42,78 L50,72 Z" fill="#F5A800"></path>
+  <path d="M54,66 L54,78 L62,72 Z" fill="#00A551"></path>
+  <text x="69" y="31" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="500" letter-spacing="-0.5" fill="#1a1a1a">GLOBAL</text>
+  <text x="69" y="57" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="300" letter-spacing="-0.5" fill="#3ab0f0">UNION</text>
+</svg>

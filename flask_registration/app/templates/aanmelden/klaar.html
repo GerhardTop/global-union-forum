@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'en' %}Almost there{% else %}Bijna klaar{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<main class="gu-join-page">
+  <div class="gu-join-page__inner">
+
+    <div class="gu-join__panel">
+
+      <p class="gu-eyebrow">{% if lang == 'en' %}Account created{% else %}Account aangemaakt{% endif %}</p>
+      <h2 class="gu-join__h2">
+        {% if lang == 'en' %}Welcome, {{ first_name }}.{% else %}Welkom, {{ first_name }}.{% endif %}
+      </h2>
+      <p class="gu-join__sub">
+        {% if lang == 'en' %}
+          Your account has been created for <strong>{{ email }}</strong>.
+          One last step remains: a one-time &euro;&nbsp;0.01 transfer to verify your identity.
+        {% else %}
+          Je account is aangemaakt voor <strong>{{ email }}</strong>.
+          Er is nog één stap: een eenmalige overboeking van &euro;&nbsp;0,01 ter verificatie van je identiteit.
+        {% endif %}
+      </p>
+
+      <div class="gu-join__verifyBox">
+        <div class="gu-join__verifyAmount">&euro;&nbsp;0,01</div>
+        <p class="gu-join__verifyBody">
+          {% if lang == 'en' %}
+            Transfer exactly &euro;&nbsp;0.01 to our account using the reference below.
+            The name on your bank statement must match the name you registered with.
+            This is a one-time check — not a fee, not a subscription.
+          {% else %}
+            Maak precies &euro;&nbsp;0,01 over naar onze rekening met de onderstaande omschrijving.
+            De naam op je bankafschrift moet overeenkomen met de naam waarmee je je hebt aangemeld.
+            Dit is een eenmalige check — geen contributie, geen abonnement.
+          {% endif %}
+        </p>
+        <div class="gu-join__verifyRef">
+          <span class="gu-eyebrow">{% if lang == 'en' %}Reference{% else %}Omschrijving{% endif %}</span>
+          <strong>{% if lang == 'en' %}Forum signup{% else %}Aanmelding Forum{% endif %} — {{ first_name }}</strong>
+        </div>
+        <p class="gu-join__verifyNote">
+          {% if lang == 'en' %}Account number will be shared by email within one working day.
+          {% else %}Het rekeningnummer ontvang je binnen één werkdag per e-mail.{% endif %}
+        </p>
+      </div>
+
+      <div class="gu-join__actions gu-join__actions--right">
+        <a href="{{ url_for('main.login') }}" class="gu-btn gu-btn--primary gu-btn--lg">
+          {% if lang == 'en' %}Go to login{% else %}Naar inloggen{% endif %}
+          <span class="gu-arrow"></span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</main>
+{% endblock %}{% endblock %}
