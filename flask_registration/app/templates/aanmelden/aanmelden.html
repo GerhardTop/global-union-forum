@@ -12,9 +12,9 @@
       </h2>
       <p class="gu-join__sub">
         {% if lang == 'en' %}
-          Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free. We ask for a one-time &euro;&nbsp;0.01 payment to verify your identity.
+          Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free.
         {% else %}
-          Global Union Forum is een open platform voor iedereen die het gesprek serieus voert — expert of leek, 17 of 70. Deelname is gratis. We vragen eenmalig &euro;&nbsp;0,01 ter verificatie van je identiteit.
+          Global Union Forum is een open platform voor iedereen die het gesprek serieus voert — expert of leek, 17 of 70. Deelname is gratis.
         {% endif %}
       </p>
 
@@ -79,6 +79,25 @@
         {% if errors.password_confirm %}
         <p class="gu-join__formError">
           {% if lang == 'en' %}Passwords do not match.{% else %}Wachtwoorden komen niet overeen.{% endif %}
+        </p>
+        {% endif %}
+      </div>
+
+      <div class="gu-join__field">
+        <label for="linkedin_url">
+          {% if lang == 'en' %}LinkedIn profile URL (required){% else %}LinkedIn profiel URL (verplicht){% endif %}
+        </label>
+        <input id="linkedin_url" name="linkedin_url" type="url"
+               class="gu-input{% if errors.linkedin_url %} gu-input--error{% endif %}"
+               value="{{ form_data.linkedin_url }}"
+               placeholder="https://www.linkedin.com/in/jouw-naam" required>
+        <p class="gu-join__hint">
+          {% if lang == 'en' %}We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile.{% else %}We willen graag dat ieder onder eigen naam werkt, daarom vragen we om jouw LinkedIn profiel te delen.{% endif %}
+        </p>
+        {% if errors.linkedin_url %}
+        <p class="gu-join__formError">
+          {% if lang == 'en' %}Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).
+          {% else %}Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…).{% endif %}
         </p>
         {% endif %}
       </div>

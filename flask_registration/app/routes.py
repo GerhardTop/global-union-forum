@@ -3,11 +3,13 @@ import secrets
 import uuid
 from datetime import datetime, timedelta
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, abort, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_mail import Message
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sqlalchemy import func
 
-from app import db, bcrypt
+from app import db, bcrypt, mail
 from app.models import User, Thread, Post, PostLike
 from app.forms import RegistrationForm, LoginForm, ChangePasswordForm
 from app.translations import TRANSLATIONS
@@ -22,6 +24,8 @@ def detect_language():
     if 'lang' not in session:
         best = request.accept_languages.best_match(['nl', 'en'], default='en')
         session['lang'] = 'nl' if best == 'nl' else 'en'
+
+
 _ALLOWED_EXT = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
 _MAX_SIZE = 5 * 1024 * 1024  # 5 MB
 
@@ -56,7 +60,8 @@ def set_lang(code):
 
 @main.route("/")
 def index():
-    return render_template("index.html")
+    modal = session.pop('modal', None)
+    return render_template("index.html", modal=modal)
 
 
 @main.route("/manifest")
@@ -126,19 +131,37 @@ def dashboard():
 @main.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
+    lang = session.get('lang', 'nl')
+    linkedin_error = False
     form = ChangePasswordForm()
-    if form.validate_on_submit():
-        if not bcrypt.check_password_hash(current_user.password_hash, form.current_password.data):
-            flash(_t()['flash_wrong_password'], "error")
-        else:
-            current_user.password_hash = bcrypt.generate_password_hash(
-                form.new_password.data
-            ).decode("utf-8")
-            db.session.commit()
-            flash(_t()['flash_password_changed'], "success")
-            return redirect(url_for("main.profile"))
 
-    return render_template("profile.html", form=form)
+    if request.method == "POST":
+        action = request.form.get("action")
+
+        if action == "linkedin":
+            linkedin_url = request.form.get("linkedin_url", "").strip()
+            if not linkedin_url.startswith("https://www.linkedin.com/"):
+                linkedin_error = True
+            else:
+                current_user.linkedin_url = linkedin_url
+                db.session.commit()
+                flash(
+                    "LinkedIn profiel opgeslagen." if lang == 'nl' else "LinkedIn profile saved.",
+                    "success"
+                )
+                return redirect(url_for("main.profile"))
+        elif form.validate_on_submit():
+            if not bcrypt.check_password_hash(current_user.password_hash, form.current_password.data):
+                flash(_t()['flash_wrong_password'], "error")
+            else:
+                current_user.password_hash = bcrypt.generate_password_hash(
+                    form.new_password.data
+                ).decode("utf-8")
+                db.session.commit()
+                flash(_t()['flash_password_changed'], "success")
+                return redirect(url_for("main.profile"))
+
+    return render_template("profile.html", form=form, linkedin_error=linkedin_error)
 
 
 @main.route("/success")
@@ -475,6 +498,91 @@ def forum_post_verwijderen(post_id):
     return redirect(url_for('main.forum_thread', thread_id=thread_id))
 
 
+# ── Email verificatie ─────────────────────────────────────────────────────────
+
+def _make_verify_token(email):
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return s.dumps(email, salt='email-verify')
+
+
+def _send_verify_email(user, lang):
+    token = _make_verify_token(user.email)
+    verify_url = url_for('main.verify_email', token=token, _external=True)
+    if lang == 'en':
+        subject = "Confirm your email — Global Union Forum"
+        body = (
+            f"Hi {user.first_name},\n\n"
+            f"Please confirm your email address by clicking the link below:\n\n"
+            f"{verify_url}\n\n"
+            f"This link expires in 24 hours.\n\n"
+            f"If you did not create an account, you can ignore this email.\n\n"
+            f"Global Union Forum"
+        )
+    else:
+        subject = "Bevestig je e-mailadres — Global Union Forum"
+        body = (
+            f"Hoi {user.first_name},\n\n"
+            f"Bevestig je e-mailadres via de onderstaande link:\n\n"
+            f"{verify_url}\n\n"
+            f"Deze link verloopt na 24 uur.\n\n"
+            f"Als je geen account hebt aangemaakt, kun je deze e-mail negeren.\n\n"
+            f"Global Union Forum"
+        )
+    msg = Message(subject=subject, recipients=[user.email], body=body)
+    try:
+        print(f"[MAIL] Versturen naar {user.email} via "
+              f"{current_app.config.get('MAIL_SERVER')}:{current_app.config.get('MAIL_PORT')} "
+              f"als {current_app.config.get('MAIL_USERNAME')}", flush=True)
+        mail.send(msg)
+        print(f"[MAIL] OK — verstuurd naar {user.email}", flush=True)
+    except Exception as e:
+        print(f"[MAIL] FOUT bij versturen naar {user.email}: {e}", flush=True)
+
+
+@main.route("/verify/<token>")
+def verify_email(token):
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    lang = session.get('lang', 'nl')
+    try:
+        email = s.loads(token, salt='email-verify', max_age=86400)
+    except SignatureExpired:
+        flash(
+            "Deze verificatielink is verlopen. Vraag een nieuwe aan." if lang == 'nl'
+            else "This verification link has expired. Request a new one.",
+            "error"
+        )
+        return redirect(url_for('main.index'))
+    except BadSignature:
+        flash(
+            "Ongeldige verificatielink." if lang == 'nl' else "Invalid verification link.",
+            "error"
+        )
+        return redirect(url_for('main.index'))
+
+    user = User.query.filter_by(email=email).first_or_404()
+    if not user.verified:
+        user.verified = True
+        db.session.commit()
+    login_user(user)
+    session['modal'] = 'verified'
+    return redirect(url_for('main.index'))
+
+
+@main.route("/verify/resend")
+@login_required
+def verify_resend():
+    lang = session.get('lang', 'nl')
+    if current_user.verified:
+        return redirect(url_for('main.index'))
+    _send_verify_email(current_user, lang)
+    flash(
+        "Verificatiemail opnieuw verzonden — check je inbox." if lang == 'nl'
+        else "Verification email resent — check your inbox.",
+        "success"
+    )
+    return redirect(request.referrer or url_for('main.index'))
+
+
 # ── Aanmelden ─────────────────────────────────────────────────────────────────
 
 @main.route("/aanmelden", methods=["GET", "POST"])
@@ -484,12 +592,13 @@ def aanmelden():
     session.permanent = True
 
     errors = {}
-    form_data = {"first_name": "", "last_name": "", "email": ""}
+    form_data = {"first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
 
     if request.method == "POST":
-        form_data["first_name"] = request.form.get("first_name", "").strip()
-        form_data["last_name"]  = request.form.get("last_name", "").strip()
-        form_data["email"]      = request.form.get("email", "").strip().lower()
+        form_data["first_name"]   = request.form.get("first_name", "").strip()
+        form_data["last_name"]    = request.form.get("last_name", "").strip()
+        form_data["email"]        = request.form.get("email", "").strip().lower()
+        form_data["linkedin_url"] = request.form.get("linkedin_url", "").strip()
         password         = request.form.get("password", "")
         password_confirm = request.form.get("password_confirm", "")
 
@@ -505,6 +614,8 @@ def aanmelden():
             errors["password"] = True
         elif password != password_confirm:
             errors["password_confirm"] = True
+        if not form_data["linkedin_url"].startswith("https://www.linkedin.com/"):
+            errors["linkedin_url"] = True
 
         if not errors:
             password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
@@ -513,24 +624,12 @@ def aanmelden():
                 last_name=form_data["last_name"],
                 email=form_data["email"],
                 password_hash=password_hash,
+                linkedin_url=form_data["linkedin_url"],
             )
             db.session.add(user)
             db.session.commit()
-            session["aanmelden_done"]       = True
-            session["aanmelden_first_name"] = form_data["first_name"]
-            session["aanmelden_email"]      = form_data["email"]
-            return redirect(url_for("main.aanmelden_klaar"))
+            _send_verify_email(user, session.get('lang', 'nl'))
+            session['modal'] = 'email_sent'
+            return redirect(url_for("main.index"))
 
     return render_template("aanmelden/aanmelden.html", form_data=form_data, errors=errors)
-
-
-@main.route("/aanmelden/klaar")
-def aanmelden_klaar():
-    if not session.get("aanmelden_done"):
-        return redirect(url_for("main.aanmelden"))
-
-    first_name = session.pop("aanmelden_first_name", "")
-    email      = session.pop("aanmelden_email", "")
-    session.pop("aanmelden_done", None)
-
-    return render_template("aanmelden/klaar.html", first_name=first_name, email=email)

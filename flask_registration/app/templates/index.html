@@ -13,44 +13,58 @@
     </h1>
     <p class="gu-lead">
       {% if lang == 'en' %}
-      The European Union has been a great success in many ways; many countries
-      with formerly authoritarian regimes joined its ranks. People wanted to be
-      part of the EU — for prosperity and for freedom. The EU is not finished,
-      and there is much to improve. That does not change the fact that we can
-      and must already expand beyond Europe to countries that are functioning
-      democracies, such as Canada and Australia, and to (candidate) countries
-      working hard to qualify.
+      The European Union is a great success. Many countries with authoritarian
+      regimes joined its ranks. Their people wanted to belong to the EU.
+      For prosperity. For freedom.
       {% else %}
-      De Europese Unie is in veel opzichten een groot succes; veel landen met
-      voorheen dictatoriale regimes sloten zich aan. De mensen wilden bij de EU.
-      Voor welvaart en voor vrijheid. De EU is niet af en valt er veel te
-      verbeteren. Dat neemt niet weg dat we nu al kunnen en moeten uitbreiden
-      buiten Europa met andere landen die al functionerende democratieën zijn,
-      zoals Canada en Australië en met (kandidaat) landen die hard aan de slag
-      gaan om erbij te horen.
+      De Europese Unie is een groot succes. Veel landen met dictatoriale regimes
+      sloten zich aan. De bevolking wilde massaal bij de EU horen. Voor welvaart.
+      Voor vrijheid.
       {% endif %}
     </p>
     <p class="gu-lead">
       {% if lang == 'en' %}
-      The think tank Global Union Forum investigates whether the same model can
+      The EU is not finished. There is much to improve. But that need not hold
+      us back. We can already expand the cooperation beyond Europe — with
+      functioning democracies, such as Canada and Australia.
+      And with candidate countries working hard to qualify.
+      The Global Union exists alongside the EU and the UN. The goal is an
+      ever-growing community of functioning democracies.
+      {% else %}
+      De EU is niet af. Er valt veel te verbeteren. Maar dat hoeft ons niet te
+      remmen. We kunnen de samenwerking nu al uitbreiden buiten Europa — met
+      functionerende democratieën, zoals Canada en Australië.
+      En met kandidaat-landen die hard werken om erbij te horen.
+      De Global Union bestaat naast de EU en de VN. Met als doel steeds meer
+      functionerende democratieën.
+      {% endif %}
+    </p>
+    <p class="gu-lead">
+      {% if lang == 'en' %}
+      Global Union Forum is a think tank. We investigate whether this model can
       work worldwide: a cooperation of countries that take democracy, the rule
       of law, sustainability and human rights seriously.
       {% else %}
-      De denktank Global Union Forum onderzoekt of hetzelfde model wereldwijd
+      Global Union Forum is een denktank. Wij onderzoeken of dit model wereldwijd
       kan werken: een samenwerking van landen die democratie, rechtsstaat,
       duurzaamheid en mensenrechten serieus nemen.
       {% endif %}
     </p>
     {% if not current_user.is_authenticated %}
     <p class="gu-lead" style="font-size: 16px; margin-top: -8px;">
+      {% if lang == 'en' %}
+      We are looking for people who want to think along — experts and laypeople,
+      17 or 70, convinced or sceptical. Everyone who takes the conversation seriously.
+      {% else %}
       We zoeken mensen die meedenken — experts én leken, 17 of 70,
       overtuigd of sceptisch. Iedereen die het gesprek serieus voert.
+      {% endif %}
     </p>
     <div class="gu-hero__cta">
       <a class="gu-btn gu-btn--primary" href="{{ url_for('main.aanmelden') }}">
-        Doe mee aan het gesprek <span class="gu-arrow"></span>
+        {% if lang == 'en' %}Join the conversation{% else %}Doe mee aan het gesprek{% endif %} <span class="gu-arrow"></span>
       </a>
-      <a class="gu-btn gu-btn--ghost" href="#manifest">Lees het manifest</a>
+      <a class="gu-btn gu-btn--ghost" href="#manifest">{% if lang == 'en' %}Read the manifest{% else %}Lees het manifest{% endif %}</a>
     </div>
     {% endif %}
     <div class="gu-hero__flags">
@@ -68,6 +82,43 @@
   <img class="gu-hero__symbol"
        src="{{ url_for('static', filename='assets/logo-symbol.svg') }}" alt="">
 </section>
+
+{% if modal %}
+<div class="gu-modal-overlay" id="guModal" role="dialog" aria-modal="true">
+  <div class="gu-modal">
+    <button class="gu-modal__close" id="guModalClose" aria-label="Sluiten">✕</button>
+    {% if modal == 'email_sent' %}
+      <p class="gu-eyebrow">Global Union Forum</p>
+      <h2 class="gu-modal__title">
+        {% if lang == 'nl' %}Bijna klaar!{% else %}Almost there!{% endif %}
+      </h2>
+      <p class="gu-modal__body">
+        {% if lang == 'nl' %}Check je inbox voor een bevestigingslink.{% else %}Check your inbox for a confirmation link.{% endif %}
+      </p>
+    {% elif modal == 'verified' %}
+      <p class="gu-eyebrow">Global Union Forum</p>
+      <h2 class="gu-modal__title">
+        {% if lang == 'nl' %}E-mailadres bevestigd!{% else %}Email address confirmed!{% endif %}
+      </h2>
+      <p class="gu-modal__body">
+        {% if lang == 'nl' %}Je bent nu ingelogd.{% else %}You are now logged in.{% endif %}
+      </p>
+    {% endif %}
+  </div>
+</div>
+<script>
+  (function () {
+    var overlay = document.getElementById('guModal');
+    var closeBtn = document.getElementById('guModalClose');
+    function closeModal() { overlay.style.display = 'none'; }
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+    {% if modal == 'verified' %}
+    setTimeout(closeModal, 2000);
+    {% endif %}
+  })();
+</script>
+{% endif %}
 
 {# ── CampaignGrid ─────────────────────────────────────── #}
 <section class="gu-section gu-section--soft" id="idee">

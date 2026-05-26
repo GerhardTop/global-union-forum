@@ -13,6 +13,8 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     is_moderator = db.Column(db.Boolean, nullable=False, default=False)
+    verified = db.Column(db.Boolean, nullable=False, default=False)
+    linkedin_url = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -67,6 +69,7 @@ class Post(db.Model):
     vote_count     = db.Column(db.Integer, default=0)
     image_url      = db.Column(db.String(500), nullable=True)
     created_at     = db.Column(db.DateTime, default=datetime.utcnow)
+    author         = db.relationship('User', foreign_keys=[user_id], lazy='joined')
 
     @property
     def time_ago(self):

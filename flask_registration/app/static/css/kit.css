@@ -444,7 +444,7 @@ body {
   text-wrap: balance;
 }
 .gu-principle__body {
-  font-size: 15px;
+  font-size: var(--gu-fs-body);
   line-height: 1.55;
   color: var(--gu-fg-2);
   margin: 0;
@@ -1411,8 +1411,18 @@ body {
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--gu-fg-1);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .gu-post__age { font-weight: 400; color: var(--gu-fg-3); }
+.gu-post__linkedin {
+  color: var(--gu-fg-3);
+  display: inline-flex;
+  align-items: center;
+  transition: color 150ms;
+}
+.gu-post__linkedin:hover { color: var(--gu-fg-1); }
 .gu-post__sub {
   display: flex;
   flex-wrap: wrap;
@@ -1989,3 +1999,133 @@ body {
   .gu-join__stepLabel { display: none; }
   .gu-join__panel { padding: 24px 20px 20px; }
 }
+
+/* ── Modal overlay ──────────────────────────────────────────── */
+.gu-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+.gu-modal-overlay[hidden] { display: none !important; }
+.gu-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 48px 36px;
+  max-width: 440px;
+  width: calc(100% - 48px);
+  box-shadow: var(--gu-shadow-lg, 0 24px 64px rgba(0,0,0,0.18));
+  position: relative;
+  text-align: center;
+}
+.gu-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--gu-fg-3);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 150ms, background 150ms;
+}
+.gu-modal__close:hover { color: var(--gu-fg-1); background: var(--gu-n-50); }
+.gu-modal__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--gu-fg-1);
+  margin: 12px 0 12px;
+}
+.gu-modal__body {
+  font-size: 16px;
+  color: var(--gu-fg-2);
+  line-height: 1.5;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .gu-modal { padding: 32px 24px 28px; }
+}
+
+/* ── Verificatiebanner ──────────────────────────────────────── */
+.gu-verify-banner {
+  background: #fffbeb;
+  border-bottom: 1px solid #f59e0b;
+  color: #92400e;
+  font-size: 14px;
+  padding: 10px 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.gu-verify-banner a {
+  color: #92400e;
+  font-weight: 500;
+  text-decoration: underline;
+}
+@media (max-width: 600px) {
+  .gu-verify-banner { padding: 10px 20px; flex-wrap: wrap; gap: 6px; }
+}
+
+/* ── Success modal variant ─────────────────────────────── */
+.gu-modal--success .gu-modal__icon {
+  display: block;
+  margin: 0 auto 16px;
+  color: #16a34a;
+}
+.gu-modal--success .gu-modal__body {
+  text-align: center;
+  font-weight: 500;
+}
+
+/* ── Inline error alert ────────────────────────────────── */
+.gu-alert--error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: #fef2f2;
+  border-left: 3px solid #dc2626;
+  border-radius: 0 4px 4px 0;
+  color: #991b1b;
+  font-size: var(--gu-fs-sm, 14px);
+  line-height: 1.5;
+}
+.gu-alert--error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #dc2626;
+}
+
+/* ── Password toggle ───────────────────────────────────── */
+.gu-pw-wrap {
+  position: relative;
+}
+.gu-pw-wrap .gu-input {
+  padding-right: 40px;
+}
+.gu-pw-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gu-fg-3);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  line-height: 0;
+}
+.gu-pw-toggle:hover { color: var(--gu-fg-1); }
+.gu-pw-toggle .gu-pw-eye-closed { display: none; }
+.gu-pw-toggle.is-visible .gu-pw-eye-open { display: none; }
+.gu-pw-toggle.is-visible .gu-pw-eye-closed { display: block; }

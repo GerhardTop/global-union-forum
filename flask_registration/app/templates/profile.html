@@ -29,6 +29,42 @@
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
+    <p class="gu-eyebrow">LinkedIn</p>
+    <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 16px;">
+      {% if lang == 'en' %}Your LinkedIn profile.{% else %}Jouw LinkedIn profiel.{% endif %}
+    </h2>
+    {% if current_user.linkedin_url %}
+    <p style="margin-bottom: 16px; font-size: 14px;">
+      <a href="{{ current_user.linkedin_url }}" target="_blank" rel="noopener noreferrer"
+         style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">
+        {{ current_user.linkedin_url }}
+      </a>
+    </p>
+    {% endif %}
+    <form method="POST" action="{{ url_for('main.profile') }}" novalidate>
+      <input type="hidden" name="action" value="linkedin">
+      <div class="gu-join__field">
+        <label for="linkedin_url">
+          {% if lang == 'en' %}LinkedIn profile URL{% else %}LinkedIn profiel URL{% endif %}
+        </label>
+        <input id="linkedin_url" name="linkedin_url" type="url"
+               class="gu-input{% if linkedin_error %} gu-input--error{% endif %}"
+               value="{{ current_user.linkedin_url or '' }}"
+               placeholder="https://www.linkedin.com/in/jouw-naam" required>
+        {% if linkedin_error %}
+        <p class="gu-join__formError">
+          {% if lang == 'en' %}Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).
+          {% else %}Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…).{% endif %}
+        </p>
+        {% endif %}
+      </div>
+      <button type="submit" class="gu-btn gu-btn--primary" style="margin-top: 8px;">
+        {% if lang == 'en' %}Save{% else %}Opslaan{% endif %} <span class="gu-arrow"></span>
+      </button>
+    </form>
+
+    <hr class="gu-auth__divider" style="margin: 32px 0;">
+
     <p class="gu-eyebrow">{{ t.profile_change_password }}</p>
     <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 24px;">
       {% if lang == 'en' %}Update your password.{% else %}Verander je wachtwoord.{% endif %}
@@ -38,11 +74,16 @@
       {{ form.hidden_tag() }}
 
       <div class="gu-join__field">
-        <label for="{{ form.current_password.id }}">{{ t.profile_current_password }}</label>
-        {{ form.current_password(
-            class="gu-input" ~ (" gu-input--error" if form.current_password.errors else ""),
-            placeholder="••••••••"
-        ) }}
+        <div class="gu-pw-wrap">
+          {{ form.current_password(
+              class="gu-input" ~ (" gu-input--error" if form.current_password.errors else ""),
+              placeholder=("Current password" if lang == "en" else "Huidig wachtwoord")
+          ) }}
+          <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+            <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
         {% if form.current_password.errors %}
           <p class="gu-join__formError">{{ t.get(form.current_password.errors[0], form.current_password.errors[0]) }}</p>
         {% endif %}
@@ -50,22 +91,32 @@
 
       <div class="gu-join__field gu-join__field--row">
         <div class="gu-join__sub-field">
-          <label for="{{ form.new_password.id }}">{{ t.profile_new_password }}</label>
-          {{ form.new_password(
-              class="gu-input" ~ (" gu-input--error" if form.new_password.errors else ""),
-              placeholder="••••••••"
-          ) }}
+          <div class="gu-pw-wrap">
+            {{ form.new_password(
+                class="gu-input" ~ (" gu-input--error" if form.new_password.errors else ""),
+                placeholder=("New password" if lang == "en" else "Nieuw wachtwoord")
+            ) }}
+            <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+              <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
           {% if form.new_password.errors %}
             <p class="gu-join__formError">{{ t.get(form.new_password.errors[0], form.new_password.errors[0]) }}</p>
           {% endif %}
         </div>
 
         <div class="gu-join__sub-field">
-          <label for="{{ form.confirm_new_password.id }}">{{ t.profile_confirm_new_password }}</label>
-          {{ form.confirm_new_password(
-              class="gu-input" ~ (" gu-input--error" if form.confirm_new_password.errors else ""),
-              placeholder="••••••••"
-          ) }}
+          <div class="gu-pw-wrap">
+            {{ form.confirm_new_password(
+                class="gu-input" ~ (" gu-input--error" if form.confirm_new_password.errors else ""),
+                placeholder=("Confirm new password" if lang == "en" else "Bevestig nieuw wachtwoord")
+            ) }}
+            <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+              <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
           {% if form.confirm_new_password.errors %}
             <p class="gu-join__formError">{{ t.get(form.confirm_new_password.errors[0], form.confirm_new_password.errors[0]) }}</p>
           {% endif %}
@@ -77,6 +128,17 @@
         {{ t.profile_save_btn }} <span class="gu-arrow"></span>
       </button>
     </form>
+
+    <script>
+      document.querySelectorAll('.gu-pw-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var input = this.closest('.gu-pw-wrap').querySelector('input');
+          var isHidden = input.type === 'password';
+          input.type = isHidden ? 'text' : 'password';
+          this.classList.toggle('is-visible', isHidden);
+        });
+      });
+    </script>
 
   </div>
 
