@@ -14,6 +14,18 @@ body {
   color: var(--gu-fg-1);
   background: var(--gu-paper);
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.main-content {
+  flex: 1;
 }
 
 /* The brand-arrow primitive, reused everywhere */
@@ -1222,7 +1234,7 @@ body {
 }
 .gu-about__lookingGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
 }
 .gu-about__looking {
@@ -1258,8 +1270,8 @@ body {
 }
 .gu-about__identity .gu-h2 { margin: 10px 0 20px; }
 .gu-about__verifyCard {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: #ffffff;
+  border: 1px solid var(--gu-border);
   border-radius: 16px;
   padding: 32px;
 }
@@ -1273,7 +1285,7 @@ body {
 }
 .gu-about__verifyBody {
   font-size: 0.9rem;
-  color: var(--gu-fg-on-night-2);
+  color: var(--gu-fg-2);
   line-height: 1.7;
   margin: 0 0 20px;
 }
@@ -1282,7 +1294,7 @@ body {
   align-items: center;
   gap: 10px;
   font-size: 0.875rem;
-  color: var(--gu-fg-on-night-2);
+  color: var(--gu-fg-2);
 }
 
 /* Contact */
@@ -2126,6 +2138,26 @@ body {
   line-height: 0;
 }
 .gu-pw-toggle:hover { color: var(--gu-fg-1); }
+
+/* ── Feedback/uitnodiging kaartjes ─────────────────────────── */
+.gu-feedback-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.gu-feedback-card {
+  background: #fff;
+  border: 1px solid var(--gu-border);
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.gu-feedback-card p { flex: 1; }
+@media (max-width: 600px) {
+  .gu-feedback-grid { grid-template-columns: 1fr; }
+}
 .gu-pw-toggle .gu-pw-eye-closed { display: none; }
 .gu-pw-toggle.is-visible .gu-pw-eye-open { display: none; }
 .gu-pw-toggle.is-visible .gu-pw-eye-closed { display: block; }

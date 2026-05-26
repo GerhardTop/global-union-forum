@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'nl' %}Privacy & Cookies{% else %}Privacy & Cookies{% endif %} — Global Union{% endblock %}
+
+{% block content %}
+<div class="gu-profile" style="max-width: 720px;">
+
+  <div class="gu-profile__head">
+    <p class="gu-eyebrow">Global Union Forum</p>
+    <h1 class="gu-profile__title">Privacy &amp; Cookies</h1>
+  </div>
+
+  <div class="gu-join__panel">
+
+    {% if lang == 'nl' %}
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Welke gegevens we opslaan</h2>
+    <p>Bij het aanmaken van een account slaan we de volgende gegevens op:</p>
+    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
+      <li>Naam (voor- en achternaam)</li>
+      <li>E-mailadres</li>
+      <li>LinkedIn profiel URL</li>
+    </ul>
+    <p>Daarnaast bewaren we je forumberichten en eventuele likes die je hebt gegeven.</p>
+
+    <hr class="gu-auth__divider" style="margin: 28px 0;">
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Waarom we deze gegevens gebruiken</h2>
+    <p>Je gegevens worden uitsluitend gebruikt voor:</p>
+    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
+      <li><strong>Identificatie</strong> — zodat deelnemers weten wie er spreekt in het forum</li>
+      <li><strong>Communicatie</strong> — om je te bereiken over je account of het platform</li>
+    </ul>
+    <p>We verkopen geen gegevens aan derden en delen ze niet met adverteerders.</p>
+
+    <hr class="gu-auth__divider" style="margin: 28px 0;">
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Cookies</h2>
+    <p>Global Union Forum gebruikt alleen <strong>functionele cookies</strong>:</p>
+    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
+      <li>Een sessiecookie om je ingelogd te houden</li>
+      <li>Een cookie voor je taalvoorkeur (NL/EN)</li>
+    </ul>
+    <p>Er worden geen tracking- of advertentiecookies gebruikt. Er is dan ook geen cookie-banner nodig.</p>
+
+    <hr class="gu-auth__divider" style="margin: 28px 0;">
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Account verwijderen</h2>
+    <p>Je kunt je account op elk moment verwijderen via je <a href="{{ url_for('main.profile') }}" style="color: var(--gu-globe);">profielpagina</a>. Na verwijdering worden alle persoonlijke gegevens en forumberichten permanent en onherroepelijk gewist.</p>
+
+    <hr class="gu-auth__divider" style="margin: 28px 0;">
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Vragen</h2>
+    <p>Heb je vragen over je privacy of je gegevens? Neem contact op via <a href="mailto:top.gerhard@gmail.com" style="color: var(--gu-globe);">top.gerhard@gmail.com</a>.</p>
+
+    {% else %}
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">What data we store</h2>
+    <p>When you create an account, we store the following data:</p>
+    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
+      <li>Name (first and last name)</li>
+      <li>Email address</li>
+      <li>LinkedIn profile URL</li>
+    </ul>
+    <p>We also store your forum posts and any likes you have given.</p>
+
+    <hr class="gu-auth__divider" style="margin: 28px 0;">
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Why we use this data</h2>
+    <p>Your data is used solely for:</p>
+    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
+      <li><strong>Identification</strong> — so that participants know who is speaking in the forum</li>
+      <li><strong>Communication</strong> — to reach you about your account or the platform</li>
+    </ul>
+    <p>We do not sell data to third parties and do not share it with advertisers.</p>
+
+    <hr class="gu-auth__divider" style="margin: 28px 0;">
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Cookies</h2>
+    <p>Global Union Forum uses only <strong>functional cookies</strong>:</p>
+    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
+      <li>A session cookie to keep you logged in</li>
+      <li>A cookie for your language preference (NL/EN)</li>
+    </ul>
+    <p>No tracking or advertising cookies are used. A cookie banner is therefore not required.</p>
+
+    <hr class="gu-auth__divider" style="margin: 28px 0;">
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Deleting your account</h2>
+    <p>You can delete your account at any time from your <a href="{{ url_for('main.profile') }}" style="color: var(--gu-globe);">profile page</a>. After deletion, all personal data and forum posts are permanently and irrevocably erased.</p>
+
+    <hr class="gu-auth__divider" style="margin: 28px 0;">
+
+    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Questions</h2>
+    <p>Do you have questions about your privacy or your data? Contact us at <a href="mailto:top.gerhard@gmail.com" style="color: var(--gu-globe);">top.gerhard@gmail.com</a>.</p>
+
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

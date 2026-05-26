@@ -140,7 +140,86 @@
       });
     </script>
 
+    {% if not current_user.is_admin %}
+    <hr class="gu-auth__divider" style="margin: 40px 0 32px;">
+
+    <p class="gu-eyebrow" style="color: #dc2626;">
+      {% if lang == 'nl' %}Gevarenzone{% else %}Danger zone{% endif %}
+    </p>
+    <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 12px;">
+      {% if lang == 'nl' %}Account verwijderen{% else %}Delete account{% endif %}
+    </h2>
+    <p style="font-size: 14px; color: var(--gu-fg-2); margin-bottom: 20px;">
+      {% if lang == 'nl' %}
+        Dit verwijdert je account, al je forumberichten en al je likes permanent.
+        Dit kan niet ongedaan worden gemaakt.
+      {% else %}
+        This permanently deletes your account, all your forum posts, and all your likes.
+        This cannot be undone.
+      {% endif %}
+    </p>
+    <button type="button" id="guDeleteBtn"
+            class="gu-btn" style="border: 1px solid #dc2626; color: #dc2626; background: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500;">
+      {% if lang == 'nl' %}Verwijder mijn account{% else %}Delete my account{% endif %}
+    </button>
+    {% endif %}
+
   </div>
 
 </div>
+
+{# ── Delete account confirmation modal ─────────────────── #}
+{% if not current_user.is_admin %}
+<div class="gu-modal-overlay" id="guDeleteModal" style="display:none;" role="dialog" aria-modal="true">
+  <div class="gu-modal">
+    <button type="button" class="gu-modal__close" id="guDeleteCancel" aria-label="Annuleer">✕</button>
+    <svg class="gu-modal__icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+         viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <h2 class="gu-modal__title" style="color: #dc2626;">
+      {% if lang == 'nl' %}Weet je het zeker?{% else %}Are you sure?{% endif %}
+    </h2>
+    <p class="gu-modal__body">
+      {% if lang == 'nl' %}
+        Dit verwijdert je account en alle bijbehorende data permanent.
+        Dit kan <strong>niet</strong> ongedaan worden gemaakt.
+      {% else %}
+        This permanently deletes your account and all associated data.
+        This <strong>cannot</strong> be undone.
+      {% endif %}
+    </p>
+    <form method="POST" action="{{ url_for('main.account_verwijderen') }}" style="margin-top: 24px;">
+      {{ form.hidden_tag() }}
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button type="button" id="guDeleteCancelBtn"
+                class="gu-btn gu-btn--ghost">
+          {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
+        </button>
+        <button type="submit"
+                class="gu-btn" style="background: #dc2626; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          {% if lang == 'nl' %}Ja, verwijder mijn account{% else %}Yes, delete my account{% endif %}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+  (function () {
+    var btn = document.getElementById('guDeleteBtn');
+    var modal = document.getElementById('guDeleteModal');
+    var cancel1 = document.getElementById('guDeleteCancel');
+    var cancel2 = document.getElementById('guDeleteCancelBtn');
+    function open() { modal.style.display = 'flex'; }
+    function close() { modal.style.display = 'none'; }
+    btn.addEventListener('click', open);
+    cancel1.addEventListener('click', close);
+    cancel2.addEventListener('click', close);
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+  })();
+</script>
+{% endif %}
 {% endblock %}

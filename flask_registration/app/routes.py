@@ -74,29 +74,9 @@ def about():
     return render_template("about.html")
 
 
-@main.route("/register", methods=["GET", "POST"])
+@main.route("/register")
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        existing_user = User.query.filter_by(email=form.email.data.lower()).first()
-        if existing_user:
-            flash(_t()['flash_email_in_use'], "error")
-            return render_template("register.html", form=form)
-
-        password_hash = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-        user = User(
-            first_name=form.first_name.data.strip(),
-            last_name=form.last_name.data.strip(),
-            email=form.email.data.lower().strip(),
-            password_hash=password_hash,
-        )
-        db.session.add(user)
-        db.session.commit()
-        return redirect(url_for("main.success", name=user.first_name))
-
-    return render_template("register.html", form=form)
+    return redirect(url_for("main.aanmelden"))
 
 
 @main.route("/login", methods=["GET", "POST"])
@@ -162,6 +142,105 @@ def profile():
                 return redirect(url_for("main.profile"))
 
     return render_template("profile.html", form=form, linkedin_error=linkedin_error)
+
+
+@main.route("/privacy")
+def privacy():
+    return render_template("privacy.html")
+
+
+@main.route("/account/verwijderen", methods=["POST"])
+@login_required
+def account_verwijderen():
+    lang = session.get('lang', 'nl')
+    if current_user.is_admin:
+        flash(
+            "Adminaccounts kunnen niet worden verwijderd." if lang == 'nl'
+            else "Admin accounts cannot be deleted.",
+            "error"
+        )
+        return redirect(url_for("main.profile"))
+
+    user_id = current_user.id
+
+    # Delete likes given by user and likes on user's posts
+    PostLike.query.filter_by(user_id=user_id).delete()
+    user_post_ids = [p.id for p in Post.query.filter_by(user_id=user_id).with_entities(Post.id).all()]
+    if user_post_ids:
+        PostLike.query.filter(PostLike.post_id.in_(user_post_ids)).delete(synchronize_session=False)
+        # Detach replies to user's posts so they survive
+        Post.query.filter(Post.parent_id.in_(user_post_ids)).update(
+            {Post.parent_id: None}, synchronize_session=False
+        )
+        Post.query.filter_by(user_id=user_id).delete(synchronize_session=False)
+
+    user = User.query.get(user_id)
+    logout_user()
+    db.session.delete(user)
+    db.session.commit()
+
+    flash(
+        "Je account is verwijderd." if lang == 'nl' else "Your account has been deleted.",
+        "success"
+    )
+    return redirect(url_for("main.index"))
+
+
+@main.route("/uitnodiging", methods=["POST"])
+def uitnodiging():
+    lang = request.form.get('lang', session.get('lang', 'nl'))
+    invite_email = request.form.get('invite_email', '').strip()
+    invite_message = request.form.get('invite_message', '').strip()
+
+    if not invite_email:
+        flash(
+            "Vul een e-mailadres in." if lang == 'nl' else "Please enter an email address.",
+            "error"
+        )
+        return redirect(url_for("main.index"))
+
+    register_url = url_for('main.aanmelden', _external=True)
+    if current_user.is_authenticated:
+        sender_name = f"{current_user.first_name} {current_user.last_name}"
+    else:
+        sender_name = "Gerhard Top"
+
+    if lang == 'en':
+        subject = "Invitation: join the Global Union Forum conversation"
+        body = (
+            f"Hi,\n\n"
+            f"{sender_name} invites you to join Global Union Forum — a think tank exploring "
+            f"whether the success of the European Union can be replicated worldwide.\n\n"
+        )
+        if invite_message:
+            body += f'Personal message from {sender_name}:\n"{invite_message}"\n\n'
+        body += f"Create a free account here:\n{register_url}\n\nGlobal Union Forum"
+    else:
+        subject = "Uitnodiging: doe mee aan het Global Union Forum gesprek"
+        body = (
+            f"Hoi,\n\n"
+            f"{sender_name} nodigt je uit om mee te denken bij Global Union Forum — een denktank "
+            f"die onderzoekt of het succes van de Europese Unie wereldwijd herhaald kan worden.\n\n"
+        )
+        if invite_message:
+            body += f'Persoonlijk bericht van {sender_name}:\n"{invite_message}"\n\n'
+        body += f"Maak gratis een account aan:\n{register_url}\n\nGlobal Union Forum"
+
+    msg = Message(subject=subject, recipients=[invite_email], body=body)
+    try:
+        mail.send(msg)
+        flash(
+            "Uitnodiging verstuurd!" if lang == 'nl' else "Invitation sent!",
+            "success"
+        )
+    except Exception as e:
+        print(f"[MAIL] FOUT uitnodiging naar {invite_email}: {e}", flush=True)
+        flash(
+            "Er is iets misgegaan. Probeer het later opnieuw."
+            if lang == 'nl' else "Something went wrong. Please try again later.",
+            "error"
+        )
+    return redirect(url_for("main.index"))
 
 
 @main.route("/success")
