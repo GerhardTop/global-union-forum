@@ -7,13 +7,20 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "change-this-in-production")
-    SQLALCHEMY_DATABASE_URI = (
-        f"mysql+pymysql://{os.environ.get('DB_USER', 'root')}:"
-        f"{os.environ.get('DB_PASSWORD', '')}@"
-        f"{os.environ.get('DB_HOST', 'localhost')}:"
-        f"{os.environ.get('DB_PORT', '3306')}/"
-        f"{os.environ.get('DB_NAME', 'flask_registration')}"
-    )
+    _db_url = os.environ.get("DATABASE_URL")
+    if _db_url:
+        # Render.com levert postgres:// — SQLAlchemy vereist postgresql://
+        if _db_url.startswith("postgres://"):
+            _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+        SQLALCHEMY_DATABASE_URI = _db_url
+    else:
+        SQLALCHEMY_DATABASE_URI = (
+            f"mysql+pymysql://{os.environ.get('DB_USER', 'root')}:"
+            f"{os.environ.get('DB_PASSWORD', '')}@"
+            f"{os.environ.get('DB_HOST', 'localhost')}:"
+            f"{os.environ.get('DB_PORT', '3306')}/"
+            f"{os.environ.get('DB_NAME', 'flask_registration')}"
+        )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     MAIL_SERVER   = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
