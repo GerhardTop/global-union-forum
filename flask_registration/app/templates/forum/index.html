@@ -33,6 +33,9 @@
         <a class="gu-threadlist__link" href="{{ url_for('main.forum_thread', thread_id=t.id) }}">
           <span class="gu-threadlist__eyebrow">
             {{ t.eyebrow_nl if lang == 'nl' else t.eyebrow_en }}
+            {% if t.is_demo %}
+              <span class="gu-forum__demo-badge">Demo</span>
+            {% endif %}
             {% if t.is_closed %}
               <span class="gu-forum__closed-badge">{% if lang == 'nl' %}Gesloten{% else %}Closed{% endif %}</span>
             {% endif %}

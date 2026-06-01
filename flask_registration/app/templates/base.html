@@ -15,6 +15,17 @@
 </head>
 <body>
     <div class="page-wrapper">
+        {% if current_user.is_authenticated and not current_user.linkedin_url and request.endpoint != 'main.linkedin_aanvullen' %}
+        <div class="gu-linkedin-banner">
+          {% if lang == 'nl' %}
+            Vul je LinkedIn profiel in om mee te doen aan het gesprek.
+            <a href="{{ url_for('main.linkedin_aanvullen') }}">Aanvullen →</a>
+          {% else %}
+            Add your LinkedIn profile to join the conversation.
+            <a href="{{ url_for('main.linkedin_aanvullen') }}">Add it →</a>
+          {% endif %}
+        </div>
+        {% endif %}
         {% include '_header.html' %}
 
         <main class="main-content">

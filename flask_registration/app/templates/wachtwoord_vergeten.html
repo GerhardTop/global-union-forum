@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'en' %}Forgot password{% else %}Wachtwoord vergeten{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<div class="gu-auth-page">
+  <div class="gu-auth-panel">
+
+    <div class="gu-auth__brand">
+      <img src="{{ url_for('static', filename='assets/logo-symbol.svg') }}" height="28" alt="">
+      <p class="gu-eyebrow" style="margin: 0;">Global Union</p>
+    </div>
+
+    <p class="gu-eyebrow">{% if lang == 'en' %}Forgot password{% else %}Wachtwoord vergeten{% endif %}</p>
+    <h2 class="gu-join__h2">{% if lang == 'en' %}Reset your password.{% else %}Wachtwoord opnieuw instellen.{% endif %}</h2>
+    <p style="color: var(--gu-fg-2); font-size: 0.9375rem; margin: 8px 0 24px; line-height: 1.6;">
+      {% if lang == 'en' %}
+        Enter your email address and we'll send you a reset link.
+      {% else %}
+        Vul je e-mailadres in en we sturen je een resetlink.
+      {% endif %}
+    </p>
+
+    {% if sent %}
+    <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; margin-bottom: 20px;
+                background: #f0fdf4; border-left: 3px solid var(--gu-success); border-radius: 0 4px 4px 0;
+                color: #166534; font-size: 0.875rem;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      {% if lang == 'en' %}Reset link sent — check your inbox.{% else %}Reset link verstuurd — check je inbox.{% endif %}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('main.wachtwoord_vergeten') }}" novalidate>
+      <div class="gu-join__field">
+        <label for="email">{% if lang == 'en' %}Email address{% else %}E-mailadres{% endif %}</label>
+        <input id="email" name="email" type="email" class="gu-input"
+               placeholder="{% if lang == 'en' %}john.doe@example.com{% else %}jan.jansen@voorbeeld.nl{% endif %}"
+               autocomplete="email" required>
+      </div>
+      <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
+              style="width: 100%; justify-content: center; margin-top: 8px;">
+        {% if lang == 'en' %}Send reset link{% else %}Stuur resetlink{% endif %} <span class="gu-arrow"></span>
+      </button>
+    </form>
+
+    <hr class="gu-auth__divider">
+    <p class="gu-auth__footer">
+      <a href="{{ url_for('main.login') }}" style="color: var(--gu-fg-3);">
+        ← {% if lang == 'en' %}Back to log in{% else %}Terug naar inloggen{% endif %}
+      </a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}{% endblock %}

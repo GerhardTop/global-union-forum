@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Moderator Dashboard — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<div class="gu-admin" lang="{{ lang }}">
+  <div class="gu-admin__inner">
+
+    <div class="gu-admin__head">
+      <p class="gu-eyebrow">Beheer</p>
+      <h1 class="gu-admin__title">Moderator Dashboard</h1>
+    </div>
+
+    {# ── Overzichtsstatistieken ─────────────────────────────────── #}
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">Overzicht</p>
+      <div class="gu-stat-grid gu-stat-grid--3">
+        <div class="gu-stat-card gu-stat-card--info">
+          <span class="gu-stat-card__num">{{ active_threads }}</span>
+          <span class="gu-stat-card__label">Actieve gesprekken</span>
+        </div>
+        <div class="gu-stat-card">
+          <span class="gu-stat-card__num">{{ posts_today }}</span>
+          <span class="gu-stat-card__label">Berichten vandaag</span>
+        </div>
+        <div class="gu-stat-card{% if threads_no_gerhard_count %} gu-stat-card--warn{% endif %}">
+          <span class="gu-stat-card__num">{{ threads_no_gerhard_count }}</span>
+          <span class="gu-stat-card__label">Threads zonder reactie van Gerhard Top</span>
+        </div>
+      </div>
+    </section>
+
+    {# ── Recente berichten ─────────────────────────────────────── #}
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">Recente berichten</p>
+      {% if recent_posts %}
+      <div class="gu-admin-table-wrap">
+        <table class="gu-admin-table">
+          <thead>
+            <tr>
+              <th>Auteur</th>
+              <th>Gesprek</th>
+              <th>Tijdstip</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in recent_posts %}
+            <tr>
+              <td class="gu-admin-table__name">
+                <div class="gu-admin-table__avatar gu-admin-table__avatar--sm">{{ post.author_name[0] | upper }}</div>
+                <span>{{ post.author_name }}</span>
+              </td>
+              <td>
+                <a href="{{ url_for('main.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}"
+                   class="gu-admin-table__threadlink">
+                  {%- set t = post.thread -%}
+                  {{ t.title_prefix_nl }}{% if t.title_accent_nl %} <em>{{ t.title_accent_nl }}</em>{% endif %}{{ t.title_suffix_nl }}
+                </a>
+              </td>
+              <td class="gu-admin-table__date">{{ post.time_ago['nl'] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="gu-threadlist__empty">Nog geen berichten.</p>
+      {% endif %}
+    </section>
+
+    {# ── Aandacht nodig: threads zonder reactie Gerhard ─────────── #}
+    {% if threads_no_gerhard %}
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">Aandacht nodig</p>
+      <p class="gu-admin__section-desc">Actieve gesprekken zonder reactie van Gerhard Top.</p>
+      <ul class="gu-admin-list">
+        {% for thread in threads_no_gerhard %}
+        <li class="gu-admin-list__item">
+          <a href="{{ url_for('main.forum_thread', thread_id=thread.id) }}"
+             class="gu-admin-list__link">
+            <span class="gu-admin-list__eyebrow">{{ thread.eyebrow_nl }}</span>
+            <span class="gu-admin-list__title">
+              {{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} <em>{{ thread.title_accent_nl }}</em>{% endif %}{{ thread.title_suffix_nl }}
+            </span>
+          </a>
+          <span class="gu-admin-list__badge gu-admin-list__badge--warn">Geen reactie</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    {# ── Gesloten gesprekken ────────────────────────────────────── #}
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">Gesloten gesprekken</p>
+      {% if closed_threads %}
+      <ul class="gu-admin-list">
+        {% for thread in closed_threads %}
+        <li class="gu-admin-list__item">
+          <a href="{{ url_for('main.forum_thread', thread_id=thread.id) }}"
+             class="gu-admin-list__link">
+            <span class="gu-admin-list__eyebrow">{{ thread.eyebrow_nl }}</span>
+            <span class="gu-admin-list__title">
+              {{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} <em>{{ thread.title_accent_nl }}</em>{% endif %}{{ thread.title_suffix_nl }}
+            </span>
+          </a>
+          <form method="POST" action="{{ url_for('main.forum_reopen', thread_id=thread.id) }}"
+                style="display:inline;">
+            <button type="submit" class="gu-forum__modbtn">Heropen</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="gu-threadlist__empty">Geen gesloten gesprekken.</p>
+      {% endif %}
+    </section>
+
+  </div>
+</div>
+{% endblock %}{% endblock %}

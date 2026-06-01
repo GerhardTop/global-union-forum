@@ -1,8 +1,12 @@
-from flask import Flask, session
+from flask import Flask, session, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
+from authlib.integrations.flask_client import OAuth
 from sqlalchemy import text, inspect as sa_inspect
 
 from config import Config
@@ -13,6 +17,8 @@ login_manager = LoginManager()
 login_manager.login_view = "main.login"
 login_manager.login_message_category = "error"
 mail = Mail()
+limiter = Limiter(key_func=get_remote_address, default_limits=[])
+oauth = OAuth()
 
 ADMIN_EMAIL = "top.gerhard@gmail.com"
 
@@ -24,7 +30,8 @@ def _migrate_columns():
     alters = []
 
     if 'users' in existing:
-        cols = {c['name'] for c in insp.get_columns('users')}
+        user_col_list = insp.get_columns('users')
+        cols = {c['name'] for c in user_col_list}
         if 'is_admin' not in cols:
             alters.append('ALTER TABLE users ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT FALSE')
         if 'is_moderator' not in cols:
@@ -33,11 +40,24 @@ def _migrate_columns():
             alters.append('ALTER TABLE users ADD COLUMN verified BOOLEAN NOT NULL DEFAULT FALSE')
         if 'linkedin_url' not in cols:
             alters.append('ALTER TABLE users ADD COLUMN linkedin_url VARCHAR(255) NULL')
+        if 'auto_translate' not in cols:
+            alters.append('ALTER TABLE users ADD COLUMN auto_translate BOOLEAN NULL DEFAULT NULL')
+        else:
+            at_info = next(c for c in user_col_list if c['name'] == 'auto_translate')
+            if not at_info.get('nullable', True):
+                # Was NOT NULL DEFAULT FALSE — maak nullable en reset ongewijzigde defaults
+                alters.append('ALTER TABLE users MODIFY COLUMN auto_translate BOOLEAN NULL DEFAULT NULL')
+                alters.append('UPDATE users SET auto_translate = NULL WHERE auto_translate = FALSE')
+        if 'google_id' not in cols:
+            alters.append('ALTER TABLE users ADD COLUMN google_id VARCHAR(100) NULL')
+            alters.append('ALTER TABLE users ADD UNIQUE INDEX uq_users_google_id (google_id)')
 
     if 'threads' in existing:
         cols = {c['name'] for c in insp.get_columns('threads')}
         if 'is_closed' not in cols:
             alters.append('ALTER TABLE threads ADD COLUMN is_closed BOOLEAN NOT NULL DEFAULT FALSE')
+        if 'is_demo' not in cols:
+            alters.append('ALTER TABLE threads ADD COLUMN is_demo BOOLEAN NOT NULL DEFAULT FALSE')
 
     if 'posts' in existing:
         cols = {c['name'] for c in insp.get_columns('posts')}
@@ -45,6 +65,8 @@ def _migrate_columns():
             alters.append('ALTER TABLE posts ADD COLUMN parent_id INTEGER NULL')
         if 'image_url' not in cols:
             alters.append('ALTER TABLE posts ADD COLUMN image_url VARCHAR(500) NULL')
+        if 'is_demo' not in cols:
+            alters.append('ALTER TABLE posts ADD COLUMN is_demo BOOLEAN NOT NULL DEFAULT FALSE')
 
     if alters:
         with db.engine.connect() as conn:
@@ -98,6 +120,51 @@ def create_app():
     bcrypt.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
+    limiter.init_app(app)
+    oauth.init_app(app)
+    oauth.register(
+        name='google',
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+        client_kwargs={'scope': 'openid email profile'},
+    )
+
+    _csp = {
+        'default-src': "'self'",
+        'script-src': ["'self'", "'unsafe-inline'"],
+        'style-src': ["'self'", "'unsafe-inline'",
+                      'https://fonts.googleapis.com'],
+        'font-src': ["'self'", 'https://fonts.gstatic.com'],
+        'img-src': ["'self'", 'data:'],
+        'connect-src': ["'self'", 'https://api.anthropic.com'],
+        'frame-ancestors': "'none'",
+        'object-src': "'none'",
+        'base-uri': "'self'",
+    }
+    Talisman(
+        app,
+        force_https=False,
+        strict_transport_security=False,
+        session_cookie_secure=False,
+        session_cookie_http_only=True,
+        frame_options='DENY',
+        content_security_policy=_csp,
+    )
+
+    @app.errorhandler(429)
+    def too_many_requests(e):
+        lang = session.get('lang', 'nl')
+        msg = ('Te veel pogingen. Probeer het over een minuut opnieuw.' if lang == 'nl'
+               else 'Too many attempts. Please try again in a minute.')
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'error': 'rate_limited', 'message': msg}), 429
+        flash(msg, 'error')
+        _path_map = {
+            '/aanmelden': 'main.aanmelden',
+            '/wachtwoord-vergeten': 'main.wachtwoord_vergeten',
+        }
+        return redirect(url_for(_path_map.get(request.path, 'main.login')))
 
     from app.routes import main
     app.register_blueprint(main)

@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<div class="gu-admin" lang="{{ lang }}">
+  <div class="gu-admin__inner">
+
+    <div class="gu-admin__head">
+      <p class="gu-eyebrow">Beheer</p>
+      <h1 class="gu-admin__title">Admin Dashboard</h1>
+    </div>
+
+    {# ── Gebruikersstatistieken ──────────────────────────────── #}
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">Gebruikers</p>
+      <div class="gu-stat-grid">
+        <div class="gu-stat-card">
+          <span class="gu-stat-card__num">{{ total_users }}</span>
+          <span class="gu-stat-card__label">Totaal gebruikers</span>
+        </div>
+        <div class="gu-stat-card gu-stat-card--info">
+          <span class="gu-stat-card__num">{{ new_this_week }}</span>
+          <span class="gu-stat-card__label">Nieuw deze week</span>
+        </div>
+      </div>
+    </section>
+
+    {# ── Forum statistieken ────────────────────────────────────── #}
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">Forum</p>
+      <div class="gu-stat-grid">
+        <div class="gu-stat-card">
+          <span class="gu-stat-card__num">{{ active_threads }}</span>
+          <span class="gu-stat-card__label">Actieve gesprekken</span>
+        </div>
+        <div class="gu-stat-card">
+          <span class="gu-stat-card__num">{{ closed_threads }}</span>
+          <span class="gu-stat-card__label">Gesloten gesprekken</span>
+        </div>
+        <div class="gu-stat-card">
+          <span class="gu-stat-card__num">{{ total_posts }}</span>
+          <span class="gu-stat-card__label">Totaal berichten</span>
+        </div>
+        <div class="gu-stat-card">
+          <span class="gu-stat-card__num">{{ demo_posts }}</span>
+          <span class="gu-stat-card__label">Demo berichten</span>
+        </div>
+      </div>
+    </section>
+
+    {# ── Gebruikerslijst ───────────────────────────────────────── #}
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">Gebruikerslijst</p>
+      <div class="gu-admin-table-wrap">
+        <table class="gu-admin-table">
+          <thead>
+            <tr>
+              <th>Naam</th>
+              <th>E-mail</th>
+              <th>Rol</th>
+              <th>Aangemeld</th>
+              <th>Acties</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            {% set is_self = user.id == current_user.id %}
+            {% set role_key = 'admin' if user.is_admin else ('mod' if user.is_moderator else '') %}
+            {% set role_label = 'Admin' if user.is_admin else ('Moderator' if user.is_moderator else 'Gebruiker') %}
+            <tr class="gu-admin-table__row{% if is_self %} gu-admin-table__row--self{% endif %}">
+
+              <td class="gu-admin-table__name">
+                <div class="gu-admin-table__avatar">{{ user.first_name[0] | upper }}{{ user.last_name[0] | upper }}</div>
+                <span>{{ user.first_name }} {{ user.last_name }}</span>
+                {% if user.linkedin_url %}
+                <a href="{{ user.linkedin_url }}" target="_blank" rel="noopener noreferrer"
+                   class="gu-admin-table__linkedin" title="LinkedIn profiel">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                       fill="currentColor" aria-hidden="true">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
+                {% endif %}
+              </td>
+
+              <td class="gu-admin-table__email">{{ user.email }}</td>
+
+              <td class="gu-admin-table__roles">
+                {% if is_self %}
+                  {# Own row — static badge, no dropdown #}
+                  <span class="gu-role-badge{% if role_key %} gu-role-badge--{{ role_key }}{% endif %}">{{ role_label }}</span>
+                {% else %}
+                  <div class="gu-role-picker" data-user-id="{{ user.id }}">
+                    <button type="button"
+                            class="gu-role-badge{% if role_key %} gu-role-badge--{{ role_key }}{% endif %} gu-role-picker__btn"
+                            aria-haspopup="listbox" aria-expanded="false"
+                            title="Rol wijzigen">
+                      <span class="gu-role-picker__label">{{ role_label }}</span>
+                      <svg class="gu-role-picker__chevron" xmlns="http://www.w3.org/2000/svg"
+                           width="10" height="10" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="2.5"
+                           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    </button>
+                    <div class="gu-role-picker__menu" role="listbox" hidden>
+                      <button class="gu-role-picker__option{% if not user.is_admin and not user.is_moderator %} gu-role-picker__option--current{% endif %}"
+                              role="option" data-role="gebruiker">Gebruiker</button>
+                      <button class="gu-role-picker__option{% if user.is_moderator and not user.is_admin %} gu-role-picker__option--current{% endif %}"
+                              role="option" data-role="moderator">Moderator</button>
+                      <button class="gu-role-picker__option{% if user.is_admin %} gu-role-picker__option--current{% endif %}"
+                              role="option" data-role="admin">Admin</button>
+                    </div>
+                  </div>
+                {% endif %}
+              </td>
+
+              <td class="gu-admin-table__date">
+                {{ user.created_at.strftime('%d-%m-%Y') if user.created_at else '—' }}
+              </td>
+
+              <td class="gu-admin-table__actions">
+                {% if not user.is_admin and not is_self %}
+                  <button type="button"
+                          class="gu-post__action gu-post__action--icon gu-post__delete-btn gu-admin-delete-btn"
+                          data-user-id="{{ user.id }}"
+                          data-user-name="{{ user.first_name }} {{ user.last_name }}"
+                          aria-label="Verwijder account van {{ user.first_name }} {{ user.last_name }}"
+                          title="Verwijder account">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    </svg>
+                  </button>
+                {% else %}
+                  <span class="gu-admin-table__no-action">—</span>
+                {% endif %}
+              </td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+{# ── Bevestigingsmodal verwijder gebruiker ────────────────────── #}
+<div class="gu-modal-overlay" id="adminDeleteModal" hidden role="dialog" aria-modal="true"
+     aria-labelledby="adminDeleteTitle">
+  <div class="gu-modal">
+    <button type="button" class="gu-modal__close" id="adminDeleteClose" aria-label="Annuleer">✕</button>
+    <h2 class="gu-modal__title" id="adminDeleteTitle">Account verwijderen</h2>
+    <p class="gu-modal__body" id="adminDeleteBody">
+      Weet je zeker dat je dit account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
+    </p>
+    <form method="POST" id="adminDeleteForm" style="margin-top: 20px; display:flex; gap:12px; justify-content:flex-end;">
+      <button type="button" class="gu-btn gu-btn--ghost" id="adminDeleteCancel">Annuleer</button>
+      <button type="submit" class="gu-btn gu-btn--primary" style="background:var(--gu-danger);">Verwijder account</button>
+    </form>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ── Role picker ───────────────────────────────────────────────
+  var openPicker = null;
+
+  function closePicker(picker) {
+    picker.querySelector('.gu-role-picker__btn').setAttribute('aria-expanded', 'false');
+    picker.querySelector('.gu-role-picker__menu').hidden = true;
+    openPicker = null;
+  }
+
+  document.querySelectorAll('.gu-role-picker').forEach(function (picker) {
+    var btn    = picker.querySelector('.gu-role-picker__btn');
+    var menu   = picker.querySelector('.gu-role-picker__menu');
+    var userId = picker.dataset.userId;
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (openPicker && openPicker !== picker) closePicker(openPicker);
+      var opening = menu.hidden;
+      menu.hidden = !opening;
+      btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+      openPicker = opening ? picker : null;
+    });
+
+    menu.querySelectorAll('.gu-role-picker__option').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        var role = opt.dataset.role;
+        var fd   = new FormData();
+        fd.append('role', role);
+        fetch('/admin/gebruiker/' + userId + '/rol', {
+          method: 'POST', body: fd,
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (!data.ok) return;
+          // Update badge label
+          btn.querySelector('.gu-role-picker__label').textContent = opt.textContent.trim();
+          // Update badge colour class
+          btn.classList.remove('gu-role-badge--admin', 'gu-role-badge--mod');
+          if (role === 'admin')     btn.classList.add('gu-role-badge--admin');
+          if (role === 'moderator') btn.classList.add('gu-role-badge--mod');
+          // Mark current option
+          menu.querySelectorAll('.gu-role-picker__option').forEach(function (o) {
+            o.classList.toggle('gu-role-picker__option--current', o === opt);
+          });
+          closePicker(picker);
+        });
+      });
+    });
+  });
+
+  document.addEventListener('click', function () { if (openPicker) closePicker(openPicker); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && openPicker) closePicker(openPicker); });
+
+  // ── Delete modal ──────────────────────────────────────────────
+  var modal     = document.getElementById('adminDeleteModal');
+  var form      = document.getElementById('adminDeleteForm');
+  var bodyText  = document.getElementById('adminDeleteBody');
+  var closeBtn  = document.getElementById('adminDeleteClose');
+  var cancelBtn = document.getElementById('adminDeleteCancel');
+
+  function openModal(userId, userName) {
+    form.action = '/admin/gebruiker/' + userId + '/verwijder';
+    bodyText.textContent = 'Weet je zeker dat je het account van ' + userName + ' wilt verwijderen? Dit kan niet ongedaan worden gemaakt.';
+    modal.hidden = false;
+  }
+  function closeModal() { modal.hidden = true; }
+
+  document.querySelectorAll('.gu-admin-delete-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { openModal(btn.dataset.userId, btn.dataset.userName); });
+  });
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+})();
+</script>
+{% endblock %}{% endblock %}

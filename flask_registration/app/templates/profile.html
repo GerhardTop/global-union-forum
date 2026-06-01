@@ -65,6 +65,49 @@
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
+    <p class="gu-eyebrow">{% if lang == 'nl' %}Taal & Vertalingen{% else %}Language & Translations{% endif %}</p>
+    <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 16px;">
+      {% if lang == 'nl' %}Taalvoorkeur.{% else %}Language preference.{% endif %}
+    </h2>
+    <div class="gu-lang-switch" style="margin-bottom: 24px;">
+      <a href="{{ url_for('main.set_lang', code='nl') }}"
+         class="gu-lang-switch__btn{% if lang == 'nl' %} is-active{% endif %}">NL</a>
+      <a href="{{ url_for('main.set_lang', code='en') }}"
+         class="gu-lang-switch__btn{% if lang == 'en' %} is-active{% endif %}">EN</a>
+    </div>
+
+    <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">
+      {% if lang == 'nl' %}Automatisch vertalen.{% else %}Automatic translation.{% endif %}
+    </h3>
+    {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else (lang == 'en') %}
+    <form method="POST" action="{{ url_for('main.profiel_vertaalvoorkeur') }}" style="margin-bottom: 4px;">
+      <label class="gu-toggle-label">
+        <span class="gu-toggle">
+          <input type="checkbox" name="auto_translate" value="1" class="gu-toggle__input"
+                 {% if effective_auto %}checked{% endif %}
+                 onchange="this.form.submit()">
+          <span class="gu-toggle__track"></span>
+          <span class="gu-toggle__thumb"></span>
+        </span>
+        <span class="gu-toggle__text">
+          {% if lang == 'nl' %}
+            Vertaal berichten automatisch naar het Nederlands
+          {% else %}
+            Automatically translate posts to English
+          {% endif %}
+        </span>
+      </label>
+    </form>
+    <p style="font-size: 13px; color: var(--gu-fg-3); margin-bottom: 0;">
+      {% if lang == 'nl' %}
+        Berichten in een andere taal worden bij het openen van een gesprek automatisch vertaald.
+      {% else %}
+        Posts in another language are automatically translated when you open a conversation.
+      {% endif %}
+    </p>
+
+    <hr class="gu-auth__divider" style="margin: 32px 0;">
+
     <p class="gu-eyebrow">{{ t.profile_change_password }}</p>
     <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 24px;">
       {% if lang == 'en' %}Update your password.{% else %}Verander je wachtwoord.{% endif %}
@@ -100,6 +143,14 @@
               <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
+          </div>
+          <p class="gu-pw-hint">
+            {% if lang == 'en' %}At least 8 characters, 1 uppercase letter, 1 number and 1 special character.
+            {% else %}Minimaal 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.{% endif %}
+          </p>
+          <div class="gu-pw-strength" id="pwStrengthProfile" hidden>
+            <div class="gu-pw-strength__bar"><div class="gu-pw-strength__fill"></div></div>
+            <span class="gu-pw-strength__label"></span>
           </div>
           {% if form.new_password.errors %}
             <p class="gu-join__formError">{{ t.get(form.new_password.errors[0], form.new_password.errors[0]) }}</p>
@@ -138,6 +189,35 @@
           this.classList.toggle('is-visible', isHidden);
         });
       });
+
+      (function () {
+        var lang   = '{{ lang }}';
+        var labels = { nl: ['Zwak', 'Matig', 'Sterk'], en: ['Weak', 'Fair', 'Strong'] };
+        var levels = ['gu-pw-strength--weak', 'gu-pw-strength--medium', 'gu-pw-strength--strong'];
+        var L = labels[lang] || labels.nl;
+
+        var input = document.getElementById('new_password');
+        var box   = document.getElementById('pwStrengthProfile');
+        if (!input || !box) return;
+        var lbl = box.querySelector('.gu-pw-strength__label');
+
+        input.addEventListener('input', function () {
+          var v = input.value;
+          if (!v) { box.hidden = true; return; }
+          box.hidden = false;
+
+          var score = 0;
+          if (v.length >= 8)           score++;
+          if (/[A-Z]/.test(v))         score++;
+          if (/[0-9]/.test(v))         score++;
+          if (/[^A-Za-z0-9]/.test(v))  score++;
+
+          var idx = score <= 1 ? 0 : score <= 3 ? 1 : 2;
+          box.classList.remove.apply(box.classList, levels);
+          box.classList.add(levels[idx]);
+          lbl.textContent = L[idx];
+        });
+      })();
     </script>
 
     {% if not current_user.is_admin %}

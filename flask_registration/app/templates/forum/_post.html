@@ -22,8 +22,8 @@
 {% set time = post.time_ago[lang] %}
 {% set badge = (post.author_badge_nl if lang == 'nl' else post.author_badge_en) %}
 {% set is_own = current_user.is_authenticated and post.user_id == current_user.id %}
-{% set can_edit = not is_deleted and current_user.is_authenticated and (post.user_id == current_user.id or current_user.is_moderator or current_user.is_admin) %}
-{% set can_delete = not is_deleted and current_user.is_authenticated and (post.user_id == current_user.id or current_user.is_moderator or current_user.is_admin) and (not post.is_op or current_user.is_moderator or current_user.is_admin) %}
+{% set can_edit = not is_deleted and current_user.is_authenticated and post.user_id == current_user.id %}
+{% set can_delete = not is_deleted and current_user.is_authenticated and post.user_id == current_user.id and not post.is_op %}
 
 <article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}"
          id="post-{{ post.id }}">
@@ -88,15 +88,6 @@
 
   {% if not is_deleted %}
 
-  <div class="gu-post__translation" id="trans-{{ post.id }}" hidden aria-live="polite" lang="{{ lang }}">
-    <div class="gu-post__transhead">
-      <span class="gu-arrow" style="background:var(--gu-globe)"></span>
-      <span>{% if lang == 'nl' %}Vertaling{% else %}Translation{% endif %}</span>
-      <span class="gu-post__transhint">{% if lang == 'nl' %}Automatisch vertaald{% else %}Automatically translated{% endif %}</span>
-    </div>
-    <div class="gu-post__transbody"></div>
-  </div>
-
   <footer class="gu-post__actions">
 
     {# Like button — hidden for own posts #}
@@ -121,26 +112,13 @@
       {% endif %}
     {% endif %}
 
-    {# Translate button #}
-    {% if is_foreign %}
-    <button class="gu-post__action gu-post__translate-btn"
-            data-post-id="{{ post.id }}"
-            data-translate-url="{{ url_for('main.forum_translate', post_id=post.id) }}"
-            data-label-translate="{% if lang == 'nl' %}Vertaal naar Nederlands{% else %}Translate to English{% endif %}"
-            data-label-hide="{% if lang == 'nl' %}Verberg vertaling{% else %}Hide translation{% endif %}"
-            data-label-loading="{% if lang == 'nl' %}Bezig…{% else %}Translating…{% endif %}"
-            data-label-error="{% if lang == 'nl' %}Mislukt — probeer opnieuw{% else %}Failed — try again{% endif %}">
-      {% if lang == 'nl' %}Vertaal naar Nederlands{% else %}Translate to English{% endif %}
-    </button>
-    {% endif %}
-
-    {# Edit icon #}
+    {# Edit icon — eigen posts #}
     {% if can_edit %}
     <button class="gu-post__action gu-post__action--icon gu-post__edit-btn"
             data-post-id="{{ post.id }}"
             data-url="{{ url_for('main.forum_post_bewerken', post_id=post.id) }}"
             aria-label="{% if lang == 'nl' %}Bewerken{% else %}Edit{% endif %}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
            fill="none" stroke="currentColor" stroke-width="2"
            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
@@ -148,13 +126,13 @@
     </button>
     {% endif %}
 
-    {# Delete icon #}
+    {# Delete icon — eigen posts, niet OP #}
     {% if can_delete %}
     <form method="POST" action="{{ url_for('main.forum_post_verwijderen', post_id=post.id) }}"
           class="gu-post__delete-form" style="display:inline;">
       <button type="submit" class="gu-post__action gu-post__action--icon gu-post__delete-btn"
-              aria-label="{% if lang == 'nl' %}Verwijderen{% else %}Delete{% endif %}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              aria-label="{% if lang == 'nl' %}Verwijderen{% else %}Delete {% endif %}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
              fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="3 6 5 6 21 6"/>
@@ -164,12 +142,49 @@
     </form>
     {% endif %}
 
-    {# Reageer button (depth < 2, not own post, logged in, thread open) #}
+    {# Reageer button — primaire actieknop (depth < 2, not own post, logged in, thread open) #}
     {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own %}
-    <button class="gu-post__action gu-post__action--ghost gu-post__reply-btn"
+    {% if current_user.linkedin_url %}
+    <button class="gu-post__action gu-post__reply-btn"
             data-target="reply-form-{{ post.id }}">
       {% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
     </button>
+    {% else %}
+    <button class="gu-post__action gu-post__reply-btn"
+            data-target="reply-nolin-{{ post.id }}">
+      {% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
+    </button>
+    {% endif %}
+    {% endif %}
+
+    {# Translate button — subtiel #}
+    {% if is_foreign %}
+    <button class="gu-post__action gu-post__action--ghost gu-post__translate-btn"
+            data-post-id="{{ post.id }}"
+            data-translate-url="{{ url_for('main.forum_translate', post_id=post.id) }}"
+            data-label-translate="{% if lang == 'nl' %}Vertaal naar Nederlands{% else %}Translate to English{% endif %}"
+            data-label-original="{% if lang == 'nl' %}Toon origineel{% else %}Show original{% endif %}"
+            data-label-loading="{% if lang == 'nl' %}Bezig…{% else %}Translating…{% endif %}"
+            data-label-error="{% if lang == 'nl' %}Mislukt — probeer opnieuw{% else %}Failed — try again{% endif %}">
+      {% if lang == 'nl' %}Vertaal naar Nederlands{% else %}Translate to English{% endif %}
+    </button>
+
+    {# Always-translate toggle — alleen voor ingelogde gebruikers #}
+    {% if current_user.is_authenticated %}
+    <form method="POST" action="{{ url_for('main.profiel_vertaalvoorkeur') }}" style="display:inline;">
+      <input type="hidden" name="next" value="{{ url_for('main.forum_thread', thread_id=thread.id) }}">
+      {% if not auto_translate %}
+        <input type="hidden" name="auto_translate" value="1">
+      {% endif %}
+      <button type="submit" class="gu-post__action gu-post__action--ghost gu-post__always-translate">
+        {% if auto_translate %}
+          {% if lang == 'nl' %}Vertaal niet altijd{% else %}Don't always translate{% endif %}
+        {% else %}
+          {% if lang == 'nl' %}Vertaal altijd naar Nederlands{% else %}Always translate to English{% endif %}
+        {% endif %}
+      </button>
+    </form>
+    {% endif %}
     {% endif %}
 
   </footer>
@@ -193,8 +208,27 @@
   </div>
   {% endif %}
 
+  {# Inline LinkedIn notice — shown when user clicks Reageer but has no LinkedIn #}
+  {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own and not current_user.linkedin_url %}
+  <div class="gu-post__replyform gu-post__replyform--nolin" id="reply-nolin-{{ post.id }}" hidden>
+    <p style="margin: 0; font-size: 0.9375rem; color: var(--gu-fg-2);">
+      {% if lang == 'nl' %}
+        <a href="{{ url_for('main.linkedin_aanvullen') }}" style="color: var(--gu-globe-deep); font-weight: 500;">Vul je LinkedIn profiel in</a> om te reageren.
+      {% else %}
+        <a href="{{ url_for('main.linkedin_aanvullen') }}" style="color: var(--gu-globe-deep); font-weight: 500;">Add your LinkedIn profile</a> to post replies.
+      {% endif %}
+    </p>
+    <div class="gu-post__replyactions">
+      <button type="button" class="gu-btn gu-btn--ghost gu-post__reply-cancel"
+              data-target="reply-nolin-{{ post.id }}">
+        {% if lang == 'nl' %}Sluiten{% else %}Close{% endif %}
+      </button>
+    </div>
+  </div>
+  {% endif %}
+
   {# Inline reply form #}
-  {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own %}
+  {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own and current_user.linkedin_url %}
   <div class="gu-post__replyform" id="reply-form-{{ post.id }}" hidden>
     <form method="POST" action="{{ url_for('main.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       <input type="hidden" name="parent_id" value="{{ post.id }}">

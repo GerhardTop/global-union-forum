@@ -64,15 +64,24 @@
         <div class="gu-pw-wrap">
           <input id="password" name="password" type="password"
                  class="gu-input{% if errors.password %} gu-input--error{% endif %}"
-                 placeholder="{% if lang == 'en' %}At least 8 characters{% else %}Minimaal 8 tekens{% endif %}" required>
+                 placeholder="{% if lang == 'en' %}Min. 8 characters{% else %}Min. 8 tekens{% endif %}" required>
           <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
             <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
+        <p class="gu-pw-hint">
+          {% if lang == 'en' %}At least 8 characters, 1 uppercase letter, 1 number and 1 special character.
+          {% else %}Minimaal 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.{% endif %}
+        </p>
+        <div class="gu-pw-strength" id="pwStrength" hidden>
+          <div class="gu-pw-strength__bar"><div class="gu-pw-strength__fill"></div></div>
+          <span class="gu-pw-strength__label"></span>
+        </div>
         {% if errors.password %}
         <p class="gu-join__formError">
-          {% if lang == 'en' %}Password must be at least 8 characters.{% else %}Minimaal 8 tekens.{% endif %}
+          {% if lang == 'en' %}Password must contain at least 8 characters, one uppercase letter, one number and one special character.
+          {% else %}Wachtwoord moet minimaal 8 tekens bevatten, een hoofdletter, een cijfer en een speciaal teken.{% endif %}
         </p>
         {% endif %}
       </div>
@@ -121,6 +130,21 @@
         </button>
       </div>
 
+      <div class="gu-auth__or">
+        <span>{% if lang == 'en' %}or{% else %}of{% endif %}</span>
+      </div>
+
+      <a href="{{ url_for('main.auth_google') }}" class="gu-btn gu-btn--google">
+        <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          <path fill="none" d="M0 0h48v48H0z"/>
+        </svg>
+        {% if lang == 'en' %}Register with Google{% else %}Registreren met Google{% endif %}
+      </a>
+
     </form>
   </div>
 </main>
@@ -133,5 +157,36 @@
       this.classList.toggle('is-visible', isHidden);
     });
   });
+
+  (function () {
+    var lang = '{{ lang }}';
+    var labels = {
+      nl: ['Zwak', 'Matig', 'Sterk'],
+      en: ['Weak', 'Fair',  'Strong']
+    };
+    var levels = ['gu-pw-strength--weak', 'gu-pw-strength--medium', 'gu-pw-strength--strong'];
+    var L = labels[lang] || labels.nl;
+
+    var input = document.getElementById('password');
+    var box   = document.getElementById('pwStrength');
+    var lbl   = box.querySelector('.gu-pw-strength__label');
+
+    input.addEventListener('input', function () {
+      var v = input.value;
+      if (!v) { box.hidden = true; return; }
+      box.hidden = false;
+
+      var score = 0;
+      if (v.length >= 8)            score++;
+      if (/[A-Z]/.test(v))          score++;
+      if (/[0-9]/.test(v))          score++;
+      if (/[^A-Za-z0-9]/.test(v))   score++;
+
+      var idx = score <= 1 ? 0 : score <= 3 ? 1 : 2;
+      box.classList.remove.apply(box.classList, levels);
+      box.classList.add(levels[idx]);
+      lbl.textContent = L[idx];
+    });
+  })();
 </script>
 {% endblock %}{% endblock %}

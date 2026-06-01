@@ -1,4 +1,5 @@
 import os
+import re
 import secrets
 import uuid
 from datetime import datetime, timedelta
@@ -9,12 +10,29 @@ from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sqlalchemy import func
 
-from app import db, bcrypt, mail
+from app import db, bcrypt, mail, limiter, oauth
 from app.models import User, Thread, Post, PostLike
 from app.forms import RegistrationForm, LoginForm, ChangePasswordForm
 from app.translations import TRANSLATIONS
 
 main = Blueprint("main", __name__)
+
+_SPECIAL = re.compile(r'[^A-Za-z0-9]')
+
+def _password_strong(pw):
+    return (
+        len(pw) >= 8 and
+        bool(re.search(r'[A-Z]', pw)) and
+        bool(re.search(r'[0-9]', pw)) and
+        bool(_SPECIAL.search(pw))
+    )
+
+_PW_ERROR = {
+    'nl': ('Wachtwoord moet minimaal 8 tekens bevatten, '
+           'een hoofdletter, een cijfer en een speciaal teken.'),
+    'en': ('Password must contain at least 8 characters, '
+           'one uppercase letter, one number and one special character.'),
+}
 
 _UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 
@@ -24,6 +42,26 @@ def detect_language():
     if 'lang' not in session:
         best = request.accept_languages.best_match(['nl', 'en'], default='en')
         session['lang'] = 'nl' if best == 'nl' else 'en'
+
+
+@main.before_request
+def enforce_session_timeout():
+    if not current_user.is_authenticated:
+        return
+    last = session.get('_last_active')
+    now = datetime.utcnow().timestamp()
+    if last and (now - last) > 1800:  # 30 minutes inactivity
+        lang = session.get('lang', 'nl')
+        logout_user()
+        session.clear()
+        session['lang'] = lang
+        flash(
+            'Je sessie is verlopen. Log opnieuw in.' if lang == 'nl'
+            else 'Your session has expired. Please log in again.',
+            'error'
+        )
+        return redirect(url_for('main.login'))
+    session['_last_active'] = now
 
 
 _ALLOWED_EXT = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
@@ -55,6 +93,9 @@ def _t():
 def set_lang(code):
     if code in ('nl', 'en'):
         session['lang'] = code
+        if current_user.is_authenticated:
+            current_user.auto_translate = True if code == 'en' else None
+            db.session.commit()
     return redirect(request.referrer or url_for('main.index'))
 
 
@@ -80,19 +121,208 @@ def register():
 
 
 @main.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute", methods=["POST"])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
     form = LoginForm()
+    login_error = False
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower().strip()).first()
         if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
+            session.permanent = True
             login_user(user)
             next_page = request.args.get("next")
             return redirect(next_page or url_for("main.index"))
-        flash(_t()['flash_invalid_credentials'], "error")
+        login_error = True
 
-    return render_template("login.html", form=form)
+    return render_template("login.html", form=form, login_error=login_error)
+
+
+# ── Wachtwoord vergeten ───────────────────────────────────────────────────────
+
+def _make_reset_token(email):
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return s.dumps(email, salt='password-reset')
+
+
+def _verify_reset_token(token):
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    try:
+        return s.loads(token, salt='password-reset', max_age=3600)
+    except (SignatureExpired, BadSignature):
+        return None
+
+
+def _send_reset_email(user, reset_url, lang):
+    if lang == 'en':
+        subject = "Reset your password — Global Union Forum"
+        body = (
+            f"Hi {user.first_name},\n\n"
+            f"You requested a password reset. Click the link below to choose a new password:\n\n"
+            f"{reset_url}\n\n"
+            f"This link expires in 1 hour.\n\n"
+            f"If you did not request this, you can safely ignore this email.\n\n"
+            f"Global Union Forum"
+        )
+    else:
+        subject = "Wachtwoord opnieuw instellen — Global Union Forum"
+        body = (
+            f"Hoi {user.first_name},\n\n"
+            f"Je hebt een wachtwoordreset aangevraagd. Klik op de link hieronder om een nieuw wachtwoord in te stellen:\n\n"
+            f"{reset_url}\n\n"
+            f"Deze link verloopt na 1 uur.\n\n"
+            f"Als jij dit niet hebt aangevraagd, kun je deze e-mail negeren.\n\n"
+            f"Global Union Forum"
+        )
+    msg = Message(subject=subject, recipients=[user.email], body=body)
+    try:
+        mail.send(msg)
+        print(f"[MAIL] Reset email verstuurd naar {user.email}", flush=True)
+    except Exception as e:
+        print(f"[MAIL] FOUT reset email naar {user.email}: {e}", flush=True)
+
+
+@main.route('/wachtwoord-vergeten', methods=['GET', 'POST'])
+@limiter.limit("3 per hour", methods=["POST"])
+def wachtwoord_vergeten():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    lang = session.get('lang', 'nl')
+    sent = False
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        user = User.query.filter_by(email=email).first()
+        if user:
+            reset_url = url_for('main.wachtwoord_reset', token=_make_reset_token(email), _external=True)
+            _send_reset_email(user, reset_url, lang)
+        sent = True  # altijd tonen — voorkomt e-mailenumeratie
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'ok': True})
+    return render_template('wachtwoord_vergeten.html', sent=sent)
+
+
+@main.route('/wachtwoord-reset/<token>', methods=['GET', 'POST'])
+def wachtwoord_reset(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    lang = session.get('lang', 'nl')
+    email = _verify_reset_token(token)
+    if not email:
+        return render_template('wachtwoord_reset.html', token_invalid=True, token=token)
+    user = User.query.filter_by(email=email).first_or_404()
+    error = None
+    if request.method == 'POST':
+        pw  = request.form.get('password', '')
+        pw2 = request.form.get('password_confirm', '')
+        if not _password_strong(pw):
+            error = _PW_ERROR[lang]
+        elif pw != pw2:
+            error = ('Wachtwoorden komen niet overeen.' if lang == 'nl'
+                     else 'Passwords do not match.')
+        else:
+            user.password_hash = bcrypt.generate_password_hash(pw).decode('utf-8')
+            db.session.commit()
+            session.permanent = True
+            login_user(user)
+            flash(
+                'Wachtwoord gewijzigd. Je bent nu ingelogd.' if lang == 'nl'
+                else 'Password changed. You are now logged in.',
+                'success'
+            )
+            return redirect(url_for('main.index'))
+    return render_template('wachtwoord_reset.html', token_invalid=False, token=token, error=error)
+
+
+@main.route('/auth/google')
+def auth_google():
+    redirect_uri = url_for('main.auth_google_callback', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@main.route('/auth/google/callback')
+def auth_google_callback():
+    lang = session.get('lang', 'nl')
+    try:
+        token = oauth.google.authorize_access_token()
+    except Exception:
+        flash(
+            'Inloggen met Google mislukt. Probeer het opnieuw.' if lang == 'nl'
+            else 'Google sign-in failed. Please try again.',
+            'error'
+        )
+        return redirect(url_for('main.login'))
+
+    userinfo = token.get('userinfo')
+    if not userinfo:
+        flash(
+            'Geen gebruikersgegevens ontvangen van Google.' if lang == 'nl'
+            else 'No user information received from Google.',
+            'error'
+        )
+        return redirect(url_for('main.login'))
+
+    email = userinfo.get('email', '').lower().strip()
+    google_id = userinfo.get('sub', '')
+    first_name = userinfo.get('given_name', '')
+    last_name = userinfo.get('family_name', '')
+
+    if not email:
+        flash(
+            'Geen e-mailadres ontvangen van Google.' if lang == 'nl'
+            else 'No email address received from Google.',
+            'error'
+        )
+        return redirect(url_for('main.login'))
+
+    user = User.query.filter_by(email=email).first()
+    if user:
+        if not user.google_id:
+            user.google_id = google_id
+            db.session.commit()
+        session.permanent = True
+        login_user(user)
+        return redirect(url_for('main.index'))
+
+    pw_hash = bcrypt.generate_password_hash(secrets.token_hex(32)).decode('utf-8')
+    reg_lang = lang
+    user = User(
+        first_name=first_name or email.split('@')[0],
+        last_name=last_name or '',
+        email=email,
+        password_hash=pw_hash,
+        google_id=google_id,
+        verified=True,
+        auto_translate=True if reg_lang == 'en' else None,
+    )
+    db.session.add(user)
+    db.session.commit()
+    session.permanent = True
+    login_user(user)
+    return redirect(url_for('main.linkedin_aanvullen'))
+
+
+@main.route('/profiel/linkedin-aanvullen', methods=['GET', 'POST'])
+@login_required
+def linkedin_aanvullen():
+    if current_user.linkedin_url:
+        return redirect(url_for('main.index'))
+    lang = session.get('lang', 'nl')
+    error = False
+    if request.method == 'POST':
+        linkedin_url = request.form.get('linkedin_url', '').strip()
+        if not linkedin_url.startswith('https://www.linkedin.com/'):
+            error = True
+        else:
+            current_user.linkedin_url = linkedin_url
+            db.session.commit()
+            flash(
+                'Welkom bij Global Union Forum!' if lang == 'nl'
+                else 'Welcome to Global Union Forum!',
+                'success'
+            )
+            return redirect(url_for('main.index'))
+    return render_template('linkedin_aanvullen.html', error=error)
 
 
 @main.route("/logout")
@@ -133,6 +363,8 @@ def profile():
         elif form.validate_on_submit():
             if not bcrypt.check_password_hash(current_user.password_hash, form.current_password.data):
                 flash(_t()['flash_wrong_password'], "error")
+            elif not _password_strong(form.new_password.data):
+                flash(_PW_ERROR[lang], "error")
             else:
                 current_user.password_hash = bcrypt.generate_password_hash(
                     form.new_password.data
@@ -144,9 +376,150 @@ def profile():
     return render_template("profile.html", form=form, linkedin_error=linkedin_error)
 
 
+@main.route("/profiel/vertaalvoorkeur", methods=["POST"])
+@login_required
+def profiel_vertaalvoorkeur():
+    lang = session.get('lang', 'nl')
+    current_user.auto_translate = request.form.get("auto_translate") == "1"
+    db.session.commit()
+    next_url = request.form.get('next') or url_for("main.profile")
+    return redirect(next_url)
+
+
 @main.route("/privacy")
 def privacy():
     return render_template("privacy.html")
+
+
+# ── Admin dashboard ───────────────────────────────────────────────────────────
+
+@main.route('/admin')
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        abort(403)
+
+    week_ago      = datetime.utcnow() - timedelta(days=7)
+    total_users   = User.query.count()
+    new_this_week = User.query.filter(User.created_at >= week_ago).count()
+
+    active_threads = Thread.query.filter_by(is_closed=False).count()
+    closed_threads = Thread.query.filter_by(is_closed=True).count()
+    total_posts    = Post.query.count()
+    demo_posts     = Post.query.filter_by(is_demo=True).count()
+
+    users = User.query.order_by(User.created_at.desc()).all()
+
+    return render_template(
+        'admin/dashboard.html',
+        total_users=total_users,
+        new_this_week=new_this_week,
+        active_threads=active_threads,
+        closed_threads=closed_threads,
+        total_posts=total_posts,
+        demo_posts=demo_posts,
+        users=users,
+    )
+
+
+@main.route('/moderator')
+@login_required
+def moderator_dashboard():
+    if not (current_user.is_admin or current_user.is_moderator):
+        abort(403)
+
+    active_threads = Thread.query.filter_by(is_closed=False).count()
+
+    today = datetime.utcnow().date()
+    posts_today = Post.query.filter(
+        func.date(Post.created_at) == today
+    ).count()
+
+    gerhard = User.query.filter_by(email='top.gerhard@gmail.com').first()
+    if gerhard:
+        replied_thread_ids = db.session.query(Post.thread_id).filter_by(
+            user_id=gerhard.id
+        ).distinct()
+        threads_no_gerhard = (
+            Thread.query.filter_by(is_closed=False)
+            .filter(~Thread.id.in_(replied_thread_ids.scalar_subquery()))
+            .order_by(Thread.created_at.desc())
+            .all()
+        )
+    else:
+        threads_no_gerhard = Thread.query.filter_by(is_closed=False).order_by(Thread.created_at.desc()).all()
+
+    recent_posts = (
+        Post.query
+        .filter(Post.body != '[bericht verwijderd]')
+        .order_by(Post.created_at.desc())
+        .limit(10)
+        .all()
+    )
+
+    closed_threads = Thread.query.filter_by(is_closed=True).order_by(Thread.created_at.desc()).all()
+
+    return render_template(
+        'moderator/dashboard.html',
+        active_threads=active_threads,
+        posts_today=posts_today,
+        threads_no_gerhard_count=len(threads_no_gerhard),
+        threads_no_gerhard=threads_no_gerhard,
+        recent_posts=recent_posts,
+        closed_threads=closed_threads,
+    )
+
+
+@main.route('/admin/gebruiker/<int:user_id>/rol', methods=['POST'])
+@login_required
+def admin_set_rol(user_id):
+    if not current_user.is_admin:
+        abort(403)
+    if user_id == current_user.id:
+        return jsonify({'error': 'cannot change own role'}), 400
+    user = User.query.get_or_404(user_id)
+    role = request.form.get('role', '')
+    if role == 'admin':
+        user.is_admin = True
+        user.is_moderator = True
+    elif role == 'moderator':
+        user.is_admin = False
+        user.is_moderator = True
+    elif role == 'gebruiker':
+        user.is_admin = False
+        user.is_moderator = False
+    else:
+        return jsonify({'error': 'invalid role'}), 400
+    db.session.commit()
+    return jsonify({'ok': True, 'role': role})
+
+
+@main.route('/admin/gebruiker/<int:user_id>/verwijder', methods=['POST'])
+@login_required
+def admin_verwijder_gebruiker(user_id):
+    if not current_user.is_admin:
+        abort(403)
+    user = User.query.get_or_404(user_id)
+    if user.is_admin:
+        abort(400)
+
+    uid = user.id
+    PostLike.query.filter_by(user_id=uid).delete()
+    user_post_ids = [
+        p.id for p in Post.query.filter_by(user_id=uid).with_entities(Post.id).all()
+    ]
+    if user_post_ids:
+        PostLike.query.filter(
+            PostLike.post_id.in_(user_post_ids)
+        ).delete(synchronize_session=False)
+        Post.query.filter(Post.parent_id.in_(user_post_ids)).update(
+            {Post.parent_id: None}, synchronize_session=False
+        )
+        Post.query.filter_by(user_id=uid).delete(synchronize_session=False)
+
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('main.admin_dashboard'))
 
 
 @main.route("/account/verwijderen", methods=["POST"])
@@ -253,91 +626,354 @@ def success():
 
 # ── Forum ─────────────────────────────────────────────────────────────────────
 
+def _get_or_create_demo_user(first_name, last_name, email):
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        pw = bcrypt.generate_password_hash(secrets.token_hex(24)).decode('utf-8')
+        user = User(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password_hash=pw,
+            verified=True,
+            linkedin_url=None,
+        )
+        db.session.add(user)
+        db.session.flush()
+    return user
+
+
 def _seed_forum():
-    """Create the example thread from Forum.jsx on first run."""
-    if Thread.query.first():
+    """Seed 4 demo threads with demo users on first run."""
+    if Thread.query.filter_by(is_demo=True).first():
         return
+
+    # Remove old non-demo seed thread if it exists
+    old = Thread.query.filter_by(eyebrow_nl='Het idee · scorecard').first()
+    if old:
+        PostLike.query.filter(PostLike.post_id.in_(
+            db.session.query(Post.id).filter_by(thread_id=old.id)
+        )).delete(synchronize_session=False)
+        Post.query.filter_by(thread_id=old.id).delete()
+        db.session.delete(old)
+        db.session.flush()
+
     now = datetime.utcnow()
-    t = Thread(
-        eyebrow_nl='Het idee · scorecard',
-        eyebrow_en='The idea · scorecard',
-        title_prefix_nl='Hoe houden we de scorecard eerlijk tegen',
-        title_accent_nl='landen die op papier goed scoren',
+
+    jan     = _get_or_create_demo_user('Jan',    'Hofman (demo)',       'jan.hofman.demo@globalunionforum.org')
+    fatima  = _get_or_create_demo_user('Fatima', 'El Idrissi (demo)',   'fatima.elidrissi.demo@globalunionforum.org')
+    sarah   = _get_or_create_demo_user('Sarah',  'Chen (demo)',         'sarah.chen.demo@globalunionforum.org')
+    marcus  = _get_or_create_demo_user('Marcus', 'Osei (demo)',         'marcus.osei.demo@globalunionforum.org')
+
+    # ── Thread 1: Scorecard manipulatie ──────────────────────────────
+    t1 = Thread(
+        eyebrow_nl='Het idee · principe 1',
+        eyebrow_en='The idea · principle 1',
+        title_prefix_nl='Wat als landen de scorecard gaan',
+        title_accent_nl='manipuleren',
         title_suffix_nl='?',
-        title_prefix_en='How do we keep the scorecard honest against',
-        title_accent_en='countries that look good on paper',
+        title_prefix_en='What if countries start',
+        title_accent_en='gaming the scorecard',
         title_suffix_en='?',
-        created_at=now - timedelta(days=3),
+        is_demo=True,
+        created_at=now - timedelta(days=6),
     )
-    db.session.add(t)
+    db.session.add(t1)
     db.session.flush()
 
-    NL_OP = (
-        "Ik denk vaak na over wat de zwakste plek is in het idee. Als we landen beoordelen "
-        "op vijf criteria — corruptie, vrijheid, mensenrechten, duurzaamheid, internationale "
-        "rechtsorde — dan hebben we cijfers en lijsten nodig. Die cijfers komen van overheden "
-        "zelf, of van internationale organen.\n\n"
-        "Een land als China kan op papier prima scoren op corruptiebestrijding (er worden veel "
-        "corrupte mensen opgepakt), terwijl het in de praktijk een autoritair regime is. Hoe "
-        "houden we de meetlat eerlijk zonder dat we een eindeloze ruzie krijgen over welke bron klopt?"
+    p1_op = Post(
+        thread_id=t1.id, user_id=jan.id,
+        author_name='Jan Hofman (demo)', author_role='member', author_age=52,
+        source_lang='nl', is_op=True, vote_count=0, is_demo=True,
+        body_nl=(
+            "Ik steun het idee van de scorecard, maar ik maak me zorgen over de wet van Goodhart: "
+            "zodra een maatstaf een doel wordt, houdt het op een goede maatstaf te zijn.\n\n"
+            "China werd al eerder aangehaald: spectaculaire anticorruptiecijfers, ondertussen een "
+            "van de meest onderdrukkende regimes ter wereld. Maar dit is geen Chinees probleem — "
+            "ook westerse landen vertonen dit gedrag. Griekenland heeft jarenlang zijn "
+            "begrotingscijfers mooier gemaakt voor de EU.\n\n"
+            "Mijn vraag: heeft Global Union een mechanisme nodig dat landen bestraft die "
+            "aantoonbaar de cijfers manipuleren? En zo ja, wie stelt vast dat er gemanipuleerd is?"
+        ),
+        body_en=(
+            "I support the idea of the scorecard, but I'm worried about Goodhart's Law: once "
+            "a measure becomes a target, it ceases to be a good measure.\n\n"
+            "China has already been cited: spectacular anti-corruption numbers, while being one "
+            "of the most repressive regimes in the world. But this isn't a Chinese problem — "
+            "Western countries do this too. Greece manipulated its budget figures for years to "
+            "meet EU requirements.\n\n"
+            "My question: does Global Union need a mechanism to penalise countries that "
+            "demonstrably manipulate the figures? And if so, who decides that manipulation has occurred?"
+        ),
+        created_at=now - timedelta(days=6),
     )
-    EN_OP = (
-        "I often think about the weakest point in this idea. If we evaluate countries on five "
-        "criteria — corruption, freedom, human rights, sustainability, the international rule of "
-        "law — we need numbers and rankings. Those numbers come from governments themselves, or "
-        "from international bodies.\n\n"
-        "A country like China can look excellent on paper at fighting corruption (plenty of corrupt "
-        "people get arrested), while in practice being an authoritarian regime. How do we keep the "
-        "measuring stick honest without endless arguments about which source is correct?"
-    )
+    db.session.add(p1_op)
+    db.session.flush()
 
-    posts = [
-        Post(thread_id=t.id, author_name='Lieke Van Doorn', author_role='founder',
-             source_lang='nl', is_op=True, vote_count=0,
-             body_nl=NL_OP, body_en=EN_OP,
-             created_at=now - timedelta(days=3)),
-        Post(thread_id=t.id, author_name='James Whitfield', author_role='member',
-             author_age=19, source_lang='en', vote_count=12,
-             body=(
-                 "Maybe a dumb question, but: good indices already exist — Reporters Without "
-                 "Borders, Transparency International, Freedom House. All independent. Why are "
-                 "we building our own scoring system instead of combining existing indices? "
-                 "Seems faster and more credible."
-             ),
-             created_at=now - timedelta(days=2, hours=4)),
-        Post(thread_id=t.id, author_name='Dr. Aisha Nkrumah', author_role='expert',
-             author_badge_nl='Politicoloog · UvA', author_badge_en='Political scientist · UvA',
-             source_lang='en', vote_count=47,
-             body=(
-                 "James' suggestion is pragmatic, but it underestimates one problem: Western "
-                 "indices can be dismissed as a colonial lens. A meta-score from multiple "
-                 "independent sources only works politically if the composition is representative "
-                 "— include Afrobarometer and the Asia Foundation, not just Anglo-American institutes.\n\n"
-                 "Otherwise dictatorships will weaponise it and Global Union becomes vulnerable "
-                 "to the charge of neocolonialism."
-             ),
-             created_at=now - timedelta(days=2, hours=2)),
-        Post(thread_id=t.id, author_name='Marc Janssen', author_role='member',
-             author_age=42, source_lang='nl', vote_count=23,
-             body=(
-                 "Eens met Aisha. Maar belangrijker: wie corrigeert als een 'goed' land slecht "
-                 "begint te scoren? In de EU duurt zoiets jaren — kijk naar Hongarije. Als we "
-                 "niet vooraf afspreken dat de score binnen 12 maanden directe tariefgevolgen "
-                 "heeft, hebben we hetzelfde vetorecht-probleem met andere woorden."
-             ),
-             created_at=now - timedelta(days=1)),
-        Post(thread_id=t.id, author_name='Lieke Van Doorn', author_role='founder',
-             source_lang='nl', is_op=True, vote_count=0,
-             body=(
-                 "Marc, je punt raakt precies waar het manifest mee begint — vetorecht eruit, "
-                 "drempelregel erin. Voor de scorecard moeten we hetzelfde doen: jaarlijkse "
-                 "meting, jaarlijkse aanpassing, geen onderhandeling achteraf. Aisha's punt over "
-                 "representatieve bronnen pak ik mee in de volgende versie van het essay."
-             ),
-             created_at=now - timedelta(hours=6)),
-    ]
-    for p in posts:
-        db.session.add(p)
+    p1_r1 = Post(
+        thread_id=t1.id, user_id=sarah.id, parent_id=p1_op.id,
+        author_name='Sarah Chen (demo)', author_role='expert', author_age=34,
+        author_badge_nl='Internationale betrekkingen · LSE',
+        author_badge_en='International relations · LSE',
+        source_lang='en', vote_count=31, is_demo=True,
+        body=(
+            "Jan raises exactly the right concern. The technical term is 'metric gaming' "
+            "and it's endemic to any scoring system.\n\n"
+            "One partial solution: an independent verification body with investigative powers "
+            "— not unlike a Global Audit Court. Countries submit their figures, but the body "
+            "can cross-check against satellite data, NGO reports, academic studies. Not "
+            "perfect, but much harder to game than self-reported statistics.\n\n"
+            "The real question is mandate and funding. Who appoints its members? If wealthy "
+            "member states control the budget, smaller countries will never trust it."
+        ),
+        created_at=now - timedelta(days=5, hours=3),
+    )
+    db.session.add(p1_r1)
+    db.session.flush()
+
+    p1_r2 = Post(
+        thread_id=t1.id, user_id=marcus.id, parent_id=p1_op.id,
+        author_name='Marcus Osei (demo)', author_role='member', author_age=31,
+        source_lang='en', vote_count=18, is_demo=True,
+        body=(
+            "The independent body idea is appealing but circular: you need trust to create "
+            "the body, and the body is supposed to create trust. This is exactly where the "
+            "EU got stuck with Hungary.\n\n"
+            "Maybe start smaller: a temporary 'red flag' system. If three or more member "
+            "states formally challenge a country's score, an automatic third-party audit "
+            "kicks in. Puts the burden of proof on challengers, not on the body itself."
+        ),
+        created_at=now - timedelta(days=4, hours=8),
+    )
+    db.session.add(p1_r2)
+
+    # ── Thread 2: Handelzone zonder personenverkeer ───────────────────
+    t2 = Thread(
+        eyebrow_nl='Het idee · principe 4',
+        eyebrow_en='The idea · principle 4',
+        title_prefix_nl='Één handelszone zonder vrij personenverkeer —',
+        title_accent_nl='is dat houdbaar',
+        title_suffix_nl='?',
+        title_prefix_en='One trade zone without free movement —',
+        title_accent_en='is that sustainable',
+        title_suffix_en='?',
+        is_demo=True,
+        created_at=now - timedelta(days=4),
+    )
+    db.session.add(t2)
+    db.session.flush()
+
+    p2_op = Post(
+        thread_id=t2.id, user_id=fatima.id,
+        author_name='Fatima El Idrissi (demo)', author_role='expert', author_age=38,
+        author_badge_nl='Handelsrecht · Universiteit Leiden',
+        author_badge_en='Trade law · Leiden University',
+        source_lang='nl', is_op=True, vote_count=0, is_demo=True,
+        body_nl=(
+            "Het manifest onderscheidt handelszone en personenverkeer bewust. Ik begrijp de "
+            "politieke logica: vrij personenverkeer is het struikelblok dat de EU in veel "
+            "discussies onverkoopbaar maakt. Door dat los te koppelen maak je toetreding "
+            "politiek aantrekkelijker.\n\n"
+            "Maar er zijn twee problemen die ik niet opgelost zie.\n\n"
+            "Ten eerste: hoe voorkom je een brain drain? Als goederen vrij mogen bewegen maar "
+            "mensen niet, worden hooggekwalificeerde mensen in armere lidstaten extra kwetsbaar "
+            "— bedrijven vertrekken, banen volgen.\n\n"
+            "Ten tweede: mensenrechten omvatten ook het recht om te reizen. Als Global Union "
+            "ernst maakt met mensenrechten als toetredingscriterium, hoe verdedig je dan een "
+            "systeem dat bewust mobiliteit beperkt?"
+        ),
+        body_en=(
+            "The manifesto deliberately separates trade zone from freedom of movement. I "
+            "understand the political logic: free movement is the stumbling block that makes "
+            "EU accession politically toxic in many debates. By decoupling it, accession "
+            "becomes more attractive.\n\n"
+            "But there are two problems I don't see resolved.\n\n"
+            "First: how do you prevent brain drain? If goods can move freely but people "
+            "cannot, highly skilled workers in poorer member states become especially "
+            "vulnerable — companies leave, jobs follow.\n\n"
+            "Second: human rights include the right to travel. If Global Union takes human "
+            "rights seriously as an accession criterion, how do you defend a system that "
+            "deliberately restricts mobility?"
+        ),
+        created_at=now - timedelta(days=4),
+    )
+    db.session.add(p2_op)
+    db.session.flush()
+
+    p2_r1 = Post(
+        thread_id=t2.id, user_id=jan.id, parent_id=p2_op.id,
+        author_name='Jan Hofman (demo)', author_role='member', author_age=52,
+        source_lang='nl', vote_count=14, is_demo=True,
+        body=(
+            "Fatima's brain drain argument raakt een echte spanning. Maar ik denk dat ze de "
+            "doelstelling omkeert: Global Union is niet bedoeld als migratiesysteem, maar als "
+            "een economische en politieke drukval.\n\n"
+            "Het gaat erom dat landen die meedoen intern welvarender worden — zodat er minder "
+            "reden is voor brain drain. Als het werkt, hoef je personenverkeer helemaal niet "
+            "apart te regelen.\n\n"
+            "Het mensenrechtenargument snap ik. Maar reisrecht is al een apart internationaal "
+            "regime (UDHR art. 13). Global Union hoeft dat niet opnieuw te regelen — alleen "
+            "niet actief te belemmeren."
+        ),
+        created_at=now - timedelta(days=3, hours=5),
+    )
+    db.session.add(p2_r1)
+
+    # ── Thread 3: Onafhankelijke media ───────────────────────────────
+    t3 = Thread(
+        eyebrow_nl='Het idee · principe 3',
+        eyebrow_en='The idea · principle 3',
+        title_prefix_nl='Onafhankelijke media als Global Union-instrument —',
+        title_accent_nl='werkt het BBC-model',
+        title_suffix_nl='?',
+        title_prefix_en='Independent media as a Global Union instrument —',
+        title_accent_en='does the BBC model work',
+        title_suffix_en='?',
+        is_demo=True,
+        created_at=now - timedelta(days=2),
+    )
+    db.session.add(t3)
+    db.session.flush()
+
+    p3_op = Post(
+        thread_id=t3.id, user_id=sarah.id,
+        author_name='Sarah Chen (demo)', author_role='expert', author_age=34,
+        author_badge_nl='Internationale betrekkingen · LSE',
+        author_badge_en='International relations · LSE',
+        source_lang='en', is_op=True, vote_count=0, is_demo=True,
+        body=(
+            "Principle 3 proposes independent journalism in local languages, modelled on the "
+            "BBC. I work in media policy and I find this the most promising — and the most "
+            "underspecified — part of the proposal.\n\n"
+            "The BBC works because of three things: public funding (licence fee), statutory "
+            "independence (Royal Charter), and brand trust built over decades. Replicating "
+            "that globally means answering:\n\n"
+            "1. Who funds it? A Global Union levy? Voluntary contributions from member "
+            "states? Both are vulnerable to political capture.\n"
+            "2. Who protects it legally? A charter is only as strong as the body that "
+            "enforces it.\n"
+            "3. How does it operate in countries where the state controls internet "
+            "infrastructure?\n\n"
+            "I'm genuinely enthusiastic about this idea, but it needs a full governance "
+            "model before it can be taken seriously."
+        ),
+        created_at=now - timedelta(days=2),
+    )
+    db.session.add(p3_op)
+    db.session.flush()
+
+    p3_r1 = Post(
+        thread_id=t3.id, user_id=jan.id, parent_id=p3_op.id,
+        author_name='Jan Hofman (demo)', author_role='member', author_age=52,
+        source_lang='nl', vote_count=9, is_demo=True,
+        body=(
+            "Goed punt over de financiering. Maar misschien hoeft het geen BBC te worden. "
+            "Er is al een ecosysteem van onafhankelijke media die internationaal actief zijn: "
+            "Deutsche Welle, Radio Free Europe, France 24.\n\n"
+            "Wat als Global Union deze bestaande organisaties versterkt en coördineert, "
+            "in plaats van een nieuw instituut te bouwen? Dat is sneller, goedkoper, en "
+            "heeft al bewezen geloofwaardig te zijn in autocratische contexten."
+        ),
+        created_at=now - timedelta(days=1, hours=14),
+    )
+    db.session.add(p3_r1)
+    db.session.flush()
+
+    p3_r2 = Post(
+        thread_id=t3.id, user_id=fatima.id, parent_id=p3_r1.id,
+        author_name='Fatima El Idrissi (demo)', author_role='expert', author_age=38,
+        author_badge_nl='Handelsrecht · Universiteit Leiden',
+        author_badge_en='Trade law · Leiden University',
+        source_lang='nl', vote_count=22, is_demo=True,
+        body=(
+            "Jan's suggestie is pragmatisch, maar die bestaande organisaties zijn niet "
+            "neutraal — ze worden gesponsord door nationale overheden met eigen geopolitieke "
+            "belangen. Radio Free Europe is al decennia de facto een Amerikaans "
+            "buitenlandsinstrument.\n\n"
+            "Als Global Union geloofwaardig wil zijn als niet-westerse doctrine, moet ze "
+            "financiering en governance echt onafhankelijk maken. Dat is juist het "
+            "moeilijkste deel — en het meest noodzakelijke."
+        ),
+        created_at=now - timedelta(days=1, hours=8),
+    )
+    db.session.add(p3_r2)
+
+    # ── Thread 4: Toetreding — wie beslist ───────────────────────────
+    t4 = Thread(
+        eyebrow_nl='Het idee · toetreding',
+        eyebrow_en='The idea · accession',
+        title_prefix_nl='Wie mogen er als eerste bij, en',
+        title_accent_nl='wie beslist dat',
+        title_suffix_nl='?',
+        title_prefix_en='Who gets in first, and',
+        title_accent_en='who decides',
+        title_suffix_en='?',
+        is_demo=True,
+        created_at=now - timedelta(hours=18),
+    )
+    db.session.add(t4)
+    db.session.flush()
+
+    p4_op = Post(
+        thread_id=t4.id, user_id=marcus.id,
+        author_name='Marcus Osei (demo)', author_role='member', author_age=31,
+        source_lang='en', is_op=True, vote_count=0, is_demo=True,
+        body=(
+            "The manifesto describes Global Union as open to 'functioning democracies'. "
+            "But who decides when a country qualifies?\n\n"
+            "The EU has a formal accession process: the Commission assesses, the Council "
+            "approves by qualified majority. It's slow, political, and — as we've seen "
+            "with Western Balkans countries waiting 20+ years — often gridlocked.\n\n"
+            "Global Union could do it differently. Some options:\n"
+            "- An independent accreditation body, like a global democracy audit\n"
+            "- Existing member states vote by qualified majority (80%? 85%?)\n"
+            "- Self-certification against the scorecard, with a mandatory review period\n\n"
+            "Each has obvious weaknesses. But the question matters enormously: the "
+            "credibility of the whole system depends on whether the criteria are applied "
+            "consistently, or whether big members can block candidates they find inconvenient."
+        ),
+        created_at=now - timedelta(hours=18),
+    )
+    db.session.add(p4_op)
+    db.session.flush()
+
+    p4_r1 = Post(
+        thread_id=t4.id, user_id=fatima.id, parent_id=p4_op.id,
+        author_name='Fatima El Idrissi (demo)', author_role='expert', author_age=38,
+        author_badge_nl='Handelsrecht · Universiteit Leiden',
+        author_badge_en='Trade law · Leiden University',
+        source_lang='nl', vote_count=19, is_demo=True,
+        body=(
+            "De vergelijking met de EU-uitbreidingsprocedure is treffend maar ook een "
+            "waarschuwing. De EU heeft 'kopenhaagencriteria' — democratie, rechtsstaat, "
+            "mensenrechten, markteconomie. Op papier helder. In de praktijk heeft politieke "
+            "wil meer bepaald dan juridische haalbaarheid.\n\n"
+            "Mijn voorstel: combineer een scorecard-drempel (objectief) met een peer review "
+            "door bestaande leden (democratisch draagvlak). Landen kunnen pas lid worden als "
+            "ze beide halen. Dat voorkomt dat grote leden democratische kandidaten blokkeren "
+            "op basis van economisch eigenbelang."
+        ),
+        created_at=now - timedelta(hours=11),
+    )
+    db.session.add(p4_r1)
+    db.session.flush()
+
+    p4_r2 = Post(
+        thread_id=t4.id, user_id=jan.id, parent_id=p4_r1.id,
+        author_name='Jan Hofman (demo)', author_role='member', author_age=52,
+        source_lang='nl', vote_count=8, is_demo=True,
+        body=(
+            "Ik ben voor een zo objectief mogelijke drempel, maar Fatima's punt over "
+            "politieke blokkades is reëel. Misschien helpt een 'kandidaatstatus' — zoals "
+            "de EU dat ook kent.\n\n"
+            "Landen die aan de minimumscore voldoen krijgen direct handelsprivileges, ook "
+            "als ze nog niet volledig lid zijn. Dat geeft een incentive zonder dat je "
+            "vastloopt in politieke onderhandelingen over volwaardig lidmaatschap."
+        ),
+        created_at=now - timedelta(hours=4),
+    )
+    db.session.add(p4_r2)
+
     db.session.commit()
 
 
@@ -431,6 +1067,11 @@ def forum_thread(thread_id):
             ).all()
         }
 
+    user_lang = session.get('lang', 'nl')
+    auto_translate = current_user.is_authenticated and (
+        current_user.auto_translate is True
+        or (current_user.auto_translate is None and user_lang == 'en')
+    )
     return render_template(
         'forum/thread.html',
         thread=thread,
@@ -439,12 +1080,67 @@ def forum_thread(thread_id):
         replies_map=replies_map,
         like_counts=like_counts,
         liked_ids=liked_ids,
+        auto_translate=auto_translate,
     )
 
 
 @main.route('/forum/translate/<int:post_id>', methods=['POST'])
 def forum_translate(post_id):
-    return jsonify({'translation': 'API key nog niet ingesteld'})
+    post = Post.query.get_or_404(post_id)
+    user_lang = session.get('lang', 'nl')
+
+    # source_lang is de taal van de originele tekst; user_lang is de gewenste taal.
+    # Vertaling is alleen zinvol als die twee verschillen.
+    if user_lang == post.source_lang:
+        return jsonify({'error': 'no translation needed'}), 400
+
+    if user_lang == 'nl':
+        # Gebruiker wil Nederlands — origineel is Engels
+        if post.body_nl:
+            return jsonify({'translation': post.body_nl})
+        source = post.body_en or post.body or ''
+        target_lang = 'Dutch'
+    else:
+        # Gebruiker wil Engels — origineel is Nederlands
+        if post.body_en:
+            return jsonify({'translation': post.body_en})
+        source = post.body_nl or post.body or ''
+        target_lang = 'English'
+
+    if not source.strip():
+        return jsonify({'error': 'no content'}), 400
+
+    api_key = current_app.config.get('ANTHROPIC_API_KEY', '')
+    if not api_key:
+        return jsonify({'error': 'translation unavailable'}), 503
+
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model='claude-haiku-4-5-20251001',
+            max_tokens=1024,
+            messages=[{
+                'role': 'user',
+                'content': (
+                    f'Translate the following forum post to {target_lang}. '
+                    'Preserve paragraph breaks. Return only the translation, no preamble.\n\n'
+                    f'{source}'
+                ),
+            }],
+        )
+        translation = message.content[0].text.strip()
+
+        if user_lang == 'nl':
+            post.body_nl = translation
+        else:
+            post.body_en = translation
+        db.session.commit()
+
+        return jsonify({'translation': translation})
+    except Exception as e:
+        current_app.logger.error('Translation error: %s', e)
+        return jsonify({'error': 'translation failed'}), 500
 
 
 @main.route('/forum/like/<int:post_id>', methods=['POST'])
@@ -665,6 +1361,7 @@ def verify_resend():
 # ── Aanmelden ─────────────────────────────────────────────────────────────────
 
 @main.route("/aanmelden", methods=["GET", "POST"])
+@limiter.limit("3 per hour", methods=["POST"])
 def aanmelden():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
@@ -689,7 +1386,7 @@ def aanmelden():
             errors["email"] = True
         elif User.query.filter_by(email=form_data["email"]).first():
             errors["email_in_use"] = True
-        if len(password) < 8:
+        if not _password_strong(password):
             errors["password"] = True
         elif password != password_confirm:
             errors["password_confirm"] = True
@@ -698,12 +1395,14 @@ def aanmelden():
 
         if not errors:
             password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
+            reg_lang = session.get('lang', 'nl')
             user = User(
                 first_name=form_data["first_name"],
                 last_name=form_data["last_name"],
                 email=form_data["email"],
                 password_hash=password_hash,
                 linkedin_url=form_data["linkedin_url"],
+                auto_translate=True if reg_lang == 'en' else None,
             )
             db.session.add(user)
             db.session.commit()

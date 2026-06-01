@@ -7,10 +7,12 @@
   </a>
 
   <nav class="gu-header__nav" id="siteNav" aria-label="Navigatie">
-    <a href="{{ url_for('main.forum') }}">Forum</a>
-
-    <a href="{{ url_for('main.manifest') }}">Manifest</a>
-    <a href="{{ url_for('main.about') }}">{% if lang == 'en' %}About{% else %}Over ons{% endif %}</a>
+    <a href="{{ url_for('main.forum') }}"
+       {% if request.endpoint and request.endpoint.startswith('main.forum') %}class="is-active"{% endif %}>Forum</a>
+    <a href="{{ url_for('main.manifest') }}"
+       {% if request.endpoint == 'main.manifest' %}class="is-active"{% endif %}>Manifest</a>
+    <a href="{{ url_for('main.about') }}"
+       {% if request.endpoint == 'main.about' %}class="is-active"{% endif %}>{% if lang == 'en' %}About{% else %}Over ons{% endif %}</a>
   </nav>
 
   <div class="gu-header__end">
@@ -23,16 +25,12 @@
       <div class="gu-header__dropdown" id="avatarDropdown" hidden>
         <p class="gu-header__dropdown-name">{{ current_user.first_name }} {{ current_user.last_name }}</p>
         <a href="{{ url_for('main.profile') }}" class="gu-header__dropdown-item">{{ t.nav_profile }}</a>
-        <div class="gu-header__dropdown-lang">
-          <p class="gu-header__dropdown-label">{% if lang == 'nl' %}Taal{% else %}Language{% endif %}</p>
-          <div class="gu-header__dropdown-langlinks">
-            <a href="{{ url_for('main.set_lang', code='nl') }}"
-               class="gu-header__dropdown-langlink{% if lang == 'nl' %} is-active{% endif %}">Nederlands</a>
-            <span class="gu-footer__lang-sep">·</span>
-            <a href="{{ url_for('main.set_lang', code='en') }}"
-               class="gu-header__dropdown-langlink{% if lang == 'en' %} is-active{% endif %}">English</a>
-          </div>
-        </div>
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('main.admin_dashboard') }}" class="gu-header__dropdown-item">Admin</a>
+        {% endif %}
+        {% if current_user.is_moderator and not current_user.is_admin %}
+        <a href="{{ url_for('main.moderator_dashboard') }}" class="gu-header__dropdown-item">Moderator</a>
+        {% endif %}
         <hr class="gu-header__dropdown-divider">
         <a href="{{ url_for('main.logout') }}" class="gu-header__dropdown-item">{{ t.nav_logout }}</a>
       </div>

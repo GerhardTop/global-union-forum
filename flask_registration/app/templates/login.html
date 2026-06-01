@@ -27,15 +27,36 @@
         {% endif %}
       </div>
 
-      <div class="gu-join__field">
-        <label for="{{ form.password.id }}">{{ t.login_password }}</label>
-        {{ form.password(
-            class="gu-input" ~ (" gu-input--error" if form.password.errors else ""),
-            placeholder="••••••••"
-        ) }}
-        {% if form.password.errors %}
-          <p class="gu-join__formError">{{ t.get(form.password.errors[0], form.password.errors[0]) }}</p>
-        {% endif %}
+      <div class="gu-join__field" style="margin-bottom: 4px;">
+        <div class="gu-pw-wrap">
+          {{ form.password(
+              class="gu-input" ~ (" gu-input--error" if login_error else ""),
+              placeholder=('Password' if lang == 'en' else 'Wachtwoord')
+          ) }}
+          <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+            <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+
+      {% if login_error %}
+      <div class="gu-alert--error" role="alert" style="margin-bottom: 16px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {% if lang == 'en' %}Invalid email or password.{% else %}Ongeldig e-mailadres of wachtwoord.{% endif %}
+      </div>
+      {% endif %}
+
+      <div style="text-align: right; margin: 0 0 16px; font-size: 0.875rem;">
+        <a href="#" id="forgotLink" style="color: var(--gu-fg-3); text-decoration: none; border-bottom: 1px solid var(--gu-border-strong);">
+          {% if lang == 'en' %}Forgot password?{% else %}Wachtwoord vergeten?{% endif %}
+        </a>
+        <span id="forgotFeedback" style="display:none; margin-top: 6px; font-size: 0.8125rem; line-height: 1.5;"></span>
       </div>
 
       <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
@@ -43,6 +64,21 @@
         {{ t.login_btn }} <span class="gu-arrow"></span>
       </button>
     </form>
+
+    <div class="gu-auth__or">
+      <span>{% if lang == 'en' %}or{% else %}of{% endif %}</span>
+    </div>
+
+    <a href="{{ url_for('main.auth_google') }}" class="gu-btn gu-btn--google">
+      <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        <path fill="none" d="M0 0h48v48H0z"/>
+      </svg>
+      {% if lang == 'en' %}Sign in with Google{% else %}Inloggen met Google{% endif %}
+    </a>
 
     <hr class="gu-auth__divider">
 
@@ -53,4 +89,53 @@
 
   </div>
 </div>
+<script>
+  document.querySelectorAll('.gu-pw-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var input = this.closest('.gu-pw-wrap').querySelector('input');
+      var isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      this.classList.toggle('is-visible', isHidden);
+    });
+  });
+
+  document.getElementById('forgotLink').addEventListener('click', function (e) {
+    e.preventDefault();
+    var lang = '{{ lang }}';
+    var emailInput = document.getElementById('{{ form.email.id }}');
+    var feedback = document.getElementById('forgotFeedback');
+    var email = emailInput.value.trim();
+
+    if (!email) {
+      feedback.style.display = 'block';
+      feedback.style.color = 'var(--gu-danger)';
+      feedback.textContent = lang === 'en'
+        ? 'Please enter your email address first.'
+        : 'Vul eerst je e-mailadres in.';
+      emailInput.focus();
+      return;
+    }
+
+    var fd = new FormData();
+    fd.append('email', email);
+    fetch('{{ url_for("main.wachtwoord_vergeten") }}', {
+      method: 'POST',
+      body: fd,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(function (response) {
+      feedback.style.display = 'block';
+      if (response.status === 429) {
+        feedback.style.color = 'var(--gu-danger)';
+        feedback.textContent = lang === 'en'
+          ? 'Too many attempts. Please try again in an hour.'
+          : 'Te veel pogingen. Probeer het over een uur opnieuw.';
+      } else {
+        feedback.style.color = '#166534';
+        feedback.textContent = lang === 'en'
+          ? 'Reset link sent — check your inbox.'
+          : 'Reset link verstuurd — check je inbox.';
+      }
+    });
+  });
+</script>
 {% endblock %}{% endblock %}

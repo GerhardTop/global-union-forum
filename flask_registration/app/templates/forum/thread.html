@@ -45,6 +45,10 @@
           <span aria-hidden="true">·</span>
           <span>{% if lang == 'nl' %}laatst {% else %}last {% endif %}{{ posts[-1].time_ago[lang] }}</span>
         {% endif %}
+        {% if thread.is_demo %}
+          <span aria-hidden="true">·</span>
+          <span class="gu-forum__demo-badge">Demo</span>
+        {% endif %}
         {% if thread.is_closed %}
           <span aria-hidden="true">·</span>
           <span class="gu-forum__closed-badge">{% if lang == 'nl' %}Gesloten{% else %}Closed{% endif %}</span>
@@ -140,6 +144,16 @@
       <div class="gu-composer gu-composer--closed">
         <p>{% if lang == 'nl' %}Dit gesprek is gesloten.{% else %}This conversation is closed.{% endif %}</p>
       </div>
+    {% elif current_user.is_authenticated and not current_user.linkedin_url %}
+    <div class="gu-composer gu-composer--locked">
+      <p>
+        {% if lang == 'nl' %}
+          <a href="{{ url_for('main.linkedin_aanvullen') }}">Vul je LinkedIn profiel in</a> om mee te doen aan het gesprek.
+        {% else %}
+          <a href="{{ url_for('main.linkedin_aanvullen') }}">Add your LinkedIn profile</a> to join the conversation.
+        {% endif %}
+      </p>
+    </div>
     {% elif current_user.is_authenticated %}
     <form class="gu-composer" id="composer" method="POST" action="{{ url_for('main.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       <textarea
@@ -306,42 +320,59 @@
     });
 
     document.querySelectorAll('.gu-post__translate-btn').forEach(function (button) {
-      var postId    = button.dataset.postId;
-      var url       = button.dataset.translateUrl;
-      var transBox  = document.getElementById('trans-' + postId);
-      var transBody = transBox ? transBox.querySelector('.gu-post__transbody') : null;
-      var shown     = false;
+      var postId          = button.dataset.postId;
+      var url             = button.dataset.translateUrl;
+      var bodyEl          = document.getElementById('body-' + postId);
+      var originalHtml    = null;
+      var translationHtml = null;
+      var showingTrans    = false;
 
       button.addEventListener('click', function () {
-        if (shown) {
-          transBox.hidden = true;
-          shown = false;
-          button.textContent = button.dataset.labelTranslate;
+        // Toggle if both sides are already cached
+        if (originalHtml !== null && translationHtml !== null) {
+          showingTrans = !showingTrans;
+          bodyEl.innerHTML = showingTrans ? translationHtml : originalHtml;
+          button.textContent = showingTrans
+            ? button.dataset.labelOriginal
+            : button.dataset.labelTranslate;
           return;
         }
-        if (transBody && transBody.innerHTML.trim()) {
-          transBox.hidden = false;
-          shown = true;
-          button.textContent = button.dataset.labelHide;
-          return;
-        }
+
+        // First fetch
+        originalHtml = bodyEl.innerHTML;
         button.textContent = button.dataset.labelLoading;
         button.disabled = true;
+
         fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
           .then(function (r) { return r.json(); })
           .then(function (data) {
-            if (transBody) {
-              transBody.innerHTML = (data.translation || '')
-                .split('\n\n').map(function (p) { return '<p>' + p + '</p>'; }).join('');
+            if (data.error) {
+              button.textContent = button.dataset.labelError;
+              originalHtml = null;
+              return;
             }
-            if (transBox) transBox.hidden = false;
-            shown = true;
-            button.textContent = button.dataset.labelHide;
+            translationHtml = (data.translation || '')
+              .split('\n\n')
+              .map(function (p) { return '<p>' + p + '</p>'; })
+              .join('');
+            bodyEl.innerHTML = translationHtml;
+            showingTrans = true;
+            button.textContent = button.dataset.labelOriginal;
           })
-          .catch(function () { button.textContent = button.dataset.labelError; })
+          .catch(function () {
+            button.textContent = button.dataset.labelError;
+            originalHtml = null;
+          })
           .finally(function () { button.disabled = false; });
       });
     });
+
+    // Auto-translate: klik alle vertaalbuttons parallel bij pagina-load
+    if ({{ auto_translate | tojson }}) {
+      document.querySelectorAll('.gu-post__translate-btn').forEach(function (btn) {
+        btn.click();
+      });
+    }
   })();
 </script>
 {% endblock %}

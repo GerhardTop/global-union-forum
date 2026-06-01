@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'en' %}Add LinkedIn{% else %}LinkedIn aanvullen{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<div class="gu-auth-page">
+  <div class="gu-auth-panel">
+
+    <div class="gu-auth__brand">
+      <img src="{{ url_for('static', filename='assets/logo-symbol.svg') }}" height="28" alt="">
+      <p class="gu-eyebrow" style="margin: 0;">Global Union</p>
+    </div>
+
+    <p class="gu-eyebrow">{% if lang == 'en' %}ALMOST THERE{% else %}BIJNA KLAAR{% endif %}</p>
+    <h2 class="gu-join__h2">
+      {% if lang == 'en' %}Add your LinkedIn profile.{% else %}Vul je LinkedIn profiel in.{% endif %}
+    </h2>
+    <p style="color: var(--gu-fg-2); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 28px;">
+      {% if lang == 'en' %}
+        To join the conversation, we ask for your LinkedIn profile so other participants know who you are.
+      {% else %}
+        Om mee te doen aan het gesprek vragen we je LinkedIn profiel. Zo weten andere deelnemers wie je bent.
+      {% endif %}
+    </p>
+
+    <form method="POST" action="{{ url_for('main.linkedin_aanvullen') }}" novalidate>
+
+      <div class="gu-join__field">
+        <label for="linkedin_url">
+          {% if lang == 'en' %}LinkedIn profile URL{% else %}LinkedIn profiel URL{% endif %}
+        </label>
+        <input id="linkedin_url" name="linkedin_url" type="url"
+               class="gu-input{% if error %} gu-input--error{% endif %}"
+               placeholder="https://www.linkedin.com/in/jouw-naam"
+               autofocus required>
+        {% if error %}
+        <p class="gu-join__formError">
+          {% if lang == 'en' %}Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).
+          {% else %}Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…).{% endif %}
+        </p>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
+              style="width: 100%; justify-content: center; margin-top: 8px;">
+        {% if lang == 'en' %}Save and continue{% else %}Opslaan en starten{% endif %}
+        <span class="gu-arrow"></span>
+      </button>
+
+    </form>
+
+    <p style="text-align: center; margin-top: 20px;">
+      <a href="{{ url_for('main.index') }}"
+         style="color: var(--gu-fg-3); font-size: 0.875rem; text-decoration: none; border-bottom: 1px solid var(--gu-border-strong);">
+        {% if lang == 'en' %}I'll do this later →{% else %}Sla ik later op →{% endif %}
+      </a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}{% endblock %}

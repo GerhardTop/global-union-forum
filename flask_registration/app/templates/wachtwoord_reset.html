@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'en' %}Choose new password{% else %}Nieuw wachtwoord kiezen{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<div class="gu-auth-page">
+  <div class="gu-auth-panel">
+
+    <div class="gu-auth__brand">
+      <img src="{{ url_for('static', filename='assets/logo-symbol.svg') }}" height="28" alt="">
+      <p class="gu-eyebrow" style="margin: 0;">Global Union</p>
+    </div>
+
+    {% if token_invalid %}
+
+      <p class="gu-eyebrow">{% if lang == 'en' %}Link expired{% else %}Link verlopen{% endif %}</p>
+      <h2 class="gu-join__h2">{% if lang == 'en' %}This link is no longer valid.{% else %}Deze link is niet meer geldig.{% endif %}</h2>
+      <p style="color: var(--gu-fg-2); font-size: 0.9375rem; margin: 16px 0 24px; line-height: 1.6;">
+        {% if lang == 'en' %}
+          The reset link has expired or is invalid. Request a new one below.
+        {% else %}
+          De resetlink is verlopen of ongeldig. Vraag hieronder een nieuwe aan.
+        {% endif %}
+      </p>
+      <a href="{{ url_for('main.wachtwoord_vergeten') }}" class="gu-btn gu-btn--primary gu-btn--lg"
+         style="display: flex; justify-content: center;">
+        {% if lang == 'en' %}Request new link{% else %}Nieuwe link aanvragen{% endif %} <span class="gu-arrow"></span>
+      </a>
+
+    {% else %}
+
+      <p class="gu-eyebrow">{% if lang == 'en' %}New password{% else %}Nieuw wachtwoord{% endif %}</p>
+      <h2 class="gu-join__h2">{% if lang == 'en' %}Choose a new password.{% else %}Kies een nieuw wachtwoord.{% endif %}</h2>
+
+      {% if error %}
+      <div class="gu-alert--error" role="alert" style="margin: 16px 0;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('main.wachtwoord_reset', token=token) }}"
+            novalidate style="margin-top: 24px;">
+
+        <div class="gu-join__field">
+          <label for="password">{% if lang == 'en' %}New password{% else %}Nieuw wachtwoord{% endif %}</label>
+          <div class="gu-pw-wrap">
+            <input id="password" name="password" type="password" class="gu-input"
+                   placeholder="{% if lang == 'en' %}Min. 8 characters{% else %}Min. 8 tekens{% endif %}"
+                   autocomplete="new-password" required>
+            <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+              <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <p class="gu-pw-hint">
+            {% if lang == 'en' %}At least 8 characters, 1 uppercase letter, 1 number and 1 special character.
+            {% else %}Minimaal 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.{% endif %}
+          </p>
+          <div class="gu-pw-strength" id="pwStrength" hidden>
+            <div class="gu-pw-strength__bar"><div class="gu-pw-strength__fill"></div></div>
+            <span class="gu-pw-strength__label"></span>
+          </div>
+        </div>
+
+        <div class="gu-join__field">
+          <label for="password_confirm">{% if lang == 'en' %}Confirm new password{% else %}Bevestig nieuw wachtwoord{% endif %}</label>
+          <div class="gu-pw-wrap">
+            <input id="password_confirm" name="password_confirm" type="password" class="gu-input"
+                   placeholder="{% if lang == 'en' %}Repeat your password{% else %}Herhaal je wachtwoord{% endif %}"
+                   autocomplete="new-password" required>
+            <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+              <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
+                style="width: 100%; justify-content: center; margin-top: 8px;">
+          {% if lang == 'en' %}Save new password{% else %}Nieuw wachtwoord opslaan{% endif %} <span class="gu-arrow"></span>
+        </button>
+      </form>
+
+    {% endif %}
+
+  </div>
+</div>
+<script>
+  document.querySelectorAll('.gu-pw-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var input = this.closest('.gu-pw-wrap').querySelector('input');
+      var isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      this.classList.toggle('is-visible', isHidden);
+    });
+  });
+
+  (function () {
+    var lang = '{{ lang }}';
+    var labels = { nl: ['Zwak', 'Matig', 'Sterk'], en: ['Weak', 'Fair', 'Strong'] };
+    var levels = ['gu-pw-strength--weak', 'gu-pw-strength--medium', 'gu-pw-strength--strong'];
+    var L = labels[lang] || labels.nl;
+    var input = document.getElementById('password');
+    var box   = document.getElementById('pwStrength');
+    if (!input || !box) return;
+    var lbl = box.querySelector('.gu-pw-strength__label');
+    input.addEventListener('input', function () {
+      var v = input.value;
+      if (!v) { box.hidden = true; return; }
+      box.hidden = false;
+      var score = 0;
+      if (v.length >= 8)           score++;
+      if (/[A-Z]/.test(v))         score++;
+      if (/[0-9]/.test(v))         score++;
+      if (/[^A-Za-z0-9]/.test(v))  score++;
+      var idx = score <= 1 ? 0 : score <= 3 ? 1 : 2;
+      box.classList.remove.apply(box.classList, levels);
+      box.classList.add(levels[idx]);
+      lbl.textContent = L[idx];
+    });
+  })();
+</script>
+{% endblock %}{% endblock %}

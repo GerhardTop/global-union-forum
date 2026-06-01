@@ -214,6 +214,40 @@
     </div>
   </section>
 
+  {# ── FEEDBACK + INVITE ────────────────────────────────────── #}
+  <section class="gu-manifest__feedback">
+    <div class="gu-manifest__feedbackInner">
+      <div class="gu-feedback-grid">
+        <div class="gu-feedback-card">
+          <p>
+            {% if lang == 'en' %}
+              Do you have suggestions for improving this site? Is there functionality you miss? We'd love to hear from you!
+            {% else %}
+              Heb je suggesties voor verbetering van deze site? Miss je bepaalde functionaliteit? Fijn als je het laat weten!
+            {% endif %}
+          </p>
+          <a class="gu-btn gu-btn--primary" href="mailto:top.gerhard@gmail.com">
+            {% if lang == 'en' %}Send feedback{% else %}Stuur feedback{% endif %}
+            <span class="gu-arrow"></span>
+          </a>
+        </div>
+        <div class="gu-feedback-card">
+          <p>
+            {% if lang == 'en' %}
+              Know someone who'd want to think along? Invite them to join the conversation.
+            {% else %}
+              Ken jij iemand die mee wil denken? Nodig ze uit om mee te doen aan het gesprek.
+            {% endif %}
+          </p>
+          <a class="gu-btn gu-btn--primary" href="{{ url_for('main.aanmelden') }}">
+            {% if lang == 'en' %}I know someone{% else %}Ik ken iemand die mee wil denken{% endif %}
+            <span class="gu-arrow"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 {% endblock %}
 

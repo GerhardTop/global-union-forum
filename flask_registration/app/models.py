@@ -14,8 +14,10 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     is_moderator = db.Column(db.Boolean, nullable=False, default=False)
     verified = db.Column(db.Boolean, nullable=False, default=False)
-    linkedin_url = db.Column(db.String(255), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    linkedin_url   = db.Column(db.String(255), nullable=True)
+    google_id      = db.Column(db.String(100), nullable=True, unique=True)
+    auto_translate = db.Column(db.Boolean, nullable=True, default=None)
+    created_at     = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -39,6 +41,7 @@ class Thread(db.Model):
     title_accent_en = db.Column(db.String(200), nullable=True)
     title_suffix_en = db.Column(db.String(50),  nullable=False, default='')
     is_closed    = db.Column(db.Boolean, nullable=False, default=False)
+    is_demo      = db.Column(db.Boolean, nullable=False, default=False)
     created_at   = db.Column(db.DateTime, default=datetime.utcnow)
     posts        = db.relationship('Post', backref='thread', lazy=True,
                                    order_by='Post.created_at')
@@ -66,6 +69,7 @@ class Post(db.Model):
     body_en        = db.Column(db.Text, nullable=True)
     source_lang    = db.Column(db.String(5), nullable=False, default='nl')
     is_op          = db.Column(db.Boolean, default=False)
+    is_demo        = db.Column(db.Boolean, nullable=False, default=False)
     vote_count     = db.Column(db.Integer, default=0)
     image_url      = db.Column(db.String(500), nullable=True)
     created_at     = db.Column(db.DateTime, default=datetime.utcnow)
