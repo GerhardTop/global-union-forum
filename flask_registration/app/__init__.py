@@ -197,5 +197,7 @@ def create_app():
     with app.app_context():
         db.create_all()
         _migrate_columns()
+        from app.routes import _seed_forum
+        _seed_forum()
 
     return app
