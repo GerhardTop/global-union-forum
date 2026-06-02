@@ -988,7 +988,7 @@ def _thread_list(closed=False):
         .filter(Thread.is_closed == closed)
         .outerjoin(last_post_sq, Thread.id == last_post_sq.c.thread_id)
         .add_columns(last_post_sq.c.last_at)
-        .order_by(func.isnull(last_post_sq.c.last_at), last_post_sq.c.last_at.desc(), Thread.created_at.desc())
+        .order_by(last_post_sq.c.last_at.desc().nulls_last(), Thread.created_at.desc())
         .all()
     )
     result = []
