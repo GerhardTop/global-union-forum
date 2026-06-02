@@ -431,8 +431,11 @@ def moderator_dashboard():
     active_threads = Thread.query.filter_by(is_closed=False).count()
 
     today = datetime.utcnow().date()
+    start_of_day = datetime(today.year, today.month, today.day)
+    end_of_day = start_of_day + timedelta(days=1)
     posts_today = Post.query.filter(
-        func.date(Post.created_at) == today
+        Post.created_at >= start_of_day,
+        Post.created_at < end_of_day,
     ).count()
 
     gerhard = User.query.filter_by(email='top.gerhard@gmail.com').first()

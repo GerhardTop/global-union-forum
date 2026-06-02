@@ -27,6 +27,7 @@ def _migrate_columns():
     """Add new columns to existing tables without Flask-Migrate."""
     insp = sa_inspect(db.engine)
     existing = insp.get_table_names()
+    is_pg = db.engine.dialect.name == 'postgresql'
     alters = []
 
     if 'users' in existing:
@@ -46,11 +47,18 @@ def _migrate_columns():
             at_info = next(c for c in user_col_list if c['name'] == 'auto_translate')
             if not at_info.get('nullable', True):
                 # Was NOT NULL DEFAULT FALSE — maak nullable en reset ongewijzigde defaults
-                alters.append('ALTER TABLE users MODIFY COLUMN auto_translate BOOLEAN NULL DEFAULT NULL')
+                if is_pg:
+                    alters.append('ALTER TABLE users ALTER COLUMN auto_translate DROP NOT NULL')
+                    alters.append('ALTER TABLE users ALTER COLUMN auto_translate SET DEFAULT NULL')
+                else:
+                    alters.append('ALTER TABLE users MODIFY COLUMN auto_translate BOOLEAN NULL DEFAULT NULL')
                 alters.append('UPDATE users SET auto_translate = NULL WHERE auto_translate = FALSE')
         if 'google_id' not in cols:
             alters.append('ALTER TABLE users ADD COLUMN google_id VARCHAR(100) NULL')
-            alters.append('ALTER TABLE users ADD UNIQUE INDEX uq_users_google_id (google_id)')
+            if is_pg:
+                alters.append('CREATE UNIQUE INDEX IF NOT EXISTS uq_users_google_id ON users (google_id)')
+            else:
+                alters.append('ALTER TABLE users ADD UNIQUE INDEX uq_users_google_id (google_id)')
 
     if 'threads' in existing:
         cols = {c['name'] for c in insp.get_columns('threads')}
