@@ -528,13 +528,19 @@ body {
 @media (max-width: 767px) {
   .gu-footer__grid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 0;
+    padding-bottom: 16px;
   }
+  /* Verberg tagline, De Denktank- en Meedoen-kolom */
+  .gu-footer__brand .gu-payoff { display: none; }
+  .gu-footer__grid > div:nth-child(2),
+  .gu-footer__grid > div:nth-child(3) { display: none; }
   .gu-footer__legal {
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 12px;
+    padding-bottom: 2rem;
   }
   .gu-footer ul li,
   .gu-footer ul a {
