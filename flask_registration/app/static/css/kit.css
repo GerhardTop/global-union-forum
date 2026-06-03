@@ -2354,7 +2354,14 @@ body {
   }
   .gu-hero__symbol { display: none; }
   .gu-hero__cta { flex-wrap: wrap; }
-  .gu-hero__flags { margin-top: 32px; gap: 8px; }
+  .gu-hero__flags {
+    margin-top: 32px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .gu-hero__flags > span:last-child {
+    flex: 1 1 100%;
+  }
 
   /* Sections */
   .gu-section { padding: 16px 0; }
