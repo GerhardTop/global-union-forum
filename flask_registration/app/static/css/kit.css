@@ -2366,12 +2366,6 @@ body {
   }
 
   @media (max-width: 600px) {
-    .gu-hero {
-      padding-bottom: 16px;
-    }
-    .gu-hero__flags > span:last-child {
-      text-align: left;
-    }
   }
 
   /* Sections */
