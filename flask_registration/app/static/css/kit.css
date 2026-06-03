@@ -2349,7 +2349,7 @@ body {
   /* ── Homepage — Hero ────────────────────────────────────── */
   .gu-hero {
     grid-template-columns: 1fr;
-    padding: 48px 20px 16px;
+    padding: 48px 20px 16px; /* mobile bottom matches .gu-section top padding */
     gap: 32px;
   }
   .gu-hero__symbol { display: none; }
