@@ -2363,6 +2363,8 @@ body {
   .gu-hero__flags > span:last-child {
     flex: 1 1 100%;
     text-align: left;
+    margin-left: 0;
+    width: 100%;
   }
 
   @media (max-width: 600px) {
