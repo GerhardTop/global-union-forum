@@ -2349,7 +2349,7 @@ body {
   /* ── Homepage — Hero ────────────────────────────────────── */
   .gu-hero {
     grid-template-columns: 1fr;
-    padding: 48px 20px 4rem;
+    padding: 48px 20px 6rem;
     gap: 32px;
   }
   .gu-hero__symbol { display: none; }
@@ -2367,7 +2367,6 @@ body {
 
   /* Sections */
   .gu-section { padding: 16px 0; }
-  #idee { margin-top: 3rem; }
   .gu-section__head { margin-bottom: 16px; }
 
   /* Campaign / principle grid: 1 column */
