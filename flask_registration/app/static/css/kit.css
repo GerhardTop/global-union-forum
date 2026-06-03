@@ -2365,6 +2365,15 @@ body {
     text-align: left;
   }
 
+  @media (max-width: 600px) {
+    .gu-hero {
+      padding-bottom: 16px;
+    }
+    .gu-hero__flags > span:last-child {
+      text-align: left;
+    }
+  }
+
   /* Sections */
   .gu-section { padding: 16px 0; }
   .gu-section__head { margin-bottom: 16px; }
