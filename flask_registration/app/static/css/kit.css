@@ -2358,9 +2358,11 @@ body {
     margin-top: 32px;
     gap: 8px;
     flex-wrap: wrap;
+    justify-content: flex-start;
   }
   .gu-hero__flags > span:last-child {
     flex: 1 1 100%;
+    text-align: left;
   }
 
   /* Sections */
