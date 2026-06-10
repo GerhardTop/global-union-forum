@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'en' %}Choose new password{% else %}Nieuw wachtwoord kiezen{% endif %} — Global Union{% endblock %}
+{% block title %}{{ _('Choose new password') }} — Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <div class="gu-auth-page">
@@ -12,24 +12,20 @@
 
     {% if token_invalid %}
 
-      <p class="gu-eyebrow">{% if lang == 'en' %}Link expired{% else %}Link verlopen{% endif %}</p>
-      <h2 class="gu-join__h2">{% if lang == 'en' %}This link is no longer valid.{% else %}Deze link is niet meer geldig.{% endif %}</h2>
+      <p class="gu-eyebrow">{{ _('Link expired') }}</p>
+      <h2 class="gu-join__h2">{{ _('This link is no longer valid.') }}</h2>
       <p style="color: var(--gu-fg-2); font-size: 0.9375rem; margin: 16px 0 24px; line-height: 1.6;">
-        {% if lang == 'en' %}
-          The reset link has expired or is invalid. Request a new one below.
-        {% else %}
-          De resetlink is verlopen of ongeldig. Vraag hieronder een nieuwe aan.
-        {% endif %}
+        {{ _('The reset link has expired or is invalid. Request a new one below.') }}
       </p>
       <a href="{{ url_for('main.wachtwoord_vergeten') }}" class="gu-btn gu-btn--primary gu-btn--lg"
          style="display: flex; justify-content: center;">
-        {% if lang == 'en' %}Request new link{% else %}Nieuwe link aanvragen{% endif %} <span class="gu-arrow"></span>
+        {{ _('Request new link') }} <span class="gu-arrow"></span>
       </a>
 
     {% else %}
 
-      <p class="gu-eyebrow">{% if lang == 'en' %}New password{% else %}Nieuw wachtwoord{% endif %}</p>
-      <h2 class="gu-join__h2">{% if lang == 'en' %}Choose a new password.{% else %}Kies een nieuw wachtwoord.{% endif %}</h2>
+      <p class="gu-eyebrow">{{ _('New password') }}</p>
+      <h2 class="gu-join__h2">{{ _('Choose a new password.') }}</h2>
 
       {% if error %}
       <div class="gu-alert--error" role="alert" style="margin: 16px 0;">
@@ -47,10 +43,10 @@
             novalidate style="margin-top: 24px;">
 
         <div class="gu-join__field">
-          <label for="password">{% if lang == 'en' %}New password{% else %}Nieuw wachtwoord{% endif %}</label>
+          <label for="password">{{ _('New password') }}</label>
           <div class="gu-pw-wrap">
             <input id="password" name="password" type="password" class="gu-input"
-                   placeholder="{% if lang == 'en' %}Min. 8 characters{% else %}Min. 8 tekens{% endif %}"
+                   placeholder="{{ _('Min. 8 characters') }}"
                    autocomplete="new-password" required>
             <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
               <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -58,8 +54,7 @@
             </button>
           </div>
           <p class="gu-pw-hint">
-            {% if lang == 'en' %}At least 8 characters, 1 uppercase letter, 1 number and 1 special character.
-            {% else %}Minimaal 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.{% endif %}
+            {{ _('At least 8 characters, 1 uppercase letter, 1 number and 1 special character.') }}
           </p>
           <div class="gu-pw-strength" id="pwStrength" hidden>
             <div class="gu-pw-strength__bar"><div class="gu-pw-strength__fill"></div></div>
@@ -68,10 +63,10 @@
         </div>
 
         <div class="gu-join__field">
-          <label for="password_confirm">{% if lang == 'en' %}Confirm new password{% else %}Bevestig nieuw wachtwoord{% endif %}</label>
+          <label for="password_confirm">{{ _('Confirm new password') }}</label>
           <div class="gu-pw-wrap">
             <input id="password_confirm" name="password_confirm" type="password" class="gu-input"
-                   placeholder="{% if lang == 'en' %}Repeat your password{% else %}Herhaal je wachtwoord{% endif %}"
+                   placeholder="{{ _('Repeat your password') }}"
                    autocomplete="new-password" required>
             <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
               <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -82,7 +77,7 @@
 
         <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
                 style="width: 100%; justify-content: center; margin-top: 8px;">
-          {% if lang == 'en' %}Save new password{% else %}Nieuw wachtwoord opslaan{% endif %} <span class="gu-arrow"></span>
+          {{ _('Save new password') }} <span class="gu-arrow"></span>
         </button>
       </form>
 

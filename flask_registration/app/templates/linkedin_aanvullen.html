@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'en' %}Add LinkedIn{% else %}LinkedIn aanvullen{% endif %} — Global Union{% endblock %}
+{% block title %}{{ _('Add LinkedIn') }} — Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <div class="gu-auth-page">
@@ -10,23 +10,19 @@
       <p class="gu-eyebrow" style="margin: 0;">Global Union</p>
     </div>
 
-    <p class="gu-eyebrow">{% if lang == 'en' %}ALMOST THERE{% else %}BIJNA KLAAR{% endif %}</p>
+    <p class="gu-eyebrow">{{ _('ALMOST THERE') }}</p>
     <h2 class="gu-join__h2">
-      {% if lang == 'en' %}Add your LinkedIn profile.{% else %}Vul je LinkedIn profiel in.{% endif %}
+      {{ _('Add your LinkedIn profile.') }}
     </h2>
     <p style="color: var(--gu-fg-2); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 28px;">
-      {% if lang == 'en' %}
-        To join the conversation, we ask for your LinkedIn profile so other participants know who you are.
-      {% else %}
-        Om mee te doen aan het gesprek vragen we je LinkedIn profiel. Zo weten andere deelnemers wie je bent.
-      {% endif %}
+      {{ _('To join the conversation, we ask for your LinkedIn profile so other participants know who you are.') }}
     </p>
 
     <form method="POST" action="{{ url_for('main.linkedin_aanvullen') }}" novalidate>
 
       <div class="gu-join__field">
         <label for="linkedin_url">
-          {% if lang == 'en' %}LinkedIn profile URL{% else %}LinkedIn profiel URL{% endif %}
+          {{ _('LinkedIn profile URL') }}
         </label>
         <input id="linkedin_url" name="linkedin_url" type="url"
                class="gu-input{% if error %} gu-input--error{% endif %}"
@@ -34,15 +30,14 @@
                autofocus required>
         {% if error %}
         <p class="gu-join__formError">
-          {% if lang == 'en' %}Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).
-          {% else %}Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…).{% endif %}
+          {{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}
         </p>
         {% endif %}
       </div>
 
       <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
               style="width: 100%; justify-content: center; margin-top: 8px;">
-        {% if lang == 'en' %}Save and continue{% else %}Opslaan en starten{% endif %}
+        {{ _('Save and continue') }}
         <span class="gu-arrow"></span>
       </button>
 
@@ -51,7 +46,7 @@
     <p style="text-align: center; margin-top: 20px;">
       <a href="{{ url_for('main.index') }}"
          style="color: var(--gu-fg-3); font-size: 0.875rem; text-decoration: none; border-bottom: 1px solid var(--gu-border-strong);">
-        {% if lang == 'en' %}I'll do this later →{% else %}Sla ik later op →{% endif %}
+        {{ _("I'll do this later →") }}
       </a>
     </p>
 

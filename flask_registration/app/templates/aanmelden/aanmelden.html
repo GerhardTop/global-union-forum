@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'en' %}Join us{% else %}Doe mee{% endif %} — Global Union{% endblock %}
+{% block title %}{{ _('Join us') }} — Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <main class="gu-join-page">
@@ -8,71 +8,62 @@
     <form class="gu-join__panel" method="POST" action="{{ url_for('main.aanmelden') }}" novalidate>
 
       <h2 class="gu-join__h2">
-        {% if lang == 'en' %}Join the conversation.{% else %}Doe mee aan het gesprek.{% endif %}
+        {{ _('Join the conversation.') }}
       </h2>
       <p class="gu-join__sub">
-        {% if lang == 'en' %}
-          Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free.
-        {% else %}
-          Global Union Forum is een open platform voor iedereen die het gesprek serieus voert — expert of leek, 17 of 70. Deelname is gratis.
-        {% endif %}
+        {{ _('Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free.') }}
       </p>
 
       <div class="gu-join__field gu-join__field--row">
         <div class="gu-join__sub-field">
-          <label for="first_name">{% if lang == 'en' %}First name{% else %}Voornaam{% endif %}</label>
+          <label for="first_name">{{ _('First name') }}</label>
           <input id="first_name" name="first_name" type="text"
                  class="gu-input{% if errors.first_name %} gu-input--error{% endif %}"
                  value="{{ form_data.first_name }}" placeholder="Sara" required autofocus>
           {% if errors.first_name %}
-          <p class="gu-join__formError">{% if lang == 'en' %}Required.{% else %}Verplicht.{% endif %}</p>
+          <p class="gu-join__formError">{{ _('Required.') }}</p>
           {% endif %}
         </div>
         <div class="gu-join__sub-field">
-          <label for="last_name">{% if lang == 'en' %}Last name{% else %}Achternaam{% endif %}</label>
+          <label for="last_name">{{ _('Last name') }}</label>
           <input id="last_name" name="last_name" type="text"
                  class="gu-input{% if errors.last_name %} gu-input--error{% endif %}"
                  value="{{ form_data.last_name }}" placeholder="De Vries" required>
           {% if errors.last_name %}
-          <p class="gu-join__formError">{% if lang == 'en' %}Required.{% else %}Verplicht.{% endif %}</p>
+          <p class="gu-join__formError">{{ _('Required.') }}</p>
           {% endif %}
         </div>
       </div>
 
       <div class="gu-join__field">
-        <label for="email">{% if lang == 'en' %}Email address{% else %}E-mailadres{% endif %}</label>
+        <label for="email">{{ _('Email address') }}</label>
         <input id="email" name="email" type="email"
                class="gu-input{% if errors.email or errors.email_in_use %} gu-input--error{% endif %}"
                value="{{ form_data.email }}" placeholder="naam@voorbeeld.nl" required>
         {% if errors.email_in_use %}
         <p class="gu-join__formError">
-          {% if lang == 'en' %}This email is already in use.
-            <a href="{{ url_for('main.login') }}">Log in instead?</a>
-          {% else %}Dit e-mailadres is al in gebruik.
-            <a href="{{ url_for('main.login') }}">Inloggen?</a>
-          {% endif %}
+          {{ _('This email is already in use.\n            <a href="{{ url_for(\'main.login\') }}">Log in instead?</a>') }}
         </p>
         {% elif errors.email %}
         <p class="gu-join__formError">
-          {% if lang == 'en' %}Enter a valid email address.{% else %}Vul een geldig e-mailadres in.{% endif %}
+          {{ _('Enter a valid email address.') }}
         </p>
         {% endif %}
       </div>
 
       <div class="gu-join__field">
-        <label for="password">{% if lang == 'en' %}Password{% else %}Wachtwoord{% endif %}</label>
+        <label for="password">{{ _('Password') }}</label>
         <div class="gu-pw-wrap">
           <input id="password" name="password" type="password"
                  class="gu-input{% if errors.password %} gu-input--error{% endif %}"
-                 placeholder="{% if lang == 'en' %}Min. 8 characters{% else %}Min. 8 tekens{% endif %}" required>
+                 placeholder="{{ _('Min. 8 characters') }}" required>
           <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
             <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
         <p class="gu-pw-hint">
-          {% if lang == 'en' %}At least 8 characters, 1 uppercase letter, 1 number and 1 special character.
-          {% else %}Minimaal 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.{% endif %}
+          {{ _('At least 8 characters, 1 uppercase letter, 1 number and 1 special character.') }}
         </p>
         <div class="gu-pw-strength" id="pwStrength" hidden>
           <div class="gu-pw-strength__bar"><div class="gu-pw-strength__fill"></div></div>
@@ -80,18 +71,17 @@
         </div>
         {% if errors.password %}
         <p class="gu-join__formError">
-          {% if lang == 'en' %}Password must contain at least 8 characters, one uppercase letter, one number and one special character.
-          {% else %}Wachtwoord moet minimaal 8 tekens bevatten, een hoofdletter, een cijfer en een speciaal teken.{% endif %}
+          {{ _('Password must contain at least 8 characters, one uppercase letter, one number and one special character.') }}
         </p>
         {% endif %}
       </div>
 
       <div class="gu-join__field">
-        <label for="password_confirm">{% if lang == 'en' %}Confirm password{% else %}Bevestig wachtwoord{% endif %}</label>
+        <label for="password_confirm">{{ _('Confirm password') }}</label>
         <div class="gu-pw-wrap">
           <input id="password_confirm" name="password_confirm" type="password"
                  class="gu-input{% if errors.password_confirm %} gu-input--error{% endif %}"
-                 placeholder="{% if lang == 'en' %}Repeat your password{% else %}Herhaal je wachtwoord{% endif %}" required>
+                 placeholder="{{ _('Repeat your password') }}" required>
           <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
             <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -99,39 +89,38 @@
         </div>
         {% if errors.password_confirm %}
         <p class="gu-join__formError">
-          {% if lang == 'en' %}Passwords do not match.{% else %}Wachtwoorden komen niet overeen.{% endif %}
+          {{ _('Passwords do not match.') }}
         </p>
         {% endif %}
       </div>
 
       <div class="gu-join__field">
         <label for="linkedin_url">
-          {% if lang == 'en' %}LinkedIn profile URL (required){% else %}LinkedIn profiel URL (verplicht){% endif %}
+          {{ _('LinkedIn profile URL (required)') }}
         </label>
         <input id="linkedin_url" name="linkedin_url" type="url"
                class="gu-input{% if errors.linkedin_url %} gu-input--error{% endif %}"
                value="{{ form_data.linkedin_url }}"
                placeholder="https://www.linkedin.com/in/jouw-naam" required>
         <p class="gu-join__hint">
-          {% if lang == 'en' %}We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile.{% else %}We willen graag dat ieder onder eigen naam werkt, daarom vragen we om jouw LinkedIn profiel te delen.{% endif %}
+          {{ _('We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile.') }}
         </p>
         {% if errors.linkedin_url %}
         <p class="gu-join__formError">
-          {% if lang == 'en' %}Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).
-          {% else %}Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…).{% endif %}
+          {{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}
         </p>
         {% endif %}
       </div>
 
       <div class="gu-join__actions gu-join__actions--right">
         <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">
-          {% if lang == 'en' %}Create account{% else %}Account aanmaken{% endif %}
+          {{ _('Create account') }}
           <span class="gu-arrow"></span>
         </button>
       </div>
 
       <div class="gu-auth__or">
-        <span>{% if lang == 'en' %}or{% else %}of{% endif %}</span>
+        <span>{{ _('or') }}</span>
       </div>
 
       <a href="{{ url_for('main.auth_google') }}" class="gu-btn gu-btn--google">
@@ -142,7 +131,7 @@
           <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           <path fill="none" d="M0 0h48v48H0z"/>
         </svg>
-        {% if lang == 'en' %}Register with Google{% else %}Registreren met Google{% endif %}
+        {{ _('Register with Google') }}
       </a>
 
     </form>

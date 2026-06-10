@@ -10,22 +10,22 @@
   <div class="gu-footer__grid">
     <div class="gu-footer__brand">
       <img src="{{ url_for('static', filename='assets/logo-navbar-dark.svg') }}" alt="Global Union" height="28">
-      <p class="gu-payoff gu-payoff--on-night">Freedom for all</p>
+      <p class="gu-payoff gu-payoff--on-night">{{ _('Freedom for all') }}</p>
     </div>
     <div>
-      <p class="gu-eyebrow gu-eyebrow--on-night">De denktank</p>
+      <p class="gu-eyebrow gu-eyebrow--on-night">{{ _('De denktank') }}</p>
       <ul>
         <li><a href="{{ url_for('main.manifest') }}">Manifest</a></li>
       </ul>
     </div>
     <div>
-      <p class="gu-eyebrow gu-eyebrow--on-night">Meedoen</p>
+      <p class="gu-eyebrow gu-eyebrow--on-night">{{ _('Meedoen') }}</p>
       <ul>
-        <li><a href="{{ url_for('main.forum') }}">Denk mee</a></li>
+        <li><a href="{{ url_for('main.forum') }}">{{ _('Denk mee') }}</a></li>
       </ul>
     </div>
     <div>
-      <p class="gu-eyebrow gu-eyebrow--on-night">Contact</p>
+      <p class="gu-eyebrow gu-eyebrow--on-night">{{ _('Contact') }}</p>
       <ul>
         <li><a href="mailto:top.gerhard@gmail.com">top.gerhard@gmail.com</a></li>
         <li>Amsterdam, Nederland</li>
@@ -33,7 +33,7 @@
     </div>
   </div>
   <div class="gu-footer__legal">
-    <span>&copy; 2026 Global Union Forum<br>een beweging in opbouw</span>
+    <span>&copy; 2026 Global Union Forum<br>{{ _('een beweging in opbouw') }}</span>
     <span><a href="{{ url_for('main.privacy') }}">Privacy &amp; Cookies</a></span>
   </div>
   {% if not current_user.is_authenticated %}

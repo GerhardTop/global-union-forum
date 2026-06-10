@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'en' %}Forgot password{% else %}Wachtwoord vergeten{% endif %} — Global Union{% endblock %}
+{% block title %}{{ _('Forgot password') }} — Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <div class="gu-auth-page">
@@ -10,14 +10,10 @@
       <p class="gu-eyebrow" style="margin: 0;">Global Union</p>
     </div>
 
-    <p class="gu-eyebrow">{% if lang == 'en' %}Forgot password{% else %}Wachtwoord vergeten{% endif %}</p>
-    <h2 class="gu-join__h2">{% if lang == 'en' %}Reset your password.{% else %}Wachtwoord opnieuw instellen.{% endif %}</h2>
+    <p class="gu-eyebrow">{{ _('Forgot password') }}</p>
+    <h2 class="gu-join__h2">{{ _('Reset your password.') }}</h2>
     <p style="color: var(--gu-fg-2); font-size: 0.9375rem; margin: 8px 0 24px; line-height: 1.6;">
-      {% if lang == 'en' %}
-        Enter your email address and we'll send you a reset link.
-      {% else %}
-        Vul je e-mailadres in en we sturen je een resetlink.
-      {% endif %}
+      {{ _("Enter your email address and we'll send you a reset link.") }}
     </p>
 
     {% if sent %}
@@ -29,27 +25,27 @@
            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
       </svg>
-      {% if lang == 'en' %}Reset link sent — check your inbox.{% else %}Reset link verstuurd — check je inbox.{% endif %}
+      {{ _('Reset link sent — check your inbox.') }}
     </div>
     {% endif %}
 
     <form method="POST" action="{{ url_for('main.wachtwoord_vergeten') }}" novalidate>
       <div class="gu-join__field">
-        <label for="email">{% if lang == 'en' %}Email address{% else %}E-mailadres{% endif %}</label>
+        <label for="email">{{ _('Email address') }}</label>
         <input id="email" name="email" type="email" class="gu-input"
-               placeholder="{% if lang == 'en' %}john.doe@example.com{% else %}jan.jansen@voorbeeld.nl{% endif %}"
+               placeholder="{{ _('john.doe@example.com') }}"
                autocomplete="email" required>
       </div>
       <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
               style="width: 100%; justify-content: center; margin-top: 8px;">
-        {% if lang == 'en' %}Send reset link{% else %}Stuur resetlink{% endif %} <span class="gu-arrow"></span>
+        {{ _('Send reset link') }} <span class="gu-arrow"></span>
       </button>
     </form>
 
     <hr class="gu-auth__divider">
     <p class="gu-auth__footer">
       <a href="{{ url_for('main.login') }}" style="color: var(--gu-fg-3);">
-        ← {% if lang == 'en' %}Back to log in{% else %}Terug naar inloggen{% endif %}
+        ← {{ _('Back to log in') }}
       </a>
     </p>
 

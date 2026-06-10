@@ -11,7 +11,7 @@
     </div>
 
     <p class="gu-eyebrow">{{ t.register_title }}</p>
-    <h2 class="gu-join__h2">{% if lang == 'en' %}Create your account.{% else %}Maak je account aan.{% endif %}</h2>
+    <h2 class="gu-join__h2">{{ _('Create your account.') }}</h2>
     <p class="gu-join__sub">{{ t.register_subtitle }}</p>
 
     <form method="POST" action="{{ url_for('main.register') }}" novalidate style="margin-top: 24px;">
@@ -85,7 +85,7 @@
     <hr class="gu-auth__divider">
 
     <p class="gu-auth__footer">
-      {% if lang == 'en' %}Already have an account?{% else %}Al een account?{% endif %}
+      {{ _('Already have an account?') }}
       <a href="{{ url_for('main.login') }}">{{ t.login_btn }}</a>
     </p>
 

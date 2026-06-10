@@ -12,7 +12,7 @@
     <a href="{{ url_for('main.manifest') }}"
        {% if request.endpoint == 'main.manifest' %}class="is-active"{% endif %}>Manifest</a>
     <a href="{{ url_for('main.about') }}"
-       {% if request.endpoint == 'main.about' %}class="is-active"{% endif %}>{% if lang == 'en' %}About{% else %}Over ons{% endif %}</a>
+       {% if request.endpoint == 'main.about' %}class="is-active"{% endif %}>{{ _('About') }}</a>
   </nav>
 
   <div class="gu-header__end">
@@ -37,7 +37,7 @@
     </div>
     {% else %}
     <a href="{{ url_for('main.login') }}" class="gu-header__cta">
-      {% if lang == 'en' %}Log in{% else %}Inloggen{% endif %}
+      {{ _('Log in') }}
     </a>
     {% endif %}
 

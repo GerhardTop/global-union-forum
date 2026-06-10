@@ -7,13 +7,13 @@ from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, abort, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_mail import Message
+from flask_babel import gettext as _
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sqlalchemy import func
 
 from app import db, bcrypt, mail, limiter, oauth
 from app.models import User, Thread, Post, PostLike
 from app.forms import RegistrationForm, LoginForm, ChangePasswordForm
-from app.translations import TRANSLATIONS
 
 main = Blueprint("main", __name__)
 
@@ -83,10 +83,6 @@ def _save_upload(file):
     filename = f'{uuid.uuid4().hex}.{ext}'
     file.save(os.path.join(_UPLOAD_DIR, filename))
     return f'/static/uploads/{filename}'
-
-
-def _t():
-    return TRANSLATIONS[session.get('lang', 'nl')]
 
 
 @main.route("/lang/<code>")
@@ -362,7 +358,7 @@ def profile():
                 return redirect(url_for("main.profile"))
         elif form.validate_on_submit():
             if not bcrypt.check_password_hash(current_user.password_hash, form.current_password.data):
-                flash(_t()['flash_wrong_password'], "error")
+                flash(_('Current password is incorrect.'), "error")
             elif not _password_strong(form.new_password.data):
                 flash(_PW_ERROR[lang], "error")
             else:
@@ -370,7 +366,7 @@ def profile():
                     form.new_password.data
                 ).decode("utf-8")
                 db.session.commit()
-                flash(_t()['flash_password_changed'], "success")
+                flash(_('Password changed successfully.'), "success")
                 return redirect(url_for("main.profile"))
 
     return render_template("profile.html", form=form, linkedin_error=linkedin_error)

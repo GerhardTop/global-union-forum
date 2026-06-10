@@ -31,7 +31,7 @@
 
     <p class="gu-eyebrow">LinkedIn</p>
     <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 16px;">
-      {% if lang == 'en' %}Your LinkedIn profile.{% else %}Jouw LinkedIn profiel.{% endif %}
+      {{ _('Your LinkedIn profile.') }}
     </h2>
     {% if current_user.linkedin_url %}
     <p style="margin-bottom: 16px; font-size: 14px;">
@@ -45,7 +45,7 @@
       <input type="hidden" name="action" value="linkedin">
       <div class="gu-join__field">
         <label for="linkedin_url">
-          {% if lang == 'en' %}LinkedIn profile URL{% else %}LinkedIn profiel URL{% endif %}
+          {{ _('LinkedIn profile URL') }}
         </label>
         <input id="linkedin_url" name="linkedin_url" type="url"
                class="gu-input{% if linkedin_error %} gu-input--error{% endif %}"
@@ -53,13 +53,12 @@
                placeholder="https://www.linkedin.com/in/jouw-naam" required>
         {% if linkedin_error %}
         <p class="gu-join__formError">
-          {% if lang == 'en' %}Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).
-          {% else %}Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…).{% endif %}
+          {{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}
         </p>
         {% endif %}
       </div>
       <button type="submit" class="gu-btn gu-btn--primary" style="margin-top: 8px;">
-        {% if lang == 'en' %}Save{% else %}Opslaan{% endif %} <span class="gu-arrow"></span>
+        {{ _('Save') }} <span class="gu-arrow"></span>
       </button>
     </form>
 
@@ -73,11 +72,7 @@
       <a href="{{ url_for('main.set_lang', code='nl') }}"
          class="gu-lang-switch__btn{% if lang == 'nl' %} is-active{% endif %}">NL</a>
       <a href="{{ url_for('main.set_lang', code='en') }}"
-         class="gu-lang-switch__btn{% if lang == 'en' %} is-active{% endif %}">EN</a>
-    </div>
-
-    <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">
-      {% if lang == 'nl' %}Automatisch vertalen.{% else %}Automatic translation.{% endif %}
+         class="gu-lang-switch__btn{{ _('is-active{% endif %}">EN</a>\n    </div>\n\n    <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">\n      {% if lang == \'nl\' %}Automatisch vertalen.') }}
     </h3>
     {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else (lang == 'en') %}
     <form method="POST" action="{{ url_for('main.profiel_vertaalvoorkeur') }}" style="margin-bottom: 4px;">
@@ -110,7 +105,7 @@
 
     <p class="gu-eyebrow">{{ t.profile_change_password }}</p>
     <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 24px;">
-      {% if lang == 'en' %}Update your password.{% else %}Verander je wachtwoord.{% endif %}
+      {{ _('Update your password.') }}
     </h2>
 
     <form method="POST" action="{{ url_for('main.profile') }}" novalidate>
@@ -145,8 +140,7 @@
             </button>
           </div>
           <p class="gu-pw-hint">
-            {% if lang == 'en' %}At least 8 characters, 1 uppercase letter, 1 number and 1 special character.
-            {% else %}Minimaal 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.{% endif %}
+            {{ _('At least 8 characters, 1 uppercase letter, 1 number and 1 special character.') }}
           </p>
           <div class="gu-pw-strength" id="pwStrengthProfile" hidden>
             <div class="gu-pw-strength__bar"><div class="gu-pw-strength__fill"></div></div>

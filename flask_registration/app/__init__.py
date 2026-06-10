@@ -6,6 +6,7 @@ from flask_mail import Mail
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
+from flask_babel import Babel, gettext
 from authlib.integrations.flask_client import OAuth
 from sqlalchemy import text, inspect as sa_inspect
 
@@ -19,6 +20,7 @@ login_manager.login_message_category = "error"
 mail = Mail()
 limiter = Limiter(key_func=get_remote_address, default_limits=[])
 oauth = OAuth()
+babel = Babel()
 
 ADMIN_EMAIL = "top.gerhard@gmail.com"
 
@@ -130,6 +132,7 @@ def create_app():
     mail.init_app(app)
     limiter.init_app(app)
     oauth.init_app(app)
+    babel.init_app(app)
     oauth.register(
         name='google',
         client_id=app.config['GOOGLE_CLIENT_ID'],
@@ -137,6 +140,14 @@ def create_app():
         server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
         client_kwargs={'scope': 'openid email profile'},
     )
+
+    @babel.localeselector
+    def get_locale():
+        """Select locale based on session or browser preference."""
+        if 'lang' in session:
+            return session['lang'] if session['lang'] in ['nl', 'en'] else 'en'
+        best = request.accept_languages.best_match(['nl', 'en'], default='en')
+        return best
 
     _csp = {
         'default-src': "'self'",
@@ -180,13 +191,14 @@ def create_app():
     from app.utils import linkify
     app.jinja_env.filters['linkify'] = linkify
 
-    from app.translations import TRANSLATIONS
-
     @app.context_processor
-    def inject_translations():
-        lang = session.get('lang', 'nl')
-        login_manager.login_message = TRANSLATIONS[lang]['flash_invalid_credentials']
-        return dict(t=TRANSLATIONS[lang], lang=lang)
+    def inject_babel():
+        """Inject babel utilities and current language into templates."""
+        return dict(
+            _=gettext,
+            lang=session.get('lang', 'en'),
+            LANGUAGES={'en': 'English', 'nl': 'Nederlands'}
+        )
 
     @app.before_request
     def ensure_admin():

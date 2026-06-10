@@ -8,29 +8,29 @@
   <div class="gu-dashboard__head">
     <p class="gu-eyebrow">Global Union</p>
     <h1 class="gu-dashboard__title">
-      {% if lang == 'en' %}Welcome back, {{ current_user.first_name }}.{% else %}Welkom terug, {{ current_user.first_name }}.{% endif %}
+      {{ _('Welcome back, {{ current_user.first_name }}.') }}
     </h1>
     <p class="gu-dashboard__sub">
-      {% if lang == 'en' %}Your account is active.{% else %}Je account is actief.{% endif %}
+      {{ _('Your account is active.') }}
     </p>
   </div>
 
   <div class="gu-dashboard__grid">
 
     <div class="gu-dashboard__card">
-      <p class="gu-eyebrow">{% if lang == 'en' %}Membership{% else %}Lidmaatschap{% endif %}</p>
+      <p class="gu-eyebrow">{{ _('Membership') }}</p>
       <h2 class="gu-dashboard__card-title">Placeholder A</h2>
       <p class="gu-dashboard__card-body">{{ t.dashboard_placeholder_text }}</p>
     </div>
 
     <div class="gu-dashboard__card">
-      <p class="gu-eyebrow">{% if lang == 'en' %}Activity{% else %}Activiteit{% endif %}</p>
+      <p class="gu-eyebrow">{{ _('Activity') }}</p>
       <h2 class="gu-dashboard__card-title">Placeholder B</h2>
       <p class="gu-dashboard__card-body">{{ t.dashboard_placeholder_text }}</p>
     </div>
 
     <div class="gu-dashboard__card">
-      <p class="gu-eyebrow">{% if lang == 'en' %}Settings{% else %}Instellingen{% endif %}</p>
+      <p class="gu-eyebrow">{{ _('Settings') }}</p>
       <h2 class="gu-dashboard__card-title">Placeholder C</h2>
       <p class="gu-dashboard__card-body">{{ t.dashboard_placeholder_text }}</p>
     </div>

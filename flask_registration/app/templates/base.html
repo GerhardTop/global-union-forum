@@ -17,13 +17,8 @@
     <div class="page-wrapper">
         {% if current_user.is_authenticated and not current_user.linkedin_url and request.endpoint != 'main.linkedin_aanvullen' %}
         <div class="gu-linkedin-banner">
-          {% if lang == 'nl' %}
-            Vul je LinkedIn profiel in om mee te doen aan het gesprek.
-            <a href="{{ url_for('main.linkedin_aanvullen') }}">Aanvullen →</a>
-          {% else %}
-            Add your LinkedIn profile to join the conversation.
-            <a href="{{ url_for('main.linkedin_aanvullen') }}">Add it →</a>
-          {% endif %}
+          {{ _('Add your LinkedIn profile to join the conversation.') }}
+          <a href="{{ url_for('main.linkedin_aanvullen') }}">{{ _('Add it →') }}</a>
         </div>
         {% endif %}
         {% include '_header.html' %}
@@ -47,7 +42,7 @@
                     {% for category, message in messages if category == 'success' %}
                     <div class="gu-modal-overlay" id="guFlashModal" role="dialog" aria-modal="true">
                       <div class="gu-modal gu-modal--success">
-                        <button type="button" class="gu-modal__close" id="guFlashClose" aria-label="Sluiten">✕</button>
+                        <button type="button" class="gu-modal__close" id="guFlashClose" aria-label="{{ _('Sluiten') }}">✕</button>
                         <svg class="gu-modal__icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -73,13 +68,8 @@
 
             {% if current_user.is_authenticated and not current_user.verified %}
             <div class="gu-verify-banner">
-              {% if lang == 'nl' %}
-                Bevestig je e-mailadres — check je inbox.
-                <a href="{{ url_for('main.verify_resend') }}">Stuur opnieuw</a>
-              {% else %}
-                Confirm your email address — check your inbox.
-                <a href="{{ url_for('main.verify_resend') }}">Resend</a>
-              {% endif %}
+              {{ _('Confirm your email address — check your inbox.') }}
+              <a href="{{ url_for('main.verify_resend') }}">{{ _('Resend') }}</a>
             </div>
             {% endif %}
 
