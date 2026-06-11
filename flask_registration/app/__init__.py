@@ -132,7 +132,13 @@ def create_app():
     mail.init_app(app)
     limiter.init_app(app)
     oauth.init_app(app)
-    babel.init_app(app)
+    def get_locale():
+        if 'lang' in session:
+            return session['lang'] if session['lang'] in ['nl', 'en'] else 'en'
+        best = request.accept_languages.best_match(['nl', 'en'], default='en')
+        return best
+
+    babel.init_app(app, locale_selector=get_locale)
     oauth.register(
         name='google',
         client_id=app.config['GOOGLE_CLIENT_ID'],
@@ -140,14 +146,6 @@ def create_app():
         server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
         client_kwargs={'scope': 'openid email profile'},
     )
-
-    @babel.localeselector
-    def get_locale():
-        """Select locale based on session or browser preference."""
-        if 'lang' in session:
-            return session['lang'] if session['lang'] in ['nl', 'en'] else 'en'
-        best = request.accept_languages.best_match(['nl', 'en'], default='en')
-        return best
 
     _csp = {
         'default-src': "'self'",
