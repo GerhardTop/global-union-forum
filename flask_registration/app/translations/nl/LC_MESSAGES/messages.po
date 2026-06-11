@@ -32,10 +32,10 @@ msgid "Freedom for all"
 msgstr "Vrijheid voor iedereen"
 
 #: app/templates/index.html
-msgid "Een unie van"
+msgid "A union of"
 msgstr "Een unie van"
 
-msgid "functionerende democratieën"
+msgid "functioning democracies"
 msgstr "functionerende democratieën"
 
 msgid "The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom."
@@ -59,43 +59,43 @@ msgstr "Doe mee aan het gesprek"
 msgid "Read the manifest"
 msgstr "Lees het manifest"
 
-msgid "Een wereldwijde beweging"
+msgid "A global movement"
 msgstr "Een wereldwijde beweging"
 
-msgid "Het idee, in vier stukken"
+msgid "The idea, in four pieces"
 msgstr "Het idee, in vier stukken"
 
-msgid "Niet uit dwang,"
+msgid "Not by coercion,"
 msgstr "Niet uit dwang,"
 
-msgid "maar uit aantrekkingskracht."
+msgid "but by attraction."
 msgstr "maar uit aantrekkingskracht."
 
-msgid "Wie meedoet, wint perspectief en welvaart. Wie buiten blijft, voelt de druk van onderaf. Hetzelfde mechanisme dat Oost-Europa uit dictaturen heeft getrokken — maar dan toegepast op de wereld."
+msgid "Those who participate gain perspective and prosperity. Those who stay out feel pressure from below. The same mechanism that pulled Eastern Europe out of dictatorships — but applied worldwide."
 msgstr "Wie meedoet, wint perspectief en welvaart. Wie buiten blijft, voelt de druk van onderaf. Hetzelfde mechanisme dat Oost-Europa uit dictaturen heeft getrokken — maar dan toegepast op de wereld."
 
-msgid "Handelen op gedrag"
+msgid "Act on behaviour"
 msgstr "Handelen op gedrag"
 
-msgid "Eén tarievensysteem op basis van een scorecard per land — corruptie, vrijheid, mensenrechten, duurzaamheid, internationale rechtsorde. Voldoe je volledig? 0% invoerrechten. Pleeg je agressie? Uitgesloten."
+msgid "One tariff system based on a scorecard per country — corruption, freedom, human rights, sustainability, international law. Full compliance? 0% import duties. Commit aggression? Excluded."
 msgstr "Eén tarievensysteem op basis van een scorecard per land — corruptie, vrijheid, mensenrechten, duurzaamheid, internationale rechtsorde. Voldoe je volledig? 0% invoerrechten. Pleeg je agressie? Uitgesloten."
 
-msgid "Vreedzaam, maar niet naïef"
+msgid "Peaceful, but not naive"
 msgstr "Vreedzaam, maar niet naïef"
 
-msgid "Geen oorlog, wel doortastende sancties. Volken moeten zelf in opstand komen — als dat wordt neergeslagen, staan we klaar. Landen die schade lijden worden gezamenlijk gecompenseerd."
+msgid "No war, but decisive sanctions. Peoples must rise up themselves — if that is suppressed, we stand ready. Countries suffering damage are jointly compensated."
 msgstr "Geen oorlog, wel doortastende sancties. Volken moeten zelf in opstand komen — als dat wordt neergeslagen, staan we klaar. Landen die schade lijden worden gezamenlijk gecompenseerd."
 
-msgid "Vrije informatie"
+msgid "Free information"
 msgstr "Vrije informatie"
 
-msgid "Onafhankelijke journalistiek in lokale talen, naar het model van de BBC. Beschermde technologie die mensen losmaakt van staatsgecontroleerd internet. Vrijheid begint bij weten."
+msgid "Independent journalism in local languages, following the BBC model. Protected technology that frees people from state-controlled internet. Freedom begins with knowledge."
 msgstr "Onafhankelijke journalistiek in lokale talen, naar het model van de BBC. Beschermde technologie die mensen losmaakt van staatsgecontroleerd internet. Vrijheid begint bij weten."
 
-msgid "Eén handelszone — geen open grenzen"
+msgid "One trade zone — no open borders"
 msgstr "Eén handelszone — geen open grenzen"
 
-msgid "Gemeenschappelijke tarieven, ja. Vrij personenverkeer, nee. Zo voorkomen we ongewenste migratiestromen en houden we landen zelf verantwoordelijk voor hun welvaart."
+msgid "Common tariffs, yes. Free movement of people, no. This prevents unwanted migration flows and keeps countries responsible for their own prosperity."
 msgstr "Gemeenschappelijke tarieven, ja. Vrij personenverkeer, nee. Zo voorkomen we ongewenste migratiestromen en houden we landen zelf verantwoordelijk voor hun welvaart."
 
 msgid "This site was designed with Claude Design and built with Claude and Claude Code. Do you have feedback about the site itself? I'd love to hear it! Substantive reactions to the idea are welcome in the forum. Thanks in advance."
@@ -137,7 +137,7 @@ msgstr "E-mailadres bevestigd!"
 msgid "You are now logged in."
 msgstr "Je bent nu ingelogd."
 
-msgid "Sluiten"
+msgid "Close"
 msgstr "Sluiten"
 
 msgid "Add your LinkedIn profile to join the conversation."

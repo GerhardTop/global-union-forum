@@ -35,6 +35,51 @@ msgid "Contact"
 msgstr "Contact"
 
 #: app/templates/index.html
+msgid "A union of"
+msgstr "A union of"
+
+msgid "functioning democracies"
+msgstr "functioning democracies"
+
+msgid "A global movement"
+msgstr "A global movement"
+
+msgid "The idea, in four pieces"
+msgstr "The idea, in four pieces"
+
+msgid "Not by coercion,"
+msgstr "Not by coercion,"
+
+msgid "but by attraction."
+msgstr "but by attraction."
+
+msgid "Those who participate gain perspective and prosperity. Those who stay out feel pressure from below. The same mechanism that pulled Eastern Europe out of dictatorships — but applied worldwide."
+msgstr "Those who participate gain perspective and prosperity. Those who stay out feel pressure from below. The same mechanism that pulled Eastern Europe out of dictatorships — but applied worldwide."
+
+msgid "Act on behaviour"
+msgstr "Act on behaviour"
+
+msgid "One tariff system based on a scorecard per country — corruption, freedom, human rights, sustainability, international law. Full compliance? 0% import duties. Commit aggression? Excluded."
+msgstr "One tariff system based on a scorecard per country — corruption, freedom, human rights, sustainability, international law. Full compliance? 0% import duties. Commit aggression? Excluded."
+
+msgid "Peaceful, but not naive"
+msgstr "Peaceful, but not naive"
+
+msgid "No war, but decisive sanctions. Peoples must rise up themselves — if that is suppressed, we stand ready. Countries suffering damage are jointly compensated."
+msgstr "No war, but decisive sanctions. Peoples must rise up themselves — if that is suppressed, we stand ready. Countries suffering damage are jointly compensated."
+
+msgid "Free information"
+msgstr "Free information"
+
+msgid "Independent journalism in local languages, following the BBC model. Protected technology that frees people from state-controlled internet. Freedom begins with knowledge."
+msgstr "Independent journalism in local languages, following the BBC model. Protected technology that frees people from state-controlled internet. Freedom begins with knowledge."
+
+msgid "One trade zone — no open borders"
+msgstr "One trade zone — no open borders"
+
+msgid "Common tariffs, yes. Free movement of people, no. This prevents unwanted migration flows and keeps countries responsible for their own prosperity."
+msgstr "Common tariffs, yes. Free movement of people, no. This prevents unwanted migration flows and keeps countries responsible for their own prosperity."
+
 msgid "The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom."
 msgstr "The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom."
 
