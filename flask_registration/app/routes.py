@@ -38,13 +38,6 @@ _UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 
 
 @main.before_request
-def detect_language():
-    if 'lang' not in session:
-        best = request.accept_languages.best_match(['nl', 'en'], default='en')
-        session['lang'] = 'nl' if best == 'nl' else 'en'
-
-
-@main.before_request
 def enforce_session_timeout():
     if not current_user.is_authenticated:
         return

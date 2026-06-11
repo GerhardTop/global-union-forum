@@ -16,48 +16,22 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Je sessie is verlopen. Log opnieuw in."
-msgstr "Je sessie is verlopen. Log opnieuw in."
-
+#: app/routes.py
 msgid "Your session has expired. Please log in again."
 msgstr "Je sessie is verlopen. Log opnieuw in."
 
-msgid "flash_wrong_password"
-msgstr "Huidig wachtwoord is onjuist."
-
-msgid "flash_password_changed"
-msgstr "Wachtwoord succesvol gewijzigd."
-
+#: app/templates/_header.html
 msgid "About"
-msgstr "Over ons"
-
-msgid "Over ons"
 msgstr "Over ons"
 
 msgid "Log in"
 msgstr "Inloggen"
 
-msgid "Inloggen"
-msgstr "Inloggen"
-
+#: app/templates/_footer.html
 msgid "Freedom for all"
 msgstr "Vrijheid voor iedereen"
 
-msgid "De denktank"
-msgstr "De denktank"
-
-msgid "Meedoen"
-msgstr "Meedoen"
-
-msgid "Denk mee"
-msgstr "Denk mee"
-
-msgid "Contact"
-msgstr "Contact"
-
-msgid "een beweging in opbouw"
-msgstr "een beweging in opbouw"
-
+#: app/templates/index.html
 msgid "Een unie van"
 msgstr "Een unie van"
 
@@ -67,43 +41,22 @@ msgstr "functionerende democratieën"
 msgid "The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom."
 msgstr "De Europese Unie is een groot succes. Veel landen met dictatoriale regimes sloten zich aan. De bevolking wilde massaal bij de EU horen. Voor welvaart. Voor vrijheid."
 
-msgid "De Europese Unie is een groot succes. Veel landen met dictatoriale regimes sloten zich aan. De bevolking wilde massaal bij de EU horen. Voor welvaart. Voor vrijheid."
-msgstr "De Europese Unie is een groot succes. Veel landen met dictatoriale regimes sloten zich aan. De bevolking wilde massaal bij de EU horen. Voor welvaart. Voor vrijheid."
-
 msgid "The EU is not finished. There is much to improve. But that need not hold us back. We can already expand the cooperation beyond Europe, with functioning democracies, such as Canada and Australia. And with candidate countries working hard to qualify. The Global Union exists alongside the EU and the UN. The goal is an ever-growing community of functioning democracies."
-msgstr "De EU is niet af. Er valt veel te verbeteren. Maar dat hoeft ons niet te remmen. We kunnen de samenwerking nu al uitbreiden buiten Europa, met functionerende democratieën, zoals Canada en Australië. En met kandidaat-landen die hard werken om erbij te horen. De Global Union bestaat naast de EU en de VN. Met als doel steeds meer functionerende democratieën."
-
-msgid "De EU is niet af. Er valt veel te verbeteren. Maar dat hoeft ons niet te remmen. We kunnen de samenwerking nu al uitbreiden buiten Europa, met functionerende democratieën, zoals Canada en Australië. En met kandidaat-landen die hard werken om erbij te horen. De Global Union bestaat naast de EU en de VN. Met als doel steeds meer functionerende democratieën."
 msgstr "De EU is niet af. Er valt veel te verbeteren. Maar dat hoeft ons niet te remmen. We kunnen de samenwerking nu al uitbreiden buiten Europa, met functionerende democratieën, zoals Canada en Australië. En met kandidaat-landen die hard werken om erbij te horen. De Global Union bestaat naast de EU en de VN. Met als doel steeds meer functionerende democratieën."
 
 msgid "Global Union Forum is a think tank. We investigate whether this model can work worldwide: a cooperation of countries that take democracy, the rule of law, sustainability and human rights seriously."
 msgstr "Global Union Forum is een denktank. Wij onderzoeken of dit model wereldwijd kan werken: een samenwerking van landen die democratie, rechtsstaat, duurzaamheid en mensenrechten serieus nemen."
 
-msgid "Global Union Forum is een denktank. Wij onderzoeken of dit model wereldwijd kan werken: een samenwerking van landen die democratie, rechtsstaat, duurzaamheid en mensenrechten serieus nemen."
-msgstr "Global Union Forum is een denktank. Wij onderzoeken of dit model wereldwijd kan werken: een samenwerking van landen die democratie, rechtsstaat, duurzaamheid en mensenrechten serieus nemen."
-
 msgid "A first manifesto has been drawn up. We want to improve the idea with the intelligence of everyone willing to think it through. All input will be collected and processed to arrive at a new manifesto."
-msgstr "Een eerste manifest is opgesteld. Het idee willen we verbeteren met de intelligentie van alle mensen die mee willen denken. Alle input zullen we verzamelen en verwerken om te komen tot een nieuw manifest."
-
-msgid "Een eerste manifest is opgesteld. Het idee willen we verbeteren met de intelligentie van alle mensen die mee willen denken. Alle input zullen we verzamelen en verwerken om te komen tot een nieuw manifest."
 msgstr "Een eerste manifest is opgesteld. Het idee willen we verbeteren met de intelligentie van alle mensen die mee willen denken. Alle input zullen we verzamelen en verwerken om te komen tot een nieuw manifest."
 
 msgid "We are looking for people who want to think along — experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously."
 msgstr "We zoeken mensen die meedenken — experts én leken, 17 of 70, overtuigd of sceptisch. Iedereen die het gesprek serieus voert."
 
-msgid "We zoeken mensen die meedenken — experts én leken, 17 of 70, overtuigd of sceptisch. Iedereen die het gesprek serieus voert."
-msgstr "We zoeken mensen die meedenken — experts én leken, 17 of 70, overtuigd of sceptisch. Iedereen die het gesprek serieus voert."
-
 msgid "Join the conversation"
 msgstr "Doe mee aan het gesprek"
 
-msgid "Doe mee aan het gesprek"
-msgstr "Doe mee aan het gesprek"
-
 msgid "Read the manifest"
-msgstr "Lees het manifest"
-
-msgid "Lees het manifest"
 msgstr "Lees het manifest"
 
 msgid "Een wereldwijde beweging"
@@ -148,330 +101,176 @@ msgstr "Gemeenschappelijke tarieven, ja. Vrij personenverkeer, nee. Zo voorkomen
 msgid "This site was designed with Claude Design and built with Claude and Claude Code. Do you have feedback about the site itself? I'd love to hear it! Substantive reactions to the idea are welcome in the forum. Thanks in advance."
 msgstr "Deze site is ontworpen met Claude Design en gebouwd met Claude en Claude Code. Heb je feedback over de site zelf? Ik hoor het graag! Inhoudelijke reacties op het idee zijn welkom in het forum. Alvast bedankt."
 
-msgid "Deze site is ontworpen met Claude Design en gebouwd met Claude en Claude Code. Heb je feedback over de site zelf? Ik hoor het graag! Inhoudelijke reacties op het idee zijn welkom in het forum. Alvast bedankt."
-msgstr "Deze site is ontworpen met Claude Design en gebouwd met Claude en Claude Code. Heb je feedback over de site zelf? Ik hoor het graag! Inhoudelijke reacties op het idee zijn welkom in het forum. Alvast bedankt."
-
 msgid "Send feedback"
-msgstr "Stuur feedback"
-
-msgid "Stuur feedback"
 msgstr "Stuur feedback"
 
 msgid "I know someone who would most probably like to join the conversation."
 msgstr "Ik ken iemand die het vast leuk vindt om mee te denken."
 
-msgid "Ik ken iemand die het vast leuk vindt om mee te denken."
-msgstr "Ik ken iemand die het vast leuk vindt om mee te denken."
-
 msgid "Invite"
-msgstr "Nodig uit"
-
-msgid "Nodig uit"
 msgstr "Nodig uit"
 
 msgid "Invite someone"
 msgstr "Iemand uitnodigen"
 
-msgid "Iemand uitnodigen"
-msgstr "Iemand uitnodigen"
-
 msgid "Email address"
-msgstr "E-mailadres"
-
-msgid "E-mailadres"
 msgstr "E-mailadres"
 
 msgid "Personal message (optional)"
 msgstr "Persoonlijk bericht (optioneel)"
 
-msgid "Persoonlijk bericht (optioneel)"
-msgstr "Persoonlijk bericht (optioneel)"
-
 msgid "Write a short message…"
-msgstr "Schrijf een kort bericht…"
-
-msgid "Schrijf een kort bericht…"
 msgstr "Schrijf een kort bericht…"
 
 msgid "Send invitation"
 msgstr "Verstuur uitnodiging"
 
-msgid "Verstuur uitnodiging"
-msgstr "Verstuur uitnodiging"
-
 msgid "Almost there!"
-msgstr "Bijna klaar!"
-
-msgid "Bijna klaar!"
 msgstr "Bijna klaar!"
 
 msgid "Check your inbox for a confirmation link."
 msgstr "Check je inbox voor een bevestigingslink."
 
-msgid "Check je inbox voor een bevestigingslink."
-msgstr "Check je inbox voor een bevestigingslink."
-
 msgid "Email address confirmed!"
-msgstr "E-mailadres bevestigd!"
-
-msgid "E-mailadres bevestigd!"
 msgstr "E-mailadres bevestigd!"
 
 msgid "You are now logged in."
 msgstr "Je bent nu ingelogd."
 
-msgid "Je bent nu ingelogd."
-msgstr "Je bent nu ingelogd."
+msgid "Sluiten"
+msgstr "Sluiten"
 
-msgid "The manifesto"
-msgstr "Het manifest"
+msgid "Add your LinkedIn profile to join the conversation."
+msgstr "Vul je LinkedIn profiel in om mee te doen aan het gesprek."
 
-msgid "Het manifest"
-msgstr "Het manifest"
+msgid "Add it →"
+msgstr "Aanvullen →"
 
-msgid "Join us"
-msgstr "Doe mee"
+msgid "Confirm your email address — check your inbox."
+msgstr "Bevestig je e-mailadres — check je inbox."
 
+msgid "Resend"
+msgstr "Stuur opnieuw"
 
-msgid "Join the conversation."
-msgstr "Doe mee aan het gesprek."
+msgid "Current password is incorrect."
+msgstr "Huidig wachtwoord is onjuist."
 
-
-msgid "Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free."
-msgstr "Global Union Forum is een open platform voor iedereen die het gesprek serieus voert — expert of leek, 17 of 70. Deelname is gratis."
-
-
-msgid "First name"
-msgstr "Voornaam"
-
-
-msgid "Required."
-msgstr "Verplicht."
-
-
-msgid "Last name"
-msgstr "Achternaam"
-
-
-msgid "This email is already in use.\n            <a href=\"{{ url_for('main.login') }}\">Log in instead?</a>"
-msgstr "Dit e-mailadres is al in gebruik.\n            <a href=\"{{ url_for('main.login') }}\">Inloggen?</a>"
-
-
-msgid "Enter a valid email address."
-msgstr "Vul een geldig e-mailadres in."
-
-
-msgid "Password"
-msgstr "Wachtwoord"
-
-
-msgid "Min. 8 characters"
-msgstr "Min. 8 tekens"
-
-
-msgid "At least 8 characters, 1 uppercase letter, 1 number and 1 special character."
-msgstr "Minimaal 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken."
-
-
-msgid "Password must contain at least 8 characters, one uppercase letter, one number and one special character."
-msgstr "Wachtwoord moet minimaal 8 tekens bevatten, een hoofdletter, een cijfer en een speciaal teken."
-
-
-msgid "Confirm password"
-msgstr "Bevestig wachtwoord"
-
-
-msgid "Repeat your password"
-msgstr "Herhaal je wachtwoord"
-
-
-msgid "Passwords do not match."
-msgstr "Wachtwoorden komen niet overeen."
-
-
-msgid "LinkedIn profile URL (required)"
-msgstr "LinkedIn profiel URL (verplicht)"
-
-
-msgid "We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile."
-msgstr "We willen graag dat ieder onder eigen naam werkt, daarom vragen we om jouw LinkedIn profiel te delen."
-
-
-msgid "Enter a valid LinkedIn URL (https://www.linkedin.com/in/…)."
-msgstr "Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…)."
-
-
-msgid "Create account"
-msgstr "Account aanmaken"
-
-
-msgid "or"
-msgstr "of"
-
-
-msgid "Register with Google"
-msgstr "Registreren met Google"
-
-
-msgid "Welcome back, {{ current_user.first_name }}."
-msgstr "Welkom terug, {{ current_user.first_name }}."
-
-
-msgid "Your account is active."
-msgstr "Je account is actief."
-
-
-msgid "Membership"
-msgstr "Lidmaatschap"
-
-
-msgid "Activity"
-msgstr "Activiteit"
-
-
-msgid "Settings"
-msgstr "Instellingen"
-
-
-msgid "Add LinkedIn"
-msgstr "LinkedIn aanvullen"
-
-
-msgid "ALMOST THERE"
-msgstr "BIJNA KLAAR"
-
-
-msgid "Add your LinkedIn profile."
-msgstr "Vul je LinkedIn profiel in."
-
-
-msgid "To join the conversation, we ask for your LinkedIn profile so other participants know who you are."
-msgstr "Om mee te doen aan het gesprek vragen we je LinkedIn profiel. Zo weten andere deelnemers wie je bent."
-
-
-msgid "LinkedIn profile URL"
-msgstr "LinkedIn profiel URL"
-
-
-msgid "Save and continue"
-msgstr "Opslaan en starten"
-
-
-msgid "I'll do this later →"
-msgstr "Sla ik later op →"
-
+msgid "Password changed successfully."
+msgstr "Wachtwoord succesvol gewijzigd."
 
 msgid "Welcome back."
 msgstr "Welkom terug."
 
+msgid "Password"
+msgstr "Wachtwoord"
+
+msgid "Show password"
+msgstr "Wachtwoord tonen"
 
 msgid "Invalid email or password."
 msgstr "Ongeldig e-mailadres of wachtwoord."
 
-
 msgid "Forgot password?"
 msgstr "Wachtwoord vergeten?"
 
+msgid "or"
+msgstr "of"
 
 msgid "Sign in with Google"
 msgstr "Inloggen met Google"
 
+msgid "Join us"
+msgstr "Doe mee"
 
-msgid "Do you have suggestions for improving this site? Is there functionality you miss? We'd love to hear from you!"
-msgstr "Heb je suggesties voor verbetering van deze site? Miss je bepaalde functionaliteit? Fijn als je het laat weten!"
+msgid "Join the conversation."
+msgstr "Doe mee aan het gesprek."
 
+msgid "Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free."
+msgstr "Global Union Forum is een open platform voor iedereen die het gesprek serieus voert — expert of leek, 17 of 70. Deelname is gratis."
 
-msgid "Know someone who'd want to think along? Invite them to join the conversation."
-msgstr "Ken jij iemand die mee wil denken? Nodig ze uit om mee te doen aan het gesprek."
+msgid "First name"
+msgstr "Voornaam"
 
+msgid "Last name"
+msgstr "Achternaam"
 
-msgid "I know someone"
-msgstr "Ik ken iemand die mee wil denken"
+msgid "This email is already in use. Log in instead?"
+msgstr "Dit e-mailadres is al in gebruik. Inloggen?"
 
+msgid "Enter a valid email address."
+msgstr "Vul een geldig e-mailadres in."
 
-msgid "Your LinkedIn profile."
-msgstr "Jouw LinkedIn profiel."
+msgid "Min. 8 characters"
+msgstr "Min. 8 tekens"
 
+msgid "At least 8 characters, 1 uppercase letter, 1 number and 1 special character."
+msgstr "Minimaal 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken."
 
-msgid "Save"
-msgstr "Opslaan"
+msgid "Password must contain at least 8 characters, one uppercase letter, one number and one special character."
+msgstr "Wachtwoord moet minimaal 8 tekens bevatten, een hoofdletter, een cijfer en een speciaal teken."
 
+msgid "Confirm password"
+msgstr "Bevestig wachtwoord"
 
-msgid "is-active{% endif %}\">EN</a>\n    </div>\n\n    <h3 style=\"font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;\">\n      {% if lang == 'nl' %}Automatisch vertalen."
-msgstr "Automatic translation."
+msgid "Repeat your password"
+msgstr "Herhaal je wachtwoord"
 
+msgid "Passwords do not match."
+msgstr "Wachtwoorden komen niet overeen."
 
-msgid "Update your password."
-msgstr "Verander je wachtwoord."
+msgid "LinkedIn profile URL (required)"
+msgstr "LinkedIn profiel URL (verplicht)"
 
+msgid "We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile."
+msgstr "We willen graag dat ieder onder eigen naam werkt, daarom vragen we om jouw LinkedIn profiel te delen."
 
-msgid "Create your account."
-msgstr "Maak je account aan."
+msgid "Enter a valid LinkedIn URL (https://www.linkedin.com/in/…)."
+msgstr "Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…)."
 
+msgid "Create account"
+msgstr "Account aanmaken"
 
-msgid "Already have an account?"
-msgstr "Al een account?"
+msgid "Register with Google"
+msgstr "Registreren met Google"
 
+msgid "My profile"
+msgstr "Mijn profiel"
 
-msgid "Choose new password"
-msgstr "Nieuw wachtwoord kiezen"
+msgid "Welcome back,"
+msgstr "Welkom terug,"
 
+msgid "Your account is active."
+msgstr "Je account is actief."
 
-msgid "Link expired"
-msgstr "Link verlopen"
+msgid "Membership"
+msgstr "Lidmaatschap"
 
+msgid "Activity"
+msgstr "Activiteit"
 
-msgid "This link is no longer valid."
-msgstr "Deze link is niet meer geldig."
+msgid "Settings"
+msgstr "Instellingen"
 
+msgid "The conversation"
+msgstr "Het gesprek"
 
-msgid "The reset link has expired or is invalid. Request a new one below."
-msgstr "De resetlink is verlopen of ongeldig. Vraag hieronder een nieuwe aan."
+msgid "New conversation"
+msgstr "Nieuw gesprek"
 
+msgid "Closed conversations"
+msgstr "Gesloten gesprekken"
 
-msgid "Request new link"
-msgstr "Nieuwe link aanvragen"
+msgid "Closed"
+msgstr "Gesloten"
 
+msgid "No conversations yet. Start the first one."
+msgstr "Nog geen gesprekken. Start het eerste gesprek."
 
-msgid "New password"
-msgstr "Nieuw wachtwoord"
+msgid "to join the conversation."
+msgstr "om mee te doen aan het gesprek."
 
+msgid "The manifesto"
+msgstr "Het manifest"
 
-msgid "Choose a new password."
-msgstr "Kies een nieuw wachtwoord."
-
-
-msgid "Confirm new password"
-msgstr "Bevestig nieuw wachtwoord"
-
-
-msgid "Save new password"
-msgstr "Nieuw wachtwoord opslaan"
-
-
-msgid "Forgot password"
-msgstr "Wachtwoord vergeten"
-
-
-msgid "Reset your password."
-msgstr "Wachtwoord opnieuw instellen."
-
-
-msgid "Enter your email address and we'll send you a reset link."
-msgstr "Vul je e-mailadres in en we sturen je een resetlink."
-
-
-msgid "Reset link sent — check your inbox."
-msgstr "Reset link verstuurd — check je inbox."
-
-
-msgid "john.doe@example.com"
-msgstr "jan.jansen@voorbeeld.nl"
-
-
-msgid "Send reset link"
-msgstr "Stuur resetlink"
-
-
-msgid "Back to log in"
-msgstr "Terug naar inloggen"
+msgid "About"
+msgstr "Over ons"
