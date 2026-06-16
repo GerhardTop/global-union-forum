@@ -1,8 +1,11 @@
+import logging
 import os
 import re
 import secrets
 import uuid
 from datetime import datetime, timedelta
+
+_log = logging.getLogger('babel_locale')
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, abort, current_app
 from flask_login import login_user, logout_user, login_required, current_user
@@ -82,6 +85,10 @@ def _save_upload(file):
 def set_lang(code):
     if code in ('nl', 'en'):
         session['lang'] = code
+        session.permanent = True
+        _log.debug('set_lang → code=%s | session_id keys=%s | SECRET_KEY_set=%s',
+                   code, list(session.keys()),
+                   bool(current_app.config.get('SECRET_KEY') != 'change-this-in-production'))
         if current_user.is_authenticated:
             current_user.auto_translate = True if code == 'en' else None
             db.session.commit()

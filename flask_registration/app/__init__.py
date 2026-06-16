@@ -1,3 +1,4 @@
+import logging
 from flask import Flask, session, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -123,6 +124,7 @@ def _ensure_admin_user():
 
 
 def create_app():
+    logging.basicConfig(level=logging.DEBUG)
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -132,10 +134,16 @@ def create_app():
     mail.init_app(app)
     limiter.init_app(app)
     oauth.init_app(app)
+    _log = logging.getLogger('babel_locale')
+
     def get_locale():
-        if 'lang' in session:
-            return session['lang'] if session['lang'] in ['nl', 'en'] else 'en'
+        lang_in_session = session.get('lang')
+        if lang_in_session in ('nl', 'en'):
+            _log.debug('get_locale → session lang=%s', lang_in_session)
+            return lang_in_session
         best = request.accept_languages.best_match(['nl', 'en'], default='en')
+        _log.debug('get_locale → no session lang, Accept-Language=%s → %s',
+                   request.accept_languages, best)
         return best
 
     babel.init_app(app, locale_selector=get_locale)
