@@ -71,7 +71,8 @@ body {
   color: var(--gu-fg-1);
   text-wrap: balance;
 }
-.gu-display em { font-style: normal; font-weight: 300; color: var(--gu-globe); }
+.gu-display em,
+.gu-display .gu-title-em { font-style: normal; font-weight: 300; color: var(--gu-globe); }
 .gu-h2 {
   font-size: clamp(28px, 3.4vw, 44px);
   line-height: 1.08;
