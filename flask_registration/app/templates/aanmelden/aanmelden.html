@@ -98,10 +98,20 @@
         <label for="linkedin_url">
           {{ _('LinkedIn profile URL (required)') }}
         </label>
-        <input id="linkedin_url" name="linkedin_url" type="url"
-               class="gu-input{% if errors.linkedin_url %} gu-input--error{% endif %}"
-               value="{{ form_data.linkedin_url }}"
-               placeholder="https://www.linkedin.com/in/jouw-naam" required>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input id="linkedin_url" name="linkedin_url" type="url"
+                 class="gu-input{% if errors.linkedin_url %} gu-input--error{% endif %}"
+                 value="{{ form_data.linkedin_url }}"
+                 placeholder="https://www.linkedin.com/in/jouw-naam" required
+                 style="flex: 1; min-width: 0;">
+          <button type="button" id="guLinkedInSearch" class="gu-btn gu-btn--ghost"
+                  style="white-space: nowrap; flex-shrink: 0;">
+            {{ _('Find my profile') }}
+          </button>
+        </div>
+        <p class="gu-join__hint" style="margin-top: 6px;">
+          {{ _('Find your profile, click on it and copy the URL from the address bar.') }}
+        </p>
         <p class="gu-join__hint">
           {{ _('We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile.') }}
         </p>
@@ -146,6 +156,20 @@
       this.classList.toggle('is-visible', isHidden);
     });
   });
+
+  (function () {
+    var btn = document.getElementById('guLinkedInSearch');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        var first = (document.getElementById('first_name').value || '').trim();
+        var last  = (document.getElementById('last_name').value  || '').trim();
+        var name  = [first, last].filter(Boolean).join(' ');
+        var url   = 'https://www.linkedin.com/search/results/people/?keywords='
+                    + encodeURIComponent(name);
+        window.open(url, '_blank', 'noopener');
+      });
+    }
+  })();
 
   (function () {
     var lang = '{{ lang }}';

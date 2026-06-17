@@ -239,6 +239,12 @@ msgstr "Passwords do not match."
 msgid "LinkedIn profile URL (required)"
 msgstr "LinkedIn profile URL (required)"
 
+msgid "Find my profile"
+msgstr "Find my profile"
+
+msgid "Find your profile, click on it and copy the URL from the address bar."
+msgstr "Find your profile, click on it and copy the URL from the address bar."
+
 msgid "We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile."
 msgstr "We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile."
 

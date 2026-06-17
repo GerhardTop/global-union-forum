@@ -236,6 +236,12 @@ msgstr "Wachtwoorden komen niet overeen."
 msgid "LinkedIn profile URL (required)"
 msgstr "LinkedIn profiel URL (verplicht)"
 
+msgid "Find my profile"
+msgstr "Zoek mijn profiel"
+
+msgid "Find your profile, click on it and copy the URL from the address bar."
+msgstr "Zoek je profiel, klik erop en kopieer de URL uit de adresbalk."
+
 msgid "We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile."
 msgstr "We willen graag dat ieder onder eigen naam werkt, daarom vragen we om jouw LinkedIn profiel te delen."
 
