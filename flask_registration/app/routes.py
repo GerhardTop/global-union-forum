@@ -370,9 +370,10 @@ def profile():
 @main.route("/profiel/vertaalvoorkeur", methods=["POST"])
 @login_required
 def profiel_vertaalvoorkeur():
-    lang = session.get('lang', 'nl')
     current_user.auto_translate = request.form.get("auto_translate") == "1"
     db.session.commit()
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'ok': True})
     next_url = request.form.get('next') or url_for("main.profile")
     return redirect(next_url)
 
