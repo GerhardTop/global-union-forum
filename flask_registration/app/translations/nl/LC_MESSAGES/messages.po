@@ -289,3 +289,64 @@ msgstr "Het manifest"
 
 msgid "About"
 msgstr "Over ons"
+
+#: app/templates/_header.html
+msgid "Profile"
+msgstr "Profiel"
+
+msgid "Log out"
+msgstr "Uitloggen"
+
+#: app/templates/login.html
+msgid "No account yet?"
+msgstr "Nog geen account?"
+
+msgid "Register here"
+msgstr "Registreer hier"
+
+msgid "john.doe@example.com"
+msgstr "jan.jansen@voorbeeld.nl"
+
+#: app/templates/register.html
+msgid "Fill in your details to create an account."
+msgstr "Vul je gegevens in om een account aan te maken."
+
+msgid "Create your account."
+msgstr "Maak je account aan."
+
+msgid "Already have an account?"
+msgstr "Al een account?"
+
+#: app/templates/profile.html
+msgid "Change password"
+msgstr "Wachtwoord wijzigen"
+
+msgid "Save changes"
+msgstr "Wijzigingen opslaan"
+
+#: app/templates/landing.html
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "This is a placeholder for future content."
+msgstr "Dit is een placeholder voor toekomstige inhoud."
+
+#: app/templates/success.html
+msgid "Welcome,"
+msgstr "Welkom,"
+
+msgid "Your account has been created successfully. You can now log in."
+msgstr "Je account is succesvol aangemaakt. Je kunt nu inloggen."
+
+msgid "Create another account"
+msgstr "Nog een account aanmaken"
+
+#: app/templates/welcome.html
+msgid "Welcome"
+msgstr "Welkom"
+
+msgid "Create an account or log in to get started."
+msgstr "Maak een account aan of log in om te beginnen."
+
+msgid "Register"
+msgstr "Registreren"

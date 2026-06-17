@@ -1,28 +1,28 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t.profile_title }} — Global Union{% endblock %}
+{% block title %}{{ _('My profile') }} — Global Union{% endblock %}
 
 {% block content %}
 <div class="gu-profile">
 
   <div class="gu-profile__head">
     <p class="gu-eyebrow">Global Union</p>
-    <h1 class="gu-profile__title">{{ t.profile_title }}</h1>
+    <h1 class="gu-profile__title">{{ _('My profile') }}</h1>
   </div>
 
   <div class="gu-join__panel">
 
     <div class="gu-profile__info">
       <div class="gu-profile__info-row">
-        <span class="gu-profile__info-label">{{ t.profile_first_name }}</span>
+        <span class="gu-profile__info-label">{{ _('First name') }}</span>
         <span class="gu-profile__info-value">{{ current_user.first_name }}</span>
       </div>
       <div class="gu-profile__info-row">
-        <span class="gu-profile__info-label">{{ t.profile_last_name }}</span>
+        <span class="gu-profile__info-label">{{ _('Last name') }}</span>
         <span class="gu-profile__info-value">{{ current_user.last_name }}</span>
       </div>
       <div class="gu-profile__info-row">
-        <span class="gu-profile__info-label">{{ t.profile_email }}</span>
+        <span class="gu-profile__info-label">{{ _('Email address') }}</span>
         <span class="gu-profile__info-value">{{ current_user.email }}</span>
       </div>
     </div>
@@ -72,7 +72,11 @@
       <a href="{{ url_for('main.set_lang', code='nl') }}"
          class="gu-lang-switch__btn{% if lang == 'nl' %} is-active{% endif %}">NL</a>
       <a href="{{ url_for('main.set_lang', code='en') }}"
-         class="gu-lang-switch__btn{{ _('is-active{% endif %}">EN</a>\n    </div>\n\n    <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">\n      {% if lang == \'nl\' %}Automatisch vertalen.') }}
+         class="gu-lang-switch__btn{% if lang == 'en' %} is-active{% endif %}">EN</a>
+    </div>
+
+    <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">
+      {% if lang == 'nl' %}Automatisch vertalen.{% else %}Automatic translation.{% endif %}
     </h3>
     {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else (lang == 'en') %}
     <form method="POST" action="{{ url_for('main.profiel_vertaalvoorkeur') }}" style="margin-bottom: 4px;">
@@ -103,7 +107,7 @@
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
-    <p class="gu-eyebrow">{{ t.profile_change_password }}</p>
+    <p class="gu-eyebrow">{{ _('Change password') }}</p>
     <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 24px;">
       {{ _('Update your password.') }}
     </h2>
@@ -123,7 +127,7 @@
           </button>
         </div>
         {% if form.current_password.errors %}
-          <p class="gu-join__formError">{{ t.get(form.current_password.errors[0], form.current_password.errors[0]) }}</p>
+          <p class="gu-join__formError">{{ _(form.current_password.errors[0]) }}</p>
         {% endif %}
       </div>
 
@@ -147,7 +151,7 @@
             <span class="gu-pw-strength__label"></span>
           </div>
           {% if form.new_password.errors %}
-            <p class="gu-join__formError">{{ t.get(form.new_password.errors[0], form.new_password.errors[0]) }}</p>
+            <p class="gu-join__formError">{{ _(form.new_password.errors[0]) }}</p>
           {% endif %}
         </div>
 
@@ -163,14 +167,14 @@
             </button>
           </div>
           {% if form.confirm_new_password.errors %}
-            <p class="gu-join__formError">{{ t.get(form.confirm_new_password.errors[0], form.confirm_new_password.errors[0]) }}</p>
+            <p class="gu-join__formError">{{ _(form.confirm_new_password.errors[0]) }}</p>
           {% endif %}
         </div>
       </div>
 
       <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
               style="margin-top: 8px;">
-        {{ t.profile_save_btn }} <span class="gu-arrow"></span>
+        {{ _('Save changes') }} <span class="gu-arrow"></span>
       </button>
     </form>
 

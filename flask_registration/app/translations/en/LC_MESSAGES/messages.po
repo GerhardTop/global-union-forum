@@ -289,3 +289,64 @@ msgstr "to join the conversation."
 
 msgid "The manifesto"
 msgstr "The manifesto"
+
+#: app/templates/_header.html
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Log out"
+msgstr "Log out"
+
+#: app/templates/login.html
+msgid "No account yet?"
+msgstr "No account yet?"
+
+msgid "Register here"
+msgstr "Register here"
+
+msgid "john.doe@example.com"
+msgstr "john.doe@example.com"
+
+#: app/templates/register.html
+msgid "Fill in your details to create an account."
+msgstr "Fill in your details to create an account."
+
+msgid "Create your account."
+msgstr "Create your account."
+
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+#: app/templates/profile.html
+msgid "Change password"
+msgstr "Change password"
+
+msgid "Save changes"
+msgstr "Save changes"
+
+#: app/templates/landing.html
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "This is a placeholder for future content."
+msgstr "This is a placeholder for future content."
+
+#: app/templates/success.html
+msgid "Welcome,"
+msgstr "Welcome,"
+
+msgid "Your account has been created successfully. You can now log in."
+msgstr "Your account has been created successfully. You can now log in."
+
+msgid "Create another account"
+msgstr "Create another account"
+
+#: app/templates/welcome.html
+msgid "Welcome"
+msgstr "Welcome"
+
+msgid "Create an account or log in to get started."
+msgstr "Create an account or log in to get started."
+
+msgid "Register"
+msgstr "Register"

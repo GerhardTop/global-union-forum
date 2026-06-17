@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t.welcome_title }} — MijnApp{% endblock %}
+{% block title %}{{ _('Welcome') }} — Global Union{% endblock %}
 {% block container_class %}container-wide{% endblock %}
 
 {% block content %}
 <div class="welcome-hero">
     <div class="welcome-hero__content">
-        <h1>{{ t.welcome_title }}</h1>
-        <p>{{ t.welcome_subtitle }}</p>
+        <h1>{{ _('Welcome') }}</h1>
+        <p>{{ _('Create an account or log in to get started.') }}</p>
         <div class="welcome-hero__actions">
-            <a href="{{ url_for('main.login') }}" class="btn btn-primary">{{ t.welcome_login_btn }}</a>
-            <a href="{{ url_for('main.register') }}" class="btn btn-secondary">{{ t.welcome_register_btn }}</a>
+            <a href="{{ url_for('main.login') }}" class="btn btn-primary">{{ _('Log in') }}</a>
+            <a href="{{ url_for('main.register') }}" class="btn btn-secondary">{{ _('Register') }}</a>
         </div>
     </div>
 </div>

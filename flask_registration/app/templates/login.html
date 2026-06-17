@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ t.login_title }} — Global Union{% endblock %}
+{% block title %}{{ _('Log in') }} — Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <div class="gu-auth-page">
@@ -10,20 +10,20 @@
       <p class="gu-eyebrow" style="margin: 0;">Global Union</p>
     </div>
 
-    <p class="gu-eyebrow">{{ t.login_title }}</p>
+    <p class="gu-eyebrow">{{ _('Log in') }}</p>
     <h2 class="gu-join__h2">{{ _('Welcome back.') }}</h2>
 
     <form method="POST" action="{{ url_for('main.login') }}" novalidate style="margin-top: 24px;">
       {{ form.hidden_tag() }}
 
       <div class="gu-join__field">
-        <label for="{{ form.email.id }}">{{ t.login_email }}</label>
+        <label for="{{ form.email.id }}">{{ _('Email address') }}</label>
         {{ form.email(
             class="gu-input" ~ (" gu-input--error" if form.email.errors else ""),
-            placeholder=t.ph_email
+            placeholder=_('john.doe@example.com')
         ) }}
         {% if form.email.errors %}
-          <p class="gu-join__formError">{{ t.get(form.email.errors[0], form.email.errors[0]) }}</p>
+          <p class="gu-join__formError">{{ _(form.email.errors[0]) }}</p>
         {% endif %}
       </div>
 
@@ -61,7 +61,7 @@
 
       <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
               style="width: 100%; justify-content: center; margin-top: 8px;">
-        {{ t.login_btn }} <span class="gu-arrow"></span>
+        {{ _('Log in') }} <span class="gu-arrow"></span>
       </button>
     </form>
 
@@ -83,8 +83,8 @@
     <hr class="gu-auth__divider">
 
     <p class="gu-auth__footer">
-      {{ t.login_no_account }}
-      <a href="{{ url_for('main.aanmelden') }}">{{ t.login_register_link }}</a>
+      {{ _('No account yet?') }}
+      <a href="{{ url_for('main.aanmelden') }}">{{ _('Register here') }}</a>
     </p>
 
   </div>

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ t.register_title }} — Global Union{% endblock %}
+{% block title %}{{ _('Create account') }} — Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <div class="gu-auth-page">
@@ -10,75 +10,75 @@
       <p class="gu-eyebrow" style="margin: 0;">Global Union</p>
     </div>
 
-    <p class="gu-eyebrow">{{ t.register_title }}</p>
+    <p class="gu-eyebrow">{{ _('Create account') }}</p>
     <h2 class="gu-join__h2">{{ _('Create your account.') }}</h2>
-    <p class="gu-join__sub">{{ t.register_subtitle }}</p>
+    <p class="gu-join__sub">{{ _('Fill in your details to create an account.') }}</p>
 
     <form method="POST" action="{{ url_for('main.register') }}" novalidate style="margin-top: 24px;">
       {{ form.hidden_tag() }}
 
       <div class="gu-join__field gu-join__field--row">
         <div class="gu-join__sub-field">
-          <label for="{{ form.first_name.id }}">{{ t.register_first_name }}</label>
+          <label for="{{ form.first_name.id }}">{{ _('First name') }}</label>
           {{ form.first_name(
               class="gu-input" ~ (" gu-input--error" if form.first_name.errors else ""),
-              placeholder=t.ph_first_name
+              placeholder=('John' if lang == 'en' else 'Jan')
           ) }}
           {% if form.first_name.errors %}
-            <p class="gu-join__formError">{{ t.get(form.first_name.errors[0], form.first_name.errors[0]) }}</p>
+            <p class="gu-join__formError">{{ _(form.first_name.errors[0]) }}</p>
           {% endif %}
         </div>
 
         <div class="gu-join__sub-field">
-          <label for="{{ form.last_name.id }}">{{ t.register_last_name }}</label>
+          <label for="{{ form.last_name.id }}">{{ _('Last name') }}</label>
           {{ form.last_name(
               class="gu-input" ~ (" gu-input--error" if form.last_name.errors else ""),
-              placeholder=t.ph_last_name
+              placeholder=('Doe' if lang == 'en' else 'Janssen')
           ) }}
           {% if form.last_name.errors %}
-            <p class="gu-join__formError">{{ t.get(form.last_name.errors[0], form.last_name.errors[0]) }}</p>
+            <p class="gu-join__formError">{{ _(form.last_name.errors[0]) }}</p>
           {% endif %}
         </div>
       </div>
 
       <div class="gu-join__field">
-        <label for="{{ form.email.id }}">{{ t.register_email }}</label>
+        <label for="{{ form.email.id }}">{{ _('Email address') }}</label>
         {{ form.email(
             class="gu-input" ~ (" gu-input--error" if form.email.errors else ""),
-            placeholder=t.ph_email
+            placeholder=_('john.doe@example.com')
         ) }}
         {% if form.email.errors %}
-          <p class="gu-join__formError">{{ t.get(form.email.errors[0], form.email.errors[0]) }}</p>
+          <p class="gu-join__formError">{{ _(form.email.errors[0]) }}</p>
         {% endif %}
       </div>
 
       <div class="gu-join__field gu-join__field--row">
         <div class="gu-join__sub-field">
-          <label for="{{ form.password.id }}">{{ t.register_password }}</label>
+          <label for="{{ form.password.id }}">{{ _('Password') }}</label>
           {{ form.password(
               class="gu-input" ~ (" gu-input--error" if form.password.errors else ""),
-              placeholder=t.ph_password
+              placeholder=_('Min. 8 characters')
           ) }}
           {% if form.password.errors %}
-            <p class="gu-join__formError">{{ t.get(form.password.errors[0], form.password.errors[0]) }}</p>
+            <p class="gu-join__formError">{{ _(form.password.errors[0]) }}</p>
           {% endif %}
         </div>
 
         <div class="gu-join__sub-field">
-          <label for="{{ form.confirm_password.id }}">{{ t.register_confirm_password }}</label>
+          <label for="{{ form.confirm_password.id }}">{{ _('Confirm password') }}</label>
           {{ form.confirm_password(
               class="gu-input" ~ (" gu-input--error" if form.confirm_password.errors else ""),
-              placeholder=t.ph_confirm_password
+              placeholder=_('Repeat your password')
           ) }}
           {% if form.confirm_password.errors %}
-            <p class="gu-join__formError">{{ t.get(form.confirm_password.errors[0], form.confirm_password.errors[0]) }}</p>
+            <p class="gu-join__formError">{{ _(form.confirm_password.errors[0]) }}</p>
           {% endif %}
         </div>
       </div>
 
       <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
               style="width: 100%; justify-content: center; margin-top: 8px;">
-        {{ t.register_btn }} <span class="gu-arrow"></span>
+        {{ _('Create account') }} <span class="gu-arrow"></span>
       </button>
     </form>
 
@@ -86,7 +86,7 @@
 
     <p class="gu-auth__footer">
       {{ _('Already have an account?') }}
-      <a href="{{ url_for('main.login') }}">{{ t.login_btn }}</a>
+      <a href="{{ url_for('main.login') }}">{{ _('Log in') }}</a>
     </p>
 
   </div>
