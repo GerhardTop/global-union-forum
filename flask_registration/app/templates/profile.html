@@ -33,15 +33,13 @@
     <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 16px;">
       {{ _('Your LinkedIn profile.') }}
     </h2>
-    {% if current_user.linkedin_url %}
-    <p style="margin-bottom: 16px; font-size: 14px;">
-      <a href="{{ current_user.linkedin_url }}" target="_blank" rel="noopener noreferrer"
+    <p id="guLinkedInDisplay" style="margin-bottom: 16px; font-size: 14px;{% if not current_user.linkedin_url %} display: none;{% endif %}">
+      <a id="guLinkedInLink" href="{{ current_user.linkedin_url or '' }}" target="_blank" rel="noopener noreferrer"
          style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">
-        {{ current_user.linkedin_url }}
+        {{ current_user.linkedin_url or '' }}
       </a>
     </p>
-    {% endif %}
-    <form method="POST" action="{{ url_for('main.profile') }}" novalidate>
+    <form id="guLinkedInForm" method="POST" action="{{ url_for('main.profile') }}" novalidate>
       <input type="hidden" name="action" value="linkedin">
       <div class="gu-join__field">
         <label for="linkedin_url">
@@ -51,15 +49,16 @@
                class="gu-input{% if linkedin_error %} gu-input--error{% endif %}"
                value="{{ current_user.linkedin_url or '' }}"
                placeholder="https://www.linkedin.com/in/jouw-naam" required>
-        {% if linkedin_error %}
-        <p class="gu-join__formError">
+        <p id="guLinkedInErrorMsg" class="gu-join__formError"{% if not linkedin_error %} style="display:none;"{% endif %}>
           {{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}
         </p>
-        {% endif %}
       </div>
       <button type="submit" class="gu-btn gu-btn--primary" style="margin-top: 8px;">
         {{ _('Save') }} <span class="gu-arrow"></span>
       </button>
+      <span id="guLinkedInSuccess" style="display:none; margin-left: 12px; font-size: 0.875rem; color: var(--gu-success);">
+        {% if lang == 'nl' %}Opgeslagen!{% else %}Saved!{% endif %}
+      </span>
     </form>
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
@@ -70,9 +69,11 @@
     </h2>
     <div class="gu-lang-switch" style="margin-bottom: 24px;">
       <a href="{{ url_for('main.set_lang', code='nl') }}"
-         class="gu-lang-switch__btn{% if lang == 'nl' %} is-active{% endif %}">NL</a>
+         class="gu-lang-switch__btn{% if lang == 'nl' %} is-active{% endif %}"
+         onclick="guSaveScroll()">NL</a>
       <a href="{{ url_for('main.set_lang', code='en') }}"
-         class="gu-lang-switch__btn{% if lang == 'en' %} is-active{% endif %}">EN</a>
+         class="gu-lang-switch__btn{% if lang == 'en' %} is-active{% endif %}"
+         onclick="guSaveScroll()">EN</a>
     </div>
 
     <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">
@@ -178,6 +179,54 @@
     </form>
 
     <script>
+      /* ── Scroll preservation voor taalschakelaar ── */
+      function guSaveScroll() {
+        sessionStorage.setItem('guProfileScrollY', window.scrollY);
+      }
+      (function () {
+        var y = sessionStorage.getItem('guProfileScrollY');
+        if (y !== null) {
+          sessionStorage.removeItem('guProfileScrollY');
+          window.scrollTo(0, parseInt(y, 10));
+        }
+      })();
+
+      /* ── LinkedIn form AJAX ── */
+      (function () {
+        var form       = document.getElementById('guLinkedInForm');
+        var display    = document.getElementById('guLinkedInDisplay');
+        var link       = document.getElementById('guLinkedInLink');
+        var errorMsg   = document.getElementById('guLinkedInErrorMsg');
+        var successMsg = document.getElementById('guLinkedInSuccess');
+        var input      = document.getElementById('linkedin_url');
+        if (!form) return;
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+          })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (data.ok) {
+              link.href        = data.linkedin_url;
+              link.textContent = data.linkedin_url;
+              display.style.display = '';
+              errorMsg.style.display  = 'none';
+              successMsg.style.display = '';
+              input.classList.remove('gu-input--error');
+              setTimeout(function () { successMsg.style.display = 'none'; }, 3000);
+            } else {
+              errorMsg.style.display   = '';
+              successMsg.style.display = 'none';
+              input.classList.add('gu-input--error');
+            }
+          });
+        });
+      })();
+
+      /* ── Auto-translate toggle AJAX ── */
       (function () {
         var form   = document.getElementById('guTranslateForm');
         var toggle = form && form.querySelector('.gu-toggle__input');

@@ -341,11 +341,16 @@ def profile():
 
         if action == "linkedin":
             linkedin_url = request.form.get("linkedin_url", "").strip()
+            is_xhr = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             if not linkedin_url.startswith("https://www.linkedin.com/"):
                 linkedin_error = True
+                if is_xhr:
+                    return jsonify({'ok': False})
             else:
                 current_user.linkedin_url = linkedin_url
                 db.session.commit()
+                if is_xhr:
+                    return jsonify({'ok': True, 'linkedin_url': linkedin_url})
                 flash(
                     "LinkedIn profiel opgeslagen." if lang == 'nl' else "LinkedIn profile saved.",
                     "success"
