@@ -31,6 +31,21 @@ msgstr "Log in"
 msgid "Freedom for all"
 msgstr "Freedom for all"
 
+msgid "The Think Tank"
+msgstr "The Think Tank"
+
+msgid "Participate"
+msgstr "Participate"
+
+msgid "Join the thinking"
+msgstr "Join the thinking"
+
+msgid "Amsterdam, The Netherlands"
+msgstr "Amsterdam, The Netherlands"
+
+msgid "a movement in the making"
+msgstr "a movement in the making"
+
 msgid "Contact"
 msgstr "Contact"
 

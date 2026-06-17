@@ -31,6 +31,21 @@ msgstr "Inloggen"
 msgid "Freedom for all"
 msgstr "Vrijheid voor iedereen"
 
+msgid "The Think Tank"
+msgstr "De Denktank"
+
+msgid "Participate"
+msgstr "Meedoen"
+
+msgid "Join the thinking"
+msgstr "Denk mee"
+
+msgid "Amsterdam, The Netherlands"
+msgstr "Amsterdam, Nederland"
+
+msgid "a movement in the making"
+msgstr "een beweging in opbouw"
+
 #: app/templates/index.html
 msgid "A union of"
 msgstr "Een unie van"
