@@ -120,23 +120,25 @@
               </td>
 
               <td class="gu-admin-table__actions">
-                {% if not user.is_admin and not is_self %}
-                  <button type="button"
-                          class="gu-post__action gu-post__action--icon gu-post__delete-btn gu-admin-delete-btn"
-                          data-user-id="{{ user.id }}"
-                          data-user-name="{{ user.first_name }} {{ user.last_name }}"
-                          aria-label="Verwijder account van {{ user.first_name }} {{ user.last_name }}"
-                          title="Verwijder account">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <polyline points="3 6 5 6 21 6"/>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                    </svg>
-                  </button>
-                {% else %}
-                  <span class="gu-admin-table__no-action">—</span>
-                {% endif %}
+                <div class="gu-admin-table__actions-inner">
+                  {% if not user.is_admin and not is_self %}
+                    <button type="button"
+                            class="gu-post__action gu-post__action--icon gu-post__delete-btn gu-admin-delete-btn"
+                            data-user-id="{{ user.id }}"
+                            data-user-name="{{ user.first_name }} {{ user.last_name }}"
+                            aria-label="Verwijder account van {{ user.first_name }} {{ user.last_name }}"
+                            title="Verwijder account">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                           fill="none" stroke="currentColor" stroke-width="2"
+                           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                      </svg>
+                    </button>
+                  {% else %}
+                    <span class="gu-admin-table__no-action">—</span>
+                  {% endif %}
+                </div>
               </td>
 
             </tr>

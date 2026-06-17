@@ -1035,8 +1035,9 @@ body {
 .gu-admin-table__roles { white-space: nowrap; }
 .gu-admin-table__check { color: var(--gu-success); display: inline-flex; align-items: center; }
 .gu-admin-table__uncheck { color: var(--gu-fg-3); }
-.gu-admin-table__actions { white-space: nowrap; display: flex; gap: 8px; align-items: center; }
-.gu-admin-table__no-action { color: var(--gu-fg-3); }
+.gu-admin-table__actions { white-space: nowrap; }
+.gu-admin-table__actions-inner { display: flex; gap: 8px; align-items: center; }
+.gu-admin-table__no-action { color: var(--gu-fg-3); display: inline-flex; align-items: center; padding: 2px 4px; }
 .gu-admin-table__threadlink { color: var(--gu-fg-1); text-decoration: none; font-size: 0.875rem; }
 .gu-admin-table__threadlink:hover { color: var(--gu-globe-deep); text-decoration: underline; }
 
