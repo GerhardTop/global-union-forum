@@ -9,12 +9,12 @@ _log = logging.getLogger('babel_locale')
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, abort, current_app
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_mail import Message
 from flask_babel import gettext as _
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sqlalchemy import func
 
-from app import db, bcrypt, mail, limiter, oauth
+from app import db, bcrypt, limiter, oauth
+from app.mail import send_email
 from app.models import User, Thread, Post, PostLike
 from app.forms import RegistrationForm, LoginForm, ChangePasswordForm
 
@@ -153,30 +153,25 @@ def _verify_reset_token(token):
 def _send_reset_email(user, reset_url, lang):
     if lang == 'en':
         subject = "Reset your password — Global Union Forum"
-        body = (
-            f"Hi {user.first_name},\n\n"
-            f"You requested a password reset. Click the link below to choose a new password:\n\n"
-            f"{reset_url}\n\n"
-            f"This link expires in 1 hour.\n\n"
-            f"If you did not request this, you can safely ignore this email.\n\n"
-            f"Global Union Forum"
+        html = (
+            f"<p>Hi {user.first_name},</p>"
+            f"<p>You requested a password reset. Click the link below to choose a new password:</p>"
+            f"<p><a href='{reset_url}'>{reset_url}</a></p>"
+            f"<p>This link expires in 1 hour.</p>"
+            f"<p>If you did not request this, you can safely ignore this email.</p>"
+            f"<p>Global Union Forum</p>"
         )
     else:
         subject = "Wachtwoord opnieuw instellen — Global Union Forum"
-        body = (
-            f"Hoi {user.first_name},\n\n"
-            f"Je hebt een wachtwoordreset aangevraagd. Klik op de link hieronder om een nieuw wachtwoord in te stellen:\n\n"
-            f"{reset_url}\n\n"
-            f"Deze link verloopt na 1 uur.\n\n"
-            f"Als jij dit niet hebt aangevraagd, kun je deze e-mail negeren.\n\n"
-            f"Global Union Forum"
+        html = (
+            f"<p>Hoi {user.first_name},</p>"
+            f"<p>Je hebt een wachtwoordreset aangevraagd. Klik op de link hieronder om een nieuw wachtwoord in te stellen:</p>"
+            f"<p><a href='{reset_url}'>{reset_url}</a></p>"
+            f"<p>Deze link verloopt na 1 uur.</p>"
+            f"<p>Als jij dit niet hebt aangevraagd, kun je deze e-mail negeren.</p>"
+            f"<p>Global Union Forum</p>"
         )
-    msg = Message(subject=subject, recipients=[user.email], body=body)
-    try:
-        mail.send(msg)
-        print(f"[MAIL] Reset email verstuurd naar {user.email}", flush=True)
-    except Exception as e:
-        print(f"[MAIL] FOUT reset email naar {user.email}: {e}", flush=True)
+    send_email(user.email, subject, html)
 
 
 @main.route('/wachtwoord-vergeten', methods=['GET', 'POST'])
@@ -598,15 +593,14 @@ def uitnodiging():
             body += f'Persoonlijk bericht van {sender_name}:\n"{invite_message}"\n\n'
         body += f"Maak gratis een account aan:\n{register_url}\n\nGlobal Union Forum"
 
-    msg = Message(subject=subject, recipients=[invite_email], body=body)
-    try:
-        mail.send(msg)
+    html = body.replace("\n", "<br>")
+    ok = send_email(invite_email, subject, html)
+    if ok:
         flash(
             "Uitnodiging verstuurd!" if lang == 'nl' else "Invitation sent!",
             "success"
         )
-    except Exception as e:
-        print(f"[MAIL] FOUT uitnodiging naar {invite_email}: {e}", flush=True)
+    else:
         flash(
             "Er is iets misgegaan. Probeer het later opnieuw."
             if lang == 'nl' else "Something went wrong. Please try again later.",
@@ -1284,33 +1278,25 @@ def _send_verify_email(user, lang):
     verify_url = url_for('main.verify_email', token=token, _external=True)
     if lang == 'en':
         subject = "Confirm your email — Global Union Forum"
-        body = (
-            f"Hi {user.first_name},\n\n"
-            f"Please confirm your email address by clicking the link below:\n\n"
-            f"{verify_url}\n\n"
-            f"This link expires in 24 hours.\n\n"
-            f"If you did not create an account, you can ignore this email.\n\n"
-            f"Global Union Forum"
+        html = (
+            f"<p>Hi {user.first_name},</p>"
+            f"<p>Please confirm your email address by clicking the link below:</p>"
+            f"<p><a href='{verify_url}'>{verify_url}</a></p>"
+            f"<p>This link expires in 24 hours.</p>"
+            f"<p>If you did not create an account, you can ignore this email.</p>"
+            f"<p>Global Union Forum</p>"
         )
     else:
         subject = "Bevestig je e-mailadres — Global Union Forum"
-        body = (
-            f"Hoi {user.first_name},\n\n"
-            f"Bevestig je e-mailadres via de onderstaande link:\n\n"
-            f"{verify_url}\n\n"
-            f"Deze link verloopt na 24 uur.\n\n"
-            f"Als je geen account hebt aangemaakt, kun je deze e-mail negeren.\n\n"
-            f"Global Union Forum"
+        html = (
+            f"<p>Hoi {user.first_name},</p>"
+            f"<p>Bevestig je e-mailadres via de onderstaande link:</p>"
+            f"<p><a href='{verify_url}'>{verify_url}</a></p>"
+            f"<p>Deze link verloopt na 24 uur.</p>"
+            f"<p>Als je geen account hebt aangemaakt, kun je deze e-mail negeren.</p>"
+            f"<p>Global Union Forum</p>"
         )
-    msg = Message(subject=subject, recipients=[user.email], body=body)
-    try:
-        print(f"[MAIL] Versturen naar {user.email} via "
-              f"{current_app.config.get('MAIL_SERVER')}:{current_app.config.get('MAIL_PORT')} "
-              f"als {current_app.config.get('MAIL_USERNAME')}", flush=True)
-        mail.send(msg)
-        print(f"[MAIL] OK — verstuurd naar {user.email}", flush=True)
-    except Exception as e:
-        print(f"[MAIL] FOUT bij versturen naar {user.email}: {e}", flush=True)
+    send_email(user.email, subject, html)
 
 
 @main.route("/verify/<token>")

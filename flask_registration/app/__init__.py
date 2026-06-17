@@ -3,7 +3,6 @@ from flask import Flask, session, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-from flask_mail import Mail
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
@@ -18,7 +17,6 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = "main.login"
 login_manager.login_message_category = "error"
-mail = Mail()
 limiter = Limiter(key_func=get_remote_address, default_limits=[])
 oauth = OAuth()
 babel = Babel()
@@ -131,7 +129,6 @@ def create_app():
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
-    mail.init_app(app)
     limiter.init_app(app)
     oauth.init_app(app)
     _log = logging.getLogger('babel_locale')
