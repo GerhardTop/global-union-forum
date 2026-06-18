@@ -111,7 +111,7 @@ msgid "A single trade zone, limited free movement of people"
 msgstr "Eén handelszone, beperkt vrij verkeer van personen"
 
 msgid "Common tariffs, yes. Full free movement of people, no. For scarce talent, temporary visas for high-value work apply. The GU invests in remote training programmes and internships to develop talent, and facilitates remote working. Experience and knowledge flow back to the home country."
-msgstr "Voor schaars talent gelden tijdelijke visa voor hoogwaardig werk. De GU investeert in opleidingsprogramma's op afstand en stages om talent te ontwikkelen."
+msgstr "Voor hoogwaardig werk verstrekken we tijdelijke werkvisa aan schaars talent uit GU-landen én daarbuiten. De GU investeert in opleidingsprogramma's om talent te ontwikkelen, zodat kennis en ervaring terugvloeien naar het land van herkomst."
 
 msgid "This site was designed with Claude Design and built with Claude and Claude Code. Do you have feedback about the site itself? I'd love to hear it! Substantive reactions to the idea are welcome in the forum. Thanks in advance."
 msgstr "Deze site is ontworpen met Claude Design en gebouwd met Claude en Claude Code. Heb je feedback over de site zelf? Ik hoor het graag! Inhoudelijke reacties op het idee zijn welkom in het forum. Alvast bedankt."

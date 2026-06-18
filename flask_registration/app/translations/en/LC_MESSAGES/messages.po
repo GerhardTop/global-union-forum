@@ -93,7 +93,7 @@ msgid "A single trade zone, limited free movement of people"
 msgstr "A single trade zone, limited free movement of people"
 
 msgid "Common tariffs, yes. Full free movement of people, no. For scarce talent, temporary visas for high-value work apply. The GU invests in remote training programmes and internships to develop talent, and facilitates remote working. Experience and knowledge flow back to the home country."
-msgstr "For scarce talent, temporary visas for high-value work apply. The GU invests in remote training programmes and internships to develop talent."
+msgstr "For high-value work, we issue temporary work visas to scarce talent from GU countries as well as non-GU countries. The GU invests in training programmes to develop talent, so that knowledge and experience flow back to the home country."
 
 msgid "The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom."
 msgstr "The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom."
