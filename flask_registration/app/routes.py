@@ -746,14 +746,14 @@ def _seed_forum():
     )
     db.session.add(p1_r2)
 
-    # ── Thread 2: Handelzone zonder personenverkeer ───────────────────
+    # ── Thread 2: Handelszone, beperkt vrij personenverkeer ──────────
     t2 = Thread(
         eyebrow_nl='Het idee · principe 4',
         eyebrow_en='The idea · principle 4',
-        title_prefix_nl='Één handelszone zonder vrij personenverkeer —',
+        title_prefix_nl='Eén handelszone, beperkt vrij verkeer van personen -',
         title_accent_nl='is dat houdbaar',
         title_suffix_nl='?',
-        title_prefix_en='One trade zone without free movement —',
+        title_prefix_en='A single trade zone, limited free movement of people -',
         title_accent_en='is that sustainable',
         title_suffix_en='?',
         is_demo=True,

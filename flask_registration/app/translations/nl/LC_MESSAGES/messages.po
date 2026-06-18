@@ -107,11 +107,11 @@ msgstr "Vrije informatie"
 msgid "Independent journalism in local languages, following the BBC model. Protected technology that frees people from state-controlled internet. Freedom begins with knowledge."
 msgstr "Onafhankelijke journalistiek in lokale talen, naar het model van de BBC. Beschermde technologie die mensen losmaakt van staatsgecontroleerd internet. Vrijheid begint bij weten."
 
-msgid "One trade zone — no open borders"
-msgstr "Eén handelszone — geen open grenzen"
+msgid "A single trade zone, limited free movement of people"
+msgstr "Eén handelszone, beperkt vrij verkeer van personen"
 
-msgid "Common tariffs, yes. Free movement of people, no. This prevents unwanted migration flows and keeps countries responsible for their own prosperity."
-msgstr "Gemeenschappelijke tarieven, ja. Vrij personenverkeer, nee. Zo voorkomen we ongewenste migratiestromen en houden we landen zelf verantwoordelijk voor hun welvaart."
+msgid "Common tariffs, yes. Full free movement of people, no. For scarce talent, temporary visas for high-value work apply. The GU invests in remote training programmes and internships to develop talent, and facilitates remote working. Experience and knowledge flow back to the home country."
+msgstr "Gemeenschappelijke tarieven, ja. Volledig vrij personenverkeer, nee. Voor schaars talent gelden tijdelijke visa voor hoogwaardig werk. De GU investeert in opleidingsprogramma's op afstand en stages om talent te ontwikkelen en faciliteert werken op afstand. Ervaring en kennis vloeien terug naar het land van herkomst."
 
 msgid "This site was designed with Claude Design and built with Claude and Claude Code. Do you have feedback about the site itself? I'd love to hear it! Substantive reactions to the idea are welcome in the forum. Thanks in advance."
 msgstr "Deze site is ontworpen met Claude Design en gebouwd met Claude en Claude Code. Heb je feedback over de site zelf? Ik hoor het graag! Inhoudelijke reacties op het idee zijn welkom in het forum. Alvast bedankt."

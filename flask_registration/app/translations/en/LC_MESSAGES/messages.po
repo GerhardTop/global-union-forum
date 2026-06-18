@@ -89,11 +89,11 @@ msgstr "Free information"
 msgid "Independent journalism in local languages, following the BBC model. Protected technology that frees people from state-controlled internet. Freedom begins with knowledge."
 msgstr "Independent journalism in local languages, following the BBC model. Protected technology that frees people from state-controlled internet. Freedom begins with knowledge."
 
-msgid "One trade zone — no open borders"
-msgstr "One trade zone — no open borders"
+msgid "A single trade zone, limited free movement of people"
+msgstr "A single trade zone, limited free movement of people"
 
-msgid "Common tariffs, yes. Free movement of people, no. This prevents unwanted migration flows and keeps countries responsible for their own prosperity."
-msgstr "Common tariffs, yes. Free movement of people, no. This prevents unwanted migration flows and keeps countries responsible for their own prosperity."
+msgid "Common tariffs, yes. Full free movement of people, no. For scarce talent, temporary visas for high-value work apply. The GU invests in remote training programmes and internships to develop talent, and facilitates remote working. Experience and knowledge flow back to the home country."
+msgstr "Common tariffs, yes. Full free movement of people, no. For scarce talent, temporary visas for high-value work apply. The GU invests in remote training programmes and internships to develop talent, and facilitates remote working. Experience and knowledge flow back to the home country."
 
 msgid "The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom."
 msgstr "The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom."
