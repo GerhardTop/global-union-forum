@@ -356,3 +356,9 @@ msgstr "Create an account or log in to get started."
 
 msgid "Register"
 msgstr "Register"
+
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+msgid "Log in here."
+msgstr "Log in here."

@@ -356,3 +356,9 @@ msgstr "Maak een account aan of log in om te beginnen."
 
 msgid "Register"
 msgstr "Registreren"
+
+msgid "Already have an account?"
+msgstr "Al een account?"
+
+msgid "Log in here."
+msgstr "Log hier in."

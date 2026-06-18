@@ -144,6 +144,11 @@
         {{ _('Register with Google') }}
       </a>
 
+      <p class="gu-auth__footer">
+        {{ _('Already have an account?') }}
+        <a href="{{ url_for('main.login') }}">{{ _('Log in here.') }}</a>
+      </p>
+
     </form>
   </div>
 </main>
