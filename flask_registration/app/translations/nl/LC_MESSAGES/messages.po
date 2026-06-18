@@ -99,7 +99,7 @@ msgid "Peaceful, but not naive"
 msgstr "Een vreedzame geopolitieke macht"
 
 msgid "No war, but decisive sanctions. Peoples must rise up themselves — if that is suppressed, we stand ready. Countries suffering damage are jointly compensated."
-msgstr "Geen oorlog, wel strategische onafhankelijkheid. De GU investeert fors in grondstoffen, energie, defensie en eigen AI-capaciteit. Als regimes zich misdragen volgen doortastende sancties. Landen die schade lijden, compenseren we gezamenlijk."
+msgstr "Geen oorlog, wel strategische onafhankelijkheid. De GU investeert fors in grondstoffen, energie, defensie en eigen AI-capaciteit. Als regimes zich misdragen volgen doortastende sancties."
 
 msgid "Free information"
 msgstr "Vrije informatie"
