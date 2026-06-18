@@ -81,7 +81,7 @@ msgid "Peaceful, but not naive"
 msgstr "A peaceful geopolitical power"
 
 msgid "No war, but decisive sanctions. Peoples must rise up themselves — if that is suppressed, we stand ready. Countries suffering damage are jointly compensated."
-msgstr "No war, but strategic independence. The GU invests heavily in raw materials, energy, defence and its own AI capabilities. If regimes behave brutally, decisive sanctions follow. Countries that incur damage are jointly compensated."
+msgstr "No war, but strategic independence. The GU invests heavily in raw materials, energy, defence and its own AI capabilities. If regimes misbehave, decisive sanctions follow. Countries that incur damage are jointly compensated."
 
 msgid "Free information"
 msgstr "Free information"
