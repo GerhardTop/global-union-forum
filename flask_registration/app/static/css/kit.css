@@ -1652,7 +1652,7 @@ body {
   margin: 0;
 }
 .gu-about__lookingBody {
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
   color: var(--gu-fg-2);
   line-height: 1.65;
   margin: 0;
@@ -1681,7 +1681,7 @@ body {
   line-height: 1;
 }
 .gu-about__verifyBody {
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
   color: var(--gu-fg-2);
   line-height: 1.7;
   margin: 0 0 20px;
