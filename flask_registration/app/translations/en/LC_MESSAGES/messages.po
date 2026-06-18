@@ -78,10 +78,10 @@ msgid "One tariff system based on a scorecard per country — corruption, freedo
 msgstr "One tariff system based on a scorecard per country — corruption, freedom, human rights, sustainability, international law. Full compliance? 0% import duties. Commit aggression? Excluded."
 
 msgid "Peaceful, but not naive"
-msgstr "Peaceful, but not naive"
+msgstr "A peaceful geopolitical power"
 
 msgid "No war, but decisive sanctions. Peoples must rise up themselves — if that is suppressed, we stand ready. Countries suffering damage are jointly compensated."
-msgstr "No war, but decisive sanctions. Peoples must rise up themselves — if that is suppressed, we stand ready. Countries suffering damage are jointly compensated."
+msgstr "The GU invests urgently in strategic independence: raw materials, energy, defence and its own AI capabilities. Military action only with broad GU consensus. Regimes that commit crimes against their own population face decisive sanctions."
 
 msgid "Free information"
 msgstr "Free information"

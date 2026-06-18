@@ -96,10 +96,10 @@ msgid "One tariff system based on a scorecard per country — corruption, freedo
 msgstr "Eén tarievensysteem op basis van een scorecard per land — corruptie, vrijheid, mensenrechten, duurzaamheid, internationale rechtsorde. Voldoe je volledig? 0% invoerrechten. Pleeg je agressie? Uitgesloten."
 
 msgid "Peaceful, but not naive"
-msgstr "Vreedzaam, maar niet naïef"
+msgstr "Een vreedzame geopolitieke macht"
 
 msgid "No war, but decisive sanctions. Peoples must rise up themselves — if that is suppressed, we stand ready. Countries suffering damage are jointly compensated."
-msgstr "Geen oorlog, wel doortastende sancties. Volken moeten zelf in opstand komen — als dat wordt neergeslagen, staan we klaar. Landen die schade lijden worden gezamenlijk gecompenseerd."
+msgstr "De GU investeert urgent in strategische onafhankelijkheid: grondstoffen, energie, defensie én eigen AI-capaciteit. Militair ingrijpen alleen bij brede GU-meerderheid. Regimes die hun bevolking mishandelen krijgen doortastende sancties."
 
 msgid "Free information"
 msgstr "Vrije informatie"
