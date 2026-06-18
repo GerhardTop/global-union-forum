@@ -1755,7 +1755,7 @@ body {
 .gu-forum__title {
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 700;
-  color: var(--gu-fg-1);
+  color: var(--gu-globe);
   line-height: 1.2;
   margin: 8px 0 16px;
   letter-spacing: -0.02em;
