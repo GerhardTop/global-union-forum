@@ -147,9 +147,17 @@
 
           <div class="gu-manifest__numbered">
             <span class="gu-manifest__numberedN">04</span>
-            <h4 class="gu-manifest__numberedTitle">{% if lang == 'nl' %}Geen vrij personenverkeer — wel één handelszone{% else %}No free movement of people - but a single trade zone{% endif %}</h4>
+            <h4 class="gu-manifest__numberedTitle">{% if lang == 'nl' %}Eén handelszone, beperkt vrij verkeer van personen{% else %}A single trade zone, limited free movement of people{% endif %}</h4>
           </div>
-          <p>{% if lang == 'nl' %}De GU functioneert niet als één markt met vrij personenverkeer, om grote migratiestromen naar welvarende gebieden te voorkomen. Wel gelden uniforme handelstarieven op basis van de scorecard. Naarmate de GU groeit, zal de wereldwijde economische groei toenemen, zoals ook de EU economisch sterk groeide door uitbreiding.{% else %}The GU does not function as a single market with free movement of people, to avoid large migration flows toward wealthier areas. Uniform trade tariffs based on the scorecard do apply. As the GU grows, global economic growth grows with it, just as the EU grew economically through enlargement.{% endif %}</p>
+          {% if lang == 'nl' %}
+            <p>De GU functioneert niet als één markt met volledig vrij personenverkeer, om ongewenste migratiestromen naar welvarende gebieden te voorkomen. Wel gelden uniforme handelstarieven op basis van de scorecard.</p>
+            <p>Voor hoogwaardig en schaars talent geldt een uitzonderingsregeling: tijdelijke werkvisa voor professionals die een specifieke bijdrage leveren aan GU-landen. De gedachte is circulair: wie tijdelijk elders werkt, brengt kennis, ervaring en netwerken terug naar het eigen land. Dat versterkt de ontwikkeling daar.</p>
+            <p>De GU investeert daarnaast in opleidingsprogramma's waarmee mensen in niet-GU-landen zich kunnen ontwikkelen tot het niveau dat nodig is om een waardevolle bijdrage te leveren. Eenmaal terug in eigen land kunnen zij ook op afstand blijven bijdragen aan de GU-economie. Zo groeit de welvaart aan beide kanten.</p>
+          {% else %}
+            <p>The GU does not function as a single market with full free movement of people, to avoid unwanted migration flows toward wealthier areas. Uniform trade tariffs based on the scorecard do apply.</p>
+            <p>For highly skilled and scarce talent, an exception applies: temporary work visas for professionals who make a specific contribution to GU countries. The principle is circular: those who work abroad temporarily bring knowledge, experience and networks back to their home country. That strengthens development there.</p>
+            <p>The GU also invests in training programmes through which people in non-GU countries can develop to the level needed to make a valuable contribution. Once back home, they can continue to contribute to the GU economy remotely. This way prosperity grows on both sides.</p>
+          {% endif %}
         </section>
 
         {# ── 4. Lange termijn ───────────────────────────── #}
