@@ -273,6 +273,8 @@ def auth_google_callback():
             db.session.commit()
         session.permanent = True
         login_user(user)
+        if not user.linkedin_url:
+            return redirect(url_for('main.linkedin_aanvullen'))
         return redirect(url_for('main.index'))
 
     pw_hash = bcrypt.generate_password_hash(secrets.token_hex(32)).decode('utf-8')

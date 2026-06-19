@@ -24,10 +24,19 @@
         <label for="linkedin_url">
           {{ _('LinkedIn profile URL') }}
         </label>
-        <input id="linkedin_url" name="linkedin_url" type="url"
-               class="gu-input{% if error %} gu-input--error{% endif %}"
-               placeholder="https://www.linkedin.com/in/jouw-naam"
-               autofocus required>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input id="linkedin_url" name="linkedin_url" type="url"
+                 class="gu-input{% if error %} gu-input--error{% endif %}"
+                 placeholder="https://www.linkedin.com/in/jouw-naam"
+                 autofocus required style="flex: 1; min-width: 0;">
+          <button type="button" id="guLinkedInSearch" class="gu-btn gu-btn--ghost"
+                  style="white-space: nowrap; flex-shrink: 0;">
+            {{ _('Find my profile') }}
+          </button>
+        </div>
+        <p class="gu-join__hint" style="margin-top: 6px;">
+          {{ _('Find your profile, click on it and copy the URL from the address bar.') }}
+        </p>
         {% if error %}
         <p class="gu-join__formError">
           {{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}
@@ -52,4 +61,16 @@
 
   </div>
 </div>
+<script>
+  (function () {
+    var btn = document.getElementById('guLinkedInSearch');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        var name = '{{ current_user.first_name|default("") }} {{ current_user.last_name|default("") }}'.trim();
+        var url = 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(name);
+        window.open(url, '_blank', 'noopener');
+      });
+    }
+  })();
+</script>
 {% endblock %}{% endblock %}

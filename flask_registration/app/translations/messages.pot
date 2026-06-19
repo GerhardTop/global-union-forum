@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
-"Report-Msgid-Bugs-To: top.gerhard@gmail.com\n"
+"Report-Msgid-Bugs-To: info@globalunionforum.org\n"
 "POT-Creation-Date: 2026-06-10 12:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
