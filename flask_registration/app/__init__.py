@@ -131,17 +131,11 @@ def create_app():
     login_manager.init_app(app)
     limiter.init_app(app)
     oauth.init_app(app)
-    _log = logging.getLogger('babel_locale')
-
     def get_locale():
         lang_in_session = session.get('lang')
         if lang_in_session in ('nl', 'en'):
-            _log.debug('get_locale → session lang=%s', lang_in_session)
             return lang_in_session
-        best = request.accept_languages.best_match(['nl', 'en'], default='en')
-        _log.debug('get_locale → no session lang, Accept-Language=%s → %s',
-                   request.accept_languages, best)
-        return best
+        return request.accept_languages.best_match(['nl', 'en'], default='en')
 
     babel.init_app(app, locale_selector=get_locale)
     oauth.register(
