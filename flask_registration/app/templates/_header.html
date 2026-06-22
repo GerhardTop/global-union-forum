@@ -36,6 +36,12 @@
       </div>
     </div>
     {% else %}
+    <div class="gu-langswitch">
+      <a href="{{ url_for('main.set_lang', code='nl') }}"
+         class="gu-langswitch__btn{% if lang == 'nl' %} is-active{% endif %}">NL</a>
+      <a href="{{ url_for('main.set_lang', code='en') }}"
+         class="gu-langswitch__btn{% if lang == 'en' %} is-active{% endif %}">EN</a>
+    </div>
     <a href="{{ url_for('main.login') }}" class="gu-header__cta">
       {{ _('Log in') }}
     </a>
