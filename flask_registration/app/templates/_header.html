@@ -36,11 +36,16 @@
       </div>
     </div>
     {% else %}
-    <div class="gu-langswitch">
-      <a href="{{ url_for('main.set_lang', code='nl') }}"
-         class="gu-langswitch__btn{% if lang == 'nl' %} is-active{% endif %}">NL</a>
-      <a href="{{ url_for('main.set_lang', code='en') }}"
-         class="gu-langswitch__btn{% if lang == 'en' %} is-active{% endif %}">EN</a>
+    <div class="gu-lang-dd" id="langDd">
+      <button class="gu-lang-dd__trigger" id="langDdBtn" aria-expanded="false" aria-haspopup="true">
+        {{ lang | upper }}<span class="gu-lang-dd__chevron">▾</span>
+      </button>
+      <div class="gu-lang-dd__menu" id="langDdMenu" hidden>
+        <a href="{{ url_for('main.set_lang', code='nl') }}"
+           class="gu-lang-dd__item{% if lang == 'nl' %} is-active{% endif %}">NL</a>
+        <a href="{{ url_for('main.set_lang', code='en') }}"
+           class="gu-lang-dd__item{% if lang == 'en' %} is-active{% endif %}">EN</a>
+      </div>
     </div>
     <a href="{{ url_for('main.login') }}" class="gu-header__cta">
       {{ _('Log in') }}
@@ -74,6 +79,25 @@
         }
       });
       avatarDropdown.addEventListener('click', function (e) { e.stopPropagation(); });
+    }
+
+    /* Language dropdown */
+    var langDdBtn  = document.getElementById('langDdBtn');
+    var langDdMenu = document.getElementById('langDdMenu');
+    if (langDdBtn) {
+      langDdBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = !langDdMenu.hidden;
+        langDdMenu.hidden = open;
+        langDdBtn.setAttribute('aria-expanded', String(!open));
+      });
+      document.addEventListener('click', function () {
+        if (langDdMenu && !langDdMenu.hidden) {
+          langDdMenu.hidden = true;
+          langDdBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+      langDdMenu.addEventListener('click', function (e) { e.stopPropagation(); });
     }
 
     /* Hamburger */

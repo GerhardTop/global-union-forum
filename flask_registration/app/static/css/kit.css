@@ -225,6 +225,57 @@ body {
 .gu-header--night .gu-langswitch__btn { color: var(--gu-fg-on-night-2); }
 .gu-langswitch__btn.is-active { background: var(--gu-globe); color: #fff; }
 
+/* Language dropdown (navbar, unauthenticated) */
+.gu-lang-dd {
+  position: relative;
+}
+.gu-lang-dd__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--gu-font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #666;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 150ms;
+}
+.gu-lang-dd__trigger:hover { color: #333; }
+.gu-lang-dd__chevron {
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0.6;
+}
+.gu-lang-dd__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  min-width: 72px;
+  overflow: hidden;
+  z-index: 200;
+}
+.gu-lang-dd__item {
+  display: block;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #666;
+  text-decoration: none;
+  transition: background 120ms;
+}
+.gu-lang-dd__item:hover { background: #f5f4f0; color: #333; }
+.gu-lang-dd__item.is-active { color: #1a8fd1; font-weight: 500; }
+
 .gu-header__end {
   display: flex;
   align-items: center;
