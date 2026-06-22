@@ -1600,11 +1600,11 @@ body {
 }
 .gu-about__founderQuote {
   border-left: 3px solid var(--gu-globe);
-  padding: 14px 20px;
-  margin: 32px 0 0;
-  background: #fff;
+  padding: 16px 20px;
+  margin: 32px 0;
+  background: var(--gu-bg-soft);
   border-radius: 0 8px 8px 0;
-  font-size: 1rem;
+  font-size: 1.0625rem;
   font-style: italic;
   color: var(--gu-fg-2);
   line-height: 1.65;
