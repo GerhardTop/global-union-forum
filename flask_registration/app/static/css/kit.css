@@ -237,7 +237,7 @@ body {
   border: none;
   cursor: pointer;
   font-family: var(--gu-font-sans);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 400;
   letter-spacing: 0.04em;
   color: #666;
@@ -247,9 +247,9 @@ body {
 }
 .gu-lang-dd__trigger:hover { color: #333; }
 .gu-lang-dd__chevron {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1;
-  opacity: 0.6;
+  opacity: 0.8;
 }
 .gu-lang-dd__menu {
   position: absolute;
