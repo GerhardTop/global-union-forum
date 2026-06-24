@@ -2373,10 +2373,12 @@ body {
 
   .gu-header__end { gap: 8px; }
   .gu-lang-dd { display: none; }
-  .gu-header__nav-lang { display: flex; align-items: center; gap: 10px; padding: 11px 4px; border-top: 1px solid var(--gu-border); }
-  .gu-header__nav-lang-btn { font-size: 14px; font-weight: 400; letter-spacing: 0.04em; color: #666; text-decoration: none; }
-  .gu-header__nav-lang-btn.is-active { color: #1a8fd1; font-weight: 600; }
-  .gu-header__nav-lang-sep { color: rgba(0,0,0,0.2); }
+  .gu-header__nav-lang { position: relative; padding: 11px 4px; border-top: 1px solid var(--gu-border); }
+  .gu-header__nav-lang-trigger { background: none; border: none; cursor: pointer; font-family: var(--gu-font-sans); font-size: 15px; font-weight: 400; color: #444; display: flex; align-items: center; gap: 3px; }
+  .gu-header__nav-lang-menu { position: absolute; left: 0; top: calc(100% - 4px); background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); min-width: 72px; overflow: hidden; z-index: 200; }
+  .gu-header__nav-lang-item { display: block; padding: 8px 16px; font-size: 13px; color: #666; text-decoration: none; }
+  .gu-header__nav-lang-item:hover { background: #f5f4f0; }
+  .gu-header__nav-lang-item.is-active { color: #1a8fd1; font-weight: 500; }
 
   /* Burger: show on mobile */
   .gu-header__burger { display: block; }

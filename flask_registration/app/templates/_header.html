@@ -15,9 +15,15 @@
        {% if request.endpoint == 'main.about' %}class="is-active"{% endif %}>{{ _('About') }}</a>
     {% if not current_user.is_authenticated %}
     <div class="gu-header__nav-lang">
-      <a href="{{ url_for('main.set_lang', code='nl') }}" class="gu-header__nav-lang-btn{% if lang == 'nl' %} is-active{% endif %}">NL</a>
-      <span class="gu-header__nav-lang-sep">|</span>
-      <a href="{{ url_for('main.set_lang', code='en') }}" class="gu-header__nav-lang-btn{% if lang == 'en' %} is-active{% endif %}">EN</a>
+      <button class="gu-header__nav-lang-trigger" id="navLangBtn" aria-expanded="false">
+        {{ lang | upper }}<span class="gu-lang-dd__chevron">▾</span>
+      </button>
+      <div class="gu-header__nav-lang-menu" id="navLangMenu" hidden>
+        <a href="{{ url_for('main.set_lang', code='nl') }}"
+           class="gu-header__nav-lang-item{% if lang == 'nl' %} is-active{% endif %}">NL</a>
+        <a href="{{ url_for('main.set_lang', code='en') }}"
+           class="gu-header__nav-lang-item{% if lang == 'en' %} is-active{% endif %}">EN</a>
+      </div>
     </div>
     {% endif %}
   </nav>
@@ -105,6 +111,25 @@
         }
       });
       langDdMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+    }
+
+    /* Mobile language dropdown */
+    var navLangBtn  = document.getElementById('navLangBtn');
+    var navLangMenu = document.getElementById('navLangMenu');
+    if (navLangBtn) {
+      navLangBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = !navLangMenu.hidden;
+        navLangMenu.hidden = open;
+        navLangBtn.setAttribute('aria-expanded', String(!open));
+      });
+      document.addEventListener('click', function () {
+        if (navLangMenu && !navLangMenu.hidden) {
+          navLangMenu.hidden = true;
+          navLangBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+      navLangMenu.addEventListener('click', function (e) { e.stopPropagation(); });
     }
 
     /* Hamburger */
