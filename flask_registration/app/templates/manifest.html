@@ -196,10 +196,10 @@
           <p>
             {{ _("Do you have suggestions for improving this site? Is there functionality you miss? We'd love to hear from you!") }}
           </p>
-          <a class="gu-btn gu-btn--primary" href="mailto:info@globalunionforum.org">
+          <button type="button" id="guFeedbackBtn" class="gu-btn gu-btn--primary">
             {{ _('Send feedback') }}
             <span class="gu-arrow"></span>
-          </a>
+          </button>
         </div>
         <div class="gu-feedback-card">
           <p>
@@ -216,6 +216,46 @@
 
 </main>
 {% endblock %}
+
+{# ── Feedbackmodal ─────────────────────────────────────────── #}
+<div class="gu-modal-overlay" id="guFeedbackModal" style="display:none;" role="dialog" aria-modal="true">
+  <div class="gu-modal" style="max-width: 480px; text-align: left;">
+    <button type="button" class="gu-modal__close" id="guFeedbackClose" aria-label="{{ _('Close') }}">✕</button>
+    <h2 class="gu-modal__title" style="text-align: left; font-size: 1.25rem; margin-bottom: 20px;">
+      {{ _('Send feedback') }}
+    </h2>
+    <form method="POST" action="{{ url_for('main.feedback') }}">
+      <input type="hidden" name="lang" value="{{ lang }}">
+      <div class="gu-join__field">
+        <label for="feedback_name" style="font-size: 14px; font-weight: 500; color: var(--gu-fg-2);">
+          {% if lang == 'nl' %}Naam{% else %}Name{% endif %}
+        </label>
+        <input id="feedback_name" name="feedback_name" type="text"
+               class="gu-input" placeholder="Sara De Vries" required>
+      </div>
+      <div class="gu-join__field">
+        <label for="feedback_email" style="font-size: 14px; font-weight: 500; color: var(--gu-fg-2);">
+          {{ _('Email address') }}
+        </label>
+        <input id="feedback_email" name="feedback_email" type="email"
+               class="gu-input" placeholder="naam@voorbeeld.nl" required>
+      </div>
+      <div class="gu-join__field">
+        <label for="feedback_message" style="font-size: 14px; font-weight: 500; color: var(--gu-fg-2);">
+          {% if lang == 'nl' %}Bericht{% else %}Message{% endif %}
+        </label>
+        <textarea id="feedback_message" name="feedback_message"
+                  class="gu-input" rows="4"
+                  style="resize: vertical; font-family: inherit; font-size: inherit;"
+                  required></textarea>
+      </div>
+      <button type="submit" class="gu-btn gu-btn--primary" style="width: 100%; justify-content: center;">
+        {{ _('Send feedback') }}
+        <span class="gu-arrow"></span>
+      </button>
+    </form>
+  </div>
+</div>
 
 <script>
   (function () {
@@ -257,6 +297,18 @@
     // Set first item active on load
     var first = document.querySelector('.gu-manifest__section');
     if (first) setActive(first.id);
+  })();
+
+  (function () {
+    var btn = document.getElementById('guFeedbackBtn');
+    var modal = document.getElementById('guFeedbackModal');
+    var close = document.getElementById('guFeedbackClose');
+    if (!btn) return;
+    function openModal() { modal.style.display = 'flex'; }
+    function closeModal() { modal.style.display = 'none'; }
+    btn.addEventListener('click', openModal);
+    close.addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
   })();
 </script>
 {% endblock %}

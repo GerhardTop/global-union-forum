@@ -617,6 +617,41 @@ def uitnodiging():
     return redirect(url_for("main.index"))
 
 
+@main.route("/feedback", methods=["POST"])
+def feedback():
+    lang = request.form.get('lang', session.get('lang', 'nl'))
+    name = request.form.get('feedback_name', '').strip()
+    email = request.form.get('feedback_email', '').strip()
+    message = request.form.get('feedback_message', '').strip()
+
+    if not (name and email and message):
+        flash(
+            "Vul alle velden in." if lang == 'nl' else "Please fill in all fields.",
+            "error"
+        )
+        return redirect(url_for("main.index"))
+
+    subject = f"Feedback van {name} via Global Union Forum"
+    html = (
+        f"<p><strong>Naam:</strong> {name}</p>"
+        f"<p><strong>E-mail:</strong> {email}</p>"
+        f"<p><strong>Bericht:</strong><br>{message.replace(chr(10), '<br>')}</p>"
+    )
+    ok = send_email("feedback@globalunionforum.org", subject, html)
+    if ok:
+        flash(
+            "Bedankt voor je feedback!" if lang == 'nl' else "Thanks for your feedback!",
+            "success"
+        )
+    else:
+        flash(
+            "Er is iets misgegaan. Probeer het later opnieuw."
+            if lang == 'nl' else "Something went wrong. Please try again later.",
+            "error"
+        )
+    return redirect(url_for("main.index"))
+
+
 @main.route("/success")
 def success():
     name = request.args.get("name", "")
