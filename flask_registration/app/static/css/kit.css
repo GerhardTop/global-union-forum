@@ -2372,6 +2372,11 @@ body {
   .gu-header__brand img { height: 52px; width: auto; max-width: 100%; }
 
   .gu-header__end { gap: 8px; }
+  .gu-lang-dd { display: none; }
+  .gu-header__nav-lang { display: flex; align-items: center; gap: 10px; padding: 11px 4px; border-top: 1px solid var(--gu-border); }
+  .gu-header__nav-lang-btn { font-size: 14px; font-weight: 400; letter-spacing: 0.04em; color: #666; text-decoration: none; }
+  .gu-header__nav-lang-btn.is-active { color: #1a8fd1; font-weight: 600; }
+  .gu-header__nav-lang-sep { color: rgba(0,0,0,0.2); }
 
   /* Burger: show on mobile */
   .gu-header__burger { display: block; }

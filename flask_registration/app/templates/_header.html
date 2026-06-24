@@ -13,6 +13,13 @@
        {% if request.endpoint == 'main.manifest' %}class="is-active"{% endif %}>Manifest</a>
     <a href="{{ url_for('main.about') }}"
        {% if request.endpoint == 'main.about' %}class="is-active"{% endif %}>{{ _('About') }}</a>
+    {% if not current_user.is_authenticated %}
+    <div class="gu-header__nav-lang">
+      <a href="{{ url_for('main.set_lang', code='nl') }}" class="gu-header__nav-lang-btn{% if lang == 'nl' %} is-active{% endif %}">NL</a>
+      <span class="gu-header__nav-lang-sep">|</span>
+      <a href="{{ url_for('main.set_lang', code='en') }}" class="gu-header__nav-lang-btn{% if lang == 'en' %} is-active{% endif %}">EN</a>
+    </div>
+    {% endif %}
   </nav>
 
   <div class="gu-header__end">
