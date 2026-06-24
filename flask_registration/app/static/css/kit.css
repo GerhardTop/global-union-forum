@@ -229,6 +229,7 @@ body {
 .gu-lang-dd {
   position: relative;
 }
+.gu-header__nav-lang { display: none; }
 .gu-lang-dd__trigger {
   display: inline-flex;
   align-items: center;
@@ -2373,6 +2374,7 @@ body {
 
   .gu-header__end { gap: 8px; }
   .gu-lang-dd { display: none; }
+  .gu-header__nav-lang { display: block; }
   .gu-header__nav-lang { position: relative; padding: 11px 4px; border-top: 1px solid var(--gu-border); }
   .gu-header__nav-lang-trigger { background: none; border: none; cursor: pointer; font-family: var(--gu-font-sans); font-size: 15px; font-weight: 400; color: #444; display: flex; align-items: center; gap: 3px; }
   .gu-header__nav-lang-menu { position: absolute; left: 0; top: calc(100% - 4px); background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); min-width: 72px; overflow: hidden; z-index: 200; }
