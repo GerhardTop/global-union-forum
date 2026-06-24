@@ -620,8 +620,12 @@ def uitnodiging():
 @main.route("/feedback", methods=["POST"])
 def feedback():
     lang = request.form.get('lang', session.get('lang', 'nl'))
-    name = request.form.get('feedback_name', '').strip()
-    email = request.form.get('feedback_email', '').strip()
+    if current_user.is_authenticated:
+        name = f"{current_user.first_name} {current_user.last_name}".strip()
+        email = current_user.email
+    else:
+        name = request.form.get('feedback_name', '').strip()
+        email = request.form.get('feedback_email', '').strip()
     message = request.form.get('feedback_message', '').strip()
 
     if not (name and email and message):

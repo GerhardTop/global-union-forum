@@ -237,6 +237,10 @@
     </h2>
     <form method="POST" action="{{ url_for('main.feedback') }}">
       <input type="hidden" name="lang" value="{{ lang }}">
+      {% if current_user.is_authenticated %}
+      <input type="hidden" name="feedback_name" value="{{ current_user.first_name }} {{ current_user.last_name }}">
+      <input type="hidden" name="feedback_email" value="{{ current_user.email }}">
+      {% else %}
       <div class="gu-join__field">
         <label for="feedback_name" style="font-size: 14px; font-weight: 500; color: var(--gu-fg-2);">
           {% if lang == 'nl' %}Naam{% else %}Name{% endif %}
@@ -251,6 +255,7 @@
         <input id="feedback_email" name="feedback_email" type="email"
                class="gu-input" placeholder="naam@voorbeeld.nl" required>
       </div>
+      {% endif %}
       <div class="gu-join__field">
         <label for="feedback_message" style="font-size: 14px; font-weight: 500; color: var(--gu-fg-2);">
           {% if lang == 'nl' %}Bericht{% else %}Message{% endif %}
