@@ -36,7 +36,7 @@ class Config:
     SESSION_COOKIE_SAMESITE = 'Lax'
 
     # Flask-Babel configuration
-    BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_DEFAULT_LOCALE = 'nl'
     BABEL_SUPPORTED_LOCALES = ['en', 'nl']
     BABEL_DEFAULT_TIMEZONE = 'UTC'
     RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')

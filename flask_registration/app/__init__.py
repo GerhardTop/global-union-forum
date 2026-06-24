@@ -135,7 +135,7 @@ def create_app():
         lang_in_session = session.get('lang')
         if lang_in_session in ('nl', 'en'):
             return lang_in_session
-        return request.accept_languages.best_match(['nl', 'en'], default='en')
+        return request.accept_languages.best_match(['nl', 'en'], default='nl')
 
     babel.init_app(app, locale_selector=get_locale)
     oauth.register(
@@ -193,7 +193,7 @@ def create_app():
         """Inject babel utilities and current language into templates."""
         return dict(
             _=gettext,
-            lang=session.get('lang', 'en'),
+            lang=session.get('lang', 'nl'),
             LANGUAGES={'en': 'English', 'nl': 'Nederlands'}
         )
 
