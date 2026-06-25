@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'nl' %}Pagina niet gevonden{% else %}Page not found{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}
+<section class="gu-section" style="padding: 80px 0; text-align: center;">
+  <div class="gu-container" style="max-width: 560px;">
+    <p class="gu-eyebrow">404</p>
+    {% if lang == 'nl' %}
+    <h1 class="gu-h2" style="margin-bottom: 20px;">
+      Deze pagina bestaat<br><em>niet (meer)</em>
+    </h1>
+    <p class="gu-lead" style="margin-bottom: 40px;">
+      De pagina die je zoekt is verplaatst, verwijderd of heeft nooit bestaan.
+      Ga terug naar de homepage en probeer het opnieuw.
+    </p>
+    {% else %}
+    <h1 class="gu-h2" style="margin-bottom: 20px;">
+      This page does<br><em>not exist</em>
+    </h1>
+    <p class="gu-lead" style="margin-bottom: 40px;">
+      The page you're looking for has been moved, removed, or never existed.
+      Head back to the homepage and try again.
+    </p>
+    {% endif %}
+    <a href="{{ url_for('main.index') }}" class="gu-btn gu-btn--primary">
+      {% if lang == 'nl' %}Terug naar homepage{% else %}Back to homepage{% endif %}
+      <span class="gu-arrow"></span>
+    </a>
+  </div>
+</section>
+{% endblock %}

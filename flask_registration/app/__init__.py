@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, session, request, redirect, url_for, flash, jsonify
+from flask import Flask, session, request, redirect, url_for, flash, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -157,6 +157,20 @@ def create_app():
         frame_options='DENY',
         content_security_policy=_csp,
     )
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return render_template('404.html'), 404
+
+    @app.errorhandler(500)
+    def server_error(e):
+        import traceback as tb
+        from app.mail import send_error_email
+        try:
+            send_error_email(str(e), tb.format_exc())
+        except Exception:
+            pass
+        return render_template('500.html'), 500
 
     @app.errorhandler(429)
     def too_many_requests(e):
