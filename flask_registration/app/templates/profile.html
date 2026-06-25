@@ -178,7 +178,7 @@
       </button>
     </form>
 
-    <script>
+    <script nonce="{{ csp_nonce() }}">
       /* ── Scroll preservation voor taalschakelaar ── */
       function guSaveScroll() {
         sessionStorage.setItem('guProfileScrollY', window.scrollY);
@@ -348,7 +348,7 @@
     </form>
   </div>
 </div>
-<script>
+<script nonce="{{ csp_nonce() }}">
   (function () {
     var btn = document.getElementById('guDeleteBtn');
     var modal = document.getElementById('guDeleteModal');

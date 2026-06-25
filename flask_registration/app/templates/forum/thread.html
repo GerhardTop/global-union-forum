@@ -196,7 +196,7 @@
 </main>
 {% endblock %}
 
-<script>
+<script nonce="{{ csp_nonce() }}">
   (function () {
     var ta  = document.getElementById('composerBody');
     var btn = document.getElementById('composerSubmit');

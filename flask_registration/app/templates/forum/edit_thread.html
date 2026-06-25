@@ -67,7 +67,7 @@
 </main>
 {% endblock %}
 
-<script>
+<script nonce="{{ csp_nonce() }}">
   (function () {
     var titleInput = document.getElementById('title');
     var bodyInput  = document.getElementById('body');

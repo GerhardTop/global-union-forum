@@ -73,7 +73,7 @@
     {% endif %}
   </div>
 </div>
-<script>
+<script nonce="{{ csp_nonce() }}">
   (function () {
     var overlay = document.getElementById('guModal');
     var closeBtn = document.getElementById('guModalClose');
@@ -214,7 +214,7 @@
     </form>
   </div>
 </div>
-<script>
+<script nonce="{{ csp_nonce() }}">
   (function () {
     var btn = document.getElementById('guInviteBtn');
     var modal = document.getElementById('guInviteModal');
@@ -272,7 +272,7 @@
     </form>
   </div>
 </div>
-<script>
+<script nonce="{{ csp_nonce() }}">
   (function () {
     var btn = document.getElementById('guFeedbackBtn');
     var modal = document.getElementById('guFeedbackModal');

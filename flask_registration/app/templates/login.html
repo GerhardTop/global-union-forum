@@ -89,7 +89,7 @@
 
   </div>
 </div>
-<script>
+<script nonce="{{ csp_nonce() }}">
   document.querySelectorAll('.gu-pw-toggle').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var input = this.closest('.gu-pw-wrap').querySelector('input');

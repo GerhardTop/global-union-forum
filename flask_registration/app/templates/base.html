@@ -52,7 +52,7 @@
                         <p class="gu-modal__body">{{ message }}</p>
                       </div>
                     </div>
-                    <script>
+                    <script nonce="{{ csp_nonce() }}">
                       (function () {
                         var overlay = document.getElementById('guFlashModal');
                         var btn = document.getElementById('guFlashClose');

@@ -1,4 +1,5 @@
 import logging
+import secrets
 from flask import Flask, session, request, redirect, url_for, flash, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -138,9 +139,8 @@ def create_app():
 
     _csp = {
         'default-src': "'self'",
-        'script-src': ["'self'", "'unsafe-inline'"],
-        'style-src': ["'self'", "'unsafe-inline'",
-                      'https://fonts.googleapis.com'],
+        'script-src': ["'self'", lambda: f"'nonce-{request._csp_nonce}'"],
+        'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
         'font-src': ["'self'", 'https://fonts.gstatic.com'],
         'img-src': ["'self'", 'data:'],
         'connect-src': ["'self'", 'https://api.anthropic.com'],
@@ -156,6 +156,7 @@ def create_app():
         session_cookie_http_only=True,
         frame_options='DENY',
         content_security_policy=_csp,
+        content_security_policy_nonce_in=['script-src'],
     )
 
     @app.errorhandler(404)
@@ -219,6 +220,12 @@ def create_app():
 
     from app.utils import linkify
     app.jinja_env.filters['linkify'] = linkify
+
+    @app.context_processor
+    def inject_csp_nonce():
+        if not hasattr(request, '_csp_nonce'):
+            request._csp_nonce = secrets.token_urlsafe(16)
+        return dict(csp_nonce=lambda: request._csp_nonce)
 
     @app.context_processor
     def inject_babel():
