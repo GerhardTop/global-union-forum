@@ -187,15 +187,10 @@ def create_app():
             LANGUAGES={'en': 'English', 'nl': 'Nederlands'}
         )
 
-    @app.before_request
-    def ensure_admin():
-        if request.endpoint == 'static':
-            return
-        _ensure_admin_user()
-
     with app.app_context():
         db.create_all()
         _migrate_columns()
+        _ensure_admin_user()
         from app.routes import _seed_forum
         _seed_forum()
 
