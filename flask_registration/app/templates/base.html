@@ -26,43 +26,45 @@
         <main class="main-content">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                    {# Inline errors #}
-                    {% for category, message in messages if category == 'error' %}
-                    <div class="gu-alert--error" role="alert">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
-                           fill="none" stroke="currentColor" stroke-width="2"
-                           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
-                        <line x1="12" y1="16" x2="12.01" y2="16"/>
-                      </svg>
-                      {{ message }}
-                    </div>
-                    {% endfor %}
-                    {# Success modal #}
-                    {% for category, message in messages if category == 'success' %}
-                    <div class="gu-modal-overlay" id="guFlashModal" role="dialog" aria-modal="true">
-                      <div class="gu-modal gu-modal--success">
-                        <button type="button" class="gu-modal__close" id="guFlashClose" aria-label="{{ _('Sluiten') }}">✕</button>
+                    {% for category, message in messages %}
+                    <div class="gu-modal-overlay gu-flash-modal"
+                         id="guFlash{{ loop.index }}"
+                         data-delay="{{ '6000' if category == 'error' else '2500' }}"
+                         role="dialog" aria-modal="true" aria-live="assertive">
+                      <div class="gu-modal gu-modal--{{ category if category in ('success', 'error') else 'success' }}">
+                        <button type="button" class="gu-modal__close" aria-label="{{ _('Sluiten') }}">✕</button>
+                        {% if category == 'success' %}
                         <svg class="gu-modal__icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                           <polyline points="22 4 12 14.01 9 11.01"/>
                         </svg>
+                        {% else %}
+                        <svg class="gu-modal__icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <circle cx="12" cy="12" r="10"/>
+                          <line x1="12" y1="8" x2="12" y2="12"/>
+                          <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        {% endif %}
                         <p class="gu-modal__body">{{ message }}</p>
                       </div>
                     </div>
+                    {% endfor %}
                     <script nonce="{{ csp_nonce() }}">
                       (function () {
-                        var overlay = document.getElementById('guFlashModal');
-                        var btn = document.getElementById('guFlashClose');
-                        function close() { overlay.style.display = 'none'; }
-                        btn.addEventListener('click', close);
-                        overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
-                        setTimeout(close, 2000);
+                        document.querySelectorAll('.gu-flash-modal').forEach(function (overlay) {
+                          var btn = overlay.querySelector('.gu-modal__close');
+                          var delay = parseInt(overlay.dataset.delay) || 2500;
+                          function close() { overlay.style.display = 'none'; }
+                          btn.addEventListener('click', close);
+                          overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+                          setTimeout(close, delay);
+                        });
                       })();
                     </script>
-                    {% endfor %}
                 {% endif %}
             {% endwith %}
 

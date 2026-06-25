@@ -2498,6 +2498,18 @@ body {
   font-weight: 500;
 }
 
+/* ── Error modal variant ─────────────────────────────── */
+.gu-modal--error .gu-modal__icon {
+  display: block;
+  margin: 0 auto 16px;
+  color: #dc2626;
+}
+.gu-modal--error .gu-modal__body {
+  text-align: center;
+  font-weight: 500;
+  color: #991b1b;
+}
+
 /* ── Inline error alert ────────────────────────────────── */
 .gu-alert--error {
   display: flex;
