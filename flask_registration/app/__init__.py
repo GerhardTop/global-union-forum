@@ -104,21 +104,11 @@ def _ensure_admin_user():
             db.session.commit()
 
     # Anne Top-Verhoeven — moderator
-    anne_email = 'anne.top@globalunionforum.org'
-    if not User.query.filter_by(email=anne_email).first():
-        import os
-        pw = _bcrypt.generate_password_hash(os.urandom(24).hex()).decode('utf-8')
-        anne = User(
-            first_name='Anne',
-            last_name='Top-Verhoeven',
-            email=anne_email,
-            password_hash=pw,
-            is_moderator=True,
-            verified=True,
-            linkedin_url='https://www.linkedin.com/in/anne-top-verhoeven',
-        )
-        db.session.add(anne)
-        db.session.commit()
+    anne = User.query.filter_by(email='atopverhoeven@hotmail.com').first()
+    if anne:
+        if not anne.is_moderator:
+            anne.is_moderator = True
+            db.session.commit()
 
 
 def create_app():
