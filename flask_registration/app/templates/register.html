@@ -24,9 +24,6 @@
               class="gu-input" ~ (" gu-input--error" if form.first_name.errors else ""),
               placeholder=('John' if lang == 'en' else 'Jan')
           ) }}
-          {% if form.first_name.errors %}
-            <p class="gu-join__formError">{{ _(form.first_name.errors[0]) }}</p>
-          {% endif %}
         </div>
 
         <div class="gu-join__sub-field">
@@ -35,9 +32,6 @@
               class="gu-input" ~ (" gu-input--error" if form.last_name.errors else ""),
               placeholder=('Doe' if lang == 'en' else 'Janssen')
           ) }}
-          {% if form.last_name.errors %}
-            <p class="gu-join__formError">{{ _(form.last_name.errors[0]) }}</p>
-          {% endif %}
         </div>
       </div>
 
@@ -47,9 +41,6 @@
             class="gu-input" ~ (" gu-input--error" if form.email.errors else ""),
             placeholder=_('john.doe@example.com')
         ) }}
-        {% if form.email.errors %}
-          <p class="gu-join__formError">{{ _(form.email.errors[0]) }}</p>
-        {% endif %}
       </div>
 
       <div class="gu-join__field gu-join__field--row">
@@ -59,9 +50,6 @@
               class="gu-input" ~ (" gu-input--error" if form.password.errors else ""),
               placeholder=_('Min. 8 characters')
           ) }}
-          {% if form.password.errors %}
-            <p class="gu-join__formError">{{ _(form.password.errors[0]) }}</p>
-          {% endif %}
         </div>
 
         <div class="gu-join__sub-field">
@@ -70,9 +58,6 @@
               class="gu-input" ~ (" gu-input--error" if form.confirm_password.errors else ""),
               placeholder=_('Repeat your password')
           ) }}
-          {% if form.confirm_password.errors %}
-            <p class="gu-join__formError">{{ _(form.confirm_password.errors[0]) }}</p>
-          {% endif %}
         </div>
       </div>
 

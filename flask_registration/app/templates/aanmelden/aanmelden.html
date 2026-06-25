@@ -20,18 +20,12 @@
           <input id="first_name" name="first_name" type="text"
                  class="gu-input{% if errors.first_name %} gu-input--error{% endif %}"
                  value="{{ form_data.first_name }}" placeholder="Sara" required autofocus>
-          {% if errors.first_name %}
-          <p class="gu-join__formError">{{ _('Required.') }}</p>
-          {% endif %}
         </div>
         <div class="gu-join__sub-field">
           <label for="last_name">{{ _('Last name') }}</label>
           <input id="last_name" name="last_name" type="text"
                  class="gu-input{% if errors.last_name %} gu-input--error{% endif %}"
                  value="{{ form_data.last_name }}" placeholder="De Vries" required>
-          {% if errors.last_name %}
-          <p class="gu-join__formError">{{ _('Required.') }}</p>
-          {% endif %}
         </div>
       </div>
 
@@ -40,15 +34,6 @@
         <input id="email" name="email" type="email"
                class="gu-input{% if errors.email or errors.email_in_use %} gu-input--error{% endif %}"
                value="{{ form_data.email }}" placeholder="naam@voorbeeld.nl" required>
-        {% if errors.email_in_use %}
-        <p class="gu-join__formError">
-          {{ _('This email is already in use.\n            <a href="{{ url_for(\'main.login\') }}">Log in instead?</a>') }}
-        </p>
-        {% elif errors.email %}
-        <p class="gu-join__formError">
-          {{ _('Enter a valid email address.') }}
-        </p>
-        {% endif %}
       </div>
 
       <div class="gu-join__field">
@@ -69,11 +54,6 @@
           <div class="gu-pw-strength__bar"><div class="gu-pw-strength__fill"></div></div>
           <span class="gu-pw-strength__label"></span>
         </div>
-        {% if errors.password %}
-        <p class="gu-join__formError">
-          {{ _('Password must contain at least 8 characters, one uppercase letter, one number and one special character.') }}
-        </p>
-        {% endif %}
       </div>
 
       <div class="gu-join__field">
@@ -87,11 +67,6 @@
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
-        {% if errors.password_confirm %}
-        <p class="gu-join__formError">
-          {{ _('Passwords do not match.') }}
-        </p>
-        {% endif %}
       </div>
 
       <div class="gu-join__field">
@@ -115,11 +90,6 @@
         <p class="gu-join__hint">
           {{ _('We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile.') }}
         </p>
-        {% if errors.linkedin_url %}
-        <p class="gu-join__formError">
-          {{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}
-        </p>
-        {% endif %}
       </div>
 
       <div class="gu-join__actions gu-join__actions--right">

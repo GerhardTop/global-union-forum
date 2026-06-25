@@ -22,9 +22,6 @@
             class="gu-input" ~ (" gu-input--error" if form.email.errors else ""),
             placeholder=_('john.doe@example.com')
         ) }}
-        {% if form.email.errors %}
-          <p class="gu-join__formError">{{ _(form.email.errors[0]) }}</p>
-        {% endif %}
       </div>
 
       <div class="gu-join__field" style="margin-bottom: 4px;">
