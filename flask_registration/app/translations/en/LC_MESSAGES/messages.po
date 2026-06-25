@@ -362,3 +362,15 @@ msgstr "Already have an account?"
 
 msgid "Log in here."
 msgstr "Log in here."
+
+msgid "val_required"
+msgstr "This field is required."
+
+msgid "val_email_invalid"
+msgstr "Enter a valid email address."
+
+msgid "val_password_min"
+msgstr "Password must be at least 8 characters."
+
+msgid "val_passwords_no_match"
+msgstr "Passwords do not match."

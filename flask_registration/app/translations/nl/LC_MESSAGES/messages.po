@@ -362,3 +362,15 @@ msgstr "Al een account?"
 
 msgid "Log in here."
 msgstr "Log hier in."
+
+msgid "val_required"
+msgstr "Dit veld is verplicht."
+
+msgid "val_email_invalid"
+msgstr "Vul een geldig e-mailadres in."
+
+msgid "val_password_min"
+msgstr "Wachtwoord moet minimaal 8 tekens bevatten."
+
+msgid "val_passwords_no_match"
+msgstr "Wachtwoorden komen niet overeen."
