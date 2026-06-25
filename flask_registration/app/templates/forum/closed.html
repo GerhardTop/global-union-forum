@@ -8,14 +8,14 @@
     <div class="gu-forum__topbar">
       <header class="gu-forum__indexhead">
         <nav class="gu-forum__crumbs" aria-label="breadcrumb" style="margin-bottom:6px;">
-          <a href="{{ url_for('main.forum') }}">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</a>
+          <a href="{{ url_for('forum.forum') }}">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</a>
           <span aria-hidden="true">›</span>
           <span>{% if lang == 'nl' %}Gesloten{% else %}Closed{% endif %}</span>
         </nav>
         <p class="gu-eyebrow">Forum</p>
         <h1 class="gu-forum__title">{% if lang == 'nl' %}Gesloten gesprekken{% else %}Closed conversations{% endif %}</h1>
       </header>
-      <a href="{{ url_for('main.forum') }}" class="gu-btn gu-btn--ghost">
+      <a href="{{ url_for('forum.forum') }}" class="gu-btn gu-btn--ghost">
         {% if lang == 'nl' %}← Terug{% else %}← Back{% endif %}
       </a>
     </div>
@@ -25,7 +25,7 @@
       {% for item in threads %}
       {% set t = item.thread %}
       <li class="gu-threadlist__row gu-threadlist__row--closed gu-threadlist__row--withaction">
-        <a class="gu-threadlist__link" href="{{ url_for('main.forum_thread', thread_id=t.id) }}">
+        <a class="gu-threadlist__link" href="{{ url_for('forum.forum_thread', thread_id=t.id) }}">
           <span class="gu-threadlist__eyebrow">
             {{ t.eyebrow_nl if lang == 'nl' else t.eyebrow_en }}
             <span class="gu-forum__closed-badge">{% if lang == 'nl' %}Gesloten{% else %}Closed{% endif %}</span>
@@ -45,7 +45,7 @@
             {% endif %}
           </span>
         </a>
-        <form method="POST" action="{{ url_for('main.forum_reopen', thread_id=t.id) }}"
+        <form method="POST" action="{{ url_for('forum.forum_reopen', thread_id=t.id) }}"
               class="gu-threadlist__reopenform">
           <button type="submit" class="gu-forum__modbtn">
             {% if lang == 'nl' %}Heropen{% else %}Reopen{% endif %}

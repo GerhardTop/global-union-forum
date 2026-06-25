@@ -7,7 +7,7 @@
   </a>
 
   <nav class="gu-header__nav" id="siteNav" aria-label="Navigatie">
-    <a href="{{ url_for('main.forum') }}"
+    <a href="{{ url_for('forum.forum') }}"
        {% if request.endpoint and request.endpoint.startswith('main.forum') %}class="is-active"{% endif %}>Forum</a>
     <a href="{{ url_for('main.manifest') }}"
        {% if request.endpoint == 'main.manifest' %}class="is-active"{% endif %}>Manifest</a>
@@ -37,15 +37,15 @@
       </button>
       <div class="gu-header__dropdown" id="avatarDropdown" hidden>
         <p class="gu-header__dropdown-name">{{ current_user.first_name }} {{ current_user.last_name }}</p>
-        <a href="{{ url_for('main.profile') }}" class="gu-header__dropdown-item">{{ _('Profile') }}</a>
+        <a href="{{ url_for('profile.profile') }}" class="gu-header__dropdown-item">{{ _('Profile') }}</a>
         {% if current_user.is_admin %}
-        <a href="{{ url_for('main.admin_dashboard') }}" class="gu-header__dropdown-item">Admin</a>
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="gu-header__dropdown-item">Admin</a>
         {% endif %}
         {% if current_user.is_moderator and not current_user.is_admin %}
-        <a href="{{ url_for('main.moderator_dashboard') }}" class="gu-header__dropdown-item">Moderator</a>
+        <a href="{{ url_for('admin.moderator_dashboard') }}" class="gu-header__dropdown-item">Moderator</a>
         {% endif %}
         <hr class="gu-header__dropdown-divider">
-        <a href="{{ url_for('main.logout') }}" class="gu-header__dropdown-item">{{ _('Log out') }}</a>
+        <a href="{{ url_for('auth.logout') }}" class="gu-header__dropdown-item">{{ _('Log out') }}</a>
       </div>
     </div>
     {% else %}
@@ -60,7 +60,7 @@
            class="gu-lang-dd__item{% if lang == 'en' %} is-active{% endif %}">EN</a>
       </div>
     </div>
-    <a href="{{ url_for('main.login') }}" class="gu-header__cta">
+    <a href="{{ url_for('auth.login') }}" class="gu-header__cta">
       {{ _('Log in') }}
     </a>
     {% endif %}

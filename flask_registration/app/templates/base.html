@@ -18,7 +18,7 @@
         {% if current_user.is_authenticated and not current_user.linkedin_url and request.endpoint != 'main.linkedin_aanvullen' %}
         <div class="gu-linkedin-banner">
           {{ _('Add your LinkedIn profile to join the conversation.') }}
-          <a href="{{ url_for('main.linkedin_aanvullen') }}">{{ _('Add it →') }}</a>
+          <a href="{{ url_for('auth.linkedin_aanvullen') }}">{{ _('Add it →') }}</a>
         </div>
         {% endif %}
         {% include '_header.html' %}
@@ -69,7 +69,7 @@
             {% if current_user.is_authenticated and not current_user.verified %}
             <div class="gu-verify-banner">
               {{ _('Confirm your email address — check your inbox.') }}
-              <a href="{{ url_for('main.verify_resend') }}">{{ _('Resend') }}</a>
+              <a href="{{ url_for('auth.verify_resend') }}">{{ _('Resend') }}</a>
             </div>
             {% endif %}
 

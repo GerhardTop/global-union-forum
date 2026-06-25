@@ -18,7 +18,7 @@
       {{ _('To join the conversation, we ask for your LinkedIn profile so other participants know who you are.') }}
     </p>
 
-    <form method="POST" action="{{ url_for('main.linkedin_aanvullen') }}" novalidate>
+    <form method="POST" action="{{ url_for('auth.linkedin_aanvullen') }}" novalidate>
 
       <div class="gu-join__field">
         <label for="linkedin_url">

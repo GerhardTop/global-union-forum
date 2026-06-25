@@ -28,7 +28,7 @@
       {{ _('We are looking for people who want to think along — experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously.') }}
     </p>
     <div class="gu-hero__cta">
-      <a class="gu-btn gu-btn--primary" href="{{ url_for('main.aanmelden') }}">
+      <a class="gu-btn gu-btn--primary" href="{{ url_for('social.aanmelden') }}">
         {{ _('Join the conversation') }} <span class="gu-arrow"></span>
       </a>
       <a class="gu-btn gu-btn--ghost" href="#manifest">{{ _('Read the manifest') }}</a>
@@ -189,7 +189,7 @@
     <h2 class="gu-modal__title" style="text-align: left; font-size: 1.25rem; margin-bottom: 20px;">
       {{ _('Invite someone') }}
     </h2>
-    <form method="POST" action="{{ url_for('main.uitnodiging') }}">
+    <form method="POST" action="{{ url_for('social.uitnodiging') }}">
       <input type="hidden" name="lang" value="{{ lang }}">
       <div class="gu-join__field">
         <label for="invite_email" style="font-size: 14px; font-weight: 500; color: var(--gu-fg-2);">
@@ -235,7 +235,7 @@
     <h2 class="gu-modal__title" style="text-align: left; font-size: 1.25rem; margin-bottom: 20px;">
       {{ _('Send feedback') }}
     </h2>
-    <form method="POST" action="{{ url_for('main.feedback') }}">
+    <form method="POST" action="{{ url_for('social.feedback') }}">
       <input type="hidden" name="lang" value="{{ lang }}">
       {% if current_user.is_authenticated %}
       <input type="hidden" name="feedback_name" value="{{ current_user.first_name }} {{ current_user.last_name }}">

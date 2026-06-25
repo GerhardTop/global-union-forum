@@ -6,9 +6,9 @@
   <div class="gu-forum__inner">
 
     <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-      <a href="{{ url_for('main.forum') }}">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</a>
+      <a href="{{ url_for('forum.forum') }}">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</a>
       <span aria-hidden="true">›</span>
-      <a href="{{ url_for('main.forum_thread', thread_id=thread.id) }}">
+      <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}">
         {% if lang == 'nl' %}{{ thread.title_prefix_nl }}{% else %}{{ thread.title_prefix_en }}{% endif %}
       </a>
       <span aria-hidden="true">›</span>
@@ -22,7 +22,7 @@
       </h1>
     </header>
 
-    <form class="gu-forum__newform" method="POST" action="{{ url_for('main.forum_bewerken', thread_id=thread.id) }}">
+    <form class="gu-forum__newform" method="POST" action="{{ url_for('forum.forum_bewerken', thread_id=thread.id) }}">
 
       <div class="gu-forum__newfield">
         <label for="title">{% if lang == 'nl' %}Titel{% else %}Title{% endif %}</label>
@@ -53,7 +53,7 @@
       </div>
 
       <div class="gu-forum__newactions">
-        <a href="{{ url_for('main.forum_thread', thread_id=thread.id) }}" class="gu-btn gu-btn--ghost">
+        <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" class="gu-btn gu-btn--ghost">
           {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
         </a>
         <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg" id="editSubmit">

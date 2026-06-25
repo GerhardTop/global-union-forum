@@ -116,7 +116,7 @@
     {% if can_edit %}
     <button class="gu-post__action gu-post__action--icon gu-post__edit-btn"
             data-post-id="{{ post.id }}"
-            data-url="{{ url_for('main.forum_post_bewerken', post_id=post.id) }}"
+            data-url="{{ url_for('forum.forum_post_bewerken', post_id=post.id) }}"
             aria-label="{% if lang == 'nl' %}Bewerken{% else %}Edit{% endif %}">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
            fill="none" stroke="currentColor" stroke-width="2"
@@ -128,7 +128,7 @@
 
     {# Delete icon — eigen posts, niet OP #}
     {% if can_delete %}
-    <form method="POST" action="{{ url_for('main.forum_post_verwijderen', post_id=post.id) }}"
+    <form method="POST" action="{{ url_for('forum.forum_post_verwijderen', post_id=post.id) }}"
           class="gu-post__delete-form" style="display:inline;">
       <button type="submit" class="gu-post__action gu-post__action--icon gu-post__delete-btn"
               aria-label="{% if lang == 'nl' %}Verwijderen{% else %}Delete {% endif %}">
@@ -161,7 +161,7 @@
     {% if is_foreign %}
     <button class="gu-post__action gu-post__action--ghost gu-post__translate-btn"
             data-post-id="{{ post.id }}"
-            data-translate-url="{{ url_for('main.forum_translate', post_id=post.id) }}"
+            data-translate-url="{{ url_for('forum.forum_translate', post_id=post.id) }}"
             data-label-translate="{% if lang == 'nl' %}Vertaal naar Nederlands{% else %}Translate to English{% endif %}"
             data-label-original="{% if lang == 'nl' %}Toon origineel{% else %}Show original{% endif %}"
             data-label-loading="{% if lang == 'nl' %}Bezig…{% else %}Translating…{% endif %}"
@@ -171,8 +171,8 @@
 
     {# Always-translate toggle — alleen voor ingelogde gebruikers #}
     {% if current_user.is_authenticated %}
-    <form method="POST" action="{{ url_for('main.profiel_vertaalvoorkeur') }}" style="display:inline;">
-      <input type="hidden" name="next" value="{{ url_for('main.forum_thread', thread_id=thread.id) }}">
+    <form method="POST" action="{{ url_for('profile.profiel_vertaalvoorkeur') }}" style="display:inline;">
+      <input type="hidden" name="next" value="{{ url_for('forum.forum_thread', thread_id=thread.id) }}">
       {% if not auto_translate %}
         <input type="hidden" name="auto_translate" value="1">
       {% endif %}
@@ -200,7 +200,7 @@
       </button>
       <button type="button" class="gu-btn gu-btn--primary gu-post__edit-save"
               data-post-id="{{ post.id }}"
-              data-url="{{ url_for('main.forum_post_bewerken', post_id=post.id) }}"
+              data-url="{{ url_for('forum.forum_post_bewerken', post_id=post.id) }}"
               disabled>
         {% if lang == 'nl' %}Opslaan{% else %}Save{% endif %} <span class="gu-arrow"></span>
       </button>
@@ -213,9 +213,9 @@
   <div class="gu-post__replyform gu-post__replyform--nolin" id="reply-nolin-{{ post.id }}" hidden>
     <p style="margin: 0; font-size: 0.9375rem; color: var(--gu-fg-2);">
       {% if lang == 'nl' %}
-        <a href="{{ url_for('main.linkedin_aanvullen') }}" style="color: var(--gu-globe-deep); font-weight: 500;">Vul je LinkedIn profiel in</a> om te reageren.
+        <a href="{{ url_for('auth.linkedin_aanvullen') }}" style="color: var(--gu-globe-deep); font-weight: 500;">Vul je LinkedIn profiel in</a> om te reageren.
       {% else %}
-        <a href="{{ url_for('main.linkedin_aanvullen') }}" style="color: var(--gu-globe-deep); font-weight: 500;">Add your LinkedIn profile</a> to post replies.
+        <a href="{{ url_for('auth.linkedin_aanvullen') }}" style="color: var(--gu-globe-deep); font-weight: 500;">Add your LinkedIn profile</a> to post replies.
       {% endif %}
     </p>
     <div class="gu-post__replyactions">
@@ -230,7 +230,7 @@
   {# Inline reply form #}
   {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own and current_user.linkedin_url %}
   <div class="gu-post__replyform" id="reply-form-{{ post.id }}" hidden>
-    <form method="POST" action="{{ url_for('main.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       <input type="hidden" name="parent_id" value="{{ post.id }}">
       <textarea
         class="gu-composer__input"

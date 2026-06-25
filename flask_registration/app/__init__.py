@@ -15,7 +15,7 @@ from config import Config
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = "main.login"
+login_manager.login_view = "auth.login"
 login_manager.login_message_category = "error"
 limiter = Limiter(key_func=get_remote_address, default_limits=[])
 oauth = OAuth()
@@ -167,13 +167,41 @@ def create_app():
             return jsonify({'error': 'rate_limited', 'message': msg}), 429
         flash(msg, 'error')
         _path_map = {
-            '/aanmelden': 'main.aanmelden',
-            '/wachtwoord-vergeten': 'main.wachtwoord_vergeten',
+            '/aanmelden': 'social.aanmelden',
+            '/wachtwoord-vergeten': 'auth.wachtwoord_vergeten',
         }
-        return redirect(url_for(_path_map.get(request.path, 'main.login')))
+        return redirect(url_for(_path_map.get(request.path, 'auth.login')))
 
-    from app.routes import main
+    from datetime import datetime
+    from flask_login import logout_user as _logout_user
+
+    @app.before_request
+    def enforce_session_timeout():
+        from flask_login import current_user as _cu
+        if not _cu.is_authenticated:
+            return
+        last = session.get('_last_active')
+        now = datetime.utcnow().timestamp()
+        if last and (now - last) > 1800:
+            lang = session.get('lang', 'nl')
+            _logout_user()
+            session.clear()
+            session['lang'] = lang
+            flash(
+                'Je sessie is verlopen. Log opnieuw in.' if lang == 'nl'
+                else 'Your session has expired. Please log in again.',
+                'error'
+            )
+            return redirect(url_for('auth.login'))
+        session['_last_active'] = now
+
+    from app.routes import main, auth, forum_bp, profile_bp, admin_bp, social
     app.register_blueprint(main)
+    app.register_blueprint(auth)
+    app.register_blueprint(forum_bp)
+    app.register_blueprint(profile_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(social)
 
     from app.utils import linkify
     app.jinja_env.filters['linkify'] = linkify
@@ -191,7 +219,7 @@ def create_app():
         db.create_all()
         _migrate_columns()
         _ensure_admin_user()
-        from app.routes import _seed_forum
+        from app.routes.forum import _seed_forum
         _seed_forum()
 
     return app

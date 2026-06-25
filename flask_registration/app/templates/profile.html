@@ -39,7 +39,7 @@
         {{ current_user.linkedin_url or '' }}
       </a>
     </p>
-    <form id="guLinkedInForm" method="POST" action="{{ url_for('main.profile') }}" novalidate>
+    <form id="guLinkedInForm" method="POST" action="{{ url_for('profile.profile') }}" novalidate>
       <input type="hidden" name="action" value="linkedin">
       <div class="gu-join__field">
         <label for="linkedin_url">
@@ -80,7 +80,7 @@
       {% if lang == 'nl' %}Automatisch vertalen.{% else %}Automatic translation.{% endif %}
     </h3>
     {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else (lang == 'en') %}
-    <form id="guTranslateForm" method="POST" action="{{ url_for('main.profiel_vertaalvoorkeur') }}" style="margin-bottom: 4px;">
+    <form id="guTranslateForm" method="POST" action="{{ url_for('profile.profiel_vertaalvoorkeur') }}" style="margin-bottom: 4px;">
       <label class="gu-toggle-label">
         <span class="gu-toggle">
           <input type="checkbox" name="auto_translate" value="1" class="gu-toggle__input"
@@ -112,7 +112,7 @@
       {{ _('Update your password.') }}
     </h2>
 
-    <form method="POST" action="{{ url_for('main.profile') }}" novalidate>
+    <form method="POST" action="{{ url_for('profile.profile') }}" novalidate>
       {{ form.hidden_tag() }}
 
       <div class="gu-join__field">
@@ -333,7 +333,7 @@
         This <strong>cannot</strong> be undone.
       {% endif %}
     </p>
-    <form method="POST" action="{{ url_for('main.account_verwijderen') }}" style="margin-top: 24px;">
+    <form method="POST" action="{{ url_for('auth.account_verwijderen') }}" style="margin-top: 24px;">
       {{ form.hidden_tag() }}
       <div style="display: flex; gap: 12px; justify-content: center;">
         <button type="button" id="guDeleteCancelBtn"

@@ -12,12 +12,12 @@
       </header>
       {% if current_user.is_authenticated %}
       <div class="gu-forum__topactions">
-        <a href="{{ url_for('main.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
+        <a href="{{ url_for('forum.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
           <span style="font-size:1.1em;line-height:1">+</span>
           {% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %}
         </a>
         {% if current_user.is_admin or current_user.is_moderator %}
-        <a href="{{ url_for('main.forum_gesloten') }}" class="gu-forum__closed-link">
+        <a href="{{ url_for('forum.forum_gesloten') }}" class="gu-forum__closed-link">
           {% if lang == 'nl' %}Gesloten gesprekken{% else %}Closed conversations{% endif %}
         </a>
         {% endif %}
@@ -30,7 +30,7 @@
       {% for item in threads %}
       {% set t = item.thread %}
       <li class="gu-threadlist__row{% if t.is_closed %} gu-threadlist__row--closed{% endif %}">
-        <a class="gu-threadlist__link" href="{{ url_for('main.forum_thread', thread_id=t.id) }}">
+        <a class="gu-threadlist__link" href="{{ url_for('forum.forum_thread', thread_id=t.id) }}">
           <span class="gu-threadlist__eyebrow">
             {{ t.eyebrow_nl if lang == 'nl' else t.eyebrow_en }}
             {% if t.is_demo %}
@@ -67,7 +67,7 @@
     {% if not current_user.is_authenticated %}
     <div class="gu-composer gu-composer--locked" style="margin-top:32px;">
       <p>
-        <a href="{{ url_for('main.login') }}">{% if lang == 'nl' %}Log in{% else %}Log in{% endif %}</a>
+        <a href="{{ url_for('auth.login') }}">{% if lang == 'nl' %}Log in{% else %}Log in{% endif %}</a>
         {% if lang == 'nl' %}om mee te doen aan het gesprek.{% else %}to join the conversation.{% endif %}
       </p>
     </div>

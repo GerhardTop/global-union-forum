@@ -9,8 +9,8 @@
         <h1>{{ _('Welcome') }}</h1>
         <p>{{ _('Create an account or log in to get started.') }}</p>
         <div class="welcome-hero__actions">
-            <a href="{{ url_for('main.login') }}" class="btn btn-primary">{{ _('Log in') }}</a>
-            <a href="{{ url_for('main.register') }}" class="btn btn-secondary">{{ _('Register') }}</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">{{ _('Log in') }}</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">{{ _('Register') }}</a>
         </div>
     </div>
 </div>

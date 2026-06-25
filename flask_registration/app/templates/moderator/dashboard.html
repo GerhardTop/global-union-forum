@@ -50,7 +50,7 @@
                 <span>{{ post.author_name }}</span>
               </td>
               <td>
-                <a href="{{ url_for('main.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}"
+                <a href="{{ url_for('forum.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}"
                    class="gu-admin-table__threadlink">
                   {%- set t = post.thread -%}
                   {{ t.title_prefix_nl }}{% if t.title_accent_nl %} <em>{{ t.title_accent_nl }}</em>{% endif %}{{ t.title_suffix_nl }}
@@ -75,7 +75,7 @@
       <ul class="gu-admin-list">
         {% for thread in threads_no_gerhard %}
         <li class="gu-admin-list__item">
-          <a href="{{ url_for('main.forum_thread', thread_id=thread.id) }}"
+          <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}"
              class="gu-admin-list__link">
             <span class="gu-admin-list__eyebrow">{{ thread.eyebrow_nl }}</span>
             <span class="gu-admin-list__title">
@@ -96,14 +96,14 @@
       <ul class="gu-admin-list">
         {% for thread in closed_threads %}
         <li class="gu-admin-list__item">
-          <a href="{{ url_for('main.forum_thread', thread_id=thread.id) }}"
+          <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}"
              class="gu-admin-list__link">
             <span class="gu-admin-list__eyebrow">{{ thread.eyebrow_nl }}</span>
             <span class="gu-admin-list__title">
               {{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} <em>{{ thread.title_accent_nl }}</em>{% endif %}{{ thread.title_suffix_nl }}
             </span>
           </a>
-          <form method="POST" action="{{ url_for('main.forum_reopen', thread_id=thread.id) }}"
+          <form method="POST" action="{{ url_for('forum.forum_reopen', thread_id=thread.id) }}"
                 style="display:inline;">
             <button type="submit" class="gu-forum__modbtn">Heropen</button>
           </form>

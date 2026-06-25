@@ -180,7 +180,7 @@
       <h2 class="gu-h2">{% if lang == 'nl' %}Tot zover dit manifest.{% else %}That's the manifesto.{% endif %}</h2>
       <p class="gu-lead">{% if lang == 'nl' %}Dit is een schrijfoefening — een eerste aanzet. Geen blauwdruk, geen partijprogramma. Wel een richting. Reageer op het manifest in het Forum, schrijf een eigen tegenpositie, of breng het verder in een werksessie.{% else %}This is a writing exercise — a first attempt. Not a blueprint, not a party programme. But a direction. Reply to it in the Forum, write your own counter-position, or carry it further in a working session.{% endif %}</p>
       <div class="gu-manifest__endCTA">
-        <a href="{{ url_for('main.forum') }}" class="gu-btn gu-btn--primary gu-btn--lg">
+        <a href="{{ url_for('forum.forum') }}" class="gu-btn gu-btn--primary gu-btn--lg">
           {% if lang == 'nl' %}Reageer in het Forum{% else %}Reply in the Forum{% endif %}
           <span class="gu-arrow"></span>
         </a>
@@ -205,7 +205,7 @@
           <p>
             {{ _("Know someone who'd want to think along? Invite them to join the conversation.") }}
           </p>
-          <a class="gu-btn gu-btn--primary" href="{{ url_for('main.aanmelden') }}">
+          <a class="gu-btn gu-btn--primary" href="{{ url_for('social.aanmelden') }}">
             {{ _('I know someone') }}
             <span class="gu-arrow"></span>
           </a>
@@ -224,7 +224,7 @@
     <h2 class="gu-modal__title" style="text-align: left; font-size: 1.25rem; margin-bottom: 20px;">
       {{ _('Send feedback') }}
     </h2>
-    <form method="POST" action="{{ url_for('main.feedback') }}">
+    <form method="POST" action="{{ url_for('social.feedback') }}">
       <input type="hidden" name="lang" value="{{ lang }}">
       {% if current_user.is_authenticated %}
       <input type="hidden" name="feedback_name" value="{{ current_user.first_name }} {{ current_user.last_name }}">

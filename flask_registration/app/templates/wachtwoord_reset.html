@@ -17,7 +17,7 @@
       <p style="color: var(--gu-fg-2); font-size: 0.9375rem; margin: 16px 0 24px; line-height: 1.6;">
         {{ _('The reset link has expired or is invalid. Request a new one below.') }}
       </p>
-      <a href="{{ url_for('main.wachtwoord_vergeten') }}" class="gu-btn gu-btn--primary gu-btn--lg"
+      <a href="{{ url_for('auth.wachtwoord_vergeten') }}" class="gu-btn gu-btn--primary gu-btn--lg"
          style="display: flex; justify-content: center;">
         {{ _('Request new link') }} <span class="gu-arrow"></span>
       </a>
@@ -39,7 +39,7 @@
       </div>
       {% endif %}
 
-      <form method="POST" action="{{ url_for('main.wachtwoord_reset', token=token) }}"
+      <form method="POST" action="{{ url_for('auth.wachtwoord_reset', token=token) }}"
             novalidate style="margin-top: 24px;">
 
         <div class="gu-join__field">

@@ -14,7 +14,7 @@
     <h2 class="gu-join__h2">{{ _('Create your account.') }}</h2>
     <p class="gu-join__sub">{{ _('Fill in your details to create an account.') }}</p>
 
-    <form method="POST" action="{{ url_for('main.register') }}" novalidate style="margin-top: 24px;">
+    <form method="POST" action="{{ url_for('auth.register') }}" novalidate style="margin-top: 24px;">
       {{ form.hidden_tag() }}
 
       <div class="gu-join__field gu-join__field--row">
@@ -86,7 +86,7 @@
 
     <p class="gu-auth__footer">
       {{ _('Already have an account?') }}
-      <a href="{{ url_for('main.login') }}">{{ _('Log in') }}</a>
+      <a href="{{ url_for('auth.login') }}">{{ _('Log in') }}</a>
     </p>
 
   </div>
