@@ -5,6 +5,13 @@ from dotenv import load_dotenv
 load_dotenv(override=False)
 
 
+def _require_env(key: str) -> str:
+    val = os.environ.get(key)
+    if not val:
+        raise RuntimeError(f"Required environment variable '{key}' is not set")
+    return val
+
+
 def _build_db_url():
     url = os.environ.get("DATABASE_URL", "")
     if url:
@@ -21,7 +28,7 @@ def _build_db_url():
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY", "change-this-in-production")
+    SECRET_KEY = _require_env("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = _build_db_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

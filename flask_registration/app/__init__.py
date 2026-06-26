@@ -1,4 +1,5 @@
 import logging
+import os
 from flask import Flask, session, request, redirect, url_for, flash, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -147,11 +148,12 @@ def create_app():
         'object-src': "'none'",
         'base-uri': "'self'",
     }
+    _production = bool(os.environ.get("DATABASE_URL"))
     Talisman(
         app,
-        force_https=False,
-        strict_transport_security=False,
-        session_cookie_secure=False,
+        force_https=_production,
+        strict_transport_security=_production,
+        session_cookie_secure=_production,
         session_cookie_http_only=True,
         frame_options='DENY',
         content_security_policy=_csp,

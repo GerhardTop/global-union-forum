@@ -260,6 +260,7 @@ def verify_email(token):
 
 @auth.route("/verify/resend")
 @login_required
+@limiter.limit("3 per hour")
 def verify_resend():
     lang = session.get('lang', 'nl')
     if current_user.verified:
