@@ -1,7 +1,16 @@
+from flask import session
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from urllib.parse import urlparse
+
+from app.utils import _password_strong, _PW_ERROR
+
+
+def _validate_password_strong(form, field):
+    if not _password_strong(field.data or ""):
+        lang = session.get('lang', 'nl')
+        raise ValidationError(_PW_ERROR[lang])
 
 
 class RegistrationForm(FlaskForm):
@@ -65,10 +74,9 @@ class WachtwoordVergetenForm(FlaskForm):
 
 
 class WachtwoordResetForm(FlaskForm):
-    # Sterktevereisten worden in de route gecontroleerd via _password_strong().
     password = PasswordField(
         "password",
-        validators=[DataRequired(message="val_required")],
+        validators=[DataRequired(message="val_required"), _validate_password_strong],
     )
     password_confirm = PasswordField(
         "password_confirm",
@@ -102,6 +110,11 @@ class DeleteAccountForm(FlaskForm):
     pass
 
 
+class VerifyResendForm(FlaskForm):
+    """Leeg form — alleen voor CSRF-validatie bij verificatiemail opnieuw versturen."""
+    pass
+
+
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField(
         "current_password",
@@ -112,6 +125,7 @@ class ChangePasswordForm(FlaskForm):
         validators=[
             DataRequired(message="val_required"),
             Length(min=8, message="val_password_min"),
+            _validate_password_strong,
         ],
     )
     confirm_new_password = PasswordField(

@@ -5,7 +5,6 @@ from flask_login import login_required, current_user
 from flask_babel import gettext as _
 
 from app import db, bcrypt
-from app.utils import _password_strong, _PW_ERROR
 
 profile_bp = Blueprint("profile", __name__)
 
@@ -47,8 +46,6 @@ def profile():
         elif form.validate_on_submit():
             if not bcrypt.check_password_hash(current_user.password_hash, form.current_password.data):
                 flash(_('Current password is incorrect.'), "error")
-            elif not _password_strong(form.new_password.data):
-                flash(_PW_ERROR[lang], "error")
             else:
                 current_user.password_hash = bcrypt.generate_password_hash(
                     form.new_password.data
@@ -57,6 +54,11 @@ def profile():
                 db.session.commit()
                 flash(_('Password changed successfully.'), "success")
                 return redirect(url_for("profile.profile"))
+        elif form.is_submitted():
+            for field in (form.current_password, form.new_password, form.confirm_new_password):
+                if field.errors:
+                    flash(field.errors[0], "error")
+                    break
 
     return render_template("profile.html", form=form, linkedin_error=linkedin_error)
 

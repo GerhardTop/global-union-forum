@@ -9,11 +9,11 @@ from flask_babel import gettext as _
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 from app import db, bcrypt, limiter, oauth
-from app.forms import (WachtwoordVergetenForm, WachtwoordResetForm,
-                       LinkedInAanvullenForm, DeleteAccountForm)
+from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
+                       LinkedInAanvullenForm, DeleteAccountForm, VerifyResendForm)
 from app.mail import send_email
 from app.models import User, Post, PostLike
-from app.utils import _password_strong, _PW_ERROR, _make_verify_token, _send_verify_email
+from app.utils import _make_verify_token, _send_verify_email
 
 auth = Blueprint("auth", __name__)
 
@@ -72,7 +72,6 @@ def register():
 @auth.route("/login", methods=["GET", "POST"])
 @limiter.limit("5 per minute", methods=["POST"])
 def login():
-    from app.forms import LoginForm
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
     form = LoginForm()
@@ -136,9 +135,7 @@ def wachtwoord_reset(token):
     if form.validate_on_submit():
         pw  = form.password.data
         pw2 = form.password_confirm.data
-        if not _password_strong(pw):
-            error = _PW_ERROR[lang]
-        elif pw != pw2:
+        if pw != pw2:
             error = ('Wachtwoorden komen niet overeen.' if lang == 'nl'
                      else 'Passwords do not match.')
         else:
@@ -153,6 +150,8 @@ def wachtwoord_reset(token):
                 'success'
             )
             return redirect(url_for('main.index'))
+    elif form.is_submitted() and form.password.errors:
+        error = form.password.errors[0]
     return render_template('wachtwoord_reset.html', token_invalid=False, token=token,
                            error=error, form=form)
 
@@ -177,7 +176,10 @@ def auth_google_callback():
         return redirect(url_for('auth.login'))
     try:
         token = oauth.google.authorize_access_token()
-    except Exception:
+    except Exception as exc:
+        current_app.logger.error(
+            f"Google OAuth token-uitwisseling mislukt: {type(exc).__name__}: {exc}"
+        )
         flash(
             'Inloggen met Google mislukt. Probeer het opnieuw.' if lang == 'nl'
             else 'Google sign-in failed. Please try again.',
@@ -283,7 +285,7 @@ def logout():
 
 @auth.app_context_processor
 def _inject_verify_resend_form():
-    return {'verify_resend_form': DeleteAccountForm()}
+    return {'verify_resend_form': VerifyResendForm()}
 
 
 @auth.route("/verify/<token>")
@@ -322,7 +324,7 @@ def verify_email(token):
 @login_required
 @limiter.limit("3 per hour")
 def verify_resend():
-    form = DeleteAccountForm()
+    form = VerifyResendForm()
     if not form.validate_on_submit():
         abort(400)
     lang = session.get('lang', 'nl')

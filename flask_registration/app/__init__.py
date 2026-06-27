@@ -177,6 +177,10 @@ def create_app():
 
     @app.errorhandler(429)
     def too_many_requests(e):
+        app.logger.warning(
+            f"Rate-limit overschreden: {request.method} {request.path} "
+            f"van {request.remote_addr}"
+        )
         lang = session.get('lang', 'nl')
         msg = ('Te veel pogingen. Probeer het over een minuut opnieuw.' if lang == 'nl'
                else 'Too many attempts. Please try again in a minute.')
