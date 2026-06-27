@@ -246,8 +246,6 @@ def auth_google_callback():
         if not user.google_id:
             user.google_id = google_id
             db.session.commit()
-        session.clear()
-        session['lang'] = lang
         session.permanent = True
         login_user(user)
         if not user.linkedin_url:
@@ -267,8 +265,6 @@ def auth_google_callback():
     )
     db.session.add(user)
     db.session.commit()
-    session.clear()
-    session['lang'] = lang
     session.permanent = True
     login_user(user)
     return redirect(url_for('auth.linkedin_aanvullen'))
