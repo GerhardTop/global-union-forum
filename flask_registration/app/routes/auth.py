@@ -249,7 +249,13 @@ def logout():
     return redirect(url_for("main.index"))
 
 
+@auth.app_context_processor
+def _inject_verify_resend_form():
+    return {'verify_resend_form': DeleteAccountForm()}
+
+
 @auth.route("/verify/<token>")
+@limiter.limit("10 per hour")
 def verify_email(token):
     s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     lang = session.get('lang', 'nl')
@@ -270,18 +276,23 @@ def verify_email(token):
         return redirect(url_for('main.index'))
 
     user = User.query.filter_by(email=email).first_or_404()
-    if not user.verified:
+    was_unverified = not user.verified
+    if was_unverified:
         user.verified = True
         db.session.commit()
-    login_user(user)
-    session['modal'] = 'verified'
+        if not current_user.is_authenticated:
+            login_user(user)
+        session['modal'] = 'verified'
     return redirect(url_for('main.index'))
 
 
-@auth.route("/verify/resend")
+@auth.route("/verify/resend", methods=["POST"])
 @login_required
 @limiter.limit("3 per hour")
 def verify_resend():
+    form = DeleteAccountForm()
+    if not form.validate_on_submit():
+        abort(400)
     lang = session.get('lang', 'nl')
     if current_user.verified:
         return redirect(url_for('main.index'))
@@ -311,20 +322,28 @@ def account_verwijderen():
 
     user_id = current_user.id
 
-    PostLike.query.filter_by(user_id=user_id).delete()
-    user_post_ids = [p.id for p in Post.query.filter_by(user_id=user_id).with_entities(Post.id).all()]
-    if user_post_ids:
-        PostLike.query.filter(PostLike.post_id.in_(user_post_ids)).delete(synchronize_session=False)
-        Post.query.filter(Post.parent_id.in_(user_post_ids)).update(
-            {Post.parent_id: None}, synchronize_session=False
+    try:
+        PostLike.query.filter_by(user_id=user_id).delete()
+        user_post_ids = [p.id for p in Post.query.filter_by(user_id=user_id).with_entities(Post.id).all()]
+        if user_post_ids:
+            PostLike.query.filter(PostLike.post_id.in_(user_post_ids)).delete(synchronize_session=False)
+            Post.query.filter(Post.parent_id.in_(user_post_ids)).update(
+                {Post.parent_id: None}, synchronize_session=False
+            )
+            Post.query.filter_by(user_id=user_id).delete(synchronize_session=False)
+        user = db.session.get(User, user_id)
+        db.session.delete(user)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        flash(
+            "Er is een fout opgetreden. Probeer het opnieuw." if lang == 'nl'
+            else "An error occurred. Please try again.",
+            "error"
         )
-        Post.query.filter_by(user_id=user_id).delete(synchronize_session=False)
+        return redirect(url_for("profile.profile"))
 
-    user = User.query.get(user_id)
-    db.session.delete(user)
-    db.session.commit()
     logout_user()
-
     flash(
         "Je account is verwijderd." if lang == 'nl' else "Your account has been deleted.",
         "success"

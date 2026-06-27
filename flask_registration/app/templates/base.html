@@ -71,7 +71,10 @@
             {% if current_user.is_authenticated and not current_user.verified %}
             <div class="gu-verify-banner">
               {{ _('Confirm your email address — check your inbox.') }}
-              <a href="{{ url_for('auth.verify_resend') }}">{{ _('Resend') }}</a>
+              <form method="POST" action="{{ url_for('auth.verify_resend') }}" style="display:inline;margin:0;">
+                {{ verify_resend_form.hidden_tag() }}
+                <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;color:inherit;font:inherit;">{{ _('Resend') }}</button>
+              </form>
             </div>
             {% endif %}
 
