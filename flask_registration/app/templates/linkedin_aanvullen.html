@@ -19,6 +19,7 @@
     </p>
 
     <form method="POST" action="{{ url_for('auth.linkedin_aanvullen') }}" novalidate>
+      {{ form.hidden_tag() }}
 
       <div class="gu-join__field">
         <label for="linkedin_url">

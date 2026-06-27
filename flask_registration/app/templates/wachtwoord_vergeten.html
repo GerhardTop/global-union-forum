@@ -30,6 +30,7 @@
     {% endif %}
 
     <form method="POST" action="{{ url_for('auth.wachtwoord_vergeten') }}" novalidate>
+      {{ form.hidden_tag() }}
       <div class="gu-join__field">
         <label for="email">{{ _('Email address') }}</label>
         <input id="email" name="email" type="email" class="gu-input"

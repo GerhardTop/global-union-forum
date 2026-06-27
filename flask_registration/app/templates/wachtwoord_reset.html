@@ -41,6 +41,7 @@
 
       <form method="POST" action="{{ url_for('auth.wachtwoord_reset', token=token) }}"
             novalidate style="margin-top: 24px;">
+        {{ form.hidden_tag() }}
 
         <div class="gu-join__field">
           <label for="password">{{ _('New password') }}</label>

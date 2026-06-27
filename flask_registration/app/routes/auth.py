@@ -4,10 +4,11 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from urllib.parse import urlparse
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import gettext as _
-from flask_wtf.csrf import validate_csrf, ValidationError as CSRFValidationError
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 from app import db, bcrypt, limiter, oauth
+from app.forms import (WachtwoordVergetenForm, WachtwoordResetForm,
+                       LinkedInAanvullenForm, DeleteAccountForm)
 from app.mail import send_email
 from app.models import User, Post, PostLike
 from app.utils import _password_strong, _PW_ERROR, _make_verify_token, _send_verify_email
@@ -91,9 +92,10 @@ def wachtwoord_vergeten():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     lang = session.get('lang', 'nl')
+    form = WachtwoordVergetenForm()
     sent = False
-    if request.method == 'POST':
-        email = request.form.get('email', '').strip().lower()
+    if form.validate_on_submit():
+        email = form.email.data.strip().lower()
         user = User.query.filter_by(email=email).first()
         if user:
             reset_url = url_for('auth.wachtwoord_reset', token=_make_reset_token(email), _external=True)
@@ -101,7 +103,7 @@ def wachtwoord_vergeten():
         sent = True
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'ok': True})
-    return render_template('wachtwoord_vergeten.html', sent=sent)
+    return render_template('wachtwoord_vergeten.html', sent=sent, form=form)
 
 
 @auth.route('/wachtwoord-reset/<token>', methods=['GET', 'POST'])
@@ -116,10 +118,11 @@ def wachtwoord_reset(token):
     # Token ongeldig als het wachtwoord ná uitgifte al is gewijzigd.
     if user.password_changed_at and issued_at and user.password_changed_at > issued_at:
         return render_template('wachtwoord_reset.html', token_invalid=True, token=token)
+    form = WachtwoordResetForm()
     error = None
-    if request.method == 'POST':
-        pw  = request.form.get('password', '')
-        pw2 = request.form.get('password_confirm', '')
+    if form.validate_on_submit():
+        pw  = form.password.data
+        pw2 = form.password_confirm.data
         if not _password_strong(pw):
             error = _PW_ERROR[lang]
         elif pw != pw2:
@@ -138,7 +141,8 @@ def wachtwoord_reset(token):
                 'success'
             )
             return redirect(url_for('main.index'))
-    return render_template('wachtwoord_reset.html', token_invalid=False, token=token, error=error)
+    return render_template('wachtwoord_reset.html', token_invalid=False, token=token,
+                           error=error, form=form)
 
 
 @auth.route('/auth/google')
@@ -217,10 +221,12 @@ def linkedin_aanvullen():
     if current_user.linkedin_url:
         return redirect(url_for('main.index'))
     lang = session.get('lang', 'nl')
+    form = LinkedInAanvullenForm()
     error = False
-    if request.method == 'POST':
-        linkedin_url = request.form.get('linkedin_url', '').strip()
-        if not linkedin_url.startswith('https://www.linkedin.com/'):
+    if form.validate_on_submit():
+        linkedin_url = form.linkedin_url.data.strip()
+        parsed = urlparse(linkedin_url)
+        if parsed.scheme != 'https' or parsed.netloc not in ('www.linkedin.com', 'linkedin.com'):
             error = True
         else:
             current_user.linkedin_url = linkedin_url
@@ -231,7 +237,9 @@ def linkedin_aanvullen():
                 'success'
             )
             return redirect(url_for('main.index'))
-    return render_template('linkedin_aanvullen.html', error=error)
+    elif form.is_submitted():
+        error = True
+    return render_template('linkedin_aanvullen.html', error=error, form=form)
 
 
 @auth.route("/logout")
@@ -289,9 +297,8 @@ def verify_resend():
 @auth.route("/account/verwijderen", methods=["POST"])
 @login_required
 def account_verwijderen():
-    try:
-        validate_csrf(request.form.get('csrf_token'))
-    except CSRFValidationError:
+    form = DeleteAccountForm()
+    if not form.validate_on_submit():
         abort(400)
     lang = session.get('lang', 'nl')
     if current_user.is_admin:
