@@ -84,6 +84,9 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower().strip()).first()
         if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
+            lang = session.get('lang', 'nl')
+            session.clear()
+            session['lang'] = lang
             session.permanent = True
             login_user(user)
             next_page = request.args.get("next")
@@ -121,6 +124,8 @@ def wachtwoord_vergeten():
         sent = True
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'ok': True})
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'ok': False, 'error': 'invalid_form'})
     return render_template('wachtwoord_vergeten.html', sent=sent, form=form)
 
 
@@ -241,6 +246,8 @@ def auth_google_callback():
         if not user.google_id:
             user.google_id = google_id
             db.session.commit()
+        session.clear()
+        session['lang'] = lang
         session.permanent = True
         login_user(user)
         if not user.linkedin_url:
@@ -260,6 +267,8 @@ def auth_google_callback():
     )
     db.session.add(user)
     db.session.commit()
+    session.clear()
+    session['lang'] = lang
     session.permanent = True
     login_user(user)
     return redirect(url_for('auth.linkedin_aanvullen'))
@@ -295,7 +304,10 @@ def linkedin_aanvullen():
 @auth.route("/logout")
 @login_required
 def logout():
+    lang = session.get('lang', 'nl')
     logout_user()
+    session.clear()
+    session['lang'] = lang
     return redirect(url_for("main.index"))
 
 
@@ -373,7 +385,6 @@ def account_verwijderen():
         return redirect(url_for("profile.profile"))
 
     user_id = current_user.id
-    logout_user()
 
     try:
         PostLike.query.filter_by(user_id=user_id).delete()
@@ -394,7 +405,11 @@ def account_verwijderen():
             else "An error occurred. Please try again.",
             "error"
         )
-        return redirect(url_for("main.index"))
+        return redirect(url_for("profile.profile"))
+
+    logout_user()
+    session.clear()
+    session['lang'] = lang
 
     flash(
         "Je account is verwijderd." if lang == 'nl' else "Your account has been deleted.",
