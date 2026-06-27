@@ -13,6 +13,15 @@ def _validate_password_strong(form, field):
         raise ValidationError(_PW_ERROR[lang])
 
 
+def _validate_password_match(form, field):
+    if field.data != form.password.data:
+        lang = session.get('lang', 'nl')
+        raise ValidationError(
+            'Wachtwoorden komen niet overeen.' if lang == 'nl'
+            else 'Passwords do not match.'
+        )
+
+
 class RegistrationForm(FlaskForm):
     first_name = StringField(
         "first_name",
@@ -80,7 +89,7 @@ class WachtwoordResetForm(FlaskForm):
     )
     password_confirm = PasswordField(
         "password_confirm",
-        validators=[DataRequired(message="val_required")],
+        validators=[DataRequired(message="val_required"), _validate_password_match],
     )
     submit = SubmitField("submit")
 

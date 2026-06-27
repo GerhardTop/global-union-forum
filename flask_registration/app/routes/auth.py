@@ -133,25 +133,23 @@ def wachtwoord_reset(token):
     form = WachtwoordResetForm()
     error = None
     if form.validate_on_submit():
-        pw  = form.password.data
-        pw2 = form.password_confirm.data
-        if pw != pw2:
-            error = ('Wachtwoorden komen niet overeen.' if lang == 'nl'
-                     else 'Passwords do not match.')
-        else:
-            user.password_hash = bcrypt.generate_password_hash(pw).decode('utf-8')
-            user.password_changed_at = datetime.now(timezone.utc).replace(tzinfo=None)
-            db.session.commit()
-            session.permanent = True
-            login_user(user)
-            flash(
-                'Wachtwoord gewijzigd. Je bent nu ingelogd.' if lang == 'nl'
-                else 'Password changed. You are now logged in.',
-                'success'
-            )
-            return redirect(url_for('main.index'))
-    elif form.is_submitted() and form.password.errors:
-        error = form.password.errors[0]
+        pw = form.password.data
+        user.password_hash = bcrypt.generate_password_hash(pw).decode('utf-8')
+        user.password_changed_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        db.session.commit()
+        session.permanent = True
+        login_user(user)
+        flash(
+            'Wachtwoord gewijzigd. Je bent nu ingelogd.' if lang == 'nl'
+            else 'Password changed. You are now logged in.',
+            'success'
+        )
+        return redirect(url_for('main.index'))
+    elif form.is_submitted():
+        if form.password.errors:
+            error = form.password.errors[0]
+        elif form.password_confirm.errors:
+            error = form.password_confirm.errors[0]
     return render_template('wachtwoord_reset.html', token_invalid=False, token=token,
                            error=error, form=form)
 
@@ -315,6 +313,8 @@ def verify_email(token):
         user.verified = True
         db.session.commit()
         if not current_user.is_authenticated:
+            session.clear()
+            session['lang'] = lang
             login_user(user)
         session['modal'] = 'verified'
     return redirect(url_for('main.index'))
