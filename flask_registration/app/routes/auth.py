@@ -1,7 +1,7 @@
 import secrets
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, current_app
-from werkzeug.urls import url_parse
+from urllib.parse import urlparse
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import gettext as _
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
@@ -74,7 +74,7 @@ def login():
             session.permanent = True
             login_user(user)
             next_page = request.args.get("next")
-            if not next_page or url_parse(next_page).netloc != "":
+            if not next_page or urlparse(next_page).netloc != "":
                 next_page = url_for("main.index")
             return redirect(next_page)
         login_error = True
