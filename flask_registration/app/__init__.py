@@ -22,7 +22,9 @@ limiter = Limiter(key_func=get_remote_address, default_limits=[])
 oauth = OAuth()
 babel = Babel()
 
-ADMIN_EMAIL = "top.gerhard@gmail.com"
+ADMIN_EMAIL        = os.environ.get("ADMIN_EMAIL", "")
+MODERATOR_EMAIL    = os.environ.get("MODERATOR_EMAIL", "")
+ADMIN_LINKEDIN_URL = os.environ.get("ADMIN_LINKEDIN_URL", "")
 
 
 def _migrate_columns():
@@ -62,7 +64,7 @@ def _migrate_columns():
             else:
                 alters.append('ALTER TABLE users ADD UNIQUE INDEX uq_users_google_id (google_id)')
         if 'password_changed_at' not in cols:
-            alters.append('ALTER TABLE users ADD COLUMN password_changed_at DATETIME NULL DEFAULT NULL')
+            alters.append('ALTER TABLE users ADD COLUMN password_changed_at TIMESTAMP NULL DEFAULT NULL')
 
     if 'threads' in existing:
         cols = {c['name'] for c in insp.get_columns('threads')}
@@ -100,22 +102,23 @@ def _ensure_admin_user():
             user.is_admin = True
             user.is_moderator = True
             changed = True
-        if not user.linkedin_url:
-            user.linkedin_url = 'https://www.linkedin.com/in/gerhardtop'
+        if not user.linkedin_url and ADMIN_LINKEDIN_URL:
+            user.linkedin_url = ADMIN_LINKEDIN_URL
             changed = True
         if changed:
             db.session.commit()
 
-    # Anne Top-Verhoeven — moderator
-    anne = User.query.filter_by(email='atopverhoeven@hotmail.com').first()
-    if anne:
-        if not anne.is_moderator:
-            anne.is_moderator = True
+    # Moderator (configureerbaar via MODERATOR_EMAIL)
+    if MODERATOR_EMAIL:
+        moderator = User.query.filter_by(email=MODERATOR_EMAIL).first()
+        if moderator and not moderator.is_moderator:
+            moderator.is_moderator = True
             db.session.commit()
 
 
 def create_app():
-    logging.basicConfig(level=logging.DEBUG)
+    _production = bool(os.environ.get("DATABASE_URL"))
+    logging.basicConfig(level=logging.WARNING if _production else logging.DEBUG)
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -150,7 +153,6 @@ def create_app():
         'object-src': "'none'",
         'base-uri': "'self'",
     }
-    _production = bool(os.environ.get("DATABASE_URL"))
     Talisman(
         app,
         force_https=_production,
