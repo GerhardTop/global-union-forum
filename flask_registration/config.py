@@ -46,4 +46,4 @@ class Config:
     BABEL_DEFAULT_LOCALE = 'nl'
     BABEL_SUPPORTED_LOCALES = ['en', 'nl']
     BABEL_DEFAULT_TIMEZONE = 'UTC'
-    RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
+    RESEND_API_KEY = _require_env('RESEND_API_KEY')

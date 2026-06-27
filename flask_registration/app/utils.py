@@ -44,6 +44,7 @@ _SPECIAL = re.compile(r'[^A-Za-z0-9]')
 def _password_strong(pw):
     return (
         len(pw) >= 8 and
+        len(pw.encode('utf-8')) <= 72 and  # bcrypt kapt stil af op 72 bytes
         bool(re.search(r'[A-Z]', pw)) and
         bool(re.search(r'[0-9]', pw)) and
         bool(_SPECIAL.search(pw))
@@ -51,9 +52,9 @@ def _password_strong(pw):
 
 
 _PW_ERROR = {
-    'nl': ('Wachtwoord moet minimaal 8 tekens bevatten, '
+    'nl': ('Wachtwoord moet tussen 8 en 72 tekens bevatten, '
            'een hoofdletter, een cijfer en een speciaal teken.'),
-    'en': ('Password must contain at least 8 characters, '
+    'en': ('Password must be between 8 and 72 characters and contain '
            'one uppercase letter, one number and one special character.'),
 }
 

@@ -1,5 +1,7 @@
 import secrets
 
+from datetime import datetime, timezone
+
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, current_app, abort
 from urllib.parse import urlparse
 from flask_login import login_user, logout_user, login_required, current_user
@@ -29,9 +31,11 @@ def _verify_reset_token(token):
         email, issued_at = s.loads(
             token, salt='password-reset', max_age=3600, return_timestamp=True
         )
-        return email, issued_at
-    except (SignatureExpired, BadSignature):
-        return None, None
+        return email, issued_at, None
+    except SignatureExpired:
+        return None, None, 'expired'
+    except BadSignature:
+        return None, None, 'invalid'
 
 
 def _send_reset_email(user, reset_url, lang):
@@ -79,7 +83,8 @@ def login():
             session.permanent = True
             login_user(user)
             next_page = request.args.get("next")
-            if not next_page or urlparse(next_page).netloc != "":
+            parsed_next = urlparse(next_page) if next_page else None
+            if not next_page or parsed_next.scheme or parsed_next.netloc:
                 next_page = url_for("main.index")
             return redirect(next_page)
         login_error = True
@@ -111,8 +116,12 @@ def wachtwoord_reset(token):
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     lang = session.get('lang', 'nl')
-    email, issued_at = _verify_reset_token(token)
+    email, issued_at, token_error = _verify_reset_token(token)
     if not email:
+        if token_error == 'expired':
+            current_app.logger.info("Verlopen wachtwoord-reset token gebruikt (geen aanval).")
+        else:
+            current_app.logger.warning("Ongeldig of geforgeerd wachtwoord-reset token.")
         return render_template('wachtwoord_reset.html', token_invalid=True, token=token)
     user = User.query.filter_by(email=email).first_or_404()
     # Token ongeldig als het wachtwoord ná uitgifte al is gewijzigd.
@@ -129,9 +138,8 @@ def wachtwoord_reset(token):
             error = ('Wachtwoorden komen niet overeen.' if lang == 'nl'
                      else 'Passwords do not match.')
         else:
-            from datetime import datetime
             user.password_hash = bcrypt.generate_password_hash(pw).decode('utf-8')
-            user.password_changed_at = datetime.utcnow()
+            user.password_changed_at = datetime.now(timezone.utc).replace(tzinfo=None)
             db.session.commit()
             session.permanent = True
             login_user(user)
@@ -154,6 +162,15 @@ def auth_google():
 @auth.route('/auth/google/callback')
 def auth_google_callback():
     lang = session.get('lang', 'nl')
+    oauth_error = request.args.get('error')
+    if oauth_error:
+        current_app.logger.warning(f"Google OAuth geweigerd: {oauth_error}")
+        flash(
+            'Inloggen met Google geannuleerd.' if lang == 'nl'
+            else 'Google sign-in cancelled.',
+            'warning'
+        )
+        return redirect(url_for('auth.login'))
     try:
         token = oauth.google.authorize_access_token()
     except Exception:
