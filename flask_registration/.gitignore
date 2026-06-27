@@ -11,3 +11,5 @@ build/
 .DS_Store
 .DS_Store
 instance/*.db
+RAPPORT.md
+agent_voorstellen/
