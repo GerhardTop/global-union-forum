@@ -125,8 +125,12 @@ def wachtwoord_reset(token):
         return render_template('wachtwoord_reset.html', token_invalid=True, token=token)
     user = User.query.filter_by(email=email).first_or_404()
     # Token ongeldig als het wachtwoord ná uitgifte al is gewijzigd.
-    if user.password_changed_at and issued_at and user.password_changed_at > issued_at:
-        return render_template('wachtwoord_reset.html', token_invalid=True, token=token)
+    # issued_at van itsdangerous 2.2+ is timezone-aware; password_changed_at is naive.
+    # Strip tzinfo zodat de vergelijking niet crasht.
+    if user.password_changed_at and issued_at:
+        issued_naive = issued_at.replace(tzinfo=None) if issued_at.tzinfo else issued_at
+        if user.password_changed_at > issued_naive:
+            return render_template('wachtwoord_reset.html', token_invalid=True, token=token)
     form = WachtwoordResetForm()
     error = None
     if form.validate_on_submit():
@@ -199,6 +203,17 @@ def auth_google_callback():
         flash(
             'Geen e-mailadres ontvangen van Google.' if lang == 'nl'
             else 'No email address received from Google.',
+            'error'
+        )
+        return redirect(url_for('auth.login'))
+
+    if not userinfo.get('email_verified'):
+        current_app.logger.warning(
+            f"Google OAuth geweigerd: e-mailadres niet geverifieerd bij Google ({email})."
+        )
+        flash(
+            'Je Google-e-mailadres is nog niet bevestigd. Bevestig het eerst via Google.' if lang == 'nl'
+            else 'Your Google email address is not verified. Please verify it with Google first.',
             'error'
         )
         return redirect(url_for('auth.login'))
@@ -338,6 +353,7 @@ def account_verwijderen():
         return redirect(url_for("profile.profile"))
 
     user_id = current_user.id
+    logout_user()
 
     try:
         PostLike.query.filter_by(user_id=user_id).delete()
@@ -358,9 +374,8 @@ def account_verwijderen():
             else "An error occurred. Please try again.",
             "error"
         )
-        return redirect(url_for("profile.profile"))
+        return redirect(url_for("main.index"))
 
-    logout_user()
     flash(
         "Je account is verwijderd." if lang == 'nl' else "Your account has been deleted.",
         "success"
