@@ -59,7 +59,12 @@ def _send_reset_email(user, reset_url, lang):
             f"<p>Als jij dit niet hebt aangevraagd, kun je deze e-mail negeren.</p>"
             f"<p>Global Union Forum</p>"
         )
-    send_email(user.email, subject, html)
+    ok = send_email(user.email, subject, html)
+    if not ok:
+        current_app.logger.error(
+            f"Wachtwoord-reset e-mail naar {user.email} mislukt."
+        )
+    return ok
 
 
 # ── Routes ───────────────────────────────────────────────────────────────────
@@ -103,7 +108,16 @@ def wachtwoord_vergeten():
         user = User.query.filter_by(email=email).first()
         if user:
             reset_url = url_for('auth.wachtwoord_reset', token=_make_reset_token(email), _external=True)
-            _send_reset_email(user, reset_url, lang)
+            mail_ok = _send_reset_email(user, reset_url, lang)
+            if not mail_ok:
+                flash(
+                    'E-mail versturen mislukt. Probeer het later opnieuw.' if lang == 'nl'
+                    else 'Failed to send email. Please try again later.',
+                    'error'
+                )
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return jsonify({'ok': False})
+                return render_template('wachtwoord_vergeten.html', sent=False, form=form)
         sent = True
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'ok': True})
@@ -137,6 +151,8 @@ def wachtwoord_reset(token):
         user.password_hash = bcrypt.generate_password_hash(pw).decode('utf-8')
         user.password_changed_at = datetime.now(timezone.utc).replace(tzinfo=None)
         db.session.commit()
+        session.clear()
+        session['lang'] = lang
         session.permanent = True
         login_user(user)
         flash(
@@ -155,12 +171,14 @@ def wachtwoord_reset(token):
 
 
 @auth.route('/auth/google')
+@limiter.limit("20 per minute")
 def auth_google():
     redirect_uri = url_for('auth.auth_google_callback', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
 
 
 @auth.route('/auth/google/callback')
+@limiter.limit("20 per minute")
 def auth_google_callback():
     lang = session.get('lang', 'nl')
     oauth_error = request.args.get('error')
