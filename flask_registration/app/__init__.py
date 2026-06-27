@@ -61,6 +61,8 @@ def _migrate_columns():
                 alters.append('CREATE UNIQUE INDEX IF NOT EXISTS uq_users_google_id ON users (google_id)')
             else:
                 alters.append('ALTER TABLE users ADD UNIQUE INDEX uq_users_google_id (google_id)')
+        if 'password_changed_at' not in cols:
+            alters.append('ALTER TABLE users ADD COLUMN password_changed_at DATETIME NULL DEFAULT NULL')
 
     if 'threads' in existing:
         cols = {c['name'] for c in insp.get_columns('threads')}

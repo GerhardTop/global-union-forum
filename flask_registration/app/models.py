@@ -16,8 +16,9 @@ class User(UserMixin, db.Model):
     verified = db.Column(db.Boolean, nullable=False, default=False)
     linkedin_url   = db.Column(db.String(255), nullable=True)
     google_id      = db.Column(db.String(100), nullable=True, unique=True)
-    auto_translate = db.Column(db.Boolean, nullable=True, default=None)
-    created_at     = db.Column(db.DateTime, default=datetime.utcnow)
+    auto_translate      = db.Column(db.Boolean, nullable=True, default=None)
+    password_changed_at = db.Column(db.DateTime, nullable=True, default=None)
+    created_at          = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f"<User {self.email}>"

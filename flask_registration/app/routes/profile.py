@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify
 from flask_login import login_required, current_user
 from flask_babel import gettext as _
@@ -51,6 +53,7 @@ def profile():
                 current_user.password_hash = bcrypt.generate_password_hash(
                     form.new_password.data
                 ).decode("utf-8")
+                current_user.password_changed_at = datetime.utcnow()
                 db.session.commit()
                 flash(_('Password changed successfully.'), "success")
                 return redirect(url_for("profile.profile"))

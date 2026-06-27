@@ -1,9 +1,10 @@
 import secrets
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, current_app, abort
 from urllib.parse import urlparse
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import gettext as _
+from flask_wtf.csrf import validate_csrf, ValidationError as CSRFValidationError
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 from app import db, bcrypt, limiter, oauth
@@ -24,9 +25,12 @@ def _make_reset_token(email):
 def _verify_reset_token(token):
     s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     try:
-        return s.loads(token, salt='password-reset', max_age=3600)
+        email, issued_at = s.loads(
+            token, salt='password-reset', max_age=3600, return_timestamp=True
+        )
+        return email, issued_at
     except (SignatureExpired, BadSignature):
-        return None
+        return None, None
 
 
 def _send_reset_email(user, reset_url, lang):
@@ -105,10 +109,13 @@ def wachtwoord_reset(token):
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     lang = session.get('lang', 'nl')
-    email = _verify_reset_token(token)
+    email, issued_at = _verify_reset_token(token)
     if not email:
         return render_template('wachtwoord_reset.html', token_invalid=True, token=token)
     user = User.query.filter_by(email=email).first_or_404()
+    # Token ongeldig als het wachtwoord ná uitgifte al is gewijzigd.
+    if user.password_changed_at and issued_at and user.password_changed_at > issued_at:
+        return render_template('wachtwoord_reset.html', token_invalid=True, token=token)
     error = None
     if request.method == 'POST':
         pw  = request.form.get('password', '')
@@ -119,7 +126,9 @@ def wachtwoord_reset(token):
             error = ('Wachtwoorden komen niet overeen.' if lang == 'nl'
                      else 'Passwords do not match.')
         else:
+            from datetime import datetime
             user.password_hash = bcrypt.generate_password_hash(pw).decode('utf-8')
+            user.password_changed_at = datetime.utcnow()
             db.session.commit()
             session.permanent = True
             login_user(user)
@@ -280,6 +289,10 @@ def verify_resend():
 @auth.route("/account/verwijderen", methods=["POST"])
 @login_required
 def account_verwijderen():
+    try:
+        validate_csrf(request.form.get('csrf_token'))
+    except CSRFValidationError:
+        abort(400)
     lang = session.get('lang', 'nl')
     if current_user.is_admin:
         flash(
@@ -301,9 +314,9 @@ def account_verwijderen():
         Post.query.filter_by(user_id=user_id).delete(synchronize_session=False)
 
     user = User.query.get(user_id)
-    logout_user()
     db.session.delete(user)
     db.session.commit()
+    logout_user()
 
     flash(
         "Je account is verwijderd." if lang == 'nl' else "Your account has been deleted.",
