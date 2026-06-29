@@ -245,4 +245,7 @@ def create_app():
         from app.routes.forum import _seed_forum
         _seed_forum()
 
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
     return app

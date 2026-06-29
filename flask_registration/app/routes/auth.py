@@ -176,14 +176,20 @@ def wachtwoord_reset(token):
 
 
 @auth.route('/auth/google')
-@limiter.limit("20 per minute")
+@limiter.limit("20 per minute",
+               key_func=lambda: request.headers.get(
+                   'X-Forwarded-For', request.remote_addr
+               ).split(',')[0].strip())
 def auth_google():
     redirect_uri = url_for('auth.auth_google_callback', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
 
 
 @auth.route('/auth/google/callback')
-@limiter.limit("20 per minute")
+@limiter.limit("20 per minute",
+               key_func=lambda: request.headers.get(
+                   'X-Forwarded-For', request.remote_addr
+               ).split(',')[0].strip())
 def auth_google_callback():
     lang = session.get('lang', 'nl')
     oauth_error = request.args.get('error')
