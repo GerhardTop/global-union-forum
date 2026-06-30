@@ -31,6 +31,10 @@ class Config:
     SECRET_KEY = _require_env("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = _build_db_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,   # test connectie vóór gebruik; maakt nieuwe aan als Neon sliep
+        "pool_recycle": 300,     # vervang connecties ouder dan 5 minuten
+    }
 
 
     ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
