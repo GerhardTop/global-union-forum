@@ -374,3 +374,19 @@ msgstr "Password must be at least 8 characters."
 
 msgid "val_passwords_no_match"
 msgstr "Passwords do not match."
+
+#: app/templates/login.html
+msgid "Confirm your email first"
+msgstr "Confirm your email first"
+
+msgid "Your email address is not confirmed yet. Check your inbox, or resend the confirmation email below."
+msgstr "Your email address is not confirmed yet. Check your inbox, or resend the confirmation email below."
+
+msgid "Resend confirmation email"
+msgstr "Resend confirmation email"
+
+msgid "Too many attempts. Please try again in an hour."
+msgstr "Too many attempts. Please try again in an hour."
+
+msgid "Confirmation email resent — check your inbox."
+msgstr "Confirmation email resent — check your inbox."

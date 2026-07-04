@@ -114,7 +114,10 @@
     var closeBtn = document.getElementById('guUnverifiedModalClose');
     var form = document.getElementById('guResendForm');
     var body = document.getElementById('guUnverifiedBody');
-    var lang = '{{ lang }}';
+    // Server-side vertaald via _() — geen taal-ternary in JS, zodat deze
+    // teksten via de .po/.mo-catalogi lopen i.p.v. hardcoded in JavaScript.
+    var msgTooManyAttempts = {{ _('Too many attempts. Please try again in an hour.')|tojson }};
+    var msgResent = {{ _('Confirmation email resent — check your inbox.')|tojson }};
     function closeModal() { overlay.style.display = 'none'; }
     closeBtn.addEventListener('click', closeModal);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
@@ -128,14 +131,10 @@
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       }).then(function (response) {
         if (response.status === 429) {
-          body.textContent = lang === 'en'
-            ? 'Too many attempts. Please try again in an hour.'
-            : 'Te veel pogingen. Probeer het over een uur opnieuw.';
+          body.textContent = msgTooManyAttempts;
           btn.disabled = false;
         } else {
-          body.textContent = lang === 'en'
-            ? 'Confirmation email resent — check your inbox.'
-            : 'Bevestigingsmail opnieuw verzonden — check je inbox.';
+          body.textContent = msgResent;
           form.style.display = 'none';
         }
       }).catch(function () {
