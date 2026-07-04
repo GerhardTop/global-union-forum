@@ -112,7 +112,7 @@
       {{ _('Update your password.') }}
     </h2>
 
-    <form method="POST" action="{{ url_for('profile.profile') }}" novalidate>
+    <form id="guPasswordForm" method="POST" action="{{ url_for('profile.profile') }}" novalidate>
       {{ form.hidden_tag() }}
 
       <div class="gu-join__field">
@@ -171,6 +171,17 @@
         {{ _('Save changes') }} <span class="gu-arrow"></span>
       </button>
     </form>
+
+    {% if password_weak or password_mismatch %}
+    <script nonce="{{ csp_nonce() }}">
+      /* Deze pagina is lang (profiel → LinkedIn → taal → wachtwoord →
+         gevarenzone); een gewone form-POST herlaadt de hele pagina en de
+         browser scrollt standaard naar boven, waardoor de rode velden hier
+         buiten beeld vallen. Bij een validatiefout scrollen we daarom
+         expliciet naar dit formulier. */
+      document.getElementById('guPasswordForm').scrollIntoView({ block: 'center' });
+    </script>
+    {% endif %}
 
     <script nonce="{{ csp_nonce() }}">
       /* ── Scroll preservation voor taalschakelaar ── */

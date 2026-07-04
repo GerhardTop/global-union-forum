@@ -639,7 +639,7 @@ body {
 .gu-join__sub-field label { font-size: 14px; font-weight: 500; color: var(--gu-fg-1); }
 .gu-join__hint { font-size: 13px; color: var(--gu-fg-3); margin: 0; }
 .gu-input--error { border-color: var(--gu-danger) !important; box-shadow: 0 0 0 3px rgba(238,28,37,.12); }
-.gu-join__formError { font-size: 14px; color: var(--gu-danger); margin: -8px 0 8px; }
+.gu-join__formError { font-size: 14px; color: var(--gu-danger); margin: 6px 0 8px; }
 
 /* Taalknop */
 .gu-join__langChoice { display: inline-flex; gap: 8px; }
@@ -1040,6 +1040,9 @@ body {
   color: var(--gu-fg-3);
   margin: 5px 0 0;
   line-height: 1.5;
+}
+.gu-pw-hint--error {
+  color: var(--gu-danger);
 }
 .gu-pw-strength {
   display: flex;
