@@ -35,6 +35,9 @@
             {{ _('Find my profile') }}
           </button>
         </div>
+        {% if error %}
+        <p class="gu-join__formError">{{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}</p>
+        {% endif %}
         <p class="gu-join__hint" style="margin-top: 6px;">
           {{ _('Find your profile, click on it and copy the URL from the address bar.') }}
         </p>

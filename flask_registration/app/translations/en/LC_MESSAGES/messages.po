@@ -389,5 +389,6 @@ msgstr "Confirmation email resent — check your inbox."
 msgid "Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character."
 msgstr "Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character."
 
-msgid "Passwords do not match."
-msgstr "Passwords do not match."
+#: app/routes/social.py
+msgid "This email address is already in use."
+msgstr "This email address is already in use."
