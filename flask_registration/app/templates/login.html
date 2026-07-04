@@ -86,6 +86,66 @@
 
   </div>
 </div>
+
+{% if unverified_email %}
+<div class="gu-modal-overlay" id="guUnverifiedModal" role="dialog" aria-modal="true">
+  <div class="gu-modal gu-modal--error">
+    <button class="gu-modal__close" id="guUnverifiedModalClose" aria-label="{{ _('Close') }}">✕</button>
+    <p class="gu-eyebrow">Global Union Forum</p>
+    <h2 class="gu-modal__title">
+      {{ _('Confirm your email first') }}
+    </h2>
+    <p class="gu-modal__body" id="guUnverifiedBody">
+      {{ _('Your email address is not confirmed yet. Check your inbox, or resend the confirmation email below.') }}
+    </p>
+    <form id="guResendForm" style="margin-top: 16px;">
+      {{ verify_resend_form.hidden_tag() }}
+      <input type="hidden" name="email" value="{{ unverified_email }}">
+      <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
+              style="width: 100%; justify-content: center;">
+        {{ _('Resend confirmation email') }}
+      </button>
+    </form>
+  </div>
+</div>
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var overlay = document.getElementById('guUnverifiedModal');
+    var closeBtn = document.getElementById('guUnverifiedModalClose');
+    var form = document.getElementById('guResendForm');
+    var body = document.getElementById('guUnverifiedBody');
+    var lang = '{{ lang }}';
+    function closeModal() { overlay.style.display = 'none'; }
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      fetch('{{ url_for("auth.verify_resend_onbevestigd") }}', {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      }).then(function (response) {
+        if (response.status === 429) {
+          body.textContent = lang === 'en'
+            ? 'Too many attempts. Please try again in an hour.'
+            : 'Te veel pogingen. Probeer het over een uur opnieuw.';
+          btn.disabled = false;
+        } else {
+          body.textContent = lang === 'en'
+            ? 'Confirmation email resent — check your inbox.'
+            : 'Bevestigingsmail opnieuw verzonden — check je inbox.';
+          form.style.display = 'none';
+        }
+      }).catch(function () {
+        btn.disabled = false;
+      });
+    });
+  })();
+</script>
+{% endif %}
+
 <script nonce="{{ csp_nonce() }}">
   document.querySelectorAll('.gu-pw-toggle').forEach(function (btn) {
     btn.addEventListener('click', function () {

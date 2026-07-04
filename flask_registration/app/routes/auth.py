@@ -81,21 +81,30 @@ def login():
         return redirect(url_for("main.index"))
     form = LoginForm()
     login_error = False
+    # Gevuld i.p.v. ingelogd wanneer credentials kloppen maar het account nog
+    # niet bevestigd is (Blokker 1) — login.html toont dan een modal i.p.v.
+    # de gebruiker in te loggen.
+    unverified_email = None
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower().strip()).first()
         if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
-            lang = session.get('lang', 'nl')
-            session.clear()
-            session['lang'] = lang
-            session.permanent = True
-            login_user(user)
-            next_page = request.args.get("next")
-            parsed_next = urlparse(next_page) if next_page else None
-            if not next_page or parsed_next.scheme or parsed_next.netloc:
-                next_page = url_for("main.index")
-            return redirect(next_page)
-        login_error = True
-    return render_template("login.html", form=form, login_error=login_error)
+            if not user.verified:
+                unverified_email = user.email
+            else:
+                lang = session.get('lang', 'nl')
+                session.clear()
+                session['lang'] = lang
+                session.permanent = True
+                login_user(user)
+                next_page = request.args.get("next")
+                parsed_next = urlparse(next_page) if next_page else None
+                if not next_page or parsed_next.scheme or parsed_next.netloc:
+                    next_page = url_for("main.index")
+                return redirect(next_page)
+        else:
+            login_error = True
+    return render_template("login.html", form=form, login_error=login_error,
+                           unverified_email=unverified_email)
 
 
 @auth.route('/wachtwoord-vergeten', methods=['GET', 'POST'])
@@ -249,8 +258,19 @@ def auth_google_callback():
 
     user = User.query.filter_by(email=email).first()
     if user:
+        changed = False
         if not user.google_id:
             user.google_id = google_id
+            changed = True
+        # Blokker 2: Google's email_verified is hierboven al hard gecontroleerd
+        # (regel ~239), dus een bestaand account dat via Google inlogt is per
+        # definitie bevestigd. Zonder dit zou Blokker 1 (verificatie afdwingen
+        # bij e-mail/wachtwoord-login) bestaande, legitieme Google-gebruikers
+        # alsnog buitensluiten als hun 'verified' nog False stond.
+        if not user.verified:
+            user.verified = True
+            changed = True
+        if changed:
             db.session.commit()
         session.permanent = True
         login_user(user)
@@ -369,6 +389,32 @@ def verify_resend():
         "success"
     )
     return redirect(request.referrer or url_for('main.index'))
+
+
+@auth.route("/verify/resend-onbevestigd", methods=["POST"])
+@limiter.limit("3 per hour")
+def verify_resend_onbevestigd():
+    """
+    Verificatiemail opnieuw versturen voor een gebruiker die NOG NIET is
+    ingelogd — het pad vanuit de modal die login() toont wanneer credentials
+    kloppen maar het account niet bevestigd is (Blokker 1). Bewust GEEN
+    @login_required: 'verify_resend' hierboven werkt hier niet, want de
+    gebruiker mag op dit punt per ontwerp nog niet ingelogd zijn.
+
+    Reageert ALTIJD hetzelfde (ok: True) ongeacht of het account bestaat of
+    al bevestigd is — zelfde anti-enumeration-aanpak als wachtwoord_vergeten().
+    Uitsluitend bedoeld voor de AJAX-aanroep vanuit login.html; geen niet-JS
+    fallback nodig (net als de 'wachtwoord vergeten'-link op diezelfde pagina).
+    """
+    form = VerifyResendForm()
+    if not form.validate_on_submit():
+        return jsonify({'ok': False}), 400
+    lang = session.get('lang', 'nl')
+    email = (request.form.get('email') or '').strip().lower()
+    user = User.query.filter_by(email=email).first()
+    if user and not user.verified:
+        _send_verify_email(user, lang, current_app.config['SECRET_KEY'])
+    return jsonify({'ok': True})
 
 
 @auth.route("/account/verwijderen", methods=["POST"])
