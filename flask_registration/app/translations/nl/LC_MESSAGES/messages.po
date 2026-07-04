@@ -218,12 +218,6 @@ msgstr "Vul een geldig e-mailadres in."
 msgid "Min. 8 characters"
 msgstr "Min. 8 tekens"
 
-msgid "At least 8 characters, 1 uppercase letter, 1 number and 1 special character."
-msgstr "Minimaal 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken."
-
-msgid "Password must contain at least 8 characters, one uppercase letter, one number and one special character."
-msgstr "Wachtwoord moet minimaal 8 tekens bevatten, een hoofdletter, een cijfer en een speciaal teken."
-
 msgid "Confirm password"
 msgstr "Bevestig wachtwoord"
 
@@ -390,3 +384,10 @@ msgstr "Te veel pogingen. Probeer het over een uur opnieuw."
 
 msgid "Confirmation email resent — check your inbox."
 msgstr "Bevestigingsmail opnieuw verzonden — check je inbox."
+
+#: app/forms.py
+msgid "Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character."
+msgstr "Wachtwoord moet tussen 8 en 72 tekens bevatten, een hoofdletter, een cijfer en een speciaal teken."
+
+msgid "Passwords do not match."
+msgstr "Wachtwoorden komen niet overeen."

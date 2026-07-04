@@ -5,7 +5,7 @@ from flask_babel import gettext as _
 from app import db, bcrypt, limiter
 from app.mail import send_email
 from app.models import User
-from app.utils import _password_strong, _PW_ERROR, _send_verify_email
+from app.utils import _password_strong, _send_verify_email
 
 social = Blueprint("social", __name__)
 
@@ -131,10 +131,13 @@ def aanmelden():
             errors["email"] = True
         elif User.query.filter_by(email=form_data["email"]).first():
             errors["email_in_use"] = True
+        # Onafhankelijke checks (geen elif): een te zwak wachtwoord en een
+        # mismatch zijn twee losse problemen die allebei getoond moeten
+        # worden, niet alleen de eerst-gevonden.
         if not _password_strong(password):
             errors["password"] = True
-        elif password != password_confirm:
-            errors["password_confirm"] = True
+        if password != password_confirm:
+            errors["password_mismatch"] = True
         if not form_data["linkedin_url"].startswith("https://www.linkedin.com/"):
             errors["linkedin_url"] = True
 

@@ -221,12 +221,6 @@ msgstr "Enter a valid email address."
 msgid "Min. 8 characters"
 msgstr "Min. 8 characters"
 
-msgid "At least 8 characters, 1 uppercase letter, 1 number and 1 special character."
-msgstr "At least 8 characters, 1 uppercase letter, 1 number and 1 special character."
-
-msgid "Password must contain at least 8 characters, one uppercase letter, one number and one special character."
-msgstr "Password must contain at least 8 characters, one uppercase letter, one number and one special character."
-
 msgid "Confirm password"
 msgstr "Confirm password"
 
@@ -390,3 +384,10 @@ msgstr "Too many attempts. Please try again in an hour."
 
 msgid "Confirmation email resent — check your inbox."
 msgstr "Confirmation email resent — check your inbox."
+
+#: app/forms.py
+msgid "Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character."
+msgstr "Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character."
+
+msgid "Passwords do not match."
+msgstr "Passwords do not match."

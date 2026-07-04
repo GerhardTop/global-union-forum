@@ -13,7 +13,7 @@ from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
                        LinkedInAanvullenForm, DeleteAccountForm, VerifyResendForm)
 from app.mail import send_email
 from app.models import User, Post, PostLike
-from app.utils import _make_verify_token, _send_verify_email
+from app.utils import _make_verify_token, _send_verify_email, _password_strong
 
 auth = Blueprint("auth", __name__)
 
@@ -159,7 +159,12 @@ def wachtwoord_reset(token):
         if user.password_changed_at > issued_naive:
             return render_template('wachtwoord_reset.html', token_invalid=True, token=token)
     form = WachtwoordResetForm()
-    error = None
+    # Expliciet, los van WTForms' .errors berekend — zo kan er nooit een ruwe,
+    # onvertaalde validator-sleutel op het scherm belanden (zie ook profile.py
+    # en social.py: dezelfde aanpak, voor identiek gedrag over alle drie de
+    # wachtwoordbevestigings-formulieren).
+    password_weak = False
+    password_mismatch = False
     if form.validate_on_submit():
         pw = form.password.data
         user.password_hash = bcrypt.generate_password_hash(pw).decode('utf-8')
@@ -176,12 +181,15 @@ def wachtwoord_reset(token):
         )
         return redirect(url_for('main.index'))
     elif form.is_submitted():
-        if form.password.errors:
-            error = form.password.errors[0]
-        elif form.password_confirm.errors:
-            error = form.password_confirm.errors[0]
+        pw = form.password.data or ""
+        pw_confirm = form.password_confirm.data or ""
+        if pw and not _password_strong(pw):
+            password_weak = True
+        if pw_confirm and pw != pw_confirm:
+            password_mismatch = True
     return render_template('wachtwoord_reset.html', token_invalid=False, token=token,
-                           error=error, form=form)
+                           form=form, password_weak=password_weak,
+                           password_mismatch=password_mismatch)
 
 
 @auth.route('/auth/google')

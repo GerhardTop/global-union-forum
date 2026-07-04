@@ -27,18 +27,6 @@
       <p class="gu-eyebrow">{{ _('New password') }}</p>
       <h2 class="gu-join__h2">{{ _('Choose a new password.') }}</h2>
 
-      {% if error %}
-      <div class="gu-alert--error" role="alert" style="margin: 16px 0;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        {{ error }}
-      </div>
-      {% endif %}
-
       <form method="POST" action="{{ url_for('auth.wachtwoord_reset', token=token) }}"
             novalidate style="margin-top: 24px;">
         {{ form.hidden_tag() }}
@@ -46,7 +34,8 @@
         <div class="gu-join__field">
           <label for="password">{{ _('New password') }}</label>
           <div class="gu-pw-wrap">
-            <input id="password" name="password" type="password" class="gu-input"
+            <input id="password" name="password" type="password"
+                   class="gu-input{% if password_weak or password_mismatch %} gu-input--error{% endif %}"
                    placeholder="{{ _('Min. 8 characters') }}"
                    autocomplete="new-password" required>
             <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
@@ -54,8 +43,8 @@
               <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
-          <p class="gu-pw-hint">
-            {{ _('At least 8 characters, 1 uppercase letter, 1 number and 1 special character.') }}
+          <p class="gu-pw-hint{% if password_weak %} gu-pw-hint--error{% endif %}">
+            {{ _('Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character.') }}
           </p>
           <div class="gu-pw-strength" id="pwStrength" hidden>
             <div class="gu-pw-strength__bar"><div class="gu-pw-strength__fill"></div></div>
@@ -66,7 +55,8 @@
         <div class="gu-join__field">
           <label for="password_confirm">{{ _('Confirm new password') }}</label>
           <div class="gu-pw-wrap">
-            <input id="password_confirm" name="password_confirm" type="password" class="gu-input"
+            <input id="password_confirm" name="password_confirm" type="password"
+                   class="gu-input{% if password_mismatch %} gu-input--error{% endif %}"
                    placeholder="{{ _('Repeat your password') }}"
                    autocomplete="new-password" required>
             <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
@@ -74,6 +64,9 @@
               <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
+          {% if password_mismatch %}
+          <p class="gu-join__formError">{{ _('Passwords do not match.') }}</p>
+          {% endif %}
         </div>
 
         <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"

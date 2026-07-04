@@ -51,14 +51,6 @@ def _password_strong(pw):
     )
 
 
-_PW_ERROR = {
-    'nl': ('Wachtwoord moet tussen 8 en 72 tekens bevatten, '
-           'een hoofdletter, een cijfer en een speciaal teken.'),
-    'en': ('Password must be between 8 and 72 characters and contain '
-           'one uppercase letter, one number and one special character.'),
-}
-
-
 # ── E-mail verificatie (gedeeld door auth en social) ────────────────────────
 
 def _make_verify_token(email, secret_key):

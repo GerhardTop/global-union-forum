@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from flask_babel import gettext as _
 
 from app import db, bcrypt
+from app.utils import _password_strong
 
 profile_bp = Blueprint("profile", __name__)
 
@@ -21,6 +22,12 @@ def profile():
     from app.forms import ChangePasswordForm
     lang = session.get('lang', 'nl')
     linkedin_error = False
+    # Expliciet, los van WTForms' .errors berekend — zelfde aanpak als
+    # auth.py/wachtwoord_reset() en social.py/aanmelden(), zodat er nooit een
+    # ruwe validator-sleutel op het scherm kan belanden en alle drie de
+    # wachtwoordbevestigings-formulieren identiek gedrag vertonen.
+    password_weak = False
+    password_mismatch = False
     form = ChangePasswordForm()
 
     if request.method == "POST":
@@ -55,12 +62,15 @@ def profile():
                 flash(_('Password changed successfully.'), "success")
                 return redirect(url_for("profile.profile"))
         elif form.is_submitted():
-            for field in (form.current_password, form.new_password, form.confirm_new_password):
-                if field.errors:
-                    flash(field.errors[0], "error")
-                    break
+            new_pw = form.new_password.data or ""
+            confirm_pw = form.confirm_new_password.data or ""
+            if new_pw and not _password_strong(new_pw):
+                password_weak = True
+            if confirm_pw and new_pw != confirm_pw:
+                password_mismatch = True
 
-    return render_template("profile.html", form=form, linkedin_error=linkedin_error)
+    return render_template("profile.html", form=form, linkedin_error=linkedin_error,
+                           password_weak=password_weak, password_mismatch=password_mismatch)
 
 
 @profile_bp.route("/profiel/vertaalvoorkeur", methods=["POST"])
