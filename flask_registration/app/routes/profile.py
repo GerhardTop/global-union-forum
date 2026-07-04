@@ -28,6 +28,10 @@ def profile():
     # wachtwoordbevestigings-formulieren identiek gedrag vertonen.
     password_weak = False
     password_mismatch = False
+    # novalidate staat op ELK formulier in dit project (zie memory) — 'required'
+    # wordt daardoor nooit native afgedwongen, dus een leeg current_password is
+    # gewoon bereikbaar via een normale klik op "Opslaan", geen exotisch geval.
+    current_password_empty = False
     form = ChangePasswordForm()
 
     if request.method == "POST":
@@ -62,6 +66,8 @@ def profile():
                 flash(_('Password changed successfully.'), "success")
                 return redirect(url_for("profile.profile"))
         elif form.is_submitted():
+            if not form.current_password.data:
+                current_password_empty = True
             new_pw = form.new_password.data or ""
             confirm_pw = form.confirm_new_password.data or ""
             if new_pw and not _password_strong(new_pw):
@@ -70,7 +76,8 @@ def profile():
                 password_mismatch = True
 
     return render_template("profile.html", form=form, linkedin_error=linkedin_error,
-                           password_weak=password_weak, password_mismatch=password_mismatch)
+                           password_weak=password_weak, password_mismatch=password_mismatch,
+                           current_password_empty=current_password_empty)
 
 
 @profile_bp.route("/profiel/vertaalvoorkeur", methods=["POST"])

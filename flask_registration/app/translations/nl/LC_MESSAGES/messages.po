@@ -392,3 +392,13 @@ msgstr "Wachtwoord moet tussen 8 en 72 tekens bevatten, een hoofdletter, een cij
 #: app/routes/social.py
 msgid "This email address is already in use."
 msgstr "Dit e-mailadres is al in gebruik."
+
+msgid "Enter your first name."
+msgstr "Vul je voornaam in."
+
+msgid "Enter your last name."
+msgstr "Vul je achternaam in."
+
+#: app/routes/profile.py
+msgid "Enter your current password."
+msgstr "Vul je huidige wachtwoord in."

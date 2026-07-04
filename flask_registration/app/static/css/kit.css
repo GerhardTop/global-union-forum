@@ -1041,9 +1041,6 @@ body {
   margin: 5px 0 0;
   line-height: 1.5;
 }
-.gu-pw-hint--error {
-  color: var(--gu-danger);
-}
 .gu-pw-strength {
   display: flex;
   align-items: center;

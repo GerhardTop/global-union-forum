@@ -392,3 +392,13 @@ msgstr "Password must be between 8 and 72 characters and contain one uppercase l
 #: app/routes/social.py
 msgid "This email address is already in use."
 msgstr "This email address is already in use."
+
+msgid "Enter your first name."
+msgstr "Enter your first name."
+
+msgid "Enter your last name."
+msgstr "Enter your last name."
+
+#: app/routes/profile.py
+msgid "Enter your current password."
+msgstr "Enter your current password."

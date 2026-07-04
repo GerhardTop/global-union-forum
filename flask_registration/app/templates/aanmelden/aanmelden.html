@@ -20,12 +20,18 @@
           <input id="first_name" name="first_name" type="text"
                  class="gu-input{% if errors.first_name %} gu-input--error{% endif %}"
                  value="{{ form_data.first_name }}" placeholder="Sara" required autofocus>
+          {% if errors.first_name %}
+          <p class="gu-join__formError">{{ _('Enter your first name.') }}</p>
+          {% endif %}
         </div>
         <div class="gu-join__sub-field">
           <label for="last_name">{{ _('Last name') }}</label>
           <input id="last_name" name="last_name" type="text"
                  class="gu-input{% if errors.last_name %} gu-input--error{% endif %}"
                  value="{{ form_data.last_name }}" placeholder="De Vries" required>
+          {% if errors.last_name %}
+          <p class="gu-join__formError">{{ _('Enter your last name.') }}</p>
+          {% endif %}
         </div>
       </div>
 
@@ -52,7 +58,7 @@
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
-        <p class="gu-pw-hint{% if errors.password %} gu-pw-hint--error{% endif %}">
+        <p class="{{ 'gu-join__formError' if errors.password else 'gu-pw-hint' }}">
           {{ _('Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character.') }}
         </p>
         <div class="gu-pw-strength" id="pwStrength" hidden>
@@ -72,9 +78,7 @@
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
-        {% if errors.password_mismatch %}
-        <p class="gu-join__formError">{{ _('Passwords do not match.') }}</p>
-        {% endif %}
+        <p class="gu-join__formError" id="pwMismatchError"{% if not errors.password_mismatch %} style="display:none;"{% endif %}>{{ _('Passwords do not match.') }}</p>
       </div>
 
       <div class="gu-join__field">
@@ -142,6 +146,32 @@
       this.classList.toggle('is-visible', isHidden);
     });
   });
+
+  /* ── Blur-gebaseerde mismatch-validatie ──────────────────────────
+     NN/G: niet per toetsaanslag (een confirm-veld is per definitie "fout"
+     tot het laatste teken getypt is — dat is nagging), wel zodra de
+     gebruiker het bevestigingsveld verlaat. Server-side blijft de
+     uiteindelijke autoriteit bij submit (werkt ook zonder JS). */
+  (function () {
+    var pw = document.getElementById('password');
+    var confirmPw = document.getElementById('password_confirm');
+    var errorEl = document.getElementById('pwMismatchError');
+    if (!pw || !confirmPw || !errorEl) return;
+
+    function check() {
+      var mismatch = confirmPw.value.length > 0 && confirmPw.value !== pw.value;
+      errorEl.style.display = mismatch ? '' : 'none';
+      confirmPw.classList.toggle('gu-input--error', mismatch);
+    }
+    confirmPw.addEventListener('blur', check);
+    pw.addEventListener('blur', check);
+    // Live opheffen zodra het weer matcht — voorkomt dat een al zichtbare
+    // fout blijft hangen tot een nieuwe blur; toont 'm nooit NIEUW tijdens
+    // het typen (dat blijft aan blur voorbehouden).
+    confirmPw.addEventListener('input', function () {
+      if (errorEl.style.display !== 'none') check();
+    });
+  })();
 
   (function () {
     var btn = document.getElementById('guLinkedInSearch');
