@@ -1,7 +1,7 @@
 import re
 from urllib.parse import urlparse
 from markupsafe import escape, Markup
-from flask import url_for
+from flask import url_for, session
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 _URL_RE = re.compile(r'(https?://[^\s<>"\']+)', re.IGNORECASE)
@@ -49,6 +49,33 @@ def _password_strong(pw):
         bool(re.search(r'[0-9]', pw)) and
         bool(_SPECIAL.search(pw))
     )
+
+
+# ── PRG (Post/Redirect/Get) form-state ──────────────────────────────────────
+#
+# Generaliseert het bestaande session['modal']-eenmalig-poppen-patroon
+# (zie main.index()) naar formuliervalidatie: na een mislukte POST bewaren
+# we fouten + niet-gevoelige old-input één GET lang, redirecten (303), en de
+# GET popt het weer. Zo blijft de rest van de request-cyclus — inline rode
+# velden, scroll-naar-fout, blur-JS — precies zoals bij de oude in-place
+# render, alleen zonder dat de laatste geschiedenis-entry een POST is (wat
+# de "Confirm Form Resubmission"-melding bij back/refresh veroorzaakte).
+
+def _stash_form_state(form_key, errors, data=None):
+    """Bewaar validatiefouten + old input (nooit wachtwoorden!) voor form_key."""
+    session['form_state'] = {'form': form_key, 'errors': errors, 'data': data or {}}
+
+
+def _pop_form_state(form_key):
+    """
+    Haal de eenmalige state voor form_key op. Popt ONVOORWAARDELIJK (ook als
+    er niets voor form_key klaarstond) zodat state van een ander formulier
+    nooit blijft hangen of op het verkeerde scherm verschijnt.
+    """
+    state = session.pop('form_state', None)
+    if not state or state.get('form') != form_key:
+        return {}, {}
+    return state.get('errors', {}), state.get('data', {})
 
 
 # ── E-mail verificatie (gedeeld door auth en social) ────────────────────────

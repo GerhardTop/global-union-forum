@@ -5,7 +5,7 @@ from flask_babel import gettext as _
 from app import db, bcrypt, limiter
 from app.mail import send_email
 from app.models import User
-from app.utils import _password_strong, _send_verify_email
+from app.utils import _password_strong, _send_verify_email, _stash_form_state, _pop_form_state
 
 social = Blueprint("social", __name__)
 
@@ -112,10 +112,9 @@ def aanmelden():
         return redirect(url_for("main.index"))
     session.permanent = True
 
-    errors = {}
-    form_data = {"first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
-
     if request.method == "POST":
+        errors = {}
+        form_data = {"first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
         form_data["first_name"]   = request.form.get("first_name", "").strip()
         form_data["last_name"]    = request.form.get("last_name", "").strip()
         form_data["email"]        = request.form.get("email", "").strip().lower()
@@ -158,4 +157,13 @@ def aanmelden():
             session['modal'] = 'email_sent'
             return redirect(url_for("main.index"))
 
+        # PRG: fouten + old input (nooit het wachtwoord) één GET lang bewaren
+        # en redirecten (303), zodat 'back'/'refresh' geen POST-resubmit-
+        # melding meer geeft. De GET hieronder popt dit weer.
+        _stash_form_state("aanmelden", errors, form_data)
+        return redirect(url_for("social.aanmelden"), code=303)
+
+    errors, stashed_data = _pop_form_state("aanmelden")
+    form_data = {"first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
+    form_data.update(stashed_data)
     return render_template("aanmelden/aanmelden.html", form_data=form_data, errors=errors)

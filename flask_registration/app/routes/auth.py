@@ -13,7 +13,8 @@ from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
                        LinkedInAanvullenForm, DeleteAccountForm, VerifyResendForm)
 from app.mail import send_email
 from app.models import User, Post, PostLike
-from app.utils import _make_verify_token, _send_verify_email, _password_strong
+from app.utils import (_make_verify_token, _send_verify_email, _password_strong,
+                       _stash_form_state, _pop_form_state)
 
 auth = Blueprint("auth", __name__)
 
@@ -114,28 +115,40 @@ def wachtwoord_vergeten():
         return redirect(url_for('main.index'))
     lang = session.get('lang', 'nl')
     form = WachtwoordVergetenForm()
-    sent = False
-    if form.validate_on_submit():
-        email = form.email.data.strip().lower()
-        user = User.query.filter_by(email=email).first()
-        if user:
-            reset_url = url_for('auth.wachtwoord_reset', token=_make_reset_token(email), _external=True)
-            mail_ok = _send_reset_email(user, reset_url, lang)
-            if not mail_ok:
-                flash(
-                    'E-mail versturen mislukt. Probeer het later opnieuw.' if lang == 'nl'
-                    else 'Failed to send email. Please try again later.',
-                    'error'
-                )
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return jsonify({'ok': False})
-                return render_template('wachtwoord_vergeten.html', sent=False, form=form)
-        sent = True
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({'ok': True})
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return jsonify({'ok': False, 'error': 'invalid_form'})
-    return render_template('wachtwoord_vergeten.html', sent=sent, form=form)
+    is_xhr = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            email = form.email.data.strip().lower()
+            user = User.query.filter_by(email=email).first()
+            if user:
+                reset_url = url_for('auth.wachtwoord_reset', token=_make_reset_token(email), _external=True)
+                mail_ok = _send_reset_email(user, reset_url, lang)
+                if not mail_ok:
+                    flash(
+                        'E-mail versturen mislukt. Probeer het later opnieuw.' if lang == 'nl'
+                        else 'Failed to send email. Please try again later.',
+                        'error'
+                    )
+                    if is_xhr:
+                        return jsonify({'ok': False})
+                    return redirect(url_for('auth.wachtwoord_vergeten'), code=303)
+            if is_xhr:
+                return jsonify({'ok': True})
+            # PRG: 'sent' is hier een eenmalig succes-signaal, geen veldfout —
+            # zelfde form_state-mechanisme als de andere formulieren, alleen
+            # met een ander soort payload.
+            _stash_form_state("wachtwoord_vergeten", {"sent": True})
+            return redirect(url_for('auth.wachtwoord_vergeten'), code=303)
+
+        if is_xhr:
+            # 422 i.p.v. de vorige (impliciete) 200 — consistent met de
+            # andere XHR-paden in dit project.
+            return jsonify({'ok': False, 'error': 'invalid_form'}), 422
+        return redirect(url_for('auth.wachtwoord_vergeten'), code=303)
+
+    errors, _unused = _pop_form_state("wachtwoord_vergeten")
+    return render_template('wachtwoord_vergeten.html', sent=errors.get("sent", False), form=form)
 
 
 @auth.route('/wachtwoord-reset/<token>', methods=['GET', 'POST'])
@@ -163,8 +176,6 @@ def wachtwoord_reset(token):
     # onvertaalde validator-sleutel op het scherm belanden (zie ook profile.py
     # en social.py: dezelfde aanpak, voor identiek gedrag over alle drie de
     # wachtwoordbevestigings-formulieren).
-    password_weak = False
-    password_mismatch = False
     if form.validate_on_submit():
         pw = form.password.data
         user.password_hash = bcrypt.generate_password_hash(pw).decode('utf-8')
@@ -183,13 +194,21 @@ def wachtwoord_reset(token):
     elif form.is_submitted():
         pw = form.password.data or ""
         pw_confirm = form.password_confirm.data or ""
-        if pw and not _password_strong(pw):
-            password_weak = True
-        if pw_confirm and pw != pw_confirm:
-            password_mismatch = True
+        password_weak = bool(pw and not _password_strong(pw))
+        password_mismatch = bool(pw_confirm and pw != pw_confirm)
+        # PRG: geen wachtwoorden bewaren (die zijn hier niet eens onderdeel van
+        # form_data), alleen de foutvlaggen — dan 303 terug naar dezelfde
+        # reset-URL zodat 'back'/'refresh' geen POST-resubmit-melding geeft.
+        _stash_form_state("wachtwoord_reset", {
+            "password_weak": password_weak,
+            "password_mismatch": password_mismatch,
+        })
+        return redirect(url_for('auth.wachtwoord_reset', token=token), code=303)
+
+    errors, _unused_data = _pop_form_state("wachtwoord_reset")
     return render_template('wachtwoord_reset.html', token_invalid=False, token=token,
-                           form=form, password_weak=password_weak,
-                           password_mismatch=password_mismatch)
+                           form=form, password_weak=errors.get("password_weak", False),
+                           password_mismatch=errors.get("password_mismatch", False))
 
 
 @auth.route('/auth/google')
@@ -311,24 +330,26 @@ def linkedin_aanvullen():
         return redirect(url_for('main.index'))
     lang = session.get('lang', 'nl')
     form = LinkedInAanvullenForm()
-    error = False
     if form.validate_on_submit():
         linkedin_url = form.linkedin_url.data.strip()
         parsed = urlparse(linkedin_url)
         if parsed.scheme != 'https' or parsed.netloc not in ('www.linkedin.com', 'linkedin.com'):
-            error = True
-        else:
-            current_user.linkedin_url = linkedin_url
-            db.session.commit()
-            flash(
-                'Welkom bij Global Union Forum!' if lang == 'nl'
-                else 'Welcome to Global Union Forum!',
-                'success'
-            )
-            return redirect(url_for('main.index'))
+            _stash_form_state("linkedin_aanvullen", {"error": True})
+            return redirect(url_for('auth.linkedin_aanvullen'), code=303)
+        current_user.linkedin_url = linkedin_url
+        db.session.commit()
+        flash(
+            'Welkom bij Global Union Forum!' if lang == 'nl'
+            else 'Welcome to Global Union Forum!',
+            'success'
+        )
+        return redirect(url_for('main.index'))
     elif form.is_submitted():
-        error = True
-    return render_template('linkedin_aanvullen.html', error=error, form=form)
+        _stash_form_state("linkedin_aanvullen", {"error": True})
+        return redirect(url_for('auth.linkedin_aanvullen'), code=303)
+
+    errors, _unused = _pop_form_state("linkedin_aanvullen")
+    return render_template('linkedin_aanvullen.html', error=errors.get("error", False), form=form)
 
 
 @auth.route("/logout")
