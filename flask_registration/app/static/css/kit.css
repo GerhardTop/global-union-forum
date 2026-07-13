@@ -1542,9 +1542,11 @@ body {
 }
 
 /* Hero */
-.gu-about__hero { border-bottom: 1px solid var(--gu-border); }
 .gu-about__title { margin: 16px 0 24px; }
-.gu-about__leadwide { max-width: 68ch; }
+/* Geen eigen ch-breedte: vult .gu-about__inner exact zoals de kaartenrij
+   en de volgende sectie dat doen, i.p.v. een losse waarde die daar toevallig
+   mee overeenkomt op één schermbreedte maar er elders van kan afwijken. */
+.gu-about__leadwide { max-width: none; }
 
 /* Founder */
 .gu-about__founder {
@@ -1612,7 +1614,7 @@ body {
 }
 .gu-about__lookingGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 .gu-about__looking {
@@ -1642,12 +1644,19 @@ body {
 /* Identity verification */
 .gu-about__identity {
   display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 64px;
-  align-items: flex-start;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "head ." "body card";
+  column-gap: 64px;
+  row-gap: 0;
+  align-items: start;
 }
+.gu-about__identityHead { grid-area: head; }
+.gu-about__identityBody { grid-area: body; }
 .gu-about__identity .gu-h2 { margin: 10px 0 20px; }
 .gu-about__verifyCard {
+  grid-area: card;
+  justify-self: center;
+  width: 90%;
   background: #ffffff;
   border: 1px solid var(--gu-border);
   border-radius: 16px;
@@ -1661,18 +1670,17 @@ body {
   margin: 16px 0 20px;
   line-height: 1;
 }
-.gu-about__verifyBody {
-  font-size: 0.9375rem;
-  color: var(--gu-fg-2);
-  line-height: 1.7;
-  margin: 0 0 20px;
-}
 .gu-about__verifyAccount {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 0.875rem;
   color: var(--gu-fg-2);
+}
+.gu-about__pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 /* Contact */
@@ -1703,7 +1711,12 @@ body {
   .gu-about__inner { padding: 0 24px; }
   .gu-about__founder { grid-template-columns: 1fr; gap: 32px; }
   .gu-about__portrait { position: static; max-width: 200px; }
-  .gu-about__identity { grid-template-columns: 1fr; gap: 40px; }
+  .gu-about__identity {
+    grid-template-columns: 1fr;
+    grid-template-areas: "head" "body" "card";
+    row-gap: 40px;
+  }
+  .gu-about__verifyCard { justify-self: stretch; width: auto; margin-top: -32px; }
   .gu-about__contact { flex-direction: column; align-items: flex-start; }
   .gu-about__section { padding: 56px 0; }
 }
@@ -2355,11 +2368,7 @@ body {
   .gu-about, .gu-about__section, .gu-about__inner { max-width: 100%; overflow-x: hidden; }
   .gu-about__inner { padding: 0 16px; }
   .gu-about__section { padding: 16px 0; }
-  /* Hero: flush bottom — no padding, no border, no trailing margin */
-  .gu-about__hero { padding-bottom: 0; border-bottom: none; }
-  .gu-about__hero .gu-about__inner > :last-child { margin-bottom: 0; }
-  /* Founder section: no extra top padding, explicit bottom; gap-less grid so portrait margins control spacing */
-  .gu-about__hero + .gu-about__section { padding-top: 0; padding-bottom: 16px; }
+  /* Founder section (initiatiefnemer.html): gap-less grid so portrait margins control spacing */
   .gu-about__founder { gap: 0; }
   .gu-about__portrait { position: static; width: 70%; max-width: 70%; display: block; margin: 16px auto 16px; }
   .gu-about__portrait img { max-width: 100%; display: block; }

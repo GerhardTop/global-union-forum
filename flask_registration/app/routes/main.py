@@ -37,6 +37,11 @@ def about():
     return render_template("about.html")
 
 
+@main.route("/initiatiefnemer")
+def initiatiefnemer():
+    return render_template("initiatiefnemer.html")
+
+
 @main.route("/success")
 def success():
     name = request.args.get("name", "")

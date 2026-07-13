@@ -5,113 +5,105 @@
 {% block content %}
 <main class="gu-about" lang="{{ lang }}">
 
-  {# ── 1. Hero ────────────────────────────────────────────── #}
+  {# ── 1. Hero (incl. "wat we nu doen", samengevoegd tot één blok) ── #}
   <section class="gu-about__section gu-about__hero">
     <div class="gu-about__inner">
-      <p class="gu-eyebrow">{% if lang == 'nl' %}Over Global Union{% else %}About Global Union{% endif %}</p>
+      <p class="gu-eyebrow">{% if lang == 'nl' %}Over Global Union Forum{% else %}About Global Union Forum{% endif %}</p>
       <h1 class="gu-display gu-about__title">
         {% if lang == 'nl' %}Een denktank<br><em>met sterke intentie</em>
         {% else %}A think tank<br><em>with strong intent</em>{% endif %}
       </h1>
       <p class="gu-lead gu-about__leadwide">
         {% if lang == 'nl' %}
-          Global Union begon als persoonlijk manifest van Gerhard Top in maart 2026. Het werd een vraag: kunnen we het succes van de Europese Unie — een unie van functionerende democratieën — wereldwijd herhalen? En nu ligt er de uitnodiging om mee te denken. Iedereen die serieuze input of kritiek heeft is welkom!
+          Het doel is helder. Het idee staat op hoofdlijnen. Dit willen we verder uitwerken. De komende maanden zoeken we mensen. We zoeken experts en andere enthousiastelingen. Iedereen die een bijdrage wil leveren aan welzijn en perspectief voor mensen in Europa én daarbuiten is welkom. Jongere of gepensioneerde, hartchirurg of loodgieter, voor- of tegenstander. Iedereen die het gesprek respectvol voert.
         {% else %}
-          Global Union began as a personal manifesto by Gerhard Top in March 2026. It became a question: can we repeat the success of the European Union — a union of functioning democracies — on a global scale? And now the invitation is open to think along. Everyone with serious input or criticism is welcome!
+          The goal is clear. The idea exists in broad strokes. We want to work it out further. In the coming months we're looking for people. We're looking for experts and other enthusiasts. Everyone who wants to contribute to wellbeing and prospects for people in Europe and beyond is welcome. Young or retired, heart surgeon or plumber, supporter or opponent. Everyone who holds the conversation with respect.
         {% endif %}
       </p>
-    </div>
-  </section>
-
-  {# ── 2. Founder ─────────────────────────────────────────── #}
-  <section class="gu-about__section gu-about__section--soft">
-    <div class="gu-about__inner gu-about__founder">
-
-      <div class="gu-about__portrait">
-        <img src="{{ url_for('static', filename='assets/founder-gerhard-top.jpg') }}"
-             alt="Gerhard Top">
-      </div>
-
-      <div class="gu-about__founderText">
-        <p class="gu-eyebrow">{% if lang == 'nl' %}De initiatiefnemer{% else %}The initiator{% endif %}</p>
-        <h2 class="gu-about__founderName">Gerhard Top</h2>
-        <p class="gu-about__founderRole">{% if lang == 'nl' %}Initiatiefnemer · Global Union Forum{% else %}Initiator · Global Union Forum{% endif %}</p>
-
+      <p class="gu-lead gu-about__leadwide">
         {% if lang == 'nl' %}
-          <p class="gu-about__founderPara">Aan het eind van mijn studietijd viel de Muur. Op het moment van de doorbraak lag ik te sleutelen aan een Landrover. Ik hoorde op de radio de enthousiaste Oost-Duitsers en daarna een Duitse versie van het lied van Boudewijn de Groot: 'Nur die Vögel fliegen von Ost nach West Berlin...'. Kippenvel! Onverwacht, onvoorstelbaar, die dictatuur stortte gewoon in.</p>
-          <p class="gu-about__founderPara">Met die Landrover zijn we met vier man naar Kaapstad gereden. Dwars door Afrika. Ik zag de schoonheid én de armoede. De vrolijkheid en de enorme corruptie en politieke onderdrukking.</p>
-          <p class="gu-about__founderPara">Tien jaar na die Afrikareis nam ik deel aan een bijeenkomst van de Business Club van D66. We spraken over misbruik van ontwikkelingsgelden, moeilijkheden voor bedrijven die niet wilden bijdragen aan corruptie, cliëntalisme en de inbedding in de cultuur. De sfeer werd wat hopeloos, maar niemand had een oplossing.</p>
-          <p class="gu-about__founderPara">Dit voorjaar bezocht ik een ledenvergadering van Transparency International. De allesondermijnende corruptie is nog alom aanwezig in Afrika en in heel veel andere landen. Dit gebrek aan ontwikkeling, en de negatieve tendens in het groeiend aantal landen dat de rechtsstaat ondermijnt, waaronder de Verenigde Staten, maakt dat er een tegenkracht nodig is. Een krachtige samenwerking tussen functionerende democratieën, een geopolitieke macht die tevens als magneet kan dienen voor andere landen. Met het Global Union Forum wil ik een bijdrage leveren door een goed gesprek te faciliteren, het idee te verrijken en het draagvlak te vergroten.</p>
-          <p class="gu-about__founderPara">Sinds Covid ben ik docent aan de Hogeschool van Amsterdam. Na jaren in leidinggevende rollen in software en telecom wilde ik graag een meer maatschappelijke rol. Dat is gelukt, ik begeleid studenten met allerlei achtergrond, waaronder ook vluchtelingen. Soms heb ik gesprekken met hen die me raken. Die maken dat ik wil dat in steeds meer landen jongeren opgroeien in vrijheid met perspectief op groei in welvaart en welzijn.</p>
+          Geen lidmaatschap. Geen contributie. Wel een online plek waar het denken gebeurt. Initiatiefnemer <a href="{{ url_for('main.initiatiefnemer') }}" style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">Gerhard Top</a> zal in de komende weken de eerste Bèta gebruikers vragen mee te denken en gebruik te gaan maken van het forum. Hierna zullen we met een verbeterde versie voortbouwen op de discussie, meer mensen uitnodigen mee te doen en zo uit te groeien tot een beweging die veroorzaakt dat de Globale Unie er komt én succesvol wordt.
         {% else %}
-          <p class="gu-about__founderPara">At the end of my student years the Wall fell. At the moment of the breakthrough I was working on a Land Rover. Over the radio I heard the jubilant East Germans. Goosebumps! Unexpected, unimaginable, that dictatorship simply collapsed.</p>
-          <p class="gu-about__founderPara">With that Land Rover the four of us drove to Cape Town. Straight through Africa. I saw the beauty and the poverty. The cheerfulness and the enormous corruption and political repression.</p>
-          <p class="gu-about__founderPara">Ten years after that Africa trip I took part in a meeting of the D66 Business Club. We discussed the misuse of development funds, the difficulties for businesses that refused to participate in corruption, clientelism and how deeply it was embedded in the culture. The atmosphere turned somewhat hopeless, but no one had a solution.</p>
-          <p class="gu-about__founderPara">This spring I attended a member meeting of Transparency International. The all-corrupting rot is still widespread in Africa and in many other countries. This lack of development, and the negative trend in the growing number of countries that undermine the rule of law, including the United States, means that a counterforce is needed. A powerful cooperation between functioning democracies, a geopolitical force that can also serve as a magnet for other countries. With the Global Union Forum I want to make a contribution by facilitating a meaningful conversation, enriching the idea along the way, and broadening support for it.</p>
-          <p class="gu-about__founderPara">Since Covid I have been a lecturer at the University of Applied Sciences in Amsterdam. After years in leadership roles in software and telecom I wanted a more socially engaged role. I succeeded — I work with students from all kinds of backgrounds, including refugees. Sometimes I have conversations with them that move me. They make me want more and more countries to be places where young people grow up in freedom, with prospects for growth in prosperity and wellbeing.</p>
+          No membership. No fees. Just an online space where the thinking happens. Founder <a href="{{ url_for('main.initiatiefnemer') }}" style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">Gerhard Top</a> will, in the coming weeks, invite the first beta users to contribute their ideas and start using the forum. After that we'll build on the discussion with an improved version, invite more people to join, and grow into a movement that makes the Global Union happen — and succeed.
         {% endif %}
-
-        <blockquote class="gu-about__founderQuote">
-          <span class="gu-about__quoteMark">"</span>{% if lang == 'nl' %}Idioot groots, zullen veel mensen denken. Ik geloof dat we het samen kunnen uitwerken.{% else %}Absurdly grand, many people will think. I believe we can work it out together.{% endif %}<span class="gu-about__quoteMark">"</span>
-        </blockquote>
-      </div>
-
-    </div>
-  </section>
-
-  {# ── 3. Wat we nu doen ──────────────────────────────────── #}
-  <section class="gu-about__section">
-    <div class="gu-about__inner">
-
-      <div class="gu-about__nowhead">
-        <p class="gu-eyebrow">{% if lang == 'nl' %}Wat we nu doen{% else %}What we're doing now{% endif %}</p>
-        <h2 class="gu-h2">{% if lang == 'nl' %}De komende maanden zoeken we mensen.{% else %}For the coming months we're looking for people.{% endif %}</h2>
-        <p class="gu-lead" style="max-width:64ch;">
-          {% if lang == 'nl' %}Het idee staat. De vorm niet. We willen experts en enthousiastelingen, juristen en jongeren, ondernemers en burgers — iedereen die het gesprek serieus voert. Geen lidmaatschap. Geen contributie. Wel een online plek waar het denken gebeurt.
-          {% else %}The idea exists. The form doesn't. We want experts and enthusiasts, lawyers and students, entrepreneurs and citizens — anyone who takes the conversation seriously. No membership. No fee. Just an online space where the thinking happens.
-          {% endif %}
-        </p>
-      </div>
+      </p>
 
       <div class="gu-about__lookingGrid">
 
         <div class="gu-about__looking">
           <div class="gu-about__lookingHead">
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
-            <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Experts{% else %}Experts{% endif %}</h3>
+            <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Meedenkers{% else %}Co-thinkers{% endif %}</h3>
           </div>
-          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Internationaal recht, handelseconomie, mediasystemen, technologie, geopolitiek.{% else %}International law, trade economics, media systems, technology, geopolitics.{% endif %}</p>
+          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Iedereen die wil meedoen, ook zonder vakkennis, ieder argument kan van belang zijn.{% else %}Everyone who wants to join in, even without expertise — every argument can matter.{% endif %}</p>
         </div>
 
         <div class="gu-about__looking">
           <div class="gu-about__lookingHead">
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
-            <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Beginners{% else %}Beginners{% endif %}</h3>
+            <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Experts{% else %}Experts{% endif %}</h3>
           </div>
-          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Iedereen die wil meedenken, ook zonder vakkennis. Onze blinde vlek wegnemen.{% else %}Everyone who wants to think along, no expertise required. Help us see our blind spots.{% endif %}</p>
+          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Kennis delen, interessante ontwikkelingen tonen, voorstellen en kritische vragen.{% else %}Share knowledge, highlight interesting developments, proposals and critical questions.{% endif %}</p>
+        </div>
+
+        <div class="gu-about__looking">
+          <div class="gu-about__lookingHead">
+            <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
+            <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Moderators{% else %}Moderators{% endif %}</h3>
+          </div>
+          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Zorgen dat het gesprek loopt, bijdragen verwijderen die niet voldoen aan de spelregels.{% else %}Keep the conversation flowing, remove contributions that don't meet the rules of engagement.{% endif %}</p>
         </div>
 
       </div>
     </div>
   </section>
 
-  {# ── 4. Identiteitsverificatie ──────────────────────────── #}
+  {# ── 2. In goed overleg ──────────────────────────────────── #}
   <section class="gu-about__section gu-about__section--soft">
     <div class="gu-about__inner">
       <div class="gu-about__identity">
 
-        <div>
-          <p class="gu-eyebrow">{% if lang == 'nl' %}Onder eigen naam{% else %}Under your own name{% endif %}</p>
-          <h2 class="gu-h2">{% if lang == 'nl' %}Het gesprek wordt gevoerd door mensen, niet door pseudoniemen.{% else %}The conversation is held by people, not by pseudonyms.{% endif %}</h2>
-          <p class="gu-lead">{% if lang == 'nl' %}Iedereen die meedoet doet dat onder zijn of haar eigen naam. Geen avatars, geen aliassen — wel debat, ook scherp, maar zichtbaar van wie. We vragen daarom bij registratie om je LinkedIn profiel.{% else %}Everyone who takes part does so under their own name. No avatars, no aliases — but debate, including sharp debate, always visibly from whom. That is why we ask for your LinkedIn profile at registration.{% endif %}</p>
+        <div class="gu-about__identityHead">
+          <p class="gu-eyebrow">{% if lang == 'nl' %}In goed overleg{% else %}By mutual agreement{% endif %}</p>
+          <h2 class="gu-h2">{% if lang == 'nl' %}Het gesprek wordt respectvol gevoerd.{% else %}The conversation is held with respect.{% endif %}</h2>
+        </div>
+
+        <div class="gu-about__identityBody">
+          <p class="gu-lead">
+            {% if lang == 'nl' %}
+              Het gesprek wordt respectvol gevoerd met als doel te komen tot gedragen voorstellen. We zullen naar voorbeeld van Wikipedia onze '4 pilaren' samen verder uitwerken en functionaliteit toevoegen. Waar nodig zullen we policies en best practices toevoegen.
+            {% else %}
+              The conversation is held with respect, with the aim of arriving at proposals that are broadly supported. Following the example of Wikipedia, we'll work out our '4 pillars' further together and add functionality. Where needed, we'll add policies and best practices.
+            {% endif %}
+          </p>
+          <p class="gu-lead">
+            {% if lang == 'nl' %}
+              We willen het gesprek transparant voeren. Onder eigen naam. We vragen je bij registratie om je LinkedIn profiel.
+            {% else %}
+              We want to hold the conversation transparently. Under your own name. We ask for your LinkedIn profile at registration.
+            {% endif %}
+          </p>
         </div>
 
         <aside class="gu-about__verifyCard">
-          <p class="gu-eyebrow" style="margin-bottom:8px;">{% if lang == 'nl' %}Hoe we identiteit bevestigen{% else %}How we confirm identity{% endif %}</p>
-          <p class="gu-about__verifyBody">{% if lang == 'nl' %}Na registratie ontvang je een bevestigingsmail om je e-mailadres te verifiëren. Daarnaast vragen we je LinkedIn profiel.{% else %}After registration you receive a confirmation email to verify your email address. We also ask for your LinkedIn profile.{% endif %}</p>
-          <div class="gu-about__verifyAccount">
-            <span class="gu-arrow" style="background:var(--gu-globe)"></span>
-            <span>{% if lang == 'nl' %}Verificatie via e-mail en LinkedIn profiel.{% else %}Verification via email and LinkedIn profile.{% endif %}</span>
+          <p class="gu-eyebrow" style="margin-bottom:20px;">{% if lang == 'nl' %}Onze vier pilaren{% else %}Our four pillars{% endif %}</p>
+          <div class="gu-about__pillars">
+            <div class="gu-about__verifyAccount">
+              <span class="gu-arrow" style="background:#0077cc"></span>
+              <span>{% if lang == 'nl' %}Een democratische kracht voor iedereen.{% else %}A democratic force for everyone.{% endif %}</span>
+            </div>
+            <div class="gu-about__verifyAccount">
+              <span class="gu-arrow" style="background:#333333"></span>
+              <span>{% if lang == 'nl' %}We behandelen elkaar met respect.{% else %}We treat each other with respect.{% endif %}</span>
+            </div>
+            <div class="gu-about__verifyAccount">
+              <span class="gu-arrow" style="background:#ee1c25"></span>
+              <span>{% if lang == 'nl' %}Feiten vanuit een neutraal oogpunt.{% else %}Facts from a neutral point of view.{% endif %}</span>
+            </div>
+            <div class="gu-about__verifyAccount">
+              <span class="gu-arrow" style="background:#f5a800"></span>
+              <span>{% if lang == 'nl' %}Content vrij beschikbaar voor iedereen.{% else %}Content freely available to everyone.{% endif %}</span>
+            </div>
           </div>
         </aside>
 
@@ -119,8 +111,8 @@
     </div>
   </section>
 
-  {# ── 5. Contact ─────────────────────────────────────────── #}
-  <section class="gu-about__section gu-about__section--soft">
+  {# ── 3. Contact (ongewijzigd, fase 2) ───────────────────── #}
+  <section class="gu-about__section gu-about__section--soft" style="padding-top: 0;">
     <div class="gu-about__inner">
       <a href="mailto:info@globalunionforum.org" class="gu-btn gu-btn--primary gu-btn--lg">
         {% if lang == 'nl' %}Stuur feedback{% else %}Send feedback{% endif %}

@@ -325,11 +325,15 @@ class TestLogin:
         response = client.post('/login', data={
             'email': 'john@example.com',
             'password': 'Password123!'
-        }, follow_redirects=True)
-        
-        # Response mag succes zijn (redirect) of fout, maar:
-        # Gebruiker mag NIET ingelogd zijn als verified=False
+        })
+
+        # Blokker 1: correcte credentials, maar niet-bevestigd account —
+        # geen redirect (blijft op de pagina), geen sessie, wél de modal.
         assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        assert 'guUnverifiedModal' in html
+        with client.session_transaction() as sess:
+            assert '_user_id' not in sess
     
     def test_login_case_insensitive_email(self, client, app):
         """Login werkt met e-mail in ander case."""
