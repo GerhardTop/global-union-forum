@@ -13,3 +13,5 @@ build/
 instance/*.db
 RAPPORT.md
 agent_voorstellen/
+multi_agent_guf.py
+HANDLEIDING.md
