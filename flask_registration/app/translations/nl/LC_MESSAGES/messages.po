@@ -125,6 +125,9 @@ msgstr "Ik ken iemand die het vast leuk vindt om mee te denken."
 msgid "Invite"
 msgstr "Nodig uit"
 
+msgid "Are you enthusiastic or critical? Think along with us."
+msgstr "Ben je enthousiast of juist kritisch? Denk met ons mee."
+
 msgid "Invite someone"
 msgstr "Iemand uitnodigen"
 

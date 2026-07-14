@@ -128,6 +128,9 @@ msgstr "I know someone who would most probably like to join the conversation."
 msgid "Invite"
 msgstr "Invite"
 
+msgid "Are you enthusiastic or critical? Think along with us."
+msgstr "Are you enthusiastic or critical? Think along with us."
+
 msgid "Invite someone"
 msgstr "Invite someone"
 

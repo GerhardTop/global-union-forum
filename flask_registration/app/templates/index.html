@@ -9,7 +9,7 @@
   <div class="gu-hero__inner">
     <p class="gu-eyebrow">{{ _('Freedom for all') }}</p>
     <h1 class="gu-display">
-      {{ _('A union of') }}<br><span class="gu-title-em">{{ _('functioning democracies') }}</span>.
+      {{ _('A union of') }}<br><span class="gu-title-em">{{ _('functioning democracies') }}</span>
     </h1>
     <p class="gu-lead">
       {{ _('The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom.') }}
@@ -149,8 +149,8 @@
 
 {# ── Feedback & uitnodiging ────────────────────────────────── #}
 <section style="background: #ffffff; padding: 48px 0;">
-  <div style="max-width: 900px; margin-inline: auto; padding: 0 64px;">
-    <div class="gu-feedback-grid">
+  <div class="gu-feedback-wrap{% if not current_user.is_authenticated %} gu-feedback-wrap--3{% endif %}">
+    <div class="{% if not current_user.is_authenticated %}gu-feedback-grid--3{% else %}gu-feedback-grid{% endif %}">
 
       {# Kaartje 1 — Feedback #}
       <div class="gu-feedback-card">
@@ -177,6 +177,21 @@
           </button>
         </div>
       </div>
+
+      {% if not current_user.is_authenticated %}
+      {# Kaartje 3 — Doe mee (alleen niet-ingelogd) #}
+      <div class="gu-feedback-card">
+        <p style="font-size: 1rem; line-height: 1.65; color: var(--gu-fg-2); margin: 0;">
+          {{ _('Are you enthusiastic or critical? Think along with us.') }}
+        </p>
+        <div>
+          <a href="{{ url_for('social.aanmelden') }}" class="gu-btn gu-btn--primary">
+            {{ _('Join us') }}
+            <span class="gu-arrow"></span>
+          </a>
+        </div>
+      </div>
+      {% endif %}
 
     </div>
   </div>

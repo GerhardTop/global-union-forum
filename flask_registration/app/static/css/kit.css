@@ -2563,11 +2563,19 @@ body {
 .gu-pw-toggle:hover { color: var(--gu-fg-1); }
 
 /* ── Feedback/uitnodiging kaartjes ─────────────────────────── */
-.gu-feedback-grid {
+.gu-feedback-wrap {
+  max-width: 900px;
+  margin-inline: auto;
+  padding: 0 64px;
+}
+.gu-feedback-wrap--3 { max-width: 1160px; }
+.gu-feedback-grid,
+.gu-feedback-grid--3 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 24px;
 }
+.gu-feedback-grid { grid-template-columns: 1fr 1fr; }
+.gu-feedback-grid--3 { grid-template-columns: repeat(3, 1fr); }
 .gu-feedback-card {
   background: #fff;
   border: 1px solid var(--gu-border);
@@ -2578,8 +2586,14 @@ body {
   gap: 20px;
 }
 .gu-feedback-card p { flex: 1; }
+@media (max-width: 768px) {
+  .gu-feedback-grid--3 { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 600px) {
   .gu-feedback-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .gu-feedback-grid--3 { grid-template-columns: 1fr; }
 }
 .gu-pw-toggle .gu-pw-eye-closed { display: none; }
 .gu-pw-toggle.is-visible .gu-pw-eye-open { display: none; }
