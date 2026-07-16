@@ -6,4 +6,4 @@
     <line x1="4" y1="13" x2="28" y2="13" stroke="#ffffff" stroke-width="0.8" opacity="0.6"></line>
     <line x1="6" y1="8" x2="26" y2="8" stroke="#ffffff" stroke-width="0.6" opacity="0.45"></line>
     <line x1="6" y1="18" x2="26" y2="18" stroke="#ffffff" stroke-width="0.6" opacity="0.45"></line>
-  </g><circle cx="16" cy="13" r="12" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8"></circle><path d="M5,27 L5,31 L9,29 Z" fill="#0077CC"></path><path d="M10,27 L10,31 L14,29 Z" fill="#333333"></path><path d="M15,27 L15,31 L19,29 Z" fill="#EE1C25"></path><path d="M20,27 L20,31 L24,29 Z" fill="#F5A800"></path><path d="M25,27 L25,31 L29,29 Z" fill="#00A551"></path></svg>
+  </g><circle cx="16" cy="13" r="12" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8"></circle><path d="M5,27 L5,31 L9,29 Z" fill="#0077CC"></path><path d="M10,27 L10,31 L14,29 Z" fill="#ff8c42"></path><path d="M15,27 L15,31 L19,29 Z" fill="#EE1C25"></path><path d="M20,27 L20,31 L24,29 Z" fill="#ffd60a"></path><path d="M25,27 L25,31 L29,29 Z" fill="#00A551"></path></svg>

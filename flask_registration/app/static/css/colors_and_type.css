@@ -19,9 +19,9 @@
   /* Five-flag system. Each arrow stands for one continent. Use sparingly,  */
   /* together they form the full set — never invent a sixth.                */
   --gu-europe:       #0077cc;   /* Europe   — blue   */
-  --gu-asia:         #333333;   /* Asia     — black  */
+  --gu-asia:         #ff8c42;   /* Asia     — orange */
   --gu-americas:     #ee1c25;   /* Americas — red    */
-  --gu-africa:       #f5a800;   /* Africa   — yellow */
+  --gu-africa:       #ffd60a;   /* Africa   — yellow */
   --gu-oceania:      #00a551;   /* Oceania  — green  */
 
   /* ---------- NEUTRAL SCALE ---------------------------------------------- */
@@ -56,7 +56,7 @@
   --gu-link-hover:   #005ea3;
 
   --gu-success:      var(--gu-oceania);
-  --gu-warning:      var(--gu-africa);
+  --gu-warning:      #f5a800;   /* losgekoppeld van --gu-africa: blijft amber, te fel als knalgeel voor waarschuwingen */
   --gu-danger:       var(--gu-americas);
   --gu-info:         var(--gu-globe);
 
