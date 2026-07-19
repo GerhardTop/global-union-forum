@@ -6,6 +6,32 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 _URL_RE = re.compile(r'(https?://[^\s<>"\']+)', re.IGNORECASE)
 
+# ── Username-validatie (pseudoniem-model, fase 1) ────────────────────────────
+#
+# Herbruikbaar op meerdere plekken: registratie, de blur-check, toekomstige
+# moderator-wijzigingen van een username, en de migratie-backfill.
+USERNAME_BLACKLIST = {"admin", "administrator", "moderator", "beheerder", "mod"}
+_USERNAME_RE = re.compile(r'^[A-Za-z0-9_-]{3,20}$')
+
+
+def is_username_valid_format(username):
+    return bool(_USERNAME_RE.match(username or ""))
+
+
+def is_username_blacklisted(username):
+    """Exacte match, hoofdletter-ongevoelig — geen substring-matching."""
+    return (username or "").strip().lower() in USERNAME_BLACKLIST
+
+
+def is_username_available(username, exclude_user_id=None):
+    """Hoofdletter-ongevoelige uniciteitscheck tegen bestaande gebruikers."""
+    from app import db
+    from app.models import User
+    q = User.query.filter(db.func.lower(User.username) == (username or "").lower())
+    if exclude_user_id:
+        q = q.filter(User.id != exclude_user_id)
+    return q.first() is None
+
 
 def _short_label(url):
     """Return domain without www. prefix, truncated to 15 chars, plus '...'."""

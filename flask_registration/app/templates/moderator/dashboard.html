@@ -46,8 +46,8 @@
             {% for post in recent_posts %}
             <tr>
               <td class="gu-admin-table__name">
-                <div class="gu-admin-table__avatar gu-admin-table__avatar--sm">{{ post.author_name[0] | upper }}</div>
-                <span>{{ post.author_name }}</span>
+                <div class="gu-admin-table__avatar gu-admin-table__avatar--sm">{{ (post.author_name[0] if post.author_name else post.author_username[0]) | upper }}</div>
+                <span>{{ post.author_name if post.author_name else '@' ~ post.author_username }}</span>
               </td>
               <td>
                 <a href="{{ url_for('forum.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}"

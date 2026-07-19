@@ -7,8 +7,15 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
+    # Hoofdletter-ongevoelige uniciteit wordt afgedwongen via een functionele
+    # index (LOWER(username)) in _migrate_columns(), niet via unique=True hier.
+    # Let op: account_verwijderen() (auth.py) hard-delete't het eigen account
+    # nu al — dat maakt de username direct vrij voor hergebruik door een
+    # ander. Relevant voor toekomstig ontwerp (bv. cooldown-periode of
+    # gereserveerde namen) als dit ooit een probleem blijkt.
+    username = db.Column(db.String(30), nullable=False)
+    first_name = db.Column(db.String(50), nullable=True)
+    last_name = db.Column(db.String(50), nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
@@ -61,6 +68,7 @@ class Post(db.Model):
     user_id        = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     parent_id      = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
     author_name    = db.Column(db.String(100), nullable=False)
+    author_username = db.Column(db.String(30), nullable=False)
     author_role    = db.Column(db.String(20),  nullable=False, default='member')
     author_badge_nl = db.Column(db.String(200), nullable=True)
     author_badge_en = db.Column(db.String(200), nullable=True)

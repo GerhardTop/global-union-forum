@@ -119,6 +119,15 @@ msgstr "Deze site is ontworpen met Claude Design en gebouwd met Claude en Claude
 msgid "Send feedback"
 msgstr "Stuur feedback"
 
+msgid "Do you have suggestions for improving this site? Is there functionality you miss? We'd love to hear from you!"
+msgstr "Heb je suggesties om deze site te verbeteren? Mis je functionaliteit? We horen het graag!"
+
+msgid "Know someone who'd want to think along? Invite them to join the conversation."
+msgstr "Ken je iemand die wil meedenken? Nodig diegene uit voor het gesprek."
+
+msgid "I know someone"
+msgstr "Ik ken iemand"
+
 msgid "I know someone who would most probably like to join the conversation."
 msgstr "Ik ken iemand die het vast leuk vindt om mee te denken."
 
@@ -212,6 +221,12 @@ msgstr "Voornaam"
 msgid "Last name"
 msgstr "Achternaam"
 
+msgid "Not provided"
+msgstr "Niet ingevuld"
+
+msgid "Not required"
+msgstr "Niet verplicht"
+
 msgid "This email is already in use. Log in instead?"
 msgstr "Dit e-mailadres is al in gebruik. Inloggen?"
 
@@ -244,6 +259,42 @@ msgstr "We willen graag dat ieder onder eigen naam werkt, daarom vragen we om jo
 
 msgid "Enter a valid LinkedIn URL (https://www.linkedin.com/in/…)."
 msgstr "Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…)."
+
+msgid "Username"
+msgstr "Gebruikersnaam"
+
+msgid "publicly visible"
+msgstr "publiek zichtbaar"
+
+msgid "3–20 characters: letters, numbers, - and _"
+msgstr "3-20 tekens: letters, cijfers, - en _"
+
+msgid "This username is already taken."
+msgstr "Deze gebruikersnaam is al in gebruik."
+
+msgid "This username is not available."
+msgstr "Deze gebruikersnaam is niet beschikbaar."
+
+msgid "Fill in both first and last name, or leave both empty."
+msgstr "Vul zowel voor- als achternaam in, of laat beide leeg."
+
+msgid "These fields are optional."
+msgstr "Deze velden zijn optioneel."
+
+msgid "Choose your username"
+msgstr "Kies je gebruikersnaam"
+
+msgid "Choose your username."
+msgstr "Kies je gebruikersnaam."
+
+msgid "This is how other participants will see you in the conversation."
+msgstr "Zo zien andere deelnemers je in het gesprek."
+
+msgid "Save and continue"
+msgstr "Opslaan en doorgaan"
+
+msgid "ALMOST THERE"
+msgstr "BIJNA KLAAR"
 
 msgid "Create account"
 msgstr "Account aanmaken"

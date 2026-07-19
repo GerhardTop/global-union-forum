@@ -65,6 +65,14 @@ def _migrate_columns():
                 alters.append('ALTER TABLE users ADD UNIQUE INDEX uq_users_google_id (google_id)')
         if 'password_changed_at' not in cols:
             alters.append('ALTER TABLE users ADD COLUMN password_changed_at TIMESTAMP NULL DEFAULT NULL')
+        # Pseudoniem-model (fase 1): first_name/last_name worden optioneel.
+        for _col_name in ('first_name', 'last_name'):
+            _col_info = next((c for c in user_col_list if c['name'] == _col_name), None)
+            if _col_info and not _col_info.get('nullable', True):
+                if is_pg:
+                    alters.append(f'ALTER TABLE users ALTER COLUMN {_col_name} DROP NOT NULL')
+                else:
+                    alters.append(f'ALTER TABLE users MODIFY COLUMN {_col_name} VARCHAR(50) NULL')
 
     if 'threads' in existing:
         cols = {c['name'] for c in insp.get_columns('threads')}
@@ -87,6 +95,142 @@ def _migrate_columns():
             for sql in alters:
                 conn.execute(text(sql))
             conn.commit()
+
+    _migrate_username_and_backfill(insp, existing, is_pg)
+
+
+def _migrate_username_and_backfill(insp, existing, is_pg):
+    """
+    username/author_username vereisen een Python-backfill-stap tússen
+    'kolom toevoegen' en 'NOT NULL zetten' — dat past niet in de generieke
+    alters-batch hierboven (die voert alles blind uit, geen ruimte voor
+    logica ertussenin). Daarom een eigen, strikt-sequentiële functie.
+
+    Idempotent: elke fase checkt zijn eigen voorwaarde (kolom bestaat al?
+    nog NULL-rijen? index bestaat al?), dus herhaald draaien — ook na een
+    eerdere gedeeltelijke mislukking — is veilig en hervat waar het bleef.
+    De NOT NULL-constraint wordt pas gezet als de allerlaatste sub-stap,
+    nooit vóór de backfill: bij een fout halverwege blijft de database een
+    werkende (nullable, deels gevulde) tussentoestand, nooit een kapotte.
+    """
+    if 'users' not in existing:
+        return
+
+    # ── 1. users.username: kolom toevoegen (nog nullable) ────────────────
+    user_cols = {c['name']: c for c in insp.get_columns('users')}
+    if 'username' not in user_cols:
+        with db.engine.connect() as conn:
+            conn.execute(text('ALTER TABLE users ADD COLUMN username VARCHAR(30) NULL'))
+            conn.commit()
+
+    # ── 2. Python-backfill van elke NULL-username ─────────────────────────
+    from app.models import User
+    if User.query.filter(User.username.is_(None)).count():
+        _backfill_usernames()
+
+    # ── 3. NOT NULL zetten, alleen als dat nog niet zo is ─────────────────
+    user_cols = {c['name']: c for c in sa_inspect(db.engine).get_columns('users')}
+    if user_cols['username'].get('nullable', True):
+        with db.engine.connect() as conn:
+            if is_pg:
+                conn.execute(text('ALTER TABLE users ALTER COLUMN username SET NOT NULL'))
+            else:
+                conn.execute(text('ALTER TABLE users MODIFY COLUMN username VARCHAR(30) NOT NULL'))
+            conn.commit()
+
+    # ── 4. Hoofdletter-ongevoelige unieke index, los van kolom-status ─────
+    # (MySQL's standaard-collation is al _ci, dus een gewone UNIQUE INDEX
+    # volstaat daar; Postgres heeft een functionele LOWER()-index nodig.
+    # SQLite — alleen relevant voor lokaal testen, nooit een echt
+    # deploy-doel — is standaard hoofdlettergevoelig, dus COLLATE NOCASE.)
+    dialect = db.engine.dialect.name
+    index_names = {ix['name'] for ix in sa_inspect(db.engine).get_indexes('users')}
+    if 'uq_users_username_ci' not in index_names and 'uq_users_username' not in index_names:
+        with db.engine.connect() as conn:
+            if is_pg:
+                conn.execute(text(
+                    'CREATE UNIQUE INDEX IF NOT EXISTS uq_users_username_ci ON users (LOWER(username))'
+                ))
+            elif dialect == 'sqlite':
+                conn.execute(text(
+                    'CREATE UNIQUE INDEX IF NOT EXISTS uq_users_username_ci ON users (username COLLATE NOCASE)'
+                ))
+            else:
+                conn.execute(text('ALTER TABLE users ADD UNIQUE INDEX uq_users_username (username)'))
+            conn.commit()
+
+    # ── posts.author_username: zelfde sequentiële aanpak ──────────────────
+    if 'posts' not in existing:
+        return
+
+    post_cols = {c['name']: c for c in sa_inspect(db.engine).get_columns('posts')}
+    if 'author_username' not in post_cols:
+        with db.engine.connect() as conn:
+            conn.execute(text('ALTER TABLE posts ADD COLUMN author_username VARCHAR(30) NULL'))
+            conn.commit()
+
+    from app.models import Post
+    if Post.query.filter(Post.author_username.is_(None)).count():
+        # Posts met een nog-bestaande auteur: username via join backfillen.
+        with db.engine.connect() as conn:
+            conn.execute(text(
+                'UPDATE posts SET author_username = '
+                '(SELECT username FROM users WHERE users.id = posts.user_id) '
+                'WHERE posts.author_username IS NULL AND posts.user_id IS NOT NULL'
+            ))
+            conn.commit()
+        # Tombstone-posts (user_id IS NULL, account al losgekoppeld/verwijderd):
+        # gedeelde placeholder, geen per-post gok — zie forum_post_verwijderen()
+        # voor hetzelfde gedrag bij toekomstige verwijderingen.
+        Post.query.filter(Post.author_username.is_(None)).update(
+            {Post.author_username: 'deleted_user'}, synchronize_session=False
+        )
+        db.session.commit()
+
+    post_cols = {c['name']: c for c in sa_inspect(db.engine).get_columns('posts')}
+    if post_cols['author_username'].get('nullable', True):
+        with db.engine.connect() as conn:
+            if is_pg:
+                conn.execute(text('ALTER TABLE posts ALTER COLUMN author_username SET NOT NULL'))
+            else:
+                conn.execute(text('ALTER TABLE posts MODIFY COLUMN author_username VARCHAR(30) NOT NULL'))
+            conn.commit()
+
+
+def _backfill_usernames():
+    """
+    Wijst een unieke username toe aan elke User zonder username. De 4 demo-
+    gebruikers krijgen hun vaste, herkenbare namen; elke andere bestaande
+    gebruiker (bv. een admin/moderator-account van vóór dit veld bestond)
+    krijgt de placeholder 'user_<id>' — hetzelfde 'user_'-prefixschema als
+    nieuwe Google-OAuth-accounts (zie auth.py), zodat één simpele check
+    (username.startswith('user_')) overal betrouwbaar detecteert dat de
+    gebruiker nog een eigen gebruikersnaam moet kiezen bij eerstvolgende
+    login.
+    """
+    from app.models import User
+    from app.utils import is_username_blacklisted
+
+    DEMO_USERNAMES = {
+        'jan.hofman.demo@globalunionforum.org':       'jan_h',
+        'fatima.elidrissi.demo@globalunionforum.org': 'fatima_e',
+        'sarah.chen.demo@globalunionforum.org':       'sarah_c',
+        'marcus.osei.demo@globalunionforum.org':      'marcus_o',
+    }
+
+    taken = {u.username.lower() for u in User.query.filter(User.username.isnot(None)).all()}
+    rows = User.query.filter(User.username.is_(None)).order_by(User.id).all()
+
+    for user in rows:
+        candidate = DEMO_USERNAMES.get(user.email, f'user_{user.id}')
+        base, n = candidate, 1
+        while candidate.lower() in taken or is_username_blacklisted(candidate):
+            n += 1
+            candidate = f'{base}{n}'[:20]
+        user.username = candidate
+        taken.add(candidate.lower())
+
+    db.session.commit()
 
 
 def _ensure_admin_user():
@@ -117,7 +261,13 @@ def _ensure_admin_user():
 
 
 def create_app():
-    _production = bool(os.environ.get("DATABASE_URL"))
+    # sqlite is uitsluitend een test-artefact in dit project (productie=Neon/
+    # Postgres, lokale fallback=MySQL) — een sqlite-DATABASE_URL mag dus nooit
+    # 'production'-gedrag triggeren (Talisman force_https/secure cookies,
+    # logging-niveau), anders redirect Talisman testrequests naar https en
+    # kan de Flask-testclient (die gewoon http gebruikt) de app niet bereiken.
+    _db_url = os.environ.get("DATABASE_URL", "")
+    _production = bool(_db_url) and not _db_url.startswith("sqlite")
     logging.basicConfig(level=logging.WARNING if _production else logging.DEBUG)
     app = Flask(__name__)
     app.config.from_object(Config)
@@ -217,6 +367,28 @@ def create_app():
             )
             return redirect(url_for('auth.login'))
         session['_last_active'] = now
+
+    _USERNAME_CHOICE_EXEMPT = {'auth.kies_gebruikersnaam', 'auth.logout', 'static'}
+
+    @app.before_request
+    def enforce_username_choice():
+        """
+        Pseudoniem-model (fase 1): een account met een placeholder-username
+        (het 'user_'-prefixschema, zie _backfill_usernames() en
+        auth_google_callback()) moet eerst een eigen naam kiezen vóór het
+        de rest van de site kan gebruiken. Als before_request-hook i.p.v.
+        alleen een check in login() zodat dit ELKE binnenkomstroute dekt
+        (wachtwoord-login, Google-OAuth, een sessie die al bestond toen dit
+        veld werd toegevoegd) — niet slechts één van de twee login-paden.
+        """
+        from flask_login import current_user as _cu
+        if not _cu.is_authenticated:
+            return
+        if not (_cu.username or '').startswith('user_'):
+            return
+        if request.endpoint in _USERNAME_CHOICE_EXEMPT:
+            return
+        return redirect(url_for('auth.kies_gebruikersnaam'))
 
     from app.routes import main, auth, forum_bp, profile_bp, admin_bp, social
     app.register_blueprint(main)

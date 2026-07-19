@@ -30,13 +30,15 @@
 
   <div class="gu-header__end">
     {% if current_user.is_authenticated %}
+    {% set gu_display_name = (current_user.first_name ~ ' ' ~ current_user.last_name) if current_user.first_name else ('@' ~ current_user.username) %}
+    {% set gu_avatar_initials = ((current_user.first_name[0] ~ current_user.last_name[0]) if current_user.first_name else current_user.username[:2]) | upper %}
     <div class="gu-header__avatar-wrap" id="avatarWrap">
       <button class="gu-header__avatar" id="avatarBtn" aria-expanded="false" aria-haspopup="true"
-              title="{{ current_user.first_name }} {{ current_user.last_name }}">
-        {{ current_user.first_name[0] | upper }}{{ current_user.last_name[0] | upper }}
+              title="{{ gu_display_name }}">
+        {{ gu_avatar_initials }}
       </button>
       <div class="gu-header__dropdown" id="avatarDropdown" hidden>
-        <p class="gu-header__dropdown-name">{{ current_user.first_name }} {{ current_user.last_name }}</p>
+        <p class="gu-header__dropdown-name">{{ gu_display_name }}</p>
         <a href="{{ url_for('profile.profile') }}" class="gu-header__dropdown-item">{{ _('Profile') }}</a>
         {% if current_user.is_admin %}
         <a href="{{ url_for('admin.admin_dashboard') }}" class="gu-header__dropdown-item">Admin</a>

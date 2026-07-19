@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Choose your username') }} — Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<div class="gu-auth-page">
+  <div class="gu-auth-panel">
+
+    <div class="gu-auth__brand">
+      <img src="{{ url_for('static', filename='assets/logo-symbol.svg') }}" height="28" alt="">
+      <p class="gu-eyebrow" style="margin: 0;">Global Union</p>
+    </div>
+
+    <p class="gu-eyebrow">{{ _('ALMOST THERE') }}</p>
+    <h2 class="gu-join__h2">
+      {{ _('Choose your username.') }}
+    </h2>
+    <p style="color: var(--gu-fg-2); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 28px;">
+      {{ _('This is how other participants will see you in the conversation.') }}
+    </p>
+
+    <form method="POST" action="{{ url_for('auth.kies_gebruikersnaam') }}" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="gu-join__field">
+        <label for="username">
+          {{ _('Username') }}
+          <span class="gu-join__badge">{{ _('publicly visible') }}</span>
+        </label>
+        <input id="username" name="username" type="text"
+               class="gu-input{% if errors.username_format or errors.username_blacklisted or errors.username_taken %} gu-input--error{% endif %}"
+               value="{{ form_data.username }}" placeholder="sara_dv"
+               autofocus required minlength="3" maxlength="20">
+        <p class="gu-join__hint" id="usernameHint">
+          {{ _('3–20 characters: letters, numbers, - and _') }}
+        </p>
+        <p class="gu-join__formError" id="usernameError"{% if not (errors.username_format or errors.username_blacklisted or errors.username_taken) %} style="display:none;"{% endif %}>
+          {% if errors.username_taken %}{{ _('This username is already taken.') }}
+          {% elif errors.username_blacklisted %}{{ _('This username is not available.') }}
+          {% else %}{{ _('3–20 characters: letters, numbers, - and _') }}{% endif %}
+        </p>
+      </div>
+
+      <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
+              style="width: 100%; justify-content: center; margin-top: 8px;">
+        {{ _('Save and continue') }}
+        <span class="gu-arrow"></span>
+      </button>
+
+    </form>
+
+  </div>
+</div>
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var lang = '{{ lang }}';
+    var messages = {
+      format: {
+        nl: '3–20 tekens: letters, cijfers, - en _',
+        en: '3–20 characters: letters, numbers, - and _'
+      },
+      blacklisted: {
+        nl: 'Deze gebruikersnaam is niet beschikbaar.',
+        en: 'This username is not available.'
+      },
+      taken: {
+        nl: 'Deze gebruikersnaam is al in gebruik.',
+        en: 'This username is already taken.'
+      }
+    };
+    var input = document.getElementById('username');
+    var errorEl = document.getElementById('usernameError');
+    var checkUrl = '{{ url_for("social.username_check") }}';
+    if (!input || !errorEl) return;
+
+    input.addEventListener('blur', function () {
+      var value = input.value.trim();
+      if (!value) { errorEl.style.display = 'none'; input.classList.remove('gu-input--error'); return; }
+      var body = new URLSearchParams({ username: value });
+      fetch(checkUrl, { method: 'POST', body: body })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.ok) {
+            errorEl.style.display = 'none';
+            input.classList.remove('gu-input--error');
+          } else {
+            var msgs = messages[data.reason] || messages.format;
+            errorEl.textContent = msgs[lang] || msgs.nl;
+            errorEl.style.display = '';
+            input.classList.add('gu-input--error');
+          }
+        })
+        .catch(function () { /* server-side vangt bij submit */ });
+    });
+    input.addEventListener('input', function () {
+      if (errorEl.style.display !== 'none') { errorEl.style.display = 'none'; input.classList.remove('gu-input--error'); }
+    });
+  })();
+</script>
+{% endblock %}{% endblock %}

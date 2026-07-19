@@ -1,11 +1,14 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app, jsonify
 from flask_login import current_user
 from flask_babel import gettext as _
+
+from sqlalchemy.exc import IntegrityError
 
 from app import db, bcrypt, limiter
 from app.mail import send_email
 from app.models import User
-from app.utils import _password_strong, _send_verify_email, _stash_form_state, _pop_form_state
+from app.utils import (_password_strong, _send_verify_email, _stash_form_state, _pop_form_state,
+                       is_username_valid_format, is_username_blacklisted, is_username_available)
 
 social = Blueprint("social", __name__)
 
@@ -105,6 +108,24 @@ def feedback():
     return redirect(url_for("main.index"))
 
 
+@social.route("/aanmelden/username-check", methods=["POST"])
+@limiter.limit("30 per minute")
+def username_check():
+    """
+    Blur-validatie voor het username-veld op /aanmelden. Zelfde regels als
+    de server-side check bij submit (format/blacklist/uniciteit) — dit is
+    puur een snellere, eerdere terugkoppeling, geen vervanging daarvan.
+    """
+    username = (request.form.get("username") or "").strip()
+    if not is_username_valid_format(username):
+        return jsonify({"ok": False, "reason": "format"})
+    if is_username_blacklisted(username):
+        return jsonify({"ok": False, "reason": "blacklisted"})
+    if not is_username_available(username):
+        return jsonify({"ok": False, "reason": "taken"})
+    return jsonify({"ok": True})
+
+
 @social.route("/aanmelden", methods=["GET", "POST"])
 @limiter.limit("3 per hour", methods=["POST"])
 def aanmelden():
@@ -114,7 +135,8 @@ def aanmelden():
 
     if request.method == "POST":
         errors = {}
-        form_data = {"first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
+        form_data = {"username": "", "first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
+        form_data["username"]     = request.form.get("username", "").strip()
         form_data["first_name"]   = request.form.get("first_name", "").strip()
         form_data["last_name"]    = request.form.get("last_name", "").strip()
         form_data["email"]        = request.form.get("email", "").strip().lower()
@@ -122,10 +144,19 @@ def aanmelden():
         password         = request.form.get("password", "")
         password_confirm = request.form.get("password_confirm", "")
 
-        if not form_data["first_name"]:
-            errors["first_name"] = True
-        if not form_data["last_name"]:
-            errors["last_name"] = True
+        # Username: formaat, blacklist en uniciteit zijn drie losse, elk
+        # apart te tonen problemen — vandaar losse vlaggen i.p.v. één
+        # generieke 'username'-fout (zelfde principe als email/email_in_use).
+        if not is_username_valid_format(form_data["username"]):
+            errors["username_format"] = True
+        elif is_username_blacklisted(form_data["username"]):
+            errors["username_blacklisted"] = True
+        elif not is_username_available(form_data["username"]):
+            errors["username_taken"] = True
+        # Voornaam/achternaam zijn een koppel: één zonder de ander is fout,
+        # beide leeg of beide gevuld is prima (velden zijn optioneel).
+        if bool(form_data["first_name"]) != bool(form_data["last_name"]):
+            errors["name_pair"] = True
         if not form_data["email"] or "@" not in form_data["email"]:
             errors["email"] = True
         elif User.query.filter_by(email=form_data["email"]).first():
@@ -144,15 +175,25 @@ def aanmelden():
             password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
             reg_lang = session.get('lang', 'nl')
             user = User(
-                first_name=form_data["first_name"],
-                last_name=form_data["last_name"],
+                username=form_data["username"],
+                first_name=form_data["first_name"] or None,
+                last_name=form_data["last_name"] or None,
                 email=form_data["email"],
                 password_hash=password_hash,
                 linkedin_url=form_data["linkedin_url"],
                 auto_translate=True if reg_lang == 'en' else None,
             )
             db.session.add(user)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except IntegrityError:
+                # Race condition: iemand anders claimde deze username tussen
+                # de blur-check/submit-check en deze commit. De unieke index
+                # is de uiteindelijke waarheid — nette foutmelding i.p.v. 500.
+                db.session.rollback()
+                errors["username_taken"] = True
+                _stash_form_state("aanmelden", errors, form_data)
+                return redirect(url_for("social.aanmelden"), code=303)
             _send_verify_email(user, session.get('lang', 'nl'), current_app.config['SECRET_KEY'])
             session['modal'] = 'email_sent'
             return redirect(url_for("main.index"))
@@ -164,6 +205,6 @@ def aanmelden():
         return redirect(url_for("social.aanmelden"), code=303)
 
     errors, stashed_data = _pop_form_state("aanmelden")
-    form_data = {"first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
+    form_data = {"username": "", "first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
     form_data.update(stashed_data)
     return render_template("aanmelden/aanmelden.html", form_data=form_data, errors=errors)

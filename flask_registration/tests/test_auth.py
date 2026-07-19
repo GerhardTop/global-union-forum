@@ -71,6 +71,7 @@ class TestUserModel:
         """Valideer dat User-model email, password_hash, verified, google_id heeft."""
         with app.app_context():
             user = User(
+                username='test_user1',
                 first_name='Test',
                 last_name='User',
                 email='test@example.com',
@@ -108,6 +109,7 @@ class TestUserModel:
         """Valideer dat is_admin en is_moderator standaard False zijn."""
         with app.app_context():
             user = User(
+                username='test_user2',
                 first_name='Test',
                 last_name='User',
                 email='test@example.com',
@@ -115,7 +117,7 @@ class TestUserModel:
             )
             db.session.add(user)
             db.session.commit()
-            
+
             saved = User.query.filter_by(email='test@example.com').first()
             assert saved.is_admin is False
             assert saved.is_moderator is False
@@ -136,6 +138,7 @@ class TestRegistration:
     def test_successful_registration(self, client, app):
         """Registreer gebruiker met geldige gegevens; valideer opslag."""
         response = client.post('/aanmelden', data={
+            'username': 'john_doe_test',
             'first_name': 'John',
             'last_name': 'Doe',
             'email': 'john@example.com',
@@ -151,6 +154,7 @@ class TestRegistration:
         with app.app_context():
             user = User.query.filter_by(email='john@example.com').first()
             assert user is not None
+            assert user.username == 'john_doe_test'
             assert user.first_name == 'John'
             assert user.last_name == 'Doe'
             # Standaard niet geverifieerd en geen google_id
@@ -162,6 +166,7 @@ class TestRegistration:
         with app.app_context():
             # Voeg eerste gebruiker direct toe
             user1 = User(
+                username='alice_smith',
                 first_name='Alice',
                 last_name='Smith',
                 email='alice@example.com',
@@ -258,6 +263,7 @@ class TestLogin:
         with app.app_context():
             # Maak geverifieerde gebruiker
             user = User(
+                username='john_doe1',
                 first_name='John',
                 last_name='Doe',
                 email='john@example.com',
@@ -266,7 +272,7 @@ class TestLogin:
             )
             db.session.add(user)
             db.session.commit()
-        
+
         # Login poging
         response = client.post('/login', data={
             'email': 'john@example.com',
@@ -283,6 +289,7 @@ class TestLogin:
         """Login met fout wachtwoord faalt."""
         with app.app_context():
             user = User(
+                username='john_doe2',
                 first_name='John',
                 last_name='Doe',
                 email='john@example.com',
@@ -313,6 +320,7 @@ class TestLogin:
         """Login met niet-geverifieerde gebruiker wordt geblokkeerd/gewaarschuwd."""
         with app.app_context():
             user = User(
+                username='john_doe3',
                 first_name='John',
                 last_name='Doe',
                 email='john@example.com',
@@ -339,6 +347,7 @@ class TestLogin:
         """Login werkt met e-mail in ander case."""
         with app.app_context():
             user = User(
+                username='john_doe4',
                 first_name='John',
                 last_name='Doe',
                 email='John@Example.com',
@@ -365,6 +374,7 @@ class TestEmailVerification:
         """Nieuwe gebruiker heeft verified=False."""
         with app.app_context():
             user = User(
+                username='test_user3',
                 first_name='Test',
                 last_name='User',
                 email='test@example.com',
@@ -372,14 +382,15 @@ class TestEmailVerification:
             )
             db.session.add(user)
             db.session.commit()
-            
+
             saved = User.query.filter_by(email='test@example.com').first()
             assert saved.verified is False
-    
+
     def test_verified_flag_persists(self, app):
         """verified-flag kan gezet en opgeslagen worden."""
         with app.app_context():
             user = User(
+                username='test_user4',
                 first_name='Test',
                 last_name='User',
                 email='test@example.com',
@@ -401,6 +412,7 @@ class TestEmailVerification:
         with app.app_context():
             # Gebruiker zonder Google
             user1 = User(
+                username='test_user5',
                 first_name='Test1',
                 last_name='User1',
                 email='test1@example.com',
@@ -408,9 +420,10 @@ class TestEmailVerification:
                 google_id=None
             )
             db.session.add(user1)
-            
+
             # Gebruiker met Google
             user2 = User(
+                username='test_user6',
                 first_name='Test2',
                 last_name='User2',
                 email='test2@example.com',
@@ -437,6 +450,7 @@ class TestPasswordSecurity:
             hashed = bcrypt.generate_password_hash(plain).decode('utf-8')
             
             user = User(
+                username='test_user7',
                 first_name='Test',
                 last_name='User',
                 email='test@example.com',
@@ -511,6 +525,7 @@ class TestEdgeCases:
         with app.app_context():
             long_email = 'a' * 50 + '@example.com'
             user = User(
+                username='test_user8',
                 first_name='Test',
                 last_name='User',
                 email=long_email,
@@ -527,6 +542,7 @@ class TestEdgeCases:
         """Namen met speciale karakters (accenten, unicode) werken."""
         with app.app_context():
             user = User(
+                username='test_user9',
                 first_name='François',
                 last_name='Müller',
                 email='test@example.com',
@@ -543,6 +559,7 @@ class TestEdgeCases:
         """linkedin_url is nullable."""
         with app.app_context():
             user1 = User(
+                username='test_user10',
                 first_name='Test1',
                 last_name='User1',
                 email='test1@example.com',
@@ -550,6 +567,7 @@ class TestEdgeCases:
                 linkedin_url=None
             )
             user2 = User(
+                username='test_user11',
                 first_name='Test2',
                 last_name='User2',
                 email='test2@example.com',

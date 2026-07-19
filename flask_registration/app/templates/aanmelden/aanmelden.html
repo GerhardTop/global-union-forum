@@ -14,25 +14,23 @@
         {{ _('Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free.') }}
       </p>
 
-      <div class="gu-join__field gu-join__field--row">
-        <div class="gu-join__sub-field">
-          <label for="first_name">{{ _('First name') }}</label>
-          <input id="first_name" name="first_name" type="text"
-                 class="gu-input{% if errors.first_name %} gu-input--error{% endif %}"
-                 value="{{ form_data.first_name }}" placeholder="Sara" required autofocus>
-          {% if errors.first_name %}
-          <p class="gu-join__formError">{{ _('Enter your first name.') }}</p>
-          {% endif %}
-        </div>
-        <div class="gu-join__sub-field">
-          <label for="last_name">{{ _('Last name') }}</label>
-          <input id="last_name" name="last_name" type="text"
-                 class="gu-input{% if errors.last_name %} gu-input--error{% endif %}"
-                 value="{{ form_data.last_name }}" placeholder="De Vries" required>
-          {% if errors.last_name %}
-          <p class="gu-join__formError">{{ _('Enter your last name.') }}</p>
-          {% endif %}
-        </div>
+      <div class="gu-join__field">
+        <label for="username">
+          {{ _('Username') }}
+          <span class="gu-join__badge">{{ _('publicly visible') }}</span>
+        </label>
+        <input id="username" name="username" type="text"
+               class="gu-input{% if errors.username_format or errors.username_blacklisted or errors.username_taken %} gu-input--error{% endif %}"
+               value="{{ form_data.username }}" placeholder="sara_dv" required autofocus
+               minlength="3" maxlength="20">
+        <p class="gu-join__hint" id="usernameHint">
+          {{ _('3–20 characters: letters, numbers, - and _') }}
+        </p>
+        <p class="gu-join__formError" id="usernameError"{% if not (errors.username_format or errors.username_blacklisted or errors.username_taken) %} style="display:none;"{% endif %}>
+          {% if errors.username_taken %}{{ _('This username is already taken.') }}
+          {% elif errors.username_blacklisted %}{{ _('This username is not available.') }}
+          {% else %}{{ _('3–20 characters: letters, numbers, - and _') }}{% endif %}
+        </p>
       </div>
 
       <div class="gu-join__field">
@@ -81,6 +79,29 @@
         <p class="gu-join__formError" id="pwMismatchError"{% if not errors.password_mismatch %} style="display:none;"{% endif %}>{{ _('Passwords do not match.') }}</p>
       </div>
 
+      <hr class="gu-join__divider">
+      <p class="gu-join__hint gu-join__hint--section">
+        {{ _('These fields are optional.') }}
+      </p>
+
+      <div class="gu-join__field gu-join__field--row">
+        <div class="gu-join__sub-field">
+          <label for="first_name">{{ _('First name') }}</label>
+          <input id="first_name" name="first_name" type="text"
+                 class="gu-input{% if errors.name_pair %} gu-input--error{% endif %}"
+                 value="{{ form_data.first_name }}" placeholder="Sara">
+        </div>
+        <div class="gu-join__sub-field">
+          <label for="last_name">{{ _('Last name') }}</label>
+          <input id="last_name" name="last_name" type="text"
+                 class="gu-input{% if errors.name_pair %} gu-input--error{% endif %}"
+                 value="{{ form_data.last_name }}" placeholder="De Vries">
+        </div>
+      </div>
+      <p class="gu-join__formError" id="namePairError"{% if not errors.name_pair %} style="display:none;"{% endif %}>
+        {{ _('Fill in both first and last name, or leave both empty.') }}
+      </p>
+
       <div class="gu-join__field">
         <label for="linkedin_url">
           {{ _('LinkedIn profile URL (required)') }}
@@ -101,9 +122,6 @@
         {% endif %}
         <p class="gu-join__hint" style="margin-top: 6px;">
           {{ _('Find your profile, click on it and copy the URL from the address bar.') }}
-        </p>
-        <p class="gu-join__hint">
-          {{ _('We prefer everyone to participate under their own name, which is why we ask you to share your LinkedIn profile.') }}
         </p>
       </div>
 
@@ -173,13 +191,82 @@
     });
   })();
 
+  /* ── Blur-validatie voornaam/achternaam-koppel ────────────────────
+     Optioneel samen, verplicht samen: één zonder de ander is fout. */
+  (function () {
+    var first = document.getElementById('first_name');
+    var last = document.getElementById('last_name');
+    var errorEl = document.getElementById('namePairError');
+    if (!first || !last || !errorEl) return;
+
+    function check() {
+      var mismatch = Boolean(first.value.trim()) !== Boolean(last.value.trim());
+      errorEl.style.display = mismatch ? '' : 'none';
+      first.classList.toggle('gu-input--error', mismatch);
+      last.classList.toggle('gu-input--error', mismatch);
+    }
+    first.addEventListener('blur', check);
+    last.addEventListener('blur', check);
+    first.addEventListener('input', function () { if (errorEl.style.display !== 'none') check(); });
+    last.addEventListener('input', function () { if (errorEl.style.display !== 'none') check(); });
+  })();
+
+  /* ── Blur-validatie username: formaat + blacklist + uniciteit ─────
+     Server-side (zie social.py aanmelden()/username_check()) blijft de
+     uiteindelijke autoriteit — dit is puur snellere terugkoppeling. */
+  (function () {
+    var lang = '{{ lang }}';
+    var messages = {
+      format: {
+        nl: '3–20 tekens: letters, cijfers, - en _',
+        en: '3–20 characters: letters, numbers, - and _'
+      },
+      blacklisted: {
+        nl: 'Deze gebruikersnaam is niet beschikbaar.',
+        en: 'This username is not available.'
+      },
+      taken: {
+        nl: 'Deze gebruikersnaam is al in gebruik.',
+        en: 'This username is already taken.'
+      }
+    };
+    var input = document.getElementById('username');
+    var errorEl = document.getElementById('usernameError');
+    var checkUrl = '{{ url_for("social.username_check") }}';
+    if (!input || !errorEl) return;
+
+    input.addEventListener('blur', function () {
+      var value = input.value.trim();
+      if (!value) { errorEl.style.display = 'none'; input.classList.remove('gu-input--error'); return; }
+      var body = new URLSearchParams({ username: value });
+      fetch(checkUrl, { method: 'POST', body: body })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.ok) {
+            errorEl.style.display = 'none';
+            input.classList.remove('gu-input--error');
+          } else {
+            var msgs = messages[data.reason] || messages.format;
+            errorEl.textContent = msgs[lang] || msgs.nl;
+            errorEl.style.display = '';
+            input.classList.add('gu-input--error');
+          }
+        })
+        .catch(function () { /* geen JS-fout tonen bij netwerkprobleem; server-side vangt bij submit */ });
+    });
+    input.addEventListener('input', function () {
+      if (errorEl.style.display !== 'none') { errorEl.style.display = 'none'; input.classList.remove('gu-input--error'); }
+    });
+  })();
+
   (function () {
     var btn = document.getElementById('guLinkedInSearch');
     if (btn) {
       btn.addEventListener('click', function () {
         var first = (document.getElementById('first_name').value || '').trim();
         var last  = (document.getElementById('last_name').value  || '').trim();
-        var name  = [first, last].filter(Boolean).join(' ');
+        var username = (document.getElementById('username').value || '').trim();
+        var name  = [first, last].filter(Boolean).join(' ') || username;
         var url   = 'https://www.linkedin.com/search/results/people/?keywords='
                     + encodeURIComponent(name);
         window.open(url, '_blank', 'noopener');

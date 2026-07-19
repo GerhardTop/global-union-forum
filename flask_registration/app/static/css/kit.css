@@ -638,8 +638,29 @@ body {
 .gu-join__field label,
 .gu-join__sub-field label { font-size: 14px; font-weight: 500; color: var(--gu-fg-1); }
 .gu-join__hint { font-size: 13px; color: var(--gu-fg-3); margin: 0; }
+.gu-join__hint--section {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gu-fg-2);
+  margin: 0 0 12px;
+}
 .gu-input--error { border-color: var(--gu-danger) !important; box-shadow: 0 0 0 3px rgba(238,28,37,.12); }
 .gu-join__formError { font-size: 14px; color: var(--gu-danger); margin: 6px 0 8px; }
+.gu-join__badge {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--gu-fg-3);
+  border: 1px solid var(--gu-border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-left: 6px;
+  text-transform: none;
+}
+.gu-join__divider {
+  border: none;
+  border-top: 1px solid var(--gu-border-strong);
+  margin: 28px 0 20px;
+}
 
 /* Taalknop */
 .gu-join__langChoice { display: inline-flex; gap: 8px; }

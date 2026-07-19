@@ -14,12 +14,8 @@
 
     <div class="gu-profile__info">
       <div class="gu-profile__info-row">
-        <span class="gu-profile__info-label">{{ _('First name') }}</span>
-        <span class="gu-profile__info-value">{{ current_user.first_name }}</span>
-      </div>
-      <div class="gu-profile__info-row">
-        <span class="gu-profile__info-label">{{ _('Last name') }}</span>
-        <span class="gu-profile__info-value">{{ current_user.last_name }}</span>
+        <span class="gu-profile__info-label">{{ _('Username') }}</span>
+        <span class="gu-profile__info-value">{{ current_user.username }}</span>
       </div>
       <div class="gu-profile__info-row">
         <span class="gu-profile__info-label">{{ _('Email address') }}</span>
@@ -29,7 +25,19 @@
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
-    <p class="gu-eyebrow">LinkedIn</p>
+    <p class="gu-eyebrow">{{ _('Not required') }}</p>
+
+    <div class="gu-profile__info" style="margin-bottom: 24px;">
+      <div class="gu-profile__info-row">
+        <span class="gu-profile__info-label">{{ _('First name') }}</span>
+        <span class="gu-profile__info-value">{{ current_user.first_name if current_user.first_name else _('Not provided') }}</span>
+      </div>
+      <div class="gu-profile__info-row">
+        <span class="gu-profile__info-label">{{ _('Last name') }}</span>
+        <span class="gu-profile__info-value">{{ current_user.last_name if current_user.last_name else _('Not provided') }}</span>
+      </div>
+    </div>
+
     <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 16px;">
       {{ _('Your LinkedIn profile.') }}
     </h2>

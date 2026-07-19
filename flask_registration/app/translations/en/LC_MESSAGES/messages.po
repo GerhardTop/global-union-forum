@@ -122,6 +122,15 @@ msgstr "This site was designed with Claude Design and built with Claude and Clau
 msgid "Send feedback"
 msgstr "Send feedback"
 
+msgid "Do you have suggestions for improving this site? Is there functionality you miss? We'd love to hear from you!"
+msgstr "Do you have suggestions for improving this site? Is there functionality you miss? We'd love to hear from you!"
+
+msgid "Know someone who'd want to think along? Invite them to join the conversation."
+msgstr "Know someone who'd want to think along? Invite them to join the conversation."
+
+msgid "I know someone"
+msgstr "I know someone"
+
 msgid "I know someone who would most probably like to join the conversation."
 msgstr "I know someone who would most probably like to join the conversation."
 
@@ -215,6 +224,12 @@ msgstr "First name"
 msgid "Last name"
 msgstr "Last name"
 
+msgid "Not provided"
+msgstr "Not provided"
+
+msgid "Not required"
+msgstr "Not required"
+
 msgid "This email is already in use. Log in instead?"
 msgstr "This email is already in use. Log in instead?"
 
@@ -247,6 +262,42 @@ msgstr "We prefer everyone to participate under their own name, which is why we 
 
 msgid "Enter a valid LinkedIn URL (https://www.linkedin.com/in/…)."
 msgstr "Enter a valid LinkedIn URL (https://www.linkedin.com/in/…)."
+
+msgid "Username"
+msgstr "Username"
+
+msgid "publicly visible"
+msgstr "publicly visible"
+
+msgid "3–20 characters: letters, numbers, - and _"
+msgstr "3–20 characters: letters, numbers, - and _"
+
+msgid "This username is already taken."
+msgstr "This username is already taken."
+
+msgid "This username is not available."
+msgstr "This username is not available."
+
+msgid "Fill in both first and last name, or leave both empty."
+msgstr "Fill in both first and last name, or leave both empty."
+
+msgid "These fields are optional."
+msgstr "These fields are optional."
+
+msgid "Choose your username"
+msgstr "Choose your username"
+
+msgid "Choose your username."
+msgstr "Choose your username."
+
+msgid "This is how other participants will see you in the conversation."
+msgstr "This is how other participants will see you in the conversation."
+
+msgid "Save and continue"
+msgstr "Save and continue"
+
+msgid "ALMOST THERE"
+msgstr "ALMOST THERE"
 
 msgid "Create account"
 msgstr "Create account"

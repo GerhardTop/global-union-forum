@@ -34,11 +34,12 @@ def _save_upload(file):
     return f'/static/uploads/{filename}'
 
 
-def _get_or_create_demo_user(first_name, last_name, email):
+def _get_or_create_demo_user(first_name, last_name, email, username):
     user = User.query.filter_by(email=email).first()
     if not user:
         pw = bcrypt.generate_password_hash(secrets.token_hex(24)).decode('utf-8')
         user = User(
+            username=username,
             first_name=first_name,
             last_name=last_name,
             email=email,
@@ -67,10 +68,10 @@ def _seed_forum():
 
     now = datetime.utcnow()
 
-    jan     = _get_or_create_demo_user('Jan',    'Hofman (demo)',       'jan.hofman.demo@globalunionforum.org')
-    fatima  = _get_or_create_demo_user('Fatima', 'El Idrissi (demo)',   'fatima.elidrissi.demo@globalunionforum.org')
-    sarah   = _get_or_create_demo_user('Sarah',  'Chen (demo)',         'sarah.chen.demo@globalunionforum.org')
-    marcus  = _get_or_create_demo_user('Marcus', 'Osei (demo)',         'marcus.osei.demo@globalunionforum.org')
+    jan     = _get_or_create_demo_user('Jan',    'Hofman (demo)',       'jan.hofman.demo@globalunionforum.org', 'jan_h')
+    fatima  = _get_or_create_demo_user('Fatima', 'El Idrissi (demo)',   'fatima.elidrissi.demo@globalunionforum.org', 'fatima_e')
+    sarah   = _get_or_create_demo_user('Sarah',  'Chen (demo)',         'sarah.chen.demo@globalunionforum.org', 'sarah_c')
+    marcus  = _get_or_create_demo_user('Marcus', 'Osei (demo)',         'marcus.osei.demo@globalunionforum.org', 'marcus_o')
 
     # ── Thread 1: Scorecard manipulatie ──────────────────────────────
     t1 = Thread(
@@ -90,7 +91,7 @@ def _seed_forum():
 
     p1_op = Post(
         thread_id=t1.id, user_id=jan.id,
-        author_name='Jan Hofman (demo)', author_role='member', author_age=52,
+        author_name='Jan Hofman (demo)', author_username='jan_h', author_role='member', author_age=52,
         source_lang='nl', is_op=True, vote_count=0, is_demo=True,
         body_nl=(
             "Ik steun het idee van de scorecard, maar ik maak me zorgen over de wet van Goodhart: "
@@ -119,7 +120,7 @@ def _seed_forum():
 
     p1_r1 = Post(
         thread_id=t1.id, user_id=sarah.id, parent_id=p1_op.id,
-        author_name='Sarah Chen (demo)', author_role='expert', author_age=34,
+        author_name='Sarah Chen (demo)', author_username='sarah_c', author_role='expert', author_age=34,
         author_badge_nl='Internationale betrekkingen · LSE',
         author_badge_en='International relations · LSE',
         source_lang='en', vote_count=31, is_demo=True,
@@ -140,7 +141,7 @@ def _seed_forum():
 
     p1_r2 = Post(
         thread_id=t1.id, user_id=marcus.id, parent_id=p1_op.id,
-        author_name='Marcus Osei (demo)', author_role='member', author_age=31,
+        author_name='Marcus Osei (demo)', author_username='marcus_o', author_role='member', author_age=31,
         source_lang='en', vote_count=18, is_demo=True,
         body=(
             "The independent body idea is appealing but circular: you need trust to create "
@@ -172,7 +173,7 @@ def _seed_forum():
 
     p2_op = Post(
         thread_id=t2.id, user_id=fatima.id,
-        author_name='Fatima El Idrissi (demo)', author_role='expert', author_age=38,
+        author_name='Fatima El Idrissi (demo)', author_username='fatima_e', author_role='expert', author_age=38,
         author_badge_nl='Handelsrecht · Universiteit Leiden',
         author_badge_en='Trade law · Leiden University',
         source_lang='nl', is_op=True, vote_count=0, is_demo=True,
@@ -217,7 +218,7 @@ def _seed_forum():
 
     p2_r1 = Post(
         thread_id=t2.id, user_id=jan.id, parent_id=p2_op.id,
-        author_name='Jan Hofman (demo)', author_role='member', author_age=52,
+        author_name='Jan Hofman (demo)', author_username='jan_h', author_role='member', author_age=52,
         source_lang='nl', vote_count=14, is_demo=True,
         body=(
             "Fatima stelt de juiste vragen. Laat me ze één voor één langslopen.\n\n"
@@ -258,7 +259,7 @@ def _seed_forum():
 
     p3_op = Post(
         thread_id=t3.id, user_id=sarah.id,
-        author_name='Sarah Chen (demo)', author_role='expert', author_age=34,
+        author_name='Sarah Chen (demo)', author_username='sarah_c', author_role='expert', author_age=34,
         author_badge_nl='Internationale betrekkingen · LSE',
         author_badge_en='International relations · LSE',
         source_lang='en', is_op=True, vote_count=0, is_demo=True,
@@ -285,7 +286,7 @@ def _seed_forum():
 
     p3_r1 = Post(
         thread_id=t3.id, user_id=jan.id, parent_id=p3_op.id,
-        author_name='Jan Hofman (demo)', author_role='member', author_age=52,
+        author_name='Jan Hofman (demo)', author_username='jan_h', author_role='member', author_age=52,
         source_lang='nl', vote_count=9, is_demo=True,
         body=(
             "Goed punt over de financiering. Maar misschien hoeft het geen BBC te worden. "
@@ -302,7 +303,7 @@ def _seed_forum():
 
     p3_r2 = Post(
         thread_id=t3.id, user_id=fatima.id, parent_id=p3_r1.id,
-        author_name='Fatima El Idrissi (demo)', author_role='expert', author_age=38,
+        author_name='Fatima El Idrissi (demo)', author_username='fatima_e', author_role='expert', author_age=38,
         author_badge_nl='Handelsrecht · Universiteit Leiden',
         author_badge_en='Trade law · Leiden University',
         source_lang='nl', vote_count=22, is_demo=True,
@@ -337,7 +338,7 @@ def _seed_forum():
 
     p4_op = Post(
         thread_id=t4.id, user_id=marcus.id,
-        author_name='Marcus Osei (demo)', author_role='member', author_age=31,
+        author_name='Marcus Osei (demo)', author_username='marcus_o', author_role='member', author_age=31,
         source_lang='en', is_op=True, vote_count=0, is_demo=True,
         body=(
             "The manifesto describes Global Union as open to 'functioning democracies'. "
@@ -360,7 +361,7 @@ def _seed_forum():
 
     p4_r1 = Post(
         thread_id=t4.id, user_id=fatima.id, parent_id=p4_op.id,
-        author_name='Fatima El Idrissi (demo)', author_role='expert', author_age=38,
+        author_name='Fatima El Idrissi (demo)', author_username='fatima_e', author_role='expert', author_age=38,
         author_badge_nl='Handelsrecht · Universiteit Leiden',
         author_badge_en='Trade law · Leiden University',
         source_lang='nl', vote_count=19, is_demo=True,
@@ -381,7 +382,7 @@ def _seed_forum():
 
     p4_r2 = Post(
         thread_id=t4.id, user_id=jan.id, parent_id=p4_r1.id,
-        author_name='Jan Hofman (demo)', author_role='member', author_age=52,
+        author_name='Jan Hofman (demo)', author_username='jan_h', author_role='member', author_age=52,
         source_lang='nl', vote_count=8, is_demo=True,
         body=(
             "Ik ben voor een zo objectief mogelijke drempel, maar Fatima's punt over "
@@ -450,7 +451,9 @@ def forum_thread(thread_id):
             post = Post(
                 thread_id=thread_id,
                 user_id=current_user.id,
-                author_name=f'{current_user.first_name} {current_user.last_name}',
+                author_name=(f'{current_user.first_name} {current_user.last_name}'
+                             if current_user.first_name else ''),
+                author_username=current_user.username,
                 author_role='member',
                 body=body or None,
                 source_lang=session.get('lang', 'nl'),
@@ -620,7 +623,9 @@ def forum_nieuw():
             post = Post(
                 thread_id=thread.id,
                 user_id=current_user.id,
-                author_name=f'{current_user.first_name} {current_user.last_name}',
+                author_name=(f'{current_user.first_name} {current_user.last_name}'
+                             if current_user.first_name else ''),
+                author_username=current_user.username,
                 author_role='member',
                 body=body or None,
                 source_lang=session.get('lang', 'nl'),
@@ -686,5 +691,8 @@ def forum_post_verwijderen(post_id):
     post.body_nl = None
     post.body_en = None
     post.user_id = None
+    # Gedeelde placeholder i.p.v. per-post gok — zelfde principe als de
+    # migratie-backfill van bestaande tombstones (zie _migrate_username_and_backfill).
+    post.author_username = 'deleted_user'
     db.session.commit()
     return redirect(url_for('forum.forum_thread', thread_id=thread_id))

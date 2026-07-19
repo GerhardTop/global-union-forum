@@ -67,11 +67,13 @@
             {% set is_self = user.id == current_user.id %}
             {% set role_key = 'admin' if user.is_admin else ('mod' if user.is_moderator else '') %}
             {% set role_label = 'Admin' if user.is_admin else ('Moderator' if user.is_moderator else 'Gebruiker') %}
+            {% set user_display_name = (user.first_name ~ ' ' ~ user.last_name) if user.first_name else ('@' ~ user.username) %}
+            {% set user_avatar_initials = ((user.first_name[0] ~ user.last_name[0]) if user.first_name else user.username[:2]) | upper %}
             <tr class="gu-admin-table__row{% if is_self %} gu-admin-table__row--self{% endif %}">
 
               <td class="gu-admin-table__name">
-                <div class="gu-admin-table__avatar">{{ user.first_name[0] | upper }}{{ user.last_name[0] | upper }}</div>
-                <span>{{ user.first_name }} {{ user.last_name }}</span>
+                <div class="gu-admin-table__avatar">{{ user_avatar_initials }}</div>
+                <span>{{ user_display_name }}</span>
                 {% if user.linkedin_url %}
                 <a href="{{ user.linkedin_url }}" target="_blank" rel="noopener noreferrer"
                    class="gu-admin-table__linkedin" title="LinkedIn profiel">
@@ -124,8 +126,8 @@
                   <button type="button"
                           class="gu-post__action gu-post__action--icon gu-post__delete-btn gu-admin-delete-btn"
                           data-user-id="{{ user.id }}"
-                          data-user-name="{{ user.first_name }} {{ user.last_name }}"
-                          aria-label="Verwijder account van {{ user.first_name }} {{ user.last_name }}"
+                          data-user-name="{{ user_display_name }}"
+                          aria-label="Verwijder account van {{ user_display_name }}"
                           title="Verwijder account">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                          fill="none" stroke="currentColor" stroke-width="2"

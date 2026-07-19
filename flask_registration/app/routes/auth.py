@@ -8,13 +8,17 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import gettext as _
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
+from sqlalchemy.exc import IntegrityError
+
 from app import db, bcrypt, limiter, oauth
 from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
-                       LinkedInAanvullenForm, DeleteAccountForm, VerifyResendForm)
+                       LinkedInAanvullenForm, KiesGebruikersnaamForm, DeleteAccountForm,
+                       VerifyResendForm)
 from app.mail import send_email
 from app.models import User, Post, PostLike
 from app.utils import (_make_verify_token, _send_verify_email, _password_strong,
-                       _stash_form_state, _pop_form_state)
+                       _stash_form_state, _pop_form_state,
+                       is_username_valid_format, is_username_blacklisted, is_username_available)
 
 auth = Blueprint("auth", __name__)
 
@@ -301,15 +305,29 @@ def auth_google_callback():
             db.session.commit()
         session.permanent = True
         login_user(user)
+        # Blokker: bestaand account zonder linkedin gaat nog naar
+        # linkedin_aanvullen — dat verandert pas in fase 2 (linkedin wordt
+        # dan optioneel). Placeholder-usernames worden al wél afgevangen
+        # door de before_request-hook (enforce_username_choice), dus een
+        # account dat toevallig beide mist krijgt eerst de username-stap.
         if not user.linkedin_url:
             return redirect(url_for('auth.linkedin_aanvullen'))
         return redirect(url_for('main.index'))
 
     pw_hash = bcrypt.generate_password_hash(secrets.token_hex(32)).decode('utf-8')
     reg_lang = lang
+    # Placeholder-username, zelfde 'user_'-prefixschema als de migratie-
+    # backfill (_backfill_usernames) — zodat één simpele check
+    # (username.startswith('user_')) overal betrouwbaar herkent dat er nog
+    # een echte keuze gemaakt moet worden. Botsingskans met token_hex(6) is
+    # verwaarloosbaar, maar de retry-lus maakt 'm hard in plaats van hopen.
+    placeholder = f'user_{secrets.token_hex(6)}'
+    while User.query.filter(db.func.lower(User.username) == placeholder.lower()).first():
+        placeholder = f'user_{secrets.token_hex(6)}'
     user = User(
-        first_name=first_name or email.split('@')[0],
-        last_name=last_name or '',
+        username=placeholder,
+        first_name=first_name or None,
+        last_name=last_name or None,
         email=email,
         password_hash=pw_hash,
         google_id=google_id,
@@ -320,7 +338,7 @@ def auth_google_callback():
     db.session.commit()
     session.permanent = True
     login_user(user)
-    return redirect(url_for('auth.linkedin_aanvullen'))
+    return redirect(url_for('auth.kies_gebruikersnaam'))
 
 
 @auth.route('/profiel/linkedin-aanvullen', methods=['GET', 'POST'])
@@ -350,6 +368,55 @@ def linkedin_aanvullen():
 
     errors, _unused = _pop_form_state("linkedin_aanvullen")
     return render_template('linkedin_aanvullen.html', error=errors.get("error", False), form=form)
+
+
+@auth.route('/kies-gebruikersnaam', methods=['GET', 'POST'])
+@login_required
+def kies_gebruikersnaam():
+    """
+    Verplichte stap voor accounts met een placeholder-username (het
+    'user_'-prefixschema — zie _backfill_usernames() en
+    auth_google_callback()). Zolang current_user.username met 'user_'
+    begint, stuurt de before_request-hook (app/__init__.py) elke andere
+    pagina automatisch hierheen — deze route is dus de enige uitweg.
+    """
+    if not (current_user.username or '').startswith('user_'):
+        return redirect(url_for('main.index'))
+    lang = session.get('lang', 'nl')
+    form = KiesGebruikersnaamForm()
+    if form.validate_on_submit():
+        username = form.username.data.strip()
+        if not is_username_valid_format(username):
+            errors = {"username_format": True}
+        elif is_username_blacklisted(username):
+            errors = {"username_blacklisted": True}
+        elif not is_username_available(username, exclude_user_id=current_user.id):
+            errors = {"username_taken": True}
+        else:
+            errors = {}
+        if errors:
+            _stash_form_state("kies_gebruikersnaam", errors, {"username": username})
+            return redirect(url_for('auth.kies_gebruikersnaam'), code=303)
+        current_user.username = username
+        try:
+            db.session.commit()
+        except IntegrityError:
+            # Race condition, zelfde aanpak als /aanmelden.
+            db.session.rollback()
+            _stash_form_state("kies_gebruikersnaam", {"username_taken": True}, {"username": username})
+            return redirect(url_for('auth.kies_gebruikersnaam'), code=303)
+        flash(
+            'Gebruikersnaam ingesteld!' if lang == 'nl' else 'Username set!',
+            'success'
+        )
+        return redirect(url_for('main.index'))
+    elif form.is_submitted():
+        _stash_form_state("kies_gebruikersnaam", {"username_format": True}, {})
+        return redirect(url_for('auth.kies_gebruikersnaam'), code=303)
+
+    errors, stashed_data = _pop_form_state("kies_gebruikersnaam")
+    form_data = {"username": stashed_data.get("username", "")}
+    return render_template('kies_gebruikersnaam.html', errors=errors, form_data=form_data, form=form)
 
 
 @auth.route("/logout")

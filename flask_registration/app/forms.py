@@ -121,6 +121,19 @@ class LinkedInAanvullenForm(FlaskForm):
     submit = SubmitField("submit")
 
 
+class KiesGebruikersnaamForm(FlaskForm):
+    """
+    Alleen CSRF + niet-leeg hier; de echte regels (formaat/blacklist/
+    uniciteit) lopen via app.utils.is_username_*, zelfde helpers als
+    /aanmelden en de blur-check — dezelfde regels op elke invoerplek.
+    """
+    username = StringField(
+        "username",
+        validators=[DataRequired(message="val_required"), Length(max=30)],
+    )
+    submit = SubmitField("submit")
+
+
 class DeleteAccountForm(FlaskForm):
     """Leeg form — alleen voor CSRF-validatie bij account verwijderen."""
     pass
