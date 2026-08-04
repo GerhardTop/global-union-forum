@@ -637,6 +637,12 @@ body {
 .gu-join__sub-field { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 .gu-join__field label,
 .gu-join__sub-field label { font-size: 14px; font-weight: 500; color: var(--gu-fg-1); }
+.gu-join__optionalLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gu-globe);
+  margin: 0 0 12px;
+}
 .gu-join__hint { font-size: 13px; color: var(--gu-fg-3); margin: 0; }
 .gu-join__hint--section {
   font-size: 14px;
@@ -2423,7 +2429,7 @@ body {
 
   /* ── Aanmelden flow ─────────────────────────────────────── */
   .gu-join-page__inner { padding: 32px 20px 64px; }
-  .gu-join__field--row { flex-direction: column; gap: 0; }
+  .gu-join__field--row { flex-direction: column; gap: 20px; }
   .gu-join__stepLabel { display: none; }
   .gu-join__panel { padding: 24px 20px 20px; }
 }

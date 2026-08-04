@@ -218,6 +218,9 @@ msgstr "Join the conversation."
 msgid "Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free."
 msgstr "Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free."
 
+msgid "Expert or layperson, 16 or 96, under a username (pseudonym) and optionally under your own name with LinkedIn."
+msgstr "Expert or layperson, 16 or 96, under a username (pseudonym) and optionally under your own name with LinkedIn."
+
 msgid "First name"
 msgstr "First name"
 
@@ -283,6 +286,9 @@ msgstr "Fill in both first and last name, or leave both empty."
 
 msgid "These fields are optional."
 msgstr "These fields are optional."
+
+msgid "Optional"
+msgstr "Optional"
 
 msgid "Choose your username"
 msgstr "Choose your username"

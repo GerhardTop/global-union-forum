@@ -215,6 +215,9 @@ msgstr "Doe mee aan het gesprek."
 msgid "Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free."
 msgstr "Global Union Forum is een open platform voor iedereen die het gesprek serieus voert — expert of leek, 17 of 70. Deelname is gratis."
 
+msgid "Expert or layperson, 16 or 96, under a username (pseudonym) and optionally under your own name with LinkedIn."
+msgstr "Expert of leek, 16 of 96, onder gebruikersnaam (pseudoniem) en eventueel onder je eigen naam met LinkedIn adres."
+
 msgid "First name"
 msgstr "Voornaam"
 
@@ -280,6 +283,9 @@ msgstr "Vul zowel voor- als achternaam in, of laat beide leeg."
 
 msgid "These fields are optional."
 msgstr "Deze velden zijn optioneel."
+
+msgid "Optional"
+msgstr "Optioneel"
 
 msgid "Choose your username"
 msgstr "Kies je gebruikersnaam"
