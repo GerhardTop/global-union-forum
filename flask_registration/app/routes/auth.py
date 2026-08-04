@@ -305,13 +305,6 @@ def auth_google_callback():
             db.session.commit()
         session.permanent = True
         login_user(user)
-        # Blokker: bestaand account zonder linkedin gaat nog naar
-        # linkedin_aanvullen — dat verandert pas in fase 2 (linkedin wordt
-        # dan optioneel). Placeholder-usernames worden al wél afgevangen
-        # door de before_request-hook (enforce_username_choice), dus een
-        # account dat toevallig beide mist krijgt eerst de username-stap.
-        if not user.linkedin_url:
-            return redirect(url_for('auth.linkedin_aanvullen'))
         return redirect(url_for('main.index'))
 
     pw_hash = bcrypt.generate_password_hash(secrets.token_hex(32)).decode('utf-8')

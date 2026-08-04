@@ -144,16 +144,6 @@
       <div class="gu-composer gu-composer--closed">
         <p>{% if lang == 'nl' %}Dit gesprek is gesloten.{% else %}This conversation is closed.{% endif %}</p>
       </div>
-    {% elif current_user.is_authenticated and not current_user.linkedin_url %}
-    <div class="gu-composer gu-composer--locked">
-      <p>
-        {% if lang == 'nl' %}
-          <a href="{{ url_for('auth.linkedin_aanvullen') }}">Vul je LinkedIn profiel in</a> om mee te doen aan het gesprek.
-        {% else %}
-          <a href="{{ url_for('auth.linkedin_aanvullen') }}">Add your LinkedIn profile</a> to join the conversation.
-        {% endif %}
-      </p>
-    </div>
     {% elif current_user.is_authenticated %}
     <form class="gu-composer" id="composer" method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       <textarea

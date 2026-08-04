@@ -18,7 +18,7 @@
     <div class="page-wrapper">
         {% if current_user.is_authenticated and not current_user.linkedin_url and request.endpoint != 'auth.linkedin_aanvullen' %}
         <div class="gu-linkedin-banner">
-          {{ _('Add your LinkedIn profile to join the conversation.') }}
+          {{ _('Add your LinkedIn profile to post under your real name.') }}
           <a href="{{ url_for('auth.linkedin_aanvullen') }}">{{ _('Add it →') }}</a>
         </div>
         {% endif %}

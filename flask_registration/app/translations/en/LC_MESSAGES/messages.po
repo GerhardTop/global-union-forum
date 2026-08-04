@@ -170,8 +170,8 @@ msgstr "You are now logged in."
 msgid "Close"
 msgstr "Close"
 
-msgid "Add your LinkedIn profile to join the conversation."
-msgstr "Add your LinkedIn profile to join the conversation."
+msgid "Add your LinkedIn profile to post under your real name."
+msgstr "Add your LinkedIn profile to post under your real name."
 
 msgid "Add it →"
 msgstr "Add it →"
@@ -251,8 +251,8 @@ msgstr "Repeat your password"
 msgid "Passwords do not match."
 msgstr "Passwords do not match."
 
-msgid "LinkedIn profile URL (required)"
-msgstr "LinkedIn profile URL (required)"
+msgid "LinkedIn profile URL"
+msgstr "LinkedIn profile URL"
 
 msgid "Find my profile"
 msgstr "Find my profile"

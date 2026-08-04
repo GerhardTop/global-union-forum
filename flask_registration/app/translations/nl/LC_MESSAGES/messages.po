@@ -167,8 +167,8 @@ msgstr "Je bent nu ingelogd."
 msgid "Close"
 msgstr "Sluiten"
 
-msgid "Add your LinkedIn profile to join the conversation."
-msgstr "Vul je LinkedIn profiel in om mee te doen aan het gesprek."
+msgid "Add your LinkedIn profile to post under your real name."
+msgstr "Vul je LinkedIn profiel in om onder je eigen naam te posten."
 
 msgid "Add it →"
 msgstr "Aanvullen →"
@@ -248,8 +248,8 @@ msgstr "Herhaal je wachtwoord"
 msgid "Passwords do not match."
 msgstr "Wachtwoorden komen niet overeen."
 
-msgid "LinkedIn profile URL (required)"
-msgstr "LinkedIn profiel URL (verplicht)"
+msgid "LinkedIn profile URL"
+msgstr "LinkedIn profiel URL"
 
 msgid "Find my profile"
 msgstr "Zoek mijn profiel"

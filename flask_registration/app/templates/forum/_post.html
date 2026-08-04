@@ -144,17 +144,10 @@
 
     {# Reageer button — primaire actieknop (depth < 2, not own post, logged in, thread open) #}
     {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own %}
-    {% if current_user.linkedin_url %}
     <button class="gu-post__action gu-post__reply-btn"
             data-target="reply-form-{{ post.id }}">
       {% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
     </button>
-    {% else %}
-    <button class="gu-post__action gu-post__reply-btn"
-            data-target="reply-nolin-{{ post.id }}">
-      {% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
-    </button>
-    {% endif %}
     {% endif %}
 
     {# Translate button — subtiel #}
@@ -208,27 +201,8 @@
   </div>
   {% endif %}
 
-  {# Inline LinkedIn notice — shown when user clicks Reageer but has no LinkedIn #}
-  {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own and not current_user.linkedin_url %}
-  <div class="gu-post__replyform gu-post__replyform--nolin" id="reply-nolin-{{ post.id }}" hidden>
-    <p style="margin: 0; font-size: 0.9375rem; color: var(--gu-fg-2);">
-      {% if lang == 'nl' %}
-        <a href="{{ url_for('auth.linkedin_aanvullen') }}" style="color: var(--gu-globe-deep); font-weight: 500;">Vul je LinkedIn profiel in</a> om te reageren.
-      {% else %}
-        <a href="{{ url_for('auth.linkedin_aanvullen') }}" style="color: var(--gu-globe-deep); font-weight: 500;">Add your LinkedIn profile</a> to post replies.
-      {% endif %}
-    </p>
-    <div class="gu-post__replyactions">
-      <button type="button" class="gu-btn gu-btn--ghost gu-post__reply-cancel"
-              data-target="reply-nolin-{{ post.id }}">
-        {% if lang == 'nl' %}Sluiten{% else %}Close{% endif %}
-      </button>
-    </div>
-  </div>
-  {% endif %}
-
   {# Inline reply form #}
-  {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own and current_user.linkedin_url %}
+  {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own %}
   <div class="gu-post__replyform" id="reply-form-{{ post.id }}" hidden>
     <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       <input type="hidden" name="parent_id" value="{{ post.id }}">

@@ -104,13 +104,13 @@
 
       <div class="gu-join__field">
         <label for="linkedin_url">
-          {{ _('LinkedIn profile URL (required)') }}
+          {{ _('LinkedIn profile URL') }}
         </label>
         <div style="display: flex; gap: 8px; align-items: center;">
           <input id="linkedin_url" name="linkedin_url" type="url"
                  class="gu-input{% if errors.linkedin_url %} gu-input--error{% endif %}"
                  value="{{ form_data.linkedin_url }}"
-                 placeholder="https://www.linkedin.com/in/jouw-naam" required
+                 placeholder="https://www.linkedin.com/in/jouw-naam"
                  style="flex: 1; min-width: 0;">
           <button type="button" id="guLinkedInSearch" class="gu-btn gu-btn--ghost"
                   style="white-space: nowrap; flex-shrink: 0;">

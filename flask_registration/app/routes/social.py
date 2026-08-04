@@ -168,7 +168,7 @@ def aanmelden():
             errors["password"] = True
         if password != password_confirm:
             errors["password_mismatch"] = True
-        if not form_data["linkedin_url"].startswith("https://www.linkedin.com/"):
+        if form_data["linkedin_url"] and not form_data["linkedin_url"].startswith("https://www.linkedin.com/"):
             errors["linkedin_url"] = True
 
         if not errors:
@@ -180,7 +180,7 @@ def aanmelden():
                 last_name=form_data["last_name"] or None,
                 email=form_data["email"],
                 password_hash=password_hash,
-                linkedin_url=form_data["linkedin_url"],
+                linkedin_url=form_data["linkedin_url"] or None,
                 auto_translate=True if reg_lang == 'en' else None,
             )
             db.session.add(user)
