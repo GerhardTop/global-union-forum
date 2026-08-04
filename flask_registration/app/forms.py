@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_babel import gettext as _
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+from wtforms.validators import DataRequired, Email, Length, ValidationError
 from urllib.parse import urlparse
 
 from app.utils import _password_strong
@@ -27,40 +27,6 @@ def _validate_password_match(base_field_name):
         if field.data != getattr(form, base_field_name).data:
             raise ValidationError(_('Passwords do not match.'))
     return _validator
-
-
-class RegistrationForm(FlaskForm):
-    first_name = StringField(
-        "first_name",
-        validators=[DataRequired(message="val_required"), Length(max=50)],
-    )
-    last_name = StringField(
-        "last_name",
-        validators=[DataRequired(message="val_required"), Length(max=50)],
-    )
-    email = StringField(
-        "email",
-        validators=[
-            DataRequired(message="val_required"),
-            Email(message="val_email_invalid"),
-            Length(max=120),
-        ],
-    )
-    password = PasswordField(
-        "password",
-        validators=[
-            DataRequired(message="val_required"),
-            Length(min=8, message="val_password_min"),
-        ],
-    )
-    confirm_password = PasswordField(
-        "confirm_password",
-        validators=[
-            DataRequired(message="val_required"),
-            EqualTo("password", message="val_passwords_no_match"),
-        ],
-    )
-    submit = SubmitField("submit")
 
 
 class LoginForm(FlaskForm):

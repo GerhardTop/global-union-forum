@@ -29,7 +29,7 @@ def profile():
 
         if action == "linkedin":
             linkedin_url = request.form.get("linkedin_url", "").strip()
-            if not linkedin_url.startswith("https://www.linkedin.com/"):
+            if linkedin_url and not linkedin_url.startswith("https://www.linkedin.com/"):
                 if is_xhr:
                     # XHR krijgt nooit een redirect — 422 zodat de JS-fetch-
                     # afhandeling (zie profile.html) dit als fout herkent.
@@ -39,7 +39,7 @@ def profile():
                 # deze hele route (zie 'kind' hieronder bij het poppen).
                 _stash_form_state("profile", {"kind": "linkedin", "linkedin_error": True})
                 return redirect(url_for("profile.profile"), code=303)
-            current_user.linkedin_url = linkedin_url
+            current_user.linkedin_url = linkedin_url or None
             db.session.commit()
             if is_xhr:
                 return jsonify({'ok': True, 'linkedin_url': linkedin_url})

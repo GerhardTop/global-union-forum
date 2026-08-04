@@ -235,8 +235,6 @@ def _backfill_usernames():
 
 def _ensure_admin_user():
     from app.models import User
-    from flask_bcrypt import Bcrypt
-    _bcrypt = Bcrypt()
 
     # Gerhard — admin + linkedin
     user = User.query.filter_by(email=ADMIN_EMAIL).first()

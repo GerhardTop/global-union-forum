@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app, jsonify
 from flask_login import current_user
-from flask_babel import gettext as _
 
 from sqlalchemy.exc import IntegrityError
 

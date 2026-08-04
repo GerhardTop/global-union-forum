@@ -56,7 +56,7 @@
         <input id="linkedin_url" name="linkedin_url" type="url"
                class="gu-input{% if linkedin_error %} gu-input--error{% endif %}"
                value="{{ current_user.linkedin_url or '' }}"
-               placeholder="https://www.linkedin.com/in/jouw-naam" required>
+               placeholder="https://www.linkedin.com/in/jouw-naam">
         <p id="guLinkedInErrorMsg" class="gu-join__formError"{% if not linkedin_error %} style="display:none;"{% endif %}>
           {{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}
         </p>

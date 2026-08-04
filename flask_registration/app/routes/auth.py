@@ -5,7 +5,6 @@ from datetime import datetime, timezone
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, current_app, abort
 from urllib.parse import urlparse
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_babel import gettext as _
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 from sqlalchemy.exc import IntegrityError
@@ -16,7 +15,7 @@ from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
                        VerifyResendForm)
 from app.mail import send_email
 from app.models import User, Post, PostLike
-from app.utils import (_make_verify_token, _send_verify_email, _password_strong,
+from app.utils import (_send_verify_email, _password_strong,
                        _stash_form_state, _pop_form_state,
                        is_username_valid_format, is_username_blacklisted, is_username_available)
 

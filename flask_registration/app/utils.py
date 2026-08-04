@@ -2,7 +2,7 @@ import re
 from urllib.parse import urlparse
 from markupsafe import escape, Markup
 from flask import url_for, session
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+from itsdangerous import URLSafeTimedSerializer
 
 _URL_RE = re.compile(r'(https?://[^\s<>"\']+)', re.IGNORECASE)
 
