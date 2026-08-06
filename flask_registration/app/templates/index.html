@@ -205,6 +205,7 @@
       {{ _('Invite someone') }}
     </h2>
     <form method="POST" action="{{ url_for('social.uitnodiging') }}">
+      {{ invitation_form.hidden_tag() }}
       <input type="hidden" name="lang" value="{{ lang }}">
       <div class="gu-join__field">
         <label for="invite_email" style="font-size: 14px; font-weight: 500; color: var(--gu-fg-2);">
@@ -218,7 +219,7 @@
           {{ _('Personal message (optional)') }}
         </label>
         <textarea id="invite_message" name="invite_message"
-                  class="gu-input" rows="3"
+                  class="gu-input" rows="3" maxlength="1000"
                   style="resize: vertical; font-family: inherit; font-size: inherit;"
                   placeholder="{{ _('Write a short message…') }}"></textarea>
       </div>

@@ -150,8 +150,8 @@
     </button>
     {% endif %}
 
-    {# Translate button — subtiel #}
-    {% if is_foreign %}
+    {# Translate button — subtiel, alleen voor ingelogde gebruikers (zie forum_translate: @login_required) #}
+    {% if is_foreign and current_user.is_authenticated %}
     <button class="gu-post__action gu-post__action--ghost gu-post__translate-btn"
             data-post-id="{{ post.id }}"
             data-translate-url="{{ url_for('forum.forum_translate', post_id=post.id) }}"

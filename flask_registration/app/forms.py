@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_babel import gettext as _
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, ValidationError
+from wtforms import StringField, PasswordField, TextAreaField, SubmitField
+from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError
 from urllib.parse import urlparse
 
 from app.utils import _password_strong
@@ -113,6 +113,29 @@ class VerifyResendForm(FlaskForm):
 class FeedbackForm(FlaskForm):
     """Leeg form — alleen voor CSRF-validatie bij het feedbackformulier."""
     pass
+
+
+class InvitationForm(FlaskForm):
+    """
+    CSRF + validatie voor het uitnodigingsformulier. invite_email moet een
+    los, geldig e-mailadres zijn (Email-validator accepteert geen kommagesch-
+    eiden lijst) — voorkomt dat /uitnodiging als open mail-relay naar
+    meerdere ontvangers tegelijk misbruikt kan worden. invite_message is
+    optioneel maar begrensd in lengte om relay-misbruik te dempen.
+    """
+    invite_email = StringField(
+        "invite_email",
+        validators=[
+            DataRequired(message="val_required"),
+            Email(message="val_email_invalid"),
+            Length(max=255),
+        ],
+    )
+    invite_message = TextAreaField(
+        "invite_message",
+        validators=[Optional(), Length(max=1000, message="val_message_too_long")],
+    )
+    submit = SubmitField("submit")
 
 
 class ChangePasswordForm(FlaskForm):

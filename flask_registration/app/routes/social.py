@@ -4,7 +4,7 @@ from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 
 from app import db, bcrypt, limiter
-from app.forms import FeedbackForm
+from app.forms import FeedbackForm, InvitationForm
 from app.mail import send_email
 from app.models import User
 from app.utils import (_password_strong, _send_verify_email, _stash_form_state, _pop_form_state,
@@ -14,22 +14,26 @@ social = Blueprint("social", __name__)
 
 
 @social.app_context_processor
-def _inject_feedback_form():
-    return {'feedback_form': FeedbackForm()}
+def _inject_social_forms():
+    return {'feedback_form': FeedbackForm(), 'invitation_form': InvitationForm()}
 
 
 @social.route("/uitnodiging", methods=["POST"])
+@limiter.limit("5 per hour")
 def uitnodiging():
     lang = request.form.get('lang', session.get('lang', 'nl'))
-    invite_email = request.form.get('invite_email', '').strip()
-    invite_message = request.form.get('invite_message', '').strip()
-
-    if not invite_email:
+    form = InvitationForm()
+    if not form.validate_on_submit():
+        if form.csrf_token.errors:
+            abort(400)
         flash(
-            "Vul een e-mailadres in." if lang == 'nl' else "Please enter an email address.",
+            "Vul een geldig e-mailadres in." if lang == 'nl' else "Please enter a valid email address.",
             "error"
         )
         return redirect(url_for("main.index"))
+
+    invite_email = form.invite_email.data.strip()
+    invite_message = (form.invite_message.data or '').strip()
 
     register_url = url_for('social.aanmelden', _external=True)
     if current_user.is_authenticated:

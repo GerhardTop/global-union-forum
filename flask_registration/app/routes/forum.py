@@ -7,7 +7,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, sessio
 from flask_login import login_required, current_user
 from sqlalchemy import func
 
-from app import db, bcrypt
+from app import db, bcrypt, limiter
 from app.models import User, Thread, Post, PostLike
 
 forum_bp = Blueprint("forum", __name__)
@@ -509,6 +509,8 @@ def forum_thread(thread_id):
 
 
 @forum_bp.route('/forum/translate/<int:post_id>', methods=['POST'])
+@login_required
+@limiter.limit("30 per hour")
 def forum_translate(post_id):
     post = Post.query.get_or_404(post_id)
     user_lang = session.get('lang', 'nl')
