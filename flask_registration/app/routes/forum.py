@@ -3,7 +3,7 @@ import secrets
 import uuid
 from datetime import datetime, timedelta
 
-from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify, abort, current_app
+from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify, abort, current_app, flash
 from flask_login import login_required, current_user
 from sqlalchemy import func
 
@@ -447,6 +447,18 @@ def forum_thread(thread_id):
         parent_id = request.form.get('parent_id', type=int)
         image_url = _save_upload(request.files.get('image'))
         anchor    = 'composer'
+        # parent_id komt uit de form en moet daadwerkelijk bij dit thread_id
+        # horen — anders kan een reply-koppeling naar een post in een ander
+        # thread wijzen (geen IDOR, alle posts zijn al publiek, maar wel een
+        # corrupte reply-boomstructuur).
+        if parent_id is not None and not Post.query.filter_by(id=parent_id, thread_id=thread_id).first():
+            flash(
+                'Ongeldige reactie: het bericht waarop je reageert bestaat niet in dit gesprek.'
+                if session.get('lang', 'nl') == 'nl'
+                else 'Invalid reply: the post you are replying to does not exist in this conversation.',
+                'error'
+            )
+            return redirect(url_for('forum.forum_thread', thread_id=thread_id) + '#composer')
         if body or image_url:
             post = Post(
                 thread_id=thread_id,
