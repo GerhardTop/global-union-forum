@@ -1,15 +1,21 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app, jsonify, abort
 from flask_login import current_user
 
 from sqlalchemy.exc import IntegrityError
 
 from app import db, bcrypt, limiter
+from app.forms import FeedbackForm
 from app.mail import send_email
 from app.models import User
 from app.utils import (_password_strong, _send_verify_email, _stash_form_state, _pop_form_state,
                        is_username_valid_format, is_username_blacklisted, is_username_available)
 
 social = Blueprint("social", __name__)
+
+
+@social.app_context_processor
+def _inject_feedback_form():
+    return {'feedback_form': FeedbackForm()}
 
 
 @social.route("/uitnodiging", methods=["POST"])
@@ -69,8 +75,24 @@ def uitnodiging():
 
 
 @social.route("/feedback", methods=["POST"])
+@limiter.limit("5 per hour")
 def feedback():
+    form = FeedbackForm()
+    if not form.validate_on_submit():
+        abort(400)
+
     lang = request.form.get('lang', session.get('lang', 'nl'))
+
+    # Honeypot: bots vullen dit verborgen veld vaak automatisch in, mensen
+    # zien het nooit. Doe stil alsof het gelukt is — geen mail versturen,
+    # geen foutmelding — zodat bots niet leren dat ze gefilterd worden.
+    if request.form.get('website', '').strip():
+        flash(
+            "Bedankt voor je feedback!" if lang == 'nl' else "Thanks for your feedback!",
+            "success"
+        )
+        return redirect(url_for("main.index"))
+
     if current_user.is_authenticated:
         name = f"{current_user.first_name} {current_user.last_name}".strip()
         email = current_user.email

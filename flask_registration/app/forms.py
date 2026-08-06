@@ -110,6 +110,11 @@ class VerifyResendForm(FlaskForm):
     pass
 
 
+class FeedbackForm(FlaskForm):
+    """Leeg form — alleen voor CSRF-validatie bij het feedbackformulier."""
+    pass
+
+
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField(
         "current_password",

@@ -340,6 +340,7 @@ def create_app():
         _path_map = {
             '/aanmelden': 'social.aanmelden',
             '/wachtwoord-vergeten': 'auth.wachtwoord_vergeten',
+            '/feedback': 'main.index',
         }
         return redirect(url_for(_path_map.get(request.path, 'auth.login')))
 
