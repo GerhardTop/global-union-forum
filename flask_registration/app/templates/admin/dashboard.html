@@ -161,6 +161,7 @@
       Weet je zeker dat je dit account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
     </p>
     <form method="POST" id="adminDeleteForm" style="margin-top: 20px; display:flex; gap:12px; justify-content:flex-end;">
+      {{ admin_action_form.hidden_tag() }}
       <button type="button" class="gu-btn gu-btn--ghost" id="adminDeleteCancel">Annuleer</button>
       <button type="submit" class="gu-btn gu-btn--primary" style="background:var(--gu-danger);">Verwijder account</button>
     </form>
@@ -197,6 +198,7 @@
         var role = opt.dataset.role;
         var fd   = new FormData();
         fd.append('role', role);
+        fd.append('csrf_token', document.querySelector('#adminDeleteForm input[name="csrf_token"]').value);
         fetch('/admin/gebruiker/' + userId + '/rol', {
           method: 'POST', body: fd,
           headers: { 'X-Requested-With': 'XMLHttpRequest' }

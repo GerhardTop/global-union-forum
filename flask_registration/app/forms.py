@@ -138,6 +138,28 @@ class InvitationForm(FlaskForm):
     submit = SubmitField("submit")
 
 
+class AanmeldenForm(FlaskForm):
+    """
+    Leeg form — alleen voor CSRF-validatie bij /aanmelden. De echte velden
+    (username, email, wachtwoord, linkedin_url, ...) worden bewust niet als
+    WTForms-velden gemodelleerd: de bestaande handmatige validatie in
+    social.py (username format/blacklist/uniciteit, wachtwoordsterkte,
+    linkedin-formaat) blijft ongewijzigd, dit form voegt alleen de
+    ontbrekende CSRF-laag toe.
+    """
+    pass
+
+
+class LinkedInForm(FlaskForm):
+    """Leeg form — alleen voor CSRF-validatie bij het bijwerken van LinkedIn in profielinstellingen."""
+    pass
+
+
+class AdminActionForm(FlaskForm):
+    """Leeg form — alleen voor CSRF-validatie bij admin-acties (rol wijzigen, account verwijderen)."""
+    pass
+
+
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField(
         "current_password",

@@ -48,6 +48,7 @@
       </a>
     </p>
     <form id="guLinkedInForm" method="POST" action="{{ url_for('profile.profile') }}" novalidate>
+      {{ linkedin_form.hidden_tag() }}
       <input type="hidden" name="action" value="linkedin">
       <div class="gu-join__field">
         <label for="linkedin_url">

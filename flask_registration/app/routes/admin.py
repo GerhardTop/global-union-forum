@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, abort,
 from flask_login import login_required, current_user
 
 from app import db
+from app.forms import AdminActionForm
 from app.models import User, Thread, Post, PostLike
 
 admin_bp = Blueprint("admin", __name__)
@@ -35,6 +36,7 @@ def admin_dashboard():
         total_posts=total_posts,
         demo_posts=demo_posts,
         users=users,
+        admin_action_form=AdminActionForm(),
     )
 
 
@@ -94,6 +96,8 @@ def moderator_dashboard():
 def admin_set_rol(user_id):
     if not current_user.is_admin:
         abort(403)
+    if not AdminActionForm().validate_on_submit():
+        return jsonify({'error': 'invalid csrf token'}), 400
     if user_id == current_user.id:
         return jsonify({'error': 'cannot change own role'}), 400
     user = User.query.get_or_404(user_id)
@@ -118,6 +122,8 @@ def admin_set_rol(user_id):
 def admin_verwijder_gebruiker(user_id):
     if not current_user.is_admin:
         abort(403)
+    if not AdminActionForm().validate_on_submit():
+        abort(400)
     user = User.query.get_or_404(user_id)
     if user.is_admin:
         abort(400)

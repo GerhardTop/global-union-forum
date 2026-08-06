@@ -6,6 +6,14 @@
   <div class="gu-join-page__inner">
 
     <form class="gu-join__panel" method="POST" action="{{ url_for('social.aanmelden') }}" novalidate>
+      {{ form.hidden_tag() }}
+      {# Honeypot: onzichtbaar voor mensen (off-screen, geen display:none —
+         bot-scripts filteren daar vaak specifiek op), aantrekkelijk voor
+         bots om automatisch in te vullen. Niet-leeg bij POST = stil genegeerd. #}
+      <div style="position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
 
       <h2 class="gu-join__h2">
         {{ _('Join the conversation.') }}

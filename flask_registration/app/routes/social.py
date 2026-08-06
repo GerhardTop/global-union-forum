@@ -4,7 +4,7 @@ from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 
 from app import db, bcrypt, limiter
-from app.forms import FeedbackForm, InvitationForm
+from app.forms import FeedbackForm, InvitationForm, AanmeldenForm
 from app.mail import send_email
 from app.models import User
 from app.utils import (_password_strong, _send_verify_email, _stash_form_state, _pop_form_state,
@@ -159,6 +159,18 @@ def aanmelden():
     session.permanent = True
 
     if request.method == "POST":
+        form = AanmeldenForm()
+        if not form.validate_on_submit():
+            abort(400)
+
+        # Honeypot: bots vullen dit verborgen veld vaak automatisch in, mensen
+        # zien het nooit. Doe stil alsof het gelukt is — geen account
+        # aanmaken, geen mail versturen — zodat bots niet leren dat ze
+        # gefilterd worden. Zelfde patroon als /feedback.
+        if request.form.get('website', '').strip():
+            session['modal'] = 'email_sent'
+            return redirect(url_for("main.index"))
+
         errors = {}
         form_data = {"username": "", "first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
         form_data["username"]     = request.form.get("username", "").strip()
@@ -232,4 +244,4 @@ def aanmelden():
     errors, stashed_data = _pop_form_state("aanmelden")
     form_data = {"username": "", "first_name": "", "last_name": "", "email": "", "linkedin_url": ""}
     form_data.update(stashed_data)
-    return render_template("aanmelden/aanmelden.html", form_data=form_data, errors=errors)
+    return render_template("aanmelden/aanmelden.html", form=AanmeldenForm(), form_data=form_data, errors=errors)

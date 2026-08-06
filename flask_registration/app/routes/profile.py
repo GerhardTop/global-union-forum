@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, abort
 from flask_login import login_required, current_user
 from flask_babel import gettext as _
 
 from app import db, bcrypt
+from app.forms import LinkedInForm
 from app.utils import _password_strong, _stash_form_state, _pop_form_state
 
 profile_bp = Blueprint("profile", __name__)
@@ -28,6 +29,11 @@ def profile():
         is_xhr = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
         if action == "linkedin":
+            linkedin_form = LinkedInForm()
+            if not linkedin_form.validate_on_submit():
+                if is_xhr:
+                    return jsonify({'ok': False}), 400
+                abort(400)
             linkedin_url = request.form.get("linkedin_url", "").strip()
             if linkedin_url and not linkedin_url.startswith("https://www.linkedin.com/"):
                 if is_xhr:
@@ -86,7 +92,7 @@ def profile():
     # default (False) staan.
     errors, _unused = _pop_form_state("profile")
     return render_template(
-        "profile.html", form=form,
+        "profile.html", form=form, linkedin_form=LinkedInForm(),
         linkedin_error=errors.get("linkedin_error", False),
         password_weak=errors.get("password_weak", False),
         password_mismatch=errors.get("password_mismatch", False),
