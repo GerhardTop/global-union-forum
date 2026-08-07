@@ -80,8 +80,8 @@ msgstr "One tariff system based on a scorecard per country — corruption, freed
 msgid "Peaceful, but not naive"
 msgstr "A peaceful geopolitical power"
 
-msgid "No war, but decisive sanctions. Peoples must rise up themselves — if that is suppressed, we stand ready. Countries suffering damage are jointly compensated."
-msgstr "No war, but strategic independence. The GU invests heavily in raw materials, energy, defence and its own AI capabilities. If regimes misbehave, decisive sanctions follow."
+msgid "No war, but strategic independence. The GU invests heavily in raw materials, energy, defence and its own AI capabilities. If regimes misbehave, we support the opposition."
+msgstr "No war, but strategic independence. The GU invests heavily in raw materials, energy, defence and its own AI capabilities. If regimes misbehave, we support the opposition."
 
 msgid "Free information"
 msgstr "Free information"
