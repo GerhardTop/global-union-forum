@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'nl' %}Landenoverzicht{% else %}Country overview{% endif %} — Global Union{% endblock %}
+
+{% block content %}
+<div class="gu-landen">
+
+  <div class="gu-landen__head">
+    <p class="gu-eyebrow">{% if lang == 'nl' %}Het manifest{% else %}The manifesto{% endif %}</p>
+    <h1 class="gu-landen__title">{% if lang == 'nl' %}Landenoverzicht{% else %}Country overview{% endif %}</h1>
+  </div>
+
+  <div class="gu-landen__intro">
+    {% include '_landen_intro.html' %}
+  </div>
+
+  <div class="gu-landen__downloads">
+    {% if lang == 'nl' %}
+    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename='downloads/bijlage_a_landenoverzicht_NL.xlsx') }}" download>
+      Download Excel <span class="gu-arrow"></span>
+    </a>
+    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename='downloads/landenlijst.pdf') }}" download>
+      Download PDF <span class="gu-arrow"></span>
+    </a>
+    {% else %}
+    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename='downloads/appendix_a_country_overview_EN.xlsx') }}" download>
+      Download Excel <span class="gu-arrow"></span>
+    </a>
+    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename='downloads/country-list.pdf') }}" download>
+      Download PDF <span class="gu-arrow"></span>
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="gu-landen-table-wrap">
+    <table class="gu-landen-table">
+      <thead>
+        <tr>
+          <th>{% if lang == 'nl' %}Land{% else %}Country{% endif %}</th>
+          <th>DI</th>
+          <th>CPI</th>
+          <th>HRI</th>
+          <th>{% if lang == 'nl' %}Niveau GU{% else %}GU level{% endif %}</th>
+          <th>{% if lang == 'nl' %}Uitnodigen{% else %}Invite{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in countries %}
+        {% set remark = c.remarks_nl if lang == 'nl' else c.remarks_en %}
+        <tr>
+          <td class="gu-landen-table__country">
+            {{ c.land_nl if lang == 'nl' else c.land_en }}
+            {% if remark %}
+            <span class="gu-landen-table__info" title="{{ remark }}" aria-label="{{ remark }}">i</span>
+            {% endif %}
+          </td>
+          <td data-label="DI">{{ '%.2f'|format(c.di) if c.di is not none else '-' }}</td>
+          <td data-label="CPI">{{ c.cpi if c.cpi is not none else '-' }}</td>
+          <td data-label="HRI">{{ '%.3f'|format(c.hri) if c.hri is not none else '-' }}</td>
+          <td data-label="{% if lang == 'nl' %}Niveau GU{% else %}GU level{% endif %}">
+            <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
+          </td>
+          <td data-label="{% if lang == 'nl' %}Uitnodigen{% else %}Invite{% endif %}">{{ c.uitnodigen_nl if lang == 'nl' else c.uitnodigen_en }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

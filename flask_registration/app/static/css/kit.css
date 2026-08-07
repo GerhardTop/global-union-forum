@@ -1434,6 +1434,16 @@ body {
   line-height: 1.75;
   margin: 0 0 16px;
 }
+.gu-manifest__inlineLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gu-link);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+.gu-manifest__inlineLink:hover { color: var(--gu-link-hover); }
 .gu-manifest__section ul {
   color: var(--gu-fg-2);
   line-height: 1.75;
@@ -1476,6 +1486,132 @@ body {
   font-style: normal;
   font-weight: 500;
   color: var(--gu-fg-2);
+}
+
+/* Landenlijst page */
+.gu-landen__head { padding: 48px 0 24px; }
+.gu-landen__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--gu-fg-1);
+  margin: 8px 0 0;
+  letter-spacing: -0.01em;
+}
+.gu-landen__intro { max-width: 760px; margin-bottom: 24px; }
+.gu-landen__intro p {
+  color: var(--gu-fg-2);
+  line-height: 1.75;
+  margin: 0 0 16px;
+}
+.gu-landen__downloads {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+/* Level badge — zelfde pil-vorm als .gu-post__role, met de bestaande
+   semantische tokens (--gu-success groen, --gu-info lichtblauw) i.p.v.
+   nieuwe kleuren. */
+.gu-level-badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.gu-level-badge--meets        { background: var(--gu-success); color: #fff; }
+.gu-level-badge--above        { background: var(--gu-info);    color: #fff; }
+.gu-level-badge--below        { background: var(--gu-bg-soft); color: var(--gu-fg-2); }
+.gu-level-badge--insufficient { background: var(--gu-bg-soft); color: var(--gu-fg-3); }
+
+/* Landen table — zelfde visuele taal als .gu-admin-table (los gehouden zodat
+   het responsive kaarten-gedrag hieronder niet ook /admin en /moderator raakt). */
+.gu-landen-table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--gu-border);
+  margin-bottom: 48px;
+}
+.gu-landen-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.gu-landen-table thead tr {
+  background: var(--gu-bg-soft);
+  border-bottom: 1px solid var(--gu-border);
+}
+.gu-landen-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gu-fg-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.gu-landen-table td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--gu-border);
+  color: var(--gu-fg-2);
+}
+.gu-landen-table tbody tr:last-child td { border-bottom: none; }
+.gu-landen-table__country { font-weight: 600; color: var(--gu-fg-1); }
+.gu-landen-table__info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--gu-bg-soft);
+  color: var(--gu-fg-3);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  cursor: help;
+  vertical-align: middle;
+}
+
+/* Onder 600px: rijen worden gestapelde kaarten i.p.v. horizontaal scrollen —
+   zelfde breakpoint als de rest van de site. */
+@media (max-width: 600px) {
+  .gu-landen-table-wrap { overflow-x: visible; border: none; }
+  .gu-landen-table thead { display: none; }
+  .gu-landen-table, .gu-landen-table tbody, .gu-landen-table tr, .gu-landen-table td {
+    display: block;
+    width: 100%;
+  }
+  .gu-landen-table tr {
+    border: 1px solid var(--gu-border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding: 4px 16px;
+  }
+  .gu-landen-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--gu-border);
+  }
+  .gu-landen-table td:last-child { border-bottom: none; }
+  .gu-landen-table td[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gu-fg-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .gu-landen-table td.gu-landen-table__country {
+    display: block;
+    padding: 10px 0 8px;
+    font-size: 1rem;
+  }
 }
 
 /* Numbered principles */

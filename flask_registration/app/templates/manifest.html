@@ -53,8 +53,14 @@
               </a>
             </li>
             <li>
-              <a href="#lange-termijn">
+              <a href="#landen">
                 <span class="gu-manifest__tocN">03</span>
+                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Landen{% else %}Countries{% endif %}</span>
+              </a>
+            </li>
+            <li>
+              <a href="#lange-termijn">
+                <span class="gu-manifest__tocN">04</span>
                 <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Lange termijn{% else %}Long-term perspective{% endif %}</span>
               </a>
             </li>
@@ -142,7 +148,19 @@
           {% endif %}
         </section>
 
-        {# ── 3. Lange termijn ───────────────────────────── #}
+        {# ── 3. Landen ──────────────────────────────────── #}
+        <section id="landen" class="gu-manifest__section">
+          <h2>{% if lang == 'nl' %}Landen{% else %}Countries{% endif %}</h2>
+          {% include '_landen_intro.html' %}
+          <p>
+            <a href="{{ url_for('main.landenlijst') }}" class="gu-manifest__inlineLink">
+              {% if lang == 'nl' %}Bekijk de volledige lijst met alle 183 landen en hun scores{% else %}View the full list of all 183 countries and their scores{% endif %}
+              <span class="gu-arrow"></span>
+            </a>
+          </p>
+        </section>
+
+        {# ── 4. Lange termijn ───────────────────────────── #}
         <section id="lange-termijn" class="gu-manifest__section">
           <h2>{% if lang == 'nl' %}Perspectief op de lange termijn{% else %}Long-term perspective{% endif %}</h2>
           <p>{% if lang == 'nl' %}De Globale Unie omvat landen uit de gehele wereld, groeit sterk en is een drijvende kracht voor steeds meer functionerende democratieën. De GU werkt constructief samen met andere landen die de wereld veilig en schoon willen houden voor komende generaties.{% else %}The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations.{% endif %}</p>
