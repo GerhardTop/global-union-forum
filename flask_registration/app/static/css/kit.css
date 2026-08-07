@@ -1469,6 +1469,14 @@ body {
   font-weight: 500;
   font-style: normal;
 }
+.gu-manifest__pullquote-cite {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 500;
+  color: var(--gu-fg-2);
+}
 
 /* Numbered principles */
 .gu-manifest__numbered {
