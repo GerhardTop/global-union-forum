@@ -59,10 +59,10 @@ class TestLandenlijst:
 
 
 class TestManifestLandenSection:
-    def test_manifest_toc_has_four_items(self, client):
+    def test_manifest_toc_has_five_items(self, client):
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
-        assert html.count('gu-manifest__tocN') == 4
+        assert html.count('gu-manifest__tocN') == 5
 
     def test_manifest_landen_section_present(self, client):
         response = client.get("/manifest")
@@ -74,3 +74,41 @@ class TestManifestLandenSection:
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert '/manifest/landen' in html
+
+
+class TestManifestWetgevingSection:
+    def test_wetgeving_section_present_between_landen_and_lange_termijn(self, client):
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        idx_landen = html.find('id="landen"')
+        idx_wetgeving = html.find('id="wetgeving"')
+        idx_lange_termijn = html.find('id="lange-termijn"')
+        assert -1 not in (idx_landen, idx_wetgeving, idx_lange_termijn)
+        assert idx_landen < idx_wetgeving < idx_lange_termijn
+
+    def test_wetgeving_table_has_three_rows_dutch(self, client):
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert html.count('gu-wet-table__phase') == 3
+        assert "1. Fundament" in html
+        assert "2. Verdieping" in html
+        assert "3. Politiek gevoelig" in html
+        assert "80%-drempel" in html
+
+    def test_wetgeving_table_has_three_rows_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert html.count('gu-wet-table__phase') == 3
+        assert "1. Foundation" in html
+        assert "2. Deepening" in html
+        assert "3. Politically sensitive" in html
+        assert "80% threshold" in html
+
+    def test_wetgeving_gatt_and_exclusions_paragraphs(self, client):
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert "artikel XX GATT" in html
+        assert "Landbouwbeleid, cohesiefondsen en de muntunie" in html

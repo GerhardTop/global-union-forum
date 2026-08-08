@@ -59,8 +59,14 @@
               </a>
             </li>
             <li>
-              <a href="#lange-termijn">
+              <a href="#wetgeving">
                 <span class="gu-manifest__tocN">04</span>
+                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Wetgeving{% else %}Legislation{% endif %}</span>
+              </a>
+            </li>
+            <li>
+              <a href="#lange-termijn">
+                <span class="gu-manifest__tocN">05</span>
                 <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Lange termijn{% else %}Long-term perspective{% endif %}</span>
               </a>
             </li>
@@ -160,7 +166,81 @@
           </p>
         </section>
 
-        {# ── 4. Lange termijn ───────────────────────────── #}
+        {# ── 4. Wetgeving ───────────────────────────────── #}
+        <section id="wetgeving" class="gu-manifest__section">
+          <h2>{% if lang == 'nl' %}Wetgeving{% else %}Legislation{% endif %}</h2>
+          {% if lang == 'nl' %}
+            <p>Wetgeving nemen we niet in één keer over, maar gefaseerd, naar het voorbeeld van de EU: klein beginnen en uitbreiden waar het werkt. Simpele, technische regels komen eerst; politiek gevoelige onderwerpen volgen later en vragen een bredere meerderheid.</p>
+          {% else %}
+            <p>We do not adopt legislation all at once, but in phases, following the EU's example: start small and expand where it works. Simple, technical rules come first; politically sensitive matters follow later and require a broader majority.</p>
+          {% endif %}
+
+          <div class="gu-wet-table-wrap">
+            <table class="gu-wet-table">
+              <thead>
+                <tr>
+                  <th>{% if lang == 'nl' %}Fase{% else %}Phase{% endif %}</th>
+                  <th>{% if lang == 'nl' %}Voorbeelden{% else %}Examples{% endif %}</th>
+                  <th>{% if lang == 'nl' %}Criterium{% else %}Criterion{% endif %}</th>
+                  <th>{% if lang == 'nl' %}Drempel{% else %}Threshold{% endif %}</th>
+                </tr>
+              </thead>
+              {% if lang == 'nl' %}
+              <tbody>
+                <tr>
+                  <td class="gu-wet-table__phase">1. Fundament</td>
+                  <td data-label="Voorbeelden">Technische productnormen; douaneprocedures; verificatiemethode en extern tarievenstelsel van de scorecard; gegevensbescherming; voedsel- en productveiligheid</td>
+                  <td data-label="Criterium">Technisch of direct nodig om te functioneren</td>
+                  <td data-label="Drempel">Gewone regels</td>
+                </tr>
+                <tr>
+                  <td class="gu-wet-table__phase">2. Verdieping</td>
+                  <td data-label="Voorbeelden">Mededinging en staatssteun; aanbestedingen; digitale markten; beroepskwalificaties; financieel toezicht</td>
+                  <td data-label="Criterium">Matige soevereiniteitskosten, versterkt de samenwerking</td>
+                  <td data-label="Drempel">Gewone regels</td>
+                </tr>
+                <tr>
+                  <td class="gu-wet-table__phase">3. Politiek gevoelig</td>
+                  <td data-label="Voorbeelden">Rechtsstaatconditionaliteit; milieu- en arbeidsnormen; fiscale afstemming; sancties tegen agressieve landen</td>
+                  <td data-label="Criterium">Politiek gevoelig, hoge soevereiniteitskosten</td>
+                  <td data-label="Drempel">80%-drempel</td>
+                </tr>
+              </tbody>
+              {% else %}
+              <tbody>
+                <tr>
+                  <td class="gu-wet-table__phase">1. Foundation</td>
+                  <td data-label="Examples">Technical product standards; customs procedures; the scorecard's verification method and external tariff system; data protection; food and product safety</td>
+                  <td data-label="Criterion">Technical or directly needed to function</td>
+                  <td data-label="Threshold">Ordinary rules</td>
+                </tr>
+                <tr>
+                  <td class="gu-wet-table__phase">2. Deepening</td>
+                  <td data-label="Examples">Competition and state aid; procurement; digital markets; professional qualifications; financial oversight</td>
+                  <td data-label="Criterion">Moderate sovereignty cost, strengthens cooperation</td>
+                  <td data-label="Threshold">Ordinary rules</td>
+                </tr>
+                <tr>
+                  <td class="gu-wet-table__phase">3. Politically sensitive</td>
+                  <td data-label="Examples">Rule-of-law conditionality; environmental and labour standards; tax coordination; sanctions against aggressive states</td>
+                  <td data-label="Criterion">Politically sensitive, high sovereignty cost</td>
+                  <td data-label="Threshold">80% threshold</td>
+                </tr>
+              </tbody>
+              {% endif %}
+            </table>
+          </div>
+
+          {% if lang == 'nl' %}
+            <p>De Global Union werkt niet met één extern tarief, maar met verschillende tarieven per land, gebaseerd op de score op de waarden-scorecard. De grondslag is de algemene uitzondering van artikel XX GATT: bescherming van de publieke moraal. Omdat dit oordeel gedragen wordt door de hele Global Union, en volgens vaste, voor elk land gelijke criteria wordt toegepast, staat dit beroep steviger dan wanneer een enkel land het alleen zou doen.</p>
+            <p>Landbouwbeleid, cohesiefondsen en de muntunie nemen we niet over; die zijn onlosmakelijk verbonden met het grondgebied en de begroting van de EU zelf.</p>
+          {% else %}
+            <p>The Global Union does not apply a single external tariff, but different tariffs per country, based on the score on the values scorecard. The basis is the general exception in Article XX GATT: protection of public morals. Because this judgement is carried by the whole Global Union, and applied using fixed criteria equal for every country, this claim stands on firmer ground than if a single country made it alone.</p>
+            <p>We do not adopt agricultural policy, cohesion funds, or the monetary union; these are inseparably tied to the EU's own territory and budget.</p>
+          {% endif %}
+        </section>
+
+        {# ── 5. Lange termijn ───────────────────────────── #}
         <section id="lange-termijn" class="gu-manifest__section">
           <h2>{% if lang == 'nl' %}Perspectief op de lange termijn{% else %}Long-term perspective{% endif %}</h2>
           <p>{% if lang == 'nl' %}De Globale Unie omvat landen uit de gehele wereld, groeit sterk en is een drijvende kracht voor steeds meer functionerende democratieën. De GU werkt constructief samen met andere landen die de wereld veilig en schoon willen houden voor komende generaties.{% else %}The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations.{% endif %}</p>
