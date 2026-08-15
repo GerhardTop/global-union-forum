@@ -59,11 +59,52 @@
           <td data-label="{% if lang == 'nl' %}Niveau GU{% else %}GU level{% endif %}">
             <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
           </td>
-          <td data-label="{% if lang == 'nl' %}Uitnodigen{% else %}Invite{% endif %}">{{ c.uitnodigen_nl if lang == 'nl' else c.uitnodigen_en }}</td>
+          <td data-label="{% if lang == 'nl' %}Uitnodigen{% else %}Invite{% endif %}">
+            <span class="gu-invite-badge gu-invite-badge--{{ c.invite_class }}">{{ c.uitnodigen_nl if lang == 'nl' else c.uitnodigen_en }}</span>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+  </div>
+
+  {# Mobiele weergave (<600px): uitklapbare kaarten i.p.v. de tabel hierboven.
+     Losse markup (geen hergebruik van de <table>-rijen) omdat <details> niet
+     geldig binnen <tr>/<td> genest kan worden — zie toelichting bij
+     .gu-landen-cards in kit.css. #}
+  <div class="gu-landen-cards">
+    {% for c in countries %}
+    {% set remark = c.remarks_nl if lang == 'nl' else c.remarks_en %}
+    <details class="gu-landen-card">
+      <summary class="gu-landen-card__summary">
+        <span class="gu-landen-card__name">
+          {{ c.land_nl if lang == 'nl' else c.land_en }}
+          {% if remark %}
+          <span class="gu-landen-table__info" title="{{ remark }}" aria-label="{{ remark }}">i</span>
+          {% endif %}
+        </span>
+        <span class="gu-landen-card__badges">
+          <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
+          <span class="gu-invite-badge gu-invite-badge--{{ c.invite_class }}">{{ c.uitnodigen_nl if lang == 'nl' else c.uitnodigen_en }}</span>
+        </span>
+        <span class="gu-landen-card__chevron" aria-hidden="true"></span>
+      </summary>
+      <div class="gu-landen-card__details">
+        <div class="gu-landen-card__field">
+          <span class="gu-landen-card__label">DI</span>
+          <span>{{ '%.2f'|format(c.di) if c.di is not none else '-' }}</span>
+        </div>
+        <div class="gu-landen-card__field">
+          <span class="gu-landen-card__label">CPI</span>
+          <span>{{ c.cpi if c.cpi is not none else '-' }}</span>
+        </div>
+        <div class="gu-landen-card__field">
+          <span class="gu-landen-card__label">HRI</span>
+          <span>{{ '%.3f'|format(c.hri) if c.hri is not none else '-' }}</span>
+        </div>
+      </div>
+    </details>
+    {% endfor %}
   </div>
 
 </div>

@@ -1576,6 +1576,23 @@ body {
 .gu-level-badge--below        { background: var(--gu-bg-soft); color: var(--gu-fg-2); }
 .gu-level-badge--insufficient { background: var(--gu-bg-soft); color: var(--gu-fg-3); }
 
+/* Invite badge — zelfde pil-vorm/opbouw als .gu-level-badge hierboven, eigen
+   klasse i.p.v. hergebruik omdat het een los datagegeven is (kan onafhankelijk
+   van niveau_class wijzigen). */
+.gu-invite-badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.gu-invite-badge--yes      { background: var(--gu-success); color: #fff; }
+.gu-invite-badge--no       { background: var(--gu-danger);  color: #fff; }
+.gu-invite-badge--separate { background: var(--gu-bg-soft); color: var(--gu-fg-2); }
+.gu-invite-badge--na       { background: var(--gu-bg-soft); color: var(--gu-fg-3); }
+
 /* Landen table — zelfde visuele taal als .gu-admin-table (los gehouden zodat
    het responsive kaarten-gedrag hieronder niet ook /admin en /moderator raakt). */
 .gu-landen-table-wrap {
@@ -1623,44 +1640,75 @@ body {
   vertical-align: middle;
 }
 
-/* Onder 600px: rijen worden gestapelde kaarten i.p.v. horizontaal scrollen —
-   zelfde breakpoint als de rest van de site. */
+/* Landen cards — mobiele weergave (<600px), los van .gu-landen-table.
+   Native <details>/<summary> i.p.v. een JS-toggle per rij: bij 183 landen
+   scheelt dat 183 addEventListener-registraties, werkt zonder JS (progressive
+   enhancement), en <details> is van zichzelf al onafhankelijk per element —
+   geen accordion-logica nodig om meerdere tegelijk open te laten staan.
+   Los van .gu-landen-table gehouden omdat <details> niet geldig binnen
+   <tr>/<td> genest kan worden — de desktoptabel blijft daarom ongewijzigd. */
+.gu-landen-cards { display: none; }
+.gu-landen-card {
+  border: 1px solid var(--gu-border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.gu-landen-card__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+.gu-landen-card__summary::-webkit-details-marker { display: none; }
+.gu-landen-card__name {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  color: var(--gu-fg-1);
+}
+.gu-landen-card__badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+.gu-landen-card__chevron {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--gu-fg-3);
+  border-bottom: 2px solid var(--gu-fg-3);
+  transform: rotate(45deg);
+  transition: transform 0.15s;
+}
+.gu-landen-card[open] .gu-landen-card__chevron { transform: rotate(-135deg); }
+.gu-landen-card__details {
+  padding: 4px 16px 12px;
+  border-top: 1px solid var(--gu-border);
+}
+.gu-landen-card__field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+.gu-landen-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gu-fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 @media (max-width: 600px) {
-  .gu-landen-table-wrap { overflow-x: visible; border: none; }
-  .gu-landen-table thead { display: none; }
-  .gu-landen-table, .gu-landen-table tbody, .gu-landen-table tr, .gu-landen-table td {
-    display: block;
-    width: 100%;
-  }
-  .gu-landen-table tr {
-    border: 1px solid var(--gu-border);
-    border-radius: 12px;
-    margin-bottom: 12px;
-    padding: 4px 16px;
-  }
-  .gu-landen-table td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--gu-border);
-  }
-  .gu-landen-table td:last-child { border-bottom: none; }
-  .gu-landen-table td[data-label]::before {
-    content: attr(data-label);
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--gu-fg-3);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    flex-shrink: 0;
-  }
-  .gu-landen-table td.gu-landen-table__country {
-    display: block;
-    padding: 10px 0 8px;
-    font-size: 1rem;
-  }
+  .gu-landen-table-wrap { display: none; }
+  .gu-landen-cards { display: block; }
 }
 
 /* Numbered principles */

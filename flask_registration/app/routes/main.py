@@ -23,6 +23,14 @@ _LEVEL_CLASS_MAP = {
     "Below minimum": "below",
     "Insufficient data": "insufficient",
 }
+# Zelfde mechanisme als level_class hierboven: server-side afgeleid van
+# uitnodigen_en, niet uit de NL-tekst gematcht.
+_INVITE_CLASS_MAP = {
+    "Yes": "yes",
+    "No": "no",
+    "separate status": "separate",
+    "n/a": "na",
+}
 
 
 def _load_landen_data():
@@ -30,6 +38,7 @@ def _load_landen_data():
         rows = json.load(f)
     for row in rows:
         row["level_class"] = _LEVEL_CLASS_MAP.get(row["niveau_en"], "below")
+        row["invite_class"] = _INVITE_CLASS_MAP.get(row["uitnodigen_en"], "na")
     return rows
 
 

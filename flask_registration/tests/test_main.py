@@ -34,12 +34,15 @@ class TestLandenlijst:
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         # Zoek de tabelrij zelf (niet de uitzonderingsalinea, die 'separate
-        # status' ook al noemt) en check daar de Invite-celwaarde.
+        # status' ook al noemt) en beperk tot díe rij (tot de sluitende
+        # </tr>), zodat lange remark-tooltips of een vaste tekenlimiet niet
+        # per ongeluk de volgende rij meepakken.
         table_start = html.find('gu-landen-table__country')
         idx_taiwan = html.find('Taiwan', table_start)
         assert idx_taiwan != -1
-        row_taiwan = html[idx_taiwan:idx_taiwan + 700]
-        assert 'data-label="Invite">separate status<' in row_taiwan
+        row_end = html.find('</tr>', idx_taiwan)
+        row_taiwan = html[idx_taiwan:row_end]
+        assert 'gu-invite-badge--separate">separate status<' in row_taiwan
 
     def test_israel_and_us_show_no(self, client):
         client.get("/lang/en")
@@ -47,15 +50,55 @@ class TestLandenlijst:
         html = response.get_data(as_text=True)
         # Zoek vanaf de tabel (na de introtekst, die 'Israel'/'United States'
         # ook al noemt in de uitzonderingsalinea) zodat we echt de tabelrij
-        # pakken, niet de eerste vermelding in de lopende tekst.
+        # pakken, niet de eerste vermelding in de lopende tekst. Beperk tot
+        # de sluitende </tr> i.p.v. een vaste tekenlimiet.
         table_start = html.find('gu-landen-table__country')
         idx_israel = html.find('Israel', table_start)
         idx_us = html.find('United States', table_start)
         assert idx_israel != -1 and idx_us != -1
-        row_israel = html[idx_israel:idx_israel + 700]
-        row_us = html[idx_us:idx_us + 700]
-        assert 'data-label="Invite">No<' in row_israel
-        assert 'data-label="Invite">No<' in row_us
+        row_israel = html[idx_israel:html.find('</tr>', idx_israel)]
+        row_us = html[idx_us:html.find('</tr>', idx_us)]
+        assert 'gu-invite-badge--no">No<' in row_israel
+        assert 'gu-invite-badge--no">No<' in row_us
+
+    def test_invite_badge_classes(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        # Alle vier de badge-varianten moeten voorkomen (tenminste 1x elk).
+        assert 'gu-invite-badge--yes' in html
+        assert 'gu-invite-badge--no' in html
+        assert 'gu-invite-badge--separate' in html
+        assert 'gu-invite-badge--na' in html
+
+    def test_mobile_cards_present_for_all_countries(self, client):
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        assert html.count('class="gu-landen-card"') == 183
+        assert html.count('gu-landen-card__summary') == 183
+
+    def test_mobile_card_details_show_scores_not_level_or_invite_again(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        idx = html.find('class="gu-landen-card"')
+        assert idx != -1
+        card_end = html.find('</details>', idx)
+        assert card_end != -1
+        card = html[idx:card_end]
+        details_start = card.find('gu-landen-card__details')
+        summary_part = card[:details_start]
+        details_part = card[details_start:]
+        # Niveau/Uitnodigen-badges horen alleen in de summary, niet herhaald
+        # in de uitgeklapte details.
+        assert 'gu-level-badge' in summary_part
+        assert 'gu-invite-badge' in summary_part
+        assert 'gu-level-badge' not in details_part
+        assert 'gu-invite-badge' not in details_part
+        # DI/CPI/HRI horen alleen in de details, niet in de summary.
+        assert '>DI<' in details_part and '>DI<' not in summary_part
+        assert '>CPI<' in details_part and '>CPI<' not in summary_part
+        assert '>HRI<' in details_part and '>HRI<' not in summary_part
 
 
 class TestManifestLandenSection:
