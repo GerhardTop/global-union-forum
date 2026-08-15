@@ -31,6 +31,14 @@
     {% endif %}
   </div>
 
+  <p class="gu-landen__thresholds">
+    {% if lang == 'nl' %}
+      Boven minimum: DI ≥ 6,0 · CPI ≥ 40 · HRI ≥ 0,70. Op niveau: DI ≥ 8,0 · CPI ≥ 70 · HRI ≥ 0,75.
+    {% else %}
+      Above minimum: DI ≥ 6.0 · CPI ≥ 40 · HRI ≥ 0.70. Meets standard: DI ≥ 8.0 · CPI ≥ 70 · HRI ≥ 0.75.
+    {% endif %}
+  </p>
+
   <div class="gu-landen-table-wrap">
     <table class="gu-landen-table">
       <thead>
@@ -46,7 +54,11 @@
       <tbody>
         {% for c in countries %}
         {% set remark = c.remarks_nl if lang == 'nl' else c.remarks_en %}
-        <tr>
+        {% set detail_id = 'landen-detail-' ~ loop.index %}
+        {# Hoofdrij: klikbaar (gedelegeerde listener op tbody, zie script
+           onderaan) om de detailrij hieronder te tonen/verbergen. Blijft
+           verder ongewijzigd qua kolommen/inhoud t.o.v. voor deze wijziging. #}
+        <tr class="gu-landen-table__row" aria-expanded="false" aria-controls="{{ detail_id }}">
           <td class="gu-landen-table__country">
             {{ c.land_nl if lang == 'nl' else c.land_en }}
             {% if remark %}
@@ -60,7 +72,36 @@
             <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
           </td>
           <td data-label="{% if lang == 'nl' %}Uitnodigen{% else %}Invite{% endif %}">
-            <span class="gu-invite-badge gu-invite-badge--{{ c.invite_class }}">{{ c.uitnodigen_nl if lang == 'nl' else c.uitnodigen_en }}</span>
+            <span class="gu-invite-badge gu-invite-badge--{{ c.invite_class }}">{{ c.invite_label_nl if lang == 'nl' else c.invite_label_en }}</span>
+            <span class="gu-landen-table__rowToggle" aria-hidden="true"><span class="gu-landen-card__chevron"></span></span>
+          </td>
+        </tr>
+        {# Detailrij: verborgen (native hidden-attribuut) tot de hoofdrij
+           erboven wordt aangeklikt. Toont per index een pass/fail-indicatie
+           t.o.v. de 'Boven minimum'-drempel, plus de toelichting (indien
+           aanwezig) die voorheen alleen als hover-tooltip bereikbaar was. #}
+        <tr class="gu-landen-table__detailRow" id="{{ detail_id }}" hidden>
+          <td colspan="6">
+            <div class="gu-landen-table__detailGrid">
+              <div class="gu-landen-card__field">
+                <span class="gu-landen-card__label">DI</span>
+                <span class="gu-index-dot gu-index-dot--{{ c.di_pass }}"></span>
+                <span>{{ '%.2f'|format(c.di) if c.di is not none else '-' }}</span>
+              </div>
+              <div class="gu-landen-card__field">
+                <span class="gu-landen-card__label">CPI</span>
+                <span class="gu-index-dot gu-index-dot--{{ c.cpi_pass }}"></span>
+                <span>{{ c.cpi if c.cpi is not none else '-' }}</span>
+              </div>
+              <div class="gu-landen-card__field">
+                <span class="gu-landen-card__label">HRI</span>
+                <span class="gu-index-dot gu-index-dot--{{ c.hri_pass }}"></span>
+                <span>{{ '%.3f'|format(c.hri) if c.hri is not none else '-' }}</span>
+              </div>
+            </div>
+            {% if remark %}
+            <p class="gu-landen-remark">{{ remark }}</p>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}
@@ -85,27 +126,49 @@
         </span>
         <span class="gu-landen-card__badges">
           <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
-          <span class="gu-invite-badge gu-invite-badge--{{ c.invite_class }}">{{ c.uitnodigen_nl if lang == 'nl' else c.uitnodigen_en }}</span>
+          <span class="gu-invite-badge gu-invite-badge--{{ c.invite_class }}">{{ c.invite_label_nl if lang == 'nl' else c.invite_label_en }}</span>
         </span>
         <span class="gu-landen-card__chevron" aria-hidden="true"></span>
       </summary>
       <div class="gu-landen-card__details">
         <div class="gu-landen-card__field">
           <span class="gu-landen-card__label">DI</span>
-          <span>{{ '%.2f'|format(c.di) if c.di is not none else '-' }}</span>
+          <span><span class="gu-index-dot gu-index-dot--{{ c.di_pass }}"></span>{{ '%.2f'|format(c.di) if c.di is not none else '-' }}</span>
         </div>
         <div class="gu-landen-card__field">
           <span class="gu-landen-card__label">CPI</span>
-          <span>{{ c.cpi if c.cpi is not none else '-' }}</span>
+          <span><span class="gu-index-dot gu-index-dot--{{ c.cpi_pass }}"></span>{{ c.cpi if c.cpi is not none else '-' }}</span>
         </div>
         <div class="gu-landen-card__field">
           <span class="gu-landen-card__label">HRI</span>
-          <span>{{ '%.3f'|format(c.hri) if c.hri is not none else '-' }}</span>
+          <span><span class="gu-index-dot gu-index-dot--{{ c.hri_pass }}"></span>{{ '%.3f'|format(c.hri) if c.hri is not none else '-' }}</span>
         </div>
+        {% if remark %}
+        <p class="gu-landen-remark">{{ remark }}</p>
+        {% endif %}
       </div>
     </details>
     {% endfor %}
   </div>
 
 </div>
+
+{# Eén gedelegeerde click-listener op <tbody> i.p.v. 183 losse listeners —
+   zelfde overweging als bij de mobiele <details>-kaarten: licht en
+   performant ongeacht het aantal rijen. #}
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var tbody = document.querySelector('.gu-landen-table tbody');
+    if (!tbody) return;
+    tbody.addEventListener('click', function (e) {
+      var row = e.target.closest('.gu-landen-table__row');
+      if (!row) return;
+      var detail = row.nextElementSibling;
+      if (!detail || !detail.classList.contains('gu-landen-table__detailRow')) return;
+      var open = row.classList.toggle('gu-landen-table__row--open');
+      row.setAttribute('aria-expanded', open ? 'true' : 'false');
+      detail.hidden = !open;
+    });
+  })();
+</script>
 {% endblock %}

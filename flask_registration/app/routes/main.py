@@ -31,6 +31,24 @@ _INVITE_CLASS_MAP = {
     "separate status": "separate",
     "n/a": "na",
 }
+# Badge-tekst voor 'yes'/'no' wijkt af van de ruwe uitnodigen_nl/en-waarde uit
+# de brondata (die blijft ongewijzigd bruikbaar als het onderliggende
+# datagegeven); 'separate'/'na' behouden hun oorspronkelijke tekst.
+_INVITE_LABEL_OVERRIDE_NL = {"yes": "Uitnodigen", "no": "Nog niet"}
+_INVITE_LABEL_OVERRIDE_EN = {"yes": "Invite", "no": "Not yet"}
+
+# Drempelwaarden 'Boven minimum' per index — geverifieerd tegen alle 183
+# landen (samen met de 'Op niveau'-drempel via AND-logica), reproduceert
+# niveau_en exact zonder mismatch. Hier alleen de onderste drempel nodig:
+# de per-index-indicator (wijziging 5b) toont of een land op die ene index
+# ten minste 'Boven minimum' haalt, los van het totaaloordeel.
+_INDEX_THRESHOLDS = {"di": 6.0, "cpi": 40, "hri": 0.70}
+
+
+def _index_pass_class(value, key):
+    if value is None:
+        return "unknown"
+    return "pass" if value >= _INDEX_THRESHOLDS[key] else "fail"
 
 
 def _load_landen_data():
@@ -39,6 +57,11 @@ def _load_landen_data():
     for row in rows:
         row["level_class"] = _LEVEL_CLASS_MAP.get(row["niveau_en"], "below")
         row["invite_class"] = _INVITE_CLASS_MAP.get(row["uitnodigen_en"], "na")
+        row["invite_label_nl"] = _INVITE_LABEL_OVERRIDE_NL.get(row["invite_class"], row["uitnodigen_nl"])
+        row["invite_label_en"] = _INVITE_LABEL_OVERRIDE_EN.get(row["invite_class"], row["uitnodigen_en"])
+        row["di_pass"] = _index_pass_class(row["di"], "di")
+        row["cpi_pass"] = _index_pass_class(row["cpi"], "cpi")
+        row["hri_pass"] = _index_pass_class(row["hri"], "hri")
     return rows
 
 

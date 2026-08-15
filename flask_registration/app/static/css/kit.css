@@ -1558,6 +1558,28 @@ body {
   flex-wrap: wrap;
   margin-bottom: 32px;
 }
+.gu-landen__thresholds {
+  font-size: 0.8125rem;
+  color: var(--gu-fg-3);
+  margin: -12px 0 20px;
+}
+
+/* Index-dot — per-index (DI/CPI/HRI) pass/fail-indicatie t.o.v. de
+   'Boven minimum'-drempel, in de uitklap-details. --fail hergebruikt de
+   grijze 'Onder minimum'-vulling maar krijgt een randje: --gu-bg-soft is
+   bijna wit (#f6f8fa) en een vlak bolletje in die kleur is zonder rand
+   nauwelijks zichtbaar op de witte pagina-achtergrond. */
+.gu-index-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.gu-index-dot--pass    { background: var(--gu-success); }
+.gu-index-dot--fail,
+.gu-index-dot--unknown { background: var(--gu-bg-soft); border: 1px solid var(--gu-border); }
 
 /* Level badge — zelfde pil-vorm als .gu-post__role, met de bestaande
    semantische tokens (--gu-success groen, --gu-info lichtblauw) i.p.v.
@@ -1589,7 +1611,7 @@ body {
   white-space: nowrap;
 }
 .gu-invite-badge--yes      { background: var(--gu-success); color: #fff; }
-.gu-invite-badge--no       { background: var(--gu-danger);  color: #fff; }
+.gu-invite-badge--no       { background: var(--gu-bg-soft); color: var(--gu-fg-2); }
 .gu-invite-badge--separate { background: var(--gu-bg-soft); color: var(--gu-fg-2); }
 .gu-invite-badge--na       { background: var(--gu-bg-soft); color: var(--gu-fg-3); }
 
@@ -1638,6 +1660,52 @@ body {
   font-weight: 700;
   cursor: help;
   vertical-align: middle;
+}
+
+/* Desktop uitklap-rij (wijziging 4/5b) — <details> kan niet geldig binnen
+   <tr>/<td> genest worden, dus dit is een losse, verborgen <tr> (colspan)
+   direct onder de databronrij, getoggeld via één gedelegeerde click-listener
+   op <tbody> (zie inline script) i.p.v. een listener per rij. */
+.gu-landen-table__row { cursor: pointer; }
+.gu-landen-table__row:hover { background: var(--gu-bg-soft); }
+.gu-landen-table__rowToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.gu-landen-table__row--open .gu-landen-table__rowToggle .gu-landen-card__chevron {
+  transform: rotate(-135deg);
+}
+.gu-landen-table__detailRow td {
+  padding: 16px 16px 20px;
+  background: var(--gu-bg-soft);
+  border-bottom: 1px solid var(--gu-border);
+}
+.gu-landen-table__detailGrid {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+/* .gu-landen-card__field is ontworpen voor de mobiele volle-breedte kaart
+   (label links, waarde rechts uitgelijnd); hier staan de velden juist naast
+   elkaar, dus compact groeperen i.p.v. uitrekken. */
+.gu-landen-table__detailGrid .gu-landen-card__field {
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0;
+}
+/* Gedeeld tussen desktop-uitklaprij en mobiele kaart-details. */
+.gu-landen-remark {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--gu-border);
+  color: var(--gu-fg-2);
+  font-size: 0.875rem;
+  line-height: 1.6;
 }
 
 /* Landen cards — mobiele weergave (<600px), los van .gu-landen-table.
