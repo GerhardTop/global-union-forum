@@ -47,6 +47,7 @@
           <th>DI</th>
           <th>CPI</th>
           <th>HRI</th>
+          <th>Index</th>
           <th>{% if lang == 'nl' %}Niveau GU{% else %}GU level{% endif %}</th>
           <th>{% if lang == 'nl' %}Uitnodigen{% else %}Invite{% endif %}</th>
         </tr>
@@ -55,6 +56,9 @@
         {% for c in countries %}
         {% set remark = c.remarks_nl if lang == 'nl' else c.remarks_en %}
         {% set detail_id = 'landen-detail-' ~ loop.index %}
+        {% set di_str = '%.2f'|format(c.di) if c.di is not none else '-' %}
+        {% set cpi_str = c.cpi if c.cpi is not none else '-' %}
+        {% set hri_str = '%.3f'|format(c.hri) if c.hri is not none else '-' %}
         {# Hoofdrij: klikbaar (gedelegeerde listener op tbody, zie script
            onderaan) om de detailrij hieronder te tonen/verbergen. Blijft
            verder ongewijzigd qua kolommen/inhoud t.o.v. voor deze wijziging. #}
@@ -65,9 +69,16 @@
             <span class="gu-landen-table__info" title="{{ remark }}" aria-label="{{ remark }}">i</span>
             {% endif %}
           </td>
-          <td data-label="DI">{{ '%.2f'|format(c.di) if c.di is not none else '-' }}</td>
-          <td data-label="CPI">{{ c.cpi if c.cpi is not none else '-' }}</td>
-          <td data-label="HRI">{{ '%.3f'|format(c.hri) if c.hri is not none else '-' }}</td>
+          <td data-label="DI">{{ di_str }}</td>
+          <td data-label="CPI">{{ cpi_str }}</td>
+          <td data-label="HRI">{{ hri_str }}</td>
+          <td data-label="Index">
+            <span class="gu-index-group">
+              <span class="gu-index-dot gu-index-dot--{{ c.di_level }}" title="DI {{ di_str }}" aria-label="DI {{ di_str }}"></span>
+              <span class="gu-index-dot gu-index-dot--{{ c.cpi_level }}" title="CPI {{ cpi_str }}" aria-label="CPI {{ cpi_str }}"></span>
+              <span class="gu-index-dot gu-index-dot--{{ c.hri_level }}" title="HRI {{ hri_str }}" aria-label="HRI {{ hri_str }}"></span>
+            </span>
+          </td>
           <td data-label="{% if lang == 'nl' %}Niveau GU{% else %}GU level{% endif %}">
             <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
           </td>
@@ -77,26 +88,26 @@
           </td>
         </tr>
         {# Detailrij: verborgen (native hidden-attribuut) tot de hoofdrij
-           erboven wordt aangeklikt. Toont per index een pass/fail-indicatie
-           t.o.v. de 'Boven minimum'-drempel, plus de toelichting (indien
-           aanwezig) die voorheen alleen als hover-tooltip bereikbaar was. #}
+           erboven wordt aangeklikt. Toont per index de 3-standen-indicatie
+           t.o.v. de drempels, plus de toelichting (indien aanwezig) die
+           voorheen alleen als hover-tooltip bereikbaar was. #}
         <tr class="gu-landen-table__detailRow" id="{{ detail_id }}" hidden>
-          <td colspan="6">
+          <td colspan="7">
             <div class="gu-landen-table__detailGrid">
               <div class="gu-landen-card__field">
                 <span class="gu-landen-card__label">DI</span>
-                <span class="gu-index-dot gu-index-dot--{{ c.di_pass }}"></span>
-                <span>{{ '%.2f'|format(c.di) if c.di is not none else '-' }}</span>
+                <span class="gu-index-dot gu-index-dot--{{ c.di_level }}"></span>
+                <span>{{ di_str }}</span>
               </div>
               <div class="gu-landen-card__field">
                 <span class="gu-landen-card__label">CPI</span>
-                <span class="gu-index-dot gu-index-dot--{{ c.cpi_pass }}"></span>
-                <span>{{ c.cpi if c.cpi is not none else '-' }}</span>
+                <span class="gu-index-dot gu-index-dot--{{ c.cpi_level }}"></span>
+                <span>{{ cpi_str }}</span>
               </div>
               <div class="gu-landen-card__field">
                 <span class="gu-landen-card__label">HRI</span>
-                <span class="gu-index-dot gu-index-dot--{{ c.hri_pass }}"></span>
-                <span>{{ '%.3f'|format(c.hri) if c.hri is not none else '-' }}</span>
+                <span class="gu-index-dot gu-index-dot--{{ c.hri_level }}"></span>
+                <span>{{ hri_str }}</span>
               </div>
             </div>
             {% if remark %}
@@ -116,6 +127,9 @@
   <div class="gu-landen-cards">
     {% for c in countries %}
     {% set remark = c.remarks_nl if lang == 'nl' else c.remarks_en %}
+    {% set di_str = '%.2f'|format(c.di) if c.di is not none else '-' %}
+    {% set cpi_str = c.cpi if c.cpi is not none else '-' %}
+    {% set hri_str = '%.3f'|format(c.hri) if c.hri is not none else '-' %}
     <details class="gu-landen-card">
       <summary class="gu-landen-card__summary">
         <span class="gu-landen-card__name">
@@ -125,6 +139,11 @@
           {% endif %}
         </span>
         <span class="gu-landen-card__badges">
+          <span class="gu-index-group">
+            <span class="gu-index-dot gu-index-dot--{{ c.di_level }}" title="DI {{ di_str }}" aria-label="DI {{ di_str }}"></span>
+            <span class="gu-index-dot gu-index-dot--{{ c.cpi_level }}" title="CPI {{ cpi_str }}" aria-label="CPI {{ cpi_str }}"></span>
+            <span class="gu-index-dot gu-index-dot--{{ c.hri_level }}" title="HRI {{ hri_str }}" aria-label="HRI {{ hri_str }}"></span>
+          </span>
           <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
           <span class="gu-invite-badge gu-invite-badge--{{ c.invite_class }}">{{ c.invite_label_nl if lang == 'nl' else c.invite_label_en }}</span>
         </span>
@@ -133,15 +152,15 @@
       <div class="gu-landen-card__details">
         <div class="gu-landen-card__field">
           <span class="gu-landen-card__label">DI</span>
-          <span><span class="gu-index-dot gu-index-dot--{{ c.di_pass }}"></span>{{ '%.2f'|format(c.di) if c.di is not none else '-' }}</span>
+          <span><span class="gu-index-dot gu-index-dot--{{ c.di_level }}"></span>{{ di_str }}</span>
         </div>
         <div class="gu-landen-card__field">
           <span class="gu-landen-card__label">CPI</span>
-          <span><span class="gu-index-dot gu-index-dot--{{ c.cpi_pass }}"></span>{{ c.cpi if c.cpi is not none else '-' }}</span>
+          <span><span class="gu-index-dot gu-index-dot--{{ c.cpi_level }}"></span>{{ cpi_str }}</span>
         </div>
         <div class="gu-landen-card__field">
           <span class="gu-landen-card__label">HRI</span>
-          <span><span class="gu-index-dot gu-index-dot--{{ c.hri_pass }}"></span>{{ '%.3f'|format(c.hri) if c.hri is not none else '-' }}</span>
+          <span><span class="gu-index-dot gu-index-dot--{{ c.hri_level }}"></span>{{ hri_str }}</span>
         </div>
         {% if remark %}
         <p class="gu-landen-remark">{{ remark }}</p>

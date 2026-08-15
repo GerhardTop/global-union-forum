@@ -173,9 +173,53 @@ class TestLandenlijst:
         detail_end = html.find('</tr>', detail_start)
         detail = html[detail_start:detail_end]
         # Norway: DI 9.81, CPI 81, HRI 0.947 — alle drie ruim boven de
-        # 'Boven minimum'-drempel, dus alle drie 'pass' (groen).
-        assert 'gu-index-dot--pass' in detail
-        assert 'gu-index-dot--fail' not in detail
+        # 'Op niveau'-drempel, dus alle drie 'meets' (groen).
+        assert detail.count('gu-index-dot--meets') == 3
+        assert 'gu-index-dot--above' not in detail
+        assert 'gu-index-dot--below' not in detail
+
+    def test_main_row_shows_index_group(self, client):
+        # De 3 kleurpuntjes staan sinds deze wijziging al in de hoofdrij
+        # (niet pas na uitklappen) — vaste breedte, altijd exact 3 dots.
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('gu-landen-table__country')
+        idx = html.find('Norway', table_start)
+        row_end = html.find('</tr>', idx)
+        row = html[idx:row_end]
+        assert 'gu-index-group' in row
+        # Elke dot heeft class="gu-index-dot gu-index-dot--<state>": tel op
+        # het unieke openingspatroon, niet op de losse substring 'gu-index-dot'
+        # (die ook in de modifier-klasse zelf voorkomt en dus dubbel telt).
+        assert row.count('class="gu-index-dot gu-index-dot--') == 3
+        assert 'gu-index-dot--meets' in row
+
+    def test_mobile_card_summary_shows_index_group(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        cards_start = html.find('class="gu-landen-cards"')
+        idx = html.find('Norway', cards_start)
+        summary_end = html.find('</summary>', idx)
+        summary = html[idx:summary_end]
+        assert 'gu-index-group' in summary
+        assert summary.count('class="gu-index-dot gu-index-dot--') == 3
+
+    def test_index_dot_mixed_states_for_taiwan(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('gu-landen-table__country')
+        idx = html.find('Taiwan', table_start)
+        detail_start = html.find('gu-landen-table__detailRow', idx)
+        detail_end = html.find('</tr>', detail_start)
+        detail = html[detail_start:detail_end]
+        # Taiwan: DI 8.78 (Op niveau), CPI 68 (Boven minimum, niet Op
+        # niveau: 40 <= 68 < 70), HRI 0.930 (Op niveau) -> 2x meets, 1x above.
+        assert detail.count('gu-index-dot--meets') == 2
+        assert detail.count('gu-index-dot--above') == 1
+        assert 'gu-index-dot--below' not in detail
 
     def test_remark_visible_in_desktop_detail_not_only_tooltip(self, client):
         client.get("/lang/en")
@@ -207,7 +251,7 @@ class TestLandenlijst:
         assert 'gu-landen-remark' in card
         assert 'No UN recognition' in card
 
-    def test_index_dot_fail_for_below_minimum_country(self, client):
+    def test_index_dot_below_for_below_minimum_country(self, client):
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
@@ -216,8 +260,9 @@ class TestLandenlijst:
         detail_start = html.find('gu-landen-table__detailRow', idx)
         detail_end = html.find('</tr>', detail_start)
         detail = html[detail_start:detail_end]
-        assert 'gu-index-dot--pass' not in detail
-        assert detail.count('gu-index-dot--fail') == 3
+        assert 'gu-index-dot--meets' not in detail
+        assert 'gu-index-dot--above' not in detail
+        assert detail.count('gu-index-dot--below') == 3
 
 
 class TestManifestLandenSection:

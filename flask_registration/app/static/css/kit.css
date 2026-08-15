@@ -1564,11 +1564,14 @@ body {
   margin: -12px 0 20px;
 }
 
-/* Index-dot — per-index (DI/CPI/HRI) pass/fail-indicatie t.o.v. de
-   'Boven minimum'-drempel, in de uitklap-details. --fail hergebruikt de
-   grijze 'Onder minimum'-vulling maar krijgt een randje: --gu-bg-soft is
-   bijna wit (#f6f8fa) en een vlak bolletje in die kleur is zonder rand
-   nauwelijks zichtbaar op de witte pagina-achtergrond. */
+/* Index-dot — per-index (DI/CPI/HRI) 3-standen-indicatie: 'below' (onder
+   Boven-minimum), 'above' (Boven minimum maar niet Op niveau) of 'meets'
+   (Op niveau). Zelfde semantische tokens als .gu-level-badge hieronder
+   (success groen, info blauw), zodat de kleurbetekenis overal op de pagina
+   consistent is. --below/--unknown hergebruiken de grijze 'Onder minimum'-
+   vulling maar krijgen een randje: --gu-bg-soft is bijna wit (#f6f8fa) en een
+   vlak bolletje in die kleur is zonder rand nauwelijks zichtbaar op de witte
+   pagina-achtergrond. */
 .gu-index-dot {
   display: inline-block;
   width: 8px;
@@ -1577,21 +1580,36 @@ body {
   margin-right: 6px;
   vertical-align: middle;
 }
-.gu-index-dot--pass    { background: var(--gu-success); }
-.gu-index-dot--fail,
+.gu-index-dot--meets   { background: var(--gu-success); }
+.gu-index-dot--above   { background: var(--gu-info); }
+.gu-index-dot--below,
 .gu-index-dot--unknown { background: var(--gu-bg-soft); border: 1px solid var(--gu-border); }
+
+/* Index-dot-group — compacte set van de drie dots, gebruikt in de hoofdrij
+   (desktop) en kaart-summary (mobiel) zodat de indicatie al zichtbaar is
+   zonder uit te klappen. Altijd exact drie dots van vaste grootte, dus de
+   groep neemt in elke rij dezelfde breedte in (geen verspringen). */
+.gu-index-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.gu-index-group .gu-index-dot { margin-right: 0; }
 
 /* Level badge — zelfde pil-vorm als .gu-post__role, met de bestaande
    semantische tokens (--gu-success groen, --gu-info lichtblauw) i.p.v.
    nieuwe kleuren. */
 .gu-level-badge {
   display: inline-flex;
+  justify-content: center;
+  min-width: 130px;
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   white-space: nowrap;
+  text-align: center;
 }
 .gu-level-badge--meets        { background: var(--gu-success); color: #fff; }
 .gu-level-badge--above        { background: var(--gu-info);    color: #fff; }
@@ -1603,12 +1621,15 @@ body {
    van niveau_class wijzigen). */
 .gu-invite-badge {
   display: inline-flex;
+  justify-content: center;
+  min-width: 108px;
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   white-space: nowrap;
+  text-align: center;
 }
 .gu-invite-badge--yes      { background: var(--gu-success); color: #fff; }
 .gu-invite-badge--no       { background: var(--gu-bg-soft); color: var(--gu-fg-2); }
@@ -1690,12 +1711,10 @@ body {
   gap: 32px;
   flex-wrap: wrap;
 }
-/* .gu-landen-card__field is ontworpen voor de mobiele volle-breedte kaart
-   (label links, waarde rechts uitgelijnd); hier staan de velden juist naast
-   elkaar, dus compact groeperen i.p.v. uitrekken. */
+/* .gu-landen-card__field staat hier (net als in de mobiele kaart) al
+   links uitgelijnd met vaste labelbreedte; hier staan de velden naast
+   elkaar i.p.v. gestapeld, dus alleen de verticale padding vervalt. */
 .gu-landen-table__detailGrid .gu-landen-card__field {
-  justify-content: flex-start;
-  gap: 8px;
   padding: 0;
 }
 /* Gedeeld tussen desktop-uitklaprij en mobiele kaart-details. */
@@ -1760,10 +1779,15 @@ body {
   padding: 4px 16px 12px;
   border-top: 1px solid var(--gu-border);
 }
+/* Links uitgelijnd i.p.v. space-between: het label krijgt een vaste
+   minimumbreedte zodat de waarde erna (dot + getal) bij DI/CPI/HRI steeds op
+   dezelfde x-positie begint — de getallen komen zo in een rechte verticale
+   lijn te staan i.p.v. rechts te verspringen met de labelbreedte mee. */
 .gu-landen-card__field {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 8px;
   padding: 6px 0;
 }
 .gu-landen-card__label {
@@ -1772,6 +1796,7 @@ body {
   color: var(--gu-fg-3);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  min-width: 34px;
 }
 
 @media (max-width: 600px) {

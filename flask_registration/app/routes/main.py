@@ -37,18 +37,23 @@ _INVITE_CLASS_MAP = {
 _INVITE_LABEL_OVERRIDE_NL = {"yes": "Uitnodigen", "no": "Nog niet"}
 _INVITE_LABEL_OVERRIDE_EN = {"yes": "Invite", "no": "Not yet"}
 
-# Drempelwaarden 'Boven minimum' per index — geverifieerd tegen alle 183
-# landen (samen met de 'Op niveau'-drempel via AND-logica), reproduceert
-# niveau_en exact zonder mismatch. Hier alleen de onderste drempel nodig:
-# de per-index-indicator (wijziging 5b) toont of een land op die ene index
-# ten minste 'Boven minimum' haalt, los van het totaaloordeel.
-_INDEX_THRESHOLDS = {"di": 6.0, "cpi": 40, "hri": 0.70}
+# Drempelwaarden per index — geverifieerd tegen alle 183 landen, reproduceert
+# niveau_en exact via AND-logica over beide niveaus. Hier gebruikt voor de
+# 3-standen per-index-indicatie: elke index afzonderlijk als 'below' (onder
+# Boven-minimum), 'above' (Boven minimum, maar niet Op niveau) of 'meets'
+# (Op niveau) geclassificeerd, los van het gecombineerde niveau_en-oordeel.
+_INDEX_THRESHOLDS_ABOVE = {"di": 6.0, "cpi": 40, "hri": 0.70}
+_INDEX_THRESHOLDS_MEETS = {"di": 8.0, "cpi": 70, "hri": 0.75}
 
 
-def _index_pass_class(value, key):
+def _index_level_class(value, key):
     if value is None:
         return "unknown"
-    return "pass" if value >= _INDEX_THRESHOLDS[key] else "fail"
+    if value >= _INDEX_THRESHOLDS_MEETS[key]:
+        return "meets"
+    if value >= _INDEX_THRESHOLDS_ABOVE[key]:
+        return "above"
+    return "below"
 
 
 def _load_landen_data():
@@ -59,9 +64,9 @@ def _load_landen_data():
         row["invite_class"] = _INVITE_CLASS_MAP.get(row["uitnodigen_en"], "na")
         row["invite_label_nl"] = _INVITE_LABEL_OVERRIDE_NL.get(row["invite_class"], row["uitnodigen_nl"])
         row["invite_label_en"] = _INVITE_LABEL_OVERRIDE_EN.get(row["invite_class"], row["uitnodigen_en"])
-        row["di_pass"] = _index_pass_class(row["di"], "di")
-        row["cpi_pass"] = _index_pass_class(row["cpi"], "cpi")
-        row["hri_pass"] = _index_pass_class(row["hri"], "hri")
+        row["di_level"] = _index_level_class(row["di"], "di")
+        row["cpi_level"] = _index_level_class(row["cpi"], "cpi")
+        row["hri_level"] = _index_level_class(row["hri"], "hri")
     return rows
 
 
