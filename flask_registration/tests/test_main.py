@@ -370,10 +370,10 @@ class TestLandenlijst:
         assert 'Duitsland' not in table
 
 class TestManifestLandenSection:
-    def test_manifest_toc_has_six_items(self, client):
+    def test_manifest_toc_has_seven_items(self, client):
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
-        assert html.count('gu-manifest__tocN') == 6
+        assert html.count('gu-manifest__tocN') == 7
 
     def test_manifest_landen_section_present(self, client):
         response = client.get("/manifest")
@@ -586,8 +586,10 @@ class TestManifestGlobalStandardsSection:
         assert '<h2>Aligning with global standards</h2>' in html
 
     def _section_html(self, html):
+        # Grens op organisatie (niet lange-termijn): die sectie zit er
+        # inmiddels tussenin.
         section_start = html.find('id="mondiale-standaarden"')
-        section_end = html.find('id="lange-termijn"')
+        section_end = html.find('id="organisatie"')
         return html[section_start:section_end]
 
     def test_one_table_with_thirteen_rows(self, client):
@@ -660,3 +662,64 @@ class TestManifestGlobalStandardsSection:
         assert "the supranational Convention 108+ over the GDPR" in section
         assert "Uruguay, Mexico, and Senegal" in section
         assert "For AI, an authoritative global standard is still missing" in section
+
+
+class TestManifestOrganizationSection:
+    def test_section_present_between_standaarden_and_lange_termijn(self, client):
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        idx_standaarden = html.find('id="mondiale-standaarden"')
+        idx_organisatie = html.find('id="organisatie"')
+        idx_lange_termijn = html.find('id="lange-termijn"')
+        assert -1 not in (idx_standaarden, idx_organisatie, idx_lange_termijn)
+        assert idx_standaarden < idx_organisatie < idx_lange_termijn
+
+    def test_title_dutch(self, client):
+        # Sectiekop én TOC-label exact "Organisatie".
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert html.count("Organisatie") == 2  # TOC-label + <h2>
+        assert '<h2>Organisatie</h2>' in html
+
+    def test_title_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert html.count("Organisation") == 2
+        assert '<h2>Organisation</h2>' in html
+
+    def _section_html(self, html):
+        section_start = html.find('id="organisatie"')
+        section_end = html.find('id="lange-termijn"')
+        return html[section_start:section_end]
+
+    def test_no_table_in_section(self, client):
+        # Deze sectie bestaat alleen uit lopende tekst, geen tabel.
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert '<table' not in section
+        assert section.count('<p>') == 2
+
+    def test_paragraphs_dutch(self, client):
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert "De Global Union werkt met een minimale organisatie" in section
+        assert "geen grote overdrachten over zoals landbouw- of cohesiefondsen" in section
+        assert "besluiten vallen met een heldere meerderheid in plaats van unanimiteit" in section
+        assert "Discussies en stemmingen vinden online plaats" in section
+        assert "Burgers wereldwijd kunnen in hun eigen taal meepraten en invloed uitoefenen" in section
+
+    def test_paragraphs_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert "The Global Union operates with a minimal organisation" in section
+        assert "does not take on large transfers such as agricultural or cohesion funds" in section
+        assert "decisions are taken by a clear majority rather than unanimity" in section
+        assert "Discussions and votes take place online" in section
+        assert "Citizens worldwide can take part and exert influence in their own language" in section

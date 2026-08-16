@@ -71,8 +71,14 @@
               </a>
             </li>
             <li>
-              <a href="#lange-termijn">
+              <a href="#organisatie">
                 <span class="gu-manifest__tocN">06</span>
+                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Organisatie{% else %}Organisation{% endif %}</span>
+              </a>
+            </li>
+            <li>
+              <a href="#lange-termijn">
+                <span class="gu-manifest__tocN">07</span>
                 <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Lange termijn{% else %}Long-term perspective{% endif %}</span>
               </a>
             </li>
@@ -421,7 +427,19 @@
           {% endif %}
         </section>
 
-        {# ── 6. Lange termijn ───────────────────────────── #}
+        {# ── 6. Organisatie ─────────────────────────────── #}
+        <section id="organisatie" class="gu-manifest__section">
+          <h2>{% if lang == 'nl' %}Organisatie{% else %}Organisation{% endif %}</h2>
+          {% if lang == 'nl' %}
+            <p>De Global Union werkt met een minimale organisatie: een kleine commissie en een beperkt ambtenarenapparaat, ondersteund door bestaande nationale en internationale instellingen. Het budget blijft beperkt, want de unie begint met een beperkte set bevoegdheden en neemt geen grote overdrachten over zoals landbouw- of cohesiefondsen. Toch is de unie daadkrachtig: besluiten vallen met een heldere meerderheid in plaats van unanimiteit. Uitvoering vindt plaats in de landen zelf. Toezicht op de uitvoering wordt wel door de Global Union verzorgd.</p>
+            <p>Discussies en stemmingen vinden online plaats. De slagkracht wordt versterkt door democratische innovatie. Besluitvorming is transparant, inclusief de onderliggende feiten en overwegingen, uitgelegd op zowel expert- als lekenniveau. Burgers wereldwijd kunnen in hun eigen taal meepraten en invloed uitoefenen.</p>
+          {% else %}
+            <p>The Global Union operates with a minimal organisation: a small commission and a limited civil service, supported by existing national and international institutions. The budget stays limited, since the union starts with a limited set of competences and does not take on large transfers such as agricultural or cohesion funds. Yet the union is effective: decisions are taken by a clear majority rather than unanimity. Implementation takes place within the countries themselves. Oversight of that implementation is carried out by the Global Union.</p>
+            <p>Discussions and votes take place online. This effectiveness is strengthened by democratic innovation. Decision-making is transparent, including the underlying facts and considerations, explained at both expert and layperson level. Citizens worldwide can take part and exert influence in their own language.</p>
+          {% endif %}
+        </section>
+
+        {# ── 7. Lange termijn ───────────────────────────── #}
         <section id="lange-termijn" class="gu-manifest__section">
           <h2>{% if lang == 'nl' %}Perspectief op de lange termijn{% else %}Long-term perspective{% endif %}</h2>
           <p>{% if lang == 'nl' %}De Globale Unie omvat landen uit de gehele wereld, groeit sterk en is een drijvende kracht voor steeds meer functionerende democratieën. De GU werkt constructief samen met andere landen die de wereld veilig en schoon willen houden voor komende generaties.{% else %}The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations.{% endif %}</p>
