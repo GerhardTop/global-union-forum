@@ -1445,56 +1445,91 @@ body {
 }
 .gu-manifest__inlineLink:hover { color: var(--gu-link-hover); }
 
-/* Wetgeving-tabel — de artikelkolom van het manifest is smal (~650px bij elke
-   viewportbreedte vanaf ~769px, want begrensd door .gu-manifest__body's eigen
-   max-width, niet door het scherm) en de 'Voorbeelden'-cel bevat lange,
-   opsommende tekst. Een traditionele rijen-tabel past daar bij geen enkele
-   breedte comfortabel. Daarom altijd kaarten-weergave (geen mobiel-only
-   media query zoals bij .gu-landen-table) — consistente, leesbare opmaak op
-   elk scherm i.p.v. een krappe tabel op desktop en kaarten alleen op mobiel. */
-.gu-wet-table-wrap { margin: 24px 0 32px; }
-.gu-wet-table,
-.gu-wet-table thead,
-.gu-wet-table tbody,
-.gu-wet-table tr,
-.gu-wet-table td,
-.gu-wet-table th {
-  display: block;
-  width: 100%;
-}
-.gu-wet-table thead { display: none; }
-.gu-wet-table tr {
-  border: 1px solid var(--gu-border);
-  border-radius: 12px;
-  margin-bottom: 16px;
-  padding: 0 20px;
-}
-.gu-wet-table tr:last-child { margin-bottom: 0; }
-.gu-wet-table td,
-.gu-wet-table th {
-  padding: 12px 0;
+/* Wetgeving-tabel (en de tabel in de sectie 'Aansluiten op mondiale
+   standaarden', die dezelfde .gu-wet-table-klasse hergebruikt) — echte
+   rasters-tabel vanaf 601px, dezelfde visuele taal als .gu-landen-table
+   (grijze kopregel, cel-rand onderaan). Onder het mobiele breakpoint
+   (max-width: 600px, hetzelfde breakpoint als .gu-landen-table verderop)
+   wordt dezelfde <table>-opmaak zonder markup-wijziging naar gestapelde
+   kaarten omgezet, via display:block op elk tabel-onderdeel — geen aparte
+   kaarten-markup zoals bij .gu-landen-cards, want deze tabel heeft geen
+   uitklap-interactie nodig die dat zou rechtvaardigen. */
+.gu-wet-table-wrap { margin: 24px 0 32px; overflow-x: auto; }
+.gu-wet-table { width: 100%; border-collapse: collapse; }
+.gu-wet-table thead tr {
+  background: var(--gu-bg-soft);
   border-bottom: 1px solid var(--gu-border);
-  color: var(--gu-fg-2);
-  line-height: 1.6;
-  text-align: left;
-  font-weight: 400;
 }
-.gu-wet-table td:last-child { border-bottom: none; }
-.gu-wet-table td[data-label]::before {
-  content: attr(data-label);
-  display: block;
+.gu-wet-table th {
+  padding: 12px 16px;
+  text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--gu-fg-3);
-  text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 4px;
+  text-transform: uppercase;
 }
+.gu-wet-table td {
+  padding: 12px 16px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--gu-border);
+  color: var(--gu-fg-2);
+  line-height: 1.6;
+}
+.gu-wet-table tbody tr:last-child td { border-bottom: none; }
 .gu-wet-table th.gu-wet-table__phase {
-  padding: 16px 0 12px;
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--gu-fg-1);
+  text-transform: none;
+  letter-spacing: normal;
+  vertical-align: top;
+}
+
+@media (max-width: 600px) {
+  .gu-wet-table,
+  .gu-wet-table thead,
+  .gu-wet-table tbody,
+  .gu-wet-table tr,
+  .gu-wet-table td,
+  .gu-wet-table th {
+    display: block;
+    width: 100%;
+  }
+  .gu-wet-table thead { display: none; }
+  .gu-wet-table tr {
+    border: 1px solid var(--gu-border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    padding: 0 20px;
+  }
+  .gu-wet-table tr:last-child { margin-bottom: 0; }
+  .gu-wet-table td,
+  .gu-wet-table th {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gu-border);
+    color: var(--gu-fg-2);
+    line-height: 1.6;
+    text-align: left;
+    font-weight: 400;
+  }
+  .gu-wet-table td:last-child { border-bottom: none; }
+  .gu-wet-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gu-fg-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .gu-wet-table th.gu-wet-table__phase {
+    padding: 16px 0 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gu-fg-1);
+  }
 }
 
 .gu-manifest__section ul {

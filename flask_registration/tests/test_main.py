@@ -474,6 +474,26 @@ class TestManifestWetgevingSection:
         assert section.count('scope="col"') == 4
         assert section.count('scope="row"') == 3
 
+    def test_wetgeving_table_markup_supports_responsive_grid_and_cards(self, client):
+        # De server-gerenderde HTML is voor beide weergaven identiek — of het
+        # als rasters-tabel (>600px) of als gestapelde kaarten (<=600px)
+        # verschijnt, wordt puur door CSS (media query) bepaald, niet door
+        # verschillende markup. Deze test kan dat CSS-gedrag zelf niet
+        # renderen (de pytest-client voert geen CSS/JS uit) en bewaakt in
+        # plaats daarvan dat de markup-onderdelen die beide weergaven nodig
+        # hebben aanwezig blijven: een <thead> (zichtbaar op desktop, verborgen
+        # op mobiel) en data-label-attributen op de niet-koptekst-cellen
+        # (alleen zichtbaar/gebruikt op mobiel via CSS content: attr()).
+        # Het daadwerkelijke responsieve gedrag wordt geverifieerd met
+        # Playwright op 1280px en 375px (zie rapport).
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section_start = html.find('id="wetgeving"')
+        section_end = html.find('id="mondiale-standaarden"')
+        section = html[section_start:section_end]
+        assert '<thead>' in section and '</thead>' in section
+        assert section.count('data-label=') == 9  # 3 non-fase-kolommen x 3 rijen
+
     def test_wetgeving_table_has_three_rows_dutch(self, client):
         # Scope tot de wetgeving-sectie: .gu-wet-table__phase wordt sinds de
         # nieuwe 'mondiale standaarden'-sectie ook daar hergebruikt (13x), dus
