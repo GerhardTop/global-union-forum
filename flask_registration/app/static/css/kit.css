@@ -1648,13 +1648,24 @@ body {
 .gu-level-badge--insufficient { background: var(--gu-bg-soft); color: var(--gu-fg-3); }
 
 /* Landen table — zelfde visuele taal als .gu-admin-table (los gehouden zodat
-   het responsive kaarten-gedrag hieronder niet ook /admin en /moderator raakt). */
+   het responsive kaarten-gedrag hieronder niet ook /admin en /moderator raakt).
+   Bewust GEEN overflow-x hier: elke overflow-waarde behalve 'visible' op een
+   voorouder van een position:sticky-element breekt sticky (het element plakt
+   dan alleen nog binnen het scrollbereik van díe voorouder, niet t.o.v. de
+   viewport) — een bekende CSS-valkuil. table-layout:fixed met percentage-
+   kolombreedtes (wijziging 6) voorkomt dat de tabel zelf breder wordt dan
+   zijn container, dus horizontale scroll-noodzaak is hier niet aan de orde. */
 .gu-landen-table-wrap {
-  overflow-x: auto;
   border-radius: 12px;
   border: 1px solid var(--gu-border);
   margin-bottom: 48px;
 }
+/* Ronde bovenhoeken op de buitenste kopcellen i.p.v. overflow:hidden op de
+   wrapper — border-collapse-tabellen clippen niet vanzelf mee met een
+   rounded border, en overflow:hidden zou hier (net als overflow-x:auto
+   hierboven) de sticky header breken. */
+.gu-landen-table thead tr:first-child th:first-child { border-top-left-radius: 12px; }
+.gu-landen-table thead tr:first-child th:last-child { border-top-right-radius: 12px; }
 /* table-layout: fixed (wijziging 6) — kolombreedtes komen uit de <colgroup>
    in landenlijst.html i.p.v. content-afhankelijk auto-sizen, zodat alle
    kolommen een gelijkmatige, voorspelbare verdeling over de tabelbreedte
@@ -1667,6 +1678,17 @@ body {
   background: var(--gu-bg-soft);
   border-bottom: 1px solid var(--gu-border);
 }
+/* Sticky tabelkop tijdens het scrollen door de 183 rijen. Sticky staat op
+   de <th>-cellen zelf, niet op <thead>: dat laatste wordt door browsers
+   niet consistent ondersteund voor tabellen. top gebruikt dezelfde
+   --gu-header-height-token als de vaste site-header hierboven (ook
+   position: sticky; top: 0) zodat de tabelkop er precies onder blijft
+   hangen i.p.v. erachter te verdwijnen of eroverheen te overlappen. Een
+   eigen achtergrond is noodzakelijk (i.p.v. alleen op de <tr>): een
+   sticky kind toont anders de scrollende rijen erdoorheen. De schaduw
+   blijft permanent zichtbaar (niet alleen tijdens scrollen) als subtiele
+   visuele scheiding — er is geen betrouwbare cross-browser manier om CSS
+   alléén op de 'vastgeplakte' toestand te richten zonder JS. */
 .gu-landen-table th {
   padding: 12px 16px;
   text-align: left;
@@ -1676,6 +1698,11 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   line-height: 1.3;
+  position: sticky;
+  top: var(--gu-header-height);
+  z-index: 5;
+  background: var(--gu-bg-soft);
+  box-shadow: var(--gu-shadow-sm);
 }
 .gu-landen-table td {
   padding: 12px 16px;
@@ -2683,6 +2710,7 @@ body {
   .gu-container { padding: 0 16px; }
 
   /* ── Header ─────────────────────────────────────────────── */
+  :root { --gu-header-height: 77px; }
   .gu-header {
     flex-wrap: wrap;
     align-items: center;

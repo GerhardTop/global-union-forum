@@ -102,6 +102,15 @@
   --gu-radius-lg: 14px;
   --gu-radius-pill: 999px;
 
+  /* Hoogte van de vaste site-header (.gu-header, sticky top:0) — als
+     top-offset voor andere sticky elementen (bijv. sticky tabelkoppen)
+     zodat ze er precies onder blijven hangen i.p.v. eroverheen of
+     erachter te verdwijnen. Empirisch gemeten (niet uit min-height
+     afgeleid: navigatie-inhoud duwt de header iets boven de 72px
+     min-height uit). Mobiel (<=600px) krijgt een eigen waarde, zie de
+     mobile media query in kit.css. */
+  --gu-header-height: 77px;
+
   /* Shadows — restrained. The brand is editorial, not material. */
   --gu-shadow-sm: 0 1px 2px rgba(15, 25, 35, 0.06);
   --gu-shadow-md: 0 4px 14px rgba(15, 25, 35, 0.08);
