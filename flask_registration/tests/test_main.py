@@ -370,10 +370,10 @@ class TestLandenlijst:
         assert 'Duitsland' not in table
 
 class TestManifestLandenSection:
-    def test_manifest_toc_has_five_items(self, client):
+    def test_manifest_toc_has_six_items(self, client):
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
-        assert html.count('gu-manifest__tocN') == 5
+        assert html.count('gu-manifest__tocN') == 6
 
     def test_manifest_landen_section_present(self, client):
         response = client.get("/manifest")
@@ -449,11 +449,12 @@ class TestManifestWetgevingSection:
 
     def test_wetgeving_section_is_one_table_with_three_body_rows(self, client):
         # Eén semantische <table> (niet drie losse tabellen/kaarten), met
-        # precies 3 datarijen in de tbody.
+        # precies 3 datarijen in de tbody. Grens op mondiale-standaarden (niet
+        # lange-termijn): die sectie zit er inmiddels tussenin.
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section_start = html.find('id="wetgeving"')
-        section_end = html.find('id="lange-termijn"')
+        section_end = html.find('id="mondiale-standaarden"')
         section = html[section_start:section_end]
         assert section.count('<table') == 1
         tbody_start = section.find('<tbody>')
@@ -468,30 +469,39 @@ class TestManifestWetgevingSection:
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section_start = html.find('id="wetgeving"')
-        section_end = html.find('id="lange-termijn"')
+        section_end = html.find('id="mondiale-standaarden"')
         section = html[section_start:section_end]
         assert section.count('scope="col"') == 4
         assert section.count('scope="row"') == 3
 
     def test_wetgeving_table_has_three_rows_dutch(self, client):
+        # Scope tot de wetgeving-sectie: .gu-wet-table__phase wordt sinds de
+        # nieuwe 'mondiale standaarden'-sectie ook daar hergebruikt (13x), dus
+        # een ongebonden paginabrede telling zou nu 16 geven i.p.v. 3.
         client.get("/lang/nl")
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
-        assert html.count('gu-wet-table__phase') == 3
-        assert "1. Fundament" in html
-        assert "2. Verdieping" in html
-        assert "3. Politiek gevoelig" in html
-        assert "80%-drempel" in html
+        section_start = html.find('id="wetgeving"')
+        section_end = html.find('id="mondiale-standaarden"')
+        section = html[section_start:section_end]
+        assert section.count('gu-wet-table__phase') == 3
+        assert "1. Fundament" in section
+        assert "2. Verdieping" in section
+        assert "3. Politiek gevoelig" in section
+        assert "80%-drempel" in section
 
     def test_wetgeving_table_has_three_rows_english(self, client):
         client.get("/lang/en")
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
-        assert html.count('gu-wet-table__phase') == 3
-        assert "1. Foundation" in html
-        assert "2. Deepening" in html
-        assert "3. Politically sensitive" in html
-        assert "80% threshold" in html
+        section_start = html.find('id="wetgeving"')
+        section_end = html.find('id="mondiale-standaarden"')
+        section = html[section_start:section_end]
+        assert section.count('gu-wet-table__phase') == 3
+        assert "1. Foundation" in section
+        assert "2. Deepening" in section
+        assert "3. Politically sensitive" in section
+        assert "80% threshold" in section
 
     def test_wetgeving_new_intro_text_dutch(self, client):
         client.get("/lang/nl")
@@ -528,3 +538,105 @@ class TestManifestWetgevingSection:
         assert "we expect to be able to make an exception here" in html
         assert "The basis is the general exception in Article XX GATT" not in html
         assert "We do not adopt agricultural policy, cohesion funds, or the monetary union" in html
+
+
+class TestManifestGlobalStandardsSection:
+    def test_section_present_between_wetgeving_and_lange_termijn(self, client):
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        idx_wetgeving = html.find('id="wetgeving"')
+        idx_standaarden = html.find('id="mondiale-standaarden"')
+        idx_lange_termijn = html.find('id="lange-termijn"')
+        assert -1 not in (idx_wetgeving, idx_standaarden, idx_lange_termijn)
+        assert idx_wetgeving < idx_standaarden < idx_lange_termijn
+
+    def test_title_dutch(self, client):
+        # Sectiekop én TOC-label exact "Aansluiten op mondiale standaarden".
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert html.count("Aansluiten op mondiale standaarden") == 2  # TOC-label + <h2>
+        assert '<h2>Aansluiten op mondiale standaarden</h2>' in html
+
+    def test_title_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert html.count("Aligning with global standards") == 2
+        assert '<h2>Aligning with global standards</h2>' in html
+
+    def _section_html(self, html):
+        section_start = html.find('id="mondiale-standaarden"')
+        section_end = html.find('id="lange-termijn"')
+        return html[section_start:section_end]
+
+    def test_one_table_with_thirteen_rows(self, client):
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert section.count('<table') == 1
+        assert '<thead>' in section and '</thead>' in section
+        tbody_start = section.find('<tbody>')
+        tbody_end = section.find('</tbody>')
+        tbody = section[tbody_start:tbody_end]
+        assert tbody.count('<tr>') == 13
+
+    def test_table_scope_attributes(self, client):
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert section.count('scope="col"') == 3
+        assert section.count('scope="row"') == 13
+
+    def test_intro_text_dutch(self, client):
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert "We kiezen alleen voor een eigen regel als er geen mondiaal alternatief is" in section
+
+    def test_intro_text_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert "We only choose our own rule where no global alternative exists" in section
+
+    def test_table_data_sample_dutch(self, client):
+        # Steekproef: eerste, een middelste, en de laatste rij.
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert "Handelsregels" in section and "GATT/GATS, TBT- en SPS-akkoorden" in section and ">WTO<" in section
+        assert "Mensenrechten" in section and "acht fundamentele ILO-verdragen" in section and "VN, ILO" in section
+        assert "Gegevensbescherming" in section and "Verdrag 108+" in section
+        assert "Raad van Europa, open voor niet-Europese staten" in section
+
+    def test_table_data_sample_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert "Trade rules" in section and "GATT/GATS, TBT and SPS agreements" in section and ">WTO<" in section
+        assert "Human rights" in section and "eight fundamental ILO conventions" in section and "UN, ILO" in section
+        assert "Data protection" in section and "Convention 108+" in section
+        assert "Council of Europe, open to non-European states" in section
+
+    def test_paragraph_below_table_dutch(self, client):
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert "het supranationale Verdrag 108+ in plaats van de AVG" in section
+        assert "Uruguay, Mexico en Senegal" in section
+        assert "Bij AI ontbreekt nog een gezaghebbende mondiale standaard" in section
+
+    def test_paragraph_below_table_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section = self._section_html(html)
+        assert "the supranational Convention 108+ over the GDPR" in section
+        assert "Uruguay, Mexico, and Senegal" in section
+        assert "For AI, an authoritative global standard is still missing" in section

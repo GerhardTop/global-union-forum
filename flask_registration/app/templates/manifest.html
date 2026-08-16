@@ -65,8 +65,14 @@
               </a>
             </li>
             <li>
-              <a href="#lange-termijn">
+              <a href="#mondiale-standaarden">
                 <span class="gu-manifest__tocN">05</span>
+                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Aansluiten op mondiale standaarden{% else %}Aligning with global standards{% endif %}</span>
+              </a>
+            </li>
+            <li>
+              <a href="#lange-termijn">
+                <span class="gu-manifest__tocN">06</span>
                 <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Lange termijn{% else %}Long-term perspective{% endif %}</span>
               </a>
             </li>
@@ -250,7 +256,172 @@
           {% endif %}
         </section>
 
-        {# ── 5. Lange termijn ───────────────────────────── #}
+        {# ── 5. Aansluiten op mondiale standaarden ──────── #}
+        <section id="mondiale-standaarden" class="gu-manifest__section">
+          <h2>{% if lang == 'nl' %}Aansluiten op mondiale standaarden{% else %}Aligning with global standards{% endif %}</h2>
+          {% if lang == 'nl' %}
+            <p>We kiezen alleen voor een eigen regel als er geen mondiaal alternatief is of het bestaande te vrijblijvend is.</p>
+          {% else %}
+            <p>We only choose our own rule where no global alternative exists or the existing one is too weak to enforce.</p>
+          {% endif %}
+
+          <div class="gu-wet-table-wrap">
+            <table class="gu-wet-table">
+              <thead>
+                <tr>
+                  <th scope="col">{% if lang == 'nl' %}Domein{% else %}Domain{% endif %}</th>
+                  <th scope="col">{% if lang == 'nl' %}Leidende standaard{% else %}Leading standard{% endif %}</th>
+                  <th scope="col">{% if lang == 'nl' %}Orgaan{% else %}Body{% endif %}</th>
+                </tr>
+              </thead>
+              {% if lang == 'nl' %}
+              <tbody>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Handelsregels</th>
+                  <td data-label="Leidende standaard">GATT/GATS, TBT- en SPS-akkoorden</td>
+                  <td data-label="Orgaan">WTO</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Douane en indeling</th>
+                  <td data-label="Leidende standaard">Geharmoniseerd Systeem, Herzien Verdrag van Kyoto</td>
+                  <td data-label="Orgaan">WCO</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Productnormen</th>
+                  <td data-label="Leidende standaard">ISO, IEC, ITU</td>
+                  <td data-label="Orgaan">Internationaal, niet-statelijk</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Voedselveiligheid</th>
+                  <td data-label="Leidende standaard">Codex Alimentarius</td>
+                  <td data-label="Orgaan">FAO/WHO</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Belastingen</th>
+                  <td data-label="Leidende standaard">Pillar Two (minimumtarief), BEPS</td>
+                  <td data-label="Orgaan">OESO/G20 Inclusive Framework</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Bankentoezicht</th>
+                  <td data-label="Leidende standaard">Basel III</td>
+                  <td data-label="Orgaan">Bazels Comité</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Witwasbestrijding</th>
+                  <td data-label="Leidende standaard">40 aanbevelingen</td>
+                  <td data-label="Orgaan">FATF</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Verslaggeving</th>
+                  <td data-label="Leidende standaard">IFRS</td>
+                  <td data-label="Orgaan">IASB</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Mensenrechten</th>
+                  <td data-label="Leidende standaard">UVRM, IVBPR, IVESCR, acht fundamentele ILO-verdragen</td>
+                  <td data-label="Orgaan">VN, ILO</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Corruptiebestrijding</th>
+                  <td data-label="Leidende standaard">UNCAC</td>
+                  <td data-label="Orgaan">VN</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Klimaat</th>
+                  <td data-label="Leidende standaard">Akkoord van Parijs</td>
+                  <td data-label="Orgaan">UNFCCC</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Luchtvaart, scheepvaart</th>
+                  <td data-label="Leidende standaard">ICAO, IMO</td>
+                  <td data-label="Orgaan">VN-organisaties</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Gegevensbescherming</th>
+                  <td data-label="Leidende standaard">Verdrag 108+</td>
+                  <td data-label="Orgaan">Raad van Europa, open voor niet-Europese staten</td>
+                </tr>
+              </tbody>
+              {% else %}
+              <tbody>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Trade rules</th>
+                  <td data-label="Leading standard">GATT/GATS, TBT and SPS agreements</td>
+                  <td data-label="Body">WTO</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Customs and classification</th>
+                  <td data-label="Leading standard">Harmonized System, Revised Kyoto Convention</td>
+                  <td data-label="Body">WCO</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Product standards</th>
+                  <td data-label="Leading standard">ISO, IEC, ITU</td>
+                  <td data-label="Body">International, non-state</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Food safety</th>
+                  <td data-label="Leading standard">Codex Alimentarius</td>
+                  <td data-label="Body">FAO/WHO</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Taxation</th>
+                  <td data-label="Leading standard">Pillar Two (minimum rate), BEPS</td>
+                  <td data-label="Body">OECD/G20 Inclusive Framework</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Banking supervision</th>
+                  <td data-label="Leading standard">Basel III</td>
+                  <td data-label="Body">Basel Committee</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Anti-money laundering</th>
+                  <td data-label="Leading standard">40 Recommendations</td>
+                  <td data-label="Body">FATF</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Reporting</th>
+                  <td data-label="Leading standard">IFRS</td>
+                  <td data-label="Body">IASB</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Human rights</th>
+                  <td data-label="Leading standard">UDHR, ICCPR, ICESCR, eight fundamental ILO conventions</td>
+                  <td data-label="Body">UN, ILO</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Anti-corruption</th>
+                  <td data-label="Leading standard">UNCAC</td>
+                  <td data-label="Body">UN</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Climate</th>
+                  <td data-label="Leading standard">Paris Agreement</td>
+                  <td data-label="Body">UNFCCC</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Aviation, shipping</th>
+                  <td data-label="Leading standard">ICAO, IMO</td>
+                  <td data-label="Body">UN agencies</td>
+                </tr>
+                <tr>
+                  <th class="gu-wet-table__phase" scope="row">Data protection</th>
+                  <td data-label="Leading standard">Convention 108+</td>
+                  <td data-label="Body">Council of Europe, open to non-European states</td>
+                </tr>
+              </tbody>
+              {% endif %}
+            </table>
+          </div>
+
+          {% if lang == 'nl' %}
+            <p>Bij gegevensbescherming kiezen we het supranationale Verdrag 108+ in plaats van de AVG: dezelfde bescherming, maar zonder EU-label, en al opengesteld voor landen als Uruguay, Mexico en Senegal. Bij AI ontbreekt nog een gezaghebbende mondiale standaard. Deze zal met prioriteit vormgegeven moeten worden.</p>
+          {% else %}
+            <p>For data protection, we choose the supranational Convention 108+ over the GDPR: the same protection, but without an EU label, and already open to countries such as Uruguay, Mexico, and Senegal. For AI, an authoritative global standard is still missing. This will need to be shaped as a priority.</p>
+          {% endif %}
+        </section>
+
+        {# ── 6. Lange termijn ───────────────────────────── #}
         <section id="lange-termijn" class="gu-manifest__section">
           <h2>{% if lang == 'nl' %}Perspectief op de lange termijn{% else %}Long-term perspective{% endif %}</h2>
           <p>{% if lang == 'nl' %}De Globale Unie omvat landen uit de gehele wereld, groeit sterk en is een drijvende kracht voor steeds meer functionerende democratieën. De GU werkt constructief samen met andere landen die de wereld veilig en schoon willen houden voor komende generaties.{% else %}The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations.{% endif %}</p>
