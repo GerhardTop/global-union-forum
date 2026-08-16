@@ -157,7 +157,17 @@
         {# ── 3. Landen ──────────────────────────────────── #}
         <section id="landen" class="gu-manifest__section">
           <h2>{% if lang == 'nl' %}Landen{% else %}Countries{% endif %}</h2>
-          {% include '_landen_intro.html' %}
+          {% if lang == 'nl' %}
+            <p>Toetreding is gekoppeld aan drie bestaande, onafhankelijke indices: de Democracy Index, de Corruption Perceptions Index en de Human Rights Index. Voor iedere index is een 'voldoende' niveau en een 'minimum' niveau gekozen. Het minimumniveau is zo gekozen dat de EU als blok kan toetreden.</p>
+            <p>Landen boven het minimumniveau worden uitgenodigd mee te doen.</p>
+            <p>Drie landen krijgen een aparte behandeling. De Verenigde Staten en Israël worden voorlopig niet uitgenodigd. De landen voldoen cijfermatig weliswaar aan de norm, maar het valt niet te verwachten dat deze landen onder de huidige regeringen zich zouden willen committeren aan de regels van de Globale Unie. Taiwan voldoet eveneens, maar heeft geen VN-erkende status. Hiervoor kunnen we werken met een aparte status, zoals dat nu ook gebeurt bij de WTO.</p>
+            <p>De indices hebben een beperkte foutmarge. Landen die net onder de drempel zitten, kunnen op aanvraag alsnog worden beoordeeld.</p>
+          {% else %}
+            <p>Accession is tied to three existing, independent indices: the Democracy Index, the Corruption Perceptions Index, and the Human Rights Index. For each index, a 'sufficient' level and a 'minimum' level have been chosen. The minimum level is chosen so that the EU can join as a bloc.</p>
+            <p>Countries above the minimum level are invited to join.</p>
+            <p>Three countries receive separate treatment. The United States and Israel are not invited for now. These countries do numerically meet the standard, but it cannot be expected that, under their current administrations, they would want to commit to the rules of the Global Union. Taiwan also qualifies, but lacks UN-recognised status. For this we can work with a separate status, as is already the case at the WTO.</p>
+            <p>The indices carry a limited margin of error. Countries that fall just short of the threshold can still be assessed on request.</p>
+          {% endif %}
           <p>
             <a href="{{ url_for('main.landenlijst') }}" class="gu-manifest__inlineLink">
               {% if lang == 'nl' %}Bekijk de volledige lijst met alle 183 landen en hun scores{% else %}View the full list of all 183 countries and their scores{% endif %}

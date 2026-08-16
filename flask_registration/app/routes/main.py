@@ -23,6 +23,9 @@ _LEVEL_CLASS_MAP = {
     "Below minimum": "below",
     "Insufficient data": "insufficient",
 }
+# Numerieke rangorde voor het sorteren van de Niveau-kolom (wijziging 3 op de
+# landenlijst) — laag naar hoog, analoog aan level_class hierboven.
+_LEVEL_SORT_RANK = {"insufficient": 0, "below": 1, "above": 2, "meets": 3}
 # Drempelwaarden per index — geverifieerd tegen alle 183 landen, reproduceert
 # niveau_en exact via AND-logica over beide niveaus. Hier gebruikt voor de
 # 3-standen per-index-indicatie: elke index afzonderlijk als 'below' (onder
@@ -47,6 +50,7 @@ def _load_landen_data():
         rows = json.load(f)
     for row in rows:
         row["level_class"] = _LEVEL_CLASS_MAP.get(row["niveau_en"], "below")
+        row["level_sort"] = _LEVEL_SORT_RANK[row["level_class"]]
         row["di_level"] = _index_level_class(row["di"], "di")
         row["cpi_level"] = _index_level_class(row["cpi"], "cpi")
         row["hri_level"] = _index_level_class(row["hri"], "hri")

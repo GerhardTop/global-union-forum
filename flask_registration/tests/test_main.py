@@ -66,36 +66,140 @@ class TestLandenlijst:
         assert '>CPI<' in details_part and '>CPI<' not in summary_part
         assert '>HRI<' in details_part and '>HRI<' not in summary_part
 
-    def test_threshold_text_dutch(self, client):
+    def test_old_threshold_text_removed_from_landenlijst(self, client):
+        # Wijziging 1: de losse drempeltekst boven de tabel is weg van
+        # landenlijst.html (verhuisd naar /manifest, zie TestManifestLandenSection).
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        assert 'gu-landen__thresholds' not in html
+        assert 'DI ≥ 6,0' not in html
+        assert 'DI ≥ 6.0' not in html
+
+    def test_legend_table_present_dutch(self, client):
+        # Wijziging 7: compacte legenda-tabel vervangt de weggehaalde tekst.
         client.get("/lang/nl")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
-        assert "DI ≥ 6,0" in html
-        assert "CPI ≥ 40" in html
-        assert "HRI ≥ 0,70" in html
-        assert "DI ≥ 8,0" in html
-        assert "HRI ≥ 0,75" in html
+        idx = html.find('gu-landen-legend')
+        assert idx != -1
+        legend_end = html.find('gu-landen-table-wrap')
+        legend = html[idx:legend_end]
+        assert 'gu-level-badge--above">Boven minimum<' in legend
+        assert 'gu-level-badge--meets">Op niveau<' in legend
+        assert '≥ 6,0' in legend
+        assert '≥ 40' in legend
+        assert '≥ 0,70' in legend
+        assert '≥ 8,0' in legend
+        assert '≥ 70' in legend
+        assert '≥ 0,75' in legend
 
-    def test_threshold_text_english(self, client):
+    def test_legend_table_present_english(self, client):
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
-        assert "DI ≥ 6.0" in html
-        assert "HRI ≥ 0.70" in html
-        assert "DI ≥ 8.0" in html
-        assert "HRI ≥ 0.75" in html
+        idx = html.find('gu-landen-legend')
+        assert idx != -1
+        legend_end = html.find('gu-landen-table-wrap')
+        legend = html[idx:legend_end]
+        assert 'gu-level-badge--above">Above minimum<' in legend
+        assert 'gu-level-badge--meets">Meets standard<' in legend
+        assert '≥ 6.0' in legend
+        assert '≥ 0.70' in legend
+        assert '≥ 8.0' in legend
+        assert '≥ 0.75' in legend
 
     def test_three_separate_index_columns_desktop(self, client):
-        # Wijziging A: geen gegroepeerde 'Index'-kolom meer, maar drie losse,
-        # volledig uitgeschreven kolommen.
+        # Wijziging A (eerdere ronde): geen gegroepeerde 'Index'-kolom meer,
+        # maar drie losse, volledig uitgeschreven kolommen. Vanaf
+        # gu-landen-table-wrap zoeken (niet vanaf het begin van de pagina):
+        # de legenda-tabel (wijziging 7) heeft óók een <thead>/</thead>, dus
+        # een onbeperkte find() zou die eerst pakken i.p.v. de hoofdtabel.
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
-        thead_end = html.find('</thead>')
-        thead = html[:thead_end]
-        assert '<th>Democracy Index</th>' in thead
-        assert '<th>Corruption Perceptions Index</th>' in thead
-        assert '<th>Human Rights Index</th>' in thead
-        assert '<th>Index</th>' not in thead
+        wrap_start = html.find('class="gu-landen-table-wrap"')
+        assert wrap_start != -1
+        thead_end = html.find('</thead>', wrap_start)
+        thead = html[wrap_start:thead_end]
+        assert 'data-sort-key="di">Democracy Index' in thead
+        assert 'data-sort-key="cpi">Corruption Perceptions Index' in thead
+        assert 'data-sort-key="hri">Human Rights Index' in thead
+        assert '>Index<' not in thead
+
+    def test_niveau_column_header_renamed(self, client):
+        # Wijziging 4: kolomkop wordt voluit "Global Union niveau"/"level";
+        # de badge-tekst in de cellen zelf (bijv. "Op niveau") blijft gelijk.
+        client.get("/lang/nl")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        wrap_start = html.find('class="gu-landen-table-wrap"')
+        thead = html[wrap_start:html.find('</thead>', wrap_start)]
+        assert 'Global Union niveau' in thead
+        assert 'Niveau GU' not in thead
+
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        wrap_start = html.find('class="gu-landen-table-wrap"')
+        thead = html[wrap_start:html.find('</thead>', wrap_start)]
+        assert 'Global Union level' in thead
+        assert 'GU level' not in thead
+
+    def test_index_columns_centered(self, client):
+        # Wijziging 5: alleen DI/CPI/HRI-kolommen (kop én waarde) gecentreerd.
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        wrap_start = html.find('class="gu-landen-table-wrap"')
+        thead = html[wrap_start:html.find('</thead>', wrap_start)]
+        assert thead.count('gu-landen-table__th--center') == 3
+        table_start = html.find('gu-landen-table__country')
+        idx = html.find('Norway', table_start)
+        row = html[idx:html.find('</tr>', idx)]
+        assert row.count('gu-landen-table__td--center') == 3
+        # De land-cel zelf krijgt geen center-klasse (blijft links uitgelijnd).
+        country_cell_end = row.find('</td>')
+        assert 'gu-landen-table__td--center' not in row[:country_cell_end]
+
+    def test_table_has_colgroup_for_equal_column_widths(self, client):
+        # Wijziging 6: kolombreedtes via <colgroup> i.p.v. content-afhankelijk
+        # auto-sizen.
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('class="gu-landen-table"')
+        colgroup_start = html.find('<colgroup>', table_start)
+        colgroup_end = html.find('</colgroup>', table_start)
+        assert colgroup_start != -1 and colgroup_end != -1
+        colgroup = html[colgroup_start:colgroup_end]
+        # '<col ' met spatie: '<colgroup>' zelf begint ook met de substring
+        # '<col' en zou anders dubbel meetellen.
+        assert colgroup.count('<col ') == 5
+
+    def test_sort_attributes_present_for_norway(self, client):
+        # Wijziging 3: elke cel draagt data-sort-value zodat de client-side
+        # sort-JS kan sorteren zonder de server opnieuw te bevragen. Rij
+        # vanaf de openende <tr> pakken: 'Norway' komt voor het eerst voor
+        # binnen het data-sort-value-attribuut van de land-cel zelf, vóór
+        # de zichtbare naam — zoeken vanaf de tekst 'Norway' zou dat
+        # attribuut-prefix missen.
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('gu-landen-table__country')
+        idx = html.find('Norway', table_start)
+        assert idx != -1
+        tr_start = html.rfind('<tr', 0, idx)
+        row = html[tr_start:html.find('</tr>', idx)]
+        assert 'data-sort-cell="land" data-sort-value="Norway"' in row
+        assert 'data-sort-cell="di" data-sort-value="9.81"' in row
+        assert 'data-sort-cell="cpi" data-sort-value="81"' in row
+        assert 'data-sort-cell="hri" data-sort-value="0.947"' in row
+        assert 'data-sort-cell="niveau" data-sort-value="3"' in row  # 'meets' = hoogste rang
+
+    def test_sort_script_present(self, client):
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        assert 'data-sort-key' in html
+        assert 'addEventListener(\'click\'' in html or "addEventListener('click'" in html
 
     def test_index_dots_in_own_columns_for_norway(self, client):
         # Norway: DI 9.81, CPI 81, HRI 0.947 — alle drie ruim boven de
@@ -169,13 +273,17 @@ class TestLandenlijst:
 
     def test_desktop_toggle_only_for_three_exception_countries(self, client):
         # Alleen Taiwan/Israel/VS behouden het uitklap-mechanisme —
-        # precies 3 uitklaprijen op de hele pagina. Alleen binnen <tbody>
-        # tellen, niet in de hele pagina: de inline <script> onderaan bevat
-        # de klasse-naam ook als string-literal (classList.contains-check).
+        # precies 3 uitklaprijen op de hele pagina. <tbody> zoeken vanaf
+        # gu-landen-table-wrap: de legenda-tabel (wijziging 7) heeft óók een
+        # <tbody>, en de inline <script> onderaan bevat de klasse-naam ook
+        # als string-literal (classList.contains-check) — beide zouden een
+        # onbeperkte find() om de tuin leiden.
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
-        tbody = html[html.find('<tbody>'):html.find('</tbody>')]
+        wrap_start = html.find('class="gu-landen-table-wrap"')
+        assert wrap_start != -1
+        tbody = html[html.find('<tbody>', wrap_start):html.find('</tbody>', wrap_start)]
         assert tbody.count('gu-landen-table__detailRow') == 3
         assert tbody.count('gu-landen-table__rowToggle') == 3
         table_start = html.find('gu-landen-table__country')
@@ -303,6 +411,40 @@ class TestManifestLandenSection:
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert '/manifest/landen' in html
+
+    def test_manifest_landen_new_explainer_text_dutch(self, client):
+        # Wijziging 2: de (uitgebreide) uitlegtekst staat nu op /manifest,
+        # in de #landen-sectie, i.p.v. als losse tekst op /manifest/landen.
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section_start = html.find('id="landen"')
+        section_end = html.find('id="wetgeving"')
+        assert section_start != -1 and section_end != -1
+        section = html[section_start:section_end]
+        assert "Toetreding is gekoppeld aan drie bestaande" in section
+        assert "Landen boven het minimumniveau worden uitgenodigd mee te doen." in section
+        assert "beperkte foutmarge" in section
+
+    def test_manifest_landen_new_explainer_text_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section_start = html.find('id="landen"')
+        section_end = html.find('id="wetgeving"')
+        assert section_start != -1 and section_end != -1
+        section = html[section_start:section_end]
+        assert "Accession is tied to three existing" in section
+        assert "Countries above the minimum level are invited to join." in section
+        assert "limited margin of error" in section
+
+    def test_manifest_landen_explainer_not_on_landenlijst_page(self, client):
+        # De nieuwe tekst (met de unieke zin over uitnodigen) hoort alleen op
+        # /manifest te staan, niet (ook) op /manifest/landen.
+        client.get("/lang/nl")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        assert "Landen boven het minimumniveau worden uitgenodigd mee te doen." not in html
 
 
 class TestManifestWetgevingSection:

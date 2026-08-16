@@ -1558,11 +1558,42 @@ body {
   flex-wrap: wrap;
   margin-bottom: 32px;
 }
-.gu-landen__thresholds {
-  font-size: 0.8125rem;
-  color: var(--gu-fg-3);
-  margin: -12px 0 20px;
+/* Legenda (wijziging 7) — vervangt de vroegere .gu-landen__thresholds
+   lopende-tekstregel; die uitleg staat nu op /manifest. Kleine tabel,
+   dezelfde kolomvolgorde/badge-stijl als de hoofdtabel eronder. */
+.gu-landen-legend-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--gu-border);
+  margin-bottom: 20px;
+  max-width: 640px;
 }
+.gu-landen-legend {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.gu-landen-legend thead tr {
+  background: var(--gu-bg-soft);
+  border-bottom: 1px solid var(--gu-border);
+}
+.gu-landen-legend th {
+  padding: 8px 12px;
+  text-align: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--gu-fg-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.gu-landen-legend th:first-child { text-align: left; }
+.gu-landen-legend td {
+  padding: 8px 12px;
+  text-align: center;
+  color: var(--gu-fg-2);
+  border-top: 1px solid var(--gu-border);
+}
+.gu-landen-legend td:first-child { text-align: left; }
 
 /* Index-dot — per-index (DI/CPI/HRI) 3-standen-indicatie: 'below' (onder
    Boven-minimum), 'above' (Boven minimum maar niet Op niveau) of 'meets'
@@ -1624,7 +1655,14 @@ body {
   border: 1px solid var(--gu-border);
   margin-bottom: 48px;
 }
-.gu-landen-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+/* table-layout: fixed (wijziging 6) — kolombreedtes komen uit de <colgroup>
+   in landenlijst.html i.p.v. content-afhankelijk auto-sizen, zodat alle
+   kolommen een gelijkmatige, voorspelbare verdeling over de tabelbreedte
+   houden ongeacht hoe lang een landnaam of kolomkop is. Headers mogen
+   daardoor wel over twee regels afbreken (geen nowrap meer) — bij een lange
+   kop als 'Corruption Perceptions Index' in een vaste kolombreedte is dat
+   nette gedrag i.p.v. buiten de cel uitsteken. */
+.gu-landen-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 0.875rem; }
 .gu-landen-table thead tr {
   background: var(--gu-bg-soft);
   border-bottom: 1px solid var(--gu-border);
@@ -1637,7 +1675,7 @@ body {
   color: var(--gu-fg-3);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  white-space: nowrap;
+  line-height: 1.3;
 }
 .gu-landen-table td {
   padding: 12px 16px;
@@ -1646,6 +1684,33 @@ body {
   color: var(--gu-fg-2);
 }
 .gu-landen-table tbody tr:last-child td { border-bottom: none; }
+/* Centrering van de DI/CPI/HRI-kolommen (wijziging 5) — kop én waarde,
+   zodat het kleurpuntje + getal visueel onder de kolomnaam vallen. Land en
+   Niveau blijven links uitgelijnd zoals voorheen. */
+.gu-landen-table__th--center,
+.gu-landen-table td.gu-landen-table__td--center { text-align: center; }
+.gu-landen-table__td--center .gu-index-dot { margin-right: 6px; }
+
+/* Sorteerbare kolomkoppen (wijziging 3) — data-sort-dir wordt door de
+   inline sort-JS gezet/verwijderd en stuurt hier zowel het pijltje als de
+   actieve kleur aan; geen aparte JS/CSS-klassen nodig voor dezelfde staat. */
+.gu-landen-table__th--sortable { cursor: pointer; user-select: none; }
+.gu-landen-table__th--sortable:hover { color: var(--gu-fg-1); }
+.gu-landen-table__sortIcon {
+  display: inline-block;
+  width: 10px;
+  margin-left: 4px;
+  opacity: 0.45;
+}
+.gu-landen-table__sortIcon::after { content: '\2195'; }
+.gu-landen-table__th--sortable[data-sort-dir] {
+  color: var(--gu-globe-deep);
+}
+.gu-landen-table__th--sortable[data-sort-dir] .gu-landen-table__sortIcon {
+  opacity: 1;
+}
+.gu-landen-table__th--sortable[data-sort-dir="asc"] .gu-landen-table__sortIcon::after { content: '\2191'; }
+.gu-landen-table__th--sortable[data-sort-dir="desc"] .gu-landen-table__sortIcon::after { content: '\2193'; }
 .gu-landen-table__country { font-weight: 600; color: var(--gu-fg-1); }
 /* Oranje naam voor de uitzonderingslanden (Taiwan/Israël/VS) — extra visueel
    signaal naast het (i)-icoon, zowel desktop (td-tekst) als mobiel

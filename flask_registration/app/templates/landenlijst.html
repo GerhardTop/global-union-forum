@@ -31,23 +31,53 @@
     {% endif %}
   </div>
 
-  <p class="gu-landen__thresholds">
-    {% if lang == 'nl' %}
-      Boven minimum: DI ≥ 6,0 · CPI ≥ 40 · HRI ≥ 0,70. Op niveau: DI ≥ 8,0 · CPI ≥ 70 · HRI ≥ 0,75.
-    {% else %}
-      Above minimum: DI ≥ 6.0 · CPI ≥ 40 · HRI ≥ 0.70. Meets standard: DI ≥ 8.0 · CPI ≥ 70 · HRI ≥ 0.75.
-    {% endif %}
-  </p>
-
-  <div class="gu-landen-table-wrap">
-    <table class="gu-landen-table">
+  {# Legenda (wijziging 7) — vervangt de vroegere drempeltekst boven de
+     tabel; die uitleg staat nu op /manifest. Compacte tabel i.p.v. lopende
+     tekst, met dezelfde badge-stijl en kolomvolgorde als de hoofdtabel
+     hieronder zodat hij er direct naast te lezen is. #}
+  <div class="gu-landen-legend-wrap">
+    <table class="gu-landen-legend">
       <thead>
         <tr>
-          <th>{% if lang == 'nl' %}Land{% else %}Country{% endif %}</th>
+          <th>{% if lang == 'nl' %}Niveau{% else %}Level{% endif %}</th>
           <th>Democracy Index</th>
           <th>Corruption Perceptions Index</th>
           <th>Human Rights Index</th>
-          <th>{% if lang == 'nl' %}Niveau GU{% else %}GU level{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="gu-level-badge gu-level-badge--above">{% if lang == 'nl' %}Boven minimum{% else %}Above minimum{% endif %}</span></td>
+          <td>{% if lang == 'nl' %}≥ 6,0{% else %}≥ 6.0{% endif %}</td>
+          <td>≥ 40</td>
+          <td>{% if lang == 'nl' %}≥ 0,70{% else %}≥ 0.70{% endif %}</td>
+        </tr>
+        <tr>
+          <td><span class="gu-level-badge gu-level-badge--meets">{% if lang == 'nl' %}Op niveau{% else %}Meets standard{% endif %}</span></td>
+          <td>{% if lang == 'nl' %}≥ 8,0{% else %}≥ 8.0{% endif %}</td>
+          <td>≥ 70</td>
+          <td>{% if lang == 'nl' %}≥ 0,75{% else %}≥ 0.75{% endif %}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="gu-landen-table-wrap">
+    <table class="gu-landen-table">
+      <colgroup>
+        <col style="width: 30%">
+        <col style="width: 17%">
+        <col style="width: 19%">
+        <col style="width: 17%">
+        <col style="width: 17%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="gu-landen-table__th--sortable" data-sort-key="land">{% if lang == 'nl' %}Land{% else %}Country{% endif %}<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
+          <th class="gu-landen-table__th--sortable gu-landen-table__th--center" data-sort-key="di">Democracy Index<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
+          <th class="gu-landen-table__th--sortable gu-landen-table__th--center" data-sort-key="cpi">Corruption Perceptions Index<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
+          <th class="gu-landen-table__th--sortable gu-landen-table__th--center" data-sort-key="hri">Human Rights Index<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
+          <th class="gu-landen-table__th--sortable" data-sort-key="niveau">{% if lang == 'nl' %}Global Union niveau{% else %}Global Union level{% endif %}<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
         </tr>
       </thead>
       <tbody>
@@ -62,19 +92,21 @@
            (Taiwan/Israël/VS) — voor de overige landen staan DI/CPI/HRI al
            zichtbaar in hun eigen kolommen, dus is er niets om uit te klappen.
            Toggle-gedrag via één gedelegeerde click-listener op tbody (zie
-           script onderaan) i.p.v. een listener per rij. #}
+           script onderaan) i.p.v. een listener per rij. Elke cel draagt
+           data-sort-value; de sorteer-JS verplaatst hoofd- én detailrij
+           samen zodat het uitklap-mechanisme intact blijft (wijziging 3). #}
         <tr{% if remark %} class="gu-landen-table__row" aria-expanded="false" aria-controls="{{ detail_id }}"{% endif %}>
-          <td class="gu-landen-table__country">
+          <td class="gu-landen-table__country" data-sort-cell="land" data-sort-value="{{ name }}">
             {% if remark %}<span class="gu-landen-exception-name">{{ name }}</span>{% else %}{{ name }}{% endif %}
             {% if remark %}
             <span class="gu-landen-table__info" title="{{ remark }}" aria-label="{{ remark }}">i</span>
             <span class="gu-landen-table__rowToggle" aria-hidden="true"><span class="gu-landen-card__chevron"></span></span>
             {% endif %}
           </td>
-          <td data-label="Democracy Index"><span class="gu-index-dot gu-index-dot--{{ c.di_level }}"></span>{{ di_str }}</td>
-          <td data-label="Corruption Perceptions Index"><span class="gu-index-dot gu-index-dot--{{ c.cpi_level }}"></span>{{ cpi_str }}</td>
-          <td data-label="Human Rights Index"><span class="gu-index-dot gu-index-dot--{{ c.hri_level }}"></span>{{ hri_str }}</td>
-          <td data-label="{% if lang == 'nl' %}Niveau GU{% else %}GU level{% endif %}">
+          <td class="gu-landen-table__td--center" data-sort-cell="di" data-sort-value="{{ c.di if c.di is not none else -1 }}"><span class="gu-index-dot gu-index-dot--{{ c.di_level }}"></span>{{ di_str }}</td>
+          <td class="gu-landen-table__td--center" data-sort-cell="cpi" data-sort-value="{{ c.cpi if c.cpi is not none else -1 }}"><span class="gu-index-dot gu-index-dot--{{ c.cpi_level }}"></span>{{ cpi_str }}</td>
+          <td class="gu-landen-table__td--center" data-sort-cell="hri" data-sort-value="{{ c.hri if c.hri is not none else -1 }}"><span class="gu-index-dot gu-index-dot--{{ c.hri_level }}"></span>{{ hri_str }}</td>
+          <td data-sort-cell="niveau" data-sort-value="{{ c.level_sort }}">
             <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
           </td>
         </tr>
@@ -160,6 +192,75 @@
       var open = row.classList.toggle('gu-landen-table__row--open');
       row.setAttribute('aria-expanded', open ? 'true' : 'false');
       detail.hidden = !open;
+    });
+  })();
+</script>
+
+{# Sorteerbare kolomkoppen (wijziging 3) — simpele DOM-sort zonder library,
+   ruim voldoende voor 183 rijen. Toggle is 2-standen (oplopend/aflopend,
+   niet terug naar de oorspronkelijke volgorde): dat is het gangbare patroon
+   voor sorteerbare tabellen en scheelt een kopie van de originele
+   rij-volgorde moeten bewaren. Hoofd- en detailrij (indien aanwezig) worden
+   als één groep verplaatst, zodat het uitklap-mechanisme hierboven intact
+   blijft na sorteren. #}
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var table = document.querySelector('.gu-landen-table');
+    if (!table) return;
+    var tbody = table.querySelector('tbody');
+    var headers = table.querySelectorAll('th[data-sort-key]');
+
+    function groupRows() {
+      var rows = Array.prototype.slice.call(tbody.children);
+      var groups = [];
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        if (row.classList.contains('gu-landen-table__detailRow')) continue;
+        var detail = null;
+        var next = rows[i + 1];
+        if (next && next.classList.contains('gu-landen-table__detailRow')) {
+          detail = next;
+          i++;
+        }
+        groups.push({ row: row, detail: detail });
+      }
+      return groups;
+    }
+
+    function sortBy(key, dir) {
+      var groups = groupRows();
+      var mult = dir === 'asc' ? 1 : -1;
+      groups.sort(function (a, b) {
+        var cellA = a.row.querySelector('[data-sort-cell="' + key + '"]');
+        var cellB = b.row.querySelector('[data-sort-cell="' + key + '"]');
+        var av = cellA.getAttribute('data-sort-value');
+        var bv = cellB.getAttribute('data-sort-value');
+        var an = parseFloat(av);
+        var bn = parseFloat(bv);
+        var cmp;
+        if (!isNaN(an) && !isNaN(bn)) {
+          cmp = an - bn;
+        } else {
+          cmp = av.localeCompare(bv, undefined, { sensitivity: 'base' });
+        }
+        return cmp * mult;
+      });
+      var frag = document.createDocumentFragment();
+      groups.forEach(function (g) {
+        frag.appendChild(g.row);
+        if (g.detail) frag.appendChild(g.detail);
+      });
+      tbody.appendChild(frag);
+    }
+
+    headers.forEach(function (th) {
+      th.addEventListener('click', function () {
+        var key = th.getAttribute('data-sort-key');
+        var dir = th.getAttribute('data-sort-dir') === 'asc' ? 'desc' : 'asc';
+        headers.forEach(function (h) { h.removeAttribute('data-sort-dir'); });
+        th.setAttribute('data-sort-dir', dir);
+        sortBy(key, dir);
+      });
     });
   })();
 </script>
