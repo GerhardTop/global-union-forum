@@ -505,10 +505,14 @@ class TestManifestWetgevingSection:
         section_end = html.find('id="mondiale-standaarden"')
         section = html[section_start:section_end]
         assert section.count('gu-wet-table__phase') == 3
-        assert "1. Fundament" in section
-        assert "2. Verdieping" in section
-        assert "3. Politiek gevoelig" in section
+        assert '>Fundament<' in section
+        assert '>Verdieping<' in section
+        assert '>Politiek gevoelig<' in section
         assert "80%-drempel" in section
+        # Geen cijfer-prefixen meer vóór de fasenaam.
+        assert "1. Fundament" not in section
+        assert "2. Verdieping" not in section
+        assert "3. Politiek gevoelig" not in section
 
     def test_wetgeving_table_has_three_rows_english(self, client):
         client.get("/lang/en")
@@ -518,10 +522,13 @@ class TestManifestWetgevingSection:
         section_end = html.find('id="mondiale-standaarden"')
         section = html[section_start:section_end]
         assert section.count('gu-wet-table__phase') == 3
-        assert "1. Foundation" in section
-        assert "2. Deepening" in section
-        assert "3. Politically sensitive" in section
+        assert '>Foundation<' in section
+        assert '>Deepening<' in section
+        assert '>Politically sensitive<' in section
         assert "80% threshold" in section
+        assert "1. Foundation" not in section
+        assert "2. Deepening" not in section
+        assert "3. Politically sensitive" not in section
 
     def test_wetgeving_new_intro_text_dutch(self, client):
         client.get("/lang/nl")
