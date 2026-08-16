@@ -9,10 +9,6 @@
     <h1 class="gu-landen__title">{% if lang == 'nl' %}Landenoverzicht{% else %}Country overview{% endif %}</h1>
   </div>
 
-  <div class="gu-landen__intro">
-    {% include '_landen_intro.html' %}
-  </div>
-
   <div class="gu-landen__downloads">
     {% if lang == 'nl' %}
     <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename='downloads/bijlage_a_landenoverzicht_NL.xlsx') }}" download>
@@ -82,26 +78,18 @@
       </thead>
       <tbody>
         {% for c in countries %}
-        {% set remark = c.remarks_nl if lang == 'nl' else c.remarks_en %}
+        {# is_exception: puur een boolean signaal (Taiwan/Israël/VS zijn de
+           enige landen met remarks_nl/en gevuld) om de naam oranje te
+           kleuren — de toelichtingstekst zelf wordt niet meer getoond, die
+           staat al op /manifest en zou hier dubbelop zijn. #}
+        {% set is_exception = (c.remarks_nl if lang == 'nl' else c.remarks_en) %}
         {% set name = c.land_nl if lang == 'nl' else c.land_en %}
-        {% set detail_id = 'landen-detail-' ~ loop.index %}
         {% set di_str = '%.2f'|format(c.di) if c.di is not none else '-' %}
         {% set cpi_str = c.cpi if c.cpi is not none else '-' %}
         {% set hri_str = '%.3f'|format(c.hri) if c.hri is not none else '-' %}
-        {# Hoofdrij: alleen klikbaar/uitklapbaar voor landen mét toelichting
-           (Taiwan/Israël/VS) — voor de overige landen staan DI/CPI/HRI al
-           zichtbaar in hun eigen kolommen, dus is er niets om uit te klappen.
-           Toggle-gedrag via één gedelegeerde click-listener op tbody (zie
-           script onderaan) i.p.v. een listener per rij. Elke cel draagt
-           data-sort-value; de sorteer-JS verplaatst hoofd- én detailrij
-           samen zodat het uitklap-mechanisme intact blijft (wijziging 3). #}
-        <tr{% if remark %} class="gu-landen-table__row" aria-expanded="false" aria-controls="{{ detail_id }}"{% endif %}>
+        <tr>
           <td class="gu-landen-table__country" data-sort-cell="land" data-sort-value="{{ name }}">
-            {% if remark %}<span class="gu-landen-exception-name">{{ name }}</span>{% else %}{{ name }}{% endif %}
-            {% if remark %}
-            <span class="gu-landen-table__info" title="{{ remark }}" aria-label="{{ remark }}">i</span>
-            <span class="gu-landen-table__rowToggle" aria-hidden="true"><span class="gu-landen-card__chevron"></span></span>
-            {% endif %}
+            {% if is_exception %}<span class="gu-landen-exception-name">{{ name }}</span>{% else %}{{ name }}{% endif %}
           </td>
           <td class="gu-landen-table__td--center" data-sort-cell="di" data-sort-value="{{ c.di if c.di is not none else -1 }}"><span class="gu-index-dot gu-index-dot--{{ c.di_level }}"></span>{{ di_str }}</td>
           <td class="gu-landen-table__td--center" data-sort-cell="cpi" data-sort-value="{{ c.cpi if c.cpi is not none else -1 }}"><span class="gu-index-dot gu-index-dot--{{ c.cpi_level }}"></span>{{ cpi_str }}</td>
@@ -110,16 +98,6 @@
             <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
           </td>
         </tr>
-        {% if remark %}
-        {# Detailrij: verborgen (native hidden-attribuut) tot de hoofdrij
-           erboven wordt aangeklikt. Toont uitsluitend de toelichting — de
-           DI/CPI/HRI-waarden staan al in de kolommen hierboven. #}
-        <tr class="gu-landen-table__detailRow" id="{{ detail_id }}" hidden>
-          <td colspan="5">
-            <p class="gu-landen-remark">{{ remark }}</p>
-          </td>
-        </tr>
-        {% endif %}
         {% endfor %}
       </tbody>
     </table>
@@ -131,7 +109,7 @@
      .gu-landen-cards in kit.css. #}
   <div class="gu-landen-cards">
     {% for c in countries %}
-    {% set remark = c.remarks_nl if lang == 'nl' else c.remarks_en %}
+    {% set is_exception = (c.remarks_nl if lang == 'nl' else c.remarks_en) %}
     {% set name = c.land_nl if lang == 'nl' else c.land_en %}
     {% set di_str = '%.2f'|format(c.di) if c.di is not none else '-' %}
     {% set cpi_str = c.cpi if c.cpi is not none else '-' %}
@@ -139,10 +117,7 @@
     <details class="gu-landen-card">
       <summary class="gu-landen-card__summary">
         <span class="gu-landen-card__name">
-          {% if remark %}<span class="gu-landen-exception-name">{{ name }}</span>{% else %}{{ name }}{% endif %}
-          {% if remark %}
-          <span class="gu-landen-table__info" title="{{ remark }}" aria-label="{{ remark }}">i</span>
-          {% endif %}
+          {% if is_exception %}<span class="gu-landen-exception-name">{{ name }}</span>{% else %}{{ name }}{% endif %}
         </span>
         <span class="gu-landen-card__badges">
           <span class="gu-index-group">
@@ -167,9 +142,6 @@
           <span class="gu-landen-card__label">HRI</span>
           <span><span class="gu-index-dot gu-index-dot--{{ c.hri_level }}"></span>{{ hri_str }}</span>
         </div>
-        {% if remark %}
-        <p class="gu-landen-remark">{{ remark }}</p>
-        {% endif %}
       </div>
     </details>
     {% endfor %}
@@ -177,32 +149,11 @@
 
 </div>
 
-{# Eén gedelegeerde click-listener op <tbody> i.p.v. 183 losse listeners —
-   zelfde overweging als bij de mobiele <details>-kaarten: licht en
-   performant ongeacht het aantal rijen. #}
-<script nonce="{{ csp_nonce() }}">
-  (function () {
-    var tbody = document.querySelector('.gu-landen-table tbody');
-    if (!tbody) return;
-    tbody.addEventListener('click', function (e) {
-      var row = e.target.closest('.gu-landen-table__row');
-      if (!row) return;
-      var detail = row.nextElementSibling;
-      if (!detail || !detail.classList.contains('gu-landen-table__detailRow')) return;
-      var open = row.classList.toggle('gu-landen-table__row--open');
-      row.setAttribute('aria-expanded', open ? 'true' : 'false');
-      detail.hidden = !open;
-    });
-  })();
-</script>
-
 {# Sorteerbare kolomkoppen (wijziging 3) — simpele DOM-sort zonder library,
    ruim voldoende voor 183 rijen. Toggle is 2-standen (oplopend/aflopend,
    niet terug naar de oorspronkelijke volgorde): dat is het gangbare patroon
    voor sorteerbare tabellen en scheelt een kopie van de originele
-   rij-volgorde moeten bewaren. Hoofd- en detailrij (indien aanwezig) worden
-   als één groep verplaatst, zodat het uitklap-mechanisme hierboven intact
-   blijft na sorteren. #}
+   rij-volgorde moeten bewaren. #}
 <script nonce="{{ csp_nonce() }}">
   (function () {
     var table = document.querySelector('.gu-landen-table');
@@ -210,29 +161,12 @@
     var tbody = table.querySelector('tbody');
     var headers = table.querySelectorAll('th[data-sort-key]');
 
-    function groupRows() {
-      var rows = Array.prototype.slice.call(tbody.children);
-      var groups = [];
-      for (var i = 0; i < rows.length; i++) {
-        var row = rows[i];
-        if (row.classList.contains('gu-landen-table__detailRow')) continue;
-        var detail = null;
-        var next = rows[i + 1];
-        if (next && next.classList.contains('gu-landen-table__detailRow')) {
-          detail = next;
-          i++;
-        }
-        groups.push({ row: row, detail: detail });
-      }
-      return groups;
-    }
-
     function sortBy(key, dir) {
-      var groups = groupRows();
+      var rows = Array.prototype.slice.call(tbody.children);
       var mult = dir === 'asc' ? 1 : -1;
-      groups.sort(function (a, b) {
-        var cellA = a.row.querySelector('[data-sort-cell="' + key + '"]');
-        var cellB = b.row.querySelector('[data-sort-cell="' + key + '"]');
+      rows.sort(function (a, b) {
+        var cellA = a.querySelector('[data-sort-cell="' + key + '"]');
+        var cellB = b.querySelector('[data-sort-cell="' + key + '"]');
         var av = cellA.getAttribute('data-sort-value');
         var bv = cellB.getAttribute('data-sort-value');
         var an = parseFloat(av);
@@ -246,10 +180,7 @@
         return cmp * mult;
       });
       var frag = document.createDocumentFragment();
-      groups.forEach(function (g) {
-        frag.appendChild(g.row);
-        if (g.detail) frag.appendChild(g.detail);
-      });
+      rows.forEach(function (row) { frag.appendChild(row); });
       tbody.appendChild(frag);
     }
 

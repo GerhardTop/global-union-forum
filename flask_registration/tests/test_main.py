@@ -1,9 +1,10 @@
 """
 Test-suite voor main.py: /manifest/landen (landenlijst-pagina).
 Dekt: pagina laadt, toont 183 landen, i18n-tekst per taal (incl. NL/EN
-landnamen), losse DI/CPI/HRI-kolommen met 3-standen-kleurpuntjes, en dat het
-uitklap-mechanisme op desktop uitsluitend voor de drie uitzonderingsgevallen
-(Taiwan/Israel/VS) bestaat.
+landnamen), losse DI/CPI/HRI-kolommen met 3-standen-kleurpuntjes, en dat er
+geen intro-tekst en geen (i)-info-icoon/uitklap-mechanisme meer is voor de
+drie uitzonderingsgevallen (Taiwan/Israel/VS) — die toelichting staat alleen
+nog op /manifest.
 """
 
 
@@ -22,14 +23,26 @@ class TestLandenlijst:
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         assert "Landenoverzicht" in html
-        assert "Toetreding is gekoppeld aan drie bestaande" in html
 
     def test_landenlijst_english_text(self, client):
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         assert "Country overview" in html
-        assert "Accession is tied to three existing" in html
+
+    def test_intro_text_removed_from_landenlijst(self, client):
+        # De intro-tekst (voorheen via _landen_intro.html) staat alleen nog
+        # op /manifest, niet meer op de lijst-pagina zelf.
+        client.get("/lang/nl")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        assert "Toetreding is gekoppeld aan drie bestaande" not in html
+        assert "gu-landen__intro" not in html
+
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        assert "Accession is tied to three existing" not in html
 
     def test_uitnodigen_badge_removed_entirely(self, client):
         # De Uitnodigen-badge is verwijderd uit zowel desktop als mobiel
@@ -256,69 +269,49 @@ class TestLandenlijst:
         assert 'gu-index-group' in summary
         assert summary.count('class="gu-index-dot gu-index-dot--') == 3
 
-    def test_desktop_no_toggle_for_country_without_remark(self, client):
-        # Wijziging B: geen uitklap-pijltje/gedrag meer voor landen zonder
-        # toelichting — Noorwegen heeft geen remark. Rij vanaf de openende
-        # <tr> zelf pakken (niet vanaf de landnaam), anders wordt het
-        # class-attribuut van de <tr>, dat vóór de naam staat, gemist.
-        client.get("/lang/en")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        table_start = html.find('gu-landen-table__country')
-        idx = html.find('Norway', table_start)
-        assert idx != -1
-        tr_start = html.rfind('<tr', 0, idx)
-        row = html[tr_start:html.find('</tr>', idx)]
-        assert 'gu-landen-table__row' not in row  # dekt ook __rowToggle
-
-    def test_desktop_toggle_only_for_three_exception_countries(self, client):
-        # Alleen Taiwan/Israel/VS behouden het uitklap-mechanisme —
-        # precies 3 uitklaprijen op de hele pagina. <tbody> zoeken vanaf
-        # gu-landen-table-wrap: de legenda-tabel (wijziging 7) heeft óók een
-        # <tbody>, en de inline <script> onderaan bevat de klasse-naam ook
-        # als string-literal (classList.contains-check) — beide zouden een
-        # onbeperkte find() om de tuin leiden.
+    def test_desktop_no_toggle_or_info_icon_anywhere(self, client):
+        # Het (i)-icoon en het bijbehorende uitklap-mechanisme (chevron,
+        # klikbare rij, verborgen detailrij) zijn volledig verwijderd — ook
+        # voor Taiwan/Israel/VS: de toelichting staat al op /manifest en zou
+        # hier dubbelop zijn geweest. <tbody> vanaf gu-landen-table-wrap
+        # zoeken: de legenda-tabel (wijziging 7) heeft óók een <tbody>.
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         wrap_start = html.find('class="gu-landen-table-wrap"')
         assert wrap_start != -1
         tbody = html[html.find('<tbody>', wrap_start):html.find('</tbody>', wrap_start)]
-        assert tbody.count('gu-landen-table__detailRow') == 3
-        assert tbody.count('gu-landen-table__rowToggle') == 3
+        assert 'gu-landen-table__info' not in tbody
+        assert 'gu-landen-table__rowToggle' not in tbody
+        assert 'gu-landen-table__row"' not in tbody
+        assert 'gu-landen-table__detailRow' not in tbody
+        assert 'gu-landen-remark' not in tbody
+        # Ook expliciet voor de drie uitzonderingslanden zelf, niet alleen
+        # 'ergens in de tbody'.
         table_start = html.find('gu-landen-table__country')
         for name in ("Taiwan", "Israel", "United States"):
             idx = html.find(name, table_start)
             assert idx != -1, name
             tr_start = html.rfind('<tr', 0, idx)
             row = html[tr_start:html.find('</tr>', idx)]
-            assert 'gu-landen-table__row"' in row
-            assert 'gu-landen-table__rowToggle' in row
+            assert 'gu-landen-table__info' not in row
+            assert 'gu-landen-table__row"' not in row
 
-    def test_desktop_detail_row_hidden_by_default(self, client):
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        idx = html.find('gu-landen-table__detailRow')
-        assert idx != -1
-        # Elke detailrij heeft het hidden-attribuut in de server-gerenderde HTML
-        # (JS is wat het later verwijdert bij een klik, niet de server).
-        row_tag_end = html.find('>', idx)
-        assert 'hidden' in html[idx:row_tag_end]
-
-    def test_remark_visible_in_desktop_detail_not_only_tooltip(self, client):
-        # De detailrij toont uitsluitend de remark (DI/CPI/HRI staan al in
-        # de kolommen van de hoofdrij, dus niet meer herhaald hier).
+    def test_mobile_no_info_icon_or_remark_for_exception_countries(self, client):
+        # Zelfde verwijdering op mobiel: geen (i)-icoon en geen remark-tekst
+        # meer in de kaart-details van Taiwan/Israel/VS.
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
-        table_start = html.find('gu-landen-table__country')
-        idx = html.find('Taiwan', table_start)
-        detail_start = html.find('gu-landen-table__detailRow', idx)
-        detail_end = html.find('</tr>', detail_start)
-        detail = html[detail_start:detail_end]
-        assert 'gu-landen-remark' in detail
-        assert 'No UN recognition' in detail
-        assert 'gu-index-dot' not in detail
+        cards_start = html.find('class="gu-landen-cards"')
+        assert 'gu-landen-table__info' not in html[cards_start:]
+        assert 'gu-landen-remark' not in html[cards_start:]
+        idx_taiwan = html.find('Taiwan', cards_start)
+        assert idx_taiwan != -1
+        card_start = html.rfind('<details class="gu-landen-card">', 0, idx_taiwan)
+        card_end = html.find('</details>', idx_taiwan)
+        card = html[card_start:card_end]
+        assert 'No UN recognition' not in card
 
     def test_exception_country_name_orange_desktop(self, client):
         client.get("/lang/en")
@@ -375,25 +368,6 @@ class TestLandenlijst:
         assert 'Netherlands' in table
         assert 'United States' in table
         assert 'Duitsland' not in table
-
-    def test_remark_visible_in_mobile_card_details(self, client):
-        client.get("/lang/en")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        # Ga naar de mobiele kaarten-sectie (na de tabel) zodat we Taiwans
-        # <details>-kaart pakken, niet een eerdere vermelding elders op de
-        # pagina. Zoek dan terug naar het begin van díe kaart en vooruit naar
-        # het einde.
-        cards_start = html.find('class="gu-landen-cards"')
-        idx_taiwan = html.find('Taiwan', cards_start)
-        assert idx_taiwan != -1
-        card_start = html.rfind('<details class="gu-landen-card">', 0, idx_taiwan)
-        card_end = html.find('</details>', idx_taiwan)
-        assert card_start != -1 and card_end != -1
-        card = html[card_start:card_end]
-        assert 'gu-landen-remark' in card
-        assert 'No UN recognition' in card
-
 
 class TestManifestLandenSection:
     def test_manifest_toc_has_five_items(self, client):

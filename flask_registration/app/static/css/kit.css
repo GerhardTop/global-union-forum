@@ -1546,12 +1546,6 @@ body {
   margin: 8px 0 0;
   letter-spacing: -0.01em;
 }
-.gu-landen__intro { max-width: 760px; margin-bottom: 24px; }
-.gu-landen__intro p {
-  color: var(--gu-fg-2);
-  line-height: 1.75;
-  margin: 0 0 16px;
-}
 .gu-landen__downloads {
   display: flex;
   gap: 12px;
@@ -1736,69 +1730,11 @@ body {
 .gu-landen-table__th--sortable[data-sort-dir="asc"] .gu-landen-table__sortIcon::after { content: '\2191'; }
 .gu-landen-table__th--sortable[data-sort-dir="desc"] .gu-landen-table__sortIcon::after { content: '\2193'; }
 .gu-landen-table__country { font-weight: 600; color: var(--gu-fg-1); }
-/* Oranje naam voor de uitzonderingslanden (Taiwan/Israël/VS) — extra visueel
-   signaal naast het (i)-icoon, zowel desktop (td-tekst) als mobiel
-   (kaart-koptekst) via dezelfde gedeelde klasse. */
+/* Oranje naam voor de uitzonderingslanden (Taiwan/Israël/VS) — enige
+   overgebleven visuele signaal dat dit landen met een aparte behandeling
+   zijn; de toelichting zelf staat op /manifest (i-icoon en uitklapbare
+   remark zijn hier bewust verwijderd om duplicatie te voorkomen). */
 .gu-landen-exception-name { color: var(--gu-warning); }
-.gu-landen-table__info {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  margin-left: 6px;
-  border-radius: 50%;
-  background: var(--gu-bg-soft);
-  color: var(--gu-fg-3);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  cursor: help;
-  vertical-align: middle;
-}
-
-/* Desktop uitklap-rij — alleen aanwezig voor landen met een toelichting
-   (Taiwan/Israël/VS; DI/CPI/HRI staan voor alle landen al zichtbaar in hun
-   eigen kolommen, dus voor de overige 180 landen is er geen rij om uit te
-   klappen). <details> kan niet geldig binnen <tr>/<td> genest worden, dus dit
-   is een losse, verborgen <tr> (colspan) direct onder de databronrij,
-   getoggeld via één gedelegeerde click-listener op <tbody> (zie inline
-   script) i.p.v. een listener per rij. */
-.gu-landen-table__row { cursor: pointer; }
-.gu-landen-table__row:hover { background: var(--gu-bg-soft); }
-.gu-landen-table__rowToggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  margin-left: 8px;
-  vertical-align: middle;
-}
-.gu-landen-table__row--open .gu-landen-table__rowToggle .gu-landen-card__chevron {
-  transform: rotate(-135deg);
-}
-.gu-landen-table__detailRow td {
-  padding: 16px 16px 20px;
-  background: var(--gu-bg-soft);
-  border-bottom: 1px solid var(--gu-border);
-}
-/* Gedeeld tussen desktop-uitklaprij en mobiele kaart-details. Op desktop is
-   de remark nu de enige inhoud van het paneel (DI/CPI/HRI staan al in de
-   kolommen), dus geen bovenrand/marge nodig — die blijft wel staan in de
-   mobiele kaart, waar de remark nog steeds ná de DI/CPI/HRI-velden volgt. */
-.gu-landen-remark {
-  margin: 12px 0 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--gu-border);
-  color: var(--gu-fg-2);
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
-.gu-landen-table__detailRow .gu-landen-remark {
-  margin: 0;
-  padding-top: 0;
-  border-top: none;
-}
 
 /* Landen cards — mobiele weergave (<600px), los van .gu-landen-table.
    Native <details>/<summary> i.p.v. een JS-toggle per rij: bij 183 landen
