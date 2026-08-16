@@ -23,20 +23,6 @@ _LEVEL_CLASS_MAP = {
     "Below minimum": "below",
     "Insufficient data": "insufficient",
 }
-# Zelfde mechanisme als level_class hierboven: server-side afgeleid van
-# uitnodigen_en, niet uit de NL-tekst gematcht.
-_INVITE_CLASS_MAP = {
-    "Yes": "yes",
-    "No": "no",
-    "separate status": "separate",
-    "n/a": "na",
-}
-# Badge-tekst voor 'yes'/'no' wijkt af van de ruwe uitnodigen_nl/en-waarde uit
-# de brondata (die blijft ongewijzigd bruikbaar als het onderliggende
-# datagegeven); 'separate'/'na' behouden hun oorspronkelijke tekst.
-_INVITE_LABEL_OVERRIDE_NL = {"yes": "Uitnodigen", "no": "Nog niet"}
-_INVITE_LABEL_OVERRIDE_EN = {"yes": "Invite", "no": "Not yet"}
-
 # Drempelwaarden per index — geverifieerd tegen alle 183 landen, reproduceert
 # niveau_en exact via AND-logica over beide niveaus. Hier gebruikt voor de
 # 3-standen per-index-indicatie: elke index afzonderlijk als 'below' (onder
@@ -61,9 +47,6 @@ def _load_landen_data():
         rows = json.load(f)
     for row in rows:
         row["level_class"] = _LEVEL_CLASS_MAP.get(row["niveau_en"], "below")
-        row["invite_class"] = _INVITE_CLASS_MAP.get(row["uitnodigen_en"], "na")
-        row["invite_label_nl"] = _INVITE_LABEL_OVERRIDE_NL.get(row["invite_class"], row["uitnodigen_nl"])
-        row["invite_label_en"] = _INVITE_LABEL_OVERRIDE_EN.get(row["invite_class"], row["uitnodigen_en"])
         row["di_level"] = _index_level_class(row["di"], "di")
         row["cpi_level"] = _index_level_class(row["cpi"], "cpi")
         row["hri_level"] = _index_level_class(row["hri"], "hri")

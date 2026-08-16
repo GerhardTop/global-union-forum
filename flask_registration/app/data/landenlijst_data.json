@@ -1,6 +1,6 @@
 [
  {
-  "land_nl": "Norway",
+  "land_nl": "Noorwegen",
   "land_en": "Norway",
   "di": 9.81,
   "cpi": 81,
@@ -13,7 +13,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "New Zealand",
+  "land_nl": "Nieuw-Zeeland",
   "land_en": "New Zealand",
   "di": 9.62,
   "cpi": 81,
@@ -26,7 +26,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Denmark",
+  "land_nl": "Denemarken",
   "land_en": "Denmark",
   "di": 9.42,
   "cpi": 89,
@@ -39,7 +39,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Iceland",
+  "land_nl": "IJsland",
   "land_en": "Iceland",
   "di": 9.38,
   "cpi": 77,
@@ -65,7 +65,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Sweden",
+  "land_nl": "Zweden",
   "land_en": "Sweden",
   "di": 9.35,
   "cpi": 80,
@@ -78,7 +78,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Ireland",
+  "land_nl": "Ierland",
   "land_en": "Ireland",
   "di": 9.33,
   "cpi": 76,
@@ -91,7 +91,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Switzerland",
+  "land_nl": "Zwitserland",
   "land_en": "Switzerland",
   "di": 9.32,
   "cpi": 80,
@@ -104,7 +104,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Luxembourg",
+  "land_nl": "Luxemburg",
   "land_en": "Luxembourg",
   "di": 9.08,
   "cpi": 78,
@@ -130,7 +130,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Netherlands",
+  "land_nl": "Nederland",
   "land_en": "Netherlands",
   "di": 8.93,
   "cpi": 78,
@@ -156,7 +156,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Australia",
+  "land_nl": "Australië",
   "land_en": "Australia",
   "di": 8.85,
   "cpi": 76,
@@ -182,7 +182,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Germany",
+  "land_nl": "Duitsland",
   "land_en": "Germany",
   "di": 8.73,
   "cpi": 77,
@@ -195,7 +195,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "United Kingdom",
+  "land_nl": "Verenigd Koninkrijk",
   "land_en": "United Kingdom",
   "di": 8.34,
   "cpi": 70,
@@ -208,7 +208,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Estonia",
+  "land_nl": "Estland",
   "land_en": "Estonia",
   "di": 8.07,
   "cpi": 76,
@@ -234,7 +234,7 @@
   "remarks_en": "No UN recognition; a separate status is conceivable by analogy with the WTO (member as a separate customs territory)."
  },
  {
-  "land_nl": "Austria",
+  "land_nl": "Oostenrijk",
   "land_en": "Austria",
   "di": 8.42,
   "cpi": 69,
@@ -286,7 +286,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Spain",
+  "land_nl": "Spanje",
   "land_en": "Spain",
   "di": 8.2,
   "cpi": 55,
@@ -299,7 +299,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Czech Republic",
+  "land_nl": "Tsjechië",
   "land_en": "Czech Republic",
   "di": 8.15,
   "cpi": 59,
@@ -312,7 +312,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Greece",
+  "land_nl": "Griekenland",
   "land_en": "Greece",
   "di": 8.07,
   "cpi": 50,
@@ -325,7 +325,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "France",
+  "land_nl": "Frankrijk",
   "land_en": "France",
   "di": 8.05,
   "cpi": 66,
@@ -338,7 +338,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Chile",
+  "land_nl": "Chili",
   "land_en": "Chile",
   "di": 7.97,
   "cpi": 63,
@@ -364,7 +364,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Slovenia",
+  "land_nl": "Slovenië",
   "land_en": "Slovenia",
   "di": 7.82,
   "cpi": 58,
@@ -377,7 +377,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Israel",
+  "land_nl": "Israël",
   "land_en": "Israel",
   "di": 7.8,
   "cpi": 62,
@@ -390,7 +390,7 @@
   "remarks_en": "Not at this time; only if willing to commit fully to all GU rules"
  },
  {
-  "land_nl": "Belgium",
+  "land_nl": "België",
   "land_en": "Belgium",
   "di": 7.77,
   "cpi": 69,
@@ -403,7 +403,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "South Korea",
+  "land_nl": "Zuid-Korea",
   "land_en": "South Korea",
   "di": 7.75,
   "cpi": 63,
@@ -416,7 +416,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Latvia",
+  "land_nl": "Letland",
   "land_en": "Latvia",
   "di": 7.73,
   "cpi": 60,
@@ -429,7 +429,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "United States",
+  "land_nl": "Verenigde Staten",
   "land_en": "United States",
   "di": 7.65,
   "cpi": 64,
@@ -442,7 +442,7 @@
   "remarks_en": "Not at this time; only if willing to commit fully to all GU rules"
  },
  {
-  "land_nl": "Poland",
+  "land_nl": "Polen",
   "land_en": "Poland",
   "di": 7.65,
   "cpi": 52,
@@ -468,7 +468,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Cape Verde",
+  "land_nl": "Kaapverdië",
   "land_en": "Cape Verde",
   "di": 7.58,
   "cpi": 62,
@@ -481,7 +481,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Italy",
+  "land_nl": "Italië",
   "land_en": "Italy",
   "di": 7.58,
   "cpi": 53,
@@ -494,7 +494,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Lithuania",
+  "land_nl": "Litouwen",
   "land_en": "Lithuania",
   "di": 7.55,
   "cpi": 65,
@@ -520,7 +520,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "South Africa",
+  "land_nl": "Zuid-Afrika",
   "land_en": "South Africa",
   "di": 7.16,
   "cpi": 41,
@@ -533,7 +533,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Malaysia",
+  "land_nl": "Maleisië",
   "land_en": "Malaysia",
   "di": 7.11,
   "cpi": 52,
@@ -546,7 +546,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Trinidad and Tobago",
+  "land_nl": "Trinidad en Tobago",
   "land_en": "Trinidad and Tobago",
   "di": 7.09,
   "cpi": 41,
@@ -559,7 +559,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Timor-Leste",
+  "land_nl": "Oost-Timor",
   "land_en": "Timor-Leste",
   "di": 6.97,
   "cpi": 44,
@@ -572,7 +572,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Slovakia",
+  "land_nl": "Slowakije",
   "land_en": "Slovakia",
   "di": 6.94,
   "cpi": 48,
@@ -611,7 +611,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Hungary",
+  "land_nl": "Hongarije",
   "land_en": "Hungary",
   "di": 6.58,
   "cpi": 40,
@@ -624,7 +624,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Croatia",
+  "land_nl": "Kroatië",
   "land_en": "Croatia",
   "di": 6.5,
   "cpi": 47,
@@ -637,7 +637,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Namibia",
+  "land_nl": "Namibië",
   "land_en": "Namibia",
   "di": 6.48,
   "cpi": 46,
@@ -650,7 +650,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Bulgaria",
+  "land_nl": "Bulgarije",
   "land_en": "Bulgaria",
   "di": 6.34,
   "cpi": 40,
@@ -663,7 +663,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "North Macedonia",
+  "land_nl": "Noord-Macedonië",
   "land_en": "North Macedonia",
   "di": 6.28,
   "cpi": 40,
@@ -702,7 +702,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Romania",
+  "land_nl": "Roemenië",
   "land_en": "Romania",
   "di": 6.11,
   "cpi": 45,
@@ -780,7 +780,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Argentina",
+  "land_nl": "Argentinië",
   "land_en": "Argentina",
   "di": 6.89,
   "cpi": 36,
@@ -793,7 +793,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Brazil",
+  "land_nl": "Brazilië",
   "land_en": "Brazil",
   "di": 6.76,
   "cpi": 35,
@@ -806,7 +806,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Dominican Republic",
+  "land_nl": "Dominicaanse Republiek",
   "land_en": "Dominican Republic",
   "di": 6.75,
   "cpi": 37,
@@ -845,7 +845,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Mongolia",
+  "land_nl": "Mongolië",
   "land_en": "Mongolia",
   "di": 6.5,
   "cpi": 31,
@@ -858,7 +858,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Indonesia",
+  "land_nl": "Indonesië",
   "land_en": "Indonesia",
   "di": 6.37,
   "cpi": 34,
@@ -871,7 +871,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Philippines",
+  "land_nl": "Filipijnen",
   "land_en": "Philippines",
   "di": 6.31,
   "cpi": 32,
@@ -884,7 +884,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Serbia",
+  "land_nl": "Servië",
   "land_en": "Serbia",
   "di": 6.3,
   "cpi": 33,
@@ -910,7 +910,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Albania",
+  "land_nl": "Albanië",
   "land_en": "Albania",
   "di": 6.2,
   "cpi": 39,
@@ -962,7 +962,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Papua New Guinea",
+  "land_nl": "Papoea-Nieuw-Guinea",
   "land_en": "Papua New Guinea",
   "di": 5.9,
   "cpi": 26,
@@ -988,7 +988,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Moldova",
+  "land_nl": "Moldavië",
   "land_en": "Moldova",
   "di": 5.86,
   "cpi": 42,
@@ -1079,7 +1079,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Armenia",
+  "land_nl": "Armenië",
   "land_en": "Armenia",
   "di": 5.35,
   "cpi": 46,
@@ -1092,7 +1092,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Bosnia and Herzegovina",
+  "land_nl": "Bosnië en Herzegovina",
   "land_en": "Bosnia and Herzegovina",
   "di": 5.23,
   "cpi": 34,
@@ -1131,7 +1131,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Madagascar",
+  "land_nl": "Madagaskar",
   "land_en": "Madagascar",
   "di": 5.06,
   "cpi": 25,
@@ -1144,7 +1144,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Kenya",
+  "land_nl": "Kenia",
   "land_en": "Kenya",
   "di": 5.05,
   "cpi": 30,
@@ -1157,7 +1157,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Hong Kong",
+  "land_nl": "Hongkong",
   "land_en": "Hong Kong",
   "di": 5.03,
   "cpi": 76,
@@ -1170,7 +1170,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Morocco",
+  "land_nl": "Marokko",
   "land_en": "Morocco",
   "di": 4.97,
   "cpi": 39,
@@ -1196,7 +1196,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Ukraine",
+  "land_nl": "Oekraïne",
   "land_en": "Ukraine",
   "di": 4.79,
   "cpi": 36,
@@ -1209,7 +1209,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Tunisia",
+  "land_nl": "Tunesië",
   "land_en": "Tunisia",
   "di": 4.65,
   "cpi": 39,
@@ -1274,7 +1274,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Georgia",
+  "land_nl": "Georgië",
   "land_en": "Georgia",
   "di": 4.36,
   "cpi": 50,
@@ -1287,7 +1287,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Uganda",
+  "land_nl": "Oeganda",
   "land_en": "Uganda",
   "di": 4.31,
   "cpi": 25,
@@ -1326,7 +1326,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Turkey",
+  "land_nl": "Turkije",
   "land_en": "Turkey",
   "di": 4.26,
   "cpi": 31,
@@ -1339,7 +1339,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Ivory Coast",
+  "land_nl": "Ivoorkust",
   "land_en": "Ivory Coast",
   "di": 4.24,
   "cpi": 43,
@@ -1391,7 +1391,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Mauritania",
+  "land_nl": "Mauritanië",
   "land_en": "Mauritania",
   "di": 3.84,
   "cpi": 30,
@@ -1404,7 +1404,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Lebanon",
+  "land_nl": "Libanon",
   "land_en": "Lebanon",
   "di": 3.81,
   "cpi": 23,
@@ -1417,7 +1417,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Algeria",
+  "land_nl": "Algerije",
   "land_en": "Algeria",
   "di": 3.55,
   "cpi": 34,
@@ -1469,7 +1469,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Jordan",
+  "land_nl": "Jordanië",
   "land_en": "Jordan",
   "di": 3.28,
   "cpi": 50,
@@ -1482,7 +1482,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Kyrgyzstan",
+  "land_nl": "Kirgizië",
   "land_en": "Kyrgyzstan",
   "di": 3.27,
   "cpi": 26,
@@ -1495,7 +1495,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "United Arab Emirates",
+  "land_nl": "Verenigde Arabische Emiraten",
   "land_en": "United Arab Emirates",
   "di": 3.18,
   "cpi": 69,
@@ -1521,7 +1521,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Ethiopia",
+  "land_nl": "Ethiopië",
   "land_en": "Ethiopia",
   "di": 3.13,
   "cpi": 38,
@@ -1534,7 +1534,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Iraq",
+  "land_nl": "Irak",
   "land_en": "Iraq",
   "di": 3.13,
   "cpi": 28,
@@ -1573,7 +1573,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Kazakhstan",
+  "land_nl": "Kazachstan",
   "land_en": "Kazakhstan",
   "di": 2.91,
   "cpi": 38,
@@ -1599,7 +1599,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Comoros",
+  "land_nl": "Comoren",
   "land_en": "Comoros",
   "di": 2.81,
   "cpi": 20,
@@ -1612,7 +1612,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Haiti",
+  "land_nl": "Haïti",
   "land_en": "Haiti",
   "di": 2.81,
   "cpi": 16,
@@ -1625,7 +1625,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Azerbaijan",
+  "land_nl": "Azerbeidzjan",
   "land_en": "Azerbaijan",
   "di": 2.8,
   "cpi": 30,
@@ -1638,7 +1638,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Egypt",
+  "land_nl": "Egypte",
   "land_en": "Egypt",
   "di": 2.79,
   "cpi": 30,
@@ -1651,7 +1651,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Republic of the Congo",
+  "land_nl": "Congo-Brazzaville",
   "land_en": "Republic of the Congo",
   "di": 2.79,
   "cpi": 23,
@@ -1664,7 +1664,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Kuwait",
+  "land_nl": "Koeweit",
   "land_en": "Kuwait",
   "di": 2.78,
   "cpi": 46,
@@ -1690,7 +1690,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Cambodia",
+  "land_nl": "Cambodja",
   "land_en": "Cambodia",
   "di": 2.7,
   "cpi": 20,
@@ -1742,7 +1742,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Cameroon",
+  "land_nl": "Kameroen",
   "land_en": "Cameroon",
   "di": 2.56,
   "cpi": 26,
@@ -1768,7 +1768,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Bahrain",
+  "land_nl": "Bahrein",
   "land_en": "Bahrain",
   "di": 2.45,
   "cpi": 50,
@@ -1807,7 +1807,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Libya",
+  "land_nl": "Libië",
   "land_en": "Libya",
   "di": 2.31,
   "cpi": 13,
@@ -1833,7 +1833,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Guinea",
+  "land_nl": "Guinee",
   "land_en": "Guinea",
   "di": 2.15,
   "cpi": 26,
@@ -1872,7 +1872,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Uzbekistan",
+  "land_nl": "Oezbekistan",
   "land_en": "Uzbekistan",
   "di": 2.1,
   "cpi": 31,
@@ -1885,7 +1885,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Saudi Arabia",
+  "land_nl": "Saoedi-Arabië",
   "land_en": "Saudi Arabia",
   "di": 2.08,
   "cpi": 57,
@@ -1898,7 +1898,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Russia",
+  "land_nl": "Rusland",
   "land_en": "Russia",
   "di": 2.03,
   "cpi": 22,
@@ -1976,7 +1976,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Yemen",
+  "land_nl": "Jemen",
   "land_en": "Yemen",
   "di": 1.95,
   "cpi": 13,
@@ -1989,7 +1989,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Tajikistan",
+  "land_nl": "Tadzjikistan",
   "land_en": "Tajikistan",
   "di": 1.94,
   "cpi": 19,
@@ -2002,7 +2002,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Democratic Republic of the Congo",
+  "land_nl": "Congo-Kinshasa",
   "land_en": "Democratic Republic of the Congo",
   "di": 1.92,
   "cpi": 20,
@@ -2015,7 +2015,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Equatorial Guinea",
+  "land_nl": "Equatoriaal-Guinea",
   "land_en": "Equatorial Guinea",
   "di": 1.92,
   "cpi": 15,
@@ -2028,7 +2028,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Chad",
+  "land_nl": "Tsjaad",
   "land_en": "Chad",
   "di": 1.76,
   "cpi": 22,
@@ -2067,7 +2067,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Sudan",
+  "land_nl": "Soedan",
   "land_en": "Sudan",
   "di": 1.46,
   "cpi": 14,
@@ -2080,7 +2080,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Guinea-Bissau",
+  "land_nl": "Guinee-Bissau",
   "land_en": "Guinea-Bissau",
   "di": 1.37,
   "cpi": 21,
@@ -2093,7 +2093,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Syria",
+  "land_nl": "Syrië",
   "land_en": "Syria",
   "di": 1.37,
   "cpi": 15,
@@ -2106,7 +2106,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Central African Republic",
+  "land_nl": "Centraal-Afrikaanse Republiek",
   "land_en": "Central African Republic",
   "di": 1.18,
   "cpi": 24,
@@ -2119,7 +2119,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "North Korea",
+  "land_nl": "Noord-Korea",
   "land_en": "North Korea",
   "di": 1.08,
   "cpi": 15,
@@ -2158,7 +2158,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Palestine",
+  "land_nl": "Palestina",
   "land_en": "Palestine",
   "di": 3.44,
   "cpi": null,
@@ -2184,7 +2184,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Seychelles",
+  "land_nl": "Seychellen",
   "land_en": "Seychelles",
   "di": null,
   "cpi": 68,
@@ -2197,7 +2197,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Bahamas",
+  "land_nl": "Bahama's",
   "land_en": "Bahamas",
   "di": null,
   "cpi": 64,
@@ -2223,7 +2223,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Saint Vincent and the Grenadines",
+  "land_nl": "Saint Vincent en de Grenadines",
   "land_en": "Saint Vincent and the Grenadines",
   "di": null,
   "cpi": 63,
@@ -2288,7 +2288,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Sao Tome and Principe",
+  "land_nl": "São Tomé en Principe",
   "land_en": "Sao Tome and Principe",
   "di": null,
   "cpi": 45,
@@ -2301,7 +2301,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Solomon Islands",
+  "land_nl": "Salomonseilanden",
   "land_en": "Solomon Islands",
   "di": null,
   "cpi": 44,
@@ -2327,7 +2327,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Maldives",
+  "land_nl": "Malediven",
   "land_en": "Maldives",
   "di": null,
   "cpi": 39,
@@ -2353,7 +2353,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "Somalia",
+  "land_nl": "Somalië",
   "land_en": "Somalia",
   "di": null,
   "cpi": 9,
@@ -2366,7 +2366,7 @@
   "remarks_en": null
  },
  {
-  "land_nl": "South Sudan",
+  "land_nl": "Zuid-Soedan",
   "land_en": "South Sudan",
   "di": null,
   "cpi": 9,

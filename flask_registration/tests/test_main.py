@@ -1,7 +1,9 @@
 """
 Test-suite voor main.py: /manifest/landen (landenlijst-pagina).
-Dekt: pagina laadt, toont 183 landen, i18n-tekst per taal, en de drie
-uitzonderingsgevallen (Taiwan/Israel/VS) tonen de juiste 'Uitnodigen'-waarde.
+Dekt: pagina laadt, toont 183 landen, i18n-tekst per taal (incl. NL/EN
+landnamen), losse DI/CPI/HRI-kolommen met 3-standen-kleurpuntjes, en dat het
+uitklap-mechanisme op desktop uitsluitend voor de drie uitzonderingsgevallen
+(Taiwan/Israel/VS) bestaat.
 """
 
 
@@ -29,81 +31,13 @@ class TestLandenlijst:
         assert "Country overview" in html
         assert "Accession is tied to three existing" in html
 
-    def test_taiwan_shows_separate_status_not_yes(self, client):
-        client.get("/lang/en")
+    def test_uitnodigen_badge_removed_entirely(self, client):
+        # De Uitnodigen-badge is verwijderd uit zowel desktop als mobiel
+        # (functioneel al af te leiden uit Niveau GU).
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
-        # Zoek de tabelrij zelf (niet de uitzonderingsalinea, die 'separate
-        # status' ook al noemt) en beperk tot díe rij (tot de sluitende
-        # </tr>), zodat lange remark-tooltips of een vaste tekenlimiet niet
-        # per ongeluk de volgende rij meepakken.
-        table_start = html.find('gu-landen-table__country')
-        idx_taiwan = html.find('Taiwan', table_start)
-        assert idx_taiwan != -1
-        row_end = html.find('</tr>', idx_taiwan)
-        row_taiwan = html[idx_taiwan:row_end]
-        assert 'gu-invite-badge--separate">separate status<' in row_taiwan
-
-    def test_israel_and_us_show_not_yet(self, client):
-        client.get("/lang/en")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        # Zoek vanaf de tabel (na de introtekst, die 'Israel'/'United States'
-        # ook al noemt in de uitzonderingsalinea) zodat we echt de tabelrij
-        # pakken, niet de eerste vermelding in de lopende tekst. Beperk tot
-        # de sluitende </tr> i.p.v. een vaste tekenlimiet.
-        table_start = html.find('gu-landen-table__country')
-        idx_israel = html.find('Israel', table_start)
-        idx_us = html.find('United States', table_start)
-        assert idx_israel != -1 and idx_us != -1
-        row_israel = html[idx_israel:html.find('</tr>', idx_israel)]
-        row_us = html[idx_us:html.find('</tr>', idx_us)]
-        assert 'gu-invite-badge--no">Not yet<' in row_israel
-        assert 'gu-invite-badge--no">Not yet<' in row_us
-
-    def test_below_minimum_country_also_shows_not_yet(self, client):
-        # Bevestigt dat 'Nog niet'/'Not yet' niet alleen voor Israel/VS geldt:
-        # elk land met invite_class 'no' (109 van de 111) is een gewoon
-        # 'Below minimum'-land zonder remark, bijv. Panama.
-        client.get("/lang/en")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        table_start = html.find('gu-landen-table__country')
-        idx = html.find('Panama', table_start)
-        assert idx != -1
-        row = html[idx:html.find('</tr>', idx)]
-        assert 'gu-invite-badge--no">Not yet<' in row
-
-    def test_yes_badge_shows_invite_label(self, client):
-        client.get("/lang/en")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        table_start = html.find('gu-landen-table__country')
-        idx = html.find('Norway', table_start)
-        assert idx != -1
-        row = html[idx:html.find('</tr>', idx)]
-        assert 'gu-invite-badge--yes">Invite<' in row
-        assert '>Yes<' not in row
-
-    def test_yes_badge_shows_uitnodigen_label_dutch(self, client):
-        client.get("/lang/nl")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        table_start = html.find('gu-landen-table__country')
-        idx = html.find('Norway', table_start)
-        assert idx != -1
-        row = html[idx:html.find('</tr>', idx)]
-        assert 'gu-invite-badge--yes">Uitnodigen<' in row
-
-    def test_invite_badge_classes(self, client):
-        client.get("/lang/en")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        # Alle vier de badge-varianten moeten voorkomen (tenminste 1x elk).
-        assert 'gu-invite-badge--yes' in html
-        assert 'gu-invite-badge--no' in html
-        assert 'gu-invite-badge--separate' in html
-        assert 'gu-invite-badge--na' in html
+        assert 'gu-invite-badge' not in html
+        assert 'Uitnodigen<' not in html
 
     def test_mobile_cards_present_for_all_countries(self, client):
         response = client.get("/manifest/landen")
@@ -111,7 +45,7 @@ class TestLandenlijst:
         assert html.count('class="gu-landen-card"') == 183
         assert html.count('gu-landen-card__summary') == 183
 
-    def test_mobile_card_details_show_scores_not_level_or_invite_again(self, client):
+    def test_mobile_card_details_show_scores_not_level_again(self, client):
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
@@ -123,12 +57,10 @@ class TestLandenlijst:
         details_start = card.find('gu-landen-card__details')
         summary_part = card[:details_start]
         details_part = card[details_start:]
-        # Niveau/Uitnodigen-badges horen alleen in de summary, niet herhaald
-        # in de uitgeklapte details.
+        # Niveau-badge hoort alleen in de summary, niet herhaald in de
+        # uitgeklapte details.
         assert 'gu-level-badge' in summary_part
-        assert 'gu-invite-badge' in summary_part
         assert 'gu-level-badge' not in details_part
-        assert 'gu-invite-badge' not in details_part
         # DI/CPI/HRI horen alleen in de details, niet in de summary.
         assert '>DI<' in details_part and '>DI<' not in summary_part
         assert '>CPI<' in details_part and '>CPI<' not in summary_part
@@ -153,75 +85,121 @@ class TestLandenlijst:
         assert "DI ≥ 8.0" in html
         assert "HRI ≥ 0.75" in html
 
-    def test_desktop_detail_row_hidden_by_default(self, client):
+    def test_three_separate_index_columns_desktop(self, client):
+        # Wijziging A: geen gegroepeerde 'Index'-kolom meer, maar drie losse,
+        # volledig uitgeschreven kolommen.
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
-        assert html.count('gu-landen-table__detailRow') > 0
-        # Elke detailrij heeft het hidden-attribuut in de server-gerenderde HTML
-        # (JS is wat het later verwijdert bij een klik, niet de server).
-        idx = html.find('gu-landen-table__detailRow')
-        row_tag_end = html.find('>', idx)
-        assert 'hidden' in html[idx:row_tag_end]
+        thead_end = html.find('</thead>')
+        thead = html[:thead_end]
+        assert '<th>Democracy Index</th>' in thead
+        assert '<th>Corruption Perceptions Index</th>' in thead
+        assert '<th>Human Rights Index</th>' in thead
+        assert '<th>Index</th>' not in thead
 
-    def test_desktop_detail_row_has_index_dots(self, client):
-        client.get("/lang/en")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        table_start = html.find('gu-landen-table__country')
-        idx = html.find('Norway', table_start)
-        detail_start = html.find('gu-landen-table__detailRow', idx)
-        detail_end = html.find('</tr>', detail_start)
-        detail = html[detail_start:detail_end]
+    def test_index_dots_in_own_columns_for_norway(self, client):
         # Norway: DI 9.81, CPI 81, HRI 0.947 — alle drie ruim boven de
-        # 'Op niveau'-drempel, dus alle drie 'meets' (groen).
-        assert detail.count('gu-index-dot--meets') == 3
-        assert 'gu-index-dot--above' not in detail
-        assert 'gu-index-dot--below' not in detail
-
-    def test_main_row_shows_index_group(self, client):
-        # De 3 kleurpuntjes staan sinds deze wijziging al in de hoofdrij
-        # (niet pas na uitklappen) — vaste breedte, altijd exact 3 dots.
+        # 'Op niveau'-drempel, dus alle drie 'meets' (groen), elk los in zijn
+        # eigen kolom (niet gegroepeerd).
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
         idx = html.find('Norway', table_start)
-        row_end = html.find('</tr>', idx)
-        row = html[idx:row_end]
-        assert 'gu-index-group' in row
-        # Elke dot heeft class="gu-index-dot gu-index-dot--<state>": tel op
-        # het unieke openingspatroon, niet op de losse substring 'gu-index-dot'
-        # (die ook in de modifier-klasse zelf voorkomt en dus dubbel telt).
-        assert row.count('class="gu-index-dot gu-index-dot--') == 3
-        assert 'gu-index-dot--meets' in row
+        assert idx != -1
+        row = html[idx:html.find('</tr>', idx)]
+        assert 'gu-index-group' not in row
+        assert row.count('class="gu-index-dot gu-index-dot--meets"') == 3
 
-    def test_mobile_card_summary_shows_index_group(self, client):
-        client.get("/lang/en")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        cards_start = html.find('class="gu-landen-cards"')
-        idx = html.find('Norway', cards_start)
-        summary_end = html.find('</summary>', idx)
-        summary = html[idx:summary_end]
-        assert 'gu-index-group' in summary
-        assert summary.count('class="gu-index-dot gu-index-dot--') == 3
-
-    def test_index_dot_mixed_states_for_taiwan(self, client):
+    def test_index_dots_mixed_states_for_taiwan_main_row(self, client):
+        # Taiwan: DI 8.78 (Op niveau), CPI 68 (Boven minimum, niet Op
+        # niveau: 40 <= 68 < 70), HRI 0.930 (Op niveau) -> 2x meets, 1x above,
+        # zichtbaar in de hoofdrij zelf (niet pas na uitklappen).
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
         idx = html.find('Taiwan', table_start)
-        detail_start = html.find('gu-landen-table__detailRow', idx)
-        detail_end = html.find('</tr>', detail_start)
-        detail = html[detail_start:detail_end]
-        # Taiwan: DI 8.78 (Op niveau), CPI 68 (Boven minimum, niet Op
-        # niveau: 40 <= 68 < 70), HRI 0.930 (Op niveau) -> 2x meets, 1x above.
-        assert detail.count('gu-index-dot--meets') == 2
-        assert detail.count('gu-index-dot--above') == 1
-        assert 'gu-index-dot--below' not in detail
+        assert idx != -1
+        row = html[idx:html.find('</tr>', idx)]
+        assert row.count('class="gu-index-dot gu-index-dot--meets"') == 2
+        assert row.count('class="gu-index-dot gu-index-dot--above"') == 1
+
+    def test_index_dots_below_for_afghanistan_main_row(self, client):
+        # Afghanistan (DI 0.25, CPI 16, HRI 0.041 — alles onder de drempel)
+        # heeft geen remark en dus ook geen uitklaprij: de dots moeten in de
+        # hoofdrij zelf zichtbaar zijn.
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('gu-landen-table__country')
+        idx = html.find('Afghanistan', table_start)
+        assert idx != -1
+        row = html[idx:html.find('</tr>', idx)]
+        assert row.count('class="gu-index-dot gu-index-dot--below"') == 3
+
+    def test_mobile_card_summary_shows_index_group(self, client):
+        # Mobiel blijft de gegroepeerde variant gebruiken (wijziging A is
+        # desktop-only).
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        cards_start = html.find('class="gu-landen-cards"')
+        idx = html.find('Norway', cards_start)
+        assert idx != -1
+        summary_end = html.find('</summary>', idx)
+        summary = html[idx:summary_end]
+        assert 'gu-index-group' in summary
+        assert summary.count('class="gu-index-dot gu-index-dot--') == 3
+
+    def test_desktop_no_toggle_for_country_without_remark(self, client):
+        # Wijziging B: geen uitklap-pijltje/gedrag meer voor landen zonder
+        # toelichting — Noorwegen heeft geen remark. Rij vanaf de openende
+        # <tr> zelf pakken (niet vanaf de landnaam), anders wordt het
+        # class-attribuut van de <tr>, dat vóór de naam staat, gemist.
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('gu-landen-table__country')
+        idx = html.find('Norway', table_start)
+        assert idx != -1
+        tr_start = html.rfind('<tr', 0, idx)
+        row = html[tr_start:html.find('</tr>', idx)]
+        assert 'gu-landen-table__row' not in row  # dekt ook __rowToggle
+
+    def test_desktop_toggle_only_for_three_exception_countries(self, client):
+        # Alleen Taiwan/Israel/VS behouden het uitklap-mechanisme —
+        # precies 3 uitklaprijen op de hele pagina. Alleen binnen <tbody>
+        # tellen, niet in de hele pagina: de inline <script> onderaan bevat
+        # de klasse-naam ook als string-literal (classList.contains-check).
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        tbody = html[html.find('<tbody>'):html.find('</tbody>')]
+        assert tbody.count('gu-landen-table__detailRow') == 3
+        assert tbody.count('gu-landen-table__rowToggle') == 3
+        table_start = html.find('gu-landen-table__country')
+        for name in ("Taiwan", "Israel", "United States"):
+            idx = html.find(name, table_start)
+            assert idx != -1, name
+            tr_start = html.rfind('<tr', 0, idx)
+            row = html[tr_start:html.find('</tr>', idx)]
+            assert 'gu-landen-table__row"' in row
+            assert 'gu-landen-table__rowToggle' in row
+
+    def test_desktop_detail_row_hidden_by_default(self, client):
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        idx = html.find('gu-landen-table__detailRow')
+        assert idx != -1
+        # Elke detailrij heeft het hidden-attribuut in de server-gerenderde HTML
+        # (JS is wat het later verwijdert bij een klik, niet de server).
+        row_tag_end = html.find('>', idx)
+        assert 'hidden' in html[idx:row_tag_end]
 
     def test_remark_visible_in_desktop_detail_not_only_tooltip(self, client):
+        # De detailrij toont uitsluitend de remark (DI/CPI/HRI staan al in
+        # de kolommen van de hoofdrij, dus niet meer herhaald hier).
         client.get("/lang/en")
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
@@ -232,6 +210,63 @@ class TestLandenlijst:
         detail = html[detail_start:detail_end]
         assert 'gu-landen-remark' in detail
         assert 'No UN recognition' in detail
+        assert 'gu-index-dot' not in detail
+
+    def test_exception_country_name_orange_desktop(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('gu-landen-table__country')
+        idx = html.find('Taiwan', table_start)
+        assert idx != -1
+        tr_start = html.rfind('<tr', 0, idx)
+        row = html[tr_start:html.find('</tr>', idx)]
+        assert 'gu-landen-exception-name">Taiwan</span>' in row
+
+    def test_non_exception_country_name_not_orange_desktop(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('gu-landen-table__country')
+        idx = html.find('Norway', table_start)
+        assert idx != -1
+        tr_start = html.rfind('<tr', 0, idx)
+        row = html[tr_start:html.find('</tr>', idx)]
+        assert 'gu-landen-exception-name' not in row
+
+    def test_exception_country_name_orange_mobile(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        cards_start = html.find('class="gu-landen-cards"')
+        idx = html.find('Taiwan', cards_start)
+        assert idx != -1
+        summary_start = html.rfind('<summary', 0, idx)
+        summary_end = html.find('</summary>', idx)
+        summary = html[summary_start:summary_end]
+        assert 'gu-landen-exception-name">Taiwan</span>' in summary
+
+    def test_dutch_country_names_on_dutch_page(self, client):
+        client.get("/lang/nl")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('gu-landen-table__country')
+        table = html[table_start:]
+        assert 'Duitsland' in table
+        assert 'Nederland' in table
+        assert 'Verenigde Staten' in table
+        assert '>Germany<' not in table
+
+    def test_english_country_names_on_english_page(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest/landen")
+        html = response.get_data(as_text=True)
+        table_start = html.find('gu-landen-table__country')
+        table = html[table_start:]
+        assert 'Germany' in table
+        assert 'Netherlands' in table
+        assert 'United States' in table
+        assert 'Duitsland' not in table
 
     def test_remark_visible_in_mobile_card_details(self, client):
         client.get("/lang/en")
@@ -250,19 +285,6 @@ class TestLandenlijst:
         card = html[card_start:card_end]
         assert 'gu-landen-remark' in card
         assert 'No UN recognition' in card
-
-    def test_index_dot_below_for_below_minimum_country(self, client):
-        client.get("/lang/en")
-        response = client.get("/manifest/landen")
-        html = response.get_data(as_text=True)
-        table_start = html.find('gu-landen-table__country')
-        idx = html.find('Afghanistan', table_start)  # DI 0.25, CPI 16, HRI 0.041 — alles onder de drempel
-        detail_start = html.find('gu-landen-table__detailRow', idx)
-        detail_end = html.find('</tr>', detail_start)
-        detail = html[detail_start:detail_end]
-        assert 'gu-index-dot--meets' not in detail
-        assert 'gu-index-dot--above' not in detail
-        assert detail.count('gu-index-dot--below') == 3
 
 
 class TestManifestLandenSection:
