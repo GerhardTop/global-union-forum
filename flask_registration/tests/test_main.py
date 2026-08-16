@@ -707,9 +707,22 @@ class TestManifestOrganizationSection:
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)
-        assert "De Global Union werkt met een minimale organisatie" in section
-        assert "geen grote overdrachten over zoals landbouw- of cohesiefondsen" in section
-        assert "besluiten vallen met een heldere meerderheid in plaats van unanimiteit" in section
+        # Volledige alinea 1 (incl. de toegevoegde slotzin over budget voor
+        # studentenuitwisseling en onafhankelijke media/opleidingen).
+        assert (
+            "<p>De Global Union werkt met een minimale organisatie: een kleine "
+            "commissie en een beperkt ambtenarenapparaat, ondersteund door "
+            "bestaande nationale en internationale instellingen. Het budget "
+            "blijft beperkt, want de unie begint met een beperkte set "
+            "bevoegdheden en neemt geen grote overdrachten over zoals "
+            "landbouw- of cohesiefondsen. Toch is de unie daadkrachtig: "
+            "besluiten vallen met een heldere meerderheid in plaats van "
+            "unanimiteit. Uitvoering vindt plaats in de landen zelf. "
+            "Toezicht op de uitvoering wordt wel door de Global Union "
+            "verzorgd. Wel is er budget voor internationale uitwisseling "
+            "van studenten en voor onafhankelijke online nieuwsmedia en "
+            "opleidingen.</p>"
+        ) in section
         assert "Discussies en stemmingen vinden online plaats" in section
         assert "Burgers wereldwijd kunnen in hun eigen taal meepraten en invloed uitoefenen" in section
 
@@ -718,8 +731,21 @@ class TestManifestOrganizationSection:
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)
-        assert "The Global Union operates with a minimal organisation" in section
-        assert "does not take on large transfers such as agricultural or cohesion funds" in section
-        assert "decisions are taken by a clear majority rather than unanimity" in section
+        # Full paragraph 1 (incl. the added closing sentence about budget
+        # for student exchange and independent media/education).
+        assert (
+            "<p>The Global Union operates with a minimal organisation: a "
+            "small commission and a limited civil service, supported by "
+            "existing national and international institutions. The budget "
+            "stays limited, since the union starts with a limited set of "
+            "competences and does not take on large transfers such as "
+            "agricultural or cohesion funds. Yet the union is effective: "
+            "decisions are taken by a clear majority rather than "
+            "unanimity. Implementation takes place within the countries "
+            "themselves. Oversight of that implementation is carried out "
+            "by the Global Union. There is, however, budget for "
+            "international student exchange and for independent online "
+            "news media and education programmes.</p>"
+        ) in section
         assert "Discussions and votes take place online" in section
         assert "Citizens worldwide can take part and exert influence in their own language" in section
