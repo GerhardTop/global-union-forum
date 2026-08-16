@@ -1457,7 +1457,8 @@ body {
 .gu-wet-table thead,
 .gu-wet-table tbody,
 .gu-wet-table tr,
-.gu-wet-table td {
+.gu-wet-table td,
+.gu-wet-table th {
   display: block;
   width: 100%;
 }
@@ -1469,11 +1470,14 @@ body {
   padding: 0 20px;
 }
 .gu-wet-table tr:last-child { margin-bottom: 0; }
-.gu-wet-table td {
+.gu-wet-table td,
+.gu-wet-table th {
   padding: 12px 0;
   border-bottom: 1px solid var(--gu-border);
   color: var(--gu-fg-2);
   line-height: 1.6;
+  text-align: left;
+  font-weight: 400;
 }
 .gu-wet-table td:last-child { border-bottom: none; }
 .gu-wet-table td[data-label]::before {
@@ -1486,7 +1490,7 @@ body {
   letter-spacing: 0.04em;
   margin-bottom: 4px;
 }
-.gu-wet-table td.gu-wet-table__phase {
+.gu-wet-table th.gu-wet-table__phase {
   padding: 16px 0 12px;
   font-size: 1rem;
   font-weight: 700;

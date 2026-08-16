@@ -431,6 +431,48 @@ class TestManifestWetgevingSection:
         assert -1 not in (idx_landen, idx_wetgeving, idx_lange_termijn)
         assert idx_landen < idx_wetgeving < idx_lange_termijn
 
+    def test_wetgeving_title_renamed_dutch(self, client):
+        # Sectiekop én TOC-label worden "Gefaseerde wetgeving" (i.p.v. enkel
+        # "Wetgeving"), in beide gevallen exact dezelfde tekst.
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert html.count("Gefaseerde wetgeving") == 2  # TOC-label + <h2>
+        assert '<h2>Gefaseerde wetgeving</h2>' in html
+
+    def test_wetgeving_title_renamed_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert html.count("Phased legislation") == 2
+        assert '<h2>Phased legislation</h2>' in html
+
+    def test_wetgeving_section_is_one_table_with_three_body_rows(self, client):
+        # Eén semantische <table> (niet drie losse tabellen/kaarten), met
+        # precies 3 datarijen in de tbody.
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section_start = html.find('id="wetgeving"')
+        section_end = html.find('id="lange-termijn"')
+        section = html[section_start:section_end]
+        assert section.count('<table') == 1
+        tbody_start = section.find('<tbody>')
+        tbody_end = section.find('</tbody>')
+        tbody = section[tbody_start:tbody_end]
+        assert tbody.count('<tr>') == 3
+        assert '<thead>' in section and '</thead>' in section
+
+    def test_wetgeving_table_scope_attributes(self, client):
+        # Behoud van semantische thead/tbody-structuur inclusief scope:
+        # scope="col" op de kolomkoppen, scope="row" op de fase-cel per rij.
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        section_start = html.find('id="wetgeving"')
+        section_end = html.find('id="lange-termijn"')
+        section = html[section_start:section_end]
+        assert section.count('scope="col"') == 4
+        assert section.count('scope="row"') == 3
+
     def test_wetgeving_table_has_three_rows_dutch(self, client):
         client.get("/lang/nl")
         response = client.get("/manifest")
@@ -451,9 +493,38 @@ class TestManifestWetgevingSection:
         assert "3. Politically sensitive" in html
         assert "80% threshold" in html
 
-    def test_wetgeving_gatt_and_exclusions_paragraphs(self, client):
+    def test_wetgeving_new_intro_text_dutch(self, client):
+        client.get("/lang/nl")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert "Wetgeving nemen we gefaseerd over. Eenvoudige, technische regels komen eerst" in html
+        assert "naar het voorbeeld van de EU: klein beginnen en uitbreiden waar het werkt" not in html
+        assert "Simpele, technische regels komen eerst" not in html
+
+    def test_wetgeving_new_intro_text_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert "We adopt legislation in phases. Simple, technical rules come first" in html
+        assert "following the EU's example: start small and expand where it works" not in html
+
+    def test_wetgeving_gatt_and_exclusions_paragraphs_dutch(self, client):
         client.get("/lang/nl")
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert "artikel XX GATT" in html
+        assert "Dit lijkt strijdig met het principe van de wereldhandelsorganisatie" in html
+        assert "verwachten we hier een uitzondering op te kunnen maken" in html
+        assert "De grondslag is de algemene uitzondering van artikel XX GATT" not in html
+        # Uitsluitingsalinea ongewijzigd.
         assert "Landbouwbeleid, cohesiefondsen en de muntunie" in html
+
+    def test_wetgeving_gatt_and_exclusions_paragraphs_english(self, client):
+        client.get("/lang/en")
+        response = client.get("/manifest")
+        html = response.get_data(as_text=True)
+        assert "Article XX GATT" in html
+        assert "This appears to conflict with the World Trade Organization's principle" in html
+        assert "we expect to be able to make an exception here" in html
+        assert "The basis is the general exception in Article XX GATT" not in html
+        assert "We do not adopt agricultural policy, cohesion funds, or the monetary union" in html
