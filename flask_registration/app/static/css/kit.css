@@ -1693,21 +1693,18 @@ body {
 
 /* Sorteerbare kolomkoppen (wijziging 3) — data-sort-dir wordt door de
    inline sort-JS gezet/verwijderd en stuurt hier zowel het pijltje als de
-   actieve kleur aan; geen aparte JS/CSS-klassen nodig voor dezelfde staat. */
+   actieve kleur aan; geen aparte JS/CSS-klassen nodig voor dezelfde staat.
+   Niet-actieve koppen tonen geen pijltje: het icoon krijgt pas inhoud zodra
+   de kop daadwerkelijk gesorteerd is (data-sort-dir aanwezig). */
 .gu-landen-table__th--sortable { cursor: pointer; user-select: none; }
 .gu-landen-table__th--sortable:hover { color: var(--gu-fg-1); }
 .gu-landen-table__sortIcon {
   display: inline-block;
   width: 10px;
   margin-left: 4px;
-  opacity: 0.45;
 }
-.gu-landen-table__sortIcon::after { content: '\2195'; }
 .gu-landen-table__th--sortable[data-sort-dir] {
   color: var(--gu-globe-deep);
-}
-.gu-landen-table__th--sortable[data-sort-dir] .gu-landen-table__sortIcon {
-  opacity: 1;
 }
 .gu-landen-table__th--sortable[data-sort-dir="asc"] .gu-landen-table__sortIcon::after { content: '\2191'; }
 .gu-landen-table__th--sortable[data-sort-dir="desc"] .gu-landen-table__sortIcon::after { content: '\2193'; }
