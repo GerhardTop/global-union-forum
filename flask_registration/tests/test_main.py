@@ -756,3 +756,14 @@ class TestManifestOrganizationSection:
         ) in section
         assert "Discussions and votes take place online" in section
         assert "Citizens worldwide can take part and exert influence in their own language" in section
+
+
+class TestIndexPage:
+    def test_read_manifest_button_links_to_manifest_route(self, client):
+        # Regressie: deze knop linkte ooit naar '#manifest' (niet-bestaand
+        # anker op dezelfde pagina) i.p.v. de daadwerkelijke /manifest-route.
+        response = client.get("/")
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        assert 'href="/manifest"' in html
+        assert 'href="#manifest"' not in html
