@@ -2886,22 +2886,6 @@ body {
   font-weight: 500;
   text-decoration: underline;
 }
-.gu-linkedin-banner {
-  background: #fffbeb;
-  border-bottom: 1px solid #f59e0b;
-  color: #92400e;
-  font-size: 14px;
-  padding: 10px 64px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.gu-linkedin-banner a {
-  color: #92400e;
-  font-weight: 600;
-  text-decoration: underline;
-  margin-left: 4px;
-}
 @media (max-width: 600px) {
   .gu-verify-banner { padding: 10px 20px; flex-wrap: wrap; gap: 6px; }
 }
