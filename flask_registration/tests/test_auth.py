@@ -4,9 +4,11 @@ Dekt: succesvolle registratie, dubbele e-mail, ongeldige invoer, Bcrypt-wachtwoo
 e-mailverificatie-flow, login met correcte/foute credentials, niet-geverifieerd account.
 """
 
+import importlib
 import pytest
 import os
 import sys
+from datetime import timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # Voeg projectroot toe aan path zodat imports werken
@@ -17,6 +19,11 @@ if project_root not in sys.path:
 import config as config_module
 from app import create_app, db, bcrypt
 from app.models import User
+
+# app/routes/__init__.py doet `from app.routes.social import social`, wat het
+# attribuut app.routes.social overschrijft met de Blueprint i.p.v. de module.
+# importlib.import_module() haalt de echte module op via sys.modules.
+social_module = importlib.import_module("app.routes.social")
 
 
 @pytest.fixture
@@ -135,8 +142,19 @@ class TestRegistration:
     'https://www.linkedin.com/'.
     """
 
-    def test_successful_registration(self, client, app):
-        """Registreer gebruiker met geldige gegevens; valideer opslag."""
+    def test_successful_registration(self, client, app, monkeypatch):
+        """
+        Registreer gebruiker met geldige gegevens; valideer opslag.
+
+        _today_utc gemockt naar ná de TIJDELIJKE verify-bypass-deadline (zie
+        social.py) zodat deze test het permanente standaardgedrag (verified=
+        False, verificatiemail wordt geprobeerd) blijft dekken, onafhankelijk
+        van de echte kalenderdatum waarop de suite toevallig draait.
+        """
+        monkeypatch.setattr(
+            social_module, "_today_utc",
+            lambda: social_module._VERIFY_BYPASS_DEADLINE + timedelta(days=1),
+        )
         response = client.post('/aanmelden', data={
             'username': 'john_doe_test',
             'first_name': 'John',

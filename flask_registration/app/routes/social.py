@@ -1,3 +1,5 @@
+from datetime import date, datetime, timezone
+
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app, jsonify, abort
 from flask_login import current_user
 
@@ -11,6 +13,38 @@ from app.utils import (_password_strong, _send_verify_email, _stash_form_state, 
                        is_username_valid_format, is_username_blacklisted, is_username_available)
 
 social = Blueprint("social", __name__)
+
+
+# ── TIJDELIJKE bypass e-mailverificatie (Resend-maandquotum bereikt) ────────
+# Reden: gastgebruikerstest op 2026-09-08, Resend kan geen mails meer
+# versturen (quotum op). Nieuwe accounts worden t/m _VERIFY_BYPASS_DEADLINE
+# direct als geverifieerd aangemaakt, zonder verificatiemail-poging, zodat
+# gasten meteen kunnen inloggen.
+#
+# Bewust een harde datum in code i.p.v. een env-var: een env-var kan na de
+# test vergeten worden teruggezet, deze grens niet — na de deadline werkt
+# alles vanzelf weer normaal.
+#
+# Andere mail-afhankelijke flows (wachtwoord-vergeten, verificatiemail
+# opnieuw versturen) zijn hier bewust NIET in meegenomen — die blijven
+# gewoon proberen te versturen en falen zolang het quotum op is. Geaccepteerd
+# voor deze test.
+#
+# OPRUIMEN: zodra _VERIFY_BYPASS_DEADLINE gepasseerd is, is de bypass-tak in
+# aanmelden() (en deze constante + de twee helpers eronder) dode code — mag
+# in een latere sessie weg.
+_VERIFY_BYPASS_DEADLINE = date(2026, 9, 8)  # t/m einde van deze dag (UTC)
+
+
+def _today_utc():
+    """Losse functie i.p.v. een inline datetime.now()-aanroep, zodat tests
+    'vandaag' kunnen simuleren via monkeypatch — zonder de systeemklok aan
+    te raken."""
+    return datetime.now(timezone.utc).date()
+
+
+def _verify_bypass_active():
+    return _today_utc() <= _VERIFY_BYPASS_DEADLINE
 
 
 @social.app_context_processor
@@ -211,6 +245,7 @@ def aanmelden():
         if not errors:
             password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
             reg_lang = session.get('lang', 'nl')
+            bypass_verificatie = _verify_bypass_active()
             user = User(
                 username=form_data["username"],
                 first_name=form_data["first_name"] or None,
@@ -219,6 +254,7 @@ def aanmelden():
                 password_hash=password_hash,
                 linkedin_url=form_data["linkedin_url"] or None,
                 auto_translate=True if reg_lang == 'en' else None,
+                verified=bypass_verificatie,
             )
             db.session.add(user)
             try:
@@ -231,7 +267,14 @@ def aanmelden():
                 errors["username_taken"] = True
                 _stash_form_state("aanmelden", errors, form_data)
                 return redirect(url_for("social.aanmelden"), code=303)
-            _send_verify_email(user, session.get('lang', 'nl'), current_app.config['SECRET_KEY'])
+            if bypass_verificatie:
+                # Zie de TIJDELIJKE bypass-uitleg bovenaan dit bestand.
+                current_app.logger.warning(
+                    f"[TIJDELIJK] E-mailverificatie overgeslagen voor {user.email} "
+                    f"- bypass actief tot {_VERIFY_BYPASS_DEADLINE.isoformat()}"
+                )
+            else:
+                _send_verify_email(user, session.get('lang', 'nl'), current_app.config['SECRET_KEY'])
             session['modal'] = 'email_sent'
             return redirect(url_for("main.index"))
 
