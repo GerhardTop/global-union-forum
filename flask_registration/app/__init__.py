@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from flask import Flask, session, request, redirect, url_for, flash, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -25,6 +26,29 @@ babel = Babel()
 ADMIN_EMAIL        = os.environ.get("ADMIN_EMAIL", "")
 MODERATOR_EMAIL    = os.environ.get("MODERATOR_EMAIL", "")
 ADMIN_LINKEDIN_URL = os.environ.get("ADMIN_LINKEDIN_URL", "")
+
+# ── Dedup voor 500-error-mails ───────────────────────────────────────────────
+# Eén crashend endpoint mag niet honderden Resend-mails genereren: per
+# exception-type sturen we hooguit 1 mail per _ERROR_MAIL_COOLDOWN_SECONDS.
+# Simpele in-memory dict (geen extra dependency) — geldt per worker-process;
+# voldoende zolang de app op 1 gunicorn-worker draait (zie Procfile).
+_ERROR_MAIL_COOLDOWN_SECONDS = 15 * 60
+_error_mail_last_sent = {}
+
+
+def _should_send_error_mail(exc_type_name, now=None):
+    """
+    True (en registreert 'nu' als laatst-verstuurd) als er voor dit
+    exception-type nog geen mail is verstuurd, of het cooldown-venster al
+    verstreken is. False als we nog binnen het venster zitten — de mail
+    wordt dan onderdrukt.
+    """
+    now = time.time() if now is None else now
+    last_sent = _error_mail_last_sent.get(exc_type_name)
+    if last_sent is not None and now - last_sent < _ERROR_MAIL_COOLDOWN_SECONDS:
+        return False
+    _error_mail_last_sent[exc_type_name] = now
+    return True
 
 
 def _migrate_columns():
@@ -319,10 +343,16 @@ def create_app():
     def server_error(e):
         import traceback as tb
         from app.mail import send_error_email
-        try:
-            send_error_email(str(e), tb.format_exc())
-        except Exception:
-            pass
+        # Flask wrapt een onafgevangen exception in een InternalServerError
+        # (met de echte exception als .original_exception) vóór 'ie hier
+        # aankomt — zonder die uit te pakken zou elke crash hetzelfde
+        # signature "InternalServerError" krijgen en elkaars mail onderdrukken.
+        real_exc = getattr(e, "original_exception", e)
+        if _should_send_error_mail(type(real_exc).__name__):
+            try:
+                send_error_email(str(e), tb.format_exc())
+            except Exception:
+                pass
         return render_template('500.html'), 500
 
     @app.errorhandler(429)
