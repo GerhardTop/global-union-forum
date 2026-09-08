@@ -22,6 +22,10 @@ login_manager.login_message_category = "error"
 limiter = Limiter(key_func=get_remote_address, default_limits=[])
 oauth = OAuth()
 babel = Babel()
+# Op module-niveau zodat blueprints hem als per-view-decorator kunnen
+# gebruiken (@talisman(content_security_policy=...)); init_app() gebeurt in
+# create_app().
+talisman = Talisman()
 
 ADMIN_EMAIL        = os.environ.get("ADMIN_EMAIL", "")
 MODERATOR_EMAIL    = os.environ.get("MODERATOR_EMAIL", "")
@@ -325,7 +329,7 @@ def create_app():
         'object-src': "'none'",
         'base-uri': "'self'",
     }
-    Talisman(
+    talisman.init_app(
         app,
         force_https=_production,
         strict_transport_security=_production,
@@ -419,13 +423,14 @@ def create_app():
             return
         return redirect(url_for('auth.kies_gebruikersnaam'))
 
-    from app.routes import main, auth, forum_bp, profile_bp, admin_bp, social
+    from app.routes import main, auth, forum_bp, profile_bp, admin_bp, social, wikipolitics
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(forum_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(social)
+    app.register_blueprint(wikipolitics)
 
     from app.utils import linkify
     app.jinja_env.filters['linkify'] = linkify
