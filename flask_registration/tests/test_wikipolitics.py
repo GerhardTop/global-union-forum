@@ -44,6 +44,32 @@ class TestWikipoliticsPages:
         html = client.get("/wikipolitics/overwegingen").get_data(as_text=True)
         assert 'href="/wikipolitics/design"' in html
 
+    @pytest.mark.parametrize("path,target,label", [
+        ("/wikipolitics/design", "/wikipolitics/overwegingen", "Design rationale"),
+        ("/wikipolitics/overwegingen", "/wikipolitics/design", "Back to wireframes"),
+    ])
+    def test_crosslink_is_reinjected_after_root_swap(self, client, path, target, label):
+        """
+        De bundle-loader vervangt <documentElement>, waardoor de statische
+        cross-link uit de <body> verdwijnt.  Er moet daarom ook een runtime-
+        her-injectie zijn, direct na de root-swap: een #wp-nav-pill met het
+        Engelse label en de juiste href.
+        """
+        html = client.get(path).get_data(as_text=True)
+        # statische fallback in de <body>
+        assert f'<a id="wp-nav" href="{target}"' in html
+        assert label in html
+        # runtime her-injectie, na replaceWith
+        swap = "document.documentElement.replaceWith(doc.documentElement);"
+        assert swap in html
+        after = html.split(swap, 1)[1]
+        assert "a.id = 'wp-nav';" in after
+        assert f"a.href = '{target}';" in after
+        assert label in after
+        # Engelstalig — geen resten van de oude NL-balk
+        for nl in ("Bekijk de overwegingen", "Terug naar het design"):
+            assert nl not in html
+
 
 class TestWikipoliticsCsp:
     def test_relaxed_csp_only_on_these_routes(self, client):
