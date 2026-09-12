@@ -375,6 +375,7 @@ def create_app():
             '/aanmelden': 'social.aanmelden',
             '/wachtwoord-vergeten': 'auth.wachtwoord_vergeten',
             '/feedback': 'main.index',
+            '/uitnodiging': 'main.index',
         }
         return redirect(url_for(_path_map.get(request.path, 'auth.login')))
 

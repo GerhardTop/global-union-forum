@@ -54,6 +54,11 @@ def _inject_social_forms():
 
 @social.route("/uitnodiging", methods=["POST"])
 @limiter.limit("5 per hour")
+# Globale (niet per-IP) vangnet bovenop de per-IP limiet hierboven: een bot
+# die met IP-rotatie werkt omzeilt de per-IP limiet, maar deelt met alle
+# andere aanvragers deze ene gedeelde teller. In-memory, zelfde opslag als
+# de per-IP limiter — geen nieuwe afhankelijkheid.
+@limiter.limit("20 per hour", key_func=lambda: "uitnodiging-global")
 def uitnodiging():
     lang = request.form.get('lang', session.get('lang', 'nl'))
     form = InvitationForm()
@@ -63,6 +68,17 @@ def uitnodiging():
         flash(
             "Vul een geldig e-mailadres in." if lang == 'nl' else "Please enter a valid email address.",
             "error"
+        )
+        return redirect(url_for("main.index"))
+
+    # Honeypot: bots vullen dit verborgen veld vaak automatisch in, mensen
+    # zien het nooit. Doe stil alsof het gelukt is — geen mail versturen,
+    # geen foutmelding — zodat bots niet leren dat ze gefilterd worden.
+    # Zelfde patroon als /feedback en /aanmelden.
+    if request.form.get('website', '').strip():
+        flash(
+            "Uitnodiging verstuurd!" if lang == 'nl' else "Invitation sent!",
+            "success"
         )
         return redirect(url_for("main.index"))
 

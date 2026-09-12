@@ -207,6 +207,14 @@
     <form method="POST" action="{{ url_for('social.uitnodiging') }}">
       {{ invitation_form.hidden_tag() }}
       <input type="hidden" name="lang" value="{{ lang }}">
+      {# Honeypot: onzichtbaar voor mensen (off-screen, geen display:none —
+         bot-scripts filteren daar vaak specifiek op), aantrekkelijk voor
+         bots om automatisch in te vullen. Niet-leeg bij POST = stil genegeerd.
+         Zelfde patroon als /feedback en /aanmelden. #}
+      <div style="position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
+        <label for="invite_website">Website</label>
+        <input type="text" id="invite_website" name="website" tabindex="-1" autocomplete="off">
+      </div>
       <div class="gu-join__field">
         <label for="invite_email" style="font-size: 14px; font-weight: 500; color: var(--gu-fg-2);">
           {{ _('Email address') }}
