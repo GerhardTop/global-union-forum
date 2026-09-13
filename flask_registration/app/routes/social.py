@@ -1,7 +1,7 @@
 from datetime import date, datetime, timezone
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app, jsonify, abort
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from sqlalchemy.exc import IntegrityError
 
@@ -53,11 +53,17 @@ def _inject_social_forms():
 
 
 @social.route("/uitnodiging", methods=["POST"])
+# @login_required vóór de rate-limit-decorators (dus buitenste wrapper,
+# loopt als eerste): een niet-ingelogde aanvrager wordt meteen naar de
+# loginpagina gestuurd zonder ooit de limiter aan te raken. Zo verbruikt
+# anonieme bottraffic geen budget van de rate limits hieronder (die immers
+# nu alleen nog voor ingelogde leden gelden).
+@login_required
 @limiter.limit("5 per hour")
 # Globale (niet per-IP) vangnet bovenop de per-IP limiet hierboven: een bot
 # die met IP-rotatie werkt omzeilt de per-IP limiet, maar deelt met alle
-# andere aanvragers deze ene gedeelde teller. In-memory, zelfde opslag als
-# de per-IP limiter — geen nieuwe afhankelijkheid.
+# andere aanvragers deze ene gedeelde teller. Persistente SQL-backed opslag
+# (zie app/rate_limit_storage.py) — overleeft dus ook een container-herstart.
 @limiter.limit("20 per hour", key_func=lambda: "uitnodiging-global")
 def uitnodiging():
     lang = request.form.get('lang', session.get('lang', 'nl'))
@@ -86,10 +92,9 @@ def uitnodiging():
     invite_message = (form.invite_message.data or '').strip()
 
     register_url = url_for('social.aanmelden', _external=True)
-    if current_user.is_authenticated:
-        sender_name = f"{current_user.first_name} {current_user.last_name}"
-    else:
-        sender_name = "Gerhard Top"
+    # Geen fallback meer nodig: @login_required hierboven garandeert dat
+    # current_user hier altijd een ingelogde gebruiker is.
+    sender_name = f"{current_user.first_name} {current_user.last_name}"
 
     if lang == 'en':
         subject = "Invitation: join the Global Union Forum conversation"

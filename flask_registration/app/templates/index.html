@@ -149,8 +149,12 @@
 
 {# ── Feedback & uitnodiging ────────────────────────────────── #}
 <section style="background: #ffffff; padding: 48px 0;">
-  <div class="gu-feedback-wrap{% if not current_user.is_authenticated %} gu-feedback-wrap--3{% endif %}">
-    <div class="{% if not current_user.is_authenticated %}gu-feedback-grid--3{% else %}gu-feedback-grid{% endif %}">
+  {# Altijd precies 2 kaarten (Feedback + Uitnodiging voor leden, Feedback +
+     Doe mee voor bezoekers) — dus altijd de gewone 2-koloms-grid, geen
+     aparte 3-koloms-variant meer nodig sinds de uitnodig-kaart alleen nog
+     aan ingelogde leden getoond wordt. #}
+  <div class="gu-feedback-wrap">
+    <div class="gu-feedback-grid">
 
       {# Kaartje 1 — Feedback #}
       <div class="gu-feedback-card">
@@ -165,7 +169,9 @@
         </div>
       </div>
 
-      {# Kaartje 2 — Uitnodiging #}
+      {% if current_user.is_authenticated %}
+      {# Kaartje 2 — Uitnodiging (alleen ingelogd: /uitnodiging vereist nu
+         @login_required — zie app/routes/social.py) #}
       <div class="gu-feedback-card">
         <p style="font-size: 1rem; line-height: 1.65; color: var(--gu-fg-2); margin: 0;">
           {{ _('I know someone who would most probably like to join the conversation.') }}
@@ -177,8 +183,7 @@
           </button>
         </div>
       </div>
-
-      {% if not current_user.is_authenticated %}
+      {% else %}
       {# Kaartje 3 — Doe mee (alleen niet-ingelogd) #}
       <div class="gu-feedback-card">
         <p style="font-size: 1rem; line-height: 1.65; color: var(--gu-fg-2); margin: 0;">
@@ -197,7 +202,8 @@
   </div>
 </section>
 
-{# ── Uitnodigingsmodal ─────────────────────────────────────── #}
+{% if current_user.is_authenticated %}
+{# ── Uitnodigingsmodal (alleen ingelogd, zie Kaartje 2 hierboven) ────── #}
 <div class="gu-modal-overlay" id="guInviteModal" style="display:none;" role="dialog" aria-modal="true">
   <div class="gu-modal" style="max-width: 480px; text-align: left;">
     <button type="button" class="gu-modal__close" id="guInviteClose" aria-label="{{ _('Close') }}">✕</button>
@@ -251,6 +257,7 @@
     modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
   })();
 </script>
+{% endif %}
 
 {# ── Feedbackmodal ─────────────────────────────────────────── #}
 <div class="gu-modal-overlay" id="guFeedbackModal" style="display:none;" role="dialog" aria-modal="true">

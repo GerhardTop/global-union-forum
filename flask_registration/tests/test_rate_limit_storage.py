@@ -239,7 +239,23 @@ class TestAppRebuildEndToEnd:
         _limiter._limiter = type(_limiter._limiter)(_limiter._storage)
 
         with flask_app1.app_context():
+            # /uitnodiging vereist sinds @login_required een ingelogde
+            # gebruiker — dezelfde appdata-DB (app_db_uri) wordt hergebruikt
+            # door 'container 2' hieronder, dus dit account bestaat straks
+            # ook nog voor client2.
+            from app import bcrypt, db
+            from app.models import User
+            db.session.add(User(
+                username="uitnodiger", first_name="Uit", last_name="Nodiger",
+                email="uitnodiger@example.com",
+                password_hash=bcrypt.generate_password_hash("Sterk1!ww").decode("utf-8"),
+                verified=True,
+            ))
+            db.session.commit()
+
             client1 = flask_app1.test_client()
+            client1.post("/login", data={"email": "uitnodiger@example.com",
+                                          "password": "Sterk1!ww"})
             ip = "192.0.2.50"
             for i in range(3):
                 resp = client1.post(
@@ -266,7 +282,11 @@ class TestAppRebuildEndToEnd:
         _limiter._limiter = type(_limiter._limiter)(_limiter._storage)
 
         with flask_app2.app_context():
+            # Nieuwe app-instantie = nieuwe test_client = geen sessie-cookie
+            # van client1 — apart inloggen, zelfde account (zelfde appdata-DB).
             client2 = flask_app2.test_client()
+            client2.post("/login", data={"email": "uitnodiger@example.com",
+                                          "password": "Sterk1!ww"})
             # Nog 2 pogingen vanaf hetzelfde IP: 3 (van 'container 1') + 2 = 5
             # -> precies op de limiet, allebei nog toegestaan.
             for i in range(2):
