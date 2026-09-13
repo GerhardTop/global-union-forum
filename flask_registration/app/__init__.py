@@ -12,7 +12,10 @@ from flask_babel import Babel, gettext
 from authlib.integrations.flask_client import OAuth
 from sqlalchemy import text, inspect as sa_inspect
 
-from config import Config
+from config import Config, ratelimit_storage_uri
+# Importeren (niet gebruiken) registreert SQLStorage bij `limits` vóór
+# limiter.init_app(app) hieronder draait — zie app/rate_limit_storage.py.
+from . import rate_limit_storage  # noqa: F401
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -297,6 +300,13 @@ def create_app():
     logging.basicConfig(level=logging.WARNING if _production else logging.DEBUG)
     app = Flask(__name__)
     app.config.from_object(Config)
+    # Pas hier bepalen (niet als Config-class-attribuut) zodat dit de
+    # SQLALCHEMY_DATABASE_URI van DEZE app-instantie volgt, inclusief
+    # test-fixtures die dat attribuut na het importeren van config.py nog
+    # overschrijven — zie ratelimit_storage_uri() in config.py.
+    app.config["RATELIMIT_STORAGE_URI"] = ratelimit_storage_uri(
+        app.config["SQLALCHEMY_DATABASE_URI"]
+    )
 
     db.init_app(app)
     bcrypt.init_app(app)
