@@ -61,17 +61,31 @@ def _inject_social_forms():
 # anonieme bottraffic geen budget van de rate limits hieronder (die immers
 # nu alleen nog voor ingelogde leden gelden).
 @login_required
-@limiter.limit("5 per hour")
-# Globale (niet per-IP) vangnet bovenop de per-IP limiet hierboven: een bot
-# die met IP-rotatie werkt omzeilt de per-IP limiet, maar deelt met alle
-# andere aanvragers deze ene gedeelde teller. Persistente SQL-backed opslag
-# (zie app/rate_limit_storage.py) — overleeft dus ook een container-herstart.
-@limiter.limit("20 per hour", key_func=lambda: "uitnodiging-global")
+# Volgorde van de drie limieten hieronder is BEWUST: smalste (dus de
+# limiet die het snelst/goedkoopst een misbruiker afwijst) dichtst bij
+# def, breedste bovenaan. Flask-Limiter evalueert decorators van binnen
+# naar buiten (dichtst-bij-def eerst) en stopt bij de eerste overschrijding
+# (fail_on_first_breach, standaard) — dus een verzoek dat al door de
+# per-IP-limiet wordt geblokkeerd, raakt de bredere lagen daarboven nooit
+# meer aan. Zonder deze volgorde verhoogt een reeds-geblokkeerd verzoek
+# gewoon de bredere tellers, en verbruikt een bot die op de per-IP-limiet
+# stukloopt alsnog het budget van álle andere mail-routes (empirisch
+# bevestigd — zie tests/test_mail_global_ratelimit.py). Dit is industry
+# best practice bij gelaagde rate limits (vgl. APISIX: "a request
+# rejected by any plugin does not consume quota in subsequent plugins").
+#
 # Structureel vangnet over de HELE app heen (zie app/utils.py:mail_global_key):
 # gedeeld met /feedback, /aanmelden, /wachtwoord-vergeten en de
 # verify-resend-routes — welk mail-formulier een misbruiker ook vindt, het
 # totaal aantal verstuurde mails per uur kan nooit boven deze ene grens uit.
 @limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key)
+# Globale (niet per-IP) vangnet, alleen voor déze route: een bot die met
+# IP-rotatie werkt omzeilt de per-IP-limiet hieronder, maar deelt met alle
+# andere aanvragers op /uitnodiging deze ene gedeelde teller. Persistente
+# SQL-backed opslag (zie app/rate_limit_storage.py) — overleeft dus ook een
+# container-herstart.
+@limiter.limit("20 per hour", key_func=lambda: "uitnodiging-global")
+@limiter.limit("5 per hour")
 def uitnodiging():
     lang = request.form.get('lang', session.get('lang', 'nl'))
     form = InvitationForm()
@@ -145,8 +159,12 @@ def uitnodiging():
 # rate-limit-decorators, zodat een anonieme aanvraag nooit de limiter (en
 # dus ook nooit de gedeelde mail-global-teller) raakt.
 @login_required
-@limiter.limit("5 per hour")
+# Smalste limiet (per-IP) dichtst bij def, gedeelde limiet daarboven — zie
+# de uitgebreide toelichting bij /uitnodiging hierboven. Zonder deze
+# volgorde verhoogt een verzoek dat al door de per-IP-limiet geblokkeerd
+# wordt, alsnog de gedeelde teller.
 @limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key)
+@limiter.limit("5 per hour")
 def feedback():
     form = FeedbackForm()
     if not form.validate_on_submit():
@@ -217,11 +235,16 @@ def username_check():
 
 
 @social.route("/aanmelden", methods=["GET", "POST"])
-@limiter.limit("3 per hour", methods=["POST"])
 # methods=["POST"]: alleen een POST kan een verificatiemail versturen (de
 # GET hieronder rendert alleen het formulier) — een GET mag dus niet
 # meetellen voor het gedeelde mail-budget.
+#
+# Smalste limiet (per-IP) dichtst bij def, gedeelde limiet daarboven — zie
+# de uitgebreide toelichting bij /uitnodiging in dit bestand. Zonder deze
+# volgorde verhoogt een verzoek dat al door de per-route-limiet geblokkeerd
+# wordt, alsnog de gedeelde teller.
 @limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key, methods=["POST"])
+@limiter.limit("3 per hour", methods=["POST"])
 def aanmelden():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))

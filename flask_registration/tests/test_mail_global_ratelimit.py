@@ -18,6 +18,12 @@ test_uitnodiging_antibot.py) zodat geen enkele PER-IP-limiet (5/uur op
 beide routes) of de eigen 20/uur-per-route-globale-limiet van /uitnodiging
 ooit toeslaat vóórdat de gedeelde 30/uur-limiet dat doet — anders zou de
 test iets anders meten dan bedoeld.
+
+TestGeblokkeerdVerzoekVerbruiktGeenGedeeldBudget test het omgekeerde
+scenario: een IP dat WEL over zijn eigen smallere limiet heen gaat, mag de
+gedeelde teller niet verder ophogen zodra die smallere limiet al blokkeert
+— zie de decorator-volgorde-toelichting bij /uitnodiging in
+app/routes/social.py voor waarom dat niet vanzelfsprekend is.
 """
 import importlib
 import os
@@ -32,6 +38,7 @@ if project_root not in sys.path:
 import config as config_module
 from app import bcrypt, create_app, db
 from app.models import User
+from app.utils import MAIL_GLOBAL_SCOPE
 
 social_module = importlib.import_module("app.routes.social")
 
@@ -143,6 +150,62 @@ class TestGedeeldeMailGlobalLimiet:
         resp = _invite(logged_in_client, ip="203.0.113.250", i=998)
         assert len(sent_emails) == 30
         assert "Te veel pogingen" in resp.get_data(as_text=True)
+
+
+class TestGeblokkeerdVerzoekVerbruiktGeenGedeeldBudget:
+    """
+    Het interactie-scenario dat aan het licht kwam: @limiter.limit(...)
+    (en dus ook shared_limit) verhoogt zijn teller ALTIJD, ongeacht of het
+    verzoek uiteindelijk wordt toegestaan — en flask-limiter evalueert
+    gestapelde decorators van binnen naar buiten (dichtst-bij-def eerst),
+    stoppend bij de eerste overschrijding (fail_on_first_breach, standaard).
+    Stond de gedeelde limiet dichter bij def dan de per-IP-limiet (de
+    volgorde vóór deze fix), dan werd de gedeelde teller altijd als EERSTE
+    verhoogd — dus ook voor verzoeken die daarna alsnog door de per-IP-
+    limiet werden geblokkeerd. Een bot die alleen tegen zijn eigen per-IP-
+    limiet aanloopt, kon zo toch het budget van alle andere mail-routes
+    opsouperen.
+
+    Met de smalste limiet nu als binnenste decorator (dichtst bij def),
+    stopt de evaluatie bij een per-IP-overschrijding VOORDAT de gedeelde
+    limiet ooit geraakt wordt — industry best practice bij gelaagde rate
+    limits (vgl. APISIX: "a request rejected by any plugin does not
+    consume quota in subsequent plugins").
+    """
+
+    def test_over_de_per_ip_limiet_heen_geblokkeerde_pogingen_tellen_niet_mee(
+        self, logged_in_client, sent_emails
+    ):
+        from app import limiter as _limiter
+
+        # Eén IP knalt ver over zijn eigen per-IP-limiet (5/uur op /feedback)
+        # heen: 8 pogingen, waarvan de laatste 3 al door DIE smalle limiet
+        # geblokkeerd worden — nog lang niet in de buurt van de gedeelde
+        # 30/uur-grens.
+        bot_ip = "198.51.100.66"
+        for i in range(8):
+            resp = _feedback(logged_in_client, ip=bot_ip, i=i)
+            if i < 5:
+                assert "Bedankt voor je feedback" in resp.get_data(as_text=True)
+            else:
+                assert "Te veel pogingen" in resp.get_data(as_text=True)
+        assert len(sent_emails) == 5  # alleen de eerste 5 zijn echt verstuurd
+
+        # De kern van deze test: de GEDEELDE teller staat op 5, niet op 8.
+        # De 3 door de per-IP-limiet geblokkeerde pogingen hebben 'm niet
+        # aangeraakt.
+        shared_count = _limiter._storage.get(
+            f"LIMITER/{MAIL_GLOBAL_SCOPE}/{MAIL_GLOBAL_SCOPE}/30/1/hour"
+        )
+        assert shared_count == 5
+
+        # En dus heeft een ander, legitiem IP nog steeds ruimschoots ruimte
+        # in de gedeelde limiet — de bot heeft dat budget niet opgesoupeerd
+        # ondanks zijn 8 pogingen.
+        legit_ip = "203.0.113.200"
+        resp = _feedback(logged_in_client, ip=legit_ip, i=100)
+        assert "Bedankt voor je feedback" in resp.get_data(as_text=True)
+        assert len(sent_emails) == 6
 
 
 class TestFeedbackLoginRequired:

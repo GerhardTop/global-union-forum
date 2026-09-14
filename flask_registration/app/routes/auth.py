@@ -112,11 +112,13 @@ def login():
 
 
 @auth.route('/wachtwoord-vergeten', methods=['GET', 'POST'])
-@limiter.limit("3 per hour", methods=["POST"])
-# Gedeelde globale mail-limiet (zie app/utils.py:mail_global_key) — alleen
-# op POST, want de GET hieronder rendert alleen het formulier en verstuurt
-# niets.
+# Smalste limiet (per-IP) dichtst bij def, gedeelde limiet daarboven — zie
+# de uitgebreide toelichting bij /uitnodiging in social.py. Zonder deze
+# volgorde verhoogt een verzoek dat al door de per-route-limiet geblokkeerd
+# wordt, alsnog de gedeelde teller. methods=["POST"] op allebei: de GET
+# hieronder rendert alleen het formulier en verstuurt niets.
 @limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key, methods=["POST"])
+@limiter.limit("3 per hour", methods=["POST"])
 def wachtwoord_vergeten():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
@@ -466,9 +468,10 @@ def verify_email(token):
 
 @auth.route("/verify/resend", methods=["POST"])
 @login_required
-@limiter.limit("3 per hour")
-# Gedeelde globale mail-limiet (zie app/utils.py:mail_global_key).
+# Smalste limiet (per-IP) dichtst bij def, gedeelde limiet daarboven — zie
+# de uitgebreide toelichting bij /uitnodiging in social.py.
 @limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key)
+@limiter.limit("3 per hour")
 def verify_resend():
     form = VerifyResendForm()
     if not form.validate_on_submit():
@@ -486,9 +489,10 @@ def verify_resend():
 
 
 @auth.route("/verify/resend-onbevestigd", methods=["POST"])
-@limiter.limit("3 per hour")
-# Gedeelde globale mail-limiet (zie app/utils.py:mail_global_key).
+# Smalste limiet (per-IP) dichtst bij def, gedeelde limiet daarboven — zie
+# de uitgebreide toelichting bij /uitnodiging in social.py.
 @limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key)
+@limiter.limit("3 per hour")
 def verify_resend_onbevestigd():
     """
     Verificatiemail opnieuw versturen voor een gebruiker die NOG NIET is
