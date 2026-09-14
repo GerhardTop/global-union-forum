@@ -15,8 +15,8 @@ from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
                        VerifyResendForm)
 from app.mail import send_email
 from app.models import User, Post, PostLike
-from app.utils import (_send_verify_email, _password_strong,
-                       _stash_form_state, _pop_form_state,
+from app.utils import (MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, _send_verify_email,
+                       _password_strong, _stash_form_state, _pop_form_state, mail_global_key,
                        is_username_valid_format, is_username_blacklisted, is_username_available)
 
 auth = Blueprint("auth", __name__)
@@ -113,6 +113,10 @@ def login():
 
 @auth.route('/wachtwoord-vergeten', methods=['GET', 'POST'])
 @limiter.limit("3 per hour", methods=["POST"])
+# Gedeelde globale mail-limiet (zie app/utils.py:mail_global_key) — alleen
+# op POST, want de GET hieronder rendert alleen het formulier en verstuurt
+# niets.
+@limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key, methods=["POST"])
 def wachtwoord_vergeten():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
@@ -463,6 +467,8 @@ def verify_email(token):
 @auth.route("/verify/resend", methods=["POST"])
 @login_required
 @limiter.limit("3 per hour")
+# Gedeelde globale mail-limiet (zie app/utils.py:mail_global_key).
+@limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key)
 def verify_resend():
     form = VerifyResendForm()
     if not form.validate_on_submit():
@@ -481,6 +487,8 @@ def verify_resend():
 
 @auth.route("/verify/resend-onbevestigd", methods=["POST"])
 @limiter.limit("3 per hour")
+# Gedeelde globale mail-limiet (zie app/utils.py:mail_global_key).
+@limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key)
 def verify_resend_onbevestigd():
     """
     Verificatiemail opnieuw versturen voor een gebruiker die NOG NIET is

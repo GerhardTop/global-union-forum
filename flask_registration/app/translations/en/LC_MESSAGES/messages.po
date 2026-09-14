@@ -462,3 +462,7 @@ msgstr "Enter your last name."
 #: app/routes/profile.py
 msgid "Enter your current password."
 msgstr "Enter your current password."
+
+#: app/templates/index.html
+msgid "Log in to send feedback"
+msgstr "Log in to send feedback"

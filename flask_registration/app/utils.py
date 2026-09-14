@@ -104,6 +104,27 @@ def _pop_form_state(form_key):
     return state.get('errors', {}), state.get('data', {})
 
 
+# ── Gedeelde globale mail-rate-limit (gedeeld door auth en social) ─────────
+#
+# Structureel vangnet bovenop de bestaande per-route- en per-IP-limieten:
+# welk formulier een bot ook vindt (feedback, uitnodiging, aanmelden,
+# wachtwoord-vergeten, verificatiemail opnieuw versturen — elke route die
+# send_email() aanroept), ze delen allemaal deze ENE teller. Toegepast via
+# @limiter.shared_limit(...) (niet .limit()!) op elke route: .limit() zou
+# de scope stilzwijgend per endpoint uitsplitsen (elke route krijgt dan
+# alsnog zijn EIGEN teller, ondanks de vaste key_func hieronder) — pas
+# .shared_limit() met een vaste scope-string maakt 'm écht route-
+# onafhankelijk. Vaste key_func (dus geen per-IP-sleutel) maakt 'm ook
+# IP-onafhankelijk. Samen: "max X mail-triggerende requests per uur over de
+# HELE app", ongeacht welke route of welk IP.
+MAIL_GLOBAL_RATE_LIMIT = "30 per hour"
+MAIL_GLOBAL_SCOPE = "mail-global"
+
+
+def mail_global_key():
+    return "mail-global"
+
+
 # ── E-mail verificatie (gedeeld door auth en social) ────────────────────────
 
 def _make_verify_token(email, secret_key):

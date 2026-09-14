@@ -9,8 +9,10 @@ from app import db, bcrypt, limiter
 from app.forms import FeedbackForm, InvitationForm, AanmeldenForm
 from app.mail import send_email
 from app.models import User
-from app.utils import (_password_strong, _send_verify_email, _stash_form_state, _pop_form_state,
-                       is_username_valid_format, is_username_blacklisted, is_username_available)
+from app.utils import (MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, _password_strong,
+                       _send_verify_email, _stash_form_state, _pop_form_state,
+                       is_username_valid_format, is_username_blacklisted,
+                       is_username_available, mail_global_key)
 
 social = Blueprint("social", __name__)
 
@@ -65,6 +67,11 @@ def _inject_social_forms():
 # andere aanvragers deze ene gedeelde teller. Persistente SQL-backed opslag
 # (zie app/rate_limit_storage.py) — overleeft dus ook een container-herstart.
 @limiter.limit("20 per hour", key_func=lambda: "uitnodiging-global")
+# Structureel vangnet over de HELE app heen (zie app/utils.py:mail_global_key):
+# gedeeld met /feedback, /aanmelden, /wachtwoord-vergeten en de
+# verify-resend-routes — welk mail-formulier een misbruiker ook vindt, het
+# totaal aantal verstuurde mails per uur kan nooit boven deze ene grens uit.
+@limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key)
 def uitnodiging():
     lang = request.form.get('lang', session.get('lang', 'nl'))
     form = InvitationForm()
@@ -134,7 +141,12 @@ def uitnodiging():
 
 
 @social.route("/feedback", methods=["POST"])
+# Zelfde volgorde-redenering als /uitnodiging: @login_required buiten de
+# rate-limit-decorators, zodat een anonieme aanvraag nooit de limiter (en
+# dus ook nooit de gedeelde mail-global-teller) raakt.
+@login_required
 @limiter.limit("5 per hour")
+@limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key)
 def feedback():
     form = FeedbackForm()
     if not form.validate_on_submit():
@@ -152,12 +164,10 @@ def feedback():
         )
         return redirect(url_for("main.index"))
 
-    if current_user.is_authenticated:
-        name = f"{current_user.first_name} {current_user.last_name}".strip()
-        email = current_user.email
-    else:
-        name = request.form.get('feedback_name', '').strip()
-        email = request.form.get('feedback_email', '').strip()
+    # Geen anonieme tak meer nodig: @login_required hierboven garandeert dat
+    # current_user hier altijd een ingelogde gebruiker is.
+    name = f"{current_user.first_name} {current_user.last_name}".strip()
+    email = current_user.email
     message = request.form.get('feedback_message', '').strip()
 
     if not (name and email and message):
@@ -208,6 +218,10 @@ def username_check():
 
 @social.route("/aanmelden", methods=["GET", "POST"])
 @limiter.limit("3 per hour", methods=["POST"])
+# methods=["POST"]: alleen een POST kan een verificatiemail versturen (de
+# GET hieronder rendert alleen het formulier) — een GET mag dus niet
+# meetellen voor het gedeelde mail-budget.
+@limiter.shared_limit(MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, key_func=mail_global_key, methods=["POST"])
 def aanmelden():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))

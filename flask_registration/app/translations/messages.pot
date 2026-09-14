@@ -1029,3 +1029,7 @@ msgstr ""
 #: routes.py:170-176
 msgid "Hoi {name},\nJe hebt een wachtwoordreset aangevraagd. Klik op de link hieronder om een nieuw wachtwoord in te stellen:\n{url}\nDeze link verloopt na 1 uur.\nAls jij dit niet hebt aangevraagd, kun je deze e-mail negeren.\nGlobal Union Forum"
 msgstr ""
+
+#: app/templates/index.html
+msgid "Log in to send feedback"
+msgstr ""
