@@ -1,5 +1,5 @@
 """
-Test-suite voor de twee losstaande WikiPolitics-preview-pagina's.
+Test-suite voor de drie losstaande WikiPolitics-preview-pagina's.
 
 Deze pagina's staan bewust volledig los van de site: bereikbaar via hun
 directe URL, maar niet gelinkt vanuit _header.html of enige bestaande
@@ -35,6 +35,20 @@ class TestWikipoliticsPages:
         resp = client.get("/wikipolitics/overwegingen")
         disk = (_APP_DIR / "wikipolitics" / "wikipolitics-rationale.html").read_bytes()
         assert resp.data == disk
+
+    def test_example_loads(self, client):
+        resp = client.get("/wikipolitics/example")
+        assert resp.status_code == 200
+        assert resp.mimetype == "text/html"
+
+    def test_example_is_served_verbatim(self, client):
+        resp = client.get("/wikipolitics/example")
+        disk = (_APP_DIR / "wikipolitics" / "wikipolitics-homepage.html").read_bytes()
+        assert resp.data == disk
+
+    def test_design_is_wireframes_v5(self, client):
+        html = client.get("/wikipolitics/design").get_data(as_text=True)
+        assert "Wireframes v5" in html
 
     def test_cross_link_design_to_overwegingen(self, client):
         html = client.get("/wikipolitics/design").get_data(as_text=True)
@@ -73,7 +87,8 @@ class TestWikipoliticsPages:
 
 class TestWikipoliticsCsp:
     def test_relaxed_csp_only_on_these_routes(self, client):
-        for path in ("/wikipolitics/design", "/wikipolitics/overwegingen"):
+        for path in ("/wikipolitics/design", "/wikipolitics/overwegingen",
+                     "/wikipolitics/example"):
             csp = client.get(path).headers.get("Content-Security-Policy", "")
             assert "blob:" in csp, f"{path} mist blob: in CSP"
             assert "script-src" in csp and "'unsafe-eval'" in csp
@@ -94,7 +109,8 @@ class TestWikipoliticsIsolation:
         """
         offenders = []
         needles = ("wikipolitics/design", "wikipolitics/overwegingen",
-                   "wikipolitics-wireframes", "wikipolitics-rationale")
+                   "wikipolitics/example", "wikipolitics-wireframes",
+                   "wikipolitics-rationale", "wikipolitics-homepage")
         allowed = {
             _APP_DIR / "routes" / "wikipolitics.py",
         }

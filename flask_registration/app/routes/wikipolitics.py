@@ -1,5 +1,5 @@
 """
-Twee losstaande, volledig zelfstandige preview-pagina's voor het
+Drie losstaande, volledig zelfstandige preview-pagina's voor het
 WikiPolitics-ontwerp.  Bewust géén onderdeel van de site: niet in
 _header.html, geen link vanuit een bestaande route of template.  Alleen
 bereikbaar via de directe URL.
@@ -10,8 +10,8 @@ worden 1-op-1 geserveerd — geen Jinja-rendering.
 
 De globale CSP van de site (Talisman, zie app/__init__.py) staat geen
 blob:-scripts of data:-fonts toe; de bundle-loader heeft die wél nodig om
-zichzelf uit te pakken.  Daarom krijgt élk van deze twee routes via de
-Talisman-decorator een eigen, ruimere CSP — puur voor deze twee endpoints,
+zichzelf uit te pakken.  Daarom krijgt élk van deze drie routes via de
+Talisman-decorator een eigen, ruimere CSP — puur voor deze drie endpoints,
 de rest van de site blijft op het strikte beleid.
 """
 from pathlib import Path
@@ -24,7 +24,7 @@ wikipolitics = Blueprint("wikipolitics", __name__)
 
 _PAGES_DIR = Path(__file__).resolve().parent.parent / "wikipolitics"
 
-# Ruimere CSP, alleen voor de twee preview-pagina's.  De bundle-loader mint
+# Ruimere CSP, alleen voor de drie preview-pagina's.  De bundle-loader mint
 # runtime blob:-URL's voor z'n scripts en data:-URI's voor de fonts; babel/
 # canvas-runtime gebruikt new Function(), vandaar 'unsafe-eval'.  Nog steeds
 # 'self'-gebaseerd: geen externe origins, geen framing.
@@ -57,3 +57,9 @@ def design():
 @talisman(content_security_policy=_WIKIPOLITICS_CSP)
 def overwegingen():
     return _serve("wikipolitics-rationale.html")
+
+
+@wikipolitics.route("/wikipolitics/example")
+@talisman(content_security_policy=_WIKIPOLITICS_CSP)
+def example():
+    return _serve("wikipolitics-homepage.html")
