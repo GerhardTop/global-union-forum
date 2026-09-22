@@ -59,7 +59,7 @@ class TestWikipoliticsPages:
         assert 'href="/wikipolitics/design"' in html
 
     @pytest.mark.parametrize("path,target,label", [
-        ("/wikipolitics/design", "/wikipolitics/overwegingen", "Design rationale"),
+        ("/wikipolitics/design", "/wikipolitics/overwegingen", "Design handover"),
         ("/wikipolitics/overwegingen", "/wikipolitics/design", "Back to wireframes"),
     ])
     def test_crosslink_is_reinjected_after_root_swap(self, client, path, target, label):
