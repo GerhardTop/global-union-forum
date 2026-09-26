@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'nl' %}Motie · Globale Unie{% else %}Motion · Global Union{% endif %} — Global Union{% endblock %}
+
+{% block content_outer %}
+{% block content %}
+<main class="gu-about" lang="{{ lang }}">
+
+  {# ── Hero ─────────────────────────────────────────────── #}
+  <section class="gu-about__section gu-about__hero">
+    <div class="gu-about__inner">
+      <p class="gu-eyebrow">{% if lang == 'nl' %}Politieke motie · D66{% else %}Political motion · D66{% endif %}</p>
+      <h1 class="gu-display gu-about__title">
+        {% if lang == 'nl' %}De EU en Canada als<br><em>initiatiefnemers van een globale coalitie van democratieën</em>
+        {% else %}The EU and Canada as<br><em>initiators of a global coalition of democracies</em>{% endif %}
+      </h1>
+      <p class="gu-lead gu-about__leadwide">
+        {% if lang == 'nl' %}De Algemene Vergadering van D66,{% else %}The General Assembly of D66,{% endif %}
+      </p>
+    </div>
+  </section>
+
+  {# ── Constaterende dat ────────────────────────────────── #}
+  <section class="gu-about__section gu-about__section--soft">
+    <div class="gu-about__inner">
+      <div class="gu-about__identityHead">
+        <p class="gu-eyebrow">{% if lang == 'nl' %}Constaterende dat{% else %}Noting that{% endif %}</p>
+      </div>
+      <div class="gu-about__pillars">
+        <div class="gu-about__verifyAccount">
+          <span class="gu-arrow" style="background:var(--gu-europe)"></span>
+          <span>{% if lang == 'nl' %}de VS het vertrouwen van bondgenoten ondermijnt door eenzijdig op te treden en internationale afspraken te negeren;{% else %}the US is undermining the trust of its allies by acting unilaterally and ignoring international agreements;{% endif %}</span>
+        </div>
+        <div class="gu-about__verifyAccount">
+          <span class="gu-arrow" style="background:var(--gu-asia)"></span>
+          <span>{% if lang == 'nl' %}Rusland de Europese veiligheidsorde bedreigt en China Rusland steunt en zich regelmatig niet houdt aan internationale normen;{% else %}Russia threatens the European security order and China backs Russia and regularly disregards international norms;{% endif %}</span>
+        </div>
+        <div class="gu-about__verifyAccount">
+          <span class="gu-arrow" style="background:var(--gu-americas)"></span>
+          <span>{% if lang == 'nl' %}Europa sterk afhankelijk is van Amerikaanse technologie en AI-infrastructuur en van China voor grondstoffen;{% else %}Europe is heavily dependent on American technology and AI infrastructure, and on China for raw materials;{% endif %}</span>
+        </div>
+        <div class="gu-about__verifyAccount">
+          <span class="gu-arrow" style="background:var(--gu-africa)"></span>
+          <span>{% if lang == 'nl' %}premier Carney in Davos (januari 2026) opriep tot samenwerking tussen "middle powers", landen die groot genoeg zijn om mee te tellen en de internationale rechtsorde respecteren;{% else %}Prime Minister Carney, in Davos (January 2026), called for cooperation between "middle powers" — countries large enough to matter that respect the international rule of law;{% endif %}</span>
+        </div>
+        <div class="gu-about__verifyAccount">
+          <span class="gu-arrow" style="background:var(--gu-oceania)"></span>
+          <span>{% if lang == 'nl' %}Canada op 16 september 2026 is aangekondigd als het eerste geassocieerde lid van de EU;{% else %}Canada was announced on 16 September 2026 as the EU's first associated member;{% endif %}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ── Overwegende dat ──────────────────────────────────── #}
+  <section class="gu-about__section gu-about__section--soft" style="padding-top: 0;">
+    <div class="gu-about__inner">
+      <div class="gu-about__identityHead">
+        <p class="gu-eyebrow">{% if lang == 'nl' %}Overwegende dat{% else %}Considering that{% endif %}</p>
+      </div>
+      <div class="gu-about__pillars">
+        <div class="gu-about__verifyAccount">
+          <span class="gu-arrow" style="background:var(--gu-europe)"></span>
+          <span>{% if lang == 'nl' %}dit momentum benut moet worden voor een <strong>permanente samenwerkingsstructuur</strong> tussen democratieën, niet als vervanging maar als aanvulling op de VN;{% else %}this momentum must be used for a <strong>permanent structure of cooperation</strong> between democracies, not as a replacement for but a complement to the UN;{% endif %}</span>
+        </div>
+        <div class="gu-about__verifyAccount">
+          <span class="gu-arrow" style="background:var(--gu-asia)"></span>
+          <span>{% if lang == 'nl' %}deze structuur open moet staan <strong>voor alle landen</strong> die voldoen aan criteria voor democratie, rechtsstaat, corruptiebestrijding en mensenrechten, naast Canada, de UK, Zuid-Korea, Japan, Nieuw-Zeeland en Australië, ook landen buiten het rijke westen, zoals Costa Rica, Botswana en Kaapverdië;{% else %}this structure should be open <strong>to all countries</strong> that meet criteria for democracy, the rule of law, anti-corruption and human rights — alongside Canada, the UK, South Korea, Japan, New Zealand and Australia, also countries beyond the wealthy West, such as Costa Rica, Botswana and Cape Verde;{% endif %}</span>
+        </div>
+        <div class="gu-about__verifyAccount">
+          <span class="gu-arrow" style="background:var(--gu-americas)"></span>
+          <span>{% if lang == 'nl' %}de EU met de uitbreiding naar Oost-Europa heeft aangetoond dat het samengaan met een blok van welvarende democratieën een krachtige aantrekkingskracht uitoefent, waardoor landen met voorheen autocratische regimes hervormingen doorvoerden om toe te treden;{% else %}with its enlargement into Eastern Europe, the EU has shown that joining a bloc of prosperous democracies exerts a powerful pull, leading countries with formerly autocratic regimes to carry out reforms in order to join;{% endif %}</span>
+        </div>
+        <div class="gu-about__verifyAccount">
+          <span class="gu-arrow" style="background:var(--gu-africa)"></span>
+          <span>{% if lang == 'nl' %}die aantrekkingskracht opgeschaald kan worden naar wereldniveau, met op de lange termijn het <strong>perspectief van een Globale Unie</strong> van functionerende democratieën;{% else %}that pull can be scaled up to the global level, with, in the long term, the <strong>prospect of a Global Union</strong> of functioning democracies;{% endif %}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ── Verzoekt (kernbesluit, uitgelicht) ───────────────── #}
+  <section class="gu-about__section gu-about__section--soft" style="padding-top: 0;">
+    <div class="gu-about__inner">
+      <aside class="gu-about__verifyCard">
+        <p class="gu-eyebrow" style="margin-bottom:20px;">{% if lang == 'nl' %}Verzoekt de EP-delegatie{% else %}Requests the EP delegation{% endif %}</p>
+        <p class="gu-lead" style="margin:0;">
+          {% if lang == 'nl' %}
+            zich in te spannen voor de totstandkoming van een permanente samenwerkingsstructuur tussen de EU, Canada en andere democratische landen, die voldoen aan criteria voor rechtsstaat, corruptiebestrijding en mensenrechten, met als doel de strategische autonomie van democratieën te versterken en meer landen aan te trekken die democratische waarden omarmen,
+          {% else %}
+            to work towards the establishment of a permanent structure of cooperation between the EU, Canada and other democratic countries that meet criteria for the rule of law, anti-corruption and human rights, with the aim of strengthening the strategic autonomy of democracies and attracting more countries that embrace democratic values,
+          {% endif %}
+        </p>
+        <p class="gu-lead" style="margin:20px 0 0; font-style:italic;">
+          {% if lang == 'nl' %}en gaat over tot de orde van de dag.{% else %}and proceeds to the order of the day.{% endif %}
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  {# ── Oproep ───────────────────────────────────────────── #}
+  <section class="gu-about__section gu-about__section--soft" style="padding-top: 0;">
+    <div class="gu-about__inner">
+      <p class="gu-lead gu-about__leadwide">
+        {% if lang == 'nl' %}Wil jij deze motie mede-indienen of ondersteunen?{% else %}Would you like to co-submit or support this motion?{% endif %}
+      </p>
+      <a href="mailto:top.gerhard@gmail.com?subject={% if lang == 'nl' %}Motie%20Globale%20Unie{% else %}Global%20Union%20motion{% endif %}" class="gu-btn gu-btn--primary gu-btn--lg">
+        {% if lang == 'nl' %}Mede-indienen of steunen{% else %}Co-submit or support{% endif %}
+      </a>
+    </div>
+  </section>
+
+</main>
+{% endblock %}{% endblock %}

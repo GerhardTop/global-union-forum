@@ -97,6 +97,11 @@ def initiatiefnemer():
     return render_template("initiatiefnemer.html")
 
 
+@main.route("/motie_d66")
+def motie_d66():
+    return render_template("motie_d66.html")
+
+
 @main.route("/success")
 def success():
     name = request.args.get("name", "")
