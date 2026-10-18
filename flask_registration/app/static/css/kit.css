@@ -393,6 +393,39 @@ body {
   max-width: 420px;
   justify-self: end;
 }
+/* Quote onder de hero: over beide kolommen, zelfde stijl als
+   .gu-about__founderQuote (accentrand, zachte achtergrond, cursief). */
+.gu-hero__quote {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 32px 40px;
+  border-left: 3px solid var(--gu-globe);
+  border-radius: 0 8px 8px 0;
+  background: var(--gu-bg-soft);
+}
+.gu-hero__quote blockquote {
+  margin: 0;
+  max-width: 72ch;
+  font-size: 1.25rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--gu-fg-2);
+}
+.gu-hero__quote blockquote p { margin: 0; }
+.gu-hero__quoteMark {
+  color: var(--gu-globe);
+  font-weight: 500;
+  font-style: normal;
+}
+.gu-hero__quote figcaption {
+  margin-top: 14px;
+  font-size: 0.875rem;
+  color: var(--gu-fg-3);
+}
+.gu-hero > .gu-hero__flags {
+  grid-column: 1 / -1;
+  margin-top: 0;
+}
 
 /* ============================================================
    Sections
@@ -2731,6 +2764,8 @@ body {
   }
   .gu-hero__symbol { display: none; }
   .gu-hero__cta { flex-wrap: wrap; }
+  .gu-hero__quote { padding: 20px; }
+  .gu-hero__quote blockquote { font-size: 1.0625rem; }
   .gu-hero__flags {
     margin-top: 32px;
     gap: 8px;

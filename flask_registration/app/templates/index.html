@@ -40,20 +40,30 @@
       <a class="gu-btn gu-btn--ghost" href="{{ url_for('main.manifest') }}">{{ _('Read the manifest') }}</a>
     </div>
     {% endif %}
-    <div class="gu-hero__flags">
-      <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-europe)"></span>
-      <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-asia)"></span>
-      <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-americas)"></span>
-      <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-africa)"></span>
-      <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-oceania)"></span>
-      <span style="font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
-                   color: var(--gu-fg-3); font-weight: 300; margin-left: 8px;">
-        {{ _('A global movement') }}
-      </span>
-    </div>
   </div>
   <img class="gu-hero__symbol"
        src="{{ url_for('static', filename='assets/logo-symbol.svg') }}" alt="">
+
+  {# Carney-quote: over beide hero-kolommen. Letterlijke uitspraak, dus in
+     beide talen Engels; alleen de attributie is tweetalig. #}
+  <figure class="gu-hero__quote">
+    <blockquote lang="en">
+      <p><span class="gu-hero__quoteMark">"</span>... build a new order that encompasses our values, such as respect for human rights, sustainable development, solidarity, sovereignty and territorial integrity of the various states.<span class="gu-hero__quoteMark">"</span></p>
+    </blockquote>
+    <figcaption>{% if lang == 'nl' %}Mark Carney, premier van Canada, World Economic Forum, Davos, januari 2026{% else %}Mark Carney, Prime Minister of Canada, World Economic Forum, Davos, January 2026{% endif %}</figcaption>
+  </figure>
+
+  <div class="gu-hero__flags">
+    <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-europe)"></span>
+    <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-asia)"></span>
+    <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-americas)"></span>
+    <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-africa)"></span>
+    <span class="gu-arrow gu-arrow--lg" style="background: var(--gu-oceania)"></span>
+    <span style="font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+                 color: var(--gu-fg-3); font-weight: 300; margin-left: 8px;">
+      {{ _('A global movement') }}
+    </span>
+  </div>
 </section>
 
 {% if modal %}
