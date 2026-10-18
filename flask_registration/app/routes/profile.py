@@ -97,7 +97,36 @@ def profile():
         password_weak=errors.get("password_weak", False),
         password_mismatch=errors.get("password_mismatch", False),
         current_password_empty=errors.get("current_password_empty", False),
+        name_display_error=errors.get("name_display_error"),
     )
+
+
+@profile_bp.route("/profiel/naamweergave", methods=["POST"])
+@login_required
+def profiel_naamweergave():
+    """Kies hoe je in het forum verschijnt: pseudoniem (standaard) of je echte
+    naam. Aanzetten vereist een bevestiging (confirm=1): de modal op de
+    profielpagina stuurt die mee, zonder JavaScript een vinkje. Terugzetten
+    naar pseudoniem kan altijd direct."""
+    if not ForumActionForm().validate_on_submit():
+        abort(400)
+    is_xhr = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    want_real = request.form.get("show_real_name") == "1"
+    error = None
+    if want_real and current_user.real_name is None:
+        error = "no_name"
+    elif want_real and not current_user.show_real_name and request.form.get("confirm") != "1":
+        error = "not_confirmed"
+    if error:
+        if is_xhr:
+            return jsonify({'ok': False, 'error': error}), 422
+        _stash_form_state("profile", {"kind": "name_display", "name_display_error": error})
+        return redirect(url_for("profile.profile") + "#guNameDisplay", code=303)
+    current_user.show_real_name = want_real
+    db.session.commit()
+    if is_xhr:
+        return jsonify({'ok': True, 'show_real_name': want_real})
+    return redirect(url_for("profile.profile") + "#guNameDisplay")
 
 
 @profile_bp.route("/profiel/vertaalvoorkeur", methods=["POST"])

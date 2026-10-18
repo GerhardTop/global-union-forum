@@ -224,7 +224,9 @@ class TestDepthLimit:
             assert len(links) == 1
             assert links[0]['href'] == f'#post-{parent.id}'
             assert 'gu-post__inreply--flat' in links[0]['class']
-            assert f'{label} {parent.author_name}' in html
+            # Publieke naam volgens de keuze van de auteur (standaard pseudoniem).
+            assert f'{label} {parent.public_author_name()}' in html
+            assert parent.public_author_name().startswith('@')
 
     def test_mobile_label_present_from_depth_three(self, client, db, forum_users, thread):
         # Op diepte 3 en 4 springt mobiel niet meer in; het label staat er dan

@@ -38,9 +38,57 @@
       </div>
     </div>
 
-    <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 16px;">
+    {# ── Naamweergave in het forum: pseudoniem (standaard) of echte naam ── #}
+    <div id="guNameDisplay" class="gu-namechoice">
+      <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 8px;">
+        {% if lang == 'nl' %}Hoe verschijn je in het forum?{% else %}How do you appear in the forum?{% endif %}
+      </h2>
+      <p class="gu-namechoice__intro">
+        {% if lang == 'nl' %}Standaard doe je mee onder je pseudoniem. Je kunt er ook voor kiezen om onder je echte naam mee te doen, en dat later altijd weer terugzetten.{% else %}By default you take part under your pseudonym. You can also choose to take part under your real name, and switch back at any time.{% endif %}
+      </p>
+      <form id="guNameForm" method="POST" action="{{ url_for('profile.profiel_naamweergave') }}" novalidate>
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        <label class="gu-namechoice__option">
+          <input type="radio" name="show_real_name" value="0"{% if not current_user.shows_real_name %} checked{% endif %}>
+          <span>
+            <strong>{% if lang == 'nl' %}Pseudoniem{% else %}Pseudonym{% endif %} (@{{ current_user.username }})</strong>
+            <span class="gu-join__badge">{% if lang == 'nl' %}standaard{% else %}default{% endif %}</span>
+          </span>
+        </label>
+        <label class="gu-namechoice__option{% if not current_user.real_name %} gu-namechoice__option--disabled{% endif %}">
+          <input type="radio" name="show_real_name" value="1"{% if current_user.shows_real_name %} checked{% endif %}{% if not current_user.real_name %} disabled{% endif %}>
+          <span>
+            <strong>{% if lang == 'nl' %}Mijn echte naam{% else %}My real name{% endif %}{% if current_user.real_name %} ({{ current_user.real_name }}){% endif %}</strong>
+            {% if not current_user.real_name %}
+            <span class="gu-namechoice__hint">{% if lang == 'nl' %}Er is geen echte naam bekend bij je account.{% else %}No real name is known for your account.{% endif %}</span>
+            {% endif %}
+          </span>
+        </label>
+        <noscript>
+          <label class="gu-join__check" style="margin-top: 8px;">
+            <input type="checkbox" name="confirm" value="1">
+            <span>{% if lang == 'nl' %}Ik begrijp dat mijn echte naam dan zichtbaar wordt bij al mijn bijdragen in het forum, ook mijn eerdere.{% else %}I understand that my real name will then be visible on all my contributions in the forum, including earlier ones.{% endif %}</span>
+          </label>
+          <button type="submit" class="gu-btn gu-btn--primary" style="margin-top: 8px;">{{ _('Save') }} <span class="gu-arrow"></span></button>
+        </noscript>
+        <p class="gu-join__formError" id="guNameError"{% if not name_display_error %} style="display:none;"{% endif %}>
+          {% if name_display_error == 'no_name' %}{% if lang == 'nl' %}Er is geen echte naam bekend bij je account.{% else %}No real name is known for your account.{% endif %}
+          {% else %}{% if lang == 'nl' %}Bevestig eerst dat je echte naam zichtbaar mag worden.{% else %}Please first confirm that your real name may become visible.{% endif %}{% endif %}
+        </p>
+        <span id="guNameSaved" class="gu-namechoice__saved" style="display:none;">{% if lang == 'nl' %}Opgeslagen!{% else %}Saved!{% endif %}</span>
+      </form>
+
+      {# LinkedIn hoort bij de echte naam: alleen dan getoond en publiek. #}
+      <p id="guLinkedInPseudoNote" class="gu-namechoice__hint"{% if current_user.shows_real_name %} hidden{% endif %}>
+        {% if lang == 'nl' %}Zolang je je pseudoniem gebruikt, staat je LinkedIn-profiel niet publiek in het forum.{% else %}As long as you use your pseudonym, your LinkedIn profile is not shown publicly in the forum.{% endif %}
+      </p>
+      <div id="guLinkedInSection"{% if not current_user.shows_real_name %} hidden{% endif %}>
+    <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 24px 0 8px;">
       {{ _('Your LinkedIn profile.') }}
-    </h2>
+    </h3>
+    <p class="gu-namechoice__hint" style="margin-bottom: 16px;">
+      {% if lang == 'nl' %}Je LinkedIn-profiel staat publiek bij je naam in het forum.{% else %}Your LinkedIn profile is shown publicly next to your name in the forum.{% endif %}
+    </p>
     <p id="guLinkedInDisplay" style="margin-bottom: 16px; font-size: 14px;{% if not current_user.linkedin_url %} display: none;{% endif %}">
       <a id="guLinkedInLink" href="{{ current_user.linkedin_url or '' }}" target="_blank" rel="noopener noreferrer"
          style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">
@@ -69,6 +117,8 @@
         {% if lang == 'nl' %}Opgeslagen!{% else %}Saved!{% endif %}
       </span>
     </form>
+      </div>
+    </div>
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
@@ -347,6 +397,111 @@
   </div>
 
 </div>
+
+
+{# ── Bevestiging: echte naam publiek maken ─────────────────── #}
+<div class="gu-modal-overlay" id="guRealNameModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="guRealNameTitle">
+  <div class="gu-modal">
+    <button type="button" class="gu-modal__close" id="guRealNameClose" aria-label="{% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}">✕</button>
+    <h2 class="gu-modal__title" id="guRealNameTitle">
+      {% if lang == 'nl' %}Je echte naam tonen?{% else %}Show your real name?{% endif %}
+    </h2>
+    <p class="gu-modal__body">
+      {% if lang == 'nl' %}Je echte naam ({{ current_user.real_name or '' }}) wordt dan zichtbaar bij al je bijdragen in het forum, ook je eerdere. Je kunt dit altijd terugzetten naar je pseudoniem.{% else %}Your real name ({{ current_user.real_name or '' }}) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym.{% endif %}
+    </p>
+    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
+      <button type="button" id="guRealNameCancel" class="gu-btn gu-btn--ghost">
+        {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
+      </button>
+      <button type="button" id="guRealNameConfirm" class="gu-btn gu-btn--primary">
+        {% if lang == 'nl' %}Ja, toon mijn naam{% else %}Yes, show my name{% endif %}
+      </button>
+    </div>
+  </div>
+</div>
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var form = document.getElementById('guNameForm');
+    if (!form) return;
+    var radios = form.querySelectorAll('input[name="show_real_name"]');
+    var modal = document.getElementById('guRealNameModal');
+    var errorEl = document.getElementById('guNameError');
+    var savedEl = document.getElementById('guNameSaved');
+    var section = document.getElementById('guLinkedInSection');
+    var pseudoNote = document.getElementById('guLinkedInPseudoNote');
+    var lang = {{ lang | tojson }};
+    var current = form.querySelector('input[name="show_real_name"]:checked').value;
+
+    function select(value) {
+      radios.forEach(function (r) { r.checked = (r.value === value); });
+    }
+    function applyUi(value) {
+      current = value;
+      select(value);
+      section.hidden = value !== '1';
+      pseudoNote.hidden = value === '1';
+    }
+    function showError(text) {
+      errorEl.textContent = text;
+      errorEl.style.display = '';
+    }
+    function save(value, confirmed) {
+      var fd = new FormData();
+      var token = form.querySelector('input[name="csrf_token"]');
+      if (token) fd.append('csrf_token', token.value);
+      fd.append('show_real_name', value);
+      if (confirmed) fd.append('confirm', '1');
+      errorEl.style.display = 'none';
+      fetch(form.action, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+        .then(function (data) {
+          if (!data.ok) {
+            select(current);
+            showError(lang === 'nl' ? 'Opslaan mislukt, probeer het opnieuw.' : 'Saving failed, please try again.');
+            return;
+          }
+          applyUi(data.show_real_name ? '1' : '0');
+          savedEl.style.display = '';
+          setTimeout(function () { savedEl.style.display = 'none'; }, 2500);
+        })
+        .catch(function () {
+          select(current);
+          showError(lang === 'nl' ? 'Opslaan mislukt, probeer het opnieuw.' : 'Saving failed, please try again.');
+        });
+    }
+    function openModal() {
+      modal.style.display = 'flex';
+      document.getElementById('guRealNameConfirm').focus();
+    }
+    function closeModal() {
+      modal.style.display = 'none';
+      form.querySelector('input[value="1"]').focus();
+    }
+
+    radios.forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        if (radio.value === current) return;
+        if (radio.value === '1') {
+          // Pas na bevestiging toepassen: tot dan blijft het pseudoniem staan.
+          select(current);
+          openModal();
+        } else {
+          save('0', false);
+        }
+      });
+    });
+    document.getElementById('guRealNameConfirm').addEventListener('click', function () {
+      modal.style.display = 'none';
+      save('1', true);
+    });
+    document.getElementById('guRealNameCancel').addEventListener('click', closeModal);
+    document.getElementById('guRealNameClose').addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+    });
+  })();
+</script>
 
 {# ── Delete account confirmation modal ─────────────────── #}
 {% if not current_user.is_admin %}

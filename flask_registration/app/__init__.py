@@ -132,6 +132,7 @@ def _migrate_columns():
     # backfill hieronder) selecteert alle modelkolommen, dus ook role en
     # rules_accepted_at; die moeten dan al bestaan.
     _migrate_roles(existing)
+    _migrate_show_real_name(existing)
     _migrate_username_and_backfill(insp, existing, is_pg)
 
 
@@ -163,6 +164,29 @@ def _migrate_roles(existing):
                  "rules_accepted_at = COALESCE(rules_accepted_at, :now) WHERE role IS NULL"),
             {'now': datetime.utcnow()},
         )
+        conn.commit()
+
+
+def _migrate_show_real_name(existing):
+    """
+    users.show_real_name (nullable, standaard FALSE): iedereen verschijnt in
+    het forum als pseudoniem tot hij zelf iets anders kiest. Alleen de vier
+    demo-accounts (geen echte personen; hun berichten tonen bewust namen als
+    "Jan Hofman (demo)") gaan bij het toevoegen van de kolom op TRUE. Net als
+    _migrate_roles eenmalig en in één transactie, vóór elke ORM-query op User.
+    """
+    if 'users' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('users')}
+    if 'show_real_name' in cols:
+        return
+    from app.routes.forum import DEMO_USER_EMAILS
+    with db.engine.connect() as conn:
+        conn.execute(text('ALTER TABLE users ADD COLUMN show_real_name BOOLEAN NULL DEFAULT FALSE'))
+        conn.execute(text('UPDATE users SET show_real_name = FALSE WHERE show_real_name IS NULL'))
+        for email in DEMO_USER_EMAILS.values():
+            conn.execute(text('UPDATE users SET show_real_name = TRUE WHERE LOWER(email) = :e'),
+                         {'e': email.lower()})
         conn.commit()
 
 

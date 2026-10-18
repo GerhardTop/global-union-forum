@@ -39,6 +39,10 @@ class User(UserMixin, db.Model):
     # is_moderator blijft bestaan en wordt via set_role() synchroon gehouden.
     role                = db.Column(db.String(20), nullable=True, default=None)
     rules_accepted_at   = db.Column(db.DateTime, nullable=True, default=None)
+    # Naamweergave in het forum: standaard het pseudoniem (@username). Alleen
+    # als de gebruiker dit zelf aanzet (met bevestiging, zie profiel) komen
+    # de echte naam en LinkedIn publiek bij zijn bijdragen te staan.
+    show_real_name      = db.Column(db.Boolean, nullable=True, default=False)
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -63,6 +67,17 @@ class User(UserMixin, db.Model):
 
     def can_manage_rules(self):
         return bool(self.is_admin) or self.role == 'senior_moderator'
+
+    @property
+    def real_name(self):
+        """Voor- en achternaam, of None als er geen echte naam bekend is."""
+        name = ' '.join(p for p in (self.first_name, self.last_name) if p).strip()
+        return name or None
+
+    @property
+    def shows_real_name(self):
+        """Echte naam publiek: alleen als zelf gekozen én er een naam is."""
+        return bool(self.show_real_name) and self.real_name is not None
 
     def set_role(self, role):
         """Zet de contentrol en houd het oude is_moderator-vlag synchroon."""
@@ -158,6 +173,25 @@ class Post(db.Model):
     # boom zelf uit één query (replies_map); deze relatie is voor overig gebruik.
     replies        = db.relationship('Post', backref=db.backref('parent', remote_side=[id]),
                                      lazy='select', order_by='Post.created_at')
+
+    # ── Publieke auteursweergave ─────────────────────────────────────────
+    # Altijd op basis van de HUIDIGE instelling van de auteur (author-
+    # relatie), zodat een wijziging meteen bij al zijn berichten doorwerkt.
+    # Zonder author (account verwijderd) blijft het opgeslagen pseudoniem.
+    def public_author_name(self):
+        a = self.author
+        if a is not None and a.shows_real_name:
+            return a.real_name
+        return '@' + (a.username if a is not None else self.author_username)
+
+    def public_author_initial(self):
+        return self.public_author_name().lstrip('@')[:1].upper()
+
+    def public_linkedin_url(self):
+        a = self.author
+        if a is not None and a.shows_real_name and a.linkedin_url:
+            return a.linkedin_url
+        return None
 
     @property
     def time_ago(self):

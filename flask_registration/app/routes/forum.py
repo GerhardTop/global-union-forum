@@ -85,6 +85,7 @@ def _get_or_create_demo_user(first_name, last_name, email, username):
             linkedin_url=None,
         )
         user.accept_rules()  # demo-accounts zijn bijdragers, net als na de migratie
+        user.show_real_name = True  # demo-personages tonen bewust hun (demo)naam
         db.session.add(user)
         db.session.flush()
     return user

@@ -520,3 +520,8 @@ msgstr "read the ground rules"
 
 msgid "Please accept the ground rules to continue."
 msgstr "Please accept the ground rules to continue."
+
+#: app/templates/forum/_post.html
+#, python-format
+msgid "LinkedIn profile of %(name)s"
+msgstr "LinkedIn profile of %(name)s"

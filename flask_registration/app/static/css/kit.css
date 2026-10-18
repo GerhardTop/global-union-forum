@@ -1628,6 +1628,22 @@ body {
 .gu-rules__item p { margin: 0; color: var(--gu-fg-2); line-height: 1.6; }
 .gu-rules__accepted { color: var(--gu-fg-2); }
 
+/* Naamweergave in het forum (profiel): pseudoniem of echte naam */
+.gu-namechoice { scroll-margin-top: 96px; }
+.gu-namechoice__intro { font-size: 0.9375rem; color: var(--gu-fg-2); line-height: 1.6; margin: 0 0 16px; }
+.gu-namechoice__option {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px 14px; margin-bottom: 8px;
+  border: 1px solid var(--gu-border); border-radius: 8px; cursor: pointer;
+  font-size: 0.9375rem; color: var(--gu-fg-1);
+}
+.gu-namechoice__option:has(input:checked) { border-color: var(--gu-globe); background: var(--gu-bg-soft); }
+.gu-namechoice__option input { margin-top: 3px; accent-color: var(--gu-globe-deep); flex-shrink: 0; }
+.gu-namechoice__option--disabled { cursor: not-allowed; opacity: 0.6; }
+.gu-namechoice__option .gu-join__badge { margin-left: 6px; }
+.gu-namechoice__hint { display: block; font-size: 0.8125rem; color: var(--gu-fg-3); margin-top: 2px; }
+.gu-namechoice__saved { font-size: 0.875rem; color: var(--gu-success); }
+
 /* Akkoord-vinkje bij registratie */
 .gu-join__check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9375rem; line-height: 1.5; color: var(--gu-fg-2); cursor: pointer; }
 .gu-join__check input { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--gu-globe-deep); }

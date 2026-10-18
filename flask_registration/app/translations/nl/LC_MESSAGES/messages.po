@@ -520,3 +520,8 @@ msgstr "lees de spelregels"
 
 msgid "Please accept the ground rules to continue."
 msgstr "Ga akkoord met de spelregels om verder te gaan."
+
+#: app/templates/forum/_post.html
+#, python-format
+msgid "LinkedIn profile of %(name)s"
+msgstr "LinkedIn-profiel van %(name)s"
