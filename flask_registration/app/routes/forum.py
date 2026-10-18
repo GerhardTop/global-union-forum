@@ -4,7 +4,7 @@ import uuid
 from collections import deque
 from datetime import datetime, timedelta
 
-from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify, abort, current_app, flash
+from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify, abort, current_app, flash, g
 from flask_login import login_required, current_user
 from sqlalchemy import func
 
@@ -629,8 +629,16 @@ def forum_thread(thread_id):
 
 @forum_bp.route('/forum/translate/<int:post_id>', methods=['POST'])
 @login_required
-@limiter.limit("30 per hour")
+# Per gebruiker (de route vereist login) en alleen echte API-aanroepen tellen
+# mee: een vertaling uit de cache (body_nl/body_en) is gratis. Voorheen per
+# IP en elke klik telde: achter de proxy van Render delen bezoekers dan één
+# IP, en de automatische vertaling bij het laden van een pagina klikt alle
+# vertaalknoppen tegelijk, waardoor het budget voor iedereen snel op was.
+@limiter.limit("30 per hour",
+               key_func=lambda: f"forum-translate-user-{current_user.get_id()}",
+               deduct_when=lambda response: g.get('translation_api_called', False))
 def forum_translate(post_id):
+    _require_csrf()
     post = Post.query.get_or_404(post_id)
     user_lang = session.get('lang', 'nl')
 
@@ -655,6 +663,7 @@ def forum_translate(post_id):
     if not api_key:
         return jsonify({'error': 'translation unavailable'}), 503
 
+    g.translation_api_called = True  # telt mee voor de rate limit hierboven
     try:
         import anthropic
         client = anthropic.Anthropic(api_key=api_key)

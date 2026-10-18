@@ -345,17 +345,27 @@
         button.textContent = button.dataset.labelLoading;
         button.disabled = true;
 
-        fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-          .then(function (r) { return r.json(); })
+        // CSRF-token zoals bij liken/bewerken; X-Requested-With zodat een rate
+        // limit (429) als JSON terugkomt in plaats van als redirect naar HTML.
+        var trFd = new FormData();
+        trFd.append('csrf_token', csrfToken);
+        fetch(url, { method: 'POST', body: trFd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          .then(function (r) { return r.json().catch(function () { return { error: 'http ' + r.status }; }); })
           .then(function (data) {
-            if (data.error) {
+            if (data.error || typeof data.translation !== 'string') {
               button.textContent = button.dataset.labelError;
               originalHtml = null;
               return;
             }
+            // Vertaling als platte tekst (geëscaped), net als bij bewerken:
+            // nooit HTML uit een bericht of vertaling in de pagina laten uitvoeren.
             translationHtml = (data.translation || '')
               .split('\n\n')
-              .map(function (p) { return '<p>' + p + '</p>'; })
+              .map(function (p) {
+                var el = document.createElement('p');
+                el.textContent = p;
+                return el.outerHTML;
+              })
               .join('');
             bodyEl.innerHTML = translationHtml;
             showingTrans = true;
