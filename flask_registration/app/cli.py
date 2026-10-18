@@ -13,8 +13,9 @@ reset-content verwijdert alle gebruikers en alle content, behalve:
 
 Draden hebben geen auteur-kolom, dus "door gebruikers gemaakte content" is:
 elke niet-demo-draad, elk niet-demo-bericht (ook echte reacties in een
-demo-draad, en berichten van de admin) en elke like op zo'n bericht of van
-een verwijderde gebruiker. De rate-limit-tellers blijven staan.
+demo-draad, en berichten van de admin), elk eens/oneens-signaal en elke
+kwaliteitsbeoordeling op zo'n bericht, en wat van een verwijderde gebruiker
+is. De rate-limit-tellers blijven staan.
 
 Alles gebeurt in één transactie; bij een fout wordt niets verwijderd.
 Geüploade afbeeldingen (static/uploads) staan op de schijf van de server,
@@ -109,7 +110,7 @@ def _report(plan):
     click.echo(f'    overige (hoofdniveau): {sum(1 for p in posts if p.parent_id is None and not p.is_op)}')
     click.echo(f'    in demo-draden:        {sum(1 for p in posts if p.thread_id not in plan["delete_thread_ids"])}')
     click.echo(f'    van de admin:          {sum(1 for p in posts if p.user_id in admin_ids)}')
-    click.echo(f'  likes:                   {plan["likes_count"]}')
+    click.echo(f'  eens/oneens:             {plan["likes_count"]}')
     click.echo(f'  berichten met upload:    {sum(1 for p in posts if p.image_url)}'
                '  (bestanden op de server blijven staan)')
     if plan['kept_orphans'] or plan['kept_by_deleted_user']:
@@ -128,6 +129,12 @@ def _execute(plan):
         # Volgorde volgens de foreign keys: likes, dan berichten (eerst de
         # self-referentie parent_id los), dan draden, dan gebruikers.
         plan['likes_q'].delete(synchronize_session=False)
+        # Kwaliteit (fase C1): beoordelingen en meldingen van verwijderde
+        # bijdragen weg, verwijderde gebruikers los als melder/beslisser.
+        from app import quality
+        quality.delete_for_posts(post_ids)
+        for uid in user_ids:
+            quality.detach_user(uid)
         if post_ids:
             Post.query.filter(or_(Post.id.in_(post_ids), Post.parent_id.in_(post_ids))) \
                 .update({Post.parent_id: None}, synchronize_session=False)

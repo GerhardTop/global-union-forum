@@ -79,6 +79,11 @@ class User(UserMixin, db.Model):
         """Echte naam publiek: alleen als zelf gekozen én er een naam is."""
         return bool(self.show_real_name) and self.real_name is not None
 
+    @property
+    def public_name(self):
+        """Hoe deze gebruiker publiek verschijnt: echte naam of @pseudoniem."""
+        return self.real_name if self.shows_real_name else '@' + self.username
+
     def set_role(self, role):
         """Zet de contentrol en houd het oude is_moderator-vlag synchroon."""
         if role not in ROLES:
@@ -180,9 +185,7 @@ class Post(db.Model):
     # Zonder author (account verwijderd) blijft het opgeslagen pseudoniem.
     def public_author_name(self):
         a = self.author
-        if a is not None and a.shows_real_name:
-            return a.real_name
-        return '@' + (a.username if a is not None else self.author_username)
+        return a.public_name if a is not None else '@' + self.author_username
 
     def public_author_initial(self):
         return self.public_author_name().lstrip('@')[:1].upper()
@@ -227,3 +230,60 @@ class PostLike(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     __table_args__ = (db.UniqueConstraint('post_id', 'user_id', name='uq_post_like'),)
+
+
+# ── Forum fase C1: kwaliteitssignaal (los van eens/oneens en van stemrecht) ──
+QUALITY_CRITERIA = ('K1', 'K2', 'K3')
+QUALITY_STATUSES = ('voorgesteld', 'toegekend', 'afgewezen')
+
+
+class QualityAward(db.Model):
+    """Eén kwaliteitsbeoordeling per bijdrage. De AI stelt alleen voor
+    (status 'voorgesteld', source 'ai'); een moderator kent toe of wijst af.
+    Staat volledig los van eens/oneens (PostLike)."""
+    __tablename__ = "quality_awards"
+
+    id               = db.Column(db.Integer, primary_key=True)
+    post_id          = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False, unique=True)
+    criterion        = db.Column(db.String(2), nullable=True)      # K1/K2/K3, None = geen
+    status           = db.Column(db.String(12), nullable=False, default='voorgesteld')
+    explanation_nl   = db.Column(db.String(400), nullable=True)
+    explanation_en   = db.Column(db.String(400), nullable=True)
+    source           = db.Column(db.String(10), nullable=False, default='ai')  # ai/moderator/demo
+    post_lang        = db.Column(db.String(5), nullable=True)      # voor C2: percentage per taal
+    # Wat de AI vond (alleen bij source 'ai'), voor de moderator en voor C2.
+    ai_criterion     = db.Column(db.String(2), nullable=True)
+    ai_k3_possible   = db.Column(db.Boolean, nullable=True)
+    ai_has_source    = db.Column(db.Boolean, nullable=True)
+    ai_source_is_new = db.Column(db.Boolean, nullable=True)
+    ai_argument_is_new = db.Column(db.Boolean, nullable=True)
+    decided_by_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    decided_at       = db.Column(db.DateTime, nullable=True)
+    review_requested_at = db.Column(db.DateTime, nullable=True)    # auteur vraagt om meekijken
+    created_at       = db.Column(db.DateTime, default=datetime.utcnow)
+
+    post       = db.relationship('Post', backref=db.backref('quality_award', uselist=False))
+    decided_by = db.relationship('User', foreign_keys=[decided_by_id])
+
+    def explanation(self, lang):
+        return (self.explanation_nl if lang == 'nl' else self.explanation_en) or \
+               self.explanation_en or self.explanation_nl or ''
+
+
+class QualityReport(db.Model):
+    """Melding "geen kwaliteit" op een toegekende bijdrage, met het besluit
+    van een moderator (handhaven of intrekken) en wie dat nam."""
+    __tablename__ = "quality_reports"
+
+    id            = db.Column(db.Integer, primary_key=True)
+    award_id      = db.Column(db.Integer, db.ForeignKey('quality_awards.id'), nullable=False)
+    reporter_id   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
+    decision      = db.Column(db.String(12), nullable=True)        # handhaven/intrekken, None = open
+    decision_note = db.Column(db.String(400), nullable=True)
+    decided_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    decided_at    = db.Column(db.DateTime, nullable=True)
+
+    award      = db.relationship('QualityAward', backref=db.backref('reports', lazy=True))
+    reporter   = db.relationship('User', foreign_keys=[reporter_id])
+    decided_by = db.relationship('User', foreign_keys=[decided_by_id])

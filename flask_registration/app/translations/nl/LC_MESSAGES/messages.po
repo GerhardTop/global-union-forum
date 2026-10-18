@@ -536,3 +536,36 @@ msgstr "Oneens"
 
 msgid "Agree or disagree"
 msgstr "Eens of oneens"
+
+#: forum fase C1 (kwaliteit)
+
+msgid "Quality contribution"
+msgstr "Kwaliteitsbijdrage"
+
+msgid "Report: not a quality contribution"
+msgstr "Meld: geen kwaliteitsbijdrage"
+
+msgid "Ask a moderator to take a look"
+msgstr "Laat een moderator meekijken"
+
+#, python-format
+msgid "Confirmed by %(name)s"
+msgstr "Bevestigd door %(name)s"
+
+msgid "AI suggestion"
+msgstr "AI-suggestie"
+
+msgid "Awarded"
+msgstr "Toegekend"
+
+msgid "Declined"
+msgstr "Afgewezen"
+
+msgid "Assess quality"
+msgstr "Kwaliteit beoordelen"
+
+msgid "Award"
+msgstr "Toekennen"
+
+msgid "Decline"
+msgstr "Afwijzen"

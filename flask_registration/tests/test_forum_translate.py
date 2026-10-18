@@ -32,7 +32,7 @@ def fake_anthropic(monkeypatch):
             return SimpleNamespace(content=[SimpleNamespace(text=f'[vertaald] {text}')])
 
     class FakeClient:
-        def __init__(self, api_key=None):
+        def __init__(self, api_key=None, **kwargs):
             self.messages = FakeMessages()
 
     import anthropic

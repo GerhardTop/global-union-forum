@@ -2708,6 +2708,34 @@ body {
   to   { background-color: transparent; }
 }
 
+/* Kwaliteitsbijdrage (forum fase C1): gevuld ruitje, los van eens/oneens */
+.gu-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.gu-quality__mark { display: inline-flex; vertical-align: middle; color: var(--gu-quality); margin-left: 4px; }
+.gu-quality { margin: 8px 0 4px; font-size: 0.875rem; color: var(--gu-fg-2); }
+.gu-quality summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: var(--gu-quality); font-weight: 500; list-style: none; }
+.gu-quality summary::-webkit-details-marker { display: none; }
+.gu-quality summary:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; border-radius: 2px; }
+.gu-quality__diamond { flex-shrink: 0; }
+.gu-quality summary .gu-quality__diamond { color: var(--gu-quality); }
+.gu-quality__detail { margin-top: 8px; padding: 10px 12px; border-left: 2px solid var(--gu-quality); background: var(--gu-bg-soft); border-radius: 0 6px 6px 0; }
+.gu-quality__detail p { margin: 0 0 6px; }
+.gu-quality__detail p:last-child { margin-bottom: 0; }
+.gu-quality__meta { font-size: 0.8125rem; color: var(--gu-fg-3); margin: 4px 0 0; }
+.gu-quality--declined { padding: 10px 12px; border: 1px dashed var(--gu-border); border-radius: 6px; }
+.gu-quality--declined p { margin: 0 0 6px; }
+.gu-quality-mod { margin: 8px 0; font-size: 0.8125rem; }
+.gu-quality-mod summary { cursor: pointer; color: var(--gu-fg-3); }
+.gu-quality-mod__body { margin-top: 8px; padding: 10px 12px; background: var(--gu-bg-soft); border-radius: 6px; }
+.gu-quality-mod__form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-top: 8px; }
+.gu-quality-mod__field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 200px; }
+.gu-quality-mod__field .gu-input { padding: 6px 8px; font-size: 0.8125rem; }
+.gu-quality-mod__actions { display: flex; gap: 8px; }
+.gu-btn--sm { padding: 6px 12px; font-size: 0.8125rem; }
+.gu-admin__empty { color: var(--gu-fg-3); font-size: 0.875rem; }
+.gu-quality-queue { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.gu-quality-queue__item { padding: 12px 14px; border: 1px solid var(--gu-border); border-radius: 8px; }
+.gu-quality-queue__excerpt { margin: 4px 0; color: var(--gu-fg-2); font-size: 0.875rem; }
+
 /* Eens/oneens (forum fase B) */
 .gu-stance { display: inline-flex; gap: 4px; }
 .gu-stance__btn {

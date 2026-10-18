@@ -545,6 +545,8 @@ def create_app():
         _ensure_admin_user()
         from app.routes.forum import _seed_forum
         _seed_forum()
+        from app.quality import seed_demo_awards
+        seed_demo_awards()
 
     from werkzeug.middleware.proxy_fix import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)

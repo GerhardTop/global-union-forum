@@ -29,6 +29,83 @@
       </div>
     </section>
 
+    {# ── Kwaliteit (forum fase C1) ─────────────────────────────── #}
+    {% macro quality_item(post, qa) %}
+      <li class="gu-quality-queue__item">
+        <div>
+          <strong>{{ post.public_author_name() }}</strong>
+          · <a href="{{ url_for('forum.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}bekijk in gesprek{% else %}view in conversation{% endif %}</a>
+          · {{ post.time_ago[lang] }}
+        </div>
+        <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
+        {% if current_user.id == post.user_id %}
+          <p class="gu-quality__meta">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beoordeelt deze.{% else %}Your own contribution: another moderator assesses it.{% endif %}</p>
+        {% else %}
+          {% with quality_open=true, quality_next=url_for('admin.moderator_dashboard') %}
+          {% include 'forum/_quality_mod.html' %}
+          {% endwith %}
+        {% endif %}
+      </li>
+    {% endmacro %}
+
+    <section class="gu-admin__section" id="kwaliteit">
+      <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Kwaliteit: te beoordelen{% else %}Quality: to assess{% endif %} ({{ quality_queue|length }})</p>
+      <p class="gu-quality__meta">{% if lang == 'nl' %}De AI stelt alleen voor. Niets wordt toegekend zonder jouw bevestiging.{% else %}The AI only suggests. Nothing is awarded without your confirmation.{% endif %}</p>
+      {% if quality_queue %}
+      <ul class="gu-quality-queue">
+        {% for qa in quality_queue %}{{ quality_item(qa.post, qa) }}{% endfor %}
+      </ul>
+      {% else %}
+      <p class="gu-admin__empty">{% if lang == 'nl' %}Geen openstaande suggesties.{% else %}No open suggestions.{% endif %}</p>
+      {% endif %}
+    </section>
+
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen: geen kwaliteit{% else %}Reports: not quality{% endif %} ({{ open_reports|length }})</p>
+      {% if open_reports %}
+      <ul class="gu-quality-queue">
+        {% for r in open_reports %}
+        {% set post = r.award.post %}
+        <li class="gu-quality-queue__item">
+          <div>
+            <strong>{{ post.public_author_name() }}</strong> · {{ r.award.criterion }} {{ quality_labels[r.award.criterion][lang] if r.award.criterion in quality_labels else '' }}
+            · <a href="{{ url_for('forum.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}bekijk in gesprek{% else %}view in conversation{% endif %}</a>
+          </div>
+          <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
+          <p class="gu-quality__meta">{% if lang == 'nl' %}Gemeld door{% else %}Reported by{% endif %} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
+          {% if current_user.id == post.user_id %}
+            <p class="gu-quality__meta">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beslist.{% else %}Your own contribution: another moderator decides.{% endif %}</p>
+          {% else %}
+          <form method="POST" action="{{ url_for('forum.forum_quality_report_decide', report_id=r.id) }}" class="gu-quality-mod__form">
+            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+            <label class="gu-quality-mod__field">
+              <span>{% if lang == 'nl' %}Toelichting (bij intrekken zichtbaar voor de auteur){% else %}Note (visible to the author when withdrawn){% endif %}</span>
+              <input type="text" name="note" maxlength="400" class="gu-input">
+            </label>
+            <div class="gu-quality-mod__actions">
+              <button type="submit" name="decision" value="handhaven" class="gu-btn gu-btn--primary gu-btn--sm">{% if lang == 'nl' %}Handhaven{% else %}Keep{% endif %}</button>
+              <button type="submit" name="decision" value="intrekken" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Intrekken{% else %}Withdraw{% endif %}</button>
+            </div>
+          </form>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="gu-admin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>
+      {% endif %}
+    </section>
+
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Zonder AI-suggestie{% else %}Without AI suggestion{% endif %} ({{ unjudged_posts|length }})</p>
+      <p class="gu-quality__meta">{% if lang == 'nl' %}Recente bijdragen waarvoor (nog) geen suggestie is, bijvoorbeeld omdat de AI niet beschikbaar was. Beoordeel ze handmatig.{% else %}Recent contributions without a suggestion (yet), for example because the AI was unavailable. Assess them manually.{% endif %}</p>
+      {% if unjudged_posts %}
+      <ul class="gu-quality-queue">
+        {% for post in unjudged_posts %}{{ quality_item(post, None) }}{% endfor %}
+      </ul>
+      {% endif %}
+    </section>
+
     {# ── Recente berichten ─────────────────────────────────────── #}
     <section class="gu-admin__section">
       <p class="gu-eyebrow gu-eyebrow--section">Recente berichten</p>

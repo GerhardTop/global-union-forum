@@ -126,7 +126,7 @@ class TestDryRun:
         assert 'berichten totaal:        6' in out
         assert 'in demo-draden:        2' in out
         assert 'van de admin:          1' in out
-        assert 'likes:                   3' in out
+        assert 'eens/oneens:             3' in out
         assert Thread.query.filter_by(is_demo=True).count() == demo_threads
 
     def test_list_users_shows_accounts_to_delete(self, app, world):

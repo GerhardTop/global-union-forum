@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from app import db
 from app.forms import AdminActionForm
-from app.models import ROLES, User, Thread, Post, PostLike
+from app.models import ROLES, User, Thread, Post, PostLike, QualityAward, QualityReport
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -80,8 +80,26 @@ def moderator_dashboard():
 
     closed_threads = Thread.query.filter_by(is_closed=True).order_by(Thread.created_at.desc()).all()
 
+    # Kwaliteit (forum fase C1): AI-suggesties en verzoeken om mee te kijken,
+    # open meldingen "geen kwaliteit", en recente bijdragen zonder suggestie
+    # (bijvoorbeeld omdat de AI faalde) om handmatig te beoordelen.
+    live = Post.body != '[bericht verwijderd]'
+    quality_queue = (QualityAward.query.join(Post, QualityAward.post_id == Post.id)
+                     .filter(live, db.or_(QualityAward.status == 'voorgesteld',
+                                          db.and_(QualityAward.status == 'afgewezen',
+                                                  QualityAward.review_requested_at.isnot(None))))
+                     .order_by(QualityAward.created_at).all())
+    open_reports = (QualityReport.query.filter(QualityReport.decision.is_(None))
+                    .order_by(QualityReport.created_at).all())
+    unjudged_posts = (Post.query.outerjoin(QualityAward, QualityAward.post_id == Post.id)
+                      .filter(QualityAward.id.is_(None), Post.is_demo.is_(False), live)
+                      .order_by(Post.created_at.desc()).limit(20).all())
+
     return render_template(
         'moderator/dashboard.html',
+        quality_queue=quality_queue,
+        open_reports=open_reports,
+        unjudged_posts=unjudged_posts,
         active_threads=active_threads,
         posts_today=posts_today,
         threads_no_gerhard_count=len(threads_no_gerhard),
@@ -130,6 +148,8 @@ def admin_verwijder_gebruiker(user_id):
         abort(400)
 
     uid = user.id
+    from app import quality
+    quality.detach_user(uid)
     PostLike.query.filter_by(user_id=uid).delete()
     user_post_ids = [
         p.id for p in Post.query.filter_by(user_id=uid).with_entities(Post.id).all()
@@ -141,6 +161,7 @@ def admin_verwijder_gebruiker(user_id):
         Post.query.filter(Post.parent_id.in_(user_post_ids)).update(
             {Post.parent_id: None}, synchronize_session=False
         )
+        quality.delete_for_posts(user_post_ids)
         Post.query.filter_by(user_id=uid).delete(synchronize_session=False)
 
     db.session.delete(user)

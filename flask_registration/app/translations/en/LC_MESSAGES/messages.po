@@ -536,3 +536,36 @@ msgstr "Disagree"
 
 msgid "Agree or disagree"
 msgstr "Agree or disagree"
+
+#: forum fase C1 (kwaliteit)
+
+msgid "Quality contribution"
+msgstr "Quality contribution"
+
+msgid "Report: not a quality contribution"
+msgstr "Report: not a quality contribution"
+
+msgid "Ask a moderator to take a look"
+msgstr "Ask a moderator to take a look"
+
+#, python-format
+msgid "Confirmed by %(name)s"
+msgstr "Confirmed by %(name)s"
+
+msgid "AI suggestion"
+msgstr "AI suggestion"
+
+msgid "Awarded"
+msgstr "Awarded"
+
+msgid "Declined"
+msgstr "Declined"
+
+msgid "Assess quality"
+msgstr "Assess quality"
+
+msgid "Award"
+msgstr "Award"
+
+msgid "Decline"
+msgstr "Decline"

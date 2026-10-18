@@ -1,0 +1,48 @@
+{#
+  Partial: forum/_quality_mod.html (forum fase C1)
+  Moderator beoordeelt de kwaliteit van één bijdrage: AI-suggestie bevestigen,
+  zelf toekennen, of afwijzen met een reden voor de auteur.
+  Context: post, qa (QualityAward of None), quality_labels, lang,
+           forum_action_form, optioneel quality_next (terugkeeradres) en
+           quality_open (details standaard open).
+#}
+{% set q_status = {'voorgesteld': _('AI suggestion'), 'toegekend': _('Awarded'), 'afgewezen': _('Declined')} %}
+<details class="gu-quality-mod"{% if quality_open %} open{% endif %}>
+  <summary>{{ _('Assess quality') }}{% if qa %} · {{ q_status.get(qa.status, '') }}{% if qa.criterion %} {{ qa.criterion }}{% endif %}{% endif %}</summary>
+  <div class="gu-quality-mod__body">
+    {% if qa and qa.source == 'ai' %}
+    <p class="gu-quality__meta">
+      {% if lang == 'nl' %}AI-suggestie:{% else %}AI suggestion:{% endif %}
+      <strong>{{ qa.ai_criterion or (('geen' if lang == 'nl' else 'none')) }}</strong>
+      {% if qa.ai_k3_possible %}· {% if lang == 'nl' %}mogelijk K3{% else %}possibly K3{% endif %}{% endif %}
+      · {% if lang == 'nl' %}bron{% else %}source{% endif %}: {{ ('ja' if lang == 'nl' else 'yes') if qa.ai_has_source else ('nee' if lang == 'nl' else 'no') }}{% if qa.ai_has_source %} ({{ ('nieuw' if lang == 'nl' else 'new') if qa.ai_source_is_new else ('niet nieuw' if lang == 'nl' else 'not new') }}){% endif %}
+      · {% if lang == 'nl' %}taal{% else %}language{% endif %}: {{ (qa.post_lang or '?') | upper }}
+    </p>
+    {% if qa.explanation(lang) %}<p class="gu-quality__meta">{{ qa.explanation(lang) }}</p>{% endif %}
+    {% endif %}
+    {% if qa and qa.review_requested_at %}
+    <p class="gu-quality__meta">{% if lang == 'nl' %}De auteur vraagt om een tweede blik.{% else %}The author asks for a second look.{% endif %}</p>
+    {% endif %}
+    <form method="POST" action="{{ url_for('forum.forum_quality_decide', post_id=post.id) }}" class="gu-quality-mod__form">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <input type="hidden" name="next" value="{{ quality_next or (request.path ~ '#post-' ~ post.id) }}">
+      <label class="gu-quality-mod__field">
+        <span>{% if lang == 'nl' %}Criterium{% else %}Criterion{% endif %}</span>
+        <select name="criterion" class="gu-input">
+          {% for c in ['K1', 'K2', 'K3'] %}
+          <option value="{{ c }}"{% if qa and qa.criterion == c %} selected{% endif %}>{{ c }} {{ quality_labels[c][lang] }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="gu-quality-mod__field">
+        <span>{% if lang == 'nl' %}Uitleg (één regel, zichtbaar voor de auteur){% else %}Explanation (one line, visible to the author){% endif %}</span>
+        <input type="text" name="explanation" maxlength="400" class="gu-input"
+               placeholder="{% if lang == 'nl' %}Leeg laten om de AI-uitleg te houden{% else %}Leave empty to keep the AI explanation{% endif %}">
+      </label>
+      <div class="gu-quality-mod__actions">
+        <button type="submit" name="action" value="toekennen" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Award') }}</button>
+        <button type="submit" name="action" value="afwijzen" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Decline') }}</button>
+      </div>
+    </form>
+  </div>
+</details>

@@ -544,6 +544,8 @@ def account_verwijderen():
     user_id = current_user.id
 
     try:
+        from app import quality
+        quality.detach_user(user_id)
         PostLike.query.filter_by(user_id=user_id).delete()
         user_post_ids = [p.id for p in Post.query.filter_by(user_id=user_id).with_entities(Post.id).all()]
         if user_post_ids:
@@ -551,6 +553,7 @@ def account_verwijderen():
             Post.query.filter(Post.parent_id.in_(user_post_ids)).update(
                 {Post.parent_id: None}, synchronize_session=False
             )
+            quality.delete_for_posts(user_post_ids)
             Post.query.filter_by(user_id=user_id).delete(synchronize_session=False)
         user = db.session.get(User, user_id)
         db.session.delete(user)

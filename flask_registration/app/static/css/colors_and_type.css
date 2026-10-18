@@ -58,6 +58,7 @@
   --gu-success:      var(--gu-oceania);
   --gu-warning:      #f5a800;   /* losgekoppeld van --gu-africa: blijft amber, te fel als knalgeel voor waarschuwingen */
   --gu-danger:       var(--gu-americas);
+  --gu-quality:      #0F6B46;               /* kwaliteitsbijdrage (gevuld ruitje) */
   --gu-info:         var(--gu-globe);
 
   /* ---------- TYPE -------------------------------------------------------- */

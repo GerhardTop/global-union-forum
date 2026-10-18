@@ -10,7 +10,9 @@ from sqlalchemy import func
 
 from app import db, bcrypt, limiter
 from app.forms import ForumActionForm, ForumReplyForm
-from app.models import STANCES, User, Thread, Post, PostLike
+from app.models import STANCES, QUALITY_CRITERIA, User, Thread, Post, PostLike, QualityAward, QualityReport
+from app import quality
+from app.utils import safe_next
 
 forum_bp = Blueprint("forum", __name__)
 
@@ -18,7 +20,7 @@ forum_bp = Blueprint("forum", __name__)
 @forum_bp.app_context_processor
 def _inject_forum_action_form():
     # Lui gebruikt: het token wordt pas gemaakt als een template het rendert.
-    return {'forum_action_form': ForumActionForm()}
+    return {'forum_action_form': ForumActionForm(), 'quality_labels': quality.CRITERIA_LABELS}
 
 
 def _rules_first_redirect():
@@ -101,6 +103,7 @@ def _seed_forum():
         PostLike.query.filter(PostLike.post_id.in_(
             db.session.query(Post.id).filter_by(thread_id=old.id)
         )).delete(synchronize_session=False)
+        quality.delete_for_posts(p.id for p in Post.query.filter_by(thread_id=old.id).with_entities(Post.id))
         Post.query.filter_by(thread_id=old.id).delete()
         db.session.delete(old)
         db.session.flush()
@@ -536,6 +539,8 @@ def forum_thread(thread_id):
             db.session.add(post)
             db.session.commit()
             anchor = f'post-{post.id}'
+            # Kwaliteit (fase C1): AI-suggestie op de achtergrond, best-effort.
+            quality.schedule_judgement(post.id)
         return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#{anchor}')
 
     all_posts = Post.query.filter_by(thread_id=thread_id).order_by(Post.created_at).all()
@@ -587,6 +592,14 @@ def forum_thread(thread_id):
 
     all_ids = [p.id for p in all_posts]
     stance_counts = _stance_counts(all_ids)
+    quality_awards = {a.post_id: a for a in
+                      QualityAward.query.filter(QualityAward.post_id.in_(all_ids)).all()} if all_ids else {}
+    my_quality_reports = set()
+    if current_user.is_authenticated and quality_awards:
+        my_quality_reports = {r.award_id for r in QualityReport.query.filter(
+            QualityReport.reporter_id == current_user.id,
+            QualityReport.award_id.in_([a.id for a in quality_awards.values()]),
+            QualityReport.decision.is_(None)).all()}
     my_stances = {}
     if current_user.is_authenticated and all_ids:
         my_stances = {
@@ -617,6 +630,8 @@ def forum_thread(thread_id):
         max_reply_indent=MAX_REPLY_INDENT,
         stance_counts=stance_counts,
         my_stances=my_stances,
+        quality_awards=quality_awards,
+        my_quality_reports=my_quality_reports,
         auto_translate=auto_translate,
     )
 
@@ -659,21 +674,7 @@ def forum_translate(post_id):
 
     g.translation_api_called = True  # telt mee voor de rate limit hierboven
     try:
-        import anthropic
-        client = anthropic.Anthropic(api_key=api_key)
-        message = client.messages.create(
-            model='claude-haiku-4-5-20251001',
-            max_tokens=1024,
-            messages=[{
-                'role': 'user',
-                'content': (
-                    f'Translate the following forum post to {target_lang}. '
-                    'Preserve paragraph breaks. Return only the translation, no preamble.\n\n'
-                    f'{source}'
-                ),
-            }],
-        )
-        translation = message.content[0].text.strip()
+        translation = quality.translate_text(source, target_lang)
 
         if user_lang == 'nl':
             post.body_nl = translation
@@ -792,6 +793,7 @@ def forum_nieuw():
             )
             db.session.add(post)
             db.session.commit()
+            quality.schedule_judgement(post.id)
             return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#post-' + str(post.id))
     return render_template('forum/new_thread.html')
 
@@ -857,3 +859,110 @@ def forum_post_verwijderen(post_id):
     post.author_username = 'deleted_user'
     db.session.commit()
     return redirect(url_for('forum.forum_thread', thread_id=thread_id))
+
+
+# ── Kwaliteit (forum fase C1) ─────────────────────────────────────────────
+
+def _quality_back(post):
+    return redirect(safe_next(request.form.get('next'),
+                              url_for('forum.forum_thread', thread_id=post.thread_id) + f'#post-{post.id}'))
+
+
+@forum_bp.route('/forum/kwaliteit/<int:post_id>/besluit', methods=['POST'])
+@login_required
+def forum_quality_decide(post_id):
+    """Moderator kent een kwaliteitsbijdrage toe of wijst af: bevestigt een
+    AI-suggestie, of beoordeelt zelf (ook als er geen suggestie is). Nooit
+    op een eigen bijdrage."""
+    if not current_user.can_moderate():
+        abort(403)
+    _require_csrf()
+    post = Post.query.get_or_404(post_id)
+    if post.user_id == current_user.id:
+        abort(403)
+    action = request.form.get('action')
+    criterion = request.form.get('criterion') or None
+    note = (request.form.get('explanation') or '').strip()[:400]
+    award = post.quality_award
+    if action == 'toekennen' and criterion not in QUALITY_CRITERIA:
+        abort(400)
+    if action not in ('toekennen', 'afwijzen'):
+        abort(400)
+    if award is None:
+        award = QualityAward(post_id=post.id, source='moderator', post_lang=post.source_lang)
+        db.session.add(award)
+    if action == 'afwijzen' and not (note or award.explanation_nl or award.explanation_en):
+        abort(400)  # de auteur moet een reden kunnen zien
+    award.status = 'toegekend' if action == 'toekennen' else 'afgewezen'
+    award.criterion = criterion if action == 'toekennen' else award.criterion
+    if note:
+        award.explanation_nl = award.explanation_en = note
+    award.decided_by_id = current_user.id
+    award.decided_at = datetime.utcnow()
+    award.review_requested_at = None
+    db.session.commit()
+    return _quality_back(post)
+
+
+@forum_bp.route('/forum/kwaliteit/<int:post_id>/meekijken', methods=['POST'])
+@login_required
+@limiter.limit("10 per hour", key_func=lambda: f"forum-quality-review-user-{current_user.get_id()}")
+def forum_quality_review(post_id):
+    """De auteur van een niet-toegekende bijdrage laat een moderator meekijken."""
+    _require_csrf()
+    post = Post.query.get_or_404(post_id)
+    award = post.quality_award
+    if post.user_id != current_user.id or award is None or award.status != 'afgewezen':
+        abort(403)
+    award.review_requested_at = datetime.utcnow()
+    db.session.commit()
+    return _quality_back(post)
+
+
+@forum_bp.route('/forum/kwaliteit/<int:post_id>/melden', methods=['POST'])
+@login_required
+@limiter.limit("10 per hour", key_func=lambda: f"forum-quality-report-user-{current_user.get_id()}")
+def forum_quality_report(post_id):
+    """Meld een toegekende kwaliteitsbijdrage als "geen kwaliteit". Gaat naar
+    een moderator. Niet op een eigen bijdrage, één open melding per persoon."""
+    _require_csrf()
+    post = Post.query.get_or_404(post_id)
+    award = post.quality_award
+    if post.user_id == current_user.id or award is None or award.status != 'toegekend':
+        abort(403)
+    already = QualityReport.query.filter_by(award_id=award.id, reporter_id=current_user.id,
+                                            decision=None).first()
+    if already is None:
+        db.session.add(QualityReport(award_id=award.id, reporter_id=current_user.id))
+        db.session.commit()
+    return _quality_back(post)
+
+
+@forum_bp.route('/forum/kwaliteit/melding/<int:report_id>/besluit', methods=['POST'])
+@login_required
+def forum_quality_report_decide(report_id):
+    """Moderator beslist over een melding: handhaven of intrekken. Besluit,
+    naam en tijdstip worden vastgelegd; open meldingen op dezelfde
+    toekenning krijgen hetzelfde besluit."""
+    if not current_user.can_moderate():
+        abort(403)
+    _require_csrf()
+    report = QualityReport.query.get_or_404(report_id)
+    award = report.award
+    if award.post.user_id == current_user.id:
+        abort(403)
+    decision = request.form.get('decision')
+    if decision not in ('handhaven', 'intrekken'):
+        abort(400)
+    note = (request.form.get('note') or '').strip()[:400]
+    now = datetime.utcnow()
+    for r in QualityReport.query.filter_by(award_id=award.id, decision=None):
+        r.decision, r.decision_note, r.decided_by_id, r.decided_at = decision, note or None, current_user.id, now
+    if decision == 'intrekken':
+        award.status = 'afgewezen'
+        if note:
+            award.explanation_nl = award.explanation_en = note
+        award.decided_by_id = current_user.id
+        award.decided_at = now
+    db.session.commit()
+    return redirect(safe_next(request.form.get('next'), url_for('admin.moderator_dashboard')))
