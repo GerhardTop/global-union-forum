@@ -381,6 +381,8 @@ def create_app():
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'error': 'rate_limited', 'message': msg}), 429
         flash(msg, 'error')
+        if request.endpoint == 'forum.forum_thread':
+            return redirect(request.path + '#composer')
         _path_map = {
             '/aanmelden': 'social.aanmelden',
             '/wachtwoord-vergeten': 'auth.wachtwoord_vergeten',

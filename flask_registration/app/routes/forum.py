@@ -9,6 +9,7 @@ from flask_login import login_required, current_user
 from sqlalchemy import func
 
 from app import db, bcrypt, limiter
+from app.forms import ForumReplyForm
 from app.models import User, Thread, Post, PostLike
 
 forum_bp = Blueprint("forum", __name__)
@@ -442,10 +443,30 @@ def forum_gesloten():
 
 
 @forum_bp.route('/forum/<int:thread_id>', methods=['GET', 'POST'])
+# Rate limits alleen op POST (reageren) en alleen voor ingelogde gebruikers:
+# een anonieme POST doet niets (zie hieronder), net zoals @login_required
+# op /feedback en /uitnodiging anoniem verkeer buiten de limiter houdt. De
+# GET van de threadpagina blijft publiek, dus @login_required kan hier niet.
+#
+# Volgorde zoals bij /uitnodiging: smalste limiet (per gebruiker) dichtst
+# bij def, bredere (per IP) erboven. Flask-Limiter stopt bij de eerste
+# overschrijding, dus een verzoek dat al op de per-gebruiker-limiet stuk
+# loopt, verhoogt de per-IP-teller niet meer. Persistente SQL-opslag, zie
+# app/rate_limit_storage.py.
+@limiter.limit("100 per hour", methods=["POST"],
+               exempt_when=lambda: not current_user.is_authenticated)
+@limiter.limit("5 per minute", methods=["POST"],
+               key_func=lambda: f"forum-reply-user-{current_user.get_id()}",
+               exempt_when=lambda: not current_user.is_authenticated)
 def forum_thread(thread_id):
     _seed_forum()
     thread = Thread.query.get_or_404(thread_id)
+    reply_form = ForumReplyForm()
     if request.method == 'POST' and current_user.is_authenticated and not thread.is_closed:
+        # CSRF, zelfde aanpak als /feedback: leeg FlaskForm, 400 bij een
+        # ontbrekend of ongeldig token. Geen honeypot: reageren vereist login.
+        if not reply_form.validate_on_submit():
+            abort(400)
         body      = request.form.get('body', '').strip()
         parent_id = request.form.get('parent_id', type=int)
         image_url = _save_upload(request.files.get('image'))
@@ -554,6 +575,7 @@ def forum_thread(thread_id):
     return render_template(
         'forum/thread.html',
         thread=thread,
+        reply_form=reply_form,
         posts=all_posts,
         root_posts=root_posts,
         replies_map=replies_map,

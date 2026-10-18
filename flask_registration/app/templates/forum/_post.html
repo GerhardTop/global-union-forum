@@ -1,7 +1,7 @@
 {#
   Partial: forum/_post.html
-  Context: post, depth (0 = hoogste niveau), thread, replies_map, posts_by_id,
-           descendant_counts, max_reply_indent, like_counts, liked_ids
+  Context: post, depth (0 = hoogste niveau), thread, reply_form, replies_map,
+           posts_by_id, descendant_counts, max_reply_indent, like_counts, liked_ids
 #}
 {% if post.body == '[bericht verwijderd]' %}
   {% set is_deleted = true %}
@@ -222,6 +222,7 @@
   {% if current_user.is_authenticated and not thread.is_closed and not is_own %}
   <div class="gu-post__replyform" id="reply-form-{{ post.id }}" hidden>
     <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
+      {% if reply_form.meta.csrf %}{{ reply_form.csrf_token(id=False) }}{% endif %}
       <input type="hidden" name="parent_id" value="{{ post.id }}">
       <textarea
         class="gu-composer__input"

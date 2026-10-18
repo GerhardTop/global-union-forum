@@ -115,6 +115,13 @@ class FeedbackForm(FlaskForm):
     pass
 
 
+class ForumReplyForm(FlaskForm):
+    """Leeg form, alleen voor CSRF-validatie bij forumreacties (composer en
+    inline reactieformulieren op elk niveau). body/parent_id/image blijven
+    zoals voorheen rechtstreeks uit request.form/files komen."""
+    pass
+
+
 class InvitationForm(FlaskForm):
     """
     CSRF + validatie voor het uitnodigingsformulier. invite_email moet een

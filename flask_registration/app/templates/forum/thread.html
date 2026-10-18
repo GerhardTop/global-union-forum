@@ -114,6 +114,7 @@
       </div>
     {% elif current_user.is_authenticated %}
     <form class="gu-composer" id="composer" method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
+      {% if reply_form.meta.csrf %}{{ reply_form.csrf_token(id=False) }}{% endif %}
       <textarea
         class="gu-composer__input"
         name="body"
