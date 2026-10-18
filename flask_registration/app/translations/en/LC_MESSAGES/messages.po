@@ -74,8 +74,8 @@ msgstr "Those who participate gain perspective and prosperity. Those who stay ou
 msgid "Act on behaviour"
 msgstr "Act on behaviour"
 
-msgid "One tariff system based on a scorecard per country — corruption, freedom, human rights, sustainability, international law. Full compliance? 0% import duties. Commit aggression? Excluded."
-msgstr "One tariff system based on a scorecard per country — corruption, freedom, human rights, sustainability, international law. Full compliance? 0% import duties. Commit aggression? Excluded."
+msgid "A single tariff system per country, based on values we share: for freedom, anti-corruption, the international rule of law, human rights and sustainability. Full compliance? 0% import duties. Commit aggression? Excluded."
+msgstr "A single tariff system per country, based on values we share: for freedom, anti-corruption, the international rule of law, human rights and sustainability. Full compliance? 0% import duties. Commit aggression? Excluded."
 
 msgid "Peaceful, but not naive"
 msgstr "A peaceful geopolitical power"

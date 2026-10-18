@@ -92,8 +92,8 @@ msgstr "Wie meedoet, wint perspectief en welvaart. Wie buiten blijft, voelt de d
 msgid "Act on behaviour"
 msgstr "Handelen op gedrag"
 
-msgid "One tariff system based on a scorecard per country — corruption, freedom, human rights, sustainability, international law. Full compliance? 0% import duties. Commit aggression? Excluded."
-msgstr "Eén tarievensysteem op basis van een scorecard per land — corruptie, vrijheid, mensenrechten, duurzaamheid, internationale rechtsorde. Voldoe je volledig? 0% invoerrechten. Pleeg je agressie? Uitgesloten."
+msgid "A single tariff system per country, based on values we share: for freedom, anti-corruption, the international rule of law, human rights and sustainability. Full compliance? 0% import duties. Commit aggression? Excluded."
+msgstr "Eén tarievensysteem per land op basis van waarden die wij delen: voor vrijheid, corruptiebestrijding, internationale rechtsorde, mensenrechten en duurzaamheid. Voldoe je volledig? 0% invoerrechten. Pleeg je agressie? Uitgesloten."
 
 msgid "Peaceful, but not naive"
 msgstr "Een vreedzame geopolitieke macht"
