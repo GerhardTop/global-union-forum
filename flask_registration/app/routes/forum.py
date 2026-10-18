@@ -9,10 +9,23 @@ from flask_login import login_required, current_user
 from sqlalchemy import func
 
 from app import db, bcrypt, limiter
-from app.forms import ForumReplyForm
+from app.forms import ForumActionForm, ForumReplyForm
 from app.models import User, Thread, Post, PostLike
 
 forum_bp = Blueprint("forum", __name__)
+
+
+@forum_bp.app_context_processor
+def _inject_forum_action_form():
+    # Lui gebruikt: het token wordt pas gemaakt als een template het rendert.
+    return {'forum_action_form': ForumActionForm()}
+
+
+def _require_csrf():
+    """CSRF per actie, zelfde aanpak als /feedback en de reactie-stroom:
+    leeg FlaskForm, 400 bij een ontbrekend of ongeldig token."""
+    if not ForumActionForm().validate_on_submit():
+        abort(400)
 
 _ALLOWED_EXT = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
 _MAX_SIZE = 5 * 1024 * 1024
@@ -660,6 +673,7 @@ def forum_translate(post_id):
 @forum_bp.route('/forum/like/<int:post_id>', methods=['POST'])
 @login_required
 def forum_like(post_id):
+    _require_csrf()
     post = Post.query.get_or_404(post_id)
     if post.user_id == current_user.id:
         return jsonify({'error': 'cannot like own post'}), 400
@@ -680,6 +694,7 @@ def forum_like(post_id):
 def forum_close(thread_id):
     if not (current_user.is_moderator or current_user.is_admin):
         abort(403)
+    _require_csrf()
     thread = Thread.query.get_or_404(thread_id)
     thread.is_closed = True
     db.session.commit()
@@ -691,6 +706,7 @@ def forum_close(thread_id):
 def forum_reopen(thread_id):
     if not (current_user.is_moderator or current_user.is_admin):
         abort(403)
+    _require_csrf()
     thread = Thread.query.get_or_404(thread_id)
     thread.is_closed = False
     db.session.commit()
@@ -702,6 +718,7 @@ def forum_reopen(thread_id):
 def forum_nieuw():
     _seed_forum()
     if request.method == 'POST':
+        _require_csrf()
         title     = request.form.get('title', '').strip()
         body      = request.form.get('body', '').strip()
         image_url = _save_upload(request.files.get('image'))
@@ -741,6 +758,7 @@ def forum_bewerken(thread_id):
     if not (is_author or current_user.is_moderator or current_user.is_admin):
         abort(403)
     if request.method == 'POST':
+        _require_csrf()
         title = request.form.get('title', '').strip()
         body  = request.form.get('body', '').strip()
         if title and body:
@@ -765,6 +783,7 @@ def forum_post_bewerken(post_id):
     post = Post.query.get_or_404(post_id)
     if not (post.user_id == current_user.id or current_user.is_moderator or current_user.is_admin):
         abort(403)
+    _require_csrf()
     body = request.form.get('body', '').strip()
     if body:
         post.body = body
@@ -780,6 +799,7 @@ def forum_post_verwijderen(post_id):
         abort(403)
     if post.is_op and not (current_user.is_moderator or current_user.is_admin):
         abort(403)
+    _require_csrf()
     thread_id = post.thread_id
     post.body = '[bericht verwijderd]'
     post.body_nl = None

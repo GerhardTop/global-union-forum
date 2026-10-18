@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from flask_babel import gettext as _
 
 from app import db, bcrypt
-from app.forms import LinkedInForm
+from app.forms import ForumActionForm, LinkedInForm
 from app.utils import _password_strong, _stash_form_state, _pop_form_state
 
 profile_bp = Blueprint("profile", __name__)
@@ -103,6 +103,9 @@ def profile():
 @profile_bp.route("/profiel/vertaalvoorkeur", methods=["POST"])
 @login_required
 def profiel_vertaalvoorkeur():
+    # CSRF zoals bij de forum-acties (de knop staat ook onder forumberichten).
+    if not ForumActionForm().validate_on_submit():
+        abort(400)
     current_user.auto_translate = request.form.get("auto_translate") == "1"
     db.session.commit()
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

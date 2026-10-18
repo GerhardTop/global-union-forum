@@ -122,6 +122,14 @@ class ForumReplyForm(FlaskForm):
     pass
 
 
+class ForumActionForm(FlaskForm):
+    """Leeg form, alleen voor CSRF-validatie bij de overige forum-acties
+    (bericht verwijderen/bewerken, liken, draad sluiten/heropenen, draad
+    starten/bewerken) en de vertaalvoorkeur. Beschikbaar in elke template
+    als `forum_action_form` (context processor in app/routes/forum.py)."""
+    pass
+
+
 class InvitationForm(FlaskForm):
     """
     CSRF + validatie voor het uitnodigingsformulier. invite_email moet een

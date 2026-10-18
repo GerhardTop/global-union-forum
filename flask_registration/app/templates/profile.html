@@ -90,6 +90,7 @@
     </h3>
     {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else (lang == 'en') %}
     <form id="guTranslateForm" method="POST" action="{{ url_for('profile.profiel_vertaalvoorkeur') }}" style="margin-bottom: 4px;">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
       <label class="gu-toggle-label">
         <span class="gu-toggle">
           <input type="checkbox" name="auto_translate" value="1" class="gu-toggle__input"
@@ -249,6 +250,8 @@
         toggle.addEventListener('change', function () {
           var fd = new FormData();
           if (toggle.checked) fd.append('auto_translate', '1');
+          var tokenField = form.querySelector('input[name="csrf_token"]');
+          if (tokenField) fd.append('csrf_token', tokenField.value);
           fetch(form.action, {
             method: 'POST',
             body: fd,

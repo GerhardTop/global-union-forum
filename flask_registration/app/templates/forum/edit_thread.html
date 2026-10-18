@@ -23,6 +23,7 @@
     </header>
 
     <form class="gu-forum__newform" method="POST" action="{{ url_for('forum.forum_bewerken', thread_id=thread.id) }}">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
 
       <div class="gu-forum__newfield">
         <label for="title">{% if lang == 'nl' %}Titel{% else %}Title{% endif %}</label>

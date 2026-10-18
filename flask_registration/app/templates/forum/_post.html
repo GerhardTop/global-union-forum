@@ -147,6 +147,7 @@
     {% if can_delete %}
     <form method="POST" action="{{ url_for('forum.forum_post_verwijderen', post_id=post.id) }}"
           class="gu-post__delete-form" style="display:inline;">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
       <button type="submit" class="gu-post__action gu-post__action--icon gu-post__delete-btn"
               aria-label="{% if lang == 'nl' %}Verwijderen{% else %}Delete {% endif %}">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -182,6 +183,7 @@
     {# Always-translate toggle — alleen voor ingelogde gebruikers #}
     {% if current_user.is_authenticated %}
     <form method="POST" action="{{ url_for('profile.profiel_vertaalvoorkeur') }}" style="display:inline;">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
       <input type="hidden" name="next" value="{{ url_for('forum.forum_thread', thread_id=thread.id) }}">
       {% if not auto_translate %}
         <input type="hidden" name="auto_translate" value="1">
