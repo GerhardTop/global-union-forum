@@ -270,6 +270,7 @@ def aanmelden():
         form_data["last_name"]    = request.form.get("last_name", "").strip()
         form_data["email"]        = request.form.get("email", "").strip().lower()
         form_data["linkedin_url"] = request.form.get("linkedin_url", "").strip()
+        form_data["accept_rules"] = request.form.get("accept_rules") == "1"
         password         = request.form.get("password", "")
         password_confirm = request.form.get("password_confirm", "")
 
@@ -299,6 +300,9 @@ def aanmelden():
             errors["password_mismatch"] = True
         if form_data["linkedin_url"] and not form_data["linkedin_url"].startswith("https://www.linkedin.com/"):
             errors["linkedin_url"] = True
+        # Forum fase A: verplicht akkoord op de spelregels (/spelregels).
+        if not form_data["accept_rules"]:
+            errors["rules"] = True
 
         if not errors:
             password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
@@ -314,6 +318,7 @@ def aanmelden():
                 auto_translate=True if reg_lang == 'en' else None,
                 verified=bypass_verificatie,
             )
+            user.accept_rules()  # wordt zo Contributor, zie errors["rules"] hierboven
             db.session.add(user)
             try:
                 db.session.commit()

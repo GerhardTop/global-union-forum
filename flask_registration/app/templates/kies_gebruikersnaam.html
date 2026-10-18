@@ -40,6 +40,18 @@
         </p>
       </div>
 
+      {% if needs_rules %}
+      <div class="gu-join__field" id="rulesField">
+        <label class="gu-join__check" for="accept_rules">
+          <input type="checkbox" id="accept_rules" name="accept_rules" value="1"{% if form_data.accept_rules %} checked{% endif %}>
+          <span>{{ _('I accept the ground rules') }} (<a href="{{ url_for('main.spelregels') }}" target="_blank" rel="noopener">{{ _('read the ground rules') }}</a>)</span>
+        </label>
+        {% if errors.rules %}
+        <p class="gu-join__formError" id="rulesError">{{ _('Please accept the ground rules to continue.') }}</p>
+        {% endif %}
+      </div>
+      {% endif %}
+
       <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg"
               style="width: 100%; justify-content: center; margin-top: 8px;">
         {{ _('Save and continue') }}

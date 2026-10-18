@@ -17,7 +17,7 @@
         <span aria-hidden="true">›</span>
         <span>{% if lang == 'nl' %}{{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} {{ thread.title_accent_nl }}{% endif %}{{ thread.title_suffix_nl }}{% else %}{{ thread.title_prefix_en }}{% if thread.title_accent_en %} {{ thread.title_accent_en }}{% endif %}{{ thread.title_suffix_en }}{% endif %}</span>
       </nav>
-      {% if current_user.is_authenticated %}
+      {% if current_user.can_contribute() %}
       <a href="{{ url_for('forum.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
         <span style="font-size:1.1em;line-height:1">+</span>
         {% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %}
@@ -59,7 +59,7 @@
       </div>
 
       {# Moderator toolbar #}
-      {% if current_user.is_authenticated and (current_user.is_moderator or current_user.is_admin) %}
+      {% if current_user.can_moderate() %}
       <div class="gu-forum__modbar">
         {% if thread.is_closed %}
         <form method="POST" action="{{ url_for('forum.forum_reopen', thread_id=thread.id) }}" style="display:inline;">
@@ -108,13 +108,10 @@
 
     {# Composer / closed notice #}
     {% if thread.is_closed %}
-      {% if current_user.is_authenticated and (current_user.is_moderator or current_user.is_admin) %}
-        {# Reopen button already in modbar — just show notice #}
-      {% endif %}
       <div class="gu-composer gu-composer--closed">
         <p>{% if lang == 'nl' %}Dit gesprek is gesloten.{% else %}This conversation is closed.{% endif %}</p>
       </div>
-    {% elif current_user.is_authenticated %}
+    {% elif current_user.can_contribute() %}
     <form class="gu-composer" id="composer" method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       {% if reply_form.meta.csrf %}{{ reply_form.csrf_token(id=False) }}{% endif %}
       <textarea
@@ -144,6 +141,13 @@
         </button>
       </div>
     </form>
+    {% elif current_user.is_authenticated %}
+    {# Ingelogd zonder akkoord op de spelregels (nieuwe registratie): eerst akkoord. #}
+    <div class="gu-composer gu-composer--locked">
+      <p>
+        <a href="{{ url_for('main.spelregels', next=request.path) }}">{% if lang == 'nl' %}Accepteer de spelregels om mee te doen{% else %}Accept the ground rules to join in{% endif %}</a>.
+      </p>
+    </div>
     {% else %}
     <div class="gu-composer gu-composer--locked">
       <p>

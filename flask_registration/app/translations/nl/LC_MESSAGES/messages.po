@@ -485,3 +485,38 @@ msgid "Show %(num)d reply"
 msgid_plural "Show %(num)d replies"
 msgstr[0] "%(num)d reactie tonen"
 msgstr[1] "%(num)d reacties tonen"
+
+#: forum fase A (rollen en spelregels)
+
+msgid "Contributor"
+msgstr "Bijdrager"
+
+msgid "Voter"
+msgstr "Stemmer"
+
+msgid "Moderator"
+msgstr "Moderator"
+
+msgid "Senior moderator"
+msgstr "Senior moderator"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "No rules acceptance yet"
+msgstr "Nog geen akkoord"
+
+msgid "Ground rules not accepted yet"
+msgstr "Spelregels nog niet geaccepteerd"
+
+msgid "Ground rules"
+msgstr "Spelregels"
+
+msgid "I accept the ground rules"
+msgstr "Ik ga akkoord met de spelregels"
+
+msgid "read the ground rules"
+msgstr "lees de spelregels"
+
+msgid "Please accept the ground rules to continue."
+msgstr "Ga akkoord met de spelregels om verder te gaan."

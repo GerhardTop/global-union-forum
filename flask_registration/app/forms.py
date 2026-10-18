@@ -122,6 +122,12 @@ class ForumReplyForm(FlaskForm):
     pass
 
 
+class RulesAcceptForm(FlaskForm):
+    """Leeg form, alleen voor CSRF bij het accepteren van de spelregels op
+    /spelregels (de vangnet-route voor wie nog geen akkoord heeft)."""
+    pass
+
+
 class ForumActionForm(FlaskForm):
     """Leeg form, alleen voor CSRF-validatie bij de overige forum-acties
     (bericht verwijderen/bewerken, liken, draad sluiten/heropenen, draad

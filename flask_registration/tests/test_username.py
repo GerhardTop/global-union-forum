@@ -99,7 +99,7 @@ class TestRegistrationUsername:
     """Registratieflow (/aanmelden) met username: happy path + elke foutcategorie."""
 
     def test_registration_requires_username(self, client, app):
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'email': 'noname@example.com',
             'password': 'ValidPassword123!',
             'password_confirm': 'ValidPassword123!',
@@ -111,7 +111,7 @@ class TestRegistrationUsername:
 
     def test_registration_without_first_last_name_succeeds(self, client, app):
         """Kernpunt van fase 1: voornaam/achternaam zijn nu echt optioneel."""
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'username': 'pseudonym1',
             'email': 'pseudo@example.com',
             'password': 'ValidPassword123!',
@@ -127,7 +127,7 @@ class TestRegistrationUsername:
             assert user.last_name is None
 
     def test_registration_blacklisted_username_rejected(self, client, app):
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'username': 'admin',
             'email': 'wannabe@example.com',
             'password': 'ValidPassword123!',
@@ -145,7 +145,7 @@ class TestRegistrationUsername:
             db.session.add(existing)
             db.session.commit()
 
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'username': 'Taken_Name',
             'email': 'second@example.com',
             'password': 'ValidPassword123!',
@@ -158,7 +158,7 @@ class TestRegistrationUsername:
 
     def test_registration_first_name_without_last_name_rejected(self, client, app):
         """Voornaam/achternaam-koppel: één zonder de ander is fout."""
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'username': 'halfname1',
             'first_name': 'Sara',
             'email': 'halfname@example.com',
@@ -234,7 +234,7 @@ class TestKiesGebruikersnaam:
             db.session.commit()
 
         self._login(client, 'chooser@example.com', 'Password123!')
-        response = client.post('/kies-gebruikersnaam', data={'username': 'chosen_name'},
+        response = client.post('/kies-gebruikersnaam', data={'accept_rules': '1', 'username': 'chosen_name'},
                                follow_redirects=True)
         assert response.status_code == 200
 
@@ -256,7 +256,7 @@ class TestKiesGebruikersnaam:
             db.session.commit()
 
         self._login(client, 'blacklisttest@example.com', 'Password123!')
-        client.post('/kies-gebruikersnaam', data={'username': 'admin'}, follow_redirects=True)
+        client.post('/kies-gebruikersnaam', data={'accept_rules': '1', 'username': 'admin'}, follow_redirects=True)
 
         with app.app_context():
             saved = User.query.filter_by(email='blacklisttest@example.com').first()

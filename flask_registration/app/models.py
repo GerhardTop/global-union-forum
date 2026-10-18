@@ -1,6 +1,13 @@
 from datetime import datetime
-from flask_login import UserMixin
+from flask_login import AnonymousUserMixin, UserMixin
 from app import db, login_manager
+
+# Contentrollen (forum fase A), van laag naar hoog. "Reader" is geen rol maar
+# simpelweg niet ingelogd, of ingelogd zonder akkoord op de spelregels
+# (role is dan NULL). Admin (is_admin) staat los hiervan en boven alles.
+# Voter is gedefinieerd maar dwingt in deze fase nog niets extra's af.
+ROLES = ('contributor', 'voter', 'moderator', 'senior_moderator')
+_MODERATING_ROLES = ('moderator', 'senior_moderator')
 
 
 class User(UserMixin, db.Model):
@@ -26,9 +33,72 @@ class User(UserMixin, db.Model):
     auto_translate      = db.Column(db.Boolean, nullable=True, default=None)
     password_changed_at = db.Column(db.DateTime, nullable=True, default=None)
     created_at          = db.Column(db.DateTime, default=datetime.utcnow)
+    # Forum fase A: contentrol (zie ROLES) en akkoord op de spelregels. Een
+    # nieuwe registratie heeft allebei NULL tot het akkoord; bestaande
+    # gebruikers zijn bij de migratie gegrandfatherd (_migrate_roles).
+    # is_moderator blijft bestaan en wordt via set_role() synchroon gehouden.
+    role                = db.Column(db.String(20), nullable=True, default=None)
+    rules_accepted_at   = db.Column(db.DateTime, nullable=True, default=None)
 
     def __repr__(self):
         return f"<User {self.email}>"
+
+    # ── Permissies (centrale helpers, gebruikt door routes en templates) ──
+    def _rank(self):
+        return ROLES.index(self.role) + 1 if self.role in ROLES else 0
+
+    def can_contribute(self):
+        """Posten, reageren, een draad starten."""
+        return bool(self.is_admin) or (self.rules_accepted_at is not None and self._rank() >= 1)
+
+    def can_vote(self):
+        """Voor latere fasen (stemmen); nu nog nergens afgedwongen."""
+        return bool(self.is_admin) or (self.rules_accepted_at is not None and self._rank() >= 2)
+
+    def can_moderate(self):
+        """Draden sluiten/heropenen, andermans berichten bewerken/verwijderen.
+        is_moderator telt ook mee als vangnet, zodat wie vóór fase A
+        moderator was dat altijd blijft (set_role houdt beide synchroon)."""
+        return bool(self.is_admin) or bool(self.is_moderator) or self._rank() >= ROLES.index('moderator') + 1
+
+    def can_manage_rules(self):
+        return bool(self.is_admin) or self.role == 'senior_moderator'
+
+    def set_role(self, role):
+        """Zet de contentrol en houd het oude is_moderator-vlag synchroon."""
+        if role not in ROLES:
+            raise ValueError(f'onbekende rol: {role}')
+        self.role = role
+        self.is_moderator = role in _MODERATING_ROLES
+
+    def accept_rules(self):
+        """Akkoord op de spelregels; een nieuwe gebruiker wordt zo Contributor."""
+        if self.rules_accepted_at is None:
+            self.rules_accepted_at = datetime.utcnow()
+        if self.role is None:
+            self.set_role('contributor')
+
+
+class AnonymousUser(AnonymousUserMixin):
+    """Reader: niet ingelogd, mag alleen lezen."""
+    is_admin = False
+    is_moderator = False
+    role = None
+
+    def can_contribute(self):
+        return False
+
+    def can_vote(self):
+        return False
+
+    def can_moderate(self):
+        return False
+
+    def can_manage_rules(self):
+        return False
+
+
+login_manager.anonymous_user = AnonymousUser
 
 
 @login_manager.user_loader

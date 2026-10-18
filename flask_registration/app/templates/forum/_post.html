@@ -160,8 +160,8 @@
     </form>
     {% endif %}
 
-    {# Reageer button, primaire actieknop (elke diepte, not own post, logged in, thread open) #}
-    {% if current_user.is_authenticated and not thread.is_closed and not is_own %}
+    {# Reageer button, primaire actieknop (elke diepte, not own post, can_contribute, thread open) #}
+    {% if current_user.can_contribute() and not thread.is_closed and not is_own %}
     <button class="gu-post__action gu-post__reply-btn"
             data-target="reply-form-{{ post.id }}">
       {% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
@@ -221,7 +221,7 @@
   {% endif %}
 
   {# Inline reply form #}
-  {% if current_user.is_authenticated and not thread.is_closed and not is_own %}
+  {% if current_user.can_contribute() and not thread.is_closed and not is_own %}
   <div class="gu-post__replyform" id="reply-form-{{ post.id }}" hidden>
     <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       {% if reply_form.meta.csrf %}{{ reply_form.csrf_token(id=False) }}{% endif %}

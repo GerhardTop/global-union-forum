@@ -155,7 +155,7 @@ class TestRegistration:
             social_module, "_today_utc",
             lambda: social_module._VERIFY_BYPASS_DEADLINE + timedelta(days=1),
         )
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'username': 'john_doe_test',
             'first_name': 'John',
             'last_name': 'Doe',
@@ -194,7 +194,7 @@ class TestRegistration:
             db.session.commit()
 
         # Probeer registratie met zelfde e-mail
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'first_name': 'Bob',
             'last_name': 'Jones',
             'email': 'alice@example.com',
@@ -212,7 +212,7 @@ class TestRegistration:
 
     def test_mismatched_passwords_fail(self, client, app):
         """Registratie met niet-matching wachtwoorden faalt."""
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'first_name': 'Test',
             'last_name': 'User',
             'email': 'test@example.com',
@@ -229,7 +229,7 @@ class TestRegistration:
 
     def test_weak_password_rejected(self, client, app):
         """Registratie met zwak wachtwoord (< 8 chars) faalt."""
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'first_name': 'Test',
             'last_name': 'User',
             'email': 'test@example.com',
@@ -245,7 +245,7 @@ class TestRegistration:
 
     def test_missing_field_registration_fails(self, client, app):
         """Registratie zonder verplichte velden faalt."""
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'first_name': 'John',
             'email': 'john@example.com',
             # last_name, wachtwoord en linkedin_url ontbreken
@@ -258,7 +258,7 @@ class TestRegistration:
 
     def test_invalid_email_rejected(self, client, app):
         """Registratie met ongeldige e-mail faalt."""
-        response = client.post('/aanmelden', data={
+        response = client.post('/aanmelden', data={'accept_rules': '1', 
             'first_name': 'Test',
             'last_name': 'User',
             'email': 'not-an-email',

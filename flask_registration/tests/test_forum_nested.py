@@ -85,6 +85,7 @@ def forum_users(db):
                  email=f'{uname}@example.com',
                  password_hash=bcrypt.generate_password_hash('Sterk1!ww').decode('utf-8'),
                  verified=True)
+        u.accept_rules()  # bestaande bijdrager (gegrandfatherd), zie forum fase A
         db.session.add(u)
         users.append(u)
     db.session.commit()

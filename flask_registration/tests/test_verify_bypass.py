@@ -66,6 +66,7 @@ def _register(client, *, username, email):
     return client.post(
         "/aanmelden",
         data={
+            "accept_rules": "1",
             "username": username,
             "email": email,
             "password": VALID_PASSWORD,

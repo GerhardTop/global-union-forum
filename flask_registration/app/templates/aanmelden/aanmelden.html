@@ -29,7 +29,7 @@
         </label>
         <input id="username" name="username" type="text"
                class="gu-input{% if errors.username_format or errors.username_blacklisted or errors.username_taken %} gu-input--error{% endif %}"
-               value="{{ form_data.username }}" placeholder="sara_dv" required autofocus
+               value="{{ form_data.username }}" placeholder="sara_dv" required{% if not errors.rules %} autofocus{% endif %}
                minlength="3" maxlength="20">
         <p class="gu-join__hint" id="usernameHint">
           {{ _('3-20 characters: letters, numbers, - and _') }}
@@ -133,6 +133,16 @@
         </p>
       </div>
 
+      <div class="gu-join__field" id="rulesField">
+        <label class="gu-join__check" for="accept_rules">
+          <input type="checkbox" id="accept_rules" name="accept_rules" value="1"{% if form_data.accept_rules %} checked{% endif %}>
+          <span>{{ _('I accept the ground rules') }} (<a href="{{ url_for('main.spelregels') }}" target="_blank" rel="noopener">{{ _('read the ground rules') }}</a>)</span>
+        </label>
+        {% if errors.rules %}
+        <p class="gu-join__formError" id="rulesError">{{ _('Please accept the ground rules to continue.') }}</p>
+        {% endif %}
+      </div>
+
       <div class="gu-join__actions gu-join__actions--right">
         <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">
           {{ _('Create account') }}
@@ -163,6 +173,14 @@
     </form>
   </div>
 </main>
+{% if errors.rules %}
+<script nonce="{{ csp_nonce() }}">
+  // Fout bij het spelregel-vinkje: in beeld brengen (het staat onderaan het
+  // formulier) en de focus erop zetten, in plaats van op de gebruikersnaam.
+  document.getElementById('accept_rules').focus({ preventScroll: true });
+  document.getElementById('rulesField').scrollIntoView({ block: 'center' });
+</script>
+{% endif %}
 <script nonce="{{ csp_nonce() }}">
   document.querySelectorAll('.gu-pw-toggle').forEach(function (btn) {
     btn.addEventListener('click', function () {

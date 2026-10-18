@@ -12,11 +12,17 @@
       </header>
       {% if current_user.is_authenticated %}
       <div class="gu-forum__topactions">
+        {% if current_user.can_contribute() %}
         <a href="{{ url_for('forum.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
           <span style="font-size:1.1em;line-height:1">+</span>
           {% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %}
         </a>
-        {% if current_user.is_admin or current_user.is_moderator %}
+        {% else %}
+        <a href="{{ url_for('main.spelregels', next=request.path) }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
+          {% if lang == 'nl' %}Accepteer de spelregels om mee te doen{% else %}Accept the ground rules to join in{% endif %}
+        </a>
+        {% endif %}
+        {% if current_user.can_moderate() %}
         <a href="{{ url_for('forum.forum_gesloten') }}" class="gu-forum__closed-link">
           {% if lang == 'nl' %}Gesloten gesprekken{% else %}Closed conversations{% endif %}
         </a>

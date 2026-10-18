@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from app import db
 from app.forms import AdminActionForm
-from app.models import User, Thread, Post, PostLike
+from app.models import ROLES, User, Thread, Post, PostLike
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -43,7 +43,7 @@ def admin_dashboard():
 @admin_bp.route('/moderator')
 @login_required
 def moderator_dashboard():
-    if not (current_user.is_admin or current_user.is_moderator):
+    if not current_user.can_moderate():
         abort(403)
 
     active_threads = Thread.query.filter_by(is_closed=False).count()
@@ -102,15 +102,16 @@ def admin_set_rol(user_id):
         return jsonify({'error': 'cannot change own role'}), 400
     user = User.query.get_or_404(user_id)
     role = request.form.get('role', '')
+    # Forum fase A: handmatig de contentrol zetten (vervangt de automatische
+    # promotie tot fase C). 'gebruiker' is de oude waarde voor contributor.
+    if role == 'gebruiker':
+        role = 'contributor'
     if role == 'admin':
         user.is_admin = True
         user.is_moderator = True
-    elif role == 'moderator':
+    elif role in ROLES:
         user.is_admin = False
-        user.is_moderator = True
-    elif role == 'gebruiker':
-        user.is_admin = False
-        user.is_moderator = False
+        user.set_role(role)
     else:
         return jsonify({'error': 'invalid role'}), 400
     db.session.commit()

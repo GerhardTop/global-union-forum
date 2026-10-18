@@ -65,8 +65,9 @@
           <tbody>
             {% for user in users %}
             {% set is_self = user.id == current_user.id %}
-            {% set role_key = 'admin' if user.is_admin else ('mod' if user.is_moderator else '') %}
-            {% set role_label = 'Admin' if user.is_admin else ('Moderator' if user.is_moderator else 'Gebruiker') %}
+            {% set role_labels = {'contributor': _('Contributor'), 'voter': _('Voter'), 'moderator': _('Moderator'), 'senior_moderator': _('Senior moderator')} %}
+            {% set role_key = 'admin' if user.is_admin else ('mod' if user.can_moderate() else '') %}
+            {% set role_label = _('Admin') if user.is_admin else role_labels.get(user.role, _('No rules acceptance yet')) %}
             {% set user_display_name = (user.first_name ~ ' ' ~ user.last_name) if user.first_name else ('@' ~ user.username) %}
             {% set user_avatar_initials = ((user.first_name[0] ~ user.last_name[0]) if user.first_name else user.username[:2]) | upper %}
             <tr class="gu-admin-table__row{% if is_self %} gu-admin-table__row--self{% endif %}">
@@ -106,14 +107,18 @@
                       </svg>
                     </button>
                     <div class="gu-role-picker__menu" role="listbox" hidden>
-                      <button class="gu-role-picker__option{% if not user.is_admin and not user.is_moderator %} gu-role-picker__option--current{% endif %}"
-                              role="option" data-role="gebruiker">Gebruiker</button>
-                      <button class="gu-role-picker__option{% if user.is_moderator and not user.is_admin %} gu-role-picker__option--current{% endif %}"
-                              role="option" data-role="moderator">Moderator</button>
+                      {% for r in ['contributor', 'voter', 'moderator', 'senior_moderator'] %}
+                      <button class="gu-role-picker__option{% if not user.is_admin and user.role == r %} gu-role-picker__option--current{% endif %}"
+                              role="option" data-role="{{ r }}">{{ role_labels[r] }}</button>
+                      {% endfor %}
                       <button class="gu-role-picker__option{% if user.is_admin %} gu-role-picker__option--current{% endif %}"
-                              role="option" data-role="admin">Admin</button>
+                              role="option" data-role="admin">{{ _('Admin') }}</button>
                     </div>
                   </div>
+                {% endif %}
+                {% if not user.is_admin and not user.rules_accepted_at %}
+                  {# Een handmatig gezette rol telt pas na akkoord op de spelregels. #}
+                  <div class="gu-admin-table__hint">{{ _('Ground rules not accepted yet') }}</div>
                 {% endif %}
               </td>
 
@@ -211,7 +216,7 @@
           // Update badge colour class
           btn.classList.remove('gu-role-badge--admin', 'gu-role-badge--mod');
           if (role === 'admin')     btn.classList.add('gu-role-badge--admin');
-          if (role === 'moderator') btn.classList.add('gu-role-badge--mod');
+          if (role === 'moderator' || role === 'senior_moderator') btn.classList.add('gu-role-badge--mod');
           // Mark current option
           menu.querySelectorAll('.gu-role-picker__option').forEach(function (o) {
             o.classList.toggle('gu-role-picker__option--current', o === opt);

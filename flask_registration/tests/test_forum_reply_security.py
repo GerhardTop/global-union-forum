@@ -53,6 +53,7 @@ def _make_user(username):
              email=f'{username}@example.com',
              password_hash=bcrypt.generate_password_hash('Sterk1!ww').decode('utf-8'),
              verified=True)
+    u.accept_rules()  # bestaande bijdrager (gegrandfatherd), zie forum fase A
     db.session.add(u)
     db.session.commit()
     return u

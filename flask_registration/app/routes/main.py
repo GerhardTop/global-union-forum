@@ -2,10 +2,12 @@ import json
 import logging
 from pathlib import Path
 
-from flask import Blueprint, render_template, redirect, url_for, request, session
-from flask_login import current_user
+from flask import Blueprint, render_template, redirect, url_for, request, session, abort, flash
+from flask_login import current_user, login_required
 
 from app import db
+from app.forms import RulesAcceptForm
+from app.utils import safe_next
 
 main = Blueprint("main", __name__)
 
@@ -113,3 +115,28 @@ def success():
 @main.route("/privacy")
 def privacy():
     return render_template("privacy.html")
+
+
+@main.route("/spelregels")
+def spelregels():
+    """Publieke, tweetalige pagina met de spelregels R1 tot R5. Ingelogd
+    zonder akkoord: hier staat ook de akkoordknop (zie spelregels_accepteren)."""
+    return render_template("spelregels.html", form=RulesAcceptForm(),
+                           next=safe_next(request.args.get("next"), ""))
+
+
+@main.route("/spelregels/accepteren", methods=["POST"])
+@login_required
+def spelregels_accepteren():
+    """Vangnet voor wie zich registreerde zonder akkoord (of via een pad
+    zonder vinkje): akkoord geven maakt de gebruiker Contributor."""
+    if not RulesAcceptForm().validate_on_submit():
+        abort(400)
+    current_user.accept_rules()
+    db.session.commit()
+    flash(
+        "Bedankt! Je kunt nu meedoen aan het gesprek." if session.get("lang", "nl") == "nl"
+        else "Thank you! You can now join the conversation.",
+        "success"
+    )
+    return redirect(safe_next(request.form.get("next"), url_for("forum.forum")))

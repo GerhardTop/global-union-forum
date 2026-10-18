@@ -485,3 +485,38 @@ msgid "Show %(num)d reply"
 msgid_plural "Show %(num)d replies"
 msgstr[0] "Show %(num)d reply"
 msgstr[1] "Show %(num)d replies"
+
+#: forum fase A (rollen en spelregels)
+
+msgid "Contributor"
+msgstr "Contributor"
+
+msgid "Voter"
+msgstr "Voter"
+
+msgid "Moderator"
+msgstr "Moderator"
+
+msgid "Senior moderator"
+msgstr "Senior moderator"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "No rules acceptance yet"
+msgstr "No rules acceptance yet"
+
+msgid "Ground rules not accepted yet"
+msgstr "Ground rules not accepted yet"
+
+msgid "Ground rules"
+msgstr "Ground rules"
+
+msgid "I accept the ground rules"
+msgstr "I accept the ground rules"
+
+msgid "read the ground rules"
+msgstr "read the ground rules"
+
+msgid "Please accept the ground rules to continue."
+msgstr "Please accept the ground rules to continue."

@@ -379,8 +379,13 @@ def kies_gebruikersnaam():
         return redirect(url_for('main.index'))
     lang = session.get('lang', 'nl')
     form = KiesGebruikersnaamForm()
+    # Nieuwe Google-accounts komen hier na registratie: dit is hun
+    # aanmeldformulier, dus hier staat ook het verplichte akkoord op de
+    # spelregels (forum fase A). Gegrandfatherde accounts zien het vinkje niet.
+    needs_rules = current_user.rules_accepted_at is None
     if form.validate_on_submit():
         username = form.username.data.strip()
+        accept_rules = request.form.get("accept_rules") == "1"
         if not is_username_valid_format(username):
             errors = {"username_format": True}
         elif is_username_blacklisted(username):
@@ -389,10 +394,15 @@ def kies_gebruikersnaam():
             errors = {"username_taken": True}
         else:
             errors = {}
+        if needs_rules and not accept_rules:
+            errors["rules"] = True
         if errors:
-            _stash_form_state("kies_gebruikersnaam", errors, {"username": username})
+            _stash_form_state("kies_gebruikersnaam", errors,
+                              {"username": username, "accept_rules": accept_rules})
             return redirect(url_for('auth.kies_gebruikersnaam'), code=303)
         current_user.username = username
+        if needs_rules:
+            current_user.accept_rules()
         try:
             db.session.commit()
         except IntegrityError:
@@ -410,8 +420,10 @@ def kies_gebruikersnaam():
         return redirect(url_for('auth.kies_gebruikersnaam'), code=303)
 
     errors, stashed_data = _pop_form_state("kies_gebruikersnaam")
-    form_data = {"username": stashed_data.get("username", "")}
-    return render_template('kies_gebruikersnaam.html', errors=errors, form_data=form_data, form=form)
+    form_data = {"username": stashed_data.get("username", ""),
+                 "accept_rules": stashed_data.get("accept_rules", False)}
+    return render_template('kies_gebruikersnaam.html', errors=errors, form_data=form_data, form=form,
+                           needs_rules=needs_rules)
 
 
 @auth.route("/logout")

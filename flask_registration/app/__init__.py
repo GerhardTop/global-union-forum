@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from datetime import datetime
 from flask import Flask, session, request, redirect, url_for, flash, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -127,7 +128,42 @@ def _migrate_columns():
                 conn.execute(text(sql))
             conn.commit()
 
+    # _migrate_roles eerst: elke ORM-query op User (zoals in de username-
+    # backfill hieronder) selecteert alle modelkolommen, dus ook role en
+    # rules_accepted_at; die moeten dan al bestaan.
+    _migrate_roles(existing)
     _migrate_username_and_backfill(insp, existing, is_pg)
+
+
+def _migrate_roles(existing):
+    """
+    Forum fase A: users.role en users.rules_accepted_at, beide nullable.
+
+    De backfill (grandfathering) draait ALLEEN op het moment dat de kolommen
+    worden toegevoegd, in dezelfde transactie: bestaande moderators krijgen
+    rol 'moderator', alle anderen 'contributor', en iedereen telt als
+    akkoord met de spelregels. Daarna betekent role IS NULL "nieuwe
+    registratie, nog geen akkoord", dus een herhaalde backfill bij elke
+    start zou nieuwe gebruikers ten onrechte goedkeuren. Postgres voert DDL
+    transactioneel uit: mislukt iets halverwege, dan blijft alles zoals het
+    was en probeert de volgende start het opnieuw. Op een verse database
+    maakt db.create_all() de kolommen al aan en is er niets te backfillen.
+    """
+    if 'users' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('users')}
+    if 'role' in cols:
+        return
+    with db.engine.connect() as conn:
+        conn.execute(text('ALTER TABLE users ADD COLUMN role VARCHAR(20) NULL'))
+        if 'rules_accepted_at' not in cols:
+            conn.execute(text('ALTER TABLE users ADD COLUMN rules_accepted_at TIMESTAMP NULL'))
+        conn.execute(
+            text("UPDATE users SET role = CASE WHEN is_moderator THEN 'moderator' ELSE 'contributor' END, "
+                 "rules_accepted_at = COALESCE(rules_accepted_at, :now) WHERE role IS NULL"),
+            {'now': datetime.utcnow()},
+        )
+        conn.commit()
 
 
 def _migrate_username_and_backfill(insp, existing, is_pg):
@@ -284,8 +320,8 @@ def _ensure_admin_user():
     # Moderator (configureerbaar via MODERATOR_EMAIL)
     if MODERATOR_EMAIL:
         moderator = User.query.filter_by(email=MODERATOR_EMAIL).first()
-        if moderator and not moderator.is_moderator:
-            moderator.is_moderator = True
+        if moderator and not moderator.can_moderate():
+            moderator.set_role('moderator')
             db.session.commit()
 
 

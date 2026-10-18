@@ -21,6 +21,17 @@ def _inject_forum_action_form():
     return {'forum_action_form': ForumActionForm()}
 
 
+def _rules_first_redirect():
+    """Ingelogd maar (nog) geen akkoord op de spelregels: eerst daarheen."""
+    flash(
+        'Accepteer eerst de spelregels om mee te doen aan het gesprek.'
+        if session.get('lang', 'nl') == 'nl'
+        else 'Please accept the ground rules first to join the conversation.',
+        'error'
+    )
+    return redirect(url_for('main.spelregels', next=request.path))
+
+
 def _require_csrf():
     """CSRF per actie, zelfde aanpak als /feedback en de reactie-stroom:
     leeg FlaskForm, 400 bij een ontbrekend of ongeldig token."""
@@ -73,6 +84,7 @@ def _get_or_create_demo_user(first_name, last_name, email, username):
             verified=True,
             linkedin_url=None,
         )
+        user.accept_rules()  # demo-accounts zijn bijdragers, net als na de migratie
         db.session.add(user)
         db.session.flush()
     return user
@@ -459,7 +471,7 @@ def forum():
 @forum_bp.route('/forum/gesloten')
 @login_required
 def forum_gesloten():
-    if not (current_user.is_admin or current_user.is_moderator):
+    if not current_user.can_moderate():
         abort(403)
     return render_template('forum/closed.html', threads=_thread_list(closed=True))
 
@@ -485,6 +497,8 @@ def forum_thread(thread_id):
     thread = Thread.query.get_or_404(thread_id)
     reply_form = ForumReplyForm()
     if request.method == 'POST' and current_user.is_authenticated and not thread.is_closed:
+        if not current_user.can_contribute():
+            return _rules_first_redirect()
         # CSRF, zelfde aanpak als /feedback: leeg FlaskForm, 400 bij een
         # ontbrekend of ongeldig token. Geen honeypot: reageren vereist login.
         if not reply_form.validate_on_submit():
@@ -692,7 +706,7 @@ def forum_like(post_id):
 @forum_bp.route('/forum/<int:thread_id>/close', methods=['POST'])
 @login_required
 def forum_close(thread_id):
-    if not (current_user.is_moderator or current_user.is_admin):
+    if not current_user.can_moderate():
         abort(403)
     _require_csrf()
     thread = Thread.query.get_or_404(thread_id)
@@ -704,7 +718,7 @@ def forum_close(thread_id):
 @forum_bp.route('/forum/<int:thread_id>/reopen', methods=['POST'])
 @login_required
 def forum_reopen(thread_id):
-    if not (current_user.is_moderator or current_user.is_admin):
+    if not current_user.can_moderate():
         abort(403)
     _require_csrf()
     thread = Thread.query.get_or_404(thread_id)
@@ -716,6 +730,8 @@ def forum_reopen(thread_id):
 @forum_bp.route('/forum/nieuw', methods=['GET', 'POST'])
 @login_required
 def forum_nieuw():
+    if not current_user.can_contribute():
+        return _rules_first_redirect()
     _seed_forum()
     if request.method == 'POST':
         _require_csrf()
@@ -755,7 +771,7 @@ def forum_bewerken(thread_id):
     thread = Thread.query.get_or_404(thread_id)
     op = next((p for p in thread.posts if p.is_op), None)
     is_author = op and op.user_id == current_user.id
-    if not (is_author or current_user.is_moderator or current_user.is_admin):
+    if not (is_author or current_user.can_moderate()):
         abort(403)
     if request.method == 'POST':
         _require_csrf()
@@ -781,7 +797,7 @@ def forum_bewerken(thread_id):
 @login_required
 def forum_post_bewerken(post_id):
     post = Post.query.get_or_404(post_id)
-    if not (post.user_id == current_user.id or current_user.is_moderator or current_user.is_admin):
+    if not (post.user_id == current_user.id or current_user.can_moderate()):
         abort(403)
     _require_csrf()
     body = request.form.get('body', '').strip()
@@ -795,9 +811,9 @@ def forum_post_bewerken(post_id):
 @login_required
 def forum_post_verwijderen(post_id):
     post = Post.query.get_or_404(post_id)
-    if not (post.user_id == current_user.id or current_user.is_moderator or current_user.is_admin):
+    if not (post.user_id == current_user.id or current_user.can_moderate()):
         abort(403)
-    if post.is_op and not (current_user.is_moderator or current_user.is_admin):
+    if post.is_op and not current_user.can_moderate():
         abort(403)
     _require_csrf()
     thread_id = post.thread_id

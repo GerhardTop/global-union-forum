@@ -43,7 +43,7 @@
         {% if current_user.is_admin %}
         <a href="{{ url_for('admin.admin_dashboard') }}" class="gu-header__dropdown-item">Admin</a>
         {% endif %}
-        {% if current_user.is_moderator and not current_user.is_admin %}
+        {% if current_user.can_moderate() and not current_user.is_admin %}
         <a href="{{ url_for('admin.moderator_dashboard') }}" class="gu-header__dropdown-item">Moderator</a>
         {% endif %}
         <hr class="gu-header__dropdown-divider">

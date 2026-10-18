@@ -1093,6 +1093,7 @@ body {
 }
 .gu-role-badge--admin { background: var(--gu-night); color: #fff; }
 .gu-role-badge--mod   { background: var(--gu-globe); color: #fff; }
+.gu-admin-table__hint { margin-top: 4px; font-size: 0.75rem; color: var(--gu-fg-3); }
 
 /* Password strength indicator */
 .gu-pw-hint {
@@ -1608,6 +1609,29 @@ body {
   font-weight: 500;
   color: var(--gu-fg-2);
 }
+
+/* Spelregels page (/spelregels) */
+.gu-rules { list-style: none; margin: 24px 0; padding: 0; display: flex; flex-direction: column; gap: 20px; }
+.gu-rules__item { display: flex; gap: 16px; align-items: flex-start; }
+.gu-rules__n {
+  flex-shrink: 0;
+  min-width: 40px;
+  padding: 4px 0;
+  border-radius: 6px;
+  background: var(--gu-bg-soft);
+  color: var(--gu-globe-deep);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+}
+.gu-rules__title { font-size: 1.0625rem; font-weight: 600; margin: 2px 0 4px; color: var(--gu-fg-1); }
+.gu-rules__item p { margin: 0; color: var(--gu-fg-2); line-height: 1.6; }
+.gu-rules__accepted { color: var(--gu-fg-2); }
+
+/* Akkoord-vinkje bij registratie */
+.gu-join__check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9375rem; line-height: 1.5; color: var(--gu-fg-2); cursor: pointer; }
+.gu-join__check input { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--gu-globe-deep); }
+.gu-join__check a { color: var(--gu-link); }
 
 /* Landenlijst page */
 .gu-landen__head { padding: 48px 0 24px; }
