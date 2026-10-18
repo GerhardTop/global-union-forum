@@ -83,6 +83,11 @@ class Post(db.Model):
     image_url      = db.Column(db.String(500), nullable=True)
     created_at     = db.Column(db.DateTime, default=datetime.utcnow)
     author         = db.relationship('User', foreign_keys=[user_id], lazy='joined')
+    # Geneste reacties: parent_id wijst naar het bericht waarop gereageerd
+    # wordt (NULL = bericht op het hoogste niveau). De threadpagina bouwt de
+    # boom zelf uit één query (replies_map); deze relatie is voor overig gebruik.
+    replies        = db.relationship('Post', backref=db.backref('parent', remote_side=[id]),
+                                     lazy='select', order_by='Post.created_at')
 
     @property
     def time_ago(self):

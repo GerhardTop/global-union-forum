@@ -78,59 +78,27 @@
       {% endif %}
     </header>
 
-    {# Posts — 3 levels: root (0), replies (1), sub-replies (2) #}
+    {# Posts als boom, oudste eerst per niveau. Tot max_reply_indent niveaus
+       genest (mobiel: 2, via CSS); alles daaronder als platte lijst op het
+       laatste niveau, zie flat_descendants in forum_thread(). #}
     <div class="gu-thread">
-      {% for root in root_posts %}
-        {% set post = root %}
-        {% set depth = 0 %}
-        {% set level1 = replies_map.get(root.id, []) %}
+      {% for post in root_posts recursive %}
+        {% set depth = loop.depth0 %}
         {% include 'forum/_post.html' %}
-
-        {% if level1 %}
-        <div class="gu-thread__replies">
-
-          {# First level-1 reply — always visible #}
-          {% set post = level1[0] %}
-          {% set depth = 1 %}
-          {% include 'forum/_post.html' %}
-          {% set l2_first = replies_map.get(level1[0].id, []) %}
-          {% if l2_first %}
-          <div class="gu-thread__replies">
-            {% for sub in l2_first %}
-              {% set post = sub %}
-              {% set depth = 2 %}
-              {% include 'forum/_post.html' %}
-            {% endfor %}
+        {% set children = replies_map.get(post.id, []) %}
+        {% if children and depth < max_reply_indent %}
+        <div class="gu-thread__replies gu-thread__replies--d{{ depth + 1 }}" id="replies-{{ post.id }}">
+          {{ loop(children) }}
+        </div>
+        {% elif children %}
+        <div class="gu-thread__replies gu-thread__replies--flat" id="replies-{{ post.id }}">
+          {% for fpost in flat_descendants[post.id] %}
+          <div class="gu-thread__flatitem" data-ancestors=" {{ flat_ancestors[fpost.id] | join(' ') }} ">
+            {% set post = fpost %}
+            {% set depth = depths[fpost.id] %}
+            {% include 'forum/_post.html' %}
           </div>
-          {% endif %}
-
-          {# Remaining level-1 replies — collapsible #}
-          {% if level1|length > 1 %}
-          <div id="more-replies-{{ root.id }}" hidden>
-            {% for reply in level1[1:] %}
-              {% set post = reply %}
-              {% set depth = 1 %}
-              {% include 'forum/_post.html' %}
-              {% set l2 = replies_map.get(reply.id, []) %}
-              {% if l2 %}
-              <div class="gu-thread__replies">
-                {% for sub in l2 %}
-                  {% set post = sub %}
-                  {% set depth = 2 %}
-                  {% include 'forum/_post.html' %}
-                {% endfor %}
-              </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-          <button class="gu-post__action gu-post__action--ghost gu-thread__replies-toggle"
-                  data-target="more-replies-{{ root.id }}"
-                  data-label-show="{% if lang == 'nl' %}Lees meer reacties ({{ level1|length - 1 }}){% else %}Read more replies ({{ level1|length - 1 }}){% endif %}"
-                  data-label-hide="{% if lang == 'nl' %}Verberg reacties{% else %}Hide replies{% endif %}">
-            {% if lang == 'nl' %}Lees meer reacties ({{ level1|length - 1 }}){% else %}Read more replies ({{ level1|length - 1 }}){% endif %}
-          </button>
-          {% endif %}
-
+          {% endfor %}
         </div>
         {% endif %}
       {% endfor %}
@@ -224,13 +192,43 @@
       area.addEventListener('input', function () { submitBtn.disabled = !area.value.trim(); });
     });
 
-    // "Lees meer reacties" toggles
-    document.querySelectorAll('.gu-thread__replies-toggle').forEach(function (button) {
+    // Reacties in- en uitklappen. Genest: het replies-blok onder het bericht
+    // verbergen. In de platte lijst voorbij de dieptegrens staan kinderen niet
+    // in een eigen blok; daar verbergen we elk item met een ingeklapte
+    // voorouder (data-ancestors), zodat geneste inklapstanden kloppen.
+    var collapsedFlat = new Set();
+    function refreshFlat() {
+      document.querySelectorAll('.gu-thread__flatitem').forEach(function (item) {
+        var ids = item.dataset.ancestors.trim().split(/\s+/).filter(Boolean);
+        item.hidden = ids.some(function (id) { return collapsedFlat.has(id); });
+      });
+    }
+    document.querySelectorAll('.gu-post__collapse-btn').forEach(function (button) {
       button.addEventListener('click', function () {
-        var more = document.getElementById(button.dataset.target);
-        if (!more) return;
-        more.hidden = !more.hidden;
-        button.textContent = more.hidden ? button.dataset.labelShow : button.dataset.labelHide;
+        var expanded = button.getAttribute('aria-expanded') === 'true';
+        var block = button.dataset.target && document.getElementById(button.dataset.target);
+        if (block) {
+          block.hidden = expanded;
+        } else {
+          if (expanded) collapsedFlat.add(button.dataset.postId);
+          else collapsedFlat.delete(button.dataset.postId);
+          refreshFlat();
+        }
+        button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        button.textContent = expanded ? button.dataset.labelShow : button.dataset.labelHide;
+      });
+    });
+
+    // "In antwoord op": naar de ouder springen en die kort markeren.
+    document.querySelectorAll('.gu-post__inreply').forEach(function (link) {
+      link.addEventListener('click', function () {
+        var target = document.getElementById(link.getAttribute('href').slice(1));
+        if (!target) return;
+        target.setAttribute('tabindex', '-1');
+        target.classList.remove('gu-post--highlight');
+        void target.offsetWidth;  // animatie opnieuw starten bij herhaald klikken
+        target.classList.add('gu-post--highlight');
+        setTimeout(function () { target.focus({ preventScroll: true }); }, 0);
       });
     });
 

@@ -466,3 +466,22 @@ msgstr "Vul je huidige wachtwoord in."
 #: app/templates/index.html
 msgid "Log in to send feedback"
 msgstr "Log in om feedback te sturen"
+
+#: app/templates/forum/_post.html
+#, python-format
+msgid "in reply to %(name)s"
+msgstr "in antwoord op %(name)s"
+
+#: app/templates/forum/_post.html
+#, python-format
+msgid "Hide %(num)d reply"
+msgid_plural "Hide %(num)d replies"
+msgstr[0] "%(num)d reactie verbergen"
+msgstr[1] "%(num)d reacties verbergen"
+
+#: app/templates/forum/_post.html
+#, python-format
+msgid "Show %(num)d reply"
+msgid_plural "Show %(num)d replies"
+msgstr[0] "%(num)d reactie tonen"
+msgstr[1] "%(num)d reacties tonen"

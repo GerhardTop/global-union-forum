@@ -466,3 +466,22 @@ msgstr "Enter your current password."
 #: app/templates/index.html
 msgid "Log in to send feedback"
 msgstr "Log in to send feedback"
+
+#: app/templates/forum/_post.html
+#, python-format
+msgid "in reply to %(name)s"
+msgstr "in reply to %(name)s"
+
+#: app/templates/forum/_post.html
+#, python-format
+msgid "Hide %(num)d reply"
+msgid_plural "Hide %(num)d replies"
+msgstr[0] "Hide %(num)d reply"
+msgstr[1] "Hide %(num)d replies"
+
+#: app/templates/forum/_post.html
+#, python-format
+msgid "Show %(num)d reply"
+msgid_plural "Show %(num)d replies"
+msgstr[0] "Show %(num)d reply"
+msgstr[1] "Show %(num)d replies"

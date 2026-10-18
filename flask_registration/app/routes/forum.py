@@ -1,6 +1,7 @@
 import os
 import secrets
 import uuid
+from collections import deque
 from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify, abort, current_app, flash
@@ -14,6 +15,8 @@ forum_bp = Blueprint("forum", __name__)
 
 _ALLOWED_EXT = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
 _MAX_SIZE = 5 * 1024 * 1024
+# Aantal inspringniveaus voor reacties op desktop (mobiel: 2, via CSS).
+MAX_REPLY_INDENT = 4
 _UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'uploads')
 
 
@@ -483,6 +486,46 @@ def forum_thread(thread_id):
     for p in all_posts:
         if p.parent_id is not None:
             replies_map.setdefault(p.parent_id, []).append(p)
+    posts_by_id = {p.id: p for p in all_posts}
+
+    # Diepte per bericht, breedte-eerst vanaf de roots (geen recursie, dus
+    # ook een extreem lange keten kan de pagina niet laten crashen). In
+    # deze volgorde komt een ouder altijd vóór zijn kinderen.
+    depths, tree_order = {}, []
+    queue = deque((p, 0) for p in root_posts)
+    while queue:
+        p, d = queue.popleft()
+        depths[p.id] = d
+        tree_order.append(p)
+        queue.extend((c, d + 1) for c in replies_map.get(p.id, []))
+
+    # Totaal aantal onderliggende reacties per bericht (alle niveaus), voor
+    # de inklap-knop.
+    descendant_counts = {}
+    for p in reversed(tree_order):
+        descendant_counts[p.id] = sum(1 + descendant_counts[c.id] for c in replies_map.get(p.id, []))
+
+    # Voorbij de dieptegrens wordt niet verder ingesprongen: alles onder een
+    # bericht op MAX_REPLY_INDENT komt als één platte, chronologische lijst
+    # op dat laatste niveau, elk met een "in antwoord op"-label.
+    flat_descendants = {}
+    for p in tree_order:
+        if depths[p.id] == MAX_REPLY_INDENT and replies_map.get(p.id):
+            found, stack = [], list(replies_map[p.id])
+            while stack:
+                c = stack.pop()
+                found.append(c)
+                stack.extend(replies_map.get(c.id, []))
+            flat_descendants[p.id] = sorted(found, key=lambda x: (x.created_at, x.id))
+
+    # Voor de inklap-knop binnen de platte lijst: per plat bericht de ids
+    # van zijn platte voorouders (die zelf ook voorbij de grens staan).
+    flat_ancestors = {}
+    for p in tree_order:
+        if depths[p.id] > MAX_REPLY_INDENT:
+            parent = posts_by_id[p.parent_id]
+            flat_ancestors[p.id] = (flat_ancestors.get(parent.id, []) + [parent.id]
+                                    if depths[parent.id] > MAX_REPLY_INDENT else [])
 
     all_ids = [p.id for p in all_posts]
     like_counts_q = (
@@ -514,6 +557,12 @@ def forum_thread(thread_id):
         posts=all_posts,
         root_posts=root_posts,
         replies_map=replies_map,
+        posts_by_id=posts_by_id,
+        depths=depths,
+        descendant_counts=descendant_counts,
+        flat_descendants=flat_descendants,
+        flat_ancestors=flat_ancestors,
+        max_reply_indent=MAX_REPLY_INDENT,
         like_counts=like_counts,
         liked_ids=liked_ids,
         auto_translate=auto_translate,

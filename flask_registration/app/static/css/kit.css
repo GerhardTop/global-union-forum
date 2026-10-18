@@ -2629,26 +2629,44 @@ body {
 .gu-upload-label svg { flex-shrink: 0; }
 .gu-upload-chosen { color: var(--gu-fg-2); font-style: italic; }
 
-/* Nested replies */
+/* Nested replies: per niveau een dunne gekleurde draadlijn. Desktop springt
+   4 niveaus in (--d1 t/m --d4); daaronder (--flat) niet verder. Mobiel: 2
+   niveaus, zie de media query onderaan. */
 .gu-thread__replies {
-  margin-left: 16px;
-  padding-left: 16px;
+  margin-left: 10px;
+  padding-left: 14px;
   border-left: 2px solid var(--gu-border);
 }
+.gu-thread__replies--d1 { border-left-color: var(--gu-europe); }
+.gu-thread__replies--d2 { border-left-color: var(--gu-oceania); }
+.gu-thread__replies--d3 { border-left-color: var(--gu-asia); }
+.gu-thread__replies--d4 { border-left-color: var(--gu-americas); }
+.gu-thread__replies--flat { margin-left: 0; padding-left: 0; border-left: none; }
 .gu-thread__replies .gu-post {
   border-bottom-color: var(--gu-border);
 }
-.gu-thread__replies-toggle {
-  display: block;
-  margin: 4px 0 8px 0;
+
+/* "In antwoord op": alleen bij platgeslagen reacties (desktop: voorbij
+   niveau 4, mobiel: voorbij niveau 2). */
+.gu-post__inreply {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
   font-size: 0.8125rem;
-  color: var(--gu-accent);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 0;
+  color: var(--gu-fg-3);
+  text-decoration: none;
 }
-.gu-thread__replies-toggle:hover { text-decoration: underline; }
+.gu-post__inreply--flat { display: inline-flex; }
+.gu-post__inreply:hover { color: var(--gu-link); text-decoration: underline; }
+.gu-post__inreply:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; border-radius: 2px; }
+.gu-post { scroll-margin-top: 88px; }
+.gu-post:focus { outline: none; }
+.gu-post--highlight { animation: gu-post-highlight 2s ease-out; }
+@keyframes gu-post-highlight {
+  from { background-color: color-mix(in srgb, var(--gu-globe) 18%, transparent); }
+  to   { background-color: transparent; }
+}
 
 /* Like button */
 .gu-post__like-btn {
@@ -2670,12 +2688,6 @@ body {
 .gu-post__like-btn[disabled] { cursor: default; }
 .gu-post__like-icon { font-size: 0.9375rem; line-height: 1; }
 
-/* Reply count indicator */
-.gu-post__replycount {
-  font-size: 0.8125rem;
-  color: var(--gu-fg-3);
-  padding: 2px 6px;
-}
 
 /* Inline reply form */
 .gu-post__replyform {
@@ -2830,8 +2842,12 @@ body {
   /* Reply form: full width */
   .gu-post__replyform { margin-left: 0; }
 
-  /* Thread replies indent: less on mobile */
-  .gu-thread__replies { margin-left: 12px; padding-left: 10px; }
+  /* Thread replies indent: less on mobile, en maar 2 niveaus */
+  .gu-thread__replies { margin-left: 6px; padding-left: 10px; }
+  .gu-thread__replies--d3,
+  .gu-thread__replies--d4,
+  .gu-thread__replies--flat { margin-left: 0; padding-left: 0; border-left: none; }
+  .gu-post__inreply { display: inline-flex; }
 
   /* ── Auth (login / register) ────────────────────────────── */
   .gu-auth-page { padding: 24px 16px; align-items: flex-start; padding-top: 40px; }

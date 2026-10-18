@@ -1,6 +1,7 @@
 {#
   Partial: forum/_post.html
-  Context: post, depth (0/1/2), thread, replies_map, like_counts, liked_ids
+  Context: post, depth (0 = hoogste niveau), thread, replies_map, posts_by_id,
+           descendant_counts, max_reply_indent, like_counts, liked_ids
 #}
 {% if post.body == '[bericht verwijderd]' %}
   {% set is_deleted = true %}
@@ -27,6 +28,17 @@
 
 <article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}"
          id="post-{{ post.id }}">
+
+  {# "In antwoord op": vanaf diepte 3, want daar springt mobiel (2 niveaus)
+     niet meer in. Op desktop pas zichtbaar voorbij max_reply_indent. #}
+  {% if depth > 2 and post.parent_id in posts_by_id %}
+  {% set parent_post = posts_by_id[post.parent_id] %}
+  <a class="gu-post__inreply{% if depth > max_reply_indent %} gu-post__inreply--flat{% endif %}"
+     href="#post-{{ parent_post.id }}">
+    <span aria-hidden="true">↳</span>
+    {{ _('in reply to %(name)s', name=(parent_post.author_name if parent_post.author_name else '@' ~ parent_post.author_username)) }}
+  </a>
+  {% endif %}
 
   <header class="gu-post__head">
     <div class="gu-post__author">
@@ -102,14 +114,19 @@
       </button>
     {% endif %}
 
-    {# Reply count (root posts only) #}
-    {% if depth == 0 %}
-      {% set reply_count = replies_map.get(post.id, [])|length %}
-      {% if reply_count %}
-      <span class="gu-post__replycount">
-        {{ reply_count }} {% if lang == 'nl' %}reactie{{ 's' if reply_count != 1 else '' }}{% else %}repl{{ 'ies' if reply_count != 1 else 'y' }}{% endif %}
-      </span>
-      {% endif %}
+    {# Inklappen: elk bericht met reacties. Telling = alle onderliggende
+       reacties. Tot en met max_reply_indent staat er een replies-blok onder
+       het bericht; daaronder (platte lijst) werkt het via data-ancestors. #}
+    {% set n_replies = descendant_counts.get(post.id, 0) %}
+    {% if n_replies %}
+    <button type="button" class="gu-post__action gu-post__action--ghost gu-post__collapse-btn"
+            aria-expanded="true"
+            data-post-id="{{ post.id }}"
+            {% if depth <= max_reply_indent %}data-target="replies-{{ post.id }}" aria-controls="replies-{{ post.id }}"{% endif %}
+            data-label-hide="{{ ngettext('Hide %(num)d reply', 'Hide %(num)d replies', n_replies) }}"
+            data-label-show="{{ ngettext('Show %(num)d reply', 'Show %(num)d replies', n_replies) }}">
+      {{ ngettext('Hide %(num)d reply', 'Hide %(num)d replies', n_replies) }}
+    </button>
     {% endif %}
 
     {# Edit icon — eigen posts #}
@@ -142,8 +159,8 @@
     </form>
     {% endif %}
 
-    {# Reageer button — primaire actieknop (depth < 2, not own post, logged in, thread open) #}
-    {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own %}
+    {# Reageer button, primaire actieknop (elke diepte, not own post, logged in, thread open) #}
+    {% if current_user.is_authenticated and not thread.is_closed and not is_own %}
     <button class="gu-post__action gu-post__reply-btn"
             data-target="reply-form-{{ post.id }}">
       {% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
@@ -202,7 +219,7 @@
   {% endif %}
 
   {# Inline reply form #}
-  {% if depth < 2 and current_user.is_authenticated and not thread.is_closed and not is_own %}
+  {% if current_user.is_authenticated and not thread.is_closed and not is_own %}
   <div class="gu-post__replyform" id="reply-form-{{ post.id }}" hidden>
     <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       <input type="hidden" name="parent_id" value="{{ post.id }}">
