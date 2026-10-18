@@ -210,12 +210,20 @@ class Post(db.Model):
         return {'nl': 'zojuist', 'en': 'just now'}
 
 
+# Forum fase B: eens/oneens per bijdrage, los van elk kwaliteitssignaal.
+STANCES = ('eens', 'oneens')
+
+
 class PostLike(db.Model):
+    """Eén eens/oneens-signaal per gebruiker per bijdrage (unieke combinatie
+    post_id + user_id). Vroeger een like; oude likes zijn bij de migratie
+    'eens' geworden (zie _migrate_stance). Wisselen werkt de rij bij."""
     __tablename__ = "post_likes"
 
     id         = db.Column(db.Integer, primary_key=True)
     post_id    = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)
     user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    stance     = db.Column(db.String(10), nullable=True, default='eens')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     __table_args__ = (db.UniqueConstraint('post_id', 'user_id', name='uq_post_like'),)

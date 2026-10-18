@@ -525,3 +525,14 @@ msgstr "Please accept the ground rules to continue."
 #, python-format
 msgid "LinkedIn profile of %(name)s"
 msgstr "LinkedIn profile of %(name)s"
+
+#: forum fase B (eens/oneens)
+
+msgid "Agree"
+msgstr "Agree"
+
+msgid "Disagree"
+msgstr "Disagree"
+
+msgid "Agree or disagree"
+msgstr "Agree or disagree"

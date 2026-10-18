@@ -303,21 +303,30 @@
       });
     });
 
-    // Like buttons
-    document.querySelectorAll('.gu-post__like-btn:not([disabled])').forEach(function (button) {
-      var postId   = button.dataset.postId;
-      var countEl  = button.querySelector('.gu-post__like-count');
-      if (button.dataset.liked === 'true') button.classList.add('gu-post__like-btn--liked');
-      button.addEventListener('click', function () {
-        var likeFd = new FormData();
-        likeFd.append('csrf_token', csrfToken);
-        fetch('/forum/like/' + postId, { method: 'POST', body: likeFd })
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
-            countEl.textContent = data.likes;
-            button.classList.toggle('gu-post__like-btn--liked', data.liked);
-            button.dataset.liked = data.liked ? 'true' : 'false';
-          });
+    // Eens/oneens: dezelfde knop nog eens trekt de keuze in, de andere wisselt.
+    // X-Requested-With zodat een rate limit (429) als JSON terugkomt.
+    document.querySelectorAll('.gu-stance').forEach(function (group) {
+      var postId = group.dataset.postId;
+      var buttons = group.querySelectorAll('.gu-stance__btn:not([disabled])');
+      buttons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var fd = new FormData();
+          fd.append('csrf_token', csrfToken);
+          fd.append('stance', button.dataset.stance);
+          buttons.forEach(function (b) { b.disabled = true; });
+          fetch('/forum/stance/' + postId, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (r) { return r.json().catch(function () { return {}; }); })
+            .then(function (data) {
+              if (typeof data.eens !== 'number') return;
+              group.querySelectorAll('.gu-stance__btn').forEach(function (b) {
+                var s = b.dataset.stance;
+                b.querySelector('.gu-stance__count').textContent = data[s];
+                b.classList.toggle('is-mine', data.mine === s);
+                b.setAttribute('aria-pressed', data.mine === s ? 'true' : 'false');
+              });
+            })
+            .finally(function () { buttons.forEach(function (b) { b.disabled = false; }); });
+        });
       });
     });
 

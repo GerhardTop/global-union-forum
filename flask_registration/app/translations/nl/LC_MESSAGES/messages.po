@@ -525,3 +525,14 @@ msgstr "Ga akkoord met de spelregels om verder te gaan."
 #, python-format
 msgid "LinkedIn profile of %(name)s"
 msgstr "LinkedIn-profiel van %(name)s"
+
+#: forum fase B (eens/oneens)
+
+msgid "Agree"
+msgstr "Eens"
+
+msgid "Disagree"
+msgstr "Oneens"
+
+msgid "Agree or disagree"
+msgstr "Eens of oneens"

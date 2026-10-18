@@ -1,7 +1,7 @@
 {#
   Partial: forum/_post.html
   Context: post, depth (0 = hoogste niveau), thread, reply_form, replies_map,
-           posts_by_id, descendant_counts, max_reply_indent, like_counts, liked_ids
+           posts_by_id, descendant_counts, max_reply_indent, stance_counts, my_stances
 #}
 {% if post.body == '[bericht verwijderd]' %}
   {% set is_deleted = true %}
@@ -107,17 +107,21 @@
 
   <footer class="gu-post__actions">
 
-    {# Like button — hidden for own posts #}
-    {% if not is_own %}
-      {% set like_count = like_counts.get(post.id, 0) %}
-      <button class="gu-post__action gu-post__like-btn{% if post.id in liked_ids %} gu-post__like-btn--liked{% endif %}"
-              data-post-id="{{ post.id }}"
-              data-liked="{{ 'true' if post.id in liked_ids else 'false' }}"
-              {% if not current_user.is_authenticated %}disabled{% endif %}>
-        <span class="gu-post__like-icon">{% if post.id in liked_ids %}♥{% else %}♡{% endif %}</span>
-        <span class="gu-post__like-count">{{ like_count }}</span>
+    {# Eens/oneens (forum fase B): tellingen voor iedereen zichtbaar; stemmen
+       alleen als bijdrager, niet op je eigen bijdrage. #}
+    {% set counts = stance_counts.get(post.id, {'eens': 0, 'oneens': 0}) %}
+    {% set mine = my_stances.get(post.id) %}
+    {% set can_stance = current_user.can_contribute() and not is_own %}
+    <div class="gu-stance" data-post-id="{{ post.id }}" role="group" aria-label="{{ _('Agree or disagree') }}">
+      {% for s, label in [('eens', _('Agree')), ('oneens', _('Disagree'))] %}
+      <button type="button" class="gu-post__action gu-stance__btn gu-stance__btn--{{ s }}{% if mine == s %} is-mine{% endif %}"
+              data-stance="{{ s }}" aria-pressed="{{ 'true' if mine == s else 'false' }}"
+              {% if not can_stance %}disabled{% endif %}>
+        <span class="gu-stance__label">{{ label }}</span>
+        <span class="gu-stance__count">{{ counts[s] }}</span>
       </button>
-    {% endif %}
+      {% endfor %}
+    </div>
 
     {# Inklappen: elk bericht met reacties. Telling = alle onderliggende
        reacties. Tot en met max_reply_indent staat er een replies-blok onder

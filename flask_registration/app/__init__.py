@@ -133,6 +133,7 @@ def _migrate_columns():
     # rules_accepted_at; die moeten dan al bestaan.
     _migrate_roles(existing)
     _migrate_show_real_name(existing)
+    _migrate_stance(existing)
     _migrate_username_and_backfill(insp, existing, is_pg)
 
 
@@ -164,6 +165,24 @@ def _migrate_roles(existing):
                  "rules_accepted_at = COALESCE(rules_accepted_at, :now) WHERE role IS NULL"),
             {'now': datetime.utcnow()},
         )
+        conn.commit()
+
+
+def _migrate_stance(existing):
+    """
+    Forum fase B: post_likes.stance ('eens'/'oneens', nullable). Een like was
+    altijd instemming, dus elke rij zonder richting wordt 'eens'. De backfill
+    raakt alleen lege rijen en draait bij elke start (nieuwe rijen krijgen
+    altijd een richting), dus herhalen is veilig. Vóór elke ORM-query op
+    PostLike, zoals de oude-draad-opruiming in _seed_forum().
+    """
+    if 'post_likes' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('post_likes')}
+    with db.engine.connect() as conn:
+        if 'stance' not in cols:
+            conn.execute(text('ALTER TABLE post_likes ADD COLUMN stance VARCHAR(10) NULL'))
+        conn.execute(text("UPDATE post_likes SET stance = 'eens' WHERE stance IS NULL"))
         conn.commit()
 
 

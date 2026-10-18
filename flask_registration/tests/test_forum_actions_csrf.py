@@ -55,8 +55,9 @@ def _actions(s):
                         lambda: db.session.get(Post, reply.id).body == '[bericht verwijderd]'),
         'bewerken': (f'/forum/post/{reply.id}/bewerken', {'body': 'Nieuwe tekst'}, 'anna',
                      lambda: db.session.get(Post, reply.id).body == 'Nieuwe tekst'),
-        'liken': (f'/forum/like/{bram_post.id}', {}, 'anna',
-                  lambda: PostLike.query.filter_by(post_id=bram_post.id).count() == 1),
+        # Eens/oneens (fase B) vervangt de like: zelfde CSRF-eis.
+        'eens_oneens': (f'/forum/stance/{bram_post.id}', {'stance': 'eens'}, 'anna',
+                        lambda: PostLike.query.filter_by(post_id=bram_post.id, stance='eens').count() == 1),
         'sluiten': (f'/forum/{t.id}/close', {}, 'mod',
                     lambda: db.session.get(Thread, t.id).is_closed is True),
         'draad_starten': ('/forum/nieuw', {'title': 'Nieuwe draad', 'body': 'Eerste bericht'}, 'anna',
@@ -68,7 +69,7 @@ def _actions(s):
     }
 
 
-ACTIONS = ['verwijderen', 'bewerken', 'liken', 'sluiten', 'draad_starten', 'draad_bewerken', 'vertaalvoorkeur']
+ACTIONS = ['verwijderen', 'bewerken', 'eens_oneens', 'sluiten', 'draad_starten', 'draad_bewerken', 'vertaalvoorkeur']
 
 
 @pytest.mark.parametrize('name', ACTIONS)
@@ -106,8 +107,8 @@ def test_unlike_and_reopen_with_valid_token(setup, app):  # noqa: F811
     t, bram_post = setup['thread'], setup['bram_post']
     anna = _client_for(app, setup['anna'])
     token = _token(anna, t)
-    assert _post(anna, f'/forum/like/{bram_post.id}', token=token).get_json()['liked'] is True
-    assert _post(anna, f'/forum/like/{bram_post.id}', token=token).get_json()['liked'] is False
+    assert _post(anna, f'/forum/stance/{bram_post.id}', {'stance': 'eens'}, token=token).get_json()['mine'] == 'eens'
+    assert _post(anna, f'/forum/stance/{bram_post.id}', {'stance': 'eens'}, token=token).get_json()['mine'] is None
 
     mod = _client_for(app, setup['mod'])
     token = _token(mod, t)
@@ -142,7 +143,7 @@ def test_every_action_form_renders_a_token(setup, app):  # noqa: F811
     for action in (f'/forum/post/{reply.id}/verwijderen', '/profiel/vertaalvoorkeur'):
         forms = _forms_with(page, action)
         assert forms and all('name="csrf_token"' in f for f in forms), action
-    # Token voor de fetch-acties (liken, bewerken) staat in het script.
+    # Token voor de fetch-acties (eens/oneens, bewerken) staat in het script.
     assert re.search(r'var csrfToken = "[^"]+";', page)
 
     for path, action in (('/forum/nieuw', '/forum/nieuw'),

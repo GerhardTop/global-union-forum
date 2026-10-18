@@ -10,7 +10,7 @@ from sqlalchemy import func
 
 from app import db, bcrypt, limiter
 from app.forms import ForumActionForm, ForumReplyForm
-from app.models import User, Thread, Post, PostLike
+from app.models import STANCES, User, Thread, Post, PostLike
 
 forum_bp = Blueprint("forum", __name__)
 
@@ -586,18 +586,11 @@ def forum_thread(thread_id):
                                     if depths[parent.id] > MAX_REPLY_INDENT else [])
 
     all_ids = [p.id for p in all_posts]
-    like_counts_q = (
-        db.session.query(PostLike.post_id, func.count(PostLike.id))
-        .filter(PostLike.post_id.in_(all_ids))
-        .group_by(PostLike.post_id)
-        .all()
-    ) if all_ids else []
-    like_counts = {pid: cnt for pid, cnt in like_counts_q}
-
-    liked_ids = set()
+    stance_counts = _stance_counts(all_ids)
+    my_stances = {}
     if current_user.is_authenticated and all_ids:
-        liked_ids = {
-            pl.post_id for pl in
+        my_stances = {
+            pl.post_id: pl.stance for pl in
             PostLike.query.filter(
                 PostLike.post_id.in_(all_ids),
                 PostLike.user_id == current_user.id
@@ -622,8 +615,8 @@ def forum_thread(thread_id):
         flat_descendants=flat_descendants,
         flat_ancestors=flat_ancestors,
         max_reply_indent=MAX_REPLY_INDENT,
-        like_counts=like_counts,
-        liked_ids=liked_ids,
+        stance_counts=stance_counts,
+        my_stances=my_stances,
         auto_translate=auto_translate,
     )
 
@@ -694,23 +687,51 @@ def forum_translate(post_id):
         return jsonify({'error': 'translation failed'}), 500
 
 
-@forum_bp.route('/forum/like/<int:post_id>', methods=['POST'])
+def _stance_counts(post_ids):
+    """{post_id: {'eens': n, 'oneens': m}} voor de gegeven bijdragen."""
+    counts = {pid: {'eens': 0, 'oneens': 0} for pid in post_ids}
+    if post_ids:
+        rows = (db.session.query(PostLike.post_id, PostLike.stance, func.count(PostLike.id))
+                .filter(PostLike.post_id.in_(post_ids))
+                .group_by(PostLike.post_id, PostLike.stance).all())
+        for pid, stance, n in rows:
+            if stance in STANCES:
+                counts[pid][stance] = n
+    return counts
+
+
+@forum_bp.route('/forum/stance/<int:post_id>', methods=['POST'])
 @login_required
-def forum_like(post_id):
+# Eens/oneens (forum fase B, vervangt de like). Per gebruiker begrensd, zelfde
+# patroon als reageren; @login_required staat erboven, dus anoniem verkeer
+# raakt de limiter niet. Een verzoek dat al op de limiet stukloopt, telt niet.
+@limiter.limit("30 per minute",
+               key_func=lambda: f"forum-stance-user-{current_user.get_id()}")
+def forum_stance(post_id):
+    """Klik op Eens of Oneens: geen eerdere keuze maakt een nieuwe, de andere
+    richting wisselt de bestaande rij, dezelfde richting nog eens trekt de
+    keuze in. Eén rij per gebruiker per bijdrage."""
     _require_csrf()
     post = Post.query.get_or_404(post_id)
+    if not current_user.can_contribute():
+        return jsonify({'error': 'not allowed'}), 403
     if post.user_id == current_user.id:
-        return jsonify({'error': 'cannot like own post'}), 400
+        return jsonify({'error': 'cannot vote on own post'}), 400
+    stance = request.form.get('stance', '')
+    if stance not in STANCES:
+        return jsonify({'error': 'invalid stance'}), 400
     existing = PostLike.query.filter_by(post_id=post_id, user_id=current_user.id).first()
-    if existing:
+    if existing is None:
+        db.session.add(PostLike(post_id=post_id, user_id=current_user.id, stance=stance))
+        mine = stance
+    elif existing.stance == stance:
         db.session.delete(existing)
-        liked = False
+        mine = None
     else:
-        db.session.add(PostLike(post_id=post_id, user_id=current_user.id))
-        liked = True
+        existing.stance = stance
+        mine = stance
     db.session.commit()
-    count = PostLike.query.filter_by(post_id=post_id).count()
-    return jsonify({'likes': count, 'liked': liked})
+    return jsonify({**_stance_counts([post_id])[post_id], 'mine': mine})
 
 
 @forum_bp.route('/forum/<int:thread_id>/close', methods=['POST'])
