@@ -6,7 +6,7 @@ from flask_babel import gettext as _
 
 from app import db, bcrypt
 from app.forms import ForumActionForm, LinkedInForm
-from app.utils import _password_strong, _stash_form_state, _pop_form_state
+from app.utils import _password_strong, _stash_form_state, _pop_form_state, safe_next
 
 profile_bp = Blueprint("profile", __name__)
 
@@ -110,5 +110,5 @@ def profiel_vertaalvoorkeur():
     db.session.commit()
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({'ok': True})
-    next_url = request.form.get('next') or url_for("profile.profile")
-    return redirect(next_url)
+    # Alleen interne paden: anders valt de redirect terug op het profiel.
+    return redirect(safe_next(request.form.get('next'), url_for("profile.profile")))

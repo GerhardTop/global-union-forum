@@ -6,6 +6,27 @@ from itsdangerous import URLSafeTimedSerializer
 
 _URL_RE = re.compile(r'(https?://[^\s<>"\']+)', re.IGNORECASE)
 
+
+def safe_next(target, fallback):
+    """Geef `target` terug als het een pad binnen de eigen site is, anders
+    `fallback`. Tegen open redirects via een next-veld of -parameter.
+
+    Alleen een pad dat met precies één "/" begint mag. Geweigerd: lege
+    waarden, "//host" en "///host" (protocol-relatief), elke backslash
+    (browsers lezen "/\\host" als "//host"), witruimte en stuurtekens, en
+    alles met een scheme of host volgens urlparse.
+    """
+    if not target or not isinstance(target, str):
+        return fallback
+    if not target.startswith('/') or target.startswith('//'):
+        return fallback
+    if '\\' in target or any(c.isspace() or ord(c) < 32 or ord(c) == 127 for c in target):
+        return fallback
+    parsed = urlparse(target)
+    if parsed.scheme or parsed.netloc:
+        return fallback
+    return target
+
 # ── Username-validatie (pseudoniem-model, fase 1) ────────────────────────────
 #
 # Herbruikbaar op meerdere plekken: registratie, de blur-check, toekomstige

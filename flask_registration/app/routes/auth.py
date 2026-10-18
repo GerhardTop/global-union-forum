@@ -17,7 +17,8 @@ from app.mail import send_email
 from app.models import User, Post, PostLike
 from app.utils import (MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, _send_verify_email,
                        _password_strong, _stash_form_state, _pop_form_state, mail_global_key,
-                       is_username_valid_format, is_username_blacklisted, is_username_available)
+                       is_username_valid_format, is_username_blacklisted, is_username_available,
+                       safe_next)
 
 auth = Blueprint("auth", __name__)
 
@@ -100,11 +101,7 @@ def login():
                 session['lang'] = lang
                 session.permanent = True
                 login_user(user)
-                next_page = request.args.get("next")
-                parsed_next = urlparse(next_page) if next_page else None
-                if not next_page or parsed_next.scheme or parsed_next.netloc:
-                    next_page = url_for("main.index")
-                return redirect(next_page)
+                return redirect(safe_next(request.args.get("next"), url_for("main.index")))
         else:
             login_error = True
     return render_template("login.html", form=form, login_error=login_error,
