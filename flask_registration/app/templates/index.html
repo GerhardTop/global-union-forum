@@ -12,20 +12,26 @@
       {{ _('A union of') }}<br><span class="gu-title-em">{{ _('functioning democracies') }}</span>
     </h1>
     <p class="gu-lead">
-      {{ _('The European Union is a great success. Many countries with authoritarian regimes joined its ranks. Their people wanted to belong to the EU. For prosperity. For freedom.') }}
+      {% if lang == 'nl' %}De wereld heeft een geopolitiek machtsblok nodig dat staat voor de internationale rechtsorde: voor onze vrijheid en veiligheid, voor democratie, mensenrechten en duurzaamheid.{% else %}The world needs a geopolitical power bloc that stands for the international rule of law: for our freedom and security, for democracy, human rights and sustainability.{% endif %}
     </p>
     <p class="gu-lead">
-      {{ _('The EU is not finished. There is much to improve. But that need not hold us back. We can already expand the cooperation beyond Europe, with functioning democracies, such as Canada, Japan and Australia. And with candidate countries that already have a reasonably strong democracy, such as Malaysia, Chile, Costa Rica, Botswana and Ghana. The Global Union exists alongside the EU and the UN. The goal is an ever-growing community of functioning democracies.') }}
+      {% if lang == 'nl' %}Rusland bedreigt de Europese veiligheid, en de VS dreigt een minder betrouwbare partner te worden. China steunt Rusland. De VN-Veiligheidsraad raakt steeds vaker verlamd.{% else %}Russia threatens European security, and the US risks becoming a less reliable partner. China backs Russia. The UN Security Council is increasingly paralysed.{% endif %}
     </p>
     <p class="gu-lead">
-      {{ _('Global Union Forum is a think tank. We investigate whether this model can work worldwide: a cooperation of countries that take democracy, the rule of law, sustainability and human rights seriously.') }}
+      {% if lang == 'nl' %}Mark Carney, premier van Canada, riep in Davos op tot samenwerking tussen 'middle powers': landen die samen groot genoeg zijn om mee te tellen en de internationale rechtsorde respecteren. In september 2026 is een eerste stap gezet: Canada werd het eerste geassocieerde lid van de EU.{% else %}Mark Carney, Prime Minister of Canada, called in Davos for cooperation between "middle powers": countries that together are large enough to matter and that respect the international rule of law. A first step was taken in September 2026: Canada became the first associated member of the EU.{% endif %}
     </p>
     <p class="gu-lead">
-      {{ _('A first manifesto has been drawn up. We want to improve the idea with the intelligence of everyone willing to think it through. All input will be collected and processed to arrive at a new manifesto.') }}
+      {% if lang == 'nl' %}Global Union Forum wil dit momentum benutten en pleit voor een permanente samenwerkingsstructuur die openstaat voor alle landen die voldoen aan criteria voor democratie, rechtsstaat, corruptiebestrijding en mensenrechten. Niet als alternatief voor de VN, maar als aanvulling. Een samenwerking naast de EU, niet alleen met voor de hand liggende partners zoals Canada, het Verenigd Koninkrijk, Japan, Zuid-Korea en Australië, maar ook met landen daarbuiten die al een sterke democratie hebben, zoals Chili, Uruguay, Costa Rica, Kaapverdië, Botswana en Ghana.{% else %}Global Union Forum wants to seize this momentum and argues for a permanent structure of cooperation, open to all countries that meet criteria for democracy, the rule of law, anti-corruption and human rights. Not as a replacement for the UN, but as a complement. A cooperation alongside the EU, not only with obvious partners such as Canada, the United Kingdom, Japan, South Korea and Australia, but also with countries beyond them that already have a strong democracy, such as Chile, Uruguay, Costa Rica, Cape Verde, Botswana and Ghana.{% endif %}
+    </p>
+    <p class="gu-lead">
+      {% if lang == 'nl' %}Met de uitbreiding naar Oost-Europa liet de EU zien hoe sterk de aantrekkingskracht van een blok van welvarende democratieën is: landen met voorheen autocratische regimes voerden hervormingen door om te mogen toetreden. Die kracht kunnen we opschalen naar wereldniveau, met op de lange termijn het perspectief van een Globale Unie van functionerende democratieën.{% else %}With its enlargement into Eastern Europe, the EU showed how strong the pull of a bloc of prosperous democracies is: countries with formerly autocratic regimes carried out reforms in order to join. That pull can be scaled up to the global level, with, in the long term, the prospect of a Global Union of functioning democracies.{% endif %}
+    </p>
+    <p class="gu-lead">
+      {% if lang == 'nl' %}Global Union Forum is een denktank. Wij onderzoeken hoe dit model wereldwijd kan werken. Er ligt een eerste manifest. Dat willen we verbeteren met de kennis en ideeën van iedereen die meedenkt; alle input verzamelen we tot een nieuw manifest.{% else %}Global Union Forum is a think tank. We are exploring how this model can work worldwide. A first manifesto has been written. We want to improve it with the knowledge and ideas of everyone who takes part; we will gather all input into a new manifesto.{% endif %}
     </p>
     {% if not current_user.is_authenticated %}
     <p class="gu-lead" style="margin-top: -8px;">
-      {{ _('We are looking for people who want to think along — experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously.') }}
+      {% if lang == 'nl' %}We zoeken mensen die meedenken: experts en leken, 17 of 70, overtuigd of sceptisch. Iedereen die het gesprek serieus voert.{% else %}We are looking for people who want to think along: experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously.{% endif %}
     </p>
     <div class="gu-hero__cta">
       <a class="gu-btn gu-btn--primary" href="{{ url_for('social.aanmelden') }}">
