@@ -445,6 +445,9 @@ def create_app():
     app.register_blueprint(social)
     app.register_blueprint(wikipolitics)
 
+    from app.cli import register_cli
+    register_cli(app)
+
     from app.utils import linkify
     app.jinja_env.filters['linkify'] = linkify
 

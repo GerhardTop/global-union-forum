@@ -18,6 +18,15 @@ _ALLOWED_EXT = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
 _MAX_SIZE = 5 * 1024 * 1024
 # Aantal inspringniveaus voor reacties op desktop (mobiel: 2, via CSS).
 MAX_REPLY_INDENT = 4
+
+# De demo-accounts die _seed_forum() aanmaakt. Ook gebruikt door het
+# beheer-commando `flask reset-content` (app/cli.py) als keep-set.
+DEMO_USER_EMAILS = {
+    'jan':    'jan.hofman.demo@globalunionforum.org',
+    'fatima': 'fatima.elidrissi.demo@globalunionforum.org',
+    'sarah':  'sarah.chen.demo@globalunionforum.org',
+    'marcus': 'marcus.osei.demo@globalunionforum.org',
+}
 _UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'uploads')
 
 
@@ -72,10 +81,10 @@ def _seed_forum():
 
     now = datetime.utcnow()
 
-    jan     = _get_or_create_demo_user('Jan',    'Hofman (demo)',       'jan.hofman.demo@globalunionforum.org', 'jan_h')
-    fatima  = _get_or_create_demo_user('Fatima', 'El Idrissi (demo)',   'fatima.elidrissi.demo@globalunionforum.org', 'fatima_e')
-    sarah   = _get_or_create_demo_user('Sarah',  'Chen (demo)',         'sarah.chen.demo@globalunionforum.org', 'sarah_c')
-    marcus  = _get_or_create_demo_user('Marcus', 'Osei (demo)',         'marcus.osei.demo@globalunionforum.org', 'marcus_o')
+    jan     = _get_or_create_demo_user('Jan',    'Hofman (demo)',       DEMO_USER_EMAILS['jan'],    'jan_h')
+    fatima  = _get_or_create_demo_user('Fatima', 'El Idrissi (demo)',   DEMO_USER_EMAILS['fatima'], 'fatima_e')
+    sarah   = _get_or_create_demo_user('Sarah',  'Chen (demo)',         DEMO_USER_EMAILS['sarah'],  'sarah_c')
+    marcus  = _get_or_create_demo_user('Marcus', 'Osei (demo)',         DEMO_USER_EMAILS['marcus'], 'marcus_o')
 
     # ── Thread 1: Scorecard manipulatie ──────────────────────────────
     t1 = Thread(
