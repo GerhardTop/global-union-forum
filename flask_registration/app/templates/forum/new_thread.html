@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %} — Global Union{% endblock %}
+{% block title %}{% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %} · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <main class="gu-forum" lang="{{ lang }}">
@@ -42,7 +42,7 @@
           class="gu-composer__input"
           required
           rows="6"
-          placeholder="{% if lang == 'nl' %}Licht je vraag toe. Wees concreet — geef context, een standpunt, of een tegenwerping.{% else %}Explain your question. Be concrete — give context, a position, or a pushback.{% endif %}"
+          placeholder="{% if lang == 'nl' %}Licht je vraag toe. Wees concreet (geef context, een standpunt, of een tegenwerping).{% else %}Explain your question. Be concrete (give context, a position, or a pushback).{% endif %}"
         ></textarea>
         <span class="gu-composer__hint">
           {% if lang == 'nl' %}Je post wordt op verzoek vertaald voor andere lezers{% else %}Your post will be translated on request for other readers{% endif %}

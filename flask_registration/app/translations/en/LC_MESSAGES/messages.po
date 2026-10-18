@@ -68,8 +68,8 @@ msgstr "Not by coercion,"
 msgid "but by attraction."
 msgstr "but by attraction."
 
-msgid "Those who participate gain perspective and prosperity. Those who stay out feel pressure from below. The same mechanism that pulled Eastern Europe out of dictatorships — but applied worldwide."
-msgstr "Those who participate gain perspective and prosperity. Those who stay out feel pressure from below. The same mechanism that pulled Eastern Europe out of dictatorships — but applied worldwide."
+msgid "Those who participate gain perspective and prosperity. Those who stay out feel pressure from below. The same mechanism that pulled Eastern Europe out of dictatorships, but applied worldwide."
+msgstr "Those who participate gain perspective and prosperity. Those who stay out feel pressure from below. The same mechanism that pulled Eastern Europe out of dictatorships, but applied worldwide."
 
 msgid "Act on behaviour"
 msgstr "Act on behaviour"
@@ -107,8 +107,8 @@ msgstr "Global Union Forum is a think tank. We investigate whether this model ca
 msgid "A first manifesto has been drawn up. We want to improve the idea with the intelligence of everyone willing to think it through. All input will be collected and processed to arrive at a new manifesto."
 msgstr "A first manifesto has been drawn up. We want to improve the idea with the intelligence of everyone willing to think it through. All input will be collected and processed to arrive at a new manifesto."
 
-msgid "We are looking for people who want to think along — experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously."
-msgstr "We are looking for people who want to think along — experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously."
+msgid "We are looking for people who want to think along: experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously."
+msgstr "We are looking for people who want to think along: experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously."
 
 msgid "Join the conversation"
 msgstr "Join the conversation"
@@ -176,8 +176,8 @@ msgstr "Add your LinkedIn profile to post under your real name."
 msgid "Add it →"
 msgstr "Add it →"
 
-msgid "Confirm your email address — check your inbox."
-msgstr "Confirm your email address — check your inbox."
+msgid "Confirm your email address (check your inbox)."
+msgstr "Confirm your email address (check your inbox)."
 
 msgid "Resend"
 msgstr "Resend"
@@ -215,8 +215,8 @@ msgstr "Join us"
 msgid "Join the conversation."
 msgstr "Join the conversation."
 
-msgid "Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free."
-msgstr "Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free."
+msgid "Global Union Forum is an open platform for everyone who takes the conversation seriously (expert or layperson, 17 or 70). Participation is free."
+msgstr "Global Union Forum is an open platform for everyone who takes the conversation seriously (expert or layperson, 17 or 70). Participation is free."
 
 msgid "Expert or layperson, 16 or 96, under a username (pseudonym) and optionally under your own name with LinkedIn."
 msgstr "Expert or layperson, 16 or 96, under a username (pseudonym) and optionally under your own name with LinkedIn."
@@ -272,8 +272,8 @@ msgstr "Username"
 msgid "publicly visible"
 msgstr "publicly visible"
 
-msgid "3–20 characters: letters, numbers, - and _"
-msgstr "3–20 characters: letters, numbers, - and _"
+msgid "3-20 characters: letters, numbers, - and _"
+msgstr "3-20 characters: letters, numbers, - and _"
 
 msgid "This username is already taken."
 msgstr "This username is already taken."
@@ -442,8 +442,8 @@ msgstr "Resend confirmation email"
 msgid "Too many attempts. Please try again in an hour."
 msgstr "Too many attempts. Please try again in an hour."
 
-msgid "Confirmation email resent — check your inbox."
-msgstr "Confirmation email resent — check your inbox."
+msgid "Confirmation email resent (check your inbox)."
+msgstr "Confirmation email resent (check your inbox)."
 
 #: app/forms.py
 msgid "Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character."

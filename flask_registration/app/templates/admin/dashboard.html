@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Admin Dashboard — Global Union{% endblock %}
+{% block title %}Admin Dashboard · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <div class="gu-admin" lang="{{ lang }}">
@@ -118,7 +118,7 @@
               </td>
 
               <td class="gu-admin-table__date">
-                {{ user.created_at.strftime('%d-%m-%Y') if user.created_at else '—' }}
+                {{ user.created_at.strftime('%d-%m-%Y') if user.created_at else '-' }}
               </td>
 
               <td class="gu-admin-table__actions">
@@ -137,7 +137,7 @@
                     </svg>
                   </button>
                 {% else %}
-                  <span class="gu-admin-table__no-action">—</span>
+                  <span class="gu-admin-table__no-action">-</span>
                 {% endif %}
               </td>
 

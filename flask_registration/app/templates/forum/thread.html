@@ -3,7 +3,7 @@
   {%- set tp = thread.title_prefix_nl if lang == 'nl' else thread.title_prefix_en -%}
   {%- set ta = thread.title_accent_nl if lang == 'nl' else thread.title_accent_en -%}
   {%- set ts = thread.title_suffix_nl if lang == 'nl' else thread.title_suffix_en -%}
-  {{ tp }}{% if ta %} {{ ta }}{% endif %}{{ ts }} — Global Union
+  {{ tp }}{% if ta %} {{ ta }}{% endif %}{{ ts }} · Global Union
 {% endblock %}
 
 {% block content_outer %}{% block content %}
@@ -151,7 +151,7 @@
         name="body"
         id="composerBody"
         rows="3"
-        placeholder="{% if lang == 'nl' %}Schrijf je reactie. Wees concreet — een gedachte, een vraag, een tegenwerping.{% else %}Write your reply. Be concrete — a thought, a question, a pushback.{% endif %}"
+        placeholder="{% if lang == 'nl' %}Schrijf je reactie. Wees concreet (een gedachte, een vraag, een tegenwerping).{% else %}Write your reply. Be concrete (a thought, a question, a pushback).{% endif %}"
       ></textarea>
       <label class="gu-upload-label gu-upload-label--inline">
         <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="gu-upload-input gu-composer__imgpick">

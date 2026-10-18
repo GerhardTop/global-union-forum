@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Choose your username') }} — Global Union{% endblock %}
+{% block title %}{{ _('Choose your username') }} · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <div class="gu-auth-page">
@@ -31,12 +31,12 @@
                value="{{ form_data.username }}" placeholder="sara_dv"
                autofocus required minlength="3" maxlength="20">
         <p class="gu-join__hint" id="usernameHint">
-          {{ _('3–20 characters: letters, numbers, - and _') }}
+          {{ _('3-20 characters: letters, numbers, - and _') }}
         </p>
         <p class="gu-join__formError" id="usernameError"{% if not (errors.username_format or errors.username_blacklisted or errors.username_taken) %} style="display:none;"{% endif %}>
           {% if errors.username_taken %}{{ _('This username is already taken.') }}
           {% elif errors.username_blacklisted %}{{ _('This username is not available.') }}
-          {% else %}{{ _('3–20 characters: letters, numbers, - and _') }}{% endif %}
+          {% else %}{{ _('3-20 characters: letters, numbers, - and _') }}{% endif %}
         </p>
       </div>
 
@@ -55,8 +55,8 @@
     var lang = '{{ lang }}';
     var messages = {
       format: {
-        nl: '3–20 tekens: letters, cijfers, - en _',
-        en: '3–20 characters: letters, numbers, - and _'
+        nl: '3-20 tekens: letters, cijfers, - en _',
+        en: '3-20 characters: letters, numbers, - and _'
       },
       blacklisted: {
         nl: 'Deze gebruikersnaam is niet beschikbaar.',

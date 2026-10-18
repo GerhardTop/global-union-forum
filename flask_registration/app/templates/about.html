@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'nl' %}Over ons{% else %}About{% endif %} — Global Union{% endblock %}
+{% block title %}{% if lang == 'nl' %}Over ons{% else %}About{% endif %} · Global Union{% endblock %}
 
 {% block content_outer %}
 {% block content %}
@@ -24,7 +24,7 @@
         {% if lang == 'nl' %}
           Geen lidmaatschap. Geen contributie. Wel een online plek waar het denken gebeurt. De eerste site is nu opgezet door <a href="{{ url_for('main.initiatiefnemer') }}" style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">Gerhard Top</a>. De eerst volgende stap is feedback verzamelen van enkele Bèta gebruikers en het betrekken van enkele mede-initiatiefnemers, zowel experts als andere enthousiastelingen. Hierna zullen we met een verbeterde versie voortbouwen op de discussie, veel meer mensen uitnodigen mee te doen en een stichting oprichten met als doel uit te groeien tot een beweging die veroorzaakt dat de Globale Unie er komt én succesvol wordt.
         {% else %}
-          No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href="{{ url_for('main.initiatiefnemer') }}" style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen — and succeed.
+          No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href="{{ url_for('main.initiatiefnemer') }}" style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed.
         {% endif %}
       </p>
 
@@ -35,7 +35,7 @@
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
             <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Meedenkers{% else %}Co-thinkers{% endif %}</h3>
           </div>
-          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Iedereen die wil meedoen, ook zonder vakkennis, ieder argument kan van belang zijn.{% else %}Everyone who wants to join in, even without expertise — every argument can matter.{% endif %}</p>
+          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Iedereen die wil meedoen, ook zonder vakkennis, ieder argument kan van belang zijn.{% else %}Everyone who wants to join in, even without expertise, every argument can matter.{% endif %}</p>
         </div>
 
         <div class="gu-about__looking">

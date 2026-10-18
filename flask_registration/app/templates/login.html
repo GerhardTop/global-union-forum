@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Log in') }} — Global Union{% endblock %}
+{% block title %}{{ _('Log in') }} · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <div class="gu-auth-page">
@@ -120,7 +120,7 @@
     // Server-side vertaald via _() — geen taal-ternary in JS, zodat deze
     // teksten via de .po/.mo-catalogi lopen i.p.v. hardcoded in JavaScript.
     var msgTooManyAttempts = {{ _('Too many attempts. Please try again in an hour.')|tojson }};
-    var msgResent = {{ _('Confirmation email resent — check your inbox.')|tojson }};
+    var msgResent = {{ _('Confirmation email resent (check your inbox).')|tojson }};
     function closeModal() { overlay.style.display = 'none'; }
     closeBtn.addEventListener('click', closeModal);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
@@ -191,8 +191,8 @@
       } else {
         feedback.style.color = '#166534';
         feedback.textContent = lang === 'en'
-          ? 'Reset link sent — check your inbox.'
-          : 'Reset link verstuurd — check je inbox.';
+          ? 'Reset link sent (check your inbox).'
+          : 'Reset link verstuurd (check je inbox).';
       }
     });
   });

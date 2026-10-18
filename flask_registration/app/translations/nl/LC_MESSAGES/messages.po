@@ -65,8 +65,8 @@ msgstr "Global Union Forum is een denktank. Wij onderzoeken of dit model wereldw
 msgid "A first manifesto has been drawn up. We want to improve the idea with the intelligence of everyone willing to think it through. All input will be collected and processed to arrive at a new manifesto."
 msgstr "Een eerste manifest is opgesteld. Het idee willen we verbeteren met de intelligentie van alle mensen die mee willen denken. Alle input zullen we verzamelen en verwerken om te komen tot een nieuw manifest."
 
-msgid "We are looking for people who want to think along — experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously."
-msgstr "We zoeken mensen die meedenken — experts én leken, 17 of 70, overtuigd of sceptisch. Iedereen die het gesprek serieus voert."
+msgid "We are looking for people who want to think along: experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously."
+msgstr "We zoeken mensen die meedenken: experts én leken, 17 of 70, overtuigd of sceptisch. Iedereen die het gesprek serieus voert."
 
 msgid "Join the conversation"
 msgstr "Doe mee aan het gesprek"
@@ -86,8 +86,8 @@ msgstr "Niet uit dwang,"
 msgid "but by attraction."
 msgstr "maar uit aantrekkingskracht."
 
-msgid "Those who participate gain perspective and prosperity. Those who stay out feel pressure from below. The same mechanism that pulled Eastern Europe out of dictatorships — but applied worldwide."
-msgstr "Wie meedoet, wint perspectief en welvaart. Wie buiten blijft, voelt de druk van onderaf. Hetzelfde mechanisme dat Oost-Europa uit dictaturen heeft getrokken — maar dan toegepast op de wereld."
+msgid "Those who participate gain perspective and prosperity. Those who stay out feel pressure from below. The same mechanism that pulled Eastern Europe out of dictatorships, but applied worldwide."
+msgstr "Wie meedoet, wint perspectief en welvaart. Wie buiten blijft, voelt de druk van onderaf. Hetzelfde mechanisme dat Oost-Europa uit dictaturen heeft getrokken, maar dan toegepast op de wereld."
 
 msgid "Act on behaviour"
 msgstr "Handelen op gedrag"
@@ -173,8 +173,8 @@ msgstr "Vul je LinkedIn profiel in om onder je eigen naam te posten."
 msgid "Add it →"
 msgstr "Aanvullen →"
 
-msgid "Confirm your email address — check your inbox."
-msgstr "Bevestig je e-mailadres — check je inbox."
+msgid "Confirm your email address (check your inbox)."
+msgstr "Bevestig je e-mailadres (check je inbox)."
 
 msgid "Resend"
 msgstr "Stuur opnieuw"
@@ -212,8 +212,8 @@ msgstr "Doe mee"
 msgid "Join the conversation."
 msgstr "Doe mee aan het gesprek."
 
-msgid "Global Union Forum is an open platform for everyone who takes the conversation seriously — expert or layperson, 17 or 70. Participation is free."
-msgstr "Global Union Forum is een open platform voor iedereen die het gesprek serieus voert — expert of leek, 17 of 70. Deelname is gratis."
+msgid "Global Union Forum is an open platform for everyone who takes the conversation seriously (expert or layperson, 17 or 70). Participation is free."
+msgstr "Global Union Forum is een open platform voor iedereen die het gesprek serieus voert (expert of leek, 17 of 70). Deelname is gratis."
 
 msgid "Expert or layperson, 16 or 96, under a username (pseudonym) and optionally under your own name with LinkedIn."
 msgstr "Expert of leek, 16 of 96, onder gebruikersnaam (pseudoniem) en eventueel onder je eigen naam met LinkedIn adres."
@@ -269,7 +269,7 @@ msgstr "Gebruikersnaam"
 msgid "publicly visible"
 msgstr "publiek zichtbaar"
 
-msgid "3–20 characters: letters, numbers, - and _"
+msgid "3-20 characters: letters, numbers, - and _"
 msgstr "3-20 tekens: letters, cijfers, - en _"
 
 msgid "This username is already taken."
@@ -442,8 +442,8 @@ msgstr "Bevestigingsmail opnieuw versturen"
 msgid "Too many attempts. Please try again in an hour."
 msgstr "Te veel pogingen. Probeer het over een uur opnieuw."
 
-msgid "Confirmation email resent — check your inbox."
-msgstr "Bevestigingsmail opnieuw verzonden — check je inbox."
+msgid "Confirmation email resent (check your inbox)."
+msgstr "Bevestigingsmail opnieuw verzonden (check je inbox)."
 
 #: app/forms.py
 msgid "Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character."
