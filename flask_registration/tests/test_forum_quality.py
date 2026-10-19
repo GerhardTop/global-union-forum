@@ -34,7 +34,7 @@ from app.models import (Post, PostLike, QualityAward, QualityObjection, QualityR
 def _verdict(**over):
     data = {'has_source': False, 'source_is_new': False, 'argument_is_new': True,
             'suggested_criterion': 'K1', 'k3_possible': False,
-            'explanation_nl': 'Voegt een nieuw argument toe.', 'explanation_en': 'Adds a new argument.'}
+            'explanation': 'Voegt een nieuw argument toe.'}
     data.update(over)
     return data
 
@@ -42,8 +42,7 @@ def _verdict(**over):
 @pytest.fixture
 def fake_ai(monkeypatch, app):
     state = {'translate': [], 'judge': [], 'objection': [], 'verdict': _verdict(),
-             'response': {'stance': 'verdedigt', 'response_nl': 'Het oordeel klopt, want er is geen bron.',
-                          'response_en': 'The judgement holds, because there is no source.'},
+             'response': {'stance': 'verdedigt', 'response': 'Het oordeel klopt, want er is geen bron.'},
              'fail': None, 'fail_objection': None, 'refuse': False}
 
     def _text(payload):
@@ -208,7 +207,7 @@ class TestAutomaticJudgement:
 
     def test_no_criterion_is_declined_reason_only_for_author(self, app, db, make_user, thread, fake_ai):
         fake_ai['verdict'] = _verdict(suggested_criterion='none', argument_is_new=False,
-                                      explanation_nl='Dit argument stond er al.', explanation_en='This was argued before.')
+                                      explanation='Dit argument stond er al.')
         anna = make_user()
         post = _reply(app, anna, thread, 'Een herhaald argument.')
         assert _award(post.id).status == 'afgewezen'
@@ -233,6 +232,54 @@ class TestAutomaticJudgement:
         assert award.criterion is None and award.ai_k3_possible is True and award.status == 'afgewezen'
 
 
+# ── Taal: volledig in de taal van de bijdrage ────────────────────────────
+
+NL_RULE = 'Schrijf je volledige antwoord in het Nederlands. Gebruik geen Engelse woorden of zinsdelen. Meng geen talen.'
+EN_RULE = 'Write your entire response in English. Do not use Dutch words or phrases. Do not mix languages.'
+
+
+def _reply_in(app, user, thread, body, lang):
+    resp = _req(_client(app, user, lang=lang), 'POST', f'/forum/{thread.id}', data={'body': body})
+    assert resp.status_code == 302
+    return Post.query.filter_by(thread_id=thread.id, body=body).one()
+
+
+class TestResponseLanguage:
+    def test_dutch_post_gets_dutch_rule_and_dutch_explanation(self, app, db, make_user, thread, fake_ai):
+        post = _reply_in(app, make_user(), thread, 'Een Nederlandse bijdrage.', 'nl')
+        judge = fake_ai['judge'][0]
+        assert judge['system'].startswith(NL_RULE) and EN_RULE not in judge['system']
+        assert NL_RULE in judge['messages'][0]['content'] and 'in Dutch' in judge['messages'][0]['content']
+        assert 'explanation_en' not in json.dumps(judge['output_config'])
+        award = _award(post.id)
+        assert (award.explanation_nl, award.explanation_en) == ('Voegt een nieuw argument toe.', None)
+        assert award.prompt_text.startswith('[system]\n' + NL_RULE)  # regel ook in de getoonde prompt
+
+    def test_english_post_gets_english_rule_and_english_explanation(self, app, db, make_user, thread, fake_ai):
+        fake_ai['verdict'] = _verdict(explanation='Adds a new argument.')
+        post = _reply_in(app, make_user(), thread, 'An English contribution.', 'en')
+        judge = fake_ai['judge'][0]
+        assert judge['system'].startswith(EN_RULE) and NL_RULE not in judge['system']
+        assert 'in English' in judge['messages'][0]['content']
+        award = _award(post.id)
+        assert (award.explanation_nl, award.explanation_en, award.post_lang) == (None, 'Adds a new argument.', 'en')
+
+    @pytest.mark.parametrize('lang,rule,other', [('nl', NL_RULE, EN_RULE), ('en', EN_RULE, NL_RULE)])
+    def test_objection_response_in_language_of_post(self, app, db, make_user, thread, fake_ai, lang, rule, other):
+        fake_ai['response'] = {'stance': 'verdedigt', 'response': 'Antwoord.'}
+        anna = make_user()
+        post = _reply_in(app, anna, thread, f'Bijdrage in {lang}.', lang)
+        _object(app, anna, post)
+        call = fake_ai['objection'][0]
+        assert call['system'].startswith(rule) and other not in call['system']
+        assert rule in call['messages'][0]['content']
+        # De bijdrage zelf wordt in het Engels aangeleverd, het antwoord niet.
+        assert f'in {quality._LANGUAGE_NAMES[lang]}' in call['messages'][0]['content']
+        o = QualityObjection.query.filter_by(award_id=_award(post.id).id).one()
+        assert (o.ai_response_nl, o.ai_response_en) == (('Antwoord.', None) if lang == 'nl' else (None, 'Antwoord.'))
+        assert o.ai_response(lang) == 'Antwoord.' and o.ai_response('en' if lang == 'nl' else 'nl') == 'Antwoord.'
+
+
 # ── Transparantie: prompt zichtbaar op de discussiepagina ────────────────
 
 class TestPromptVisible:
@@ -249,7 +296,8 @@ class TestPromptVisible:
     def test_page_in_english(self, app, db, make_user, thread, fake_ai):
         post = _reply(app, make_user(), thread, 'English page.')
         page = _req(_client(app, lang='en'), 'GET', f'/forum/kwaliteit/{post.id}').get_data(as_text=True)
-        assert 'Prompt used' in page and 'Judgement by the AI' in page and 'Adds a new argument.' in page
+        # Pagina in het Engels; de uitleg staat in de taal van de bijdrage (NL).
+        assert 'Prompt used' in page and 'Judgement by the AI' in page and 'Voegt een nieuw argument toe.' in page
 
     def test_declined_page_only_for_author_and_moderators(self, app, db, make_user, thread, fake_ai):
         fake_ai['verdict'] = _verdict(suggested_criterion='none')
@@ -319,7 +367,7 @@ class TestObjection:
         assert db.session.get(QualityObjection, objection.id).decision == decision
 
     def test_ai_concedes_but_judgement_only_changes_by_moderator(self, app, db, make_user, thread, fake_ai):
-        fake_ai['response'] = {'stance': 'geeft_toe', 'response_nl': 'Je hebt gelijk.', 'response_en': 'You are right.'}
+        fake_ai['response'] = {'stance': 'geeft_toe', 'response': 'Je hebt gelijk.'}
         anna = make_user()
         post = _reply(app, anna, thread, 'Bijdrage.')
         _object(app, anna, post)

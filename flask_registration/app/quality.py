@@ -61,16 +61,33 @@ _JUDGE_SCHEMA = {
         "argument_is_new": {"type": "boolean"},
         "suggested_criterion": {"type": "string", "enum": ["K1", "K2", "none"]},
         "k3_possible": {"type": "boolean"},
-        "explanation_nl": {"type": "string"},
-        "explanation_en": {"type": "string"},
+        "explanation": {"type": "string"},
     },
     "required": ["has_source", "source_is_new", "argument_is_new", "suggested_criterion",
-                 "k3_possible", "explanation_nl", "explanation_en"],
+                 "k3_possible", "explanation"],
     "additionalProperties": False,
 }
 
 _MAX_EARLIER_POSTS = 25
 _MAX_CHARS = 1500
+
+# Dwingende taalregel: het model antwoordt volledig in de taal van de
+# bijdrage (Post.source_lang), om gemengde taal te voorkomen.
+_LANGUAGE_RULES = {
+    'nl': 'Schrijf je volledige antwoord in het Nederlands. Gebruik geen Engelse woorden of zinsdelen. '
+          'Meng geen talen. Spreek de auteur aan met je en jij, nooit met u.',
+    'en': 'Write your entire response in English. Do not use Dutch words or phrases. Do not mix languages.',
+}
+_LANGUAGE_NAMES = {'nl': 'Dutch', 'en': 'English'}
+
+
+def target_lang(post):
+    """De taal waarin de AI antwoordt: de oorspronkelijke taal van de bijdrage."""
+    return post.source_lang if post.source_lang in _LANGUAGE_RULES else 'en'
+
+
+def _with_language_rule(system, lang):
+    return f'{_LANGUAGE_RULES[lang]}\n\n{system}'
 
 
 def _client():
@@ -134,9 +151,10 @@ def judge_post(post_id):
         client = _client()
         if client is None:
             return None
-        text_en = english_text(post, client=client)
+        text_en = english_text(post, client=client)  # beoordeeld wordt de Engelse tekst
         if not text_en.strip():
             return None
+        lang = target_lang(post)  # geantwoord wordt in de taal van de bijdrage
         earlier = (Post.query.filter(Post.thread_id == post.thread_id, Post.id != post.id,
                                      Post.created_at <= post.created_at,
                                      Post.body != '[bericht verwijderd]')
@@ -150,14 +168,15 @@ def judge_post(post_id):
             f'New contribution to assess:\n<contribution>\n{text_en[:4 * _MAX_CHARS]}\n</contribution>\n\n'
             'Assess the new contribution. Set suggested_criterion to K2 if it adds a new fact with a '
             'new source, otherwise K1 if it makes a new argument, otherwise none. Write one short '
-            'sentence of explanation in Dutch (explanation_nl) and the same in English '
-            '(explanation_en), addressed to the author informally (in Dutch use je and jij, '
-            'never u), without dashes.'
+            f'sentence of explanation (explanation) in {_LANGUAGE_NAMES[lang]}, addressed to the '
+            'author informally, without dashes.\n\n'
+            f'{_LANGUAGE_RULES[lang]}'
         )
+        system = _with_language_rule(_JUDGE_SYSTEM, lang)
         response = client.messages.create(
             model=JUDGE_MODEL,
             max_tokens=2048,
-            system=_JUDGE_SYSTEM,
+            system=system,
             messages=[{'role': 'user', 'content': user_msg}],
             output_config={'format': {'type': 'json_schema', 'schema': _JUDGE_SCHEMA}},
         )
@@ -172,8 +191,11 @@ def judge_post(post_id):
             post_lang=post.source_lang, criterion=criterion, ai_criterion=criterion,
             ai_k3_possible=bool(data['k3_possible']), ai_has_source=bool(data['has_source']),
             ai_source_is_new=bool(data['source_is_new']), ai_argument_is_new=bool(data['argument_is_new']),
-            explanation_nl=data['explanation_nl'][:400], explanation_en=data['explanation_en'][:400],
-            prompt_text=_prompt_record(_JUDGE_SYSTEM, user_msg), model=JUDGE_MODEL,
+            # Alleen in de taal van de bijdrage; lezers in de andere taal zien
+            # via QualityAward.explanation() dezelfde tekst.
+            explanation_nl=data['explanation'][:400] if lang == 'nl' else None,
+            explanation_en=data['explanation'][:400] if lang == 'en' else None,
+            prompt_text=_prompt_record(system, user_msg), model=JUDGE_MODEL,
             decided_at=datetime.utcnow(),
         )
         db.session.add(award)
@@ -206,10 +228,9 @@ _OBJECTION_SCHEMA = {
     "type": "object",
     "properties": {
         "stance": {"type": "string", "enum": ["verdedigt", "geeft_toe"]},
-        "response_nl": {"type": "string"},
-        "response_en": {"type": "string"},
+        "response": {"type": "string"},
     },
-    "required": ["stance", "response_nl", "response_en"],
+    "required": ["stance", "response"],
     "additionalProperties": False,
 }
 
@@ -228,20 +249,22 @@ def respond_to_objection(objection_id):
             return None
         award, post = obj.award, obj.award.post
         verdict = award.criterion or 'none'
+        lang = target_lang(post)  # reactie in de taal van de bijdrage, niet van de vertaling
         user_msg = (
             f'Contribution:\n<contribution>\n{english_text(post, client=client)[:4 * _MAX_CHARS]}\n</contribution>\n\n'
-            f'Judgement: {verdict} ({award.status}). Explanation: {award.explanation_en or award.explanation_nl or ""}\n'
+            f'Judgement: {verdict} ({award.status}). Explanation: {award.current_explanation(lang)}\n'
             f'Findings: has_source={award.ai_has_source}, source_is_new={award.ai_source_is_new}, '
             f'argument_is_new={award.ai_argument_is_new}, k3_possible={award.ai_k3_possible}\n\n'
             f'Objection by the author:\n<objection>\n{obj.text[:2000]}\n</objection>\n\n'
-            'Respond to the objection in a few sentences, in Dutch (response_nl) and the same in English '
-            '(response_en), addressed to the author informally (in Dutch use je and jij, never u), '
-            'without dashes.'
+            f'Respond to the objection in a few sentences (response) in {_LANGUAGE_NAMES[lang]}, '
+            'addressed to the author informally, without dashes.\n\n'
+            f'{_LANGUAGE_RULES[lang]}'
         )
+        system = _with_language_rule(_OBJECTION_SYSTEM, lang)
         response = client.messages.create(
             model=JUDGE_MODEL,
             max_tokens=2048,
-            system=_OBJECTION_SYSTEM,
+            system=system,
             messages=[{'role': 'user', 'content': user_msg}],
             output_config={'format': {'type': 'json_schema', 'schema': _OBJECTION_SCHEMA}},
         )
@@ -250,9 +273,9 @@ def respond_to_objection(objection_id):
             return None
         data = json.loads(next(b.text for b in response.content if b.type == 'text'))
         obj.ai_stance = data['stance'] if data['stance'] in ('verdedigt', 'geeft_toe') else None
-        obj.ai_response_nl = data['response_nl'][:2000]
-        obj.ai_response_en = data['response_en'][:2000]
-        obj.ai_prompt_text = _prompt_record(_OBJECTION_SYSTEM, user_msg)
+        obj.ai_response_nl = data['response'][:2000] if lang == 'nl' else None
+        obj.ai_response_en = data['response'][:2000] if lang == 'en' else None
+        obj.ai_prompt_text = _prompt_record(system, user_msg)
         obj.ai_responded_at = datetime.utcnow()
         db.session.commit()
         return obj
