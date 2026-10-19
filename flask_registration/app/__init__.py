@@ -134,6 +134,7 @@ def _migrate_columns():
     _migrate_roles(existing)
     _migrate_show_real_name(existing)
     _migrate_stance(existing)
+    _migrate_quality(existing)
     _migrate_username_and_backfill(insp, existing, is_pg)
 
 
@@ -165,6 +166,31 @@ def _migrate_roles(existing):
                  "rules_accepted_at = COALESCE(rules_accepted_at, :now) WHERE role IS NULL"),
             {'now': datetime.utcnow()},
         )
+        conn.commit()
+
+
+def _migrate_quality(existing):
+    """
+    Forum C1 herzien: quality_awards.prompt_text, .model en .moderator_note
+    (nullable). Plus
+    een kleine, herhaalbare omzetting: oude AI-rijen met status
+    'voorgesteld' (uit de versie met bevestiging vooraf) krijgen de status
+    die het automatische oordeel nu geeft: toegekend met een criterium,
+    anders afgewezen. De tabel quality_objections maakt db.create_all() aan.
+    """
+    if 'quality_awards' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('quality_awards')}
+    with db.engine.connect() as conn:
+        if 'prompt_text' not in cols:
+            conn.execute(text('ALTER TABLE quality_awards ADD COLUMN prompt_text TEXT NULL'))
+        if 'model' not in cols:
+            conn.execute(text('ALTER TABLE quality_awards ADD COLUMN model VARCHAR(40) NULL'))
+        if 'moderator_note' not in cols:
+            conn.execute(text('ALTER TABLE quality_awards ADD COLUMN moderator_note VARCHAR(400) NULL'))
+        conn.execute(text(
+            "UPDATE quality_awards SET status = CASE WHEN criterion IS NOT NULL THEN 'toegekend' "
+            "ELSE 'afgewezen' END WHERE status = 'voorgesteld' AND source = 'ai'"))
         conn.commit()
 
 

@@ -1,28 +1,32 @@
 """
-Forum fase C1: het kwaliteitssignaal (K1/K2/K3), app/quality.py en de
-kwaliteitsroutes in app/routes/forum.py.
+Forum fase C1 (herzien): automatisch kwaliteitsoordeel met zichtbare prompt,
+bezwaar met AI-reactie en moderatorbeoordeling (app/quality.py en de
+kwaliteitsroutes in app/routes/forum.py).
 
-Dekt: een AI-suggestie komt in de wachtrij en wordt niet automatisch
-toegekend; de AI oordeelt op de Engelse vertaling met stijl en spelling
-uitgesloten, één keer per bijdrage; een moderator kent toe en wijst af; een
-falende of weigerende AI blokkeert het plaatsen niet; melden en het besluit
-met naam; de auteur ziet de reden en kan laten meekijken; kwaliteit staat los
-van eens/oneens; niets op je eigen bijdrage; democontent en het verdwenen ▲.
+Dekt: het oordeel verschijnt automatisch (Haiku 4.5) zonder moderatoractie;
+de gebruikte prompt staat bij het oordeel op de discussiepagina; de AI
+oordeelt één keer op de Engelse vertaling met stijl en spelling uitgesloten;
+de auteur maakt bezwaar, de AI reageert (gemockt), de moderator past het
+oordeel aan en dat wordt vastgelegd; de discussiepagina toont de thread in de
+juiste volgorde; faalt de AI, dan geen oordeel en de post blijft staan;
+melden door anderen; los van eens/oneens; niets op je eigen bijdrage; de
+migratie van oude 'voorgesteld'-rijen; democontent.
 
 De Anthropic-client is nep (geen echte API-aanroepen). Gedeelde conftest-app
 (CSRF uit); _req() wist de in `g` gecachte current_user en locale.
 """
 import json
 import uuid
-from datetime import datetime
 from types import SimpleNamespace
 
 import pytest
 from flask import g
 from flask_babel import refresh
+from sqlalchemy import text
 
 from app import bcrypt, quality
-from app.models import Post, PostLike, QualityAward, QualityReport, Thread, User
+from app.models import (Post, PostLike, QualityAward, QualityObjection, QualityReport,
+                        Thread, User)
 
 
 # ── Nep-Anthropic ────────────────────────────────────────────────────────
@@ -37,21 +41,32 @@ def _verdict(**over):
 
 @pytest.fixture
 def fake_ai(monkeypatch, app):
-    state = {'translate': [], 'judge': [], 'verdict': _verdict(), 'fail': None, 'refuse': False}
+    state = {'translate': [], 'judge': [], 'objection': [], 'verdict': _verdict(),
+             'response': {'stance': 'verdedigt', 'response_nl': 'Het oordeel klopt, want er is geen bron.',
+                          'response_en': 'The judgement holds, because there is no source.'},
+             'fail': None, 'fail_objection': None, 'refuse': False}
+
+    def _text(payload):
+        return SimpleNamespace(stop_reason='end_turn',
+                               content=[SimpleNamespace(type='text', text=json.dumps(payload))])
 
     class Messages:
         def create(self, **kw):
             if 'output_config' not in kw:  # vertaling
                 state['translate'].append(kw)
-                text = kw['messages'][0]['content'].split('\n\n', 1)[1]
-                return SimpleNamespace(content=[SimpleNamespace(type='text', text=f'EN: {text}')])
-            state['judge'].append(kw)  # kwaliteitsbeoordeling
+                src = kw['messages'][0]['content'].split('\n\n', 1)[1]
+                return SimpleNamespace(content=[SimpleNamespace(type='text', text=f'EN: {src}')])
+            if 'objection' in kw['system']:  # reactie op een bezwaar
+                state['objection'].append(kw)
+                if state['fail_objection']:
+                    raise state['fail_objection']
+                return _text(state['response'])
+            state['judge'].append(kw)  # kwaliteitsoordeel
             if state['fail']:
                 raise state['fail']
             if state['refuse']:
                 return SimpleNamespace(stop_reason='refusal', content=[])
-            return SimpleNamespace(stop_reason='end_turn',
-                                   content=[SimpleNamespace(type='text', text=json.dumps(state['verdict']))])
+            return _text(state['verdict'])
 
     class FakeClient:
         def __init__(self, api_key=None, **kw):
@@ -72,6 +87,7 @@ def _fresh_rate_limits(app):
     from app import limiter
     limiter.reset()
     yield
+
 
 @pytest.fixture
 def make_user(db):
@@ -94,6 +110,12 @@ def make_user(db):
             db.session.delete(r)
         for r in QualityReport.query.filter_by(decided_by_id=uid):
             r.decided_by_id = None
+        for o in QualityObjection.query.filter((QualityObjection.author_id == uid) |
+                                               (QualityObjection.decided_by_id == uid)):
+            if o.author_id == uid:
+                o.author_id = None
+            if o.decided_by_id == uid:
+                o.decided_by_id = None
         for a in QualityAward.query.filter_by(decided_by_id=uid):
             a.decided_by_id = None
         for p in Post.query.filter_by(user_id=uid):
@@ -119,7 +141,7 @@ def thread(db):
     # waarvan SQLite de ids daarna hergebruikt.
     ids = [p.id for p in Post.query.filter_by(thread_id=t.id)]
     for award in QualityAward.query.filter(QualityAward.post_id.in_(ids)):
-        for r in award.reports:
+        for r in list(award.reports) + list(award.objections):
             db.session.delete(r)
         db.session.delete(award)
     for like in PostLike.query.filter(PostLike.post_id.in_(ids)):
@@ -153,92 +175,201 @@ def _reply(app, user, thread, body):
     return Post.query.filter_by(thread_id=thread.id, body=body).one()
 
 
-def _decide(app, mod, post, action, criterion='K1', explanation=''):
-    return _req(_client(app, mod), 'POST', f'/forum/kwaliteit/{post.id}/besluit',
-                data={'action': action, 'criterion': criterion, 'explanation': explanation})
-
-
 def _award(post_id):
     return QualityAward.query.filter_by(post_id=post_id).one_or_none()
 
 
-# ── AI-suggestie en wachtrij ─────────────────────────────────────────────
+def _article(html, post):
+    start = html.index(f'id="post-{post.id}"')
+    end = html.find('<article', start)
+    return html[start:end if end != -1 else len(html)]
 
-class TestAiSuggestion:
-    def test_suggestion_goes_to_queue_not_awarded(self, app, db, make_user, thread, fake_ai):
-        anna, mod = make_user(), make_user('moderator')
-        post = _reply(app, anna, thread, 'Een nieuw argument over handel.')
+
+def _object(app, user, post, text_='Ik ben het niet eens met dit oordeel.'):
+    return _req(_client(app, user), 'POST', f'/forum/kwaliteit/{post.id}/bezwaar', data={'text': text_})
+
+
+def _decide_objection(app, mod, objection, decision, criterion='K2', note=''):
+    return _req(_client(app, mod), 'POST', f'/forum/kwaliteit/bezwaar/{objection.id}/besluit',
+                data={'decision': decision, 'criterion': criterion, 'note': note})
+
+
+# ── Automatisch oordeel ──────────────────────────────────────────────────
+
+class TestAutomaticJudgement:
+    def test_judgement_appears_without_moderator(self, app, db, make_user, thread, fake_ai):
+        post = _reply(app, make_user(), thread, 'Een nieuw argument over handel.')
         award = _award(post.id)
-        assert award.status == 'voorgesteld' and award.source == 'ai' and award.criterion == 'K1'
-        assert award.decided_by_id is None and award.post_lang == 'nl'
-        page = _req(_client(app), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        assert 'gu-quality__mark' not in page  # niet automatisch toegekend
-        dash = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
-        assert 'Een nieuw argument over handel.' in dash and 'Voegt een nieuw argument toe.' in dash
+        assert (award.status, award.criterion, award.source) == ('toegekend', 'K1', 'ai')
+        assert award.decided_by_id is None and award.model == 'claude-haiku-4-5' and award.post_lang == 'nl'
+        part = _article(_req(_client(app), 'GET', f'/forum/{thread.id}').get_data(as_text=True), post)
+        assert 'gu-quality__mark' in part and 'Automatisch beoordeeld door de AI.' in part
+        assert f'/forum/kwaliteit/{post.id}' in part  # link naar de discussiepagina
+
+    def test_no_criterion_is_declined_reason_only_for_author(self, app, db, make_user, thread, fake_ai):
+        fake_ai['verdict'] = _verdict(suggested_criterion='none', argument_is_new=False,
+                                      explanation_nl='Dit argument stond er al.', explanation_en='This was argued before.')
+        anna = make_user()
+        post = _reply(app, anna, thread, 'Een herhaald argument.')
+        assert _award(post.id).status == 'afgewezen'
+        own = _article(_req(_client(app, anna), 'GET', f'/forum/{thread.id}').get_data(as_text=True), post)
+        assert 'Dit argument stond er al.' in own and 'of maak bezwaar' in own
+        other = _article(_req(_client(app, make_user()), 'GET', f'/forum/{thread.id}').get_data(as_text=True), post)
+        assert 'Dit argument stond er al.' not in other and 'gu-quality__mark' not in other
 
     def test_judges_english_translation_with_style_excluded_once(self, app, db, make_user, thread, fake_ai):
         post = _reply(app, make_user(), thread, 'Dit is een Nederlandse bijdrage.')
-        assert len(fake_ai['translate']) == 1 and 'English' in fake_ai['translate'][0]['messages'][0]['content']
         judge = fake_ai['judge'][0]
+        assert judge['model'] == 'claude-haiku-4-5'
         assert 'EN: Dit is een Nederlandse bijdrage.' in judge['messages'][0]['content']
         assert 'spelling' in judge['system'] and 'fluency' in judge['system']
-        assert judge['model'] == quality.JUDGE_MODEL
-        assert judge['output_config']['format']['type'] == 'json_schema'
-        assert 'extra_body' not in judge and 'betas' not in judge
-        db.session.expire_all()
-        assert db.session.get(Post, post.id).body_en == 'EN: Dit is een Nederlandse bijdrage.'
-        # Eén keer per bijdrage: geen tweede API-aanroep.
-        assert quality.judge_post(post.id) is None
-        assert len(fake_ai['judge']) == 1
+        assert 'effort' not in judge['output_config'] and 'extra_body' not in judge
+        assert quality.judge_post(post.id) is None and len(fake_ai['judge']) == 1
 
-    def test_ai_cannot_award_k3_only_flag_it(self, app, db, make_user, thread, fake_ai):
-        fake_ai['verdict'] = _verdict(suggested_criterion='none', k3_possible=True,
-                                      explanation_nl='Geen nieuw argument, wel eerlijk.',
-                                      explanation_en='No new argument, but fair.')
+    def test_ai_only_flags_k3(self, app, db, make_user, thread, fake_ai):
+        fake_ai['verdict'] = _verdict(suggested_criterion='none', k3_possible=True)
         post = _reply(app, make_user(), thread, 'Ik geef de tegenpartij gelijk op dit punt.')
         award = _award(post.id)
-        assert award.criterion is None and award.ai_k3_possible is True and award.status == 'voorgesteld'
+        assert award.criterion is None and award.ai_k3_possible is True and award.status == 'afgewezen'
 
-    def test_moderator_awards_and_declines(self, app, db, make_user, thread, fake_ai):
+
+# ── Transparantie: prompt zichtbaar op de discussiepagina ────────────────
+
+class TestPromptVisible:
+    def test_prompt_shown_with_criterion_findings_and_explanation(self, app, db, make_user, thread, fake_ai):
+        post = _reply(app, make_user(), thread, 'Bijdrage met een argument.')
+        page = _req(_client(app), 'GET', f'/forum/kwaliteit/{post.id}').get_data(as_text=True)
+        assert 'Gebruikte prompt' in page
+        assert 'Judge the substance only.' in page  # uit de systeemprompt
+        assert 'EN: Bijdrage met een argument.' in page  # de beoordeelde (vertaalde) tekst
+        assert 'K1 Nieuw argument' in page and 'Voegt een nieuw argument toe.' in page
+        assert 'Bron aanwezig' in page and 'claude-haiku-4-5' in page
+        assert _award(post.id).prompt_text.startswith('[system]')
+
+    def test_page_in_english(self, app, db, make_user, thread, fake_ai):
+        post = _reply(app, make_user(), thread, 'English page.')
+        page = _req(_client(app, lang='en'), 'GET', f'/forum/kwaliteit/{post.id}').get_data(as_text=True)
+        assert 'Prompt used' in page and 'Judgement by the AI' in page and 'Adds a new argument.' in page
+
+    def test_declined_page_only_for_author_and_moderators(self, app, db, make_user, thread, fake_ai):
+        fake_ai['verdict'] = _verdict(suggested_criterion='none')
+        anna = make_user()
+        post = _reply(app, anna, thread, 'Afgewezen.')
+        path = f'/forum/kwaliteit/{post.id}'
+        assert _req(_client(app), 'GET', path).status_code == 404
+        assert _req(_client(app, make_user()), 'GET', path).status_code == 404
+        assert _req(_client(app, anna), 'GET', path).status_code == 200
+        assert _req(_client(app, make_user('moderator')), 'GET', path).status_code == 200
+
+    def test_no_judgement_no_page(self, app, db, make_user, thread):
+        post = _reply(app, make_user(), thread, 'Nooit beoordeeld.')
+        assert _req(_client(app), 'GET', f'/forum/kwaliteit/{post.id}').status_code == 404
+
+
+# ── Bezwaar, AI-reactie en moderatorbesluit ──────────────────────────────
+
+class TestObjection:
+    def test_full_flow_and_thread_order(self, app, db, make_user, thread, fake_ai):
         anna, mod = make_user(), make_user('moderator')
-        good = _reply(app, anna, thread, 'Goede bijdrage.')
-        weak = _reply(app, anna, thread, 'Zwakke bijdrage.')
-        assert _decide(app, mod, good, 'toekennen', 'K2').status_code == 302
-        assert _decide(app, mod, weak, 'afwijzen', explanation='Geen bron voor de bewering.').status_code == 302
-        db.session.expire_all()
-        a, w = _award(good.id), _award(weak.id)
-        assert (a.status, a.criterion, a.decided_by_id) == ('toegekend', 'K2', mod.id) and a.decided_at
-        assert (w.status, w.explanation_nl, w.decided_by_id) == ('afgewezen', 'Geen bron voor de bewering.', mod.id)
-        page = _req(_client(app), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        assert 'gu-quality__mark' in page and 'Onderbouwing met nieuw feit en bron' in page
-        assert f'Bevestigd door @{mod.username}' in page
+        post = _reply(app, anna, thread, 'Mijn bijdrage met een bron.')
+        resp = _object(app, anna, post, 'Ik noem wel degelijk een bron: het CPB.')
+        assert resp.status_code == 302 and '#bezwaar-' in resp.headers['Location']
+        objection = QualityObjection.query.filter_by(award_id=_award(post.id).id).one()
+        assert objection.author_id == anna.id
+        assert objection.ai_stance == 'verdedigt' and objection.ai_responded_at is not None
+        assert 'Ik noem wel degelijk een bron: het CPB.' in fake_ai['objection'][0]['messages'][0]['content']
+        assert objection.ai_prompt_text.startswith('[system]')
 
-    def test_moderator_can_award_without_suggestion(self, app, db, make_user, thread):
-        post = _reply(app, make_user(), thread, 'Zonder AI beoordeeld.')
-        assert _award(post.id) is None
-        _decide(app, make_user('moderator'), post, 'toekennen', 'K3', 'Eerlijk de andere kant benoemd.')
+        assert _decide_objection(app, mod, objection, 'aanpassen', 'K2', 'Er is wel een bron.').status_code == 302
+        db.session.expire_all()
+        objection = db.session.get(QualityObjection, objection.id)
+        award = _award(post.id)
+        assert (objection.decision, objection.new_criterion, objection.decided_by_id) == ('aanpassen', 'K2', mod.id)
+        assert objection.decided_at is not None
+        assert (award.status, award.criterion, award.decided_by_id) == ('toegekend', 'K2', mod.id)
+
+        page = _req(_client(app), 'GET', f'/forum/kwaliteit/{post.id}').get_data(as_text=True)
+        order = [page.index(s) for s in ('id="oordeel"', f'id="bezwaar-{objection.id}"',
+                                          f'id="reactie-{objection.id}"', f'id="besluit-{objection.id}"')]
+        assert order == sorted(order)
+        assert 'Ik noem wel degelijk een bron: het CPB.' in page
+        assert 'Het oordeel klopt, want er is geen bron.' in page and 'Verdedigt het oordeel' in page
+        assert 'Criterium aangepast naar K2' in page and f'Door @{mod.username}' in page
+        # Het oorspronkelijke AI-oordeel blijft ongewijzigd in de discussie staan...
+        verdict = page[page.index('id="oordeel"'):page.index(f'id="bezwaar-{objection.id}"')]
+        assert 'K1 Nieuw argument' in verdict and 'Voegt een nieuw argument toe.' in verdict
+        assert award.explanation_nl == 'Voegt een nieuw argument toe.' and award.ai_criterion == 'K1'
+        # ...met daarboven de huidige stand, en op de bijdrage de notitie.
+        current = page[page.index('Huidige stand'):page.index('id="oordeel"')]
+        assert 'K2 Onderbouwing met nieuw feit en bron' in current and 'Er is wel een bron.' in current
+        part = _article(_req(_client(app), 'GET', f'/forum/{thread.id}').get_data(as_text=True), post)
+        assert 'Er is wel een bron.' in part and 'Onderbouwing met nieuw feit en bron' in part
+
+    @pytest.mark.parametrize('decision,status,criterion', [('handhaven', 'toegekend', 'K1'),
+                                                           ('intrekken', 'afgewezen', 'K1')])
+    def test_keep_or_withdraw(self, app, db, make_user, thread, fake_ai, decision, status, criterion):
+        anna, mod = make_user(), make_user('moderator')
+        post = _reply(app, anna, thread, f'Bijdrage voor {decision}.')
+        _object(app, anna, post)
+        objection = QualityObjection.query.filter_by(award_id=_award(post.id).id).one()
+        _decide_objection(app, mod, objection, decision, note='Toelichting van de moderator.')
         db.session.expire_all()
         award = _award(post.id)
-        assert (award.status, award.criterion, award.source) == ('toegekend', 'K3', 'moderator')
+        assert (award.status, award.criterion) == (status, criterion)
+        assert db.session.get(QualityObjection, objection.id).decision == decision
 
-    def test_non_moderator_cannot_decide(self, app, db, make_user, thread):
-        post = _reply(app, make_user(), thread, 'Iets.')
-        assert _decide(app, make_user(), post, 'toekennen').status_code == 403
-        assert _award(post.id) is None
+    def test_ai_concedes_but_judgement_only_changes_by_moderator(self, app, db, make_user, thread, fake_ai):
+        fake_ai['response'] = {'stance': 'geeft_toe', 'response_nl': 'Je hebt gelijk.', 'response_en': 'You are right.'}
+        anna = make_user()
+        post = _reply(app, anna, thread, 'Bijdrage.')
+        _object(app, anna, post)
+        assert _award(post.id).status == 'toegekend' and _award(post.id).criterion == 'K1'
+        page = _req(_client(app, anna), 'GET', f'/forum/kwaliteit/{post.id}').get_data(as_text=True)
+        assert 'Geeft het bezwaar gelijk' in page and 'Wacht op een moderator.' in page
+
+    def test_ai_response_failure_still_saves_objection(self, app, db, make_user, thread, fake_ai):
+        fake_ai['fail_objection'] = TimeoutError('hangt')
+        anna, mod = make_user(), make_user('moderator')
+        post = _reply(app, anna, thread, 'Bijdrage.')
+        assert _object(app, anna, post).status_code == 302
+        objection = QualityObjection.query.filter_by(award_id=_award(post.id).id).one()
+        assert objection.ai_responded_at is None
+        page = _req(_client(app, mod), 'GET', f'/forum/kwaliteit/{post.id}').get_data(as_text=True)
+        assert 'Nog geen reactie van de AI.' in page
+        assert _decide_objection(app, mod, objection, 'handhaven').status_code == 302
+
+    def test_only_author_one_open_objection_and_text_required(self, app, db, make_user, thread, fake_ai):
+        anna = make_user()
+        post = _reply(app, anna, thread, 'Bijdrage.')
+        assert _object(app, make_user(), post).status_code == 403
+        assert _object(app, anna, post, '   ').status_code == 400
+        assert _object(app, anna, post).status_code == 302
+        assert _object(app, anna, post).status_code == 409
+        assert QualityObjection.query.filter_by(award_id=_award(post.id).id).count() == 1
+
+    def test_moderator_rules_for_deciding(self, app, db, make_user, thread, fake_ai):
+        mod = make_user('moderator')
+        post = _reply(app, mod, thread, 'Bijdrage van de moderator zelf.')
+        _object(app, mod, post)
+        objection = QualityObjection.query.filter_by(award_id=_award(post.id).id).one()
+        assert _decide_objection(app, mod, objection, 'intrekken').status_code == 403  # eigen bijdrage
+        assert _decide_objection(app, make_user(), objection, 'intrekken').status_code == 403  # geen moderator
+        dash = _req(_client(app, make_user('moderator')), 'GET', '/moderator').get_data(as_text=True)
+        assert 'Kwaliteit: bezwaren van auteurs (1)' in dash
 
 
 # ── De AI faalt of weigert: plaatsen gaat altijd door ────────────────────
 
 class TestAiFailure:
     @pytest.mark.parametrize('failure', [RuntimeError('API down'), TimeoutError('hangt')])
-    def test_post_is_placed_without_suggestion(self, app, db, make_user, thread, fake_ai, failure):
+    def test_post_is_placed_without_judgement(self, app, db, make_user, thread, fake_ai, failure):
         fake_ai['fail'] = failure
         post = _reply(app, make_user(), thread, f'Bijdrage terwijl de AI faalt {failure}.')
         assert post.id and _award(post.id) is None
         dash = _req(_client(app, make_user('moderator')), 'GET', '/moderator').get_data(as_text=True)
-        assert post.body in dash  # bij "Zonder AI-suggestie", handmatig te beoordelen
+        assert post.body in dash  # bij "Zonder oordeel", handmatig te beoordelen
 
-    def test_refusal_gives_no_suggestion(self, app, db, make_user, thread, fake_ai):
+    def test_refusal_gives_no_judgement(self, app, db, make_user, thread, fake_ai):
         fake_ai['refuse'] = True
         post = _reply(app, make_user(), thread, 'Bijdrage die de AI weigert.')
         assert _award(post.id) is None
@@ -249,123 +380,90 @@ class TestAiFailure:
         _reply(app, make_user(), thread, 'Geen achtergrondthread in tests.')
         assert called == []
 
+    def test_moderator_can_judge_manually(self, app, db, make_user, thread):
+        post = _reply(app, make_user(), thread, 'Zonder AI beoordeeld.')
+        _req(_client(app, make_user('moderator')), 'POST', f'/forum/kwaliteit/{post.id}/besluit',
+             data={'action': 'toekennen', 'criterion': 'K3', 'explanation': 'Eerlijk de andere kant benoemd.'})
+        db.session.expire_all()
+        assert (_award(post.id).status, _award(post.id).criterion, _award(post.id).source) == \
+            ('toegekend', 'K3', 'moderator')
 
-# ── Melden ───────────────────────────────────────────────────────────────
+
+# ── Melden door anderen (los van het bezwaar van de auteur) ──────────────
 
 class TestReporting:
-    def _awarded(self, app, db, make_user, thread):
-        anna, mod = make_user(), make_user('moderator')
-        post = _reply(app, anna, thread, 'Toegekende bijdrage.')
-        _decide(app, mod, post, 'toekennen', 'K1', 'Nieuw argument.')
-        return anna, mod, post
-
     @pytest.mark.parametrize('decision,final_status', [('intrekken', 'afgewezen'), ('handhaven', 'toegekend')])
-    def test_report_goes_to_moderator_and_decision_is_recorded(self, app, db, make_user, thread, decision, final_status):
-        anna, mod, post = self._awarded(app, db, make_user, thread)
-        reporter, mod2 = make_user(), make_user('moderator')
+    def test_report_goes_to_moderator_and_decision_is_recorded(self, app, db, make_user, thread, fake_ai,
+                                                               decision, final_status):
+        anna = make_user()
+        post = _reply(app, anna, thread, 'Automatisch toegekend.')
+        reporter, mod = make_user(), make_user('moderator')
         client = _client(app, reporter)
         assert _req(client, 'POST', f'/forum/kwaliteit/{post.id}/melden').status_code == 302
         _req(client, 'POST', f'/forum/kwaliteit/{post.id}/melden')  # dubbel telt niet
         reports = QualityReport.query.filter_by(award_id=_award(post.id).id).all()
-        assert len(reports) == 1 and reports[0].reporter_id == reporter.id and reports[0].decision is None
-        page = _req(client, 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        assert 'Je melding is ontvangen.' in page
-        dash = _req(_client(app, mod2), 'GET', '/moderator').get_data(as_text=True)
+        assert len(reports) == 1 and reports[0].reporter_id == reporter.id
+        dash = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
         assert f'Gemeld door @{reporter.username}' in dash
-
-        resp = _req(_client(app, mod2), 'POST', f'/forum/kwaliteit/melding/{reports[0].id}/besluit',
-                    data={'decision': decision, 'note': 'Toch geen nieuw argument.'})
-        assert resp.status_code == 302
+        _req(_client(app, mod), 'POST', f'/forum/kwaliteit/melding/{reports[0].id}/besluit',
+             data={'decision': decision, 'note': 'Toch geen nieuw argument.'})
         db.session.expire_all()
         r = db.session.get(QualityReport, reports[0].id)
-        assert (r.decision, r.decided_by_id) == (decision, mod2.id) and r.decided_at
+        assert (r.decision, r.decided_by_id) == (decision, mod.id) and r.decided_at
         assert _award(post.id).status == final_status
 
-    def test_cannot_report_own_or_unawarded(self, app, db, make_user, thread):
-        anna, mod, post = self._awarded(app, db, make_user, thread)
+    def test_cannot_report_own(self, app, db, make_user, thread, fake_ai):
+        anna = make_user()
+        post = _reply(app, anna, thread, 'Eigen bijdrage.')
         assert _req(_client(app, anna), 'POST', f'/forum/kwaliteit/{post.id}/melden').status_code == 403
-        other = _reply(app, anna, thread, 'Niet toegekend.')
-        assert _req(_client(app, make_user()), 'POST', f'/forum/kwaliteit/{other.id}/melden').status_code == 403
-
-    def test_anonymous_cannot_report(self, app, db, make_user, thread):
-        _, _, post = self._awarded(app, db, make_user, thread)
-        resp = _req(_client(app), 'POST', f'/forum/kwaliteit/{post.id}/melden')
-        assert resp.status_code == 302 and '/login' in resp.headers['Location']
 
 
-# ── Auteur-ervaring ──────────────────────────────────────────────────────
+# ── Los van eens/oneens ──────────────────────────────────────────────────
 
-class TestAuthorExperience:
-    def test_author_sees_reason_and_can_ask_for_review(self, app, db, make_user, thread):
-        anna, mod = make_user(), make_user('moderator')
-        post = _reply(app, anna, thread, 'Bijdrage zonder bron.')
-        _decide(app, mod, post, 'afwijzen', explanation='De bewering mist een bron.')
-        own = _req(_client(app, anna), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        assert 'Niet aangemerkt als kwaliteitsbijdrage. De bewering mist een bron.' in own
-        assert 'Laat een moderator meekijken' in own
-        other = _req(_client(app, make_user()), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        assert 'De bewering mist een bron.' not in other
-
-        assert _req(_client(app, anna), 'POST', f'/forum/kwaliteit/{post.id}/meekijken').status_code == 302
-        db.session.expire_all()
-        assert _award(post.id).review_requested_at is not None
-        own = _req(_client(app, anna), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        assert 'Een moderator kijkt nog een keer mee.' in own
-        dash = _req(_client(app, make_user('moderator')), 'GET', '/moderator').get_data(as_text=True)
-        assert 'De auteur vraagt om een tweede blik.' in dash
-
-    def test_only_author_can_ask_for_review(self, app, db, make_user, thread):
-        anna, mod = make_user(), make_user('moderator')
-        post = _reply(app, anna, thread, 'Afgewezen bijdrage.')
-        _decide(app, mod, post, 'afwijzen', explanation='Reden.')
-        assert _req(_client(app, make_user()), 'POST', f'/forum/kwaliteit/{post.id}/meekijken').status_code == 403
-
-    def test_awarded_shows_filled_diamond_with_detail(self, app, db, make_user, thread):
-        anna, mod = make_user(), make_user('moderator')
-        post = _reply(app, anna, thread, 'Kwaliteit.')
-        _decide(app, mod, post, 'toekennen', 'K1', 'Nieuw argument in dit gesprek.')
-        html = _req(_client(app, lang='en'), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        start = html.index(f'id="post-{post.id}"')
-        part = html[start:html.find('<article', start)]
-        assert 'gu-quality__mark' in part and '<details class="gu-quality">' in part
-        assert 'Quality contribution: New argument' in part and 'Nieuw argument in dit gesprek.' in part
-        for not_allowed in ('✓', '★', '👍', '&#10003;'):
-            assert not_allowed not in part
-
-
-# ── Los van eens/oneens en niet op je eigen bijdrage ─────────────────────
-
-class TestIndependenceAndOwnPosts:
-    def test_quality_and_stance_do_not_affect_each_other(self, app, db, make_user, thread):
+class TestIndependence:
+    def test_quality_and_stance_do_not_affect_each_other(self, app, db, make_user, thread, fake_ai):
         anna, bram, mod = make_user(), make_user(), make_user('moderator')
         post = _reply(app, anna, thread, 'Onafhankelijk.')
         _req(_client(app, bram), 'POST', f'/forum/stance/{post.id}', data={'stance': 'oneens'})
         before = [(r.user_id, r.stance) for r in PostLike.query.filter_by(post_id=post.id)]
-        _decide(app, mod, post, 'toekennen', 'K1')
+        _object(app, anna, post)
+        objection = QualityObjection.query.filter_by(award_id=_award(post.id).id).one()
+        _decide_objection(app, mod, objection, 'aanpassen', 'K2')
         assert [(r.user_id, r.stance) for r in PostLike.query.filter_by(post_id=post.id)] == before
         _req(_client(app, bram), 'POST', f'/forum/stance/{post.id}', data={'stance': 'eens'})
         db.session.expire_all()
-        award = _award(post.id)
-        assert (award.status, award.criterion) == ('toegekend', 'K1')
+        assert (_award(post.id).status, _award(post.id).criterion) == ('toegekend', 'K2')
         assert PostLike.query.filter_by(post_id=post.id).one().stance == 'eens'
 
-    def test_moderator_cannot_decide_own_post(self, app, db, make_user, thread):
-        mod = make_user('moderator')
-        post = _reply(app, mod, thread, 'Van de moderator zelf.')
-        assert _decide(app, mod, post, 'toekennen').status_code == 403
-        page = _req(_client(app, mod), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        start = page.index(f'id="post-{post.id}"')
-        assert 'gu-quality-mod' not in page[start:page.find('<article', start)]
 
+# ── Migratie en democontent ──────────────────────────────────────────────
 
-# ── Democontent en opruimen ──────────────────────────────────────────────
+class TestMigrationAndDemo:
+    def test_old_proposed_rows_become_automatic_outcome(self, app, db, make_user, thread):
+        from app import _migrate_columns
+        a = _reply(app, make_user(), thread, 'Oud voorstel met criterium.')
+        b = _reply(app, make_user(), thread, 'Oud voorstel zonder criterium.')
+        db.session.add_all([QualityAward(post_id=a.id, status='voorgesteld', source='ai', criterion='K1'),
+                            QualityAward(post_id=b.id, status='voorgesteld', source='ai', criterion=None)])
+        db.session.commit()  # geeft de verbinding vrij; objecten blijven aan de sessie
+        a_id, b_id = a.id, b.id
+        with db.engine.connect() as conn:  # oud schema: zonder de nieuwe kolommen
+            conn.execute(text('ALTER TABLE quality_awards DROP COLUMN prompt_text'))
+            conn.execute(text('ALTER TABLE quality_awards DROP COLUMN model'))
+            conn.execute(text('ALTER TABLE quality_awards DROP COLUMN moderator_note'))
+            conn.commit()
+        db.engine.dispose()  # SQLite: verse verbindingen na DROP COLUMN
+        _migrate_columns()
+        db.session.expire_all()
+        rows = dict(db.session.execute(text('SELECT post_id, status FROM quality_awards WHERE post_id IN (:a, :b)'),
+                                       {'a': a_id, 'b': b_id}).all())
+        assert rows == {a_id: 'toegekend', b_id: 'afgewezen'}
+        assert _award(a_id).prompt_text is None and _award(a_id).moderator_note is None  # terug, geen backfill
 
-class TestDemoAndCleanup:
     def test_demo_awards_visible_and_vote_count_gone(self, app):
         quality.seed_demo_awards()
         html = _req(_client(app), 'GET', '/forum/3').get_data(as_text=True)
-        assert 'gu-quality__mark' in html
-        assert 'gu-post__votes' not in html and '▲' not in html
+        assert 'gu-quality__mark' in html and 'gu-post__votes' not in html and '▲' not in html
 
     def test_seed_demo_awards_is_idempotent(self, app):
         quality.seed_demo_awards()

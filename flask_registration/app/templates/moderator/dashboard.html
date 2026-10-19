@@ -49,14 +49,32 @@
     {% endmacro %}
 
     <section class="gu-admin__section" id="kwaliteit">
-      <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Kwaliteit: te beoordelen{% else %}Quality: to assess{% endif %} ({{ quality_queue|length }})</p>
-      <p class="gu-quality__meta">{% if lang == 'nl' %}De AI stelt alleen voor. Niets wordt toegekend zonder jouw bevestiging.{% else %}The AI only suggests. Nothing is awarded without your confirmation.{% endif %}</p>
-      {% if quality_queue %}
+      <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Kwaliteit: bezwaren van auteurs{% else %}Quality: objections by authors{% endif %} ({{ open_objections|length }})</p>
+      <p class="gu-quality__meta">{% if lang == 'nl' %}De AI oordeelt automatisch. Maakt een auteur bezwaar, dan reageert de AI en beslis jij: handhaven, criterium aanpassen of intrekken.{% else %}The AI judges automatically. When an author objects, the AI responds and you decide: keep, change the criterion or withdraw.{% endif %}</p>
+      {% if open_objections %}
       <ul class="gu-quality-queue">
-        {% for qa in quality_queue %}{{ quality_item(qa.post, qa) }}{% endfor %}
+        {% for o in open_objections %}
+        {% set post = o.award.post %}
+        <li class="gu-quality-queue__item">
+          <div>
+            <strong>{{ post.public_author_name() }}</strong>
+            · {% if o.award.status == 'toegekend' %}{{ o.award.criterion }} {{ quality_labels[o.award.criterion][lang] if o.award.criterion in quality_labels else '' }}{% else %}{% if lang == 'nl' %}niet toegekend{% else %}not awarded{% endif %}{% endif %}
+            · <a href="{{ url_for('forum.forum_quality_page', post_id=post.id) }}#bezwaar-{{ o.id }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}open de discussie{% else %}open the discussion{% endif %}</a>
+          </div>
+          <p class="gu-quality-queue__excerpt">{% if lang == 'nl' %}Bezwaar:{% else %}Objection:{% endif %} {{ o.text[:220] }}{% if o.text|length > 220 %}…{% endif %}</p>
+          <p class="gu-quality__meta">
+            {% if o.ai_responded_at %}{% if lang == 'nl' %}AI:{% else %}AI:{% endif %}
+              {% if o.ai_stance == 'geeft_toe' %}{% if lang == 'nl' %}geeft het bezwaar gelijk{% else %}concedes{% endif %}{% else %}{% if lang == 'nl' %}verdedigt het oordeel{% else %}defends the judgement{% endif %}{% endif %}
+            {% else %}{% if lang == 'nl' %}Nog geen AI-reactie.{% else %}No AI response yet.{% endif %}{% endif %}
+          </p>
+          {% if current_user.id == post.user_id %}
+          <p class="gu-quality__meta">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beslist.{% else %}Your own contribution: another moderator decides.{% endif %}</p>
+          {% endif %}
+        </li>
+        {% endfor %}
       </ul>
       {% else %}
-      <p class="gu-admin__empty">{% if lang == 'nl' %}Geen openstaande suggesties.{% else %}No open suggestions.{% endif %}</p>
+      <p class="gu-admin__empty">{% if lang == 'nl' %}Geen open bezwaren.{% else %}No open objections.{% endif %}</p>
       {% endif %}
     </section>
 
@@ -97,8 +115,8 @@
     </section>
 
     <section class="gu-admin__section">
-      <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Zonder AI-suggestie{% else %}Without AI suggestion{% endif %} ({{ unjudged_posts|length }})</p>
-      <p class="gu-quality__meta">{% if lang == 'nl' %}Recente bijdragen waarvoor (nog) geen suggestie is, bijvoorbeeld omdat de AI niet beschikbaar was. Beoordeel ze handmatig.{% else %}Recent contributions without a suggestion (yet), for example because the AI was unavailable. Assess them manually.{% endif %}</p>
+      <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Zonder oordeel{% else %}Without judgement{% endif %} ({{ unjudged_posts|length }})</p>
+      <p class="gu-quality__meta">{% if lang == 'nl' %}Recente bijdragen zonder (of nog zonder) oordeel, bijvoorbeeld omdat de AI niet beschikbaar was. Je kunt ze handmatig beoordelen.{% else %}Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually.{% endif %}</p>
       {% if unjudged_posts %}
       <ul class="gu-quality-queue">
         {% for post in unjudged_posts %}{{ quality_item(post, None) }}{% endfor %}

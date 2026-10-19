@@ -2732,6 +2732,26 @@ body {
 .gu-quality-mod__actions { display: flex; gap: 8px; }
 .gu-btn--sm { padding: 6px 12px; font-size: 0.8125rem; }
 .gu-admin__empty { color: var(--gu-fg-3); font-size: 0.875rem; }
+.gu-quality__link { color: var(--gu-link); font-size: 0.8125rem; }
+/* Discussiepagina bij een kwaliteitsoordeel */
+.gu-qthread__post { margin: 16px 0 0; padding: 12px 16px; border-left: 3px solid var(--gu-border); background: var(--gu-bg-soft); border-radius: 0 8px 8px 0; }
+.gu-qthread__post p { margin: 0 0 6px; }
+.gu-qthread__current { margin: 20px 0 0; padding: 12px 16px; border: 1px solid var(--gu-quality); border-radius: 8px; }
+.gu-qthread__current p { margin: 0 0 6px; }
+.gu-qthread { list-style: none; margin: 24px 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
+.gu-qthread__item { position: relative; padding: 14px 0 14px 20px; border-left: 2px solid var(--gu-border); }
+.gu-qthread__item::before { content: ''; position: absolute; left: -6px; top: 20px; width: 10px; height: 10px; border-radius: 50%; background: var(--gu-paper); border: 2px solid var(--gu-border); }
+.gu-qthread__item--verdict::before { border-color: var(--gu-quality); background: var(--gu-quality); }
+.gu-qthread__item--ai::before { border-color: var(--gu-globe); }
+.gu-qthread__item--decision::before { border-color: var(--gu-fg-2); }
+.gu-qthread__item p { margin: 0 0 6px; }
+.gu-qthread__who { font-size: 0.8125rem; color: var(--gu-fg-3); font-weight: 500; }
+.gu-qthread__verdict { display: flex; align-items: center; gap: 6px; color: var(--gu-quality); }
+.gu-qthread__text { white-space: pre-line; color: var(--gu-fg-1); }
+.gu-qthread__findings { margin: 6px 0 8px 18px; padding: 0; font-size: 0.875rem; color: var(--gu-fg-2); line-height: 1.7; }
+.gu-qthread__prompt { margin-top: 8px; font-size: 0.8125rem; }
+.gu-qthread__prompt summary { cursor: pointer; color: var(--gu-link); }
+.gu-qthread__prompt pre { margin: 8px 0 0; padding: 12px; max-height: 360px; overflow: auto; white-space: pre-wrap; word-break: break-word; background: var(--gu-bg-soft); border-radius: 6px; font-family: var(--gu-font-mono); font-size: 0.75rem; line-height: 1.5; }
 .gu-quality-queue { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .gu-quality-queue__item { padding: 12px 14px; border: 1px solid var(--gu-border); border-radius: 8px; }
 .gu-quality-queue__excerpt { margin: 4px 0; color: var(--gu-fg-2); font-size: 0.875rem; }

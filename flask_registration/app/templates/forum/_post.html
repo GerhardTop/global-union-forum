@@ -108,8 +108,10 @@
     <summary><svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg> {{ _('Quality contribution') }}: {{ quality_labels[qa.criterion][lang] if qa.criterion in quality_labels else '' }}</summary>
     <div class="gu-quality__detail">
       <p><strong>{{ qa.criterion }}</strong> {{ quality_labels[qa.criterion][lang] if qa.criterion in quality_labels else '' }}</p>
-      {% if qa.explanation(lang) %}<p>{{ qa.explanation(lang) }}</p>{% endif %}
-      {% if qa.decided_by %}<p class="gu-quality__meta">{{ _('Confirmed by %(name)s', name=qa.decided_by.public_name) }}</p>{% endif %}
+      {% if qa.current_explanation(lang) %}<p>{{ qa.current_explanation(lang) }}</p>{% endif %}
+      {% if qa.decided_by %}<p class="gu-quality__meta">{{ _('Confirmed by %(name)s', name=qa.decided_by.public_name) }}</p>
+      {% elif qa.source == 'ai' %}<p class="gu-quality__meta">{% if lang == 'nl' %}Automatisch beoordeeld door de AI.{% else %}Judged automatically by the AI.{% endif %}</p>{% endif %}
+      <p><a href="{{ url_for('forum.forum_quality_page', post_id=post.id) }}" class="gu-quality__link">{% if lang == 'nl' %}Bekijk het oordeel, de gebruikte prompt en de discussie{% else %}View the judgement, the prompt used and the discussion{% endif %}</a></p>
       {% if current_user.is_authenticated and not is_own %}
         {% if qa.id in my_quality_reports %}
         <p class="gu-quality__meta">{% if lang == 'nl' %}Je melding is ontvangen. Een moderator kijkt ernaar.{% else %}Your report has been received. A moderator will look at it.{% endif %}</p>
@@ -126,16 +128,8 @@
   {% elif qa and is_own and qa.status == 'afgewezen' %}
   {# Alleen de auteur ziet waarom zijn bijdrage niet is toegekend. #}
   <div class="gu-quality gu-quality--declined">
-    <p>{% if lang == 'nl' %}Niet aangemerkt als kwaliteitsbijdrage.{% else %}Not marked as a quality contribution.{% endif %}{% if qa.explanation(lang) %} {{ qa.explanation(lang) }}{% endif %}</p>
-    {% if qa.review_requested_at %}
-    <p class="gu-quality__meta">{% if lang == 'nl' %}Een moderator kijkt nog een keer mee.{% else %}A moderator will take another look.{% endif %}</p>
-    {% else %}
-    <form method="POST" action="{{ url_for('forum.forum_quality_review', post_id=post.id) }}">
-      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-      <input type="hidden" name="next" value="{{ request.path }}#post-{{ post.id }}">
-      <button type="submit" class="gu-post__action gu-post__action--ghost">{{ _('Ask a moderator to take a look') }}</button>
-    </form>
-    {% endif %}
+    <p>{% if lang == 'nl' %}Niet aangemerkt als kwaliteitsbijdrage.{% else %}Not marked as a quality contribution.{% endif %}{% if qa.current_explanation(lang) %} {{ qa.current_explanation(lang) }}{% endif %}</p>
+    <p><a href="{{ url_for('forum.forum_quality_page', post_id=post.id) }}" class="gu-quality__link">{% if lang == 'nl' %}Bekijk het oordeel en de gebruikte prompt, of maak bezwaar{% else %}View the judgement and the prompt used, or object{% endif %}</a></p>
   </div>
   {% endif %}
 

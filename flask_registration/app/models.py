@@ -234,13 +234,17 @@ class PostLike(db.Model):
 
 # ── Forum fase C1: kwaliteitssignaal (los van eens/oneens en van stemrecht) ──
 QUALITY_CRITERIA = ('K1', 'K2', 'K3')
-QUALITY_STATUSES = ('voorgesteld', 'toegekend', 'afgewezen')
+# 'voorgesteld' komt alleen nog voor in oude rijen van vóór het automatische
+# oordeel; _migrate_quality zet die om naar toegekend of afgewezen.
+QUALITY_STATUSES = ('toegekend', 'afgewezen')
 
 
 class QualityAward(db.Model):
-    """Eén kwaliteitsbeoordeling per bijdrage. De AI stelt alleen voor
-    (status 'voorgesteld', source 'ai'); een moderator kent toe of wijst af.
-    Staat volledig los van eens/oneens (PostLike)."""
+    """Eén kwaliteitsoordeel per bijdrage. De AI oordeelt automatisch
+    (source 'ai'): toegekend met K1/K2, of afgewezen met een reden. De auteur
+    kan bezwaar maken (QualityObjection), anderen kunnen melden
+    (QualityReport); een moderator kan het oordeel aanpassen. Staat volledig
+    los van eens/oneens (PostLike)."""
     __tablename__ = "quality_awards"
 
     id               = db.Column(db.Integer, primary_key=True)
@@ -259,7 +263,15 @@ class QualityAward(db.Model):
     ai_argument_is_new = db.Column(db.Boolean, nullable=True)
     decided_by_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     decided_at       = db.Column(db.DateTime, nullable=True)
-    review_requested_at = db.Column(db.DateTime, nullable=True)    # auteur vraagt om meekijken
+    review_requested_at = db.Column(db.DateTime, nullable=True)    # oud (meekijken), niet meer gebruikt
+    # Transparantie: de volledige beoordelingsprompt en het model, zichtbaar
+    # op de discussiepagina van dit oordeel.
+    prompt_text      = db.Column(db.Text, nullable=True)
+    model            = db.Column(db.String(40), nullable=True)
+    # Toelichting van de moderator bij een aanpassing. Het oorspronkelijke
+    # AI-oordeel (ai_criterion + explanation_*) blijft zo onveranderd in de
+    # discussie staan; de huidige stand is criterion/status + deze notitie.
+    moderator_note   = db.Column(db.String(400), nullable=True)
     created_at       = db.Column(db.DateTime, default=datetime.utcnow)
 
     post       = db.relationship('Post', backref=db.backref('quality_award', uselist=False))
@@ -268,6 +280,20 @@ class QualityAward(db.Model):
     def explanation(self, lang):
         return (self.explanation_nl if lang == 'nl' else self.explanation_en) or \
                self.explanation_en or self.explanation_nl or ''
+
+    def current_explanation(self, lang):
+        """De uitleg bij de huidige stand: de notitie van de moderator als die
+        het oordeel aanpaste, anders de oorspronkelijke uitleg."""
+        return self.moderator_note or self.explanation(lang)
+
+    @property
+    def ai_status(self):
+        """Wat de AI oorspronkelijk besloot (alleen bij source 'ai')."""
+        return 'toegekend' if self.ai_criterion else 'afgewezen'
+
+    @property
+    def changed_after_ai(self):
+        return self.source == 'ai' and (self.status != self.ai_status or self.criterion != self.ai_criterion)
 
 
 class QualityReport(db.Model):
@@ -287,3 +313,36 @@ class QualityReport(db.Model):
     award      = db.relationship('QualityAward', backref=db.backref('reports', lazy=True))
     reporter   = db.relationship('User', foreign_keys=[reporter_id])
     decided_by = db.relationship('User', foreign_keys=[decided_by_id])
+
+
+class QualityObjection(db.Model):
+    """Bezwaar van de auteur tegen een kwaliteitsoordeel, met de reactie van
+    de AI (verdedigt het oordeel of geeft toe) en het besluit van een
+    moderator (handhaven, criterium aanpassen of intrekken). Samen met het
+    oordeel vormt dit de thread op de discussiepagina."""
+    __tablename__ = "quality_objections"
+
+    id              = db.Column(db.Integer, primary_key=True)
+    award_id        = db.Column(db.Integer, db.ForeignKey('quality_awards.id'), nullable=False)
+    author_id       = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    text            = db.Column(db.Text, nullable=False)
+    created_at      = db.Column(db.DateTime, default=datetime.utcnow)
+    ai_stance       = db.Column(db.String(12), nullable=True)      # verdedigt/geeft_toe
+    ai_response_nl  = db.Column(db.Text, nullable=True)
+    ai_response_en  = db.Column(db.Text, nullable=True)
+    ai_prompt_text  = db.Column(db.Text, nullable=True)
+    ai_responded_at = db.Column(db.DateTime, nullable=True)
+    decision        = db.Column(db.String(12), nullable=True)      # handhaven/aanpassen/intrekken, None = open
+    new_criterion   = db.Column(db.String(2), nullable=True)
+    decision_note   = db.Column(db.String(400), nullable=True)
+    decided_by_id   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    decided_at      = db.Column(db.DateTime, nullable=True)
+
+    award      = db.relationship('QualityAward', backref=db.backref('objections', lazy=True,
+                                                                     order_by='QualityObjection.created_at'))
+    author     = db.relationship('User', foreign_keys=[author_id])
+    decided_by = db.relationship('User', foreign_keys=[decided_by_id])
+
+    def ai_response(self, lang):
+        return (self.ai_response_nl if lang == 'nl' else self.ai_response_en) or \
+               self.ai_response_en or self.ai_response_nl or ''

@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from app import db
 from app.forms import AdminActionForm
-from app.models import ROLES, User, Thread, Post, PostLike, QualityAward, QualityReport
+from app.models import ROLES, User, Thread, Post, PostLike, QualityAward, QualityObjection, QualityReport
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -80,15 +80,12 @@ def moderator_dashboard():
 
     closed_threads = Thread.query.filter_by(is_closed=True).order_by(Thread.created_at.desc()).all()
 
-    # Kwaliteit (forum fase C1): AI-suggesties en verzoeken om mee te kijken,
-    # open meldingen "geen kwaliteit", en recente bijdragen zonder suggestie
-    # (bijvoorbeeld omdat de AI faalde) om handmatig te beoordelen.
+    # Kwaliteit (forum C1 herzien): open bezwaren van auteurs (met de
+    # AI-reactie), open meldingen "geen kwaliteit" door anderen, en recente
+    # bijdragen zonder oordeel (bijvoorbeeld omdat de AI faalde).
     live = Post.body != '[bericht verwijderd]'
-    quality_queue = (QualityAward.query.join(Post, QualityAward.post_id == Post.id)
-                     .filter(live, db.or_(QualityAward.status == 'voorgesteld',
-                                          db.and_(QualityAward.status == 'afgewezen',
-                                                  QualityAward.review_requested_at.isnot(None))))
-                     .order_by(QualityAward.created_at).all())
+    open_objections = (QualityObjection.query.filter(QualityObjection.decision.is_(None))
+                       .order_by(QualityObjection.created_at).all())
     open_reports = (QualityReport.query.filter(QualityReport.decision.is_(None))
                     .order_by(QualityReport.created_at).all())
     unjudged_posts = (Post.query.outerjoin(QualityAward, QualityAward.post_id == Post.id)
@@ -97,7 +94,7 @@ def moderator_dashboard():
 
     return render_template(
         'moderator/dashboard.html',
-        quality_queue=quality_queue,
+        open_objections=open_objections,
         open_reports=open_reports,
         unjudged_posts=unjudged_posts,
         active_threads=active_threads,

@@ -10,7 +10,8 @@ from sqlalchemy import func
 
 from app import db, bcrypt, limiter
 from app.forms import ForumActionForm, ForumReplyForm
-from app.models import STANCES, QUALITY_CRITERIA, User, Thread, Post, PostLike, QualityAward, QualityReport
+from app.models import (STANCES, QUALITY_CRITERIA, User, Thread, Post, PostLike, QualityAward,
+                        QualityObjection, QualityReport)
 from app import quality
 from app.utils import safe_next
 
@@ -871,9 +872,9 @@ def _quality_back(post):
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/besluit', methods=['POST'])
 @login_required
 def forum_quality_decide(post_id):
-    """Moderator kent een kwaliteitsbijdrage toe of wijst af: bevestigt een
-    AI-suggestie, of beoordeelt zelf (ook als er geen suggestie is). Nooit
-    op een eigen bijdrage."""
+    """Moderator stelt het oordeel rechtstreeks in (bijvoorbeeld als de AI
+    geen oordeel gaf, of om K3 toe te kennen). Nooit op een eigen bijdrage.
+    Bezwaren van de auteur lopen via forum_quality_objection_decide."""
     if not current_user.can_moderate():
         abort(403)
     _require_csrf()
@@ -896,27 +897,104 @@ def forum_quality_decide(post_id):
     award.status = 'toegekend' if action == 'toekennen' else 'afgewezen'
     award.criterion = criterion if action == 'toekennen' else award.criterion
     if note:
-        award.explanation_nl = award.explanation_en = note
+        # Een AI-oordeel blijft ongewijzigd in de discussie staan; de notitie
+        # hoort bij de huidige stand. Bij een eigen oordeel is het de uitleg.
+        if award.source == 'ai':
+            award.moderator_note = note
+        else:
+            award.explanation_nl = award.explanation_en = note
     award.decided_by_id = current_user.id
     award.decided_at = datetime.utcnow()
-    award.review_requested_at = None
     db.session.commit()
     return _quality_back(post)
 
 
-@forum_bp.route('/forum/kwaliteit/<int:post_id>/meekijken', methods=['POST'])
+def _quality_page_visible(post, award):
+    """Toegekend: voor iedereen. Afgewezen: alleen de auteur en moderators."""
+    if award is None:
+        return False
+    if award.status == 'toegekend':
+        return True
+    return current_user.is_authenticated and (post.user_id == current_user.id or current_user.can_moderate())
+
+
+@forum_bp.route('/forum/kwaliteit/<int:post_id>')
+def forum_quality_page(post_id):
+    """Discussiepagina bij het kwaliteitsoordeel van één bijdrage: het
+    oordeel met de gebruikte prompt, bevindingen en uitleg, en daarna per
+    bezwaar de toelichting van de auteur, de AI-reactie en het besluit."""
+    post = Post.query.get_or_404(post_id)
+    award = post.quality_award
+    if not _quality_page_visible(post, award):
+        abort(404)
+    objections = list(award.objections)
+    open_objection = next((o for o in objections if o.decision is None), None)
+    is_author = current_user.is_authenticated and post.user_id == current_user.id
+    return render_template(
+        'forum/quality.html', post=post, award=award, objections=objections,
+        can_object=is_author and open_objection is None and post.body != '[bericht verwijderd]',
+        can_decide=current_user.can_moderate() and not is_author,
+    )
+
+
+@forum_bp.route('/forum/kwaliteit/<int:post_id>/bezwaar', methods=['POST'])
 @login_required
-@limiter.limit("10 per hour", key_func=lambda: f"forum-quality-review-user-{current_user.get_id()}")
-def forum_quality_review(post_id):
-    """De auteur van een niet-toegekende bijdrage laat een moderator meekijken."""
+@limiter.limit("5 per hour", key_func=lambda: f"forum-quality-objection-user-{current_user.get_id()}")
+def forum_quality_object(post_id):
+    """De auteur maakt bezwaar tegen het oordeel, met een eigen toelichting.
+    De AI reageert daarop (best-effort, op de achtergrond); een moderator
+    beslist. Eén open bezwaar tegelijk."""
     _require_csrf()
     post = Post.query.get_or_404(post_id)
     award = post.quality_award
-    if post.user_id != current_user.id or award is None or award.status != 'afgewezen':
+    if post.user_id != current_user.id or award is None:
         abort(403)
-    award.review_requested_at = datetime.utcnow()
+    if any(o.decision is None for o in award.objections):
+        abort(409)
+    text = (request.form.get('text') or '').strip()[:2000]
+    if not text:
+        abort(400)
+    objection = QualityObjection(award_id=award.id, author_id=current_user.id, text=text)
+    db.session.add(objection)
     db.session.commit()
-    return _quality_back(post)
+    quality.schedule_objection_response(objection.id)
+    return redirect(url_for('forum.forum_quality_page', post_id=post.id) + f'#bezwaar-{objection.id}')
+
+
+@forum_bp.route('/forum/kwaliteit/bezwaar/<int:objection_id>/besluit', methods=['POST'])
+@login_required
+def forum_quality_objection_decide(objection_id):
+    """Moderator beoordeelt het bezwaar (en de AI-reactie) en past het
+    oordeel eventueel aan: handhaven, criterium aanpassen, of intrekken.
+    Besluit, naam en tijd worden vastgelegd. Niet op een eigen bijdrage."""
+    if not current_user.can_moderate():
+        abort(403)
+    _require_csrf()
+    objection = QualityObjection.query.get_or_404(objection_id)
+    award = objection.award
+    if award.post.user_id == current_user.id or objection.decision is not None:
+        abort(403)
+    decision = request.form.get('decision')
+    criterion = request.form.get('criterion') or None
+    note = (request.form.get('note') or '').strip()[:400]
+    if decision not in ('handhaven', 'aanpassen', 'intrekken'):
+        abort(400)
+    if decision == 'aanpassen' and criterion not in QUALITY_CRITERIA:
+        abort(400)
+    now = datetime.utcnow()
+    objection.decision, objection.decision_note = decision, note or None
+    objection.decided_by_id, objection.decided_at = current_user.id, now
+    if decision == 'aanpassen':
+        objection.new_criterion = criterion
+        award.criterion, award.status = criterion, 'toegekend'
+    elif decision == 'intrekken':
+        award.status = 'afgewezen'
+    if decision != 'handhaven':
+        if note:
+            award.moderator_note = note
+        award.decided_by_id, award.decided_at = current_user.id, now
+    db.session.commit()
+    return redirect(url_for('forum.forum_quality_page', post_id=award.post_id) + f'#bezwaar-{objection.id}')
 
 
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/melden', methods=['POST'])
@@ -961,7 +1039,7 @@ def forum_quality_report_decide(report_id):
     if decision == 'intrekken':
         award.status = 'afgewezen'
         if note:
-            award.explanation_nl = award.explanation_en = note
+            award.moderator_note = note
         award.decided_by_id = current_user.id
         award.decided_at = now
     db.session.commit()
