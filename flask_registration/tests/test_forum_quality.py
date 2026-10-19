@@ -41,13 +41,11 @@ def fake_ai(monkeypatch, app):
 
     class Messages:
         def create(self, **kw):
-            state['translate'].append(kw)
-            text = kw['messages'][0]['content'].split('\n\n', 1)[1]
-            return SimpleNamespace(content=[SimpleNamespace(type='text', text=f'EN: {text}')])
-
-    class BetaMessages:
-        def create(self, **kw):
-            state['judge'].append(kw)
+            if 'output_config' not in kw:  # vertaling
+                state['translate'].append(kw)
+                text = kw['messages'][0]['content'].split('\n\n', 1)[1]
+                return SimpleNamespace(content=[SimpleNamespace(type='text', text=f'EN: {text}')])
+            state['judge'].append(kw)  # kwaliteitsbeoordeling
             if state['fail']:
                 raise state['fail']
             if state['refuse']:
@@ -58,7 +56,6 @@ def fake_ai(monkeypatch, app):
     class FakeClient:
         def __init__(self, api_key=None, **kw):
             self.messages = Messages()
-            self.beta = SimpleNamespace(messages=BetaMessages())
 
     import anthropic
     monkeypatch.setattr(anthropic, 'Anthropic', FakeClient)
@@ -187,6 +184,7 @@ class TestAiSuggestion:
         assert 'spelling' in judge['system'] and 'fluency' in judge['system']
         assert judge['model'] == quality.JUDGE_MODEL
         assert judge['output_config']['format']['type'] == 'json_schema'
+        assert 'extra_body' not in judge and 'betas' not in judge
         db.session.expire_all()
         assert db.session.get(Post, post.id).body_en == 'EN: Dit is een Nederlandse bijdrage.'
         # Eén keer per bijdrage: geen tweede API-aanroep.

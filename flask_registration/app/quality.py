@@ -151,14 +151,12 @@ def judge_post(post_id):
             '(explanation_en), addressed to the author informally (in Dutch use je and jij, '
             'never u), without dashes.'
         )
-        response = client.beta.messages.create(
+        response = client.messages.create(
             model=JUDGE_MODEL,
             max_tokens=16000,
             system=_JUDGE_SYSTEM,
             messages=[{'role': 'user', 'content': user_msg}],
             output_config={'effort': 'medium', 'format': {'type': 'json_schema', 'schema': _JUDGE_SCHEMA}},
-            betas=['server-side-fallback-2026-07-01'],
-            extra_body={'fallbacks': 'default'},
         )
         if response.stop_reason == 'refusal':
             current_app.logger.warning('Kwaliteitsbeoordeling geweigerd voor post %s', post_id)
