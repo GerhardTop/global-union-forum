@@ -7,7 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
 from flask_babel import Babel, gettext
 from authlib.integrations.flask_client import OAuth
@@ -17,13 +16,14 @@ from config import Config, ratelimit_storage_uri
 # Importeren (niet gebruiken) registreert SQLStorage bij `limits` vóór
 # limiter.init_app(app) hieronder draait — zie app/rate_limit_storage.py.
 from . import rate_limit_storage  # noqa: F401
+from .utils import real_client_ip
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message_category = "error"
-limiter = Limiter(key_func=get_remote_address, default_limits=[])
+limiter = Limiter(key_func=real_client_ip, default_limits=[])
 oauth = OAuth()
 babel = Babel()
 # Op module-niveau zodat blueprints hem als per-view-decorator kunnen
@@ -515,7 +515,7 @@ def create_app():
     def too_many_requests(e):
         app.logger.warning(
             f"Rate-limit overschreden: {request.method} {request.path} "
-            f"van {request.remote_addr}"
+            f"van {real_client_ip()}"
         )
         lang = session.get('lang', 'nl')
         msg = ('Te veel pogingen. Probeer het over een minuut opnieuw.' if lang == 'nl'
@@ -614,6 +614,9 @@ def create_app():
             _initial_status_backfill()
 
     from werkzeug.middleware.proxy_fix import ProxyFix
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+    # Alleen proto en host (voor https-redirect_uri's). x_for=0: REMOTE_ADDR
+    # mag nooit uit het vervalsbare X-Forwarded-For komen; het client-IP komt
+    # uit real_client_ip() in app/utils.py.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=0, x_proto=1, x_host=1)
 
     return app

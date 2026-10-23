@@ -107,6 +107,16 @@ Vereiste environment variabelen in Render dashboard:
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 | `ANTHROPIC_API_KEY` | Claude API key voor forumvertaling |
+| `ORIGIN_VERIFY_SECRET` | Geheime waarde die Cloudflare meestuurt in de header `X-GU-Origin-Verify` (zie hieronder) |
+
+### Echt client-IP achter Cloudflare
+
+De rate limiter telt per bezoekers-IP via `real_client_ip()` in `app/utils.py`. Dat IP komt uit de Cloudflare-header `CF-Connecting-IP`, maar alleen als het verzoek bewijsbaar via Cloudflare kwam:
+
+1. Cloudflare: Rules > Transform Rules > Modify Request Header, zet op alle verzoeken de header `X-GU-Origin-Verify` op een lange willekeurige waarde.
+2. Render: zet dezelfde waarde als `ORIGIN_VERIFY_SECRET`.
+
+Een verzoek zonder de juiste header (bijvoorbeeld rechtstreeks op het `onrender.com`-adres) telt dan op het ruwe verbindingsadres, zodat een vervalste `CF-Connecting-IP` niets oplevert. Zolang `ORIGIN_VERIFY_SECRET` leeg is, wordt `CF-Connecting-IP` zonder controle gebruikt. `X-Forwarded-For` wordt nooit vertrouwd.
 
 ## Projectstructuur
 

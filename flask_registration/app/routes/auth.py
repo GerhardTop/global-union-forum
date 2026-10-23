@@ -15,7 +15,7 @@ from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
                        VerifyResendForm)
 from app.mail import send_email
 from app.models import User, Post, PostLike
-from app.utils import (MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, _send_verify_email,
+from app.utils import (real_client_ip, MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, _send_verify_email,
                        _password_strong, _stash_form_state, _pop_form_state, mail_global_key,
                        is_username_valid_format, is_username_blacklisted, is_username_available,
                        safe_next)
@@ -218,20 +218,14 @@ def wachtwoord_reset(token):
 
 
 @auth.route('/auth/google')
-@limiter.limit("20 per minute",
-               key_func=lambda: request.headers.get(
-                   'X-Forwarded-For', request.remote_addr
-               ).split(',')[0].strip())
+@limiter.limit("20 per minute", key_func=real_client_ip)
 def auth_google():
     redirect_uri = url_for('auth.auth_google_callback', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
 
 
 @auth.route('/auth/google/callback')
-@limiter.limit("20 per minute",
-               key_func=lambda: request.headers.get(
-                   'X-Forwarded-For', request.remote_addr
-               ).split(',')[0].strip())
+@limiter.limit("20 per minute", key_func=real_client_ip)
 def auth_google_callback():
     lang = session.get('lang', 'nl')
     oauth_error = request.args.get('error')

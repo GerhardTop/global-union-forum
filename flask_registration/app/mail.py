@@ -1,6 +1,6 @@
 import os
 import resend as _resend
-from flask import has_request_context, request
+from flask import has_request_context
 
 FROM_ADDRESS = "Global Union Forum <noreply@globalunionforum.org>"
 
@@ -13,7 +13,8 @@ def _client_ip() -> str:
     """
     if not has_request_context():
         return "n.v.t."
-    return request.remote_addr or "onbekend"
+    from app.utils import real_client_ip
+    return real_client_ip() or "onbekend"
 
 
 def send_email(to: str, subject: str, html: str) -> bool:

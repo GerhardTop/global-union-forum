@@ -1,10 +1,60 @@
+import hmac
+import ipaddress
+import os
 import re
 from urllib.parse import urlparse
 from markupsafe import escape, Markup
-from flask import url_for, session
+from flask import url_for, session, request
 from itsdangerous import URLSafeTimedSerializer
 
 _URL_RE = re.compile(r'(https?://[^\s<>"\']+)', re.IGNORECASE)
+
+
+# ── Echt client-IP (sleutel voor de rate limiter en de logs) ───────────────
+#
+# Productieketen: bezoeker -> Cloudflare -> Render -> gunicorn. Het socket-
+# adres (REMOTE_ADDR) is daar een proxy, en X-Forwarded-For is (deels) door de
+# client zelf aan te leveren. Daarom vertrouwen we alleen Cloudflare's
+# CF-Connecting-IP, en dat alleen als het verzoek bewijsbaar via Cloudflare
+# kwam:
+#
+#   * Cloudflare (Rules > Transform Rules > Modify Request Header) zet op elk
+#     verzoek de header X-GU-Origin-Verify met een geheime waarde.
+#   * Render krijgt dezelfde waarde als omgevingsvariabele ORIGIN_VERIFY_SECRET.
+#
+# Met secret: juiste header + CF-Connecting-IP -> dat IP; anders (direct op
+# *.onrender.com, header mogelijk vervalst) het ruwe socket-adres.
+# Zonder secret (hardening nog niet ingesteld): CF-Connecting-IP als die er
+# is, anders het ruwe socket-adres.
+ORIGIN_VERIFY_HEADER = 'X-GU-Origin-Verify'
+
+
+def _socket_ip():
+    """Het ruwe verbindingsadres. ProxyFix bewaart het origineel voordat hij
+    REMOTE_ADDR eventueel herschrijft; dat gebruiken we als het er is."""
+    orig = request.environ.get('werkzeug.proxy_fix.orig') or {}
+    return orig.get('REMOTE_ADDR') or request.environ.get('REMOTE_ADDR') or '127.0.0.1'
+
+
+def _valid_ip(value):
+    value = (value or '').strip()
+    try:
+        ipaddress.ip_address(value)
+    except ValueError:
+        return None
+    return value
+
+
+def real_client_ip():
+    """Het IP van de bezoeker; zie de toelichting hierboven."""
+    secret = os.environ.get('ORIGIN_VERIFY_SECRET', '')
+    cf_ip = _valid_ip(request.headers.get('CF-Connecting-IP'))
+    if secret:
+        given = request.headers.get(ORIGIN_VERIFY_HEADER, '')
+        if cf_ip and hmac.compare_digest(given.encode('utf-8'), secret.encode('utf-8')):
+            return cf_ip
+        return _socket_ip()
+    return cf_ip or _socket_ip()
 
 
 def safe_next(target, fallback):
