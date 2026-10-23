@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from app import db
 from app.forms import AdminActionForm
-from app.models import ROLES, User, Thread, Post, PostLike, QualityAward, QualityObjection, QualityReport
+from app.models import ROLES, User, Thread, Post, PostLike, QualityAward, QualityReport
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -80,12 +80,10 @@ def moderator_dashboard():
 
     closed_threads = Thread.query.filter_by(is_closed=True).order_by(Thread.created_at.desc()).all()
 
-    # Kwaliteit (forum C1 herzien): open bezwaren van auteurs (met de
-    # AI-reactie), open meldingen "geen kwaliteit" door anderen, en recente
-    # bijdragen zonder oordeel (bijvoorbeeld omdat de AI faalde).
+    # Kwaliteit (alleen een beloning): open meldingen "geen kwaliteit" door
+    # anderen, en recente bijdragen zonder oordeel (bijvoorbeeld omdat de AI
+    # faalde). Er is geen bezwaarstroom meer.
     live = Post.body != '[bericht verwijderd]'
-    open_objections = (QualityObjection.query.filter(QualityObjection.decision.is_(None))
-                       .order_by(QualityObjection.created_at).all())
     open_reports = (QualityReport.query.filter(QualityReport.decision.is_(None))
                     .order_by(QualityReport.created_at).all())
     unjudged_posts = (Post.query.outerjoin(QualityAward, QualityAward.post_id == Post.id)
@@ -94,7 +92,6 @@ def moderator_dashboard():
 
     return render_template(
         'moderator/dashboard.html',
-        open_objections=open_objections,
         open_reports=open_reports,
         unjudged_posts=unjudged_posts,
         active_threads=active_threads,

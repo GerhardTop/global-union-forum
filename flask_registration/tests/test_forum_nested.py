@@ -261,17 +261,22 @@ class TestDepthLimitAndBranch:
         for i in (7, 8, 9):
             assert post_url(posts[i]).endswith(f'/forum/{t}/tak/{posts[6].id}#post-{posts[i].id}')
 
-    def test_counts_only_visible_posts(self, client, db, forum_users, thread):
+    def test_post_without_quality_mark_counts_and_shows(self, client, db, forum_users, thread):
+        """Kwaliteit is alleen een beloning: een bijdrage zonder keurmerk telt
+        gewoon mee en staat gewoon in de (doorlink)weergave."""
         posts = _chain(db, thread, forum_users, 6)
+        before = _get(client, f'/forum/{thread.id}', 'nl')
         db.session.add(QualityAward(post_id=posts[5].id, source='ai', status='afgewezen', post_lang='nl'))
         db.session.commit()
-        html = _get(client, f'/forum/{thread.id}', 'nl')
-        assert 'Verder in dit gesprek (2 reacties)' in html  # posts[5] telt niet
-        assert f'id="collapsed-{posts[0].id}" data-count="5"' in html
-        branch = _get(client, f'/forum/{thread.id}/tak/{posts[3].id}', 'nl')
-        assert 'Bijdrage verborgen wegens onvoldoende kwaliteit.' in branch  # placeholder
-        db.session.delete(QualityAward.query.filter_by(post_id=posts[5].id).one())
-        db.session.commit()
+        try:
+            html = _get(client, f'/forum/{thread.id}', 'nl')
+            for marker in ('Verder in dit gesprek (3 reacties)', f'id="collapsed-{posts[0].id}" data-count="6"'):
+                assert marker in before and marker in html
+            branch = _get(client, f'/forum/{thread.id}/tak/{posts[3].id}', 'nl')
+            assert posts[5].body in branch and 'verborgen wegens onvoldoende kwaliteit' not in branch
+        finally:
+            db.session.delete(QualityAward.query.filter_by(post_id=posts[5].id).one())
+            db.session.commit()
 
 
 class TestCollapse:

@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {#
-  Discussiepagina bij het kwaliteitsoordeel van één bijdrage (forum C1 herzien).
-  Volgorde: het oordeel (met de gebruikte prompt, bevindingen en uitleg), dan
-  per bezwaar: de toelichting van de auteur, de reactie van de AI en het
-  besluit van de moderator.
-  Context: post, award, objections, can_object, can_decide.
+  Openbare discussiepagina bij een toegekend keurmerk: waarom het is
+  toegekend, met de gebruikte prompt, de bevindingen en de uitleg. Alleen
+  bereikbaar zolang het keurmerk is toegekend (zie _quality_page_visible).
+  Context: post, award.
 #}
 {% block title %}{% if lang == 'nl' %}Kwaliteitsoordeel{% else %}Quality judgement{% endif %} · Global Union{% endblock %}
 
@@ -61,8 +60,7 @@
     <div class="gu-qthread__current">
       <p class="gu-qthread__who">{% if lang == 'nl' %}Huidige stand, na aanpassing door een moderator{% else %}Current status, after a change by a moderator{% endif %}</p>
       <p class="gu-qthread__verdict">
-        {% if award.status == 'toegekend' %}{% with medal_size=16 %}{% include 'forum/_medal.html' %}{% endwith %} <strong>{{ _('Quality contribution') }}: {{ award.criterion }} {{ quality_labels[award.criterion][lang] if award.criterion in quality_labels else '' }}</strong>
-        {% else %}<strong>{% if lang == 'nl' %}Niet aangemerkt als kwaliteitsbijdrage{% else %}Not marked as a quality contribution{% endif %}</strong>{% endif %}
+        {% with medal_size=16 %}{% include 'forum/_medal.html' %}{% endwith %} <strong>{{ _('Quality contribution') }}: {{ award.criterion }} {{ quality_labels[award.criterion][lang] if award.criterion in quality_labels else '' }}</strong>
       </p>
       {% if award.moderator_note %}<p>{{ award.moderator_note }}</p>{% endif %}
       {% if award.decided_by %}<p class="gu-quality__meta">{% if lang == 'nl' %}Door{% else %}By{% endif %} {{ award.decided_by.public_name }} · {{ when(award.decided_at) }}</p>{% endif %}
@@ -104,73 +102,7 @@
         {% endif %}
         {% if award.decided_by and award.source != 'ai' %}<p class="gu-quality__meta">{{ _('Confirmed by %(name)s', name=award.decided_by.public_name) }}</p>{% endif %}
       </li>
-
-      {# 2. Per bezwaar: toelichting, AI-reactie, besluit #}
-      {% for o in objections %}
-      <li class="gu-qthread__item gu-qthread__item--objection" id="bezwaar-{{ o.id }}">
-        <p class="gu-qthread__who">{% if lang == 'nl' %}Bezwaar van de auteur{% else %}Objection by the author{% endif %} · {{ when(o.created_at) }}</p>
-        <p class="gu-qthread__text">{{ o.text }}</p>
-      </li>
-      <li class="gu-qthread__item gu-qthread__item--ai" id="reactie-{{ o.id }}">
-        <p class="gu-qthread__who">{% if lang == 'nl' %}Reactie van de AI{% else %}Response by the AI{% endif %}{% if o.ai_responded_at %} · {{ when(o.ai_responded_at) }}{% endif %}</p>
-        {% if o.ai_responded_at %}
-          <p><strong>{% if o.ai_stance == 'geeft_toe' %}{% if lang == 'nl' %}Geeft het bezwaar gelijk{% else %}Concedes the objection{% endif %}{% else %}{% if lang == 'nl' %}Verdedigt het oordeel{% else %}Defends the judgement{% endif %}{% endif %}</strong></p>
-          {{ translatable(o.original_response(), o.text_lang, 'resp-' ~ o.id, url_for('forum.forum_quality_objection_translate', objection_id=o.id)) }}
-          {{ prompt_block(o.ai_prompt_text) }}
-        {% else %}
-          <p class="gu-quality__meta">{% if lang == 'nl' %}Nog geen reactie van de AI. Een moderator kan ook zonder beslissen.{% else %}No response from the AI yet. A moderator can also decide without one.{% endif %}</p>
-        {% endif %}
-      </li>
-      <li class="gu-qthread__item gu-qthread__item--decision" id="besluit-{{ o.id }}">
-        <p class="gu-qthread__who">{% if lang == 'nl' %}Besluit van de moderator{% else %}Decision by the moderator{% endif %}{% if o.decided_at %} · {{ when(o.decided_at) }}{% endif %}</p>
-        {% if o.decision %}
-          <p><strong>
-            {% if o.decision == 'handhaven' %}{% if lang == 'nl' %}Oordeel gehandhaafd{% else %}Judgement kept{% endif %}
-            {% elif o.decision == 'aanpassen' %}{% if lang == 'nl' %}Criterium aangepast naar{% else %}Criterion changed to{% endif %} {{ o.new_criterion }} {{ quality_labels[o.new_criterion][lang] if o.new_criterion in quality_labels else '' }}
-            {% else %}{% if lang == 'nl' %}Oordeel ingetrokken{% else %}Judgement withdrawn{% endif %}{% endif %}
-          </strong></p>
-          {% if o.decision_note %}<p class="gu-qthread__text">{{ o.decision_note }}</p>{% endif %}
-          <p class="gu-quality__meta">{% if lang == 'nl' %}Door{% else %}By{% endif %} {{ o.decided_by.public_name if o.decided_by else '@deleted_user' }}</p>
-        {% elif can_decide %}
-          <form method="POST" action="{{ url_for('forum.forum_quality_objection_decide', objection_id=o.id) }}" class="gu-quality-mod__form">
-            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-            <label class="gu-quality-mod__field">
-              <span>{% if lang == 'nl' %}Criterium (bij aanpassen){% else %}Criterion (when changing){% endif %}</span>
-              <select name="criterion" class="gu-input">
-                {% for c in ['K1', 'K2', 'K3'] %}
-                <option value="{{ c }}"{% if award.criterion == c %} selected{% endif %}>{{ c }} {{ quality_labels[c][lang] }}</option>
-                {% endfor %}
-              </select>
-            </label>
-            <label class="gu-quality-mod__field">
-              <span>{% if lang == 'nl' %}Toelichting (zichtbaar in deze discussie){% else %}Note (visible in this discussion){% endif %}</span>
-              <input type="text" name="note" maxlength="400" class="gu-input">
-            </label>
-            <div class="gu-quality-mod__actions">
-              <button type="submit" name="decision" value="handhaven" class="gu-btn gu-btn--primary gu-btn--sm">{% if lang == 'nl' %}Handhaven{% else %}Keep{% endif %}</button>
-              <button type="submit" name="decision" value="aanpassen" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Criterium aanpassen{% else %}Change criterion{% endif %}</button>
-              <button type="submit" name="decision" value="intrekken" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Intrekken{% else %}Withdraw{% endif %}</button>
-            </div>
-          </form>
-        {% else %}
-          <p class="gu-quality__meta">{% if lang == 'nl' %}Wacht op een moderator.{% else %}Waiting for a moderator.{% endif %}</p>
-        {% endif %}
-      </li>
-      {% endfor %}
     </ol>
-
-    {% if can_object %}
-    <form class="gu-composer" method="POST" action="{{ url_for('forum.forum_quality_object', post_id=post.id) }}" id="bezwaar">
-      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-      <label for="objectionText" class="gu-qthread__who">{% if lang == 'nl' %}Bezwaar maken tegen dit oordeel{% else %}Object to this judgement{% endif %}</label>
-      <textarea class="gu-composer__input" name="text" id="objectionText" rows="3" maxlength="2000" required
-                placeholder="{% if lang == 'nl' %}Leg uit waarom je het niet eens bent met het oordeel.{% else %}Explain why you disagree with the judgement.{% endif %}"></textarea>
-      <div class="gu-composer__actions">
-        <span class="gu-composer__hint">{% if lang == 'nl' %}De AI reageert op je bezwaar, daarna beslist een moderator.{% else %}The AI responds to your objection, then a moderator decides.{% endif %}</span>
-        <button type="submit" class="gu-btn gu-btn--primary">{% if lang == 'nl' %}Bezwaar indienen{% else %}Submit objection{% endif %} <span class="gu-arrow"></span></button>
-      </div>
-    </form>
-    {% endif %}
 
   </div>
 </main>

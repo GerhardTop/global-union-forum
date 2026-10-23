@@ -91,16 +91,13 @@
     {# Gelaagde weergave: elk bericht met zijn reacties ingesprongen eronder, met
        links een in- en uitklapknop en een verbindingslijn per niveau.
        Niveau 1 is de bovenkant; dieper dan max_level niet inspringen, maar een
-       doorlink naar een eigen weergave (forum_branch) die weer bij 1 begint.
-       Punt 9: een verborgen bijdrage zonder zichtbare reacties valt weg, met
-       zichtbare reacties staat er een neutrale placeholder. #}
+       doorlink naar een eigen weergave (forum_branch) die weer bij 1 begint. #}
     <div class="gu-thread">
       {% for post in top_posts recursive %}
         {% set level = loop.depth %}
         {% set nvis = descendant_counts.get(post.id, 0) %}
-        {% if not (post.id in hidden_ids and nvis == 0) %}
         <div class="gu-node gu-node--l{{ level }}" id="node-{{ post.id }}">
-          {% if post.id in hidden_ids %}{% include 'forum/_post_hidden.html' %}{% else %}{% include 'forum/_post.html' %}{% endif %}
+          {% include 'forum/_post.html' %}
           {% if nvis and level < max_level %}
           {% set n_label = (('%d reactie' if nvis == 1 else '%d reacties') if lang == 'nl' else ('%d reply' if nvis == 1 else '%d replies')) | format(nvis) %}
           <div class="gu-node__branch">
@@ -122,7 +119,6 @@
           </a>
           {% endif %}
         </div>
-        {% endif %}
       {% endfor %}
     </div>
 
@@ -312,8 +308,8 @@
 
     {% include 'forum/_translate_script.html' %}
 
-    // Punt 8: het kwaliteitsoordeel van een zojuist geplaatste eigen bijdrage
-    // verschijnt vanzelf. Elke 2 seconden de status vragen tot hij niet meer
+    // Punt 8: de medaille van een zojuist geplaatste eigen bijdrage verschijnt
+    // vanzelf (zonder keurmerk verandert er niets). Elke 2 seconden de status vragen tot hij niet meer
     // pending is, maximaal ongeveer 60 seconden. Blijft het oordeel uit, dan
     // blijft het bericht gewoon staan; bij een volgende paginalading is het er.
     document.querySelectorAll('[data-quality-poll]').forEach(function (article) {
@@ -333,7 +329,6 @@
             mark.appendChild(node);
           }
         }
-        if (data.status === 'afgewezen') article.classList.add('gu-post--declined');
       }
       function poll() {
         if (Date.now() - started > 60000) return;

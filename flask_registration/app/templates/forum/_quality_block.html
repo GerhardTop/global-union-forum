@@ -1,7 +1,7 @@
 {#
   Partial: forum/_quality_block.html
-  Het kwaliteitsoordeel onder een bijdrage: toegekend (gevuld ruitje met
-  detail), of afgewezen (reden, alleen voor de auteur en moderators). Wordt
+  Het keurmerk onder een bijdrage, alleen als het is toegekend (medaille met
+  detail). Zonder keurmerk is er niets: geen melding en geen reden. Wordt
   ook los gerenderd door de statuspoll (forum_quality_status).
   Context: post, qa, q_awarded, is_own, my_quality_reports, quality_labels,
            lang, forum_action_form, optioneel return_path.
@@ -28,17 +28,4 @@
       {% endif %}
     </div>
   </details>
-  {% elif qa and qa.status == 'afgewezen' and (is_own or current_user.can_moderate()) %}
-  {# Afgewezen: verborgen voor andere lezers (zie forum_thread). Alleen de
-     auteur en moderators zien het bericht, met de reden. #}
-  <div class="gu-quality gu-quality--declined">
-    {% if post.is_op %}
-    {# Openingsbericht: blijft voor iedereen zichtbaar, alleen zonder ruitje. #}
-    <p class="gu-quality__hidden">{% if lang == 'nl' %}Afgewezen wegens onvoldoende kwaliteit. Als openingsbericht blijft het zichtbaar voor iedereen, zonder kwaliteitsmarkering.{% else %}Declined for insufficient quality. As the opening post it stays visible to everyone, without a quality mark.{% endif %}</p>
-    {% else %}
-    <p class="gu-quality__hidden">{% if is_own %}{% if lang == 'nl' %}Alleen zichtbaar voor jou en moderators: deze bijdrage is afgewezen wegens onvoldoende kwaliteit.{% else %}Only visible to you and moderators: this contribution was declined for insufficient quality.{% endif %}{% else %}{% if lang == 'nl' %}Afgewezen en verborgen voor andere lezers.{% else %}Declined and hidden from other readers.{% endif %}{% endif %}</p>
-    {% endif %}
-    <p>{% if lang == 'nl' %}Niet aangemerkt als kwaliteitsbijdrage.{% else %}Not marked as a quality contribution.{% endif %}{% if qa.current_explanation(lang) %} {{ qa.current_explanation(lang) }}{% endif %}</p>
-    <p><a href="{{ url_for('forum.forum_quality_page', post_id=post.id) }}" class="gu-quality__link">{% if lang == 'nl' %}Bekijk het oordeel en de gebruikte prompt, of maak bezwaar{% else %}View the judgement and the prompt used, or object{% endif %}</a></p>
-  </div>
   {% endif %}

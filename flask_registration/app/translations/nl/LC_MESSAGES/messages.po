@@ -570,6 +570,12 @@ msgstr "Toekennen"
 msgid "Decline"
 msgstr "Afwijzen"
 
+msgid "Not awarded"
+msgstr "Niet toegekend"
+
+msgid "Remove quality mark"
+msgstr "Keurmerk weghalen"
+
 #: app/templates/aanmelden/aanmelden.html
 msgid "These details stay private. In your profile you can later choose to show your real name and LinkedIn; only then are they visible to others."
 msgstr "Deze gegevens blijven privé. In je profiel kun je er later voor kiezen je echte naam en LinkedIn te tonen; pas dan zijn ze zichtbaar voor anderen."

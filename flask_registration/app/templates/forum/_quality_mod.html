@@ -1,13 +1,13 @@
 {#
   Partial: forum/_quality_mod.html (forum fase C1)
-  Moderator stelt het kwaliteitsoordeel van één bijdrage rechtstreeks in
-  (bijvoorbeeld als de AI geen oordeel gaf, of om K3 toe te kennen).
-  Bezwaren van de auteur lopen via de discussiepagina.
+  Moderator kent het keurmerk van één bijdrage handmatig toe of haalt het
+  weg (bijvoorbeeld als de AI geen oordeel gaf, of om K3 toe te kennen).
+  Zonder keurmerk blijft de bijdrage gewoon zichtbaar.
   Context: post, qa (QualityAward of None), quality_labels, lang,
            forum_action_form, optioneel quality_next (terugkeeradres) en
            quality_open (details standaard open).
 #}
-{% set q_status = {'toegekend': _('Awarded'), 'afgewezen': _('Declined')} %}
+{% set q_status = {'toegekend': _('Awarded'), 'afgewezen': _('Not awarded')} %}
 <details class="gu-quality-mod"{% if quality_open %} open{% endif %}>
   <summary>{{ _('Assess quality') }}{% if qa %} · {{ q_status.get(qa.status, '') }}{% if qa.criterion %} {{ qa.criterion }}{% endif %}{% endif %}</summary>
   <div class="gu-quality-mod__body">
@@ -33,13 +33,13 @@
         </select>
       </label>
       <label class="gu-quality-mod__field">
-        <span>{% if lang == 'nl' %}Uitleg (één regel, zichtbaar voor de auteur){% else %}Explanation (one line, visible to the author){% endif %}</span>
+        <span>{% if lang == 'nl' %}Uitleg (één regel, zichtbaar bij het keurmerk){% else %}Explanation (one line, shown with the quality mark){% endif %}</span>
         <input type="text" name="explanation" maxlength="400" class="gu-input"
                placeholder="{% if lang == 'nl' %}Leeg laten om de AI-uitleg te houden{% else %}Leave empty to keep the AI explanation{% endif %}">
       </label>
       <div class="gu-quality-mod__actions">
         <button type="submit" name="action" value="toekennen" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Award') }}</button>
-        <button type="submit" name="action" value="afwijzen" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Decline') }}</button>
+        <button type="submit" name="action" value="afwijzen" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Remove quality mark') }}</button>
       </div>
     </form>
   </div>

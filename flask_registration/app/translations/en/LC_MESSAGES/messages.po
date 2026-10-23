@@ -570,6 +570,12 @@ msgstr "Award"
 msgid "Decline"
 msgstr "Decline"
 
+msgid "Not awarded"
+msgstr "Not awarded"
+
+msgid "Remove quality mark"
+msgstr "Remove quality mark"
+
 #: app/templates/aanmelden/aanmelden.html
 msgid "These details stay private. In your profile you can later choose to show your real name and LinkedIn; only then are they visible to others."
 msgstr "These details stay private. In your profile you can later choose to show your real name and LinkedIn; only then are they visible to others."

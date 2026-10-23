@@ -3,7 +3,9 @@ Aanpassingen na een gebruikerstest (de nummers volgen de bevindingen):
 (2) toelichting onder "optioneel", (3) registratie zonder het wachtwoord
 opnieuw te typen, (4) spelregels compact in het formulier, (6) geen uitleg
 over vertalen, (7) niet reageren op je eigen bericht, (8) statuspoll voor het
-kwaliteitsoordeel, (9) afgewezen bijdragen verborgen voor anderen.
+kwaliteitsoordeel. Punt (9), afgewezen bijdragen verbergen, is teruggedraaid:
+kwaliteit is uitsluitend een beloning, een bijdrage zonder keurmerk blijft voor
+iedereen zichtbaar.
 
 Gedeelde conftest-app (CSRF uit); _req() wist de in `g` gecachte current_user
 en locale.
@@ -126,37 +128,46 @@ class TestNoReplyToOwnPost:
         assert f'id="reply-form-{own.id}"' not in html and f'id="reply-form-{other.id}"' in html
 
 
-# ── (9) Afgewezen bijdragen verborgen voor anderen ───────────────────────
+# ── Kwaliteit alleen als beloning: niets wordt op kwaliteit verborgen ────
 
-class TestDeclinedHidden:
-    def test_hidden_for_others_visible_for_author_and_moderator(self, app, world):
+def _part(html, post):
+    """De HTML van één bijdrage (tot de volgende bijdrage of het script)."""
+    start = html.index(f'id="post-{post.id}"')
+    ends = [k for k in (html.find('<article', start), html.find('<script', start)) if k != -1]
+    return html[start:min(ends) if ends else len(html)]
+
+
+DECLINE_TEXTS = ('Bijdrage verborgen wegens onvoldoende kwaliteit', 'Alleen zichtbaar voor jou en moderators',
+                 'Afgewezen en verborgen voor andere lezers', 'Als openingsbericht blijft het zichtbaar',
+                 'Niet aangemerkt als kwaliteitsbijdrage', 'maak bezwaar', 'gu-post--declined',
+                 'gu-post--hidden', 'gu-quality--declined')
+
+
+class TestNotAwardedStaysVisible:
+    def test_visible_for_everyone_without_medal_or_message(self, app, world):
         anna, bram, mod = world['user'](), world['user'](), world['user']('moderator')
         t = world['thread']()
         declined = world['post'](anna, t, status='afgewezen')
-        pending = world['post'](anna, t)  # nog niet beoordeeld: gewoon zichtbaar
-        for viewer in (None, bram):
+        for viewer in (None, bram, anna, mod):
             html = _page(app, viewer, t)
-            assert f'id="post-{declined.id}"' not in html and declined.body not in html
-            assert f'id="post-{pending.id}"' in html
-        own = _page(app, anna, t)
-        assert declined.body in own and 'Alleen zichtbaar voor jou en moderators' in own
-        assert 'Te weinig onderbouwing.' in own
-        moderated = _page(app, mod, t)
-        assert declined.body in moderated and 'Afgewezen en verborgen voor andere lezers.' in moderated
+            part = _part(html, declined)
+            assert declined.body in part
+            assert 'gu-quality__mark' not in part and 'gu-quality__medal' not in part
+            for text in DECLINE_TEXTS:
+                assert text not in html, (viewer, text)
+            if viewer is not mod:  # alleen het moderatorpaneel toont de AI-bevindingen
+                assert 'Te weinig onderbouwing.' not in part
 
-    def test_placeholder_when_others_replied(self, app, world):
+    def test_replies_under_it_show_normally(self, app, world):
         anna, bram = world['user'](), world['user']()
         t = world['thread']()
         declined = world['post'](anna, t, status='afgewezen')
         reply = world['post'](bram, t, parent=declined)
         html = _page(app, world['user'](), t)
-        assert 'Bijdrage verborgen wegens onvoldoende kwaliteit.' in html
-        assert declined.body not in html and anna.username not in html
-        assert reply.body in html
-        # De reactie staat nog onder de placeholder (structuur blijft leesbaar).
+        assert declined.body in html and reply.body in html
         assert html.index(f'id="post-{declined.id}"') < html.index(f'id="post-{reply.id}"')
 
-    def test_hidden_posts_not_counted(self, app, world):
+    def test_counted_everywhere(self, app, world):
         anna, bram = world['user'](), world['user']()
         t = world['thread']()
         root = world['post'](bram, t)
@@ -164,56 +175,44 @@ class TestDeclinedHidden:
         world['post'](anna, t, parent=root)
         reader = world['user']()
         html = _page(app, reader, t)
-        assert '>2 reacties<' in html.replace('\n', '').replace('  ', '') or '2 reacties' in html
-        # Alleen de zichtbare reactie telt mee voor "n reacties verborgen".
-        assert f'id="collapsed-{root.id}" data-count="1"' in html
+        assert re.search(r'3\s*reacties', html)
+        assert f'id="collapsed-{root.id}" data-count="2"' in html
         index = _req(_client(app, reader), 'GET', '/forum').get_data(as_text=True)
         row = index[index.index(f'/forum/{t.id}"'):]
-        assert re.search(r'2\s*reacties', row[:1500])
+        assert re.search(r'3\s*reacties', row[:1500])
 
-    def test_hidden_post_unreachable_for_others(self, app, world):
+    def test_others_can_interact_with_it(self, app, world):
         anna, bram = world['user'](), world['user']()
         t = world['thread']()
         declined = world['post'](anna, t, status='afgewezen')
         client = _client(app, bram)
-        assert _req(client, 'POST', f'/forum/stance/{declined.id}', data={'stance': 'eens'}).status_code == 404
-        assert _req(client, 'POST', f'/forum/translate/{declined.id}').status_code == 404
-        assert _req(client, 'GET', f'/forum/kwaliteit/{declined.id}/status').status_code == 404
-        resp = _req(client, 'POST', f'/forum/{t.id}', data={'body': 'op verborgen', 'parent_id': declined.id})
-        assert resp.status_code == 302 and Post.query.filter_by(body='op verborgen').count() == 0
+        assert _req(client, 'POST', f'/forum/stance/{declined.id}', data={'stance': 'eens'}).status_code == 200
+        assert _req(client, 'POST', f'/forum/translate/{declined.id}').status_code != 404
+        assert _req(client, 'GET', f'/forum/kwaliteit/{declined.id}/status').status_code == 200
+        resp = _req(client, 'POST', f'/forum/{t.id}', data={'body': 'op niet-toegekend', 'parent_id': declined.id})
+        assert resp.status_code == 302
+        assert Post.query.filter_by(body='op niet-toegekend', parent_id=declined.id).count() == 1
 
-
-class TestDeclinedOpeningPostStaysVisible:
-    """Aanvulling op punt 9: een afgewezen openingsbericht blijft voor iedereen
-    zichtbaar (zonder ruitje); een afgewezen reactie blijft verborgen."""
-
-    def test_declined_opening_post_visible_declined_reply_hidden(self, app, world):
-        anna, bram = world['user'](), world['user']()
+    def test_opening_post_without_mark_is_just_visible(self, app, world):
+        anna = world['user']()
         t = world['thread']()
         op = world['post'](anna, t, status='afgewezen', reason='Geen nieuw argument.', is_op=True)
-        reply = world['post'](bram, t, parent=op, status='afgewezen')
-        for viewer in (None, world['user']()):
-            html = _page(app, viewer, t)
-            part = html[html.index(f'id="post-{op.id}"') - 200:]
-            part = part[:part.find('</article>')]
-            assert op.body in part and 'gu-post--declined' not in part
-            assert 'gu-quality__mark' not in part and 'Geen nieuw argument.' not in part
-            assert f'id="post-{reply.id}"' not in html and reply.body not in html
-        own = _page(app, anna, t)
-        assert 'Als openingsbericht blijft het zichtbaar voor iedereen' in own and 'Geen nieuw argument.' in own
-        assert 'Alleen zichtbaar voor jou en moderators' not in own.split(f'id="post-{op.id}"')[1].split('</article>')[0]
+        for viewer in (None, world['user'](), anna):
+            part = _part(_page(app, viewer, t), op)
+            assert op.body in part and 'gu-quality__mark' not in part
+            assert 'Geen nieuw argument.' not in part
+            for text in DECLINE_TEXTS:
+                assert text not in part
 
-    def test_poll_and_counts_for_declined_opening_post(self, app, world):
-        anna, bram = world['user'](), world['user']()
+    def test_awarded_keeps_medal_and_discussion_page(self, app, world):
+        anna = world['user']()
         t = world['thread']()
-        op = world['post'](anna, t, status='afgewezen', is_op=True)
-        data = _req(_client(app, bram), 'GET', f'/forum/kwaliteit/{op.id}/status').get_json()
-        assert data['status'] == 'afgewezen' and data['reason'] is None  # geen reden voor anderen
-        own = _req(_client(app, anna), 'GET', f'/forum/kwaliteit/{op.id}/status').get_json()
-        assert own['reason'] == 'Te weinig onderbouwing.'
-        index = _req(_client(app, bram), 'GET', '/forum').get_data(as_text=True)
-        row = index[index.index(f'/forum/{t.id}"'):]
-        assert re.search(r'1\s*reactie\b', row[:1500])
+        awarded = world['post'](anna, t, status='toegekend', reason='Nieuw argument over handel.')
+        for viewer in (None, world['user']()):
+            part = _part(_page(app, viewer, t), awarded)
+            assert 'gu-quality__mark' in part and f'/forum/kwaliteit/{awarded.id}' in part
+            page = _req(_client(app, viewer), 'GET', f'/forum/kwaliteit/{awarded.id}')
+            assert page.status_code == 200 and 'Nieuw argument over handel.' in page.get_data(as_text=True)
 
 
 # ── (5) Geen afbeeldingen meer bijvoegen ─────────────────────────────────
@@ -245,7 +244,7 @@ class TestNoImageUpload:
 # ── (8) Statuspoll ───────────────────────────────────────────────────────
 
 class TestStatusPoll:
-    def test_pending_then_awarded_and_declined(self, app, db, world):
+    def test_pending_then_awarded_or_no_mark(self, app, db, world):
         anna, mod = world['user'](), world['user']('moderator')
         t = world['thread']()
         p = world['post'](anna, t)
@@ -255,16 +254,17 @@ class TestStatusPoll:
                                     ai_criterion='K1', post_lang='nl', explanation_nl='Nieuw argument.'))
         db.session.commit()
         data = _req(client, 'GET', f'/forum/kwaliteit/{p.id}/status').get_json()
-        assert data['status'] == 'toegekend' and data['criterion'] == 'K1' and data['reason'] is None
+        assert data['status'] == 'toegekend' and data['criterion'] == 'K1' and 'reason' not in data
         assert '<details class="gu-quality">' in data['html'] and 'Nieuw argument.' in data['html']
         assert f'/forum/{t.id}#post-' not in data['html'] or 'status' not in data['html']
 
+        # Geen keurmerk: alleen "geen medaille", geen reden, ook niet voor
+        # de auteur of een moderator.
         q = world['post'](anna, t, status='afgewezen', reason='Stond er al.')
-        data = _req(client, 'GET', f'/forum/kwaliteit/{q.id}/status').get_json()
-        assert data['status'] == 'afgewezen' and data['reason'] == 'Stond er al.'
-        assert 'Alleen zichtbaar voor jou en moderators' in data['html']
-        mod_data = _req(_client(app, mod), 'GET', f'/forum/kwaliteit/{q.id}/status').get_json()
-        assert mod_data['reason'] == 'Stond er al.'
+        for viewer in (anna, mod):
+            data = _req(_client(app, viewer), 'GET', f'/forum/kwaliteit/{q.id}/status').get_json()
+            assert data['status'] == 'geen' and data['criterion'] is None and 'reason' not in data
+            assert data['html'].strip() == '' and 'Stond er al.' not in data['html']
 
     def test_login_required(self, app, world):
         p = world['post'](world['user'](), world['thread']())

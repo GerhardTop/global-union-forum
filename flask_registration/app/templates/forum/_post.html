@@ -2,7 +2,7 @@
   Partial: forum/_post.html
   Context: post, level (1 = bovenkant), thread, reply_form, tree_children,
            posts_by_id, descendant_counts, max_level, stance_counts, my_stances,
-           quality_awards, my_quality_reports, quality_labels, hidden_ids, poll_ids
+           quality_awards, my_quality_reports, quality_labels, poll_ids
 #}
 {% if post.body == '[bericht verwijderd]' %}
   {% set is_deleted = true %}
@@ -34,7 +34,7 @@
 {% set q_awarded = qa and qa.status == 'toegekend' and post.body != '[bericht verwijderd]' %}
 {% set author_linkedin = post.public_linkedin_url() %}
 
-<article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}{% if qa and qa.status == 'afgewezen' and (is_own or current_user.can_moderate()) %} gu-post--declined{% endif %}"
+<article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}"
          id="post-{{ post.id }}"{% if post.id in poll_ids %} data-quality-poll="{{ url_for('forum.forum_quality_status', post_id=post.id) }}"{% endif %}>
 
 

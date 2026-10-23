@@ -172,11 +172,9 @@ class TestNeverDown:
         t = world['thread']()
         posts = [world['post'](u, t) for _ in range(3)]
         assert status.recalc_user(u.id) == 'voter'
-        objection = QualityObjection(award_id=posts[0].quality_award.id, author_id=u.id, text='x')
-        db.session.add(objection)
-        db.session.commit()
-        resp = _req(_client(app, mod), 'POST', f'/forum/kwaliteit/bezwaar/{objection.id}/besluit',
-                    data={'decision': 'intrekken'})
+        # Een moderator haalt het keurmerk handmatig weg.
+        resp = _req(_client(app, mod), 'POST', f'/forum/kwaliteit/{posts[0].id}/besluit',
+                    data={'action': 'afwijzen'})
         assert resp.status_code == 302
         assert db.session.get(QualityAward, posts[0].quality_award.id).status == 'afgewezen'
         assert status.quality_counts(u.id)[0] == 2 and _status(u.id) == 'voter'

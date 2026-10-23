@@ -50,36 +50,6 @@
     {% endmacro %}
 
     <section class="gu-admin__section" id="kwaliteit">
-      <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Kwaliteit: bezwaren van auteurs{% else %}Quality: objections by authors{% endif %} ({{ open_objections|length }})</p>
-      <p class="gu-quality__meta">{% if lang == 'nl' %}De AI oordeelt automatisch. Maakt een auteur bezwaar, dan reageert de AI en beslis jij: handhaven, criterium aanpassen of intrekken.{% else %}The AI judges automatically. When an author objects, the AI responds and you decide: keep, change the criterion or withdraw.{% endif %}</p>
-      {% if open_objections %}
-      <ul class="gu-quality-queue">
-        {% for o in open_objections %}
-        {% set post = o.award.post %}
-        <li class="gu-quality-queue__item">
-          <div>
-            <strong>{{ post.public_author_name() }}</strong>
-            · {% if o.award.status == 'toegekend' %}{{ o.award.criterion }} {{ quality_labels[o.award.criterion][lang] if o.award.criterion in quality_labels else '' }}{% else %}{% if lang == 'nl' %}niet toegekend{% else %}not awarded{% endif %}{% endif %}
-            · <a href="{{ url_for('forum.forum_quality_page', post_id=post.id) }}#bezwaar-{{ o.id }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}open de discussie{% else %}open the discussion{% endif %}</a>
-          </div>
-          <p class="gu-quality-queue__excerpt">{% if lang == 'nl' %}Bezwaar:{% else %}Objection:{% endif %} {{ o.text[:220] }}{% if o.text|length > 220 %}…{% endif %}</p>
-          <p class="gu-quality__meta">
-            {% if o.ai_responded_at %}{% if lang == 'nl' %}AI:{% else %}AI:{% endif %}
-              {% if o.ai_stance == 'geeft_toe' %}{% if lang == 'nl' %}geeft het bezwaar gelijk{% else %}concedes{% endif %}{% else %}{% if lang == 'nl' %}verdedigt het oordeel{% else %}defends the judgement{% endif %}{% endif %}
-            {% else %}{% if lang == 'nl' %}Nog geen AI-reactie.{% else %}No AI response yet.{% endif %}{% endif %}
-          </p>
-          {% if current_user.id == post.user_id %}
-          <p class="gu-quality__meta">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beslist.{% else %}Your own contribution: another moderator decides.{% endif %}</p>
-          {% endif %}
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p class="gu-admin__empty">{% if lang == 'nl' %}Geen open bezwaren.{% else %}No open objections.{% endif %}</p>
-      {% endif %}
-    </section>
-
-    <section class="gu-admin__section">
       <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen: geen kwaliteit{% else %}Reports: not quality{% endif %} ({{ open_reports|length }})</p>
       {% if open_reports %}
       <ul class="gu-quality-queue">
@@ -98,7 +68,7 @@
           <form method="POST" action="{{ url_for('forum.forum_quality_report_decide', report_id=r.id) }}" class="gu-quality-mod__form">
             {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
             <label class="gu-quality-mod__field">
-              <span>{% if lang == 'nl' %}Toelichting (bij intrekken zichtbaar voor de auteur){% else %}Note (visible to the author when withdrawn){% endif %}</span>
+              <span>{% if lang == 'nl' %}Toelichting (optioneel, alleen voor moderators){% else %}Note (optional, for moderators only){% endif %}</span>
               <input type="text" name="note" maxlength="400" class="gu-input">
             </label>
             <div class="gu-quality-mod__actions">

@@ -9,7 +9,7 @@ from sqlalchemy import func
 from app import db, bcrypt, limiter
 from app.forms import ForumActionForm, ForumReplyForm
 from app.models import (STANCES, QUALITY_CRITERIA, User, Thread, Post, PostLike, QualityAward,
-                        QualityObjection, QualityReport)
+                        QualityReport)
 from app import quality
 from app.utils import safe_next
 
@@ -45,23 +45,6 @@ def _auto_translate():
         current_user.auto_translate is True
         or (current_user.auto_translate is None and user_lang == 'en')
     )
-
-
-def _hidden_for_viewer(post):
-    """Punt 9: is een afgewezen bijdrage verborgen voor de huidige lezer?
-    Niet voor de auteur zelf en niet voor moderators/admin (toezicht)."""
-    if not current_user.is_authenticated:
-        return True
-    return post.user_id != current_user.id and not current_user.can_moderate()
-
-
-def _is_hidden(post):
-    """Verborgen voor deze lezer: afgewezen kwaliteitsoordeel en geen auteur/moderator.
-    Uitzondering: het openingsbericht van een gesprek blijft voor iedereen
-    zichtbaar, zodat het gesprek leesbaar blijft (wel zonder ruitje)."""
-    award = post.quality_award
-    return (award is not None and award.status == 'afgewezen' and not post.is_op
-            and _hidden_for_viewer(post))
 
 
 def _require_csrf():
@@ -466,17 +449,12 @@ def _thread_list(closed=False):
         .order_by(last_post_sq.c.last_at.desc().nulls_last(), Thread.created_at.desc())
         .all()
     )
-    # Punt 9: afgewezen bijdragen tellen niet mee in de zichtbare tellingen.
-    hidden = {pid for (pid,) in db.session.query(QualityAward.post_id)
-              .join(Post, QualityAward.post_id == Post.id)
-              .filter(QualityAward.status == 'afgewezen', Post.is_op.isnot(True))}
     result = []
     for thread, _ in rows:
-        visible = [p for p in thread.posts if p.id not in hidden]
-        last_post_obj = visible[-1] if visible else None
+        last_post_obj = thread.posts[-1] if thread.posts else None
         result.append({
             'thread': thread,
-            'reply_count': len(visible),
+            'reply_count': len(thread.posts),
             'last_time_ago': last_post_obj.time_ago if last_post_obj else None,
         })
     return result
@@ -539,8 +517,6 @@ def forum_thread(thread_id):
                 'error'
             )
             return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#post-{parent.id}')
-        if parent is not None and _is_hidden(parent):
-            parent = None  # verborgen voor deze lezer: behandelen alsof hij niet bestaat
         if parent_id is not None and parent is None:
             flash(
                 'Ongeldige reactie: het bericht waarop je reageert bestaat niet in dit gesprek.'
@@ -644,14 +620,10 @@ def _render_thread(thread, branch_root=None):
     posts_by_id = {p.id: p for p in all_posts}
     op, tree_children = _tree(all_posts)
 
-    # Punt 9: een bijdrage met een afgewezen kwaliteitsoordeel is verborgen
-    # voor andere lezers; de auteur en moderators zien hem wel (gemarkeerd).
+    # Kwaliteit is alleen een beloning: niets wordt op kwaliteit verborgen.
     all_ids = [p.id for p in all_posts]
     quality_awards = {a.post_id: a for a in
                       QualityAward.query.filter(QualityAward.post_id.in_(all_ids)).all()} if all_ids else {}
-    hidden_ids = {pid for pid, a in quality_awards.items()
-                  if a.status == 'afgewezen' and not posts_by_id[pid].is_op
-                  and _hidden_for_viewer(posts_by_id[pid])}
 
     if branch_root is not None:
         top_posts = [branch_root]
@@ -660,7 +632,7 @@ def _render_thread(thread, branch_root=None):
     else:  # geen openingsbericht (oude data): de hoofdberichten zelf bovenaan
         top_posts = [p for p in all_posts if p.parent_id is None]
 
-    # Aantal ZICHTBARE onderliggende reacties per bericht (alle niveaus), voor
+    # Aantal onderliggende reacties per bericht (alle niveaus), voor
     # "n reacties verborgen" en de doorlink. Breedte-eerst, zonder recursie.
     order, queue = [], deque(top_posts)
     while queue:
@@ -669,10 +641,8 @@ def _render_thread(thread, branch_root=None):
         queue.extend(tree_children.get(p.id, []))
     descendant_counts = {}
     for p in reversed(order):
-        descendant_counts[p.id] = sum((0 if c.id in hidden_ids else 1) + descendant_counts.get(c.id, 0)
+        descendant_counts[p.id] = sum(1 + descendant_counts.get(c.id, 0)
                                       for c in tree_children.get(p.id, []))
-    if branch_root is not None and branch_root.id in hidden_ids and not descendant_counts.get(branch_root.id):
-        abort(404)
 
     stance_counts = _stance_counts(all_ids)
     my_quality_reports = set()
@@ -703,8 +673,7 @@ def _render_thread(thread, branch_root=None):
         'forum/thread.html',
         thread=thread,
         reply_form=reply_form,
-        posts=[p for p in all_posts if p.id not in hidden_ids],  # zichtbare tellingen
-        hidden_ids=hidden_ids,
+        posts=all_posts,
         poll_ids=poll_ids,
         top_posts=top_posts,
         tree_children=tree_children,
@@ -733,8 +702,6 @@ def _render_thread(thread, branch_root=None):
 def forum_translate(post_id):
     _require_csrf()
     post = Post.query.get_or_404(post_id)
-    if _is_hidden(post):
-        abort(404)
     user_lang = session.get('lang', 'nl')
 
     if user_lang == post.source_lang:
@@ -800,8 +767,6 @@ def forum_stance(post_id):
     keuze in. Eén rij per gebruiker per bijdrage."""
     _require_csrf()
     post = Post.query.get_or_404(post_id)
-    if _is_hidden(post):
-        abort(404)
     if not current_user.can_contribute():
         return jsonify({'error': 'not allowed'}), 403
     if post.user_id == current_user.id:
@@ -956,9 +921,9 @@ def _quality_back(post):
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/besluit', methods=['POST'])
 @login_required
 def forum_quality_decide(post_id):
-    """Moderator stelt het oordeel rechtstreeks in (bijvoorbeeld als de AI
-    geen oordeel gaf, of om K3 toe te kennen). Nooit op een eigen bijdrage.
-    Bezwaren van de auteur lopen via forum_quality_objection_decide."""
+    """Moderator kent het keurmerk handmatig toe of haalt het weg (bijvoorbeeld
+    als de AI geen oordeel gaf, of om K3 toe te kennen). Nooit op een eigen
+    bijdrage. Weghalen verbergt niets: de bijdrage heeft dan alleen geen medaille."""
     if not current_user.can_moderate():
         abort(403)
     _require_csrf()
@@ -976,8 +941,6 @@ def forum_quality_decide(post_id):
     if award is None:
         award = QualityAward(post_id=post.id, source='moderator', post_lang=post.source_lang)
         db.session.add(award)
-    if action == 'afwijzen' and not (note or award.explanation_nl or award.explanation_en):
-        abort(400)  # de auteur moet een reden kunnen zien
     award.status = 'toegekend' if action == 'toekennen' else 'afgewezen'
     award.criterion = criterion if action == 'toekennen' else award.criterion
     if note:
@@ -995,32 +958,23 @@ def forum_quality_decide(post_id):
 
 
 def _quality_page_visible(post, award):
-    """Toegekend: voor iedereen. Afgewezen: alleen de auteur en moderators."""
-    if award is None:
-        return False
-    if award.status == 'toegekend':
-        return True
-    return current_user.is_authenticated and (post.user_id == current_user.id or current_user.can_moderate())
+    """Alleen een toegekend keurmerk heeft een (openbare) discussiepagina.
+    Zonder keurmerk is er niets te tonen: geen reden, geen bezwaar."""
+    return award is not None and award.status == 'toegekend'
+
+
 
 
 @forum_bp.route('/forum/kwaliteit/<int:post_id>')
 def forum_quality_page(post_id):
-    """Discussiepagina bij het kwaliteitsoordeel van één bijdrage: het
-    oordeel met de gebruikte prompt, bevindingen en uitleg, en daarna per
-    bezwaar de toelichting van de auteur, de AI-reactie en het besluit."""
+    """Openbare discussiepagina bij een toegekend keurmerk: waarom het is
+    toegekend, met de gebruikte prompt, de bevindingen en de uitleg."""
     post = Post.query.get_or_404(post_id)
     award = post.quality_award
     if not _quality_page_visible(post, award):
         abort(404)
-    objections = list(award.objections)
-    open_objection = next((o for o in objections if o.decision is None), None)
-    is_author = current_user.is_authenticated and post.user_id == current_user.id
-    return render_template(
-        'forum/quality.html', post=post, award=award, objections=objections,
-        auto_translate=_auto_translate(),
-        can_object=is_author and open_objection is None and post.body != '[bericht verwijderd]',
-        can_decide=current_user.can_moderate() and not is_author,
-    )
+    return render_template('forum/quality.html', post=post, award=award,
+                           auto_translate=_auto_translate())
 
 
 def _translate_ai_text(obj, prefix, src_lang):
@@ -1065,33 +1019,14 @@ def forum_quality_translate(post_id):
     return _translate_ai_text(award, 'explanation', award.text_lang)
 
 
-@forum_bp.route('/forum/kwaliteit/bezwaar/<int:objection_id>/vertaal', methods=['POST'])
-@login_required
-@limiter.limit("30 per hour",
-               key_func=lambda: f"forum-translate-user-{current_user.get_id()}",
-               deduct_when=lambda response: g.get('translation_api_called', False))
-def forum_quality_objection_translate(objection_id):
-    """Vertaal de AI-reactie op een bezwaar (zelfde knop als bij posts)."""
-    _require_csrf()
-    objection = QualityObjection.query.get_or_404(objection_id)
-    if not _quality_page_visible(objection.award.post, objection.award):
-        abort(404)
-    if objection.ai_responded_at is None:
-        return jsonify({'error': 'no content'}), 400
-    return _translate_ai_text(objection, 'ai_response', objection.text_lang)
-
-
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/status')
 @login_required
 @limiter.limit("120 per minute", key_func=lambda: f"forum-quality-status-user-{current_user.get_id()}")
 def forum_quality_status(post_id):
-    """Punt 8: lichte statuspoll voor het kwaliteitsoordeel van een bijdrage.
-    pending (nog geen oordeel), toegekend of afgewezen, met de HTML van het
-    oordeelblok zoals de pagina die zou tonen (reden alleen voor de auteur en
-    moderators). Een verborgen bijdrage geeft voor anderen 404."""
+    """Punt 8: lichte statuspoll na het plaatsen. Alleen of de medaille
+    verschijnt: pending (nog geen oordeel), toegekend (met de HTML van het
+    keurmerkblok) of geen (geen keurmerk, en geen reden)."""
     post = Post.query.get_or_404(post_id)
-    if _is_hidden(post):
-        abort(404)
     qa = post.quality_award
     if qa is None:
         return jsonify({'status': 'pending'})
@@ -1102,71 +1037,8 @@ def forum_quality_status(post_id):
     html = render_template('forum/_quality_block.html', post=post, qa=qa, q_awarded=q_awarded,
                            is_own=is_own, my_quality_reports=reported,
                            return_path=url_for('forum.forum_thread', thread_id=post.thread_id))
-    return jsonify({'status': qa.status, 'criterion': qa.criterion if q_awarded else None,
-                    'html': html,
-                    'reason': qa.current_explanation(session.get('lang', 'nl'))
-                    if qa.status == 'afgewezen' and (is_own or current_user.can_moderate()) else None})
-
-
-@forum_bp.route('/forum/kwaliteit/<int:post_id>/bezwaar', methods=['POST'])
-@login_required
-@limiter.limit("5 per hour", key_func=lambda: f"forum-quality-objection-user-{current_user.get_id()}")
-def forum_quality_object(post_id):
-    """De auteur maakt bezwaar tegen het oordeel, met een eigen toelichting.
-    De AI reageert daarop (best-effort, op de achtergrond); een moderator
-    beslist. Eén open bezwaar tegelijk."""
-    _require_csrf()
-    post = Post.query.get_or_404(post_id)
-    award = post.quality_award
-    if post.user_id != current_user.id or award is None:
-        abort(403)
-    if any(o.decision is None for o in award.objections):
-        abort(409)
-    text = (request.form.get('text') or '').strip()[:2000]
-    if not text:
-        abort(400)
-    objection = QualityObjection(award_id=award.id, author_id=current_user.id, text=text)
-    db.session.add(objection)
-    db.session.commit()
-    quality.schedule_objection_response(objection.id)
-    return redirect(url_for('forum.forum_quality_page', post_id=post.id) + f'#bezwaar-{objection.id}')
-
-
-@forum_bp.route('/forum/kwaliteit/bezwaar/<int:objection_id>/besluit', methods=['POST'])
-@login_required
-def forum_quality_objection_decide(objection_id):
-    """Moderator beoordeelt het bezwaar (en de AI-reactie) en past het
-    oordeel eventueel aan: handhaven, criterium aanpassen, of intrekken.
-    Besluit, naam en tijd worden vastgelegd. Niet op een eigen bijdrage."""
-    if not current_user.can_moderate():
-        abort(403)
-    _require_csrf()
-    objection = QualityObjection.query.get_or_404(objection_id)
-    award = objection.award
-    if award.post.user_id == current_user.id or objection.decision is not None:
-        abort(403)
-    decision = request.form.get('decision')
-    criterion = request.form.get('criterion') or None
-    note = (request.form.get('note') or '').strip()[:400]
-    if decision not in ('handhaven', 'aanpassen', 'intrekken'):
-        abort(400)
-    if decision == 'aanpassen' and criterion not in QUALITY_CRITERIA:
-        abort(400)
-    now = datetime.utcnow()
-    objection.decision, objection.decision_note = decision, note or None
-    objection.decided_by_id, objection.decided_at = current_user.id, now
-    if decision == 'aanpassen':
-        objection.new_criterion = criterion
-        award.criterion, award.status = criterion, 'toegekend'
-    elif decision == 'intrekken':
-        award.status = 'afgewezen'
-    if decision != 'handhaven':
-        if note:
-            award.moderator_note = note
-        award.decided_by_id, award.decided_at = current_user.id, now
-    db.session.commit()
-    quality._recalc_author(award.post)  # fase C2, alleen omhoog
-    return redirect(url_for('forum.forum_quality_page', post_id=award.post_id) + f'#bezwaar-{objection.id}')
+    return jsonify({'status': 'toegekend' if q_awarded else 'geen',
+                    'criterion': qa.criterion if q_awarded else None, 'html': html})
 
 
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/melden', methods=['POST'])

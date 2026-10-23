@@ -2774,14 +2774,7 @@ body {
 .gu-quality__detail p { margin: 0 0 6px; }
 .gu-quality__detail p:last-child { margin-bottom: 0; }
 .gu-quality__meta { font-size: 0.8125rem; color: var(--gu-fg-3); margin: 4px 0 0; }
-.gu-quality--declined { padding: 10px 12px; border: 1px dashed var(--gu-border); border-radius: 6px; }
-.gu-quality--declined p { margin: 0 0 6px; }
 .gu-quality-mod { margin: 8px 0; font-size: 0.8125rem; }
-/* Punt 9: afgewezen bijdragen (alleen auteur en moderators) en placeholder */
-.gu-post--declined .gu-post__body { opacity: 0.7; }
-.gu-quality__hidden { font-weight: 500; color: var(--gu-fg-2); }
-.gu-post--hidden { padding: 14px 0; }
-.gu-post__hiddennote { margin: 0; font-size: 0.875rem; font-style: italic; color: var(--gu-fg-3); }
 .gu-quality-mod summary { cursor: pointer; color: var(--gu-fg-3); }
 .gu-quality-mod__body { margin-top: 8px; padding: 10px 12px; background: var(--gu-bg-soft); border-radius: 6px; }
 .gu-quality-mod__form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-top: 8px; }

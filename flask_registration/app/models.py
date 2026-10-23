@@ -278,14 +278,16 @@ class PostLike(db.Model):
 QUALITY_CRITERIA = ('K1', 'K2', 'K3')
 # 'voorgesteld' komt alleen nog voor in oude rijen van vóór het automatische
 # oordeel; _migrate_quality zet die om naar toegekend of afgewezen.
+# 'afgewezen' betekent alleen: geen keurmerk. Kwaliteit is uitsluitend een
+# beloning; een bijdrage zonder keurmerk blijft gewoon zichtbaar.
 QUALITY_STATUSES = ('toegekend', 'afgewezen')
 
 
 class QualityAward(db.Model):
     """Eén kwaliteitsoordeel per bijdrage. De AI oordeelt automatisch
-    (source 'ai'): toegekend met K1/K2, of afgewezen met een reden. De auteur
-    kan bezwaar maken (QualityObjection), anderen kunnen melden
-    (QualityReport); een moderator kan het oordeel aanpassen. Staat volledig
+    (source 'ai'): toegekend met K1/K2 (medaille), anders geen keurmerk.
+    Anderen kunnen een toegekend keurmerk melden (QualityReport); een
+    moderator kan het keurmerk handmatig toevoegen of weghalen. Staat volledig
     los van eens/oneens (PostLike)."""
     __tablename__ = "quality_awards"
 
@@ -377,8 +379,9 @@ class QualityReport(db.Model):
 class QualityObjection(db.Model):
     """Bezwaar van de auteur tegen een kwaliteitsoordeel, met de reactie van
     de AI (verdedigt het oordeel of geeft toe) en het besluit van een
-    moderator (handhaven, criterium aanpassen of intrekken). Samen met het
-    oordeel vormt dit de thread op de discussiepagina."""
+    moderator (handhaven, criterium aanpassen of intrekken). Niet meer in
+    gebruik sinds kwaliteit alleen een beloning is; de tabel blijft staan
+    (geen destructieve migratie) en kan in fase D weer van pas komen."""
     __tablename__ = "quality_objections"
 
     id              = db.Column(db.Integer, primary_key=True)
