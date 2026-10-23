@@ -1,8 +1,10 @@
 """
-Tests voor geneste reacties in het forum (app/routes/forum.py, forum_thread()
-en forum/_post.html): reageren op een reactie, de boom over meerdere niveaus,
-de dieptegrens die platslaat met een "in antwoord op"-label, de inklapknop,
-en dat bestaande reacties van één niveau nog werken.
+Tests voor de gelaagde reactiestructuur in het forum (app/routes/forum.py:
+_render_thread, forum_branch, post_url; forum/thread.html): reageren op een
+reactie, nesten tot niveau 4 (openingsbericht = niveau 1), de doorlink naar
+een eigen weergave die weer bij 1 telt, in- en uitklappen met tellingen van
+alleen zichtbare berichten, geen rol- of statusbadges bij de auteur, en het
+medaille-keurmerk.
 
 Let op: de sessie-brede app-fixture uit conftest.py houdt één app_context
 open, dus ook één `g` voor alle requests. Flask-Babel (locale) en Flask-Login
@@ -18,7 +20,8 @@ from flask_babel import refresh
 
 from app import bcrypt
 from app.models import Post, Thread, User
-from app.routes.forum import MAX_REPLY_INDENT
+from app.models import QualityAward
+from app.routes.forum import MAX_LEVEL, post_url
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────
@@ -147,6 +150,11 @@ def _login(app, user):
 
 # ── Tests ────────────────────────────────────────────────────────────────
 
+def _node_level(tree, post):
+    cls = tree.attrs[f'node-{post.id}']['class']
+    return int(cls.split('gu-node--l')[1].split()[0])
+
+
 class TestReplyToReply:
     def test_reply_to_a_reply_is_saved_with_parent(self, app, db, forum_users, thread):
         root, reply = _chain(db, thread, forum_users, 1)
@@ -155,9 +163,8 @@ class TestReplyToReply:
                     data={'body': 'antwoord op de reactie', 'parent_id': reply.id})
         assert resp.status_code == 302
         new = Post.query.filter_by(thread_id=thread.id, body='antwoord op de reactie').one()
-        assert new.parent_id == reply.id
-        assert new.parent.parent_id == root.id
-        assert resp.headers['Location'].endswith(f'#post-{new.id}')
+        assert new.parent_id == reply.id and new.parent.parent_id == root.id
+        assert resp.headers['Location'].endswith(f'/forum/{thread.id}#post-{new.id}')
 
     def test_parent_from_other_thread_still_rejected(self, app, db, forum_users, thread):
         other = Thread(eyebrow_nl='x', eyebrow_en='x', title_prefix_nl='x', title_prefix_en='x')
@@ -169,130 +176,166 @@ class TestReplyToReply:
         assert Post.query.filter_by(body='kapot').count() == 0
         _delete_thread(db, other)
 
-    def test_reply_button_available_beyond_old_two_level_limit(self, app, db, forum_users, thread):
-        posts = _chain(db, thread, forum_users, 3)
-        # posts[3] is van Bram (diepte 3); Anna mag erop reageren.
-        client = _login(app, forum_users[0])
+    def test_reply_beyond_level_four_redirects_to_branch_view(self, app, db, forum_users, thread):
+        posts = _chain(db, thread, forum_users, 3)  # niveaus 1 tot 4
+        client = _login(app, forum_users[0])  # posts[3] is van Bram
         html = _req(client, 'GET', f'/forum/{thread.id}').get_data(as_text=True)
         assert f'id="reply-form-{posts[3].id}"' in html
+        resp = _req(client, 'POST', f'/forum/{thread.id}', data={'body': 'niveau vijf', 'parent_id': posts[3].id})
+        new = Post.query.filter_by(body='niveau vijf').one()
+        assert resp.headers['Location'].endswith(f'/forum/{thread.id}/tak/{posts[3].id}#post-{new.id}')
 
 
-class TestTreeRendering:
+class TestNesting:
     @pytest.mark.parametrize('lang', ['nl', 'en'])
-    def test_tree_nests_multiple_levels(self, client, db, forum_users, thread, lang):
-        posts = _chain(db, thread, forum_users, MAX_REPLY_INDENT)
+    def test_levels_one_to_four_nested(self, client, db, forum_users, thread, lang):
+        posts = _chain(db, thread, forum_users, MAX_LEVEL - 1)
         tree = _parse(_get(client, f'/forum/{thread.id}', lang))
-        for depth in range(1, MAX_REPLY_INDENT + 1):
-            container = f'replies-{posts[depth - 1].id}'
-            assert f'gu-thread__replies--d{depth}' in tree.attrs[container]['class']
-            assert container in tree.ancestors[f'post-{posts[depth].id}']
-        # Binnen de grens geen platgeslagen label op desktop.
-        assert 'gu-post__inreply--flat' not in _get(client, f'/forum/{thread.id}', lang)
+        for level, p in enumerate(posts, start=1):
+            assert _node_level(tree, p) == level
+            if level > 1:
+                assert f'replies-{posts[level - 2].id}' in tree.ancestors[f'post-{p.id}']
 
-    def test_siblings_are_oldest_first(self, client, db, forum_users, thread):
+    def test_top_level_composer_replies_sit_under_opening_post(self, client, db, forum_users, thread):
+        op, reply = _chain(db, thread, forum_users, 1)
+        top = Post(thread_id=thread.id, user_id=forum_users[0].id, parent_id=None,
+                   author_name='', author_username='anna_nest', body='via de composer', source_lang='nl')
+        db.session.add(top)
+        db.session.commit()
+        tree = _parse(_get(client, f'/forum/{thread.id}', 'nl'))
+        assert _node_level(tree, op) == 1
+        assert _node_level(tree, top) == 2 and _node_level(tree, reply) == 2
+        assert f'replies-{op.id}' in tree.ancestors[f'post-{top.id}']
+
+    def test_siblings_oldest_first(self, client, db, forum_users, thread):
         root = _chain(db, thread, forum_users, 0)[0]
         now = datetime.utcnow()
-        newer = Post(thread_id=thread.id, parent_id=root.id, author_name='Nieuw', author_username='n',
+        newer = Post(thread_id=thread.id, parent_id=root.id, author_name='', author_username='n',
                      body='jongste', created_at=now)
-        older = Post(thread_id=thread.id, parent_id=root.id, author_name='Oud', author_username='o',
+        older = Post(thread_id=thread.id, parent_id=root.id, author_name='', author_username='o',
                      body='oudste', created_at=now - timedelta(minutes=30))
         db.session.add_all([newer, older])
         db.session.commit()
         html = _get(client, f'/forum/{thread.id}', 'nl')
         assert html.index(f'id="post-{older.id}"') < html.index(f'id="post-{newer.id}"')
 
+    def test_demo_threads_render_in_both_languages(self, client):
+        import re
+        for lang in ('nl', 'en'):
+            html = _get(client, '/forum', lang)
+            for tid in {int(x) for x in re.findall(r'href="/forum/(\d+)"', html)}:
+                _get(client, f'/forum/{tid}', lang)
 
-class TestDepthLimit:
-    @pytest.mark.parametrize('lang,label', [('nl', 'in antwoord op'), ('en', 'in reply to')])
-    def test_beyond_limit_is_flattened_with_label(self, client, db, forum_users, thread, lang, label):
-        posts = _chain(db, thread, forum_users, MAX_REPLY_INDENT + 2)
+
+class TestDepthLimitAndBranch:
+    @pytest.mark.parametrize('lang,label', [('nl', 'Verder in dit gesprek (3 reacties)'),
+                                            ('en', 'Continue this conversation (3 replies)')])
+    def test_no_indent_beyond_level_four_link_instead(self, client, db, forum_users, thread, lang, label):
+        posts = _chain(db, thread, forum_users, 6)  # niveaus 1 tot 7
         html = _get(client, f'/forum/{thread.id}', lang)
         tree = _parse(html)
-        last_indent = posts[MAX_REPLY_INDENT]
-        flat_container = f'replies-{last_indent.id}'
-        assert 'gu-thread__replies--flat' in tree.attrs[flat_container]['class']
-        assert f'gu-thread__replies--d{MAX_REPLY_INDENT + 1}' not in html
-        for deeper in posts[MAX_REPLY_INDENT + 1:]:
-            anc = tree.ancestors[f'post-{deeper.id}']
-            assert flat_container in anc
-            # Niet verder genest dan het platte blok: geen ander replies-blok
-            # binnen het platte blok.
-            assert not [a for a in anc[anc.index(flat_container) + 1:] if a.startswith('replies-')]
-            parent = posts[posts.index(deeper) - 1]
-            links = [a for a, anc in _find(tree, 'a', 'gu-post__inreply')
-                     if f'post-{deeper.id}' in anc]
-            assert len(links) == 1
-            assert links[0]['href'] == f'#post-{parent.id}'
-            assert 'gu-post__inreply--flat' in links[0]['class']
-            # Publieke naam volgens de keuze van de auteur (standaard pseudoniem).
-            assert f'{label} {parent.public_author_name()}' in html
-            assert parent.public_author_name().startswith('@')
+        assert max(_node_level(tree, p) for p in posts[:4]) == 4
+        for deeper in posts[4:]:
+            assert f'id="post-{deeper.id}"' not in html
+        links = _find(tree, 'a', 'gu-node__more')
+        assert [a['href'] for a, _ in links] == [f'/forum/{thread.id}/tak/{posts[3].id}']
+        assert f'node-{posts[3].id}' in links[0][1] and label in html
 
-    def test_mobile_label_present_from_depth_three(self, client, db, forum_users, thread):
-        # Op diepte 3 en 4 springt mobiel niet meer in; het label staat er dan
-        # al (alleen via CSS zichtbaar op mobiel), zonder de --flat-modifier.
-        posts = _chain(db, thread, forum_users, 3)
-        tree = _parse(_get(client, f'/forum/{thread.id}', 'nl'))
-        links = _find(tree, 'a', 'gu-post__inreply')
-        assert [(a['href'], a['class']) for a, _ in links] == [(f'#post-{posts[2].id}', 'gu-post__inreply')]
-        assert f'post-{posts[3].id}' in links[0][1]
+    def test_branch_view_restarts_at_one_with_same_rules(self, client, db, forum_users, thread):
+        posts = _chain(db, thread, forum_users, 9)  # niveaus 1 tot 10
+        tree = _parse(_get(client, f'/forum/{thread.id}/tak/{posts[3].id}', 'nl'))
+        assert [_node_level(tree, p) for p in posts[3:7]] == [1, 2, 3, 4]
+        assert f'post-{posts[7].id}' not in tree.ancestors and f'post-{posts[2].id}' not in tree.ancestors
+        links = [a['href'] for a, _ in _find(tree, 'a', 'gu-node__more')]
+        assert links == [f'/forum/{thread.id}/tak/{posts[6].id}']
+        deeper = _parse(_get(client, f'/forum/{thread.id}/tak/{posts[6].id}', 'nl'))
+        assert [_node_level(deeper, p) for p in posts[6:10]] == [1, 2, 3, 4]
+
+    def test_post_url_points_to_the_right_view(self, client, db, forum_users, thread):
+        posts = _chain(db, thread, forum_users, 9)
+        t = thread.id
+        assert post_url(posts[0]).endswith(f'/forum/{t}#post-{posts[0].id}')
+        assert post_url(posts[3]).endswith(f'/forum/{t}#post-{posts[3].id}')
+        for i in (4, 5, 6):
+            assert post_url(posts[i]).endswith(f'/forum/{t}/tak/{posts[3].id}#post-{posts[i].id}')
+        for i in (7, 8, 9):
+            assert post_url(posts[i]).endswith(f'/forum/{t}/tak/{posts[6].id}#post-{posts[i].id}')
+
+    def test_counts_only_visible_posts(self, client, db, forum_users, thread):
+        posts = _chain(db, thread, forum_users, 6)
+        db.session.add(QualityAward(post_id=posts[5].id, source='ai', status='afgewezen', post_lang='nl'))
+        db.session.commit()
+        html = _get(client, f'/forum/{thread.id}', 'nl')
+        assert 'Verder in dit gesprek (2 reacties)' in html  # posts[5] telt niet
+        assert f'id="collapsed-{posts[0].id}" data-count="5"' in html
+        branch = _get(client, f'/forum/{thread.id}/tak/{posts[3].id}', 'nl')
+        assert 'Bijdrage verborgen wegens onvoldoende kwaliteit.' in branch  # placeholder
+        db.session.delete(QualityAward.query.filter_by(post_id=posts[5].id).one())
+        db.session.commit()
 
 
 class TestCollapse:
-    @pytest.mark.parametrize('lang,hide,show', [
-        ('nl', '3 reacties verbergen', '3 reacties tonen'),
-        ('en', 'Hide 3 replies', 'Show 3 replies'),
+    @pytest.mark.parametrize('lang,collapse,hidden', [
+        ('nl', 'Tak inklappen (2 reacties)', '2 reacties verborgen'),
+        ('en', 'Collapse branch (2 replies)', '2 replies hidden'),
     ])
-    def test_collapse_toggle_present_and_expanded(self, client, db, forum_users, thread, lang, hide, show):
-        posts = _chain(db, thread, forum_users, 3)
+    def test_toggle_line_and_hidden_note(self, client, db, forum_users, thread, lang, collapse, hidden):
+        posts = _chain(db, thread, forum_users, 2)
         tree = _parse(_get(client, f'/forum/{thread.id}', lang))
-        btns = {a['data-post-id']: a for a, _ in _find(tree, 'button', 'gu-post__collapse-btn')}
-        root_btn = btns[str(posts[0].id)]
-        assert root_btn['aria-controls'] == f'replies-{posts[0].id}'
-        assert root_btn['aria-expanded'] == 'true'
-        assert root_btn['data-label-hide'] == hide
-        assert root_btn['data-label-show'] == show
-        # Het blok is standaard uitgeklapt.
-        assert 'hidden' not in tree.attrs[f'replies-{posts[0].id}']
-        # Elk bericht met kinderen heeft een knop, het diepste (geen kinderen) niet.
-        assert set(btns) == {str(p.id) for p in posts[:3]}
+        toggles = {a['data-node']: a for a, _ in _find(tree, 'button', 'gu-node__toggle')}
+        t = toggles[str(posts[0].id)]
+        assert t['aria-expanded'] == 'true' and t['aria-controls'] == f'replies-{posts[0].id}'
+        assert t['aria-label'] == collapse
+        assert set(toggles) == {str(posts[0].id), str(posts[1].id)}  # het blad heeft geen knopje
+        lines = {a['data-node'] for a, _ in _find(tree, 'button', 'gu-node__line')}
+        assert lines == set(toggles)
+        note = tree.attrs[f'collapsed-{posts[0].id}']
+        assert 'hidden' in note and note['data-count'] == '2'
+        html = _get(client, f'/forum/{thread.id}', lang)
+        assert hidden in html
 
-    def test_flat_posts_with_children_get_ancestor_based_toggle(self, client, db, forum_users, thread):
-        posts = _chain(db, thread, forum_users, MAX_REPLY_INDENT + 2)
-        tree = _parse(_get(client, f'/forum/{thread.id}', 'nl'))
-        flat_parent = posts[MAX_REPLY_INDENT + 1]
-        flat_child = posts[MAX_REPLY_INDENT + 2]
-        btns = {a['data-post-id']: a for a, _ in _find(tree, 'button', 'gu-post__collapse-btn')}
-        # Plat bericht met kind: knop zonder doelblok, werkt via data-ancestors.
-        assert 'data-target' not in btns[str(flat_parent.id)]
-        assert btns[str(flat_parent.id)]['data-label-hide'] == '1 reactie verbergen'
-        # Elk plat item: zijn data-ancestors, gekoppeld aan het eerstvolgende
-        # <article> (het bericht in dat item).
-        ancestors_of, pending = {}, None
-        for tag, a, _ in tree.elements:
-            if tag == 'div' and 'gu-thread__flatitem' in (a.get('class') or '').split():
-                pending = a['data-ancestors'].split()
-            elif tag == 'article' and pending is not None:
-                ancestors_of[a['id']], pending = pending, None
-        assert ancestors_of[f'post-{flat_parent.id}'] == []
-        assert ancestors_of[f'post-{flat_child.id}'] == [str(flat_parent.id)]
+    def test_singular_collapsed_note(self, client, db, forum_users, thread):
+        posts = _chain(db, thread, forum_users, 3)  # posts[2] (niveau 3) heeft precies 1 reactie
+        html = _get(client, f'/forum/{thread.id}', 'nl')
+        assert f'id="collapsed-{posts[2].id}" data-count="1" hidden>1 reactie verborgen<' in html
+
+    def test_no_toggle_on_level_four_link_singular(self, client, db, forum_users, thread):
+        posts = _chain(db, thread, forum_users, 4)  # posts[3] (niveau 4) heeft 1 reactie
+        html = _get(client, f'/forum/{thread.id}', 'nl')
+        toggles = {a['data-node'] for a, _ in _find(_parse(html), 'button', 'gu-node__toggle')}
+        assert str(posts[3].id) not in toggles and 'Verder in dit gesprek (1 reactie)' in html
 
 
-class TestOneLevelStillWorks:
-    @pytest.mark.parametrize('lang', ['nl', 'en'])
-    def test_existing_one_level_replies_and_top_level_posts(self, client, db, forum_users, thread, lang):
-        root, reply = _chain(db, thread, forum_users, 1)
-        top_level = Post(thread_id=thread.id, user_id=forum_users[0].id, parent_id=None,
-                         author_name='Anna Test', author_username='anna_nest',
-                         body='reactie via de onderste composer', source_lang='nl')
-        db.session.add(top_level)
+class TestAuthorLine:
+    def test_no_role_status_badge_or_age(self, client, db, forum_users, thread):
+        p = Post(thread_id=thread.id, user_id=forum_users[0].id, author_name='', author_username='anna_nest',
+                 author_role='founder', author_badge_nl='Handelsrecht · Universiteit Leiden', author_age=52,
+                 body='met rollen', source_lang='nl', is_op=True)
+        q = Post(thread_id=thread.id, user_id=forum_users[1].id, author_name='', author_username='bram_nest',
+                 author_role='expert', body='expert', source_lang='nl')
+        db.session.add_all([p, q])
         db.session.commit()
-        tree = _parse(_get(client, f'/forum/{thread.id}', lang))
-        assert f'replies-{root.id}' in tree.ancestors[f'post-{reply.id}']
-        assert not [a for a in tree.ancestors[f'post-{top_level.id}'] if a.startswith('replies-')]
+        html = _get(client, f'/forum/{thread.id}', 'nl')
+        main = html.split('<main', 1)[1].split('</main>')[0]
+        for gone in ('gu-post__role', 'Initiatiefnemer', '>Expert<', 'Handelsrecht', 'gu-post__age',
+                     'gu-status-badge', 'gu-post__badge'):
+            assert gone not in main, gone
+        assert 'gu-post__time' in main and '@anna_nest' in main
 
-    def test_demo_threads_render_in_both_languages(self, client):
-        for lang in ('nl', 'en'):
-            html = _get(client, '/forum', lang)
-            for tid in {int(x) for x in __import__('re').findall(r'href="/forum/(\d+)"', html)}:
-                _get(client, f'/forum/{tid}', lang)
+
+class TestMedal:
+    def test_medal_links_to_discussion_with_explanation(self, client, db, forum_users, thread):
+        p = _chain(db, thread, forum_users, 1)[1]
+        db.session.add(QualityAward(post_id=p.id, source='ai', status='toegekend', criterion='K1',
+                                    ai_criterion='K1', post_lang='nl', explanation_nl='Nieuw.'))
+        db.session.commit()
+        html = _get(client, f'/forum/{thread.id}', 'nl')
+        tree = _parse(html)
+        marks = [(a, anc) for a, anc in _find(tree, 'a', 'gu-quality__mark') if f'post-{p.id}' in anc]
+        assert len(marks) == 1
+        a = marks[0][0]
+        title = 'Kwaliteitskeurmerk: deze bijdrage voldoet aan de kwaliteitscriteria. Klik voor de onderbouwing.'
+        assert a['href'] == f'/forum/kwaliteit/{p.id}' and a['title'] == title and a['aria-label'] == title
+        assert 'gu-quality__medal' in html and 'M6 0.5 L11.5 6' not in html  # geen diamant meer
+        db.session.delete(QualityAward.query.filter_by(post_id=p.id).one())
+        db.session.commit()

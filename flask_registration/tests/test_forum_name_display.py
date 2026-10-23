@@ -173,20 +173,19 @@ class TestThreadPage:
         html = _req(_client(app), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
         assert all('Anna de Vries' not in _article(html, p) and LINKEDIN not in _article(html, p) for p in posts)
 
-    def test_in_reply_to_label_follows_choice(self, app, db, make_user, thread):
+    def test_nested_reply_name_follows_choice(self, app, db, make_user, thread):
+        # Het "in antwoord op"-label bestaat niet meer (gelaagde weergave);
+        # ook diep in de boom volgt de naam de keuze van de auteur.
         anna, bram = make_user(), make_user(first='Bram', last='Bakker')
         chain = [_post(db, thread, anna, 'root')]
         for i in range(3):
             chain.append(_post(db, thread, bram if i % 2 == 0 else anna, f'r{i}', parent=chain[-1]))
-        # chain[3] (van Bram) staat op diepte 3 en antwoordt op chain[2] van
-        # Anna: daar staat het label met de naam van Anna.
-        assert chain[2].author.id == anna.id
         html = _req(_client(app), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        assert f'in antwoord op @{anna.username}' in html
+        assert '@' + anna.username in _article(html, chain[2]) and 'in antwoord op' not in html
         anna.show_real_name = True
         db.session.commit()
         html = _req(_client(app), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        assert 'in antwoord op Anna de Vries' in html
+        assert 'Anna de Vries' in _article(html, chain[2])
 
     def test_demo_posts_keep_their_demo_names(self, app):
         html = _req(_client(app), 'GET', '/forum/1').get_data(as_text=True)

@@ -43,7 +43,7 @@
   <div class="gu-forum__inner">
 
     <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-      <a href="{{ url_for('forum.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}">
+      <a href="{{ post_url(post) }}">
         {% if lang == 'nl' %}Terug naar de bijdrage{% else %}Back to the contribution{% endif %}
       </a>
     </nav>
@@ -61,7 +61,7 @@
     <div class="gu-qthread__current">
       <p class="gu-qthread__who">{% if lang == 'nl' %}Huidige stand, na aanpassing door een moderator{% else %}Current status, after a change by a moderator{% endif %}</p>
       <p class="gu-qthread__verdict">
-        {% if award.status == 'toegekend' %}<svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg> <strong>{{ _('Quality contribution') }}: {{ award.criterion }} {{ quality_labels[award.criterion][lang] if award.criterion in quality_labels else '' }}</strong>
+        {% if award.status == 'toegekend' %}{% with medal_size=16 %}{% include 'forum/_medal.html' %}{% endwith %} <strong>{{ _('Quality contribution') }}: {{ award.criterion }} {{ quality_labels[award.criterion][lang] if award.criterion in quality_labels else '' }}</strong>
         {% else %}<strong>{% if lang == 'nl' %}Niet aangemerkt als kwaliteitsbijdrage{% else %}Not marked as a quality contribution{% endif %}</strong>{% endif %}
       </p>
       {% if award.moderator_note %}<p>{{ award.moderator_note }}</p>{% endif %}
@@ -83,7 +83,7 @@
         {% set v_criterion = award.ai_criterion if award.source == 'ai' else award.criterion %}
         <p class="gu-qthread__verdict">
           {% if v_status == 'toegekend' %}
-            <svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg>
+            {% with medal_size=16 %}{% include 'forum/_medal.html' %}{% endwith %}
             <strong>{{ _('Quality contribution') }}: {{ v_criterion }} {{ quality_labels[v_criterion][lang] if v_criterion in quality_labels else '' }}</strong>
           {% else %}
             <strong>{% if lang == 'nl' %}Niet aangemerkt als kwaliteitsbijdrage{% else %}Not marked as a quality contribution{% endif %}</strong>

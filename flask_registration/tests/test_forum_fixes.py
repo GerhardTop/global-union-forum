@@ -165,7 +165,8 @@ class TestDeclinedHidden:
         reader = world['user']()
         html = _page(app, reader, t)
         assert '>2 reacties<' in html.replace('\n', '').replace('  ', '') or '2 reacties' in html
-        assert 'data-label-hide="1 reactie verbergen"' in html  # alleen de zichtbare reactie
+        # Alleen de zichtbare reactie telt mee voor "n reacties verborgen".
+        assert f'id="collapsed-{root.id}" data-count="1"' in html
         index = _req(_client(app, reader), 'GET', '/forum').get_data(as_text=True)
         row = index[index.index(f'/forum/{t.id}"'):]
         assert re.search(r'2\s*reacties', row[:1500])

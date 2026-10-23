@@ -35,7 +35,7 @@
       <li class="gu-quality-queue__item">
         <div>
           <strong>{{ post.public_author_name() }}</strong>
-          · <a href="{{ url_for('forum.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}bekijk in gesprek{% else %}view in conversation{% endif %}</a>
+          · <a href="{{ post_url(post) }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}bekijk in gesprek{% else %}view in conversation{% endif %}</a>
           · {{ post.time_ago[lang] }}
         </div>
         <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
@@ -88,7 +88,7 @@
         <li class="gu-quality-queue__item">
           <div>
             <strong>{{ post.public_author_name() }}</strong> · {{ r.award.criterion }} {{ quality_labels[r.award.criterion][lang] if r.award.criterion in quality_labels else '' }}
-            · <a href="{{ url_for('forum.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}bekijk in gesprek{% else %}view in conversation{% endif %}</a>
+            · <a href="{{ post_url(post) }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}bekijk in gesprek{% else %}view in conversation{% endif %}</a>
           </div>
           <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
           <p class="gu-quality__meta">{% if lang == 'nl' %}Gemeld door{% else %}Reported by{% endif %} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
@@ -146,7 +146,7 @@
                 <span>{{ post.public_author_name() }}</span>
               </td>
               <td>
-                <a href="{{ url_for('forum.forum_thread', thread_id=post.thread_id) }}#post-{{ post.id }}"
+                <a href="{{ post_url(post) }}"
                    class="gu-admin-table__threadlink">
                   {%- set t = post.thread -%}
                   {{ t.title_prefix_nl }}{% if t.title_accent_nl %} <em>{{ t.title_accent_nl }}</em>{% endif %}{{ t.title_suffix_nl }}

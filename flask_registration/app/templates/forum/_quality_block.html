@@ -8,7 +8,7 @@
 #}
   {% if q_awarded %}
   <details class="gu-quality">
-    <summary><svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg> {{ _('Quality contribution') }}: {{ quality_labels[qa.criterion][lang] if qa.criterion in quality_labels else '' }}</summary>
+    <summary>{% with medal_size=16 %}{% include 'forum/_medal.html' %}{% endwith %} {{ _('Quality contribution') }}: {{ quality_labels[qa.criterion][lang] if qa.criterion in quality_labels else '' }}</summary>
     <div class="gu-quality__detail">
       <p><strong>{{ qa.criterion }}</strong> {{ quality_labels[qa.criterion][lang] if qa.criterion in quality_labels else '' }}</p>
       {% if qa.current_explanation(lang) %}<p>{{ qa.current_explanation(lang) }}</p>{% endif %}

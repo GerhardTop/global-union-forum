@@ -7,8 +7,8 @@
 {% endblock %}
 
 {% block content_outer %}{% block content %}
-{# Sjabloon voor het gevulde ruitje, gebruikt door de statuspoll (punt 8). #}
-<template id="gu-quality-mark-template"> <span class="gu-quality__mark" title="{{ _('Quality contribution') }}"><svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg><span class="gu-sr-only">{{ _('Quality contribution') }}</span></span></template>
+{# Sjabloon voor het kwaliteitskeurmerk, gebruikt door de statuspoll (punt 8). #}
+<template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>
 <main class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
@@ -79,40 +79,57 @@
       {% endif %}
     </header>
 
-    {# Posts als boom, oudste eerst per niveau. Tot max_reply_indent niveaus
-       genest (mobiel: 2, via CSS); alles daaronder als platte lijst op het
-       laatste niveau, zie flat_descendants in forum_thread(). #}
+    {% if branch_root %}
+    {# Doorlinkweergave: een deel van het gesprek, met dit bericht als niveau 1. #}
+    <p class="gu-thread__branchnote">
+      {% if lang == 'nl' %}Je bekijkt een deel van dit gesprek.{% else %}You are viewing part of this conversation.{% endif %}
+      {% if branch_root.parent_id %}<a href="{{ post_url(branch_root) }}">{% if lang == 'nl' %}Terug naar het vorige niveau{% else %}Back to the previous level{% endif %}</a> ·{% endif %}
+      <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}">{% if lang == 'nl' %}Naar het hele gesprek{% else %}To the whole conversation{% endif %}</a>
+    </p>
+    {% endif %}
+
+    {# Gelaagde weergave: elk bericht met zijn reacties ingesprongen eronder, met
+       links een in- en uitklapknop en een verbindingslijn per niveau.
+       Niveau 1 is de bovenkant; dieper dan max_level niet inspringen, maar een
+       doorlink naar een eigen weergave (forum_branch) die weer bij 1 begint.
+       Punt 9: een verborgen bijdrage zonder zichtbare reacties valt weg, met
+       zichtbare reacties staat er een neutrale placeholder. #}
     <div class="gu-thread">
-      {# Punt 9: een verborgen (afgewezen) bijdrage zonder zichtbare reacties
-         eronder valt weg; met reacties staat er een neutrale placeholder. #}
-      {% for post in root_posts recursive %}
-        {% set depth = loop.depth0 %}
-        {% if not (post.id in hidden_ids and descendant_counts.get(post.id, 0) == 0) %}
-        {% if post.id in hidden_ids %}{% include 'forum/_post_hidden.html' %}{% else %}{% include 'forum/_post.html' %}{% endif %}
-        {% set children = replies_map.get(post.id, []) %}
-        {% if children and depth < max_reply_indent %}
-        <div class="gu-thread__replies gu-thread__replies--d{{ depth + 1 }}" id="replies-{{ post.id }}">
-          {{ loop(children) }}
-        </div>
-        {% elif children %}
-        <div class="gu-thread__replies gu-thread__replies--flat" id="replies-{{ post.id }}">
-          {% for fpost in flat_descendants[post.id] %}
-          {% if not (fpost.id in hidden_ids and descendant_counts.get(fpost.id, 0) == 0) %}
-          <div class="gu-thread__flatitem" data-ancestors=" {{ flat_ancestors[fpost.id] | join(' ') }} ">
-            {% set post = fpost %}
-            {% set depth = depths[fpost.id] %}
-            {% if post.id in hidden_ids %}{% include 'forum/_post_hidden.html' %}{% else %}{% include 'forum/_post.html' %}{% endif %}
+      {% for post in top_posts recursive %}
+        {% set level = loop.depth %}
+        {% set nvis = descendant_counts.get(post.id, 0) %}
+        {% if not (post.id in hidden_ids and nvis == 0) %}
+        <div class="gu-node gu-node--l{{ level }}" id="node-{{ post.id }}">
+          {% if post.id in hidden_ids %}{% include 'forum/_post_hidden.html' %}{% else %}{% include 'forum/_post.html' %}{% endif %}
+          {% if nvis and level < max_level %}
+          {% set n_label = (('%d reactie' if nvis == 1 else '%d reacties') if lang == 'nl' else ('%d reply' if nvis == 1 else '%d replies')) | format(nvis) %}
+          <div class="gu-node__branch">
+            <button type="button" class="gu-node__toggle" aria-expanded="true" aria-controls="replies-{{ post.id }}"
+                    data-node="{{ post.id }}"
+                    data-label-collapse="{% if lang == 'nl' %}Tak inklappen ({{ n_label }}){% else %}Collapse branch ({{ n_label }}){% endif %}"
+                    data-label-expand="{% if lang == 'nl' %}Tak uitklappen ({{ n_label }}){% else %}Expand branch ({{ n_label }}){% endif %}"
+                    aria-label="{% if lang == 'nl' %}Tak inklappen ({{ n_label }}){% else %}Collapse branch ({{ n_label }}){% endif %}"><span aria-hidden="true">−</span></button>
+            <p class="gu-node__collapsed" id="collapsed-{{ post.id }}" data-count="{{ nvis }}" hidden>{% if lang == 'nl' %}{{ n_label }} verborgen{% else %}{{ n_label }} hidden{% endif %}</p>
+            <button type="button" class="gu-node__line" data-node="{{ post.id }}" tabindex="-1" aria-hidden="true"></button>
+            <div class="gu-node__children" id="replies-{{ post.id }}">
+              {{ loop(tree_children.get(post.id, [])) }}
+            </div>
           </div>
+          {% elif nvis %}
+          <a class="gu-node__more" href="{{ url_for('forum.forum_branch', thread_id=thread.id, post_id=post.id) }}" data-count="{{ nvis }}">
+            {% if lang == 'nl' %}Verder in dit gesprek ({{ nvis }} {{ 'reactie' if nvis == 1 else 'reacties' }}){% else %}Continue this conversation ({{ nvis }} {{ 'reply' if nvis == 1 else 'replies' }}){% endif %}
+            <span class="gu-arrow" aria-hidden="true"></span>
+          </a>
           {% endif %}
-          {% endfor %}
         </div>
-        {% endif %}
         {% endif %}
       {% endfor %}
     </div>
 
-    {# Composer / closed notice #}
-    {% if thread.is_closed %}
+    {# Composer / closed notice (niet in de doorlinkweergave: reageer daar
+       via de reageerknop bij een bericht) #}
+    {% if branch_root %}
+    {% elif thread.is_closed %}
       <div class="gu-composer gu-composer--closed">
         <p>{% if lang == 'nl' %}Dit gesprek is gesloten.{% else %}This conversation is closed.{% endif %}</p>
       </div>
@@ -181,44 +198,25 @@
       area.addEventListener('input', function () { submitBtn.disabled = !area.value.trim(); });
     });
 
-    // Reacties in- en uitklappen. Genest: het replies-blok onder het bericht
-    // verbergen. In de platte lijst voorbij de dieptegrens staan kinderen niet
-    // in een eigen blok; daar verbergen we elk item met een ingeklapte
-    // voorouder (data-ancestors), zodat geneste inklapstanden kloppen.
-    var collapsedFlat = new Set();
-    function refreshFlat() {
-      document.querySelectorAll('.gu-thread__flatitem').forEach(function (item) {
-        var ids = item.dataset.ancestors.trim().split(/\s+/).filter(Boolean);
-        item.hidden = ids.some(function (id) { return collapsedFlat.has(id); });
-      });
+    // Inklappen en uitklappen van een tak: via het knopje of via de lijn.
+    // Puur client-side; de stand wordt niet bewaard.
+    function toggleNode(id) {
+      var button = document.querySelector('.gu-node__toggle[data-node="' + id + '"]');
+      var children = document.getElementById('replies-' + id);
+      var note = document.getElementById('collapsed-' + id);
+      var line = document.querySelector('.gu-node__line[data-node="' + id + '"]');
+      if (!button || !children) return;
+      var expanded = button.getAttribute('aria-expanded') === 'true';
+      children.hidden = expanded;
+      if (line) line.hidden = expanded;
+      if (note) note.hidden = !expanded;
+      button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      button.setAttribute('aria-label', expanded ? button.dataset.labelExpand : button.dataset.labelCollapse);
+      button.querySelector('span').textContent = expanded ? '+' : '−';
+      button.closest('.gu-node').classList.toggle('is-collapsed', expanded);
     }
-    document.querySelectorAll('.gu-post__collapse-btn').forEach(function (button) {
-      button.addEventListener('click', function () {
-        var expanded = button.getAttribute('aria-expanded') === 'true';
-        var block = button.dataset.target && document.getElementById(button.dataset.target);
-        if (block) {
-          block.hidden = expanded;
-        } else {
-          if (expanded) collapsedFlat.add(button.dataset.postId);
-          else collapsedFlat.delete(button.dataset.postId);
-          refreshFlat();
-        }
-        button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-        button.textContent = expanded ? button.dataset.labelShow : button.dataset.labelHide;
-      });
-    });
-
-    // "In antwoord op": naar de ouder springen en die kort markeren.
-    document.querySelectorAll('.gu-post__inreply').forEach(function (link) {
-      link.addEventListener('click', function () {
-        var target = document.getElementById(link.getAttribute('href').slice(1));
-        if (!target) return;
-        target.setAttribute('tabindex', '-1');
-        target.classList.remove('gu-post--highlight');
-        void target.offsetWidth;  // animatie opnieuw starten bij herhaald klikken
-        target.classList.add('gu-post--highlight');
-        setTimeout(function () { target.focus({ preventScroll: true }); }, 0);
-      });
+    document.querySelectorAll('.gu-node__toggle, .gu-node__line').forEach(function (el) {
+      el.addEventListener('click', function () { toggleNode(el.dataset.node); });
     });
 
     // CSRF-token voor de fetch-acties (liken, bericht bewerken); de route
@@ -326,9 +324,14 @@
         var slot = document.getElementById('quality-' + postId);
         if (slot && typeof data.html === 'string') slot.innerHTML = data.html;  // door de server gerenderd en ge-escaped
         var mark = document.getElementById('qmark-' + postId);
-        if (mark && data.status === 'toegekend' && !mark.firstChild) {
+        if (mark && data.status === 'toegekend' && !mark.querySelector('.gu-quality__mark')) {
           var tpl = document.getElementById('gu-quality-mark-template');
-          if (tpl) mark.appendChild(tpl.content.cloneNode(true));
+          if (tpl) {
+            var node = tpl.content.cloneNode(true);
+            var link = node.querySelector('a');
+            if (link) link.href = '/forum/kwaliteit/' + postId;
+            mark.appendChild(node);
+          }
         }
         if (data.status === 'afgewezen') article.classList.add('gu-post--declined');
       }

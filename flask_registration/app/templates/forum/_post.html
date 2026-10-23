@@ -1,7 +1,7 @@
 {#
   Partial: forum/_post.html
-  Context: post, depth (0 = hoogste niveau), thread, reply_form, replies_map,
-           posts_by_id, descendant_counts, max_reply_indent, stance_counts, my_stances,
+  Context: post, level (1 = bovenkant), thread, reply_form, tree_children,
+           posts_by_id, descendant_counts, max_level, stance_counts, my_stances,
            quality_awards, my_quality_reports, quality_labels, hidden_ids, poll_ids
 #}
 {% if post.body == '[bericht verwijderd]' %}
@@ -22,7 +22,6 @@
 {% endif %}
 
 {% set time = post.time_ago[lang] %}
-{% set badge = (post.author_badge_nl if lang == 'nl' else post.author_badge_en) %}
 {% set is_own = current_user.is_authenticated and post.user_id == current_user.id %}
 {% set can_edit = not is_deleted and current_user.is_authenticated and post.user_id == current_user.id %}
 {% set can_delete = not is_deleted and current_user.is_authenticated and post.user_id == current_user.id and not post.is_op %}
@@ -38,24 +37,13 @@
 <article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}{% if qa and qa.status == 'afgewezen' and (is_own or current_user.can_moderate()) %} gu-post--declined{% endif %}"
          id="post-{{ post.id }}"{% if post.id in poll_ids %} data-quality-poll="{{ url_for('forum.forum_quality_status', post_id=post.id) }}"{% endif %}>
 
-  {# "In antwoord op": vanaf diepte 3, want daar springt mobiel (2 niveaus)
-     niet meer in. Op desktop pas zichtbaar voorbij max_reply_indent. #}
-  {% if depth > 2 and post.parent_id in posts_by_id %}
-  {% set parent_post = posts_by_id[post.parent_id] %}
-  <a class="gu-post__inreply{% if depth > max_reply_indent %} gu-post__inreply--flat{% endif %}"
-     href="#post-{{ parent_post.id }}">
-    <span aria-hidden="true">↳</span>
-    {% if parent_post.id in hidden_ids %}{% if lang == 'nl' %}in antwoord op een verborgen bijdrage{% else %}in reply to a hidden contribution{% endif %}
-    {% else %}{{ _('in reply to %(name)s', name=parent_post.public_author_name()) }}{% endif %}
-  </a>
-  {% endif %}
 
   <header class="gu-post__head">
     <div class="gu-post__author">
       <div class="gu-post__avatar">{{ post.public_author_initial() }}</div>
       <div class="gu-post__authormeta">
         <div class="gu-post__name">
-          {{ author_display }}<span id="qmark-{{ post.id }}">{% if q_awarded %} <span class="gu-quality__mark" title="{{ _('Quality contribution') }}"><svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg><span class="gu-sr-only">{{ _('Quality contribution') }}</span></span>{% endif %}</span>{% if post.author_age %}<span class="gu-post__age"> · {{ post.author_age }}</span>{% endif %}
+          {{ author_display }}<span id="qmark-{{ post.id }}">{% if q_awarded %} {% include 'forum/_quality_mark.html' %}{% endif %}</span>
           {% if author_linkedin %}
           <a href="{{ author_linkedin }}" target="_blank" rel="noopener noreferrer"
              class="gu-post__linkedin" aria-label="{{ _('LinkedIn profile of %(name)s', name=author_display) }}">
@@ -67,17 +55,7 @@
           {% endif %}
         </div>
         <div class="gu-post__sub">
-          {% if post.author_role == 'founder' %}
-            <span class="gu-post__role gu-post__role--founder">{% if lang == 'nl' %}Initiatiefnemer{% else %}Initiator{% endif %}</span>
-          {% elif post.author_role == 'expert' %}
-            <span class="gu-post__role gu-post__role--expert">Expert</span>
-          {% endif %}
-          {# Fase C2: status (hoogste van verdiend en handmatig), naast de bestaande badges. #}
-          {% if post.author and post.author.effective_status != 'reader' %}
-            {% set st = post.author.effective_status %}
-            <span class="gu-status-badge gu-status-badge--{{ st }}">{{ status_labels[st][lang] }}</span>
-          {% endif %}
-          {% if badge %}<span class="gu-post__badge">{{ badge }}</span>{% endif %}
+          {# Punt 4: geen rol, status of andere badge bij de auteur; alleen de tijd. #}
           <span class="gu-post__time">{{ time }}</span>
         </div>
       </div>
@@ -134,20 +112,6 @@
       {% endfor %}
     </div>
 
-    {# Inklappen: elk bericht met reacties. Telling = alle onderliggende
-       reacties. Tot en met max_reply_indent staat er een replies-blok onder
-       het bericht; daaronder (platte lijst) werkt het via data-ancestors. #}
-    {% set n_replies = descendant_counts.get(post.id, 0) %}
-    {% if n_replies %}
-    <button type="button" class="gu-post__action gu-post__action--ghost gu-post__collapse-btn"
-            aria-expanded="true"
-            data-post-id="{{ post.id }}"
-            {% if depth <= max_reply_indent %}data-target="replies-{{ post.id }}" aria-controls="replies-{{ post.id }}"{% endif %}
-            data-label-hide="{{ ngettext('Hide %(num)d reply', 'Hide %(num)d replies', n_replies) }}"
-            data-label-show="{{ ngettext('Show %(num)d reply', 'Show %(num)d replies', n_replies) }}">
-      {{ ngettext('Hide %(num)d reply', 'Hide %(num)d replies', n_replies) }}
-    </button>
-    {% endif %}
 
     {# Edit icon — eigen posts #}
     {% if can_edit %}

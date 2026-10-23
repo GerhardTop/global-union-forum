@@ -315,20 +315,18 @@ class TestRecalcHooks:
 # ── Weergave: badge en eenmalige melding ─────────────────────────────────
 
 class TestDisplay:
-    def test_badge_next_to_author(self, app, world):
-        voter, reader = world['user'](), world['user']()
+    def test_no_status_badge_in_thread_but_on_profile(self, app, world):
+        # Gelaagde weergave (punt 4): geen rol- of statusbadge meer bij de
+        # auteur in het gesprek; de verdiende status blijft op het profiel.
+        voter = world['user']()
         t = world['thread']()
         for _ in range(3):
             world['post'](voter, t)
         status.recalc_user(voter.id)
-        p = Post(thread_id=t.id, user_id=reader.id, author_name='', author_username=reader.username, body='lezer')
-        from app import db
-        db.session.add(p)
-        db.session.commit()
         html = _req(_client(app), 'GET', f'/forum/{t.id}').get_data(as_text=True)
-        assert html.count('gu-status-badge--voter">Stemmer') == 3
-        part = html[html.index(f'id="post-{p.id}"'):]
-        assert 'gu-status-badge' not in part[:part.find('</header>')]
+        assert 'gu-status-badge' not in html.split('<main', 1)[1].split('</main>')[0]
+        profile = _req(_client(app, voter), 'GET', '/profile').get_data(as_text=True)
+        assert 'gu-status-badge--voter">Stemmer' in profile
 
     def test_one_time_banner_for_voter(self, app, world):
         u = world['user']()

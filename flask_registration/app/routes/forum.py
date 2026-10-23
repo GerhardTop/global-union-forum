@@ -70,8 +70,9 @@ def _require_csrf():
     if not ForumActionForm().validate_on_submit():
         abort(400)
 
-# Aantal inspringniveaus voor reacties op desktop (mobiel: 2, via CSS).
-MAX_REPLY_INDENT = 4
+# Maximale diepte van de gelaagde weergave: openingsbericht = niveau 1,
+# reacties niveau 2 tot 4; dieper via een doorlink (forum_branch).
+MAX_LEVEL = 4
 
 # De demo-accounts die _seed_forum() aanmaakt. Ook gebruikt door het
 # beheer-commando `flask reset-content` (app/cli.py) als keep-set.
@@ -564,18 +565,84 @@ def forum_thread(thread_id):
             )
             db.session.add(post)
             db.session.commit()
-            anchor = f'post-{post.id}'
             # Kwaliteit (fase C1): AI-suggestie op de achtergrond, best-effort.
             quality.schedule_judgement(post.id)
+            # Naar de weergave waar de nieuwe reactie staat (ook voorbij niveau 4).
+            return redirect(post_url(post))
         return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#{anchor}')
 
-    all_posts = Post.query.filter_by(thread_id=thread_id).order_by(Post.created_at).all()
-    root_posts  = [p for p in all_posts if p.parent_id is None]
-    replies_map = {}
+    return _render_thread(thread)
+
+
+# ── Gelaagde weergave (threading) ─────────────────────────────────────────
+# Niveau 1 is het openingsbericht; reacties zijn niveau 2, 3 en 4. Reacties
+# op het hoogste niveau (via de composer onderaan, zonder parent) horen ook
+# op niveau 2, onder het openingsbericht. Dieper dan niveau 4 wordt niet
+# ingesprongen: onder een niveau-4-bericht staat een doorlink naar een eigen
+# weergave (forum_branch) met dat bericht als niveau 1, met dezelfde regels.
+
+def _tree(all_posts):
+    """(openingsbericht of None, kinderen per post-id) voor de weergave."""
+    children = {}
     for p in all_posts:
         if p.parent_id is not None:
-            replies_map.setdefault(p.parent_id, []).append(p)
+            children.setdefault(p.parent_id, []).append(p)
+    op = next((p for p in all_posts if p.is_op), None)
+    if op is not None:
+        extra = [p for p in all_posts if p.parent_id is None and p.id != op.id]
+        if extra:
+            children[op.id] = sorted(children.get(op.id, []) + extra, key=lambda x: (x.created_at, x.id))
+    for kids in children.values():
+        kids.sort(key=lambda x: (x.created_at, x.id))
+    return op, children
+
+
+def _full_level(post):
+    """Niveau van een bijdrage in de volledige weergave (openingsbericht = 1)."""
+    chain = [post]
+    seen = {post.id}
+    while chain[-1].parent_id is not None:
+        parent = db.session.get(Post, chain[-1].parent_id)
+        if parent is None or parent.id in seen:
+            break
+        chain.append(parent)
+        seen.add(parent.id)
+    root = chain[-1]
+    return len(chain) if root.is_op else len(chain) + 1, chain
+
+
+def post_url(post):
+    """Waar een bijdrage staat: in het gesprek zelf (niveau 1 tot 4), of in de
+    doorlinkweergave van zijn voorouder op niveau 4, 7, 10, ... (die daar
+    niveau 1 is, zodat de bijdrage op niveau 2 tot 4 valt)."""
+    level, chain = _full_level(post)
+    if post.is_op or level <= MAX_LEVEL:
+        return url_for('forum.forum_thread', thread_id=post.thread_id) + f'#post-{post.id}'
+    root_level = MAX_LEVEL + (MAX_LEVEL - 1) * ((level - MAX_LEVEL - 1) // (MAX_LEVEL - 1))
+    root = chain[level - root_level]
+    return url_for('forum.forum_branch', thread_id=post.thread_id, post_id=root.id) + f'#post-{post.id}'
+
+
+@forum_bp.app_context_processor
+def _inject_post_url():
+    return {'post_url': post_url}
+
+
+@forum_bp.route('/forum/<int:thread_id>/tak/<int:post_id>')
+def forum_branch(thread_id, post_id):
+    """Doorlinkweergave: een bijdrage (in de volledige weergave op niveau 4)
+    als nieuwe bovenkant, met de telling weer vanaf 1."""
+    _seed_forum()
+    thread = Thread.query.get_or_404(thread_id)
+    root = Post.query.filter_by(id=post_id, thread_id=thread_id).first_or_404()
+    return _render_thread(thread, branch_root=root)
+
+
+def _render_thread(thread, branch_root=None):
+    reply_form = ForumReplyForm()
+    all_posts = Post.query.filter_by(thread_id=thread.id).order_by(Post.created_at).all()
     posts_by_id = {p.id: p for p in all_posts}
+    op, tree_children = _tree(all_posts)
 
     # Punt 9: een bijdrage met een afgewezen kwaliteitsoordeel is verborgen
     # voor andere lezers; de auteur en moderators zien hem wel (gemarkeerd).
@@ -586,46 +653,26 @@ def forum_thread(thread_id):
                   if a.status == 'afgewezen' and not posts_by_id[pid].is_op
                   and _hidden_for_viewer(posts_by_id[pid])}
 
-    # Diepte per bericht, breedte-eerst vanaf de roots (geen recursie, dus
-    # ook een extreem lange keten kan de pagina niet laten crashen). In
-    # deze volgorde komt een ouder altijd vóór zijn kinderen.
-    depths, tree_order = {}, []
-    queue = deque((p, 0) for p in root_posts)
-    while queue:
-        p, d = queue.popleft()
-        depths[p.id] = d
-        tree_order.append(p)
-        queue.extend((c, d + 1) for c in replies_map.get(p.id, []))
+    if branch_root is not None:
+        top_posts = [branch_root]
+    elif op is not None:
+        top_posts = [op]
+    else:  # geen openingsbericht (oude data): de hoofdberichten zelf bovenaan
+        top_posts = [p for p in all_posts if p.parent_id is None]
 
     # Aantal ZICHTBARE onderliggende reacties per bericht (alle niveaus), voor
-    # de inklap-knop. Verborgen bijdragen tellen niet mee; een verborgen
-    # bijdrage zonder zichtbare reacties eronder wordt helemaal weggelaten.
+    # "n reacties verborgen" en de doorlink. Breedte-eerst, zonder recursie.
+    order, queue = [], deque(top_posts)
+    while queue:
+        p = queue.popleft()
+        order.append(p)
+        queue.extend(tree_children.get(p.id, []))
     descendant_counts = {}
-    for p in reversed(tree_order):
-        descendant_counts[p.id] = sum((0 if c.id in hidden_ids else 1) + descendant_counts[c.id]
-                                      for c in replies_map.get(p.id, []))
-
-    # Voorbij de dieptegrens wordt niet verder ingesprongen: alles onder een
-    # bericht op MAX_REPLY_INDENT komt als één platte, chronologische lijst
-    # op dat laatste niveau, elk met een "in antwoord op"-label.
-    flat_descendants = {}
-    for p in tree_order:
-        if depths[p.id] == MAX_REPLY_INDENT and replies_map.get(p.id):
-            found, stack = [], list(replies_map[p.id])
-            while stack:
-                c = stack.pop()
-                found.append(c)
-                stack.extend(replies_map.get(c.id, []))
-            flat_descendants[p.id] = sorted(found, key=lambda x: (x.created_at, x.id))
-
-    # Voor de inklap-knop binnen de platte lijst: per plat bericht de ids
-    # van zijn platte voorouders (die zelf ook voorbij de grens staan).
-    flat_ancestors = {}
-    for p in tree_order:
-        if depths[p.id] > MAX_REPLY_INDENT:
-            parent = posts_by_id[p.parent_id]
-            flat_ancestors[p.id] = (flat_ancestors.get(parent.id, []) + [parent.id]
-                                    if depths[parent.id] > MAX_REPLY_INDENT else [])
+    for p in reversed(order):
+        descendant_counts[p.id] = sum((0 if c.id in hidden_ids else 1) + descendant_counts.get(c.id, 0)
+                                      for c in tree_children.get(p.id, []))
+    if branch_root is not None and branch_root.id in hidden_ids and not descendant_counts.get(branch_root.id):
+        abort(404)
 
     stance_counts = _stance_counts(all_ids)
     my_quality_reports = set()
@@ -644,7 +691,6 @@ def forum_thread(thread_id):
             ).all()
         }
 
-    auto_translate = _auto_translate()
     # Punt 8: eigen, verse bijdragen zonder oordeel worden gepold tot het
     # (best-effort) oordeel er is. Ouder dan 2 minuten: niet meer wachten.
     poll_ids = set()
@@ -660,19 +706,17 @@ def forum_thread(thread_id):
         posts=[p for p in all_posts if p.id not in hidden_ids],  # zichtbare tellingen
         hidden_ids=hidden_ids,
         poll_ids=poll_ids,
-        root_posts=root_posts,
-        replies_map=replies_map,
+        top_posts=top_posts,
+        tree_children=tree_children,
+        branch_root=branch_root,
         posts_by_id=posts_by_id,
-        depths=depths,
         descendant_counts=descendant_counts,
-        flat_descendants=flat_descendants,
-        flat_ancestors=flat_ancestors,
-        max_reply_indent=MAX_REPLY_INDENT,
+        max_level=MAX_LEVEL,
         stance_counts=stance_counts,
         my_stances=my_stances,
         quality_awards=quality_awards,
         my_quality_reports=my_quality_reports,
-        auto_translate=auto_translate,
+        auto_translate=_auto_translate(),
     )
 
 
@@ -906,8 +950,7 @@ def forum_post_verwijderen(post_id):
 # ── Kwaliteit (forum fase C1) ─────────────────────────────────────────────
 
 def _quality_back(post):
-    return redirect(safe_next(request.form.get('next'),
-                              url_for('forum.forum_thread', thread_id=post.thread_id) + f'#post-{post.id}'))
+    return redirect(safe_next(request.form.get('next'), post_url(post)))
 
 
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/besluit', methods=['POST'])
