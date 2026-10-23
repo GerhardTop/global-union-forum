@@ -330,70 +330,7 @@
       });
     });
 
-    document.querySelectorAll('.gu-post__translate-btn').forEach(function (button) {
-      var postId          = button.dataset.postId;
-      var url             = button.dataset.translateUrl;
-      var bodyEl          = document.getElementById('body-' + postId);
-      var originalHtml    = null;
-      var translationHtml = null;
-      var showingTrans    = false;
-
-      button.addEventListener('click', function () {
-        // Toggle if both sides are already cached
-        if (originalHtml !== null && translationHtml !== null) {
-          showingTrans = !showingTrans;
-          bodyEl.innerHTML = showingTrans ? translationHtml : originalHtml;
-          button.textContent = showingTrans
-            ? button.dataset.labelOriginal
-            : button.dataset.labelTranslate;
-          return;
-        }
-
-        // First fetch
-        originalHtml = bodyEl.innerHTML;
-        button.textContent = button.dataset.labelLoading;
-        button.disabled = true;
-
-        // CSRF-token zoals bij liken/bewerken; X-Requested-With zodat een rate
-        // limit (429) als JSON terugkomt in plaats van als redirect naar HTML.
-        var trFd = new FormData();
-        trFd.append('csrf_token', csrfToken);
-        fetch(url, { method: 'POST', body: trFd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-          .then(function (r) { return r.json().catch(function () { return { error: 'http ' + r.status }; }); })
-          .then(function (data) {
-            if (data.error || typeof data.translation !== 'string') {
-              button.textContent = button.dataset.labelError;
-              originalHtml = null;
-              return;
-            }
-            // Vertaling als platte tekst (geëscaped), net als bij bewerken:
-            // nooit HTML uit een bericht of vertaling in de pagina laten uitvoeren.
-            translationHtml = (data.translation || '')
-              .split('\n\n')
-              .map(function (p) {
-                var el = document.createElement('p');
-                el.textContent = p;
-                return el.outerHTML;
-              })
-              .join('');
-            bodyEl.innerHTML = translationHtml;
-            showingTrans = true;
-            button.textContent = button.dataset.labelOriginal;
-          })
-          .catch(function () {
-            button.textContent = button.dataset.labelError;
-            originalHtml = null;
-          })
-          .finally(function () { button.disabled = false; });
-      });
-    });
-
-    // Auto-translate: klik alle vertaalbuttons parallel bij pagina-load
-    if ({{ auto_translate | tojson }}) {
-      document.querySelectorAll('.gu-post__translate-btn').forEach(function (btn) {
-        btn.click();
-      });
-    }
+    {% include 'forum/_translate_script.html' %}
   })();
 </script>
 {% endblock %}

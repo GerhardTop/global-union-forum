@@ -280,6 +280,63 @@ class TestResponseLanguage:
         assert o.ai_response(lang) == 'Antwoord.' and o.ai_response('en' if lang == 'nl' else 'nl') == 'Antwoord.'
 
 
+# ── Vertaalknop op de discussiepagina (zelfde patroon als bij posts) ─────
+
+class TestTranslateButtons:
+    def _setup(self, app, make_user, thread, fake_ai):
+        anna = make_user()
+        post = _reply_in(app, anna, thread, 'Een Nederlandse bijdrage.', 'nl')
+        _object(app, anna, post)
+        objection = QualityObjection.query.filter_by(award_id=_award(post.id).id).one()
+        return anna, post, objection
+
+    @staticmethod
+    def _buttons(html):
+        import re
+        return set(re.findall(r'class="gu-post__action gu-post__action--ghost gu-post__translate-btn"\s*'
+                              r'data-target-id="([^"]+)"', html))
+
+    def test_button_only_when_site_language_differs(self, app, db, make_user, thread, fake_ai):
+        anna, post, objection = self._setup(app, make_user, thread, fake_ai)
+        award = _award(post.id)
+        path = f'/forum/kwaliteit/{post.id}'
+        other = _req(_client(app, make_user(), lang='en'), 'GET', path).get_data(as_text=True)
+        assert self._buttons(other) == {f'expl-{award.id}', f'resp-{objection.id}'}
+        same = _req(_client(app, make_user(), lang='nl'), 'GET', path).get_data(as_text=True)
+        assert self._buttons(same) == set()
+        # Net als bij posts alleen voor ingelogde lezers.
+        assert self._buttons(_req(_client(app, lang='en'), 'GET', path).get_data(as_text=True)) == set()
+        # De oorspronkelijke tekst staat er, in de taal van de bijdrage.
+        assert f'id="expl-{award.id}" lang="nl"' in other and 'Voegt een nieuw argument toe.' in other
+        assert 'el.textContent = p;' in other  # vertaling als platte tekst
+
+    def test_translate_routes_cache_and_keep_original(self, app, db, make_user, thread, fake_ai):
+        anna, post, objection = self._setup(app, make_user, thread, fake_ai)
+        reader = _client(app, make_user(), lang='en')
+        resp = _req(reader, 'POST', f'/forum/kwaliteit/{post.id}/vertaal')
+        assert resp.get_json() == {'translation': 'EN: Voegt een nieuw argument toe.'}
+        resp = _req(reader, 'POST', f'/forum/kwaliteit/bezwaar/{objection.id}/vertaal')
+        assert resp.get_json() == {'translation': 'EN: Het oordeel klopt, want er is geen bron.'}
+        n_calls = len(fake_ai['translate'])
+        _req(reader, 'POST', f'/forum/kwaliteit/{post.id}/vertaal')  # uit de cache
+        assert len(fake_ai['translate']) == n_calls
+        db.session.expire_all()
+        award = _award(post.id)
+        assert award.explanation_nl == 'Voegt een nieuw argument toe.'  # origineel blijft
+        assert award.explanation_en == 'EN: Voegt een nieuw argument toe.'  # alleen cache
+        # De pagina toont nog steeds het origineel, met de knop.
+        page = _req(reader, 'GET', f'/forum/kwaliteit/{post.id}').get_data(as_text=True)
+        assert self._buttons(page) == {f'expl-{award.id}', f'resp-{objection.id}'}
+        explanation = page[page.index(f'id="expl-{award.id}"'):page.index('gu-qthread__findings')]
+        assert 'Voegt een nieuw argument toe.' in explanation and 'EN: ' not in explanation
+
+    def test_no_translation_in_same_language_or_anonymous(self, app, db, make_user, thread, fake_ai):
+        anna, post, objection = self._setup(app, make_user, thread, fake_ai)
+        assert _req(_client(app, make_user(), lang='nl'), 'POST', f'/forum/kwaliteit/{post.id}/vertaal').status_code == 400
+        resp = _req(_client(app, lang='en'), 'POST', f'/forum/kwaliteit/{post.id}/vertaal')
+        assert resp.status_code == 302 and '/login' in resp.headers['Location']
+
+
 # ── Transparantie: prompt zichtbaar op de discussiepagina ────────────────
 
 class TestPromptVisible:

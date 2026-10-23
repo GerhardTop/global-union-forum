@@ -35,6 +35,16 @@ def _rules_first_redirect():
     return redirect(url_for('main.spelregels', next=request.path))
 
 
+def _auto_translate():
+    """Vertaalvoorkeur van de lezer: vertaalknoppen bij het laden automatisch
+    aanklikken. Gebruikt door de threadpagina en de kwaliteitsdiscussie."""
+    user_lang = session.get('lang', 'nl')
+    return current_user.is_authenticated and (
+        current_user.auto_translate is True
+        or (current_user.auto_translate is None and user_lang == 'en')
+    )
+
+
 def _require_csrf():
     """CSRF per actie, zelfde aanpak als /feedback en de reactie-stroom:
     leeg FlaskForm, 400 bij een ontbrekend of ongeldig token."""
@@ -611,11 +621,7 @@ def forum_thread(thread_id):
             ).all()
         }
 
-    user_lang = session.get('lang', 'nl')
-    auto_translate = current_user.is_authenticated and (
-        current_user.auto_translate is True
-        or (current_user.auto_translate is None and user_lang == 'en')
-    )
+    auto_translate = _auto_translate()
     return render_template(
         'forum/thread.html',
         thread=thread,
@@ -932,9 +938,68 @@ def forum_quality_page(post_id):
     is_author = current_user.is_authenticated and post.user_id == current_user.id
     return render_template(
         'forum/quality.html', post=post, award=award, objections=objections,
+        auto_translate=_auto_translate(),
         can_object=is_author and open_objection is None and post.body != '[bericht verwijderd]',
         can_decide=current_user.can_moderate() and not is_author,
     )
+
+
+def _translate_ai_text(obj, prefix, src_lang):
+    """Vertaal een AI-tekst (uitleg of reactie) naar de taal van de lezer, op
+    verzoek en precies zoals forum_translate een bericht vertaalt: dezelfde
+    vertaalhelper, alleen echte API-aanroepen tellen voor de rate limit, en de
+    vertaling gecachet in het veld van die taal (het origineel blijft staan)."""
+    user_lang = session.get('lang', 'nl')
+    if src_lang is None or user_lang == src_lang:
+        return jsonify({'error': 'no translation needed'}), 400
+    field = f'{prefix}_{user_lang}'
+    if getattr(obj, field):
+        return jsonify({'translation': getattr(obj, field)})
+    source = getattr(obj, f'{prefix}_{src_lang}') or ''
+    if not source.strip():
+        return jsonify({'error': 'no content'}), 400
+    if not current_app.config.get('ANTHROPIC_API_KEY', ''):
+        return jsonify({'error': 'translation unavailable'}), 503
+    g.translation_api_called = True  # telt mee voor de rate limit
+    try:
+        translation = quality.translate_text(source, 'Dutch' if user_lang == 'nl' else 'English')
+        setattr(obj, field, translation)
+        db.session.commit()
+        return jsonify({'translation': translation})
+    except Exception as e:
+        current_app.logger.error('Translation error: %s', e)
+        return jsonify({'error': 'translation failed'}), 500
+
+
+@forum_bp.route('/forum/kwaliteit/<int:post_id>/vertaal', methods=['POST'])
+@login_required
+@limiter.limit("30 per hour",
+               key_func=lambda: f"forum-translate-user-{current_user.get_id()}",
+               deduct_when=lambda response: g.get('translation_api_called', False))
+def forum_quality_translate(post_id):
+    """Vertaal de uitleg van het kwaliteitsoordeel (zelfde knop als bij posts)."""
+    _require_csrf()
+    post = Post.query.get_or_404(post_id)
+    award = post.quality_award
+    if not _quality_page_visible(post, award):
+        abort(404)
+    return _translate_ai_text(award, 'explanation', award.text_lang)
+
+
+@forum_bp.route('/forum/kwaliteit/bezwaar/<int:objection_id>/vertaal', methods=['POST'])
+@login_required
+@limiter.limit("30 per hour",
+               key_func=lambda: f"forum-translate-user-{current_user.get_id()}",
+               deduct_when=lambda response: g.get('translation_api_called', False))
+def forum_quality_objection_translate(objection_id):
+    """Vertaal de AI-reactie op een bezwaar (zelfde knop als bij posts)."""
+    _require_csrf()
+    objection = QualityObjection.query.get_or_404(objection_id)
+    if not _quality_page_visible(objection.award.post, objection.award):
+        abort(404)
+    if objection.ai_responded_at is None:
+        return jsonify({'error': 'no content'}), 400
+    return _translate_ai_text(objection, 'ai_response', objection.text_lang)
 
 
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/bezwaar', methods=['POST'])

@@ -281,6 +281,23 @@ class QualityAward(db.Model):
         return (self.explanation_nl if lang == 'nl' else self.explanation_en) or \
                self.explanation_en or self.explanation_nl or ''
 
+    @property
+    def text_lang(self):
+        """Taal waarin de AI de uitleg schreef (de taal van de bijdrage), of
+        None bij handgeschreven tekst (demo, moderator): die wordt niet
+        vertaald, net zoals vooraf vertaalde demo-posts."""
+        if self.source != 'ai':
+            return None
+        return self.post_lang if self.post_lang in ('nl', 'en') else 'en'
+
+    def original_explanation(self):
+        """De uitleg zoals de AI hem schreef; een vertaling in de andere taal
+        is alleen een cache (zelfde aanpak als body_nl/body_en bij posts)."""
+        lang = self.text_lang
+        if lang is None:
+            return self.explanation('nl')
+        return (self.explanation_nl if lang == 'nl' else self.explanation_en) or self.explanation(lang)
+
     def current_explanation(self, lang):
         """De uitleg bij de huidige stand: de notitie van de moderator als die
         het oordeel aanpaste, anders de oorspronkelijke uitleg."""
@@ -346,3 +363,14 @@ class QualityObjection(db.Model):
     def ai_response(self, lang):
         return (self.ai_response_nl if lang == 'nl' else self.ai_response_en) or \
                self.ai_response_en or self.ai_response_nl or ''
+
+    @property
+    def text_lang(self):
+        """Taal waarin de AI reageerde: die van de bijdrage (zie quality.target_lang)."""
+        lang = self.award.post.source_lang
+        return lang if lang in ('nl', 'en') else 'en'
+
+    def original_response(self):
+        """De reactie zoals de AI hem schreef; de andere taal is alleen cache."""
+        lang = self.text_lang
+        return (self.ai_response_nl if lang == 'nl' else self.ai_response_en) or self.ai_response(lang)

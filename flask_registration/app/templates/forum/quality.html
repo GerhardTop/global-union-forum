@@ -19,6 +19,25 @@
   {% endif %}
 {% endmacro %}
 
+{# AI-tekst in de oorspronkelijke taal, met dezelfde vertaalknop als bij posts:
+   alleen voor ingelogde lezers die de site in een andere taal bekijken. #}
+{% macro translatable(text, text_lang, el_id, url) %}
+  <div class="gu-qthread__text" id="{{ el_id }}" lang="{{ text_lang or lang }}">
+    {% for para in (text or '').split('\n\n') %}<p>{{ para }}</p>{% endfor %}
+  </div>
+  {% if text_lang and text_lang != lang and current_user.is_authenticated %}
+  <button type="button" class="gu-post__action gu-post__action--ghost gu-post__translate-btn"
+          data-target-id="{{ el_id }}"
+          data-translate-url="{{ url }}"
+          data-label-translate="{% if lang == 'nl' %}Vertaal naar Nederlands{% else %}Translate to English{% endif %}"
+          data-label-original="{% if lang == 'nl' %}Toon origineel{% else %}Show original{% endif %}"
+          data-label-loading="{% if lang == 'nl' %}Bezig…{% else %}Translating…{% endif %}"
+          data-label-error="{% if lang == 'nl' %}Mislukt, probeer opnieuw{% else %}Failed, try again{% endif %}">
+    {% if lang == 'nl' %}Vertaal naar Nederlands{% else %}Translate to English{% endif %}
+  </button>
+  {% endif %}
+{% endmacro %}
+
 {% block content_outer %}{% block content %}
 <main class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
@@ -70,7 +89,9 @@
             <strong>{% if lang == 'nl' %}Niet aangemerkt als kwaliteitsbijdrage{% else %}Not marked as a quality contribution{% endif %}</strong>
           {% endif %}
         </p>
-        {% if award.explanation(lang) %}<p>{{ award.explanation(lang) }}</p>{% endif %}
+        {% if award.text_lang %}
+          {% if award.original_explanation() %}{{ translatable(award.original_explanation(), award.text_lang, 'expl-' ~ award.id, url_for('forum.forum_quality_translate', post_id=post.id)) }}{% endif %}
+        {% elif award.explanation(lang) %}<p>{{ award.explanation(lang) }}</p>{% endif %}
         {% if award.source == 'ai' %}
         <ul class="gu-qthread__findings">
           <li>{% if lang == 'nl' %}Bron aanwezig{% else %}Source present{% endif %}: {{ yesno(award.ai_has_source) }}{% if award.ai_has_source %} ({% if award.ai_source_is_new %}{% if lang == 'nl' %}nieuw in dit gesprek{% else %}new in this conversation{% endif %}{% else %}{% if lang == 'nl' %}al eerder gebruikt{% else %}used before{% endif %}{% endif %}){% endif %}</li>
@@ -94,7 +115,7 @@
         <p class="gu-qthread__who">{% if lang == 'nl' %}Reactie van de AI{% else %}Response by the AI{% endif %}{% if o.ai_responded_at %} · {{ when(o.ai_responded_at) }}{% endif %}</p>
         {% if o.ai_responded_at %}
           <p><strong>{% if o.ai_stance == 'geeft_toe' %}{% if lang == 'nl' %}Geeft het bezwaar gelijk{% else %}Concedes the objection{% endif %}{% else %}{% if lang == 'nl' %}Verdedigt het oordeel{% else %}Defends the judgement{% endif %}{% endif %}</strong></p>
-          <p class="gu-qthread__text">{{ o.ai_response(lang) }}</p>
+          {{ translatable(o.original_response(), o.text_lang, 'resp-' ~ o.id, url_for('forum.forum_quality_objection_translate', objection_id=o.id)) }}
           {{ prompt_block(o.ai_prompt_text) }}
         {% else %}
           <p class="gu-quality__meta">{% if lang == 'nl' %}Nog geen reactie van de AI. Een moderator kan ook zonder beslissen.{% else %}No response from the AI yet. A moderator can also decide without one.{% endif %}</p>
@@ -153,4 +174,10 @@
 
   </div>
 </main>
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var csrfToken = {{ (forum_action_form.csrf_token.current_token if forum_action_form.meta.csrf else '') | tojson }};
+    {% include 'forum/_translate_script.html' %}
+  })();
+</script>
 {% endblock %}{% endblock %}
