@@ -19,7 +19,7 @@
         </a>
         {% else %}
         <a href="{{ url_for('main.spelregels', next=request.path) }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
-          {% if lang == 'nl' %}Accepteer de spelregels om mee te doen{% else %}Accept the ground rules to join in{% endif %}
+          {{ _('Accept the conduct rules to join in') }}
         </a>
         {% endif %}
         {% if current_user.can_moderate() %}

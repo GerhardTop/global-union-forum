@@ -623,3 +623,14 @@ msgstr "Ga akkoord met de gedragsregels om verder te gaan."
 #: app/routes/forum.py
 msgid "Accept the conduct rules first to take part."
 msgstr "Accepteer eerst de gedragsregels om mee te doen."
+
+#: app/templates/forum/thread.html, app/templates/forum/index.html
+msgid "Accept the conduct rules to join in"
+msgstr "Accepteer de gedragsregels om mee te doen"
+
+#: app/templates/admin/dashboard.html
+msgid "No conduct rules acceptance yet"
+msgstr "Nog geen akkoord op de gedragsregels"
+
+msgid "Conduct rules not accepted yet"
+msgstr "Gedragsregels nog niet geaccepteerd"

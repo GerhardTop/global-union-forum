@@ -623,3 +623,14 @@ msgstr "Please accept the conduct rules to continue."
 #: app/routes/forum.py
 msgid "Accept the conduct rules first to take part."
 msgstr "Accept the conduct rules first to take part."
+
+#: app/templates/forum/thread.html, app/templates/forum/index.html
+msgid "Accept the conduct rules to join in"
+msgstr "Accept the conduct rules to join in"
+
+#: app/templates/admin/dashboard.html
+msgid "No conduct rules acceptance yet"
+msgstr "No conduct rules acceptance yet"
+
+msgid "Conduct rules not accepted yet"
+msgstr "Conduct rules not accepted yet"

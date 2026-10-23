@@ -497,3 +497,34 @@ class TestAlignedTexts:
         finally:
             db.session.delete(db.session.get(User, fresh.id))
             db.session.commit()
+
+
+# ── Alle acceptatieteksten verwijzen naar de gedragsregels ───────────────
+
+class TestAcceptanceTextsConsistent:
+    @pytest.mark.parametrize('lang,text,old', [
+        ('nl', 'Accepteer de gedragsregels om mee te doen', 'Accepteer de spelregels'),
+        ('en', 'Accept the conduct rules to join in', 'Accept the ground rules'),
+    ])
+    def test_thread_and_forum_index_for_unaccepted_user(self, app, world, db, lang, text, old):
+        name = f'f_{uuid.uuid4().hex[:8]}'
+        fresh = User(username=name, email=f'{name}@example.com', verified=True,
+                     password_hash=bcrypt.generate_password_hash('Sterk1!ww').decode('utf-8'))
+        db.session.add(fresh)
+        db.session.commit()
+        t = world['thread']()
+        world['post'](world['user'](), t)
+        try:
+            thread_html = _page(app, fresh, t, lang)
+            locked = thread_html[thread_html.index('gu-composer--locked'):]
+            locked = locked[:locked.index('</div>')]
+            assert f'{text}</a>.' in locked and '/spelregels' in locked
+            index = _req(_client(app, fresh, lang), 'GET', '/forum').get_data(as_text=True)
+            assert text in index
+            for html in (thread_html, index):
+                assert old not in html
+                # De pagina zelf heet nog steeds Spelregels / Ground rules (footerlink).
+                assert ('>Spelregels</a>' if lang == 'nl' else '>Ground rules</a>') in html
+        finally:
+            db.session.delete(db.session.get(User, fresh.id))
+            db.session.commit()

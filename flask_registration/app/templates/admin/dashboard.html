@@ -71,7 +71,7 @@
             {% set is_self = user.id == current_user.id %}
             {% set role_labels = {'contributor': _('Contributor'), 'voter': _('Voter'), 'moderator': _('Moderator'), 'senior_moderator': _('Senior moderator')} %}
             {% set role_key = 'admin' if user.is_admin else ('mod' if user.can_moderate() else '') %}
-            {% set role_label = _('Admin') if user.is_admin else role_labels.get(user.role, _('No rules acceptance yet')) %}
+            {% set role_label = _('Admin') if user.is_admin else role_labels.get(user.role, _('No conduct rules acceptance yet')) %}
             {% set user_display_name = (user.first_name ~ ' ' ~ user.last_name) if user.first_name else ('@' ~ user.username) %}
             {% set user_avatar_initials = ((user.first_name[0] ~ user.last_name[0]) if user.first_name else user.username[:2]) | upper %}
             <tr class="gu-admin-table__row{% if is_self %} gu-admin-table__row--self{% endif %}">
@@ -121,8 +121,8 @@
                   </div>
                 {% endif %}
                 {% if not user.is_admin and not user.rules_accepted_at %}
-                  {# Een handmatig gezette rol telt pas na akkoord op de spelregels. #}
-                  <div class="gu-admin-table__hint">{{ _('Ground rules not accepted yet') }}</div>
+                  {# Een handmatig gezette rol telt pas na akkoord op de gedragsregels. #}
+                  <div class="gu-admin-table__hint">{{ _('Conduct rules not accepted yet') }}</div>
                 {% endif %}
               </td>
 

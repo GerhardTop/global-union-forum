@@ -147,10 +147,10 @@
       </div>
     </form>
     {% elif current_user.is_authenticated %}
-    {# Ingelogd zonder akkoord op de spelregels (nieuwe registratie): eerst akkoord. #}
+    {# Ingelogd zonder akkoord op de gedragsregels (nieuwe registratie): eerst akkoord. #}
     <div class="gu-composer gu-composer--locked">
       <p>
-        <a href="{{ url_for('main.spelregels', next=request.path) }}">{% if lang == 'nl' %}Accepteer de spelregels om mee te doen{% else %}Accept the ground rules to join in{% endif %}</a>.
+        <a href="{{ url_for('main.spelregels', next=request.path) }}">{{ _('Accept the conduct rules to join in') }}</a>.
       </p>
     </div>
     {% else %}

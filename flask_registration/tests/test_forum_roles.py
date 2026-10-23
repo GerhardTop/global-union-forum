@@ -267,7 +267,7 @@ class TestNewUsersMustAcceptRules:
         assert resp.status_code == 302 and '/spelregels' in resp.headers['Location']
 
         page = _get(client, f'/forum/{thread.id}').get_data(as_text=True)
-        assert 'id="composer"' not in page and 'Accepteer de spelregels om mee te doen' in page
+        assert 'id="composer"' not in page and 'Accepteer de gedragsregels om mee te doen</a>.' in page
         assert 'class="gu-post__action gu-post__reply-btn"' not in page
 
         rules = _get(client, '/spelregels').get_data(as_text=True)
@@ -387,4 +387,5 @@ class TestPagesRender:
         html = _get(client, '/admin', lang).get_data(as_text=True)
         label = 'Senior moderator'
         assert label in html
-        assert ('Nog geen akkoord' if lang == 'nl' else 'No rules acceptance yet') in html
+        assert ('Nog geen akkoord op de gedragsregels' if lang == 'nl' else 'No conduct rules acceptance yet') in html
+        assert ('Gedragsregels nog niet geaccepteerd' if lang == 'nl' else 'Conduct rules not accepted yet') in html
