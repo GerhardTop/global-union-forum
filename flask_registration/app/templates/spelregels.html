@@ -16,24 +16,24 @@
     {% with compact=false %}{% include '_rules_list.html' %}{% endwith %}
 
     <p style="color: var(--gu-fg-2);">
-      {% if lang == 'nl' %}Moderators kunnen berichten die deze spelregels overtreden bewerken of verwijderen, en een gesprek sluiten.{% else %}Moderators can edit or remove posts that break these ground rules, and close a conversation.{% endif %}
+      {{ _('Moderators oversee the conduct rules and can close a conversation.') }}
     </p>
 
     <hr class="gu-auth__divider" style="margin: 28px 0;">
 
     {% if not current_user.is_authenticated %}
-      <p>{% if lang == 'nl' %}Bij het aanmelden ga je akkoord met deze spelregels.{% else %}When you sign up, you agree to these ground rules.{% endif %}</p>
+      <p>{{ _('When you sign up, you agree to the conduct rules.') }}</p>
       <a class="gu-btn gu-btn--primary" href="{{ url_for('social.aanmelden') }}">{{ _('Join the conversation') }} <span class="gu-arrow"></span></a>
     {% elif current_user.rules_accepted_at %}
       <p class="gu-rules__accepted">
-        {% if lang == 'nl' %}Je hebt deze spelregels geaccepteerd op {{ current_user.rules_accepted_at.strftime('%d-%m-%Y') }}.{% else %}You accepted these ground rules on {{ current_user.rules_accepted_at.strftime('%d %B %Y') }}.{% endif %}
+        {{ _('You accepted the conduct rules on %(date)s.', date=current_user.rules_accepted_at.strftime('%d-%m-%Y' if lang == 'nl' else '%d %B %Y')) }}
       </p>
     {% else %}
       <form method="POST" action="{{ url_for('main.spelregels_accepteren') }}" id="rulesAcceptForm">
         {{ form.hidden_tag() }}
         {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
-        <p>{% if lang == 'nl' %}Om mee te doen aan het gesprek ga je eerst akkoord met deze spelregels.{% else %}To join the conversation, first agree to these ground rules.{% endif %}</p>
-        <button type="submit" class="gu-btn gu-btn--primary">{{ _('I accept the ground rules') }} <span class="gu-arrow"></span></button>
+        <p>{{ _('To join the conversation, first agree to the conduct rules.') }}</p>
+        <button type="submit" class="gu-btn gu-btn--primary">{{ _('I accept the conduct rules') }} <span class="gu-arrow"></span></button>
       </form>
     {% endif %}
 

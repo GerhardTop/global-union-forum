@@ -579,3 +579,43 @@ msgstr "Keurmerk weghalen"
 #: app/templates/aanmelden/aanmelden.html
 msgid "These details stay private. In your profile you can later choose to show your real name and LinkedIn; only then are they visible to others."
 msgstr "Deze gegevens blijven privé. In je profiel kun je er later voor kiezen je echte naam en LinkedIn te tonen; pas dan zijn ze zichtbaar voor anderen."
+
+#: app/templates/_rules_list.html
+msgid "Conduct rules"
+msgstr "Gedragsregels"
+
+msgid "These rules apply to everyone in the forum."
+msgstr "Deze regels gelden voor iedereen in het forum."
+
+msgid "Quality guidelines"
+msgstr "Kwaliteitsrichtlijnen"
+
+msgid "This is not an obligation. Follow them and your contribution is more likely to earn the quality mark."
+msgstr "Dit is geen verplichting. Volg je ze, dan verdient je bijdrage eerder het kwaliteitskeurmerk."
+
+#: app/templates/spelregels.html
+msgid "Moderators oversee the conduct rules and can close a conversation."
+msgstr "Moderators houden toezicht op de gedragsregels en kunnen een gesprek sluiten."
+
+msgid "When you sign up, you agree to the conduct rules."
+msgstr "Bij het aanmelden ga je akkoord met de gedragsregels."
+
+#, python-format
+msgid "You accepted the conduct rules on %(date)s."
+msgstr "Je hebt de gedragsregels geaccepteerd op %(date)s."
+
+msgid "To join the conversation, first agree to the conduct rules."
+msgstr "Om mee te doen aan het gesprek ga je eerst akkoord met de gedragsregels."
+
+msgid "I accept the conduct rules"
+msgstr "Ik ga akkoord met de gedragsregels"
+
+#: app/templates/aanmelden/aanmelden.html
+msgid "You must be at least 16 years old."
+msgstr "Je moet minstens 16 jaar zijn."
+
+msgid "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
+msgstr "Wachtwoord: 8 tot 72 tekens, met minstens een hoofdletter, een cijfer en een speciaal teken."
+
+msgid "Please accept the conduct rules to continue."
+msgstr "Ga akkoord met de gedragsregels om verder te gaan."

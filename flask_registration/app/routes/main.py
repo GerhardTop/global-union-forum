@@ -119,7 +119,8 @@ def privacy():
 
 @main.route("/spelregels")
 def spelregels():
-    """Publieke, tweetalige pagina met de spelregels R1 tot R5. Ingelogd
+    """Publieke, tweetalige pagina met de spelregels: de gedragsregels (waarmee
+    je akkoord gaat) en de kwaliteitsrichtlijnen (informatie). Ingelogd
     zonder akkoord: hier staat ook de akkoordknop (zie spelregels_accepteren)."""
     return render_template("spelregels.html", form=RulesAcceptForm(),
                            next=safe_next(request.args.get("next"), ""))

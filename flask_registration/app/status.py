@@ -4,7 +4,7 @@ Forum fase C2: verdiende status op basis van kwaliteit.
 Een kwaliteitsbijdrage is een eigen bijdrage (hoofdbericht of reactie) met
 een kwaliteitsoordeel dat NU de status 'toegekend' heeft. Een ingetrokken
 oordeel telt dus niet. "Onderwerpen" zijn de gesprekken (threads) waarin die
-bijdragen staan: de thread is in dit forum het onderwerp (spelregel R4 "bij
+bijdragen staan: de thread is in dit forum het onderwerp (gedragsregel "Bij
 het onderwerp" = "reageer op de vraag van het gesprek"); er bestaat geen
 ander onderwerpveld dat gesprekken van gebruikers onderscheidt.
 

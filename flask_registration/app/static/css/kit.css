@@ -1627,6 +1627,19 @@ body {
 .gu-rules__title { font-size: 1.0625rem; font-weight: 600; margin: 2px 0 4px; color: var(--gu-fg-1); }
 .gu-rules__item p { margin: 0; color: var(--gu-fg-2); line-height: 1.6; }
 .gu-rules__accepted { color: var(--gu-fg-2); }
+/* Twee groepen: gedragsregels en kwaliteitsrichtlijnen */
+.gu-rules-group { margin: 24px 0 0; }
+.gu-rules-group + .gu-rules-group { margin-top: 32px; }
+.gu-join__panel > .gu-rules-group:first-child { margin-top: 0; }
+.gu-rules-group__title { font-size: 1.25rem; font-weight: 600; margin: 0 0 4px; color: var(--gu-fg-1); }
+.gu-rules-group__intro { margin: 0; color: var(--gu-fg-2); }
+.gu-rules-group .gu-rules { margin-top: 16px; }
+.gu-rules-group--compact { margin: 0; }
+.gu-rules-group--compact + .gu-rules-group--compact { margin-top: 14px; }
+.gu-rules-group--compact .gu-rules-group__title { font-size: 0.9375rem; margin: 0 0 2px; }
+.gu-rules-group--compact .gu-rules-group__intro { font-size: 0.8125rem; margin: 0 0 8px; }
+.gu-rules-group--compact .gu-rules { margin-top: 0; }
+.gu-join__age { margin: -4px 0 16px; }
 /* Compacte spelregels in het registratieformulier (punt 4) */
 .gu-join__rules { margin: 4px 0 12px; padding: 12px 14px; max-height: 280px; overflow-y: auto; border: 1px solid var(--gu-border); border-radius: 8px; background: var(--gu-bg-soft); }
 .gu-join__rules .gu-join__optionalLabel { margin: 0 0 8px; }

@@ -21,6 +21,7 @@
       <p class="gu-join__sub">
         {{ _('Expert or layperson, 16 or 96, under a username (pseudonym) and optionally under your own name with LinkedIn.') }}
       </p>
+      <p class="gu-join__hint gu-join__age">{{ _('You must be at least 16 years old.') }}</p>
 
       <div class="gu-join__field">
         <label for="username">
@@ -64,7 +65,7 @@
           </button>
         </div>
         <p class="{{ 'gu-join__formError' if errors.password else 'gu-pw-hint' }}" id="pwHint">
-          {{ _('Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character.') }}
+          {{ _('Password: 8 to 72 characters, with at least one capital letter, one number and one special character.') }}
         </p>
         <div class="gu-pw-strength" id="pwStrength" hidden>
           <div class="gu-pw-strength__bar"><div class="gu-pw-strength__fill"></div></div>
@@ -136,16 +137,17 @@
       </div>
 
       <div class="gu-join__field" id="rulesField">
-        {# Punt 4: de spelregels volledig en compact in het formulier. #}
+        {# Punt 4: de spelregels volledig en compact in het formulier. Je gaat
+           akkoord met de gedragsregels; de kwaliteitsrichtlijnen zijn informatie. #}
         <section class="gu-join__rules" aria-labelledby="rulesHeading">
           <p class="gu-join__optionalLabel" id="rulesHeading">{{ _('Ground rules') }}</p>
           {% with compact=true %}{% include '_rules_list.html' %}{% endwith %}
         </section>
         <label class="gu-join__check" for="accept_rules">
           <input type="checkbox" id="accept_rules" name="accept_rules" value="1"{% if form_data.accept_rules %} checked{% endif %}>
-          <span>{{ _('I accept the ground rules') }}</span>
+          <span>{{ _('I accept the conduct rules') }}</span>
         </label>
-        <p class="gu-join__formError" id="rulesError"{% if not errors.rules %} style="display:none;"{% endif %}>{{ _('Please accept the ground rules to continue.') }}</p>
+        <p class="gu-join__formError" id="rulesError"{% if not errors.rules %} style="display:none;"{% endif %}>{{ _('Please accept the conduct rules to continue.') }}</p>
       </div>
 
       <div class="gu-join__actions gu-join__actions--right">

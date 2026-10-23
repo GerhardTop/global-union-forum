@@ -48,10 +48,10 @@
         </section>
         <label class="gu-join__check" for="accept_rules">
           <input type="checkbox" id="accept_rules" name="accept_rules" value="1"{% if form_data.accept_rules %} checked{% endif %}>
-          <span>{{ _('I accept the ground rules') }}</span>
+          <span>{{ _('I accept the conduct rules') }}</span>
         </label>
         {% if errors.rules %}
-        <p class="gu-join__formError" id="rulesError">{{ _('Please accept the ground rules to continue.') }}</p>
+        <p class="gu-join__formError" id="rulesError">{{ _('Please accept the conduct rules to continue.') }}</p>
         {% endif %}
       </div>
       {% endif %}

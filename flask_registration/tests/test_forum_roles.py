@@ -1,6 +1,6 @@
 """
 Forum fase A: rollen (reader/contributor/voter/moderator/senior_moderator,
-admin erboven) en de spelregels R1 tot R5.
+admin erboven) en de spelregels (gedragsregels en kwaliteitsrichtlijnen).
 
 Dekt: de permissie-helpers per rol, set_role/accept_rules, de eenmalige
 backfill in _migrate_roles(), dat bestaande bijdragers en moderators niets
@@ -271,7 +271,7 @@ class TestNewUsersMustAcceptRules:
         assert 'class="gu-post__action gu-post__reply-btn"' not in page
 
         rules = _get(client, '/spelregels').get_data(as_text=True)
-        assert 'Ik ga akkoord met de spelregels' in rules
+        assert 'Ik ga akkoord met de gedragsregels' in rules
         resp = _req(client, 'POST', '/spelregels/accepteren', data={'next': f'/forum/{thread.id}'})
         assert resp.status_code == 302 and resp.headers['Location'] == f'/forum/{thread.id}'
         db.session.expire_all()
@@ -294,7 +294,7 @@ class TestNewUsersMustAcceptRules:
         assert resp.status_code == 303
         assert User.query.filter_by(email=data['email']).count() == 0
         page = _req(client, 'GET', '/aanmelden').get_data(as_text=True)
-        assert 'Ga akkoord met de spelregels om verder te gaan.' in page
+        assert 'Ga akkoord met de gedragsregels om verder te gaan.' in page
         assert "getElementById('rulesField').scrollIntoView" in page
         # Ingevulde gegevens blijven staan (PRG), het vinkje staat nog uit.
         assert data['username'] in page
@@ -368,12 +368,12 @@ class TestPagesRender:
                                              ('en', 'About the idea, not the person')])
     def test_spelregels_public(self, app, lang, expect):
         html = _get(_client_for(app), '/spelregels', lang).get_data(as_text=True)
-        for r in ('R1', 'R2', 'R3', 'R4', 'R5'):
-            assert f'>{r}<' in html
-        assert expect in html
+        for anchor in ('gedrag-1', 'gedrag-2', 'gedrag-3', 'kwaliteit-1', 'kwaliteit-2'):
+            assert f'id="{anchor}"' in html
+        assert '>R1<' not in html and expect in html
 
-    @pytest.mark.parametrize('lang,label', [('nl', 'Ik ga akkoord met de spelregels'),
-                                            ('en', 'I accept the ground rules')])
+    @pytest.mark.parametrize('lang,label', [('nl', 'Ik ga akkoord met de gedragsregels'),
+                                            ('en', 'I accept the conduct rules')])
     def test_registration_shows_checkbox(self, app, lang, label):
         html = _get(_client_for(app), '/aanmelden', lang).get_data(as_text=True)
         assert 'name="accept_rules"' in html and label in html

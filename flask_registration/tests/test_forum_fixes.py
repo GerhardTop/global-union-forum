@@ -312,15 +312,15 @@ class TestRegistrationForm:
         html = _req(_client(app), 'GET', '/aanmelden').get_data(as_text=True)
         assert 'Deze gegevens blijven privé.' in html
         block = html[html.index('class="gu-join__rules"'):html.index('id="accept_rules"')]
-        for r in ('R1', 'R2', 'R3', 'R4', 'R5'):
-            assert f'>{r}<' in block
+        for anchor in ('gedrag-1', 'gedrag-2', 'gedrag-3', 'kwaliteit-1', 'kwaliteit-2'):
+            assert f'id="{anchor}"' in block
         assert 'gu-rules--compact' in block and 'Over het idee, niet de persoon' in block
         assert "form.addEventListener('submit'" in html and 'id="rulesError"' in html
 
     def test_rules_page_without_intro(self, app):
         html = _req(_client(app), 'GET', '/spelregels').get_data(as_text=True)
         assert 'Global Union Forum is een plek voor een serieus gesprek' not in html
-        assert '>R5<' in html
+        assert 'id="gedragsregels"' in html and 'id="kwaliteitsrichtlijnen"' in html
 
     def test_server_error_keeps_fields_but_not_password(self, app):
         client = _client(app)
@@ -333,3 +333,110 @@ class TestRegistrationForm:
             assert f'value="{data[key]}"' in html
         assert 'ValidPassword123!' not in html
         assert User.query.filter_by(email=data['email']).count() == 0
+
+
+# ── Spelregels in twee groepen, en registratieteksten ────────────────────
+
+def _section(html, sid):
+    start = html.index(f'id="{sid}"')
+    end = html.find('</section>', start)
+    return html[start:end]
+
+
+RULES = {
+    'nl': {'conduct': ('Gedragsregels', 'Deze regels gelden voor iedereen in het forum.',
+                       ['Over het idee, niet de persoon', 'Bij het onderwerp', 'Eén account per persoon']),
+           'quality': ('Kwaliteitsrichtlijnen',
+                       'Dit is geen verplichting. Volg je ze, dan verdient je bijdrage eerder het kwaliteitskeurmerk.',
+                       ['Onderbouwd', 'Concreet']),
+           'texts': ['Bekritiseer argumenten, geen mensen.', 'Reageer op de vraag van het gesprek.',
+                     'Iedereen spreekt met één stem.', 'Een feit heeft een bron.',
+                     'Maak je punt zo specifiek mogelijk']},
+    'en': {'conduct': ('Conduct rules', 'These rules apply to everyone in the forum.',
+                       ['About the idea, not the person', 'On topic', 'One account per person']),
+           'quality': ('Quality guidelines',
+                       'This is not an obligation. Follow them and your contribution is more likely to earn the quality mark.',
+                       ['Substantiated', 'Concrete']),
+           'texts': ['Criticise arguments, not people.', 'Respond to the question of the conversation.',
+                     'Everyone speaks with one voice.', 'A fact has a source.',
+                     'Make your point as specific as possible']},
+}
+
+
+class TestRulesInTwoGroups:
+    @pytest.mark.parametrize('lang', ['nl', 'en'])
+    @pytest.mark.parametrize('path', ['/spelregels', '/aanmelden'])
+    def test_two_groups_with_intro_and_existing_texts(self, app, lang, path):
+        html = _req(_client(app, lang=lang), 'GET', path).get_data(as_text=True)
+        expected = RULES[lang]
+        for sid, key, other in (('gedragsregels', 'conduct', 'quality'), ('kwaliteitsrichtlijnen', 'quality', 'conduct')):
+            title, intro, rules = expected[key]
+            part = _section(html, sid)
+            assert title in part and intro in part
+            for rule in rules:
+                assert f'>{rule}</' in part, (lang, path, rule)
+            for rule in expected[other][2]:
+                assert f'>{rule}</' not in part, (lang, path, rule)
+        for text in expected['texts']:
+            assert text in html
+        rules_html = html[html.index('id="gedragsregels"'):html.index('</section>', html.index('id="kwaliteitsrichtlijnen"'))]
+        assert '\u2014' not in rules_html and '\u2013' not in rules_html  # geen lange of korte streepjes
+
+    def test_other_language_does_not_leak(self, app):
+        nl = _req(_client(app, lang='nl'), 'GET', '/aanmelden').get_data(as_text=True)
+        en = _req(_client(app, lang='en'), 'GET', '/aanmelden').get_data(as_text=True)
+        for text in ('Conduct rules', 'Quality guidelines', 'I accept the conduct rules',
+                     'You must be at least 16 years old.', 'Password: 8 to 72 characters'):
+            assert text not in nl and text in en
+        assert 'Deze gegevens blijven privé.' in nl  # de catalogus is compleet, geen terugval op Engels
+
+    @pytest.mark.parametrize('lang,moderators,old', [
+        ('nl', 'Moderators houden toezicht op de gedragsregels en kunnen een gesprek sluiten.', 'bewerken of verwijderen'),
+        ('en', 'Moderators oversee the conduct rules and can close a conversation.', 'edit or remove'),
+    ])
+    def test_moderator_sentence(self, app, lang, moderators, old):
+        html = _req(_client(app, lang=lang), 'GET', '/spelregels').get_data(as_text=True)
+        assert moderators in html and old not in html
+
+    @pytest.mark.parametrize('lang,texts', [
+        ('nl', ('Je moet minstens 16 jaar zijn.',
+                'Wachtwoord: 8 tot 72 tekens, met minstens een hoofdletter, een cijfer en een speciaal teken.',
+                'Ik ga akkoord met de gedragsregels')),
+        ('en', ('You must be at least 16 years old.',
+                'Password: 8 to 72 characters, with at least one capital letter, one number and one special character.',
+                'I accept the conduct rules')),
+    ])
+    def test_registration_texts(self, app, lang, texts):
+        html = _req(_client(app, lang=lang), 'GET', '/aanmelden').get_data(as_text=True)
+        for text in texts:
+            assert text in html
+        assert 'Password must be between' not in html and 'Wachtwoord moet tussen' not in html
+        # Het vinkje volgt op beide groepen: je accepteert de gedragsregels, de
+        # richtlijnen zijn alleen informatie.
+        assert html.index('id="kwaliteitsrichtlijnen"') < html.index('id="accept_rules"')
+
+    def test_missing_checkbox_error_mentions_conduct_rules(self, app):
+        data = {'username': f'r_{uuid.uuid4().hex[:6]}', 'email': f'{uuid.uuid4().hex[:6]}@example.com',
+                'password': 'ValidPassword123!', 'password_confirm': 'ValidPassword123!'}
+        client = _client(app)
+        _req(client, 'POST', '/aanmelden', data=data)
+        html = _req(client, 'GET', '/aanmelden').get_data(as_text=True)
+        assert 'Ga akkoord met de gedragsregels om verder te gaan.' in html
+
+    def test_accept_button_and_accepted_note_on_rules_page(self, app, world, db):
+        name = f'f_{uuid.uuid4().hex[:8]}'
+        fresh = User(username=name, email=f'{name}@example.com', verified=True,
+                     password_hash=bcrypt.generate_password_hash('Sterk1!ww').decode('utf-8'))
+        db.session.add(fresh)
+        db.session.commit()
+        try:
+            html = _req(_client(app, fresh), 'GET', '/spelregels').get_data(as_text=True)
+            assert 'Om mee te doen aan het gesprek ga je eerst akkoord met de gedragsregels.' in html
+            assert 'Ik ga akkoord met de gedragsregels' in html
+            accepted = _req(_client(app, world['user']()), 'GET', '/spelregels').get_data(as_text=True)
+            assert 'Je hebt de gedragsregels geaccepteerd op' in accepted
+            anon = _req(_client(app, lang='en'), 'GET', '/spelregels').get_data(as_text=True)
+            assert 'When you sign up, you agree to the conduct rules.' in anon
+        finally:
+            db.session.delete(db.session.get(User, fresh.id))
+            db.session.commit()
