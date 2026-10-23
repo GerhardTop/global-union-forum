@@ -619,3 +619,7 @@ msgstr "Password: 8 to 72 characters, with at least one capital letter, one numb
 
 msgid "Please accept the conduct rules to continue."
 msgstr "Please accept the conduct rules to continue."
+
+#: app/routes/forum.py
+msgid "Accept the conduct rules first to take part."
+msgstr "Accept the conduct rules first to take part."

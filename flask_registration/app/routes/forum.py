@@ -3,6 +3,7 @@ from collections import deque
 from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify, abort, current_app, flash, g
+from flask_babel import gettext
 from flask_login import login_required, current_user
 from sqlalchemy import func
 
@@ -27,13 +28,9 @@ def _inject_forum_action_form():
 
 
 def _rules_first_redirect():
-    """Ingelogd maar (nog) geen akkoord op de spelregels: eerst daarheen."""
-    flash(
-        'Accepteer eerst de spelregels om mee te doen aan het gesprek.'
-        if session.get('lang', 'nl') == 'nl'
-        else 'Please accept the ground rules first to join the conversation.',
-        'error'
-    )
+    """Ingelogd maar (nog) geen akkoord op de gedragsregels: eerst naar de
+    spelregelpagina (daar staat de akkoordknop)."""
+    flash(gettext('Accept the conduct rules first to take part.'), 'error')
     return redirect(url_for('main.spelregels', next=request.path))
 
 

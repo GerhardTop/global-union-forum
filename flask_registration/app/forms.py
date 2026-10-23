@@ -10,8 +10,8 @@ from app.utils import _password_strong
 def _validate_password_strong(form, field):
     if not _password_strong(field.data or ""):
         raise ValidationError(_(
-            'Password must be between 8 and 72 characters and contain '
-            'one uppercase letter, one number and one special character.'
+            'Password: 8 to 72 characters, with at least one capital letter, '
+            'one number and one special character.'
         ))
 
 

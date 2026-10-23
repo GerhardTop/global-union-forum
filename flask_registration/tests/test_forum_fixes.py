@@ -440,3 +440,60 @@ class TestRulesInTwoGroups:
         finally:
             db.session.delete(db.session.get(User, fresh.id))
             db.session.commit()
+
+
+# ── Wachtwoordhint en forummelding gelijkgetrokken ───────────────────────
+
+PW_HINT = {
+    'nl': 'Wachtwoord: 8 tot 72 tekens, met minstens een hoofdletter, een cijfer en een speciaal teken.',
+    'en': 'Password: 8 to 72 characters, with at least one capital letter, one number and one special character.',
+}
+OLD_PW_HINT = ('Password must be between', 'Wachtwoord moet tussen')
+
+
+class TestAlignedTexts:
+    @pytest.mark.parametrize('lang', ['nl', 'en'])
+    def test_password_hint_on_profile_and_reset_page(self, app, world, lang):
+        from app.routes.auth import _make_reset_token
+        user = world['user']()
+        pages = {'profile': _req(_client(app, user, lang), 'GET', '/profile').get_data(as_text=True),
+                 'reset': _req(_client(app, lang=lang), 'GET',
+                               f'/wachtwoord-reset/{_make_reset_token(user.email)}').get_data(as_text=True),
+                 'aanmelden': _req(_client(app, lang=lang), 'GET', '/aanmelden').get_data(as_text=True)}
+        for name, html in pages.items():
+            assert PW_HINT[lang] in html, name
+            for old in OLD_PW_HINT:
+                assert old not in html, (name, old)
+
+    @pytest.mark.parametrize('lang', ['nl', 'en'])
+    def test_server_validation_message(self, app, lang):
+        from flask import session
+        from wtforms.validators import ValidationError
+        from app.forms import _validate_password_strong
+        with app.test_request_context('/'):
+            session['lang'] = lang
+            refresh()
+            with pytest.raises(ValidationError) as exc:
+                _validate_password_strong(None, type('F', (), {'data': 'zwak'})())
+        assert str(exc.value) == PW_HINT[lang]
+
+    @pytest.mark.parametrize('lang,text', [('nl', 'Accepteer eerst de gedragsregels om mee te doen.'),
+                                           ('en', 'Accept the conduct rules first to take part.')])
+    def test_forum_notice_mentions_conduct_rules(self, app, world, db, lang, text):
+        name = f'f_{uuid.uuid4().hex[:8]}'
+        fresh = User(username=name, email=f'{name}@example.com', verified=True,
+                     password_hash=bcrypt.generate_password_hash('Sterk1!ww').decode('utf-8'))
+        db.session.add(fresh)
+        db.session.commit()
+        try:
+            client = _client(app, fresh, lang)
+            resp = _req(client, 'GET', '/forum/nieuw')
+            assert resp.status_code == 302 and '/spelregels' in resp.headers['Location']
+            page = _req(client, 'GET', resp.headers['Location']).get_data(as_text=True)
+            assert text in page and 'spelregels om mee te doen aan het gesprek' not in page
+            # De pagina zelf heet nog steeds Spelregels / Ground rules.
+            assert ('<h1 class="gu-profile__title">Spelregels</h1>' if lang == 'nl'
+                    else '<h1 class="gu-profile__title">Ground rules</h1>') in page
+        finally:
+            db.session.delete(db.session.get(User, fresh.id))
+            db.session.commit()
