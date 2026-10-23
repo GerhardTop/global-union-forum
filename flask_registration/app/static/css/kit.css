@@ -1627,6 +1627,15 @@ body {
 .gu-rules__title { font-size: 1.0625rem; font-weight: 600; margin: 2px 0 4px; color: var(--gu-fg-1); }
 .gu-rules__item p { margin: 0; color: var(--gu-fg-2); line-height: 1.6; }
 .gu-rules__accepted { color: var(--gu-fg-2); }
+/* Compacte spelregels in het registratieformulier (punt 4) */
+.gu-join__rules { margin: 4px 0 12px; padding: 12px 14px; max-height: 280px; overflow-y: auto; border: 1px solid var(--gu-border); border-radius: 8px; background: var(--gu-bg-soft); }
+.gu-join__rules .gu-join__optionalLabel { margin: 0 0 8px; }
+.gu-rules--compact { margin: 0; gap: 8px; }
+.gu-rules--compact .gu-rules__item { gap: 10px; }
+.gu-rules--compact .gu-rules__n { min-width: 30px; padding: 1px 0; font-size: 0.75rem; }
+.gu-rules--compact .gu-rules__title { font-size: 0.875rem; margin: 0 0 2px; }
+.gu-rules--compact .gu-rules__item p { font-size: 0.8125rem; line-height: 1.5; }
+.gu-join__optionalNote { margin: 0 0 12px; }
 
 /* Naamweergave in het forum (profiel): pseudoniem of echte naam */
 .gu-namechoice { scroll-margin-top: 96px; }
@@ -2724,6 +2733,11 @@ body {
 .gu-quality--declined { padding: 10px 12px; border: 1px dashed var(--gu-border); border-radius: 6px; }
 .gu-quality--declined p { margin: 0 0 6px; }
 .gu-quality-mod { margin: 8px 0; font-size: 0.8125rem; }
+/* Punt 9: afgewezen bijdragen (alleen auteur en moderators) en placeholder */
+.gu-post--declined .gu-post__body { opacity: 0.7; }
+.gu-quality__hidden { font-weight: 500; color: var(--gu-fg-2); }
+.gu-post--hidden { padding: 14px 0; }
+.gu-post__hiddennote { margin: 0; font-size: 0.875rem; font-style: italic; color: var(--gu-fg-3); }
 .gu-quality-mod summary { cursor: pointer; color: var(--gu-fg-3); }
 .gu-quality-mod__body { margin-top: 8px; padding: 10px 12px; background: var(--gu-bg-soft); border-radius: 6px; }
 .gu-quality-mod__form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-top: 8px; }

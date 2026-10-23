@@ -2,7 +2,7 @@
   Partial: forum/_post.html
   Context: post, depth (0 = hoogste niveau), thread, reply_form, replies_map,
            posts_by_id, descendant_counts, max_reply_indent, stance_counts, my_stances,
-           quality_awards, my_quality_reports, quality_labels
+           quality_awards, my_quality_reports, quality_labels, hidden_ids, poll_ids
 #}
 {% if post.body == '[bericht verwijderd]' %}
   {% set is_deleted = true %}
@@ -35,8 +35,8 @@
 {% set q_awarded = qa and qa.status == 'toegekend' and post.body != '[bericht verwijderd]' %}
 {% set author_linkedin = post.public_linkedin_url() %}
 
-<article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}"
-         id="post-{{ post.id }}">
+<article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}{% if qa and qa.status == 'afgewezen' %} gu-post--declined{% endif %}"
+         id="post-{{ post.id }}"{% if post.id in poll_ids %} data-quality-poll="{{ url_for('forum.forum_quality_status', post_id=post.id) }}"{% endif %}>
 
   {# "In antwoord op": vanaf diepte 3, want daar springt mobiel (2 niveaus)
      niet meer in. Op desktop pas zichtbaar voorbij max_reply_indent. #}
@@ -45,7 +45,8 @@
   <a class="gu-post__inreply{% if depth > max_reply_indent %} gu-post__inreply--flat{% endif %}"
      href="#post-{{ parent_post.id }}">
     <span aria-hidden="true">↳</span>
-    {{ _('in reply to %(name)s', name=parent_post.public_author_name()) }}
+    {% if parent_post.id in hidden_ids %}{% if lang == 'nl' %}in antwoord op een verborgen bijdrage{% else %}in reply to a hidden contribution{% endif %}
+    {% else %}{{ _('in reply to %(name)s', name=parent_post.public_author_name()) }}{% endif %}
   </a>
   {% endif %}
 
@@ -54,7 +55,7 @@
       <div class="gu-post__avatar">{{ post.public_author_initial() }}</div>
       <div class="gu-post__authormeta">
         <div class="gu-post__name">
-          {{ author_display }}{% if q_awarded %} <span class="gu-quality__mark" title="{{ _('Quality contribution') }}"><svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg><span class="gu-sr-only">{{ _('Quality contribution') }}</span></span>{% endif %}{% if post.author_age %}<span class="gu-post__age"> · {{ post.author_age }}</span>{% endif %}
+          {{ author_display }}<span id="qmark-{{ post.id }}">{% if q_awarded %} <span class="gu-quality__mark" title="{{ _('Quality contribution') }}"><svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg><span class="gu-sr-only">{{ _('Quality contribution') }}</span></span>{% endif %}</span>{% if post.author_age %}<span class="gu-post__age"> · {{ post.author_age }}</span>{% endif %}
           {% if author_linkedin %}
           <a href="{{ author_linkedin }}" target="_blank" rel="noopener noreferrer"
              class="gu-post__linkedin" aria-label="{{ _('LinkedIn profile of %(name)s', name=author_display) }}">
@@ -108,35 +109,8 @@
 
   {% if not is_deleted %}
 
-  {% if q_awarded %}
-  <details class="gu-quality">
-    <summary><svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg> {{ _('Quality contribution') }}: {{ quality_labels[qa.criterion][lang] if qa.criterion in quality_labels else '' }}</summary>
-    <div class="gu-quality__detail">
-      <p><strong>{{ qa.criterion }}</strong> {{ quality_labels[qa.criterion][lang] if qa.criterion in quality_labels else '' }}</p>
-      {% if qa.current_explanation(lang) %}<p>{{ qa.current_explanation(lang) }}</p>{% endif %}
-      {% if qa.decided_by %}<p class="gu-quality__meta">{{ _('Confirmed by %(name)s', name=qa.decided_by.public_name) }}</p>
-      {% elif qa.source == 'ai' %}<p class="gu-quality__meta">{% if lang == 'nl' %}Automatisch beoordeeld door de AI.{% else %}Judged automatically by the AI.{% endif %}</p>{% endif %}
-      <p><a href="{{ url_for('forum.forum_quality_page', post_id=post.id) }}" class="gu-quality__link">{% if lang == 'nl' %}Bekijk het oordeel, de gebruikte prompt en de discussie{% else %}View the judgement, the prompt used and the discussion{% endif %}</a></p>
-      {% if current_user.is_authenticated and not is_own %}
-        {% if qa.id in my_quality_reports %}
-        <p class="gu-quality__meta">{% if lang == 'nl' %}Je melding is ontvangen. Een moderator kijkt ernaar.{% else %}Your report has been received. A moderator will look at it.{% endif %}</p>
-        {% else %}
-        <form method="POST" action="{{ url_for('forum.forum_quality_report', post_id=post.id) }}">
-          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-          <input type="hidden" name="next" value="{{ request.path }}#post-{{ post.id }}">
-          <button type="submit" class="gu-post__action gu-post__action--ghost">{{ _('Report: not a quality contribution') }}</button>
-        </form>
-        {% endif %}
-      {% endif %}
-    </div>
-  </details>
-  {% elif qa and is_own and qa.status == 'afgewezen' %}
-  {# Alleen de auteur ziet waarom zijn bijdrage niet is toegekend. #}
-  <div class="gu-quality gu-quality--declined">
-    <p>{% if lang == 'nl' %}Niet aangemerkt als kwaliteitsbijdrage.{% else %}Not marked as a quality contribution.{% endif %}{% if qa.current_explanation(lang) %} {{ qa.current_explanation(lang) }}{% endif %}</p>
-    <p><a href="{{ url_for('forum.forum_quality_page', post_id=post.id) }}" class="gu-quality__link">{% if lang == 'nl' %}Bekijk het oordeel en de gebruikte prompt, of maak bezwaar{% else %}View the judgement and the prompt used, or object{% endif %}</a></p>
-  </div>
-  {% endif %}
+  {# Vaste plek voor het oordeel, zodat de statuspoll hem kan vullen (punt 8). #}
+  <div class="gu-quality-slot" id="quality-{{ post.id }}">{% include 'forum/_quality_block.html' %}</div>
 
   {% if current_user.can_moderate() and not is_own %}
   {% include 'forum/_quality_mod.html' %}

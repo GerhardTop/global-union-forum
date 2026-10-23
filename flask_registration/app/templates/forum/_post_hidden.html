@@ -1,0 +1,9 @@
+{#
+  Partial: forum/_post_hidden.html (punt 9)
+  Neutrale placeholder op de plek van een bijdrage die wegens onvoldoende
+  kwaliteit verborgen is voor deze lezer, maar zichtbare reacties heeft.
+  Geen auteur, tekst of tellingen; de reactiestructuur blijft leesbaar.
+#}
+<article class="gu-post gu-post--hidden" id="post-{{ post.id }}">
+  <p class="gu-post__hiddennote">{% if lang == 'nl' %}Bijdrage verborgen wegens onvoldoende kwaliteit.{% else %}Contribution hidden for insufficient quality.{% endif %}</p>
+</article>

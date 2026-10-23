@@ -48,9 +48,8 @@
                value="{{ form_data.email }}" placeholder="naam@voorbeeld.nl" required>
         {% if errors.email_in_use %}
         <p class="gu-join__formError">{{ _('This email address is already in use.') }}</p>
-        {% elif errors.email %}
-        <p class="gu-join__formError">{{ _('Enter a valid email address.') }}</p>
         {% endif %}
+        <p class="gu-join__formError" id="emailError"{% if not errors.email %} style="display:none;"{% endif %}>{{ _('Enter a valid email address.') }}</p>
       </div>
 
       <div class="gu-join__field">
@@ -64,7 +63,7 @@
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
-        <p class="{{ 'gu-join__formError' if errors.password else 'gu-pw-hint' }}">
+        <p class="{{ 'gu-join__formError' if errors.password else 'gu-pw-hint' }}" id="pwHint">
           {{ _('Password must be between 8 and 72 characters and contain one uppercase letter, one number and one special character.') }}
         </p>
         <div class="gu-pw-strength" id="pwStrength" hidden>
@@ -90,6 +89,9 @@
       <hr class="gu-join__divider">
       <p class="gu-join__optionalLabel">
         {{ _('Optional') }}
+      </p>
+      <p class="gu-join__hint gu-join__optionalNote">
+        {{ _('These details stay private. In your profile you can later choose to show your real name and LinkedIn; only then are they visible to others.') }}
       </p>
 
       <div class="gu-join__field gu-join__field--row">
@@ -134,13 +136,16 @@
       </div>
 
       <div class="gu-join__field" id="rulesField">
+        {# Punt 4: de spelregels volledig en compact in het formulier. #}
+        <section class="gu-join__rules" aria-labelledby="rulesHeading">
+          <p class="gu-join__optionalLabel" id="rulesHeading">{{ _('Ground rules') }}</p>
+          {% with compact=true %}{% include '_rules_list.html' %}{% endwith %}
+        </section>
         <label class="gu-join__check" for="accept_rules">
           <input type="checkbox" id="accept_rules" name="accept_rules" value="1"{% if form_data.accept_rules %} checked{% endif %}>
-          <span>{{ _('I accept the ground rules') }} (<a href="{{ url_for('main.spelregels') }}" target="_blank" rel="noopener">{{ _('read the ground rules') }}</a>)</span>
+          <span>{{ _('I accept the ground rules') }}</span>
         </label>
-        {% if errors.rules %}
-        <p class="gu-join__formError" id="rulesError">{{ _('Please accept the ground rules to continue.') }}</p>
-        {% endif %}
+        <p class="gu-join__formError" id="rulesError"{% if not errors.rules %} style="display:none;"{% endif %}>{{ _('Please accept the ground rules to continue.') }}</p>
       </div>
 
       <div class="gu-join__actions gu-join__actions--right">
@@ -182,6 +187,54 @@
 </script>
 {% endif %}
 <script nonce="{{ csp_nonce() }}">
+  // Punt 3: controleer vóór verzenden wat de browser al kan controleren
+  // (zelfde regels als de server), zodat je bij een vergeten vinkje of een
+  // typfout je wachtwoord niet opnieuw hoeft in te voeren. De server blijft
+  // het vangnet; bij een fout daar komen de niet-gevoelige velden terug.
+  (function () {
+    var form = document.querySelector('form.gu-join__panel');
+    if (!form) return;
+    var nl = {{ (lang == 'nl') | tojson }};
+    function el(id) { return document.getElementById(id); }
+    function mark(input, errorEl, bad, text) {
+      if (input) input.classList.toggle('gu-input--error', bad);
+      if (errorEl) {
+        if (text) errorEl.textContent = text;
+        errorEl.style.display = bad ? '' : 'none';
+      }
+      return bad;
+    }
+    function strong(pw) {
+      return pw.length >= 8 && new TextEncoder().encode(pw).length <= 72 &&
+             /[A-Z]/.test(pw) && /[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw);
+    }
+    form.addEventListener('submit', function (e) {
+      var u = el('username'), em = el('email'), pw = el('password'), pc = el('password_confirm');
+      var first = el('first_name'), last = el('last_name'), rules = el('accept_rules');
+      var problems = [];
+      if (mark(u, el('usernameError'), !/^[A-Za-z0-9_-]{3,20}$/.test(u.value.trim()),
+               nl ? '3-20 tekens: letters, cijfers, - en _' : '3-20 characters: letters, numbers, - and _')) problems.push(u);
+      if (mark(em, el('emailError'), !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim()))) problems.push(em);
+      var weak = !strong(pw.value);
+      pw.classList.toggle('gu-input--error', weak);
+      el('pwHint').className = weak ? 'gu-join__formError' : 'gu-pw-hint';
+      if (weak) problems.push(pw);
+      if (mark(pc, el('pwMismatchError'), !pc.value || pc.value !== pw.value)) problems.push(pc);
+      var pairBad = Boolean(first.value.trim()) !== Boolean(last.value.trim());
+      first.classList.toggle('gu-input--error', pairBad);
+      if (mark(last, el('namePairError'), pairBad)) problems.push(first);
+      if (mark(null, el('rulesError'), !rules.checked)) problems.push(rules);
+      if (problems.length) {
+        e.preventDefault();
+        problems[0].scrollIntoView({ block: 'center' });
+        problems[0].focus({ preventScroll: true });
+      }
+    });
+    el('accept_rules').addEventListener('change', function () {
+      if (this.checked) el('rulesError').style.display = 'none';
+    });
+  })();
+
   document.querySelectorAll('.gu-pw-toggle').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var input = this.closest('.gu-pw-wrap').querySelector('input');

@@ -7,6 +7,8 @@
 {% endblock %}
 
 {% block content_outer %}{% block content %}
+{# Sjabloon voor het gevulde ruitje, gebruikt door de statuspoll (punt 8). #}
+<template id="gu-quality-mark-template"> <span class="gu-quality__mark" title="{{ _('Quality contribution') }}"><svg class="gu-quality__diamond" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="currentColor"/></svg><span class="gu-sr-only">{{ _('Quality contribution') }}</span></span></template>
 <main class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
@@ -52,9 +54,6 @@
         {% if thread.is_closed %}
           <span aria-hidden="true">·</span>
           <span class="gu-forum__closed-badge">{% if lang == 'nl' %}Gesloten{% else %}Closed{% endif %}</span>
-        {% else %}
-          <span aria-hidden="true">·</span>
-          <span>{% if lang == 'nl' %}Reacties in andere talen kun je vertalen{% else %}Posts in another language can be translated{% endif %}</span>
         {% endif %}
       </div>
 
@@ -84,9 +83,12 @@
        genest (mobiel: 2, via CSS); alles daaronder als platte lijst op het
        laatste niveau, zie flat_descendants in forum_thread(). #}
     <div class="gu-thread">
+      {# Punt 9: een verborgen (afgewezen) bijdrage zonder zichtbare reacties
+         eronder valt weg; met reacties staat er een neutrale placeholder. #}
       {% for post in root_posts recursive %}
         {% set depth = loop.depth0 %}
-        {% include 'forum/_post.html' %}
+        {% if not (post.id in hidden_ids and descendant_counts.get(post.id, 0) == 0) %}
+        {% if post.id in hidden_ids %}{% include 'forum/_post_hidden.html' %}{% else %}{% include 'forum/_post.html' %}{% endif %}
         {% set children = replies_map.get(post.id, []) %}
         {% if children and depth < max_reply_indent %}
         <div class="gu-thread__replies gu-thread__replies--d{{ depth + 1 }}" id="replies-{{ post.id }}">
@@ -95,13 +97,16 @@
         {% elif children %}
         <div class="gu-thread__replies gu-thread__replies--flat" id="replies-{{ post.id }}">
           {% for fpost in flat_descendants[post.id] %}
+          {% if not (fpost.id in hidden_ids and descendant_counts.get(fpost.id, 0) == 0) %}
           <div class="gu-thread__flatitem" data-ancestors=" {{ flat_ancestors[fpost.id] | join(' ') }} ">
             {% set post = fpost %}
             {% set depth = depths[fpost.id] %}
-            {% include 'forum/_post.html' %}
+            {% if post.id in hidden_ids %}{% include 'forum/_post_hidden.html' %}{% else %}{% include 'forum/_post.html' %}{% endif %}
           </div>
+          {% endif %}
           {% endfor %}
         </div>
+        {% endif %}
         {% endif %}
       {% endfor %}
     </div>
@@ -133,9 +138,7 @@
         <span class="gu-upload-chosen" hidden></span>
       </label>
       <div class="gu-composer__actions">
-        <span class="gu-composer__hint">
-          {% if lang == 'nl' %}Je post wordt op verzoek vertaald voor andere lezers{% else %}Your post will be translated on request for other readers{% endif %}
-        </span>
+        <span class="gu-composer__hint"></span>
         <button type="submit" class="gu-btn gu-btn--primary" id="composerSubmit" disabled>
           {% if lang == 'nl' %}Plaats reactie{% else %}Post reply{% endif %} <span class="gu-arrow"></span>
         </button>
@@ -331,6 +334,38 @@
     });
 
     {% include 'forum/_translate_script.html' %}
+
+    // Punt 8: het kwaliteitsoordeel van een zojuist geplaatste eigen bijdrage
+    // verschijnt vanzelf. Elke 2 seconden de status vragen tot hij niet meer
+    // pending is, maximaal ongeveer 60 seconden. Blijft het oordeel uit, dan
+    // blijft het bericht gewoon staan; bij een volgende paginalading is het er.
+    document.querySelectorAll('[data-quality-poll]').forEach(function (article) {
+      var url = article.dataset.qualityPoll;
+      var postId = article.id.replace('post-', '');
+      var started = Date.now();
+      function done(data) {
+        var slot = document.getElementById('quality-' + postId);
+        if (slot && typeof data.html === 'string') slot.innerHTML = data.html;  // door de server gerenderd en ge-escaped
+        var mark = document.getElementById('qmark-' + postId);
+        if (mark && data.status === 'toegekend' && !mark.firstChild) {
+          var tpl = document.getElementById('gu-quality-mark-template');
+          if (tpl) mark.appendChild(tpl.content.cloneNode(true));
+        }
+        if (data.status === 'afgewezen') article.classList.add('gu-post--declined');
+      }
+      function poll() {
+        if (Date.now() - started > 60000) return;
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            if (!data) return;  // fout of rate limit: stoppen, de pagina blijft gewoon werken
+            if (data.status === 'pending') { setTimeout(poll, 2000); return; }
+            done(data);
+          })
+          .catch(function () { setTimeout(poll, 4000); });
+      }
+      setTimeout(poll, 1500);
+    });
   })();
 </script>
 {% endblock %}

@@ -213,8 +213,9 @@ class TestAutomaticJudgement:
         assert _award(post.id).status == 'afgewezen'
         own = _article(_req(_client(app, anna), 'GET', f'/forum/{thread.id}').get_data(as_text=True), post)
         assert 'Dit argument stond er al.' in own and 'of maak bezwaar' in own
-        other = _article(_req(_client(app, make_user()), 'GET', f'/forum/{thread.id}').get_data(as_text=True), post)
-        assert 'Dit argument stond er al.' not in other and 'gu-quality__mark' not in other
+        # Punt 9: voor anderen is een afgewezen bijdrage (zonder reacties) helemaal weg.
+        other = _req(_client(app, make_user()), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
+        assert f'id="post-{post.id}"' not in other and 'Dit argument stond er al.' not in other
 
     def test_judges_english_translation_with_style_excluded_once(self, app, db, make_user, thread, fake_ai):
         post = _reply(app, make_user(), thread, 'Dit is een Nederlandse bijdrage.')

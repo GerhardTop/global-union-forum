@@ -49,6 +49,20 @@ def _auto_translate():
     )
 
 
+def _hidden_for_viewer(post):
+    """Punt 9: is een afgewezen bijdrage verborgen voor de huidige lezer?
+    Niet voor de auteur zelf en niet voor moderators/admin (toezicht)."""
+    if not current_user.is_authenticated:
+        return True
+    return post.user_id != current_user.id and not current_user.can_moderate()
+
+
+def _is_hidden(post):
+    """Verborgen voor deze lezer: afgewezen kwaliteitsoordeel en geen auteur/moderator."""
+    award = post.quality_award
+    return award is not None and award.status == 'afgewezen' and _hidden_for_viewer(post)
+
+
 def _require_csrf():
     """CSRF per actie, zelfde aanpak als /feedback en de reactie-stroom:
     leeg FlaskForm, 400 bij een ontbrekend of ongeldig token."""
@@ -470,12 +484,16 @@ def _thread_list(closed=False):
         .order_by(last_post_sq.c.last_at.desc().nulls_last(), Thread.created_at.desc())
         .all()
     )
+    # Punt 9: afgewezen bijdragen tellen niet mee in de zichtbare tellingen.
+    hidden = {pid for (pid,) in db.session.query(QualityAward.post_id)
+              .filter(QualityAward.status == 'afgewezen')}
     result = []
     for thread, _ in rows:
-        last_post_obj = thread.posts[-1] if thread.posts else None
+        visible = [p for p in thread.posts if p.id not in hidden]
+        last_post_obj = visible[-1] if visible else None
         result.append({
             'thread': thread,
-            'reply_count': len(thread.posts),
+            'reply_count': len(visible),
             'last_time_ago': last_post_obj.time_ago if last_post_obj else None,
         })
     return result
@@ -530,7 +548,18 @@ def forum_thread(thread_id):
         # horen — anders kan een reply-koppeling naar een post in een ander
         # thread wijzen (geen IDOR, alle posts zijn al publiek, maar wel een
         # corrupte reply-boomstructuur).
-        if parent_id is not None and not Post.query.filter_by(id=parent_id, thread_id=thread_id).first():
+        parent = Post.query.filter_by(id=parent_id, thread_id=thread_id).first() if parent_id is not None else None
+        if parent is not None and parent.user_id == current_user.id:
+            # Punt 7: niet reageren op je eigen bericht (de knop is ook verborgen).
+            flash(
+                'Je kunt niet reageren op je eigen bericht.' if session.get('lang', 'nl') == 'nl'
+                else 'You cannot reply to your own post.',
+                'error'
+            )
+            return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#post-{parent.id}')
+        if parent is not None and _is_hidden(parent):
+            parent = None  # verborgen voor deze lezer: behandelen alsof hij niet bestaat
+        if parent_id is not None and parent is None:
             flash(
                 'Ongeldige reactie: het bericht waarop je reageert bestaat niet in dit gesprek.'
                 if session.get('lang', 'nl') == 'nl'
@@ -566,6 +595,14 @@ def forum_thread(thread_id):
             replies_map.setdefault(p.parent_id, []).append(p)
     posts_by_id = {p.id: p for p in all_posts}
 
+    # Punt 9: een bijdrage met een afgewezen kwaliteitsoordeel is verborgen
+    # voor andere lezers; de auteur en moderators zien hem wel (gemarkeerd).
+    all_ids = [p.id for p in all_posts]
+    quality_awards = {a.post_id: a for a in
+                      QualityAward.query.filter(QualityAward.post_id.in_(all_ids)).all()} if all_ids else {}
+    hidden_ids = {pid for pid, a in quality_awards.items()
+                  if a.status == 'afgewezen' and _hidden_for_viewer(posts_by_id[pid])}
+
     # Diepte per bericht, breedte-eerst vanaf de roots (geen recursie, dus
     # ook een extreem lange keten kan de pagina niet laten crashen). In
     # deze volgorde komt een ouder altijd vóór zijn kinderen.
@@ -577,11 +614,13 @@ def forum_thread(thread_id):
         tree_order.append(p)
         queue.extend((c, d + 1) for c in replies_map.get(p.id, []))
 
-    # Totaal aantal onderliggende reacties per bericht (alle niveaus), voor
-    # de inklap-knop.
+    # Aantal ZICHTBARE onderliggende reacties per bericht (alle niveaus), voor
+    # de inklap-knop. Verborgen bijdragen tellen niet mee; een verborgen
+    # bijdrage zonder zichtbare reacties eronder wordt helemaal weggelaten.
     descendant_counts = {}
     for p in reversed(tree_order):
-        descendant_counts[p.id] = sum(1 + descendant_counts[c.id] for c in replies_map.get(p.id, []))
+        descendant_counts[p.id] = sum((0 if c.id in hidden_ids else 1) + descendant_counts[c.id]
+                                      for c in replies_map.get(p.id, []))
 
     # Voorbij de dieptegrens wordt niet verder ingesprongen: alles onder een
     # bericht op MAX_REPLY_INDENT komt als één platte, chronologische lijst
@@ -605,10 +644,7 @@ def forum_thread(thread_id):
             flat_ancestors[p.id] = (flat_ancestors.get(parent.id, []) + [parent.id]
                                     if depths[parent.id] > MAX_REPLY_INDENT else [])
 
-    all_ids = [p.id for p in all_posts]
     stance_counts = _stance_counts(all_ids)
-    quality_awards = {a.post_id: a for a in
-                      QualityAward.query.filter(QualityAward.post_id.in_(all_ids)).all()} if all_ids else {}
     my_quality_reports = set()
     if current_user.is_authenticated and quality_awards:
         my_quality_reports = {r.award_id for r in QualityReport.query.filter(
@@ -626,11 +662,21 @@ def forum_thread(thread_id):
         }
 
     auto_translate = _auto_translate()
+    # Punt 8: eigen, verse bijdragen zonder oordeel worden gepold tot het
+    # (best-effort) oordeel er is. Ouder dan 2 minuten: niet meer wachten.
+    poll_ids = set()
+    if current_user.is_authenticated:
+        fresh = datetime.utcnow() - timedelta(minutes=2)
+        poll_ids = {p.id for p in all_posts
+                    if p.user_id == current_user.id and p.id not in quality_awards and not p.is_demo
+                    and p.body != '[bericht verwijderd]' and p.created_at and p.created_at >= fresh}
     return render_template(
         'forum/thread.html',
         thread=thread,
         reply_form=reply_form,
-        posts=all_posts,
+        posts=[p for p in all_posts if p.id not in hidden_ids],  # zichtbare tellingen
+        hidden_ids=hidden_ids,
+        poll_ids=poll_ids,
         root_posts=root_posts,
         replies_map=replies_map,
         posts_by_id=posts_by_id,
@@ -660,6 +706,8 @@ def forum_thread(thread_id):
 def forum_translate(post_id):
     _require_csrf()
     post = Post.query.get_or_404(post_id)
+    if _is_hidden(post):
+        abort(404)
     user_lang = session.get('lang', 'nl')
 
     if user_lang == post.source_lang:
@@ -725,6 +773,8 @@ def forum_stance(post_id):
     keuze in. Eén rij per gebruiker per bijdrage."""
     _require_csrf()
     post = Post.query.get_or_404(post_id)
+    if _is_hidden(post):
+        abort(404)
     if not current_user.can_contribute():
         return jsonify({'error': 'not allowed'}), 403
     if post.user_id == current_user.id:
@@ -1005,6 +1055,33 @@ def forum_quality_objection_translate(objection_id):
     if objection.ai_responded_at is None:
         return jsonify({'error': 'no content'}), 400
     return _translate_ai_text(objection, 'ai_response', objection.text_lang)
+
+
+@forum_bp.route('/forum/kwaliteit/<int:post_id>/status')
+@login_required
+@limiter.limit("120 per minute", key_func=lambda: f"forum-quality-status-user-{current_user.get_id()}")
+def forum_quality_status(post_id):
+    """Punt 8: lichte statuspoll voor het kwaliteitsoordeel van een bijdrage.
+    pending (nog geen oordeel), toegekend of afgewezen, met de HTML van het
+    oordeelblok zoals de pagina die zou tonen (reden alleen voor de auteur en
+    moderators). Een verborgen bijdrage geeft voor anderen 404."""
+    post = Post.query.get_or_404(post_id)
+    if _is_hidden(post):
+        abort(404)
+    qa = post.quality_award
+    if qa is None:
+        return jsonify({'status': 'pending'})
+    is_own = post.user_id == current_user.id
+    q_awarded = qa.status == 'toegekend' and post.body != '[bericht verwijderd]'
+    reported = {qa.id} if QualityReport.query.filter_by(
+        award_id=qa.id, reporter_id=current_user.id, decision=None).first() else set()
+    html = render_template('forum/_quality_block.html', post=post, qa=qa, q_awarded=q_awarded,
+                           is_own=is_own, my_quality_reports=reported,
+                           return_path=url_for('forum.forum_thread', thread_id=post.thread_id))
+    return jsonify({'status': qa.status, 'criterion': qa.criterion if q_awarded else None,
+                    'html': html,
+                    'reason': qa.current_explanation(session.get('lang', 'nl'))
+                    if qa.status == 'afgewezen' and (is_own or current_user.can_moderate()) else None})
 
 
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/bezwaar', methods=['POST'])

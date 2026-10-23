@@ -11,47 +11,9 @@
 
   <div class="gu-join__panel">
 
-    <p>
-      {% if lang == 'nl' %}Global Union Forum is een plek voor een serieus gesprek, met deelnemers van overal: experts en leken, voorstanders en twijfelaars. Deze vijf spelregels houden het gesprek eerlijk en de moeite waard. Wie bijdraagt, gaat ermee akkoord.{% else %}Global Union Forum is a place for a serious conversation, with participants from everywhere: experts and laypeople, supporters and sceptics. These five ground rules keep the conversation fair and worthwhile. Everyone who contributes agrees to them.{% endif %}
-    </p>
 
-    <ol class="gu-rules">
-      <li class="gu-rules__item" id="r1">
-        <span class="gu-rules__n">R1</span>
-        <div>
-          <h2 class="gu-rules__title">{% if lang == 'nl' %}Onderbouwd{% else %}Substantiated{% endif %}</h2>
-          <p>{% if lang == 'nl' %}Een feit heeft een bron. Een mening mag je altijd geven, maar maak duidelijk wat feit is en wat mening.{% else %}A fact has a source. You are always free to give your opinion, but make clear what is fact and what is opinion.{% endif %}</p>
-        </div>
-      </li>
-      <li class="gu-rules__item" id="r2">
-        <span class="gu-rules__n">R2</span>
-        <div>
-          <h2 class="gu-rules__title">{% if lang == 'nl' %}Over het idee, niet de persoon{% else %}About the idea, not the person{% endif %}</h2>
-          <p>{% if lang == 'nl' %}Bekritiseer argumenten, geen mensen. Geen persoonlijke aanvallen, beledigingen of aannames over iemands bedoelingen.{% else %}Criticise arguments, not people. No personal attacks, insults or assumptions about someone's intentions.{% endif %}</p>
-        </div>
-      </li>
-      <li class="gu-rules__item" id="r3">
-        <span class="gu-rules__n">R3</span>
-        <div>
-          <h2 class="gu-rules__title">{% if lang == 'nl' %}Concreet{% else %}Concrete{% endif %}</h2>
-          <p>{% if lang == 'nl' %}Maak je punt zo specifiek mogelijk: een voorbeeld, een cijfer, een voorstel. Liever één helder argument dan tien vage.{% else %}Make your point as specific as possible: an example, a figure, a proposal. One clear argument beats ten vague ones.{% endif %}</p>
-        </div>
-      </li>
-      <li class="gu-rules__item" id="r4">
-        <span class="gu-rules__n">R4</span>
-        <div>
-          <h2 class="gu-rules__title">{% if lang == 'nl' %}Bij het onderwerp{% else %}On topic{% endif %}</h2>
-          <p>{% if lang == 'nl' %}Reageer op de vraag van het gesprek. Heb je een ander onderwerp? Start dan een nieuw gesprek.{% else %}Respond to the question of the conversation. Have a different topic? Then start a new conversation.{% endif %}</p>
-        </div>
-      </li>
-      <li class="gu-rules__item" id="r5">
-        <span class="gu-rules__n">R5</span>
-        <div>
-          <h2 class="gu-rules__title">{% if lang == 'nl' %}Eén account per persoon{% else %}One account per person{% endif %}</h2>
-          <p>{% if lang == 'nl' %}Iedereen spreekt met één stem. Meerdere accounts per persoon zijn niet toegestaan, ook niet onder een ander pseudoniem.{% else %}Everyone speaks with one voice. More than one account per person is not allowed, not even under another pseudonym.{% endif %}</p>
-        </div>
-      </li>
-    </ol>
+
+    {% with compact=false %}{% include '_rules_list.html' %}{% endwith %}
 
     <p style="color: var(--gu-fg-2);">
       {% if lang == 'nl' %}Moderators kunnen berichten die deze spelregels overtreden bewerken of verwijderen, en een gesprek sluiten.{% else %}Moderators can edit or remove posts that break these ground rules, and close a conversation.{% endif %}

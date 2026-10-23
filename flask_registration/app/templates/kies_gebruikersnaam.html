@@ -42,9 +42,13 @@
 
       {% if needs_rules %}
       <div class="gu-join__field" id="rulesField">
+        <section class="gu-join__rules" aria-labelledby="rulesHeading">
+          <p class="gu-join__optionalLabel" id="rulesHeading">{{ _('Ground rules') }}</p>
+          {% with compact=true %}{% include '_rules_list.html' %}{% endwith %}
+        </section>
         <label class="gu-join__check" for="accept_rules">
           <input type="checkbox" id="accept_rules" name="accept_rules" value="1"{% if form_data.accept_rules %} checked{% endif %}>
-          <span>{{ _('I accept the ground rules') }} (<a href="{{ url_for('main.spelregels') }}" target="_blank" rel="noopener">{{ _('read the ground rules') }}</a>)</span>
+          <span>{{ _('I accept the ground rules') }}</span>
         </label>
         {% if errors.rules %}
         <p class="gu-join__formError" id="rulesError">{{ _('Please accept the ground rules to continue.') }}</p>
