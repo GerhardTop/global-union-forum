@@ -21,7 +21,11 @@ forum_bp = Blueprint("forum", __name__)
 @forum_bp.app_context_processor
 def _inject_forum_action_form():
     # Lui gebruikt: het token wordt pas gemaakt als een template het rendert.
-    return {'forum_action_form': ForumActionForm(), 'quality_labels': quality.CRITERIA_LABELS}
+    from app import status
+    return {'forum_action_form': ForumActionForm(), 'quality_labels': quality.CRITERIA_LABELS,
+            # Fase C2: statuslabels en (lui) de ongeziene promotie voor de melding.
+            'status_labels': status.STATUS_LABELS,
+            'pending_promotion': lambda: status.pending_promotion(current_user)}
 
 
 def _rules_first_redirect():
@@ -912,6 +916,7 @@ def forum_quality_decide(post_id):
     award.decided_by_id = current_user.id
     award.decided_at = datetime.utcnow()
     db.session.commit()
+    quality._recalc_author(post)  # fase C2, alleen omhoog
     return _quality_back(post)
 
 
@@ -1059,6 +1064,7 @@ def forum_quality_objection_decide(objection_id):
             award.moderator_note = note
         award.decided_by_id, award.decided_at = current_user.id, now
     db.session.commit()
+    quality._recalc_author(award.post)  # fase C2, alleen omhoog
     return redirect(url_for('forum.forum_quality_page', post_id=award.post_id) + f'#bezwaar-{objection.id}')
 
 
@@ -1108,4 +1114,5 @@ def forum_quality_report_decide(report_id):
         award.decided_by_id = current_user.id
         award.decided_at = now
     db.session.commit()
+    quality._recalc_author(award.post)  # fase C2, alleen omhoog (nooit lager)
     return redirect(safe_next(request.form.get('next'), url_for('admin.moderator_dashboard')))

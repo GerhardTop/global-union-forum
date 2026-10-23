@@ -9,6 +9,22 @@ from app import db, login_manager
 ROLES = ('contributor', 'voter', 'moderator', 'senior_moderator')
 _MODERATING_ROLES = ('moderator', 'senior_moderator')
 
+# Forum fase C2: verdiende status op basis van toegekende kwaliteitsbijdragen
+# (zie app/status.py), van laag naar hoog. Staat los van de handmatige rol;
+# getoond wordt de hoogste van de twee. Een verdiende 'moderator' of 'senior'
+# geeft GEEN moderatiemacht (can_moderate kijkt hier niet naar).
+STATUS_LADDER = ('reader', 'contributor', 'voter', 'moderator', 'senior')
+# Handmatige rol (fase A) op dezelfde ladder, alleen voor de weergave. De rol
+# 'contributor' is sinds fase A de standaard voor iedereen die de spelregels
+# accepteerde, geen bewuste verhoging; die telt hier dus niet (anders zou
+# iedereen 'Bijdrager' tonen, terwijl Bijdrager in C2 een toegekende
+# kwaliteitsbijdrage vereist).
+_MANUAL_STATUS = {'voter': 'voter', 'moderator': 'moderator', 'senior_moderator': 'senior'}
+
+
+def status_rank(status):
+    return STATUS_LADDER.index(status) if status in STATUS_LADDER else 0
+
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
@@ -43,6 +59,9 @@ class User(UserMixin, db.Model):
     # als de gebruiker dit zelf aanzet (met bevestiging, zie profiel) komen
     # de echte naam en LinkedIn publiek bij zijn bijdragen te staan.
     show_real_name      = db.Column(db.Boolean, nullable=True, default=False)
+    # Forum fase C2: verdiende status (alleen omhoog, zie app/status.py).
+    # NULL betekent reader. Promoties met tijdstip staan in QualityPromotion.
+    quality_status      = db.Column(db.String(12), nullable=True, default=None)
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -56,8 +75,31 @@ class User(UserMixin, db.Model):
         return bool(self.is_admin) or (self.rules_accepted_at is not None and self._rank() >= 1)
 
     def can_vote(self):
-        """Voor latere fasen (stemmen); nu nog nergens afgedwongen."""
-        return bool(self.is_admin) or (self.rules_accepted_at is not None and self._rank() >= 2)
+        """Stemrecht: verdiend (status voter of hoger, fase C2) of handmatig
+        toegekend (rol voter of hoger). Er is nog geen bindende stemfunctie;
+        dit recht wordt bewaard voor later en nu alleen als status getoond."""
+        return (bool(self.is_admin)
+                or status_rank(self.quality_status) >= status_rank('voter')
+                or (self.rules_accepted_at is not None and self._rank() >= 2))
+
+    @property
+    def manual_status(self):
+        """De handmatige rol (fase A) vertaald naar de statusladder."""
+        if self.is_admin:
+            return 'senior'
+        status = _MANUAL_STATUS.get(self.role, 'reader')
+        if self.is_moderator and status_rank(status) < status_rank('moderator'):
+            status = 'moderator'
+        return status
+
+    @property
+    def earned_status(self):
+        return self.quality_status if self.quality_status in STATUS_LADDER else 'reader'
+
+    @property
+    def effective_status(self):
+        """Getoonde status: de hoogste van verdiend en handmatig."""
+        return max(self.earned_status, self.manual_status, key=status_rank)
 
     def can_moderate(self):
         """Draden sluiten/heropenen, andermans berichten bewerken/verwijderen.
@@ -374,3 +416,31 @@ class QualityObjection(db.Model):
         """De reactie zoals de AI hem schreef; de andere taal is alleen cache."""
         lang = self.text_lang
         return (self.ai_response_nl if lang == 'nl' else self.ai_response_en) or self.ai_response(lang)
+
+
+class AppSetting(db.Model):
+    """Door de admin instelbare instellingen (sleutel, geheel getal), zoals de
+    drempels voor de verdiende status (zie app/status.py)."""
+    __tablename__ = "app_settings"
+
+    key        = db.Column(db.String(50), primary_key=True)
+    value      = db.Column(db.Integer, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+
+
+class QualityPromotion(db.Model):
+    """Promotielog: wanneer een gebruiker een verdiend niveau bereikte. seen_at
+    is voor de eenmalige melding (alleen bij voter en hoger)."""
+    __tablename__ = "quality_promotions"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    level       = db.Column(db.String(12), nullable=False)
+    promoted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    seen_at     = db.Column(db.DateTime, nullable=True)
+
+    # Hoort volledig bij de gebruiker: verwijder je de gebruiker, dan ook zijn log.
+    user = db.relationship('User', backref=db.backref('promotions', lazy=True,
+                                                      order_by='QualityPromotion.promoted_at',
+                                                      cascade='all, delete-orphan'))

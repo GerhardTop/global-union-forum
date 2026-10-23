@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{#
+  Forum fase C2: taal-monitor tegen stijl-bias. Telt per taal van de bijdrage
+  (source_lang) hoe vaak de AI zelf toekende (zijn eigen oordeel, los van
+  latere aanpassingen door moderators). Alleen voor admin en moderators.
+#}
+{% block title %}{% if lang == 'nl' %}Taal-monitor{% else %}Language monitor{% endif %} · Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+{% set periods = [('7', 'laatste 7 dagen', 'last 7 days'), ('30', 'laatste 30 dagen', 'last 30 days'), ('alles', 'alles', 'all time')] %}
+<div class="gu-admin" lang="{{ lang }}">
+  <div class="gu-admin__inner">
+    <div class="gu-admin__head">
+      <p class="gu-eyebrow"><a href="{{ url_for('admin.moderator_dashboard') }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}Beheer{% else %}Management{% endif %}</a></p>
+      <h1 class="gu-admin__title">{% if lang == 'nl' %}Taal-monitor{% else %}Language monitor{% endif %}</h1>
+      <p class="gu-quality__meta">{% if lang == 'nl' %}Kent de AI in de ene taal stelselmatig vaker toe dan in de andere? De taal is die waarin de auteur de bijdrage indiende. Geteld wordt het oordeel van de AI zelf.{% else %}Does the AI systematically award more often in one language than in the other? The language is the one the author submitted the contribution in. The AI's own judgement is counted.{% endif %}</p>
+    </div>
+
+    <nav class="gu-monitor__periods" aria-label="{% if lang == 'nl' %}Periode{% else %}Period{% endif %}">
+      {% for key, nl, en in periods %}
+      <a href="{{ url_for('admin.language_monitor', periode=key, taal=sample_lang) }}"
+         class="gu-lang-switch__btn{% if period == key %} is-active{% endif %}"{% if period == key %} aria-current="page"{% endif %}>{% if lang == 'nl' %}{{ nl }}{% else %}{{ en }}{% endif %}</a>
+      {% endfor %}
+    </nav>
+
+    <section class="gu-admin__section">
+      <div class="gu-admin-table-wrap">
+        <table class="gu-admin-table gu-monitor__table">
+          <thead>
+            <tr>
+              <th>{% if lang == 'nl' %}Taal{% else %}Language{% endif %}</th>
+              <th>{% if lang == 'nl' %}Beoordeeld{% else %}Judged{% endif %}</th>
+              <th>{% if lang == 'nl' %}Toegekend{% else %}Awarded{% endif %}</th>
+              <th>{% if lang == 'nl' %}Percentage toegekend{% else %}Share awarded{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for code in ['nl', 'en'] %}
+            {% set row = stats[code] %}
+            <tr>
+              <td>{{ code | upper }}</td>
+              <td data-monitor="{{ code }}-judged">{{ row.judged }}</td>
+              <td data-monitor="{{ code }}-awarded">{{ row.awarded }}</td>
+              <td data-monitor="{{ code }}-pct">{% if row.pct is not none %}{{ '%.1f' % row.pct }}%{% else %}{% if lang == 'nl' %}geen data{% else %}no data{% endif %}{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="gu-monitor__diff" data-monitor="difference">
+        {% if lang == 'nl' %}Verschil (NL min EN){% else %}Difference (NL minus EN){% endif %}:
+        {% if stats.difference is not none %}<strong>{{ '%+.1f' % stats.difference }} {% if lang == 'nl' %}procentpunt{% else %}percentage points{% endif %}</strong>
+        {% else %}{% if lang == 'nl' %}nog niet te berekenen (een van de talen heeft geen beoordelingen){% else %}cannot be calculated yet (one of the languages has no judgements){% endif %}{% endif %}
+      </p>
+    </section>
+
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Steekproef: recentste oordelen{% else %}Sample: most recent judgements{% endif %}</p>
+      <nav class="gu-monitor__periods">
+        {% for code, nl, en in [(None, 'alle talen', 'all languages'), ('nl', 'NL', 'NL'), ('en', 'EN', 'EN')] %}
+        <a href="{{ url_for('admin.language_monitor', periode=period, taal=code) }}"
+           class="gu-lang-switch__btn{% if sample_lang == code %} is-active{% endif %}">{% if lang == 'nl' %}{{ nl }}{% else %}{{ en }}{% endif %}</a>
+        {% endfor %}
+      </nav>
+      {% if sample %}
+      <div class="gu-admin-table-wrap">
+        <table class="gu-admin-table">
+          <thead>
+            <tr>
+              <th>{% if lang == 'nl' %}Taal{% else %}Language{% endif %}</th>
+              <th>{% if lang == 'nl' %}Oordeel AI{% else %}AI judgement{% endif %}</th>
+              <th>{% if lang == 'nl' %}Huidige stand{% else %}Current status{% endif %}</th>
+              <th>{% if lang == 'nl' %}Bijdrage{% else %}Contribution{% endif %}</th>
+              <th>{% if lang == 'nl' %}Datum{% else %}Date{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in sample %}
+            <tr data-sample-lang="{{ a.post.source_lang }}">
+              <td>{{ (a.post.source_lang or '?') | upper }}</td>
+              <td>{% if a.ai_criterion %}{% if lang == 'nl' %}toegekend{% else %}awarded{% endif %} {{ a.ai_criterion }}{% else %}{% if lang == 'nl' %}afgewezen{% else %}declined{% endif %}{% endif %}</td>
+              <td>{% if a.status == 'toegekend' %}{% if lang == 'nl' %}toegekend{% else %}awarded{% endif %} {{ a.criterion }}{% else %}{% if lang == 'nl' %}afgewezen{% else %}declined{% endif %}{% endif %}</td>
+              <td><a href="{{ url_for('forum.forum_quality_page', post_id=a.post_id) }}" class="gu-admin-table__threadlink">{{ (a.post.body or '')[:80] }}{% if (a.post.body or '')|length > 80 %}…{% endif %}</a></td>
+              <td class="gu-admin-table__date">{{ a.created_at.strftime('%d-%m-%Y') if a.created_at else '' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="gu-admin__empty">{% if lang == 'nl' %}Nog geen oordelen.{% else %}No judgements yet.{% endif %}</p>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}{% endblock %}

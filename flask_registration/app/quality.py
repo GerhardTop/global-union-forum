@@ -200,11 +200,23 @@ def judge_post(post_id):
         )
         db.session.add(award)
         db.session.commit()
+        _recalc_author(post)  # fase C2: verdiende status van de auteur
         return award
     except Exception as exc:  # best-effort: geen oordeel, de bijdrage blijft gewoon staan
         db.session.rollback()
         current_app.logger.error('Kwaliteitsbeoordeling mislukt voor post %s: %s', post_id, exc)
         return None
+
+
+def _recalc_author(post):
+    """Fase C2: na elk geschreven of gewijzigd oordeel de verdiende status
+    van de auteur herberekenen (alleen omhoog). Mag het oordeel nooit breken."""
+    try:
+        from app.status import recalc_for_post
+        recalc_for_post(post)
+    except Exception as exc:
+        db.session.rollback()
+        current_app.logger.error('Herberekenen status mislukt voor post %s: %s', post.id, exc)
 
 
 def _prompt_record(system, user_msg):
@@ -315,7 +327,10 @@ def schedule_objection_response(objection_id):
 def detach_user(user_id):
     """Vóór het verwijderen van een gebruiker: zijn meldingen weg, zijn naam
     als beslisser of bezwaarmaker los (de beslissing en de thread blijven)."""
-    from app.models import QualityObjection
+    from app.models import AppSetting, QualityObjection, QualityPromotion
+    QualityPromotion.query.filter_by(user_id=user_id).delete(synchronize_session=False)
+    AppSetting.query.filter_by(updated_by_id=user_id).update(
+        {AppSetting.updated_by_id: None}, synchronize_session=False)
     QualityObjection.query.filter_by(author_id=user_id).update(
         {QualityObjection.author_id: None}, synchronize_session=False)
     QualityObjection.query.filter_by(decided_by_id=user_id).update(
@@ -366,4 +381,6 @@ def seed_demo_awards():
             post_lang=post.source_lang, explanation_nl=nl, explanation_en=en,
             decided_at=datetime.utcnow(),
         ))
+        db.session.commit()
+        _recalc_author(post)
     db.session.commit()

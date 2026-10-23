@@ -73,6 +73,22 @@
             </div>
             {% endif %}
 
+            {# Fase C2: eenmalige melding bij een promotie naar stemmer of hoger. #}
+            {% set promo = pending_promotion() if current_user.is_authenticated else None %}
+            {% if promo %}
+            <div class="gu-promotion-banner" role="status">
+              <span>
+                {% if lang == 'nl' %}Gefeliciteerd! Op basis van je kwaliteitsbijdragen heb je nu de status{% else %}Congratulations! Based on your quality contributions you now have the status{% endif %}
+                <span class="gu-status-badge gu-status-badge--{{ promo.level }}">{{ status_labels[promo.level][lang] }}</span>{% if promo.level == 'voter' %}{% if lang == 'nl' %}, met stemrecht{% else %}, with the right to vote{% endif %}{% endif %}.
+              </span>
+              <form method="POST" action="{{ url_for('profile.promotie_gezien') }}" style="margin:0;">
+                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                <input type="hidden" name="next" value="{{ request.full_path }}">
+                <button type="submit" class="gu-post__action gu-post__action--ghost">{% if lang == 'nl' %}Sluiten{% else %}Dismiss{% endif %}</button>
+              </form>
+            </div>
+            {% endif %}
+
             {% block content_outer %}<div class="gu-container">{% block content %}{% endblock %}</div>{% endblock %}
         </main>
 

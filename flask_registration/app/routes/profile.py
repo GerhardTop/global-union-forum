@@ -98,7 +98,15 @@ def profile():
         password_mismatch=errors.get("password_mismatch", False),
         current_password_empty=errors.get("current_password_empty", False),
         name_display_error=errors.get("name_display_error"),
+        **_status_context(),
     )
+
+
+def _status_context():
+    """Fase C2: verdiende status voor de profielpagina, met de voortgang."""
+    from app import status
+    count, topics = status.quality_counts(current_user.id)
+    return {'quality_count': count, 'quality_topics': topics, 'thresholds': status.get_thresholds()}
 
 
 @profile_bp.route("/profiel/naamweergave", methods=["POST"])
@@ -127,6 +135,17 @@ def profiel_naamweergave():
     if is_xhr:
         return jsonify({'ok': True, 'show_real_name': want_real})
     return redirect(url_for("profile.profile") + "#guNameDisplay")
+
+
+@profile_bp.route("/profiel/promotie-gezien", methods=["POST"])
+@login_required
+def promotie_gezien():
+    """Sluit de eenmalige promotiemelding (fase C2)."""
+    from app import status
+    if not ForumActionForm().validate_on_submit():
+        abort(400)
+    status.mark_promotions_seen(current_user.id)
+    return redirect(safe_next(request.form.get("next"), url_for("main.index")))
 
 
 @profile_bp.route("/profiel/vertaalvoorkeur", methods=["POST"])

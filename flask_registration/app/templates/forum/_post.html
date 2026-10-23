@@ -71,6 +71,11 @@
           {% elif post.author_role == 'expert' %}
             <span class="gu-post__role gu-post__role--expert">Expert</span>
           {% endif %}
+          {# Fase C2: status (hoogste van verdiend en handmatig), naast de bestaande badges. #}
+          {% if post.author and post.author.effective_status != 'reader' %}
+            {% set st = post.author.effective_status %}
+            <span class="gu-status-badge gu-status-badge--{{ st }}">{{ status_labels[st][lang] }}</span>
+          {% endif %}
           {% if badge %}<span class="gu-post__badge">{{ badge }}</span>{% endif %}
           <span class="gu-post__time">{{ time }}</span>
         </div>

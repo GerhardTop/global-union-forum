@@ -2732,6 +2732,16 @@ body {
 .gu-quality-mod__actions { display: flex; gap: 8px; }
 .gu-btn--sm { padding: 6px 12px; font-size: 0.8125rem; }
 .gu-admin__empty { color: var(--gu-fg-3); font-size: 0.875rem; }
+/* Fase C2: drempels, taal-monitor, statusbadge */
+.gu-admin__links { margin: 8px 0 0; font-size: 0.875rem; }
+.gu-thresholds { max-width: 520px; margin-top: 16px; }
+.gu-monitor__periods { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.gu-monitor__diff { margin-top: 12px; font-size: 0.9375rem; color: var(--gu-fg-2); }
+.gu-status-badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 500; border: 1px solid var(--gu-border); color: var(--gu-fg-2); background: var(--gu-paper); }
+.gu-status-badge--voter { border-color: var(--gu-globe); color: var(--gu-globe-deep); }
+.gu-status-badge--moderator, .gu-status-badge--senior { border-color: var(--gu-quality); color: var(--gu-quality); }
+.gu-promotion-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; margin: 0 auto; max-width: 1280px; padding: 12px 64px; background: var(--gu-bg-soft); border-bottom: 1px solid var(--gu-border); font-size: 0.9375rem; }
+@media (max-width: 600px) { .gu-promotion-banner { padding: 12px 20px; } }
 .gu-quality__link { color: var(--gu-link); font-size: 0.8125rem; }
 /* Discussiepagina bij een kwaliteitsoordeel */
 .gu-qthread__post { margin: 16px 0 0; padding: 12px 16px; border-left: 3px solid var(--gu-border); background: var(--gu-bg-soft); border-radius: 0 8px 8px 0; }

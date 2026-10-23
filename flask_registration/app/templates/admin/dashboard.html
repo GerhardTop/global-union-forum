@@ -8,6 +8,10 @@
     <div class="gu-admin__head">
       <p class="gu-eyebrow">Beheer</p>
       <h1 class="gu-admin__title">Admin Dashboard</h1>
+      <p class="gu-admin__links">
+        <a href="{{ url_for('admin.admin_thresholds') }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}Drempels verdiende status{% else %}Earned status thresholds{% endif %}</a>
+        · <a href="{{ url_for('admin.language_monitor') }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}Taal-monitor{% else %}Language monitor{% endif %}</a>
+      </p>
     </div>
 
     {# ── Gebruikersstatistieken ──────────────────────────────── #}

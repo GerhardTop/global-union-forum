@@ -21,6 +21,30 @@
         <span class="gu-profile__info-label">{{ _('Email address') }}</span>
         <span class="gu-profile__info-value">{{ current_user.email }}</span>
       </div>
+      {# Fase C2: status, verdiend met kwaliteitsbijdragen (alleen omhoog). #}
+      {% set st = current_user.effective_status %}
+      <div class="gu-profile__info-row" id="guStatus">
+        <span class="gu-profile__info-label">Status</span>
+        <span class="gu-profile__info-value">
+          <span class="gu-status-badge gu-status-badge--{{ st }}">{{ status_labels[st][lang] }}</span>
+          {% if current_user.can_vote() %}<span class="gu-quality__meta">· {% if lang == 'nl' %}stemrecht{% else %}right to vote{% endif %}</span>{% endif %}
+        </span>
+      </div>
+      <div class="gu-profile__info-row">
+        <span class="gu-profile__info-label">{% if lang == 'nl' %}Verdiend{% else %}Earned{% endif %}</span>
+        <span class="gu-profile__info-value">
+          {{ status_labels[current_user.earned_status][lang] }}:
+          {% if lang == 'nl' %}{{ quality_count }} kwaliteitsbijdrage{{ 'n' if quality_count != 1 else '' }} in {{ quality_topics }} onderwerp{{ 'en' if quality_topics != 1 else '' }}{% else %}{{ quality_count }} quality contribution{{ 's' if quality_count != 1 else '' }} in {{ quality_topics }} topic{{ 's' if quality_topics != 1 else '' }}{% endif %}
+          <span class="gu-quality__meta" style="display:block;">
+            {% set e = current_user.earned_status %}
+            {% if e == 'reader' %}{% if lang == 'nl' %}Met je eerste kwaliteitsbijdrage word je Bijdrager.{% else %}With your first quality contribution you become a Contributor.{% endif %}
+            {% elif e == 'contributor' %}{% if lang == 'nl' %}Stemmer (met stemrecht) vanaf {{ thresholds.voter_min }} kwaliteitsbijdragen.{% else %}Voter (with the right to vote) from {{ thresholds.voter_min }} quality contributions.{% endif %}
+            {% elif e == 'voter' %}{% if lang == 'nl' %}Moderator (status) bij meer dan {{ thresholds.moderator_min }} kwaliteitsbijdragen in minimaal {{ thresholds.moderator_min_topics }} onderwerpen.{% else %}Moderator (status) with more than {{ thresholds.moderator_min }} quality contributions in at least {{ thresholds.moderator_min_topics }} topics.{% endif %}
+            {% elif e == 'moderator' %}{% if lang == 'nl' %}Senior bij meer dan {{ thresholds.senior_min }} kwaliteitsbijdragen.{% else %}Senior with more than {{ thresholds.senior_min }} quality contributions.{% endif %}
+            {% endif %}
+          </span>
+        </span>
+      </div>
     </div>
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">

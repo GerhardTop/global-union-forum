@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{# Forum fase C2: drempels voor de verdiende status, alleen voor de admin. #}
+{% block title %}{% if lang == 'nl' %}Drempels verdiende status{% else %}Earned status thresholds{% endif %} · Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<div class="gu-admin" lang="{{ lang }}">
+  <div class="gu-admin__inner">
+    <div class="gu-admin__head">
+      <p class="gu-eyebrow"><a href="{{ url_for('admin.admin_dashboard') }}" class="gu-admin-table__threadlink">Admin</a></p>
+      <h1 class="gu-admin__title">{% if lang == 'nl' %}Drempels verdiende status{% else %}Earned status thresholds{% endif %}</h1>
+    </div>
+
+    <section class="gu-admin__section">
+      <p class="gu-quality__meta">
+        {% if lang == 'nl' %}Een kwaliteitsbijdrage is een eigen bijdrage met een toegekend kwaliteitsoordeel. Onderwerpen zijn de gesprekken waarin die bijdragen staan. Bijdrager wordt je bij de eerste. Nieuwe drempels gelden vanaf het opslaan; niemand gaat daardoor omlaag.{% else %}A quality contribution is an own contribution with an awarded quality judgement. Topics are the conversations those contributions are in. You become a contributor with the first one. New thresholds apply from the moment you save; nobody goes down because of them.{% endif %}
+      </p>
+      <form method="POST" action="{{ url_for('admin.admin_thresholds') }}" class="gu-thresholds" novalidate>
+        {{ admin_action_form.hidden_tag() }}
+        {% for key, label in labels.items() %}
+        <div class="gu-join__field">
+          <label for="{{ key }}">{{ label[lang] }}</label>
+          <input type="number" min="1" max="100000" step="1" id="{{ key }}" name="{{ key }}"
+                 class="gu-input{% if errors.get(key) %} gu-input--error{% endif %}"
+                 value="{{ form_values.get(key) if form_values else thresholds[key] }}">
+          <p class="gu-join__hint">{% if lang == 'nl' %}Standaard{% else %}Default{% endif %}: {{ defaults[key] }}</p>
+          {% if errors.get(key) %}
+          <p class="gu-join__formError">{% if lang == 'nl' %}Vul een geheel getal van minimaal 1 in.{% else %}Enter a whole number of at least 1.{% endif %}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="gu-btn gu-btn--primary">{% if lang == 'nl' %}Opslaan{% else %}Save{% endif %} <span class="gu-arrow"></span></button>
+      </form>
+    </section>
+  </div>
+</div>
+{% if errors %}
+<script nonce="{{ csp_nonce() }}">document.querySelector('.gu-input--error').scrollIntoView({ block: 'center' });</script>
+{% endif %}
+{% endblock %}{% endblock %}

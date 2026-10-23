@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from flask import Blueprint, render_template, redirect, url_for, request, abort, jsonify
+from flask import Blueprint, render_template, redirect, url_for, request, abort, jsonify, flash, session
 from flask_login import login_required, current_user
 
 from app import db
@@ -164,3 +164,54 @@ def admin_verwijder_gebruiker(user_id):
     db.session.delete(user)
     db.session.commit()
     return redirect(url_for('admin.admin_dashboard'))
+
+
+# ── Forum fase C2: drempels en taal-monitor ───────────────────────────────
+
+@admin_bp.route('/admin/drempels', methods=['GET', 'POST'])
+@login_required
+def admin_thresholds():
+    """Admin stelt de drempels voor de verdiende status in. Gelden vanaf het
+    opslaan; er wordt niemand herberekend (promotie blijft alleen omhoog)."""
+    from app import status
+    if not current_user.is_admin:
+        abort(403)
+    form = AdminActionForm()
+    errors = {}
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            abort(400)
+        values = {}
+        for key in status.DEFAULT_THRESHOLDS:
+            raw = (request.form.get(key) or '').strip()
+            if not raw.isdigit() or not (1 <= int(raw) <= 100000):
+                errors[key] = True
+            else:
+                values[key] = int(raw)
+        if not errors:
+            status.set_thresholds(values, user_id=current_user.id)
+            flash('Drempels opgeslagen.' if session.get('lang', 'nl') == 'nl' else 'Thresholds saved.', 'success')
+            return redirect(url_for('admin.admin_thresholds'))
+    return render_template('admin/thresholds.html', thresholds=status.get_thresholds(),
+                           labels=status.THRESHOLD_LABELS, defaults=status.DEFAULT_THRESHOLDS,
+                           errors=errors, form_values=request.form if errors else None,
+                           admin_action_form=form)
+
+
+@admin_bp.route('/admin/taalmonitor')
+@login_required
+def language_monitor():
+    """Toekenningspercentage van de AI per taal van de bijdrage (source_lang),
+    met periodefilter en een steekproeflijst voor handmatige controle."""
+    from app import status
+    if not current_user.can_moderate():
+        abort(403)
+    period = request.args.get('periode', '30')
+    if period not in status.PERIODS:
+        period = '30'
+    sample_lang = request.args.get('taal')
+    if sample_lang not in ('nl', 'en'):
+        sample_lang = None
+    return render_template('admin/language_monitor.html', period=period,
+                           stats=status.language_monitor(period),
+                           sample=status.monitor_sample(sample_lang), sample_lang=sample_lang)

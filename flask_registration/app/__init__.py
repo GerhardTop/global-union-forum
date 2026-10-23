@@ -133,6 +133,7 @@ def _migrate_columns():
     # rules_accepted_at; die moeten dan al bestaan.
     _migrate_roles(existing)
     _migrate_show_real_name(existing)
+    _migrate_quality_status(existing)
     _migrate_stance(existing)
     _migrate_quality(existing)
     _migrate_username_and_backfill(insp, existing, is_pg)
@@ -210,6 +211,42 @@ def _migrate_stance(existing):
             conn.execute(text('ALTER TABLE post_likes ADD COLUMN stance VARCHAR(10) NULL'))
         conn.execute(text("UPDATE post_likes SET stance = 'eens' WHERE stance IS NULL"))
         conn.commit()
+
+
+def _migrate_quality_status(existing):
+    """
+    Forum fase C2: users.quality_status (nullable, NULL = reader). Geen
+    backfill: de status wordt herberekend zodra een oordeel wordt geschreven.
+    Vóór elke ORM-query op User, net als de andere users-kolommen. De tabellen
+    app_settings en quality_promotions maakt db.create_all() aan.
+    """
+    if 'users' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('users')}
+    if 'quality_status' in cols:
+        return
+    with db.engine.connect() as conn:
+        conn.execute(text('ALTER TABLE users ADD COLUMN quality_status VARCHAR(12) NULL'))
+        conn.commit()
+    # Eenmalig, alleen nu de kolom nieuw is: bestaande toekenningen meetellen
+    # (zie _initial_status_backfill, na het seeden in create_app).
+    global _QUALITY_STATUS_COLUMN_ADDED
+    _QUALITY_STATUS_COLUMN_ADDED = True
+
+
+_QUALITY_STATUS_COLUMN_ADDED = False
+
+
+def _initial_status_backfill():
+    """Eenmalige, alleen-omhoog herberekening voor gebruikers die al
+    toegekende kwaliteitsbijdragen hadden toen fase C2 werd ingevoerd."""
+    from app.models import Post, QualityAward
+    from app.status import recalc_user
+    user_ids = {uid for (uid,) in db.session.query(Post.user_id)
+                .join(QualityAward, QualityAward.post_id == Post.id)
+                .filter(QualityAward.status == 'toegekend', Post.user_id.isnot(None)).distinct()}
+    for uid in user_ids:
+        recalc_user(uid)
 
 
 def _migrate_show_real_name(existing):
@@ -573,6 +610,8 @@ def create_app():
         _seed_forum()
         from app.quality import seed_demo_awards
         seed_demo_awards()
+        if _QUALITY_STATUS_COLUMN_ADDED:
+            _initial_status_backfill()
 
     from werkzeug.middleware.proxy_fix import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
