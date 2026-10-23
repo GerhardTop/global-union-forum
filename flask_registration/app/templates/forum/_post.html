@@ -35,7 +35,7 @@
 {% set q_awarded = qa and qa.status == 'toegekend' and post.body != '[bericht verwijderd]' %}
 {% set author_linkedin = post.public_linkedin_url() %}
 
-<article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}{% if qa and qa.status == 'afgewezen' %} gu-post--declined{% endif %}"
+<article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}{% if qa and qa.status == 'afgewezen' and (is_own or current_user.can_moderate()) %} gu-post--declined{% endif %}"
          id="post-{{ post.id }}"{% if post.id in poll_ids %} data-quality-poll="{{ url_for('forum.forum_quality_status', post_id=post.id) }}"{% endif %}>
 
   {# "In antwoord op": vanaf diepte 3, want daar springt mobiel (2 niveaus)
@@ -252,17 +252,6 @@
         rows="3"
         placeholder="{% if lang == 'nl' %}Schrijf je reactie…{% else %}Write your reply…{% endif %}"
       ></textarea>
-      <label class="gu-upload-label gu-upload-label--inline">
-        <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="gu-upload-input">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <polyline points="21 15 16 10 5 21"/>
-        </svg>
-        <span class="gu-upload-chosen" hidden></span>
-      </label>
       <div class="gu-post__replyactions">
         <button type="button" class="gu-btn gu-btn--ghost gu-post__reply-cancel"
                 data-target="reply-form-{{ post.id }}">

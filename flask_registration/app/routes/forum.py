@@ -1,6 +1,4 @@
-import os
 import secrets
-import uuid
 from collections import deque
 from datetime import datetime, timedelta
 
@@ -58,9 +56,12 @@ def _hidden_for_viewer(post):
 
 
 def _is_hidden(post):
-    """Verborgen voor deze lezer: afgewezen kwaliteitsoordeel en geen auteur/moderator."""
+    """Verborgen voor deze lezer: afgewezen kwaliteitsoordeel en geen auteur/moderator.
+    Uitzondering: het openingsbericht van een gesprek blijft voor iedereen
+    zichtbaar, zodat het gesprek leesbaar blijft (wel zonder ruitje)."""
     award = post.quality_award
-    return award is not None and award.status == 'afgewezen' and _hidden_for_viewer(post)
+    return (award is not None and award.status == 'afgewezen' and not post.is_op
+            and _hidden_for_viewer(post))
 
 
 def _require_csrf():
@@ -69,8 +70,6 @@ def _require_csrf():
     if not ForumActionForm().validate_on_submit():
         abort(400)
 
-_ALLOWED_EXT = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
-_MAX_SIZE = 5 * 1024 * 1024
 # Aantal inspringniveaus voor reacties op desktop (mobiel: 2, via CSS).
 MAX_REPLY_INDENT = 4
 
@@ -82,24 +81,6 @@ DEMO_USER_EMAILS = {
     'sarah':  'sarah.chen.demo@globalunionforum.org',
     'marcus': 'marcus.osei.demo@globalunionforum.org',
 }
-_UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'uploads')
-
-
-def _save_upload(file):
-    if not file or not file.filename:
-        return None
-    ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
-    if ext not in _ALLOWED_EXT:
-        return None
-    file.seek(0, 2)
-    if file.tell() > _MAX_SIZE:
-        file.seek(0)
-        return None
-    file.seek(0)
-    os.makedirs(_UPLOAD_DIR, exist_ok=True)
-    filename = f'{uuid.uuid4().hex}.{ext}'
-    file.save(os.path.join(_UPLOAD_DIR, filename))
-    return f'/static/uploads/{filename}'
 
 
 def _get_or_create_demo_user(first_name, last_name, email, username):
@@ -486,7 +467,8 @@ def _thread_list(closed=False):
     )
     # Punt 9: afgewezen bijdragen tellen niet mee in de zichtbare tellingen.
     hidden = {pid for (pid,) in db.session.query(QualityAward.post_id)
-              .filter(QualityAward.status == 'afgewezen')}
+              .join(Post, QualityAward.post_id == Post.id)
+              .filter(QualityAward.status == 'afgewezen', Post.is_op.isnot(True))}
     result = []
     for thread, _ in rows:
         visible = [p for p in thread.posts if p.id not in hidden]
@@ -542,7 +524,6 @@ def forum_thread(thread_id):
             abort(400)
         body      = request.form.get('body', '').strip()
         parent_id = request.form.get('parent_id', type=int)
-        image_url = _save_upload(request.files.get('image'))
         anchor    = 'composer'
         # parent_id komt uit de form en moet daadwerkelijk bij dit thread_id
         # horen — anders kan een reply-koppeling naar een post in een ander
@@ -567,7 +548,9 @@ def forum_thread(thread_id):
                 'error'
             )
             return redirect(url_for('forum.forum_thread', thread_id=thread_id) + '#composer')
-        if body or image_url:
+        # Afbeeldingen bijvoegen kan niet meer (testronde punt 5); bestaande
+        # afbeeldingen bij oude berichten blijven zichtbaar.
+        if body:
             post = Post(
                 thread_id=thread_id,
                 user_id=current_user.id,
@@ -578,7 +561,6 @@ def forum_thread(thread_id):
                 body=body or None,
                 source_lang=session.get('lang', 'nl'),
                 parent_id=parent_id,
-                image_url=image_url,
             )
             db.session.add(post)
             db.session.commit()
@@ -601,7 +583,8 @@ def forum_thread(thread_id):
     quality_awards = {a.post_id: a for a in
                       QualityAward.query.filter(QualityAward.post_id.in_(all_ids)).all()} if all_ids else {}
     hidden_ids = {pid for pid, a in quality_awards.items()
-                  if a.status == 'afgewezen' and _hidden_for_viewer(posts_by_id[pid])}
+                  if a.status == 'afgewezen' and not posts_by_id[pid].is_op
+                  and _hidden_for_viewer(posts_by_id[pid])}
 
     # Diepte per bericht, breedte-eerst vanaf de roots (geen recursie, dus
     # ook een extreem lange keten kan de pagina niet laten crashen). In
@@ -830,8 +813,7 @@ def forum_nieuw():
         _require_csrf()
         title     = request.form.get('title', '').strip()
         body      = request.form.get('body', '').strip()
-        image_url = _save_upload(request.files.get('image'))
-        if title and (body or image_url):
+        if title and body:
             thread = Thread(
                 eyebrow_nl='Forum · gesprek',
                 eyebrow_en='Forum · conversation',
@@ -850,7 +832,6 @@ def forum_nieuw():
                 body=body or None,
                 source_lang=session.get('lang', 'nl'),
                 is_op=True,
-                image_url=image_url,
             )
             db.session.add(post)
             db.session.commit()

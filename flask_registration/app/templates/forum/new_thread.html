@@ -50,19 +50,6 @@
         </span>
       </div>
 
-      <div class="gu-forum__newfield">
-        <label class="gu-upload-label">
-          <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="gu-upload-input">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-               fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-          <span class="gu-upload-chosen" hidden></span>
-        </label>
-      </div>
 
       <div class="gu-forum__newactions">
         <a href="{{ url_for('forum.forum') }}" class="gu-btn gu-btn--ghost">
@@ -90,18 +77,6 @@
     titleInput.addEventListener('input', check);
     bodyInput.addEventListener('input', check);
 
-    var fileInput  = document.querySelector('.gu-upload-input');
-    var chosenSpan = document.querySelector('.gu-upload-chosen');
-    if (fileInput && chosenSpan) {
-      fileInput.addEventListener('change', function () {
-        if (fileInput.files.length) {
-          chosenSpan.textContent = fileInput.files[0].name;
-          chosenSpan.hidden = false;
-        } else {
-          chosenSpan.hidden = true;
-        }
-      });
-    }
   })();
 </script>
 {% endblock %}

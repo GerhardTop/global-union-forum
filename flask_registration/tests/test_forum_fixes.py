@@ -49,10 +49,10 @@ def world(db):
         made['threads'].append(t.id)
         return t
 
-    def post(u, t, parent=None, status=None, reason='Te weinig onderbouwing.', created_at=None):
+    def post(u, t, parent=None, status=None, reason='Te weinig onderbouwing.', created_at=None, is_op=False):
         p = Post(thread_id=t.id, user_id=u.id, parent_id=parent.id if parent else None, author_name='',
                  author_username=u.username, body=f'tekst {uuid.uuid4().hex[:6]}', source_lang='nl',
-                 created_at=created_at or datetime.utcnow())
+                 created_at=created_at or datetime.utcnow(), is_op=is_op)
         db.session.add(p)
         db.session.flush()
         if status:
@@ -180,6 +180,65 @@ class TestDeclinedHidden:
         assert _req(client, 'GET', f'/forum/kwaliteit/{declined.id}/status').status_code == 404
         resp = _req(client, 'POST', f'/forum/{t.id}', data={'body': 'op verborgen', 'parent_id': declined.id})
         assert resp.status_code == 302 and Post.query.filter_by(body='op verborgen').count() == 0
+
+
+class TestDeclinedOpeningPostStaysVisible:
+    """Aanvulling op punt 9: een afgewezen openingsbericht blijft voor iedereen
+    zichtbaar (zonder ruitje); een afgewezen reactie blijft verborgen."""
+
+    def test_declined_opening_post_visible_declined_reply_hidden(self, app, world):
+        anna, bram = world['user'](), world['user']()
+        t = world['thread']()
+        op = world['post'](anna, t, status='afgewezen', reason='Geen nieuw argument.', is_op=True)
+        reply = world['post'](bram, t, parent=op, status='afgewezen')
+        for viewer in (None, world['user']()):
+            html = _page(app, viewer, t)
+            part = html[html.index(f'id="post-{op.id}"') - 200:]
+            part = part[:part.find('</article>')]
+            assert op.body in part and 'gu-post--declined' not in part
+            assert 'gu-quality__mark' not in part and 'Geen nieuw argument.' not in part
+            assert f'id="post-{reply.id}"' not in html and reply.body not in html
+        own = _page(app, anna, t)
+        assert 'Als openingsbericht blijft het zichtbaar voor iedereen' in own and 'Geen nieuw argument.' in own
+        assert 'Alleen zichtbaar voor jou en moderators' not in own.split(f'id="post-{op.id}"')[1].split('</article>')[0]
+
+    def test_poll_and_counts_for_declined_opening_post(self, app, world):
+        anna, bram = world['user'](), world['user']()
+        t = world['thread']()
+        op = world['post'](anna, t, status='afgewezen', is_op=True)
+        data = _req(_client(app, bram), 'GET', f'/forum/kwaliteit/{op.id}/status').get_json()
+        assert data['status'] == 'afgewezen' and data['reason'] is None  # geen reden voor anderen
+        own = _req(_client(app, anna), 'GET', f'/forum/kwaliteit/{op.id}/status').get_json()
+        assert own['reason'] == 'Te weinig onderbouwing.'
+        index = _req(_client(app, bram), 'GET', '/forum').get_data(as_text=True)
+        row = index[index.index(f'/forum/{t.id}"'):]
+        assert re.search(r'1\s*reactie\b', row[:1500])
+
+
+# ── (5) Geen afbeeldingen meer bijvoegen ─────────────────────────────────
+
+class TestNoImageUpload:
+    def test_no_file_inputs_in_post_forms(self, app, world):
+        anna, bram = world['user'](), world['user']()
+        t = world['thread']()
+        world['post'](bram, t)
+        for path in (f'/forum/{t.id}', '/forum/nieuw'):
+            html = _req(_client(app, anna), 'GET', path).get_data(as_text=True)
+            assert 'type="file"' not in html and 'gu-upload-label' not in html, path
+
+    def test_uploaded_file_is_ignored(self, app, world):
+        import io
+        anna = world['user']()
+        t = world['thread']()
+        image = (io.BytesIO(b'\x89PNG fake'), 'foto.png')
+        _req(_client(app, anna), 'POST', f'/forum/{t.id}', data={'body': 'met foto', 'image': image},
+             content_type='multipart/form-data')
+        p = Post.query.filter_by(body='met foto').one()
+        assert p.image_url is None
+        image = (io.BytesIO(b'\x89PNG fake'), 'foto.png')
+        _req(_client(app, anna), 'POST', f'/forum/{t.id}', data={'body': '', 'image': image},
+             content_type='multipart/form-data')
+        assert Post.query.filter_by(thread_id=t.id, body=None).count() == 0
 
 
 # ── (8) Statuspoll ───────────────────────────────────────────────────────

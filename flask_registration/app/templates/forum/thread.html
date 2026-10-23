@@ -126,17 +126,6 @@
         rows="3"
         placeholder="{% if lang == 'nl' %}Schrijf je reactie. Wees concreet (een gedachte, een vraag, een tegenwerping).{% else %}Write your reply. Be concrete (a thought, a question, a pushback).{% endif %}"
       ></textarea>
-      <label class="gu-upload-label gu-upload-label--inline">
-        <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="gu-upload-input gu-composer__imgpick">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <polyline points="21 15 16 10 5 21"/>
-        </svg>
-        <span class="gu-upload-chosen" hidden></span>
-      </label>
       <div class="gu-composer__actions">
         <span class="gu-composer__hint"></span>
         <button type="submit" class="gu-btn gu-btn--primary" id="composerSubmit" disabled>
@@ -171,16 +160,6 @@
     if (ta && btn) {
       ta.addEventListener('input', function () { btn.disabled = !ta.value.trim(); });
     }
-
-    // Show chosen filename for all file inputs on the page
-    document.querySelectorAll('.gu-upload-input').forEach(function (inp) {
-      var chosen = inp.closest('label') && inp.closest('label').querySelector('.gu-upload-chosen');
-      if (!chosen) return;
-      inp.addEventListener('change', function () {
-        if (inp.files.length) { chosen.textContent = inp.files[0].name; chosen.hidden = false; }
-        else { chosen.hidden = true; }
-      });
-    });
 
     // Inline reply forms
     document.querySelectorAll('.gu-post__reply-btn').forEach(function (button) {
