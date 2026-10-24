@@ -1649,6 +1649,14 @@ body {
 .gu-rules--compact .gu-rules__title { font-size: 0.875rem; margin: 0 0 2px; }
 .gu-rules--compact .gu-rules__item p { font-size: 0.8125rem; line-height: 1.5; }
 .gu-join__optionalNote { margin: 0 0 12px; }
+.gu-join__privacyLink { color: var(--gu-globe); white-space: nowrap; }
+
+/* Privacyverklaring (/privacy) */
+.gu-legal__updated { margin: 8px 0 0; font-size: 0.875rem; color: var(--gu-fg-3); }
+.gu-legal section + section { margin-top: 24px; }
+.gu-legal h2 { font-size: 1.125rem; font-weight: 600; margin: 0 0 8px; color: var(--gu-fg-1); }
+.gu-legal p { margin: 0; color: var(--gu-fg-2); line-height: 1.65; }
+.gu-legal a { color: var(--gu-globe); overflow-wrap: anywhere; }
 
 /* Naamweergave in het forum (profiel): pseudoniem of echte naam */
 .gu-namechoice { scroll-margin-top: 96px; }

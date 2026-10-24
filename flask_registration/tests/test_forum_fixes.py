@@ -528,3 +528,49 @@ class TestAcceptanceTextsConsistent:
         finally:
             db.session.delete(db.session.get(User, fresh.id))
             db.session.commit()
+
+
+# ── Privacyverklaring ────────────────────────────────────────────────────
+
+PRIVACY = {
+    'nl': ['Privacyverklaring Global Union Forum', 'Laatst bijgewerkt: 24 oktober 2026',
+           'Stichting Global Union Forum (in oprichting)', 'Welke gegevens we verzamelen',
+           'Anthropic (automatische vertaling en het kwaliteitsoordeel)',
+           'standaardcontractbepalingen van de Europese Commissie',
+           'Technische loggegevens bewaren we zes maanden.',
+           'Je moet minstens 16 jaar zijn om een account aan te maken.',
+           'Autoriteit Persoonsgegevens', 'De datum bovenaan laat zien wanneer we dat voor het laatst deden.'],
+    'en': ['Privacy statement Global Union Forum', 'Last updated: 24 October 2026',
+           'Stichting Global Union Forum (in formation)', 'What data we collect',
+           'Anthropic (automatic translation and the quality assessment)',
+           "European Commission's standard contractual clauses",
+           'We keep technical log data for six months.',
+           'You must be at least 16 years old to create an account.',
+           'Dutch Data Protection Authority (Autoriteit Persoonsgegevens)',
+           'The date at the top shows when we last did so.'],
+}
+
+
+class TestPrivacyPage:
+    @pytest.mark.parametrize('lang', ['nl', 'en'])
+    def test_page_loads_in_both_languages(self, app, lang):
+        resp = _req(_client(app, lang=lang), 'GET', '/privacy')
+        html = resp.get_data(as_text=True)
+        assert resp.status_code == 200
+        for text in PRIVACY[lang]:
+            assert text in html, (lang, text)
+        other = PRIVACY['en' if lang == 'nl' else 'nl']
+        assert other[0] not in html and other[1] not in html
+        assert html.count('href="mailto:privacy@globalunionforum.org"') == 2
+        main = html[html.index('gu-profile__head'):html.index('<footer')]
+        assert '—' not in main and '–' not in main
+
+    @pytest.mark.parametrize('lang', ['nl', 'en'])
+    def test_link_on_registration_page_and_in_footer(self, app, lang):
+        html = _req(_client(app, lang=lang), 'GET', '/aanmelden').get_data(as_text=True)
+        form = html[html.index('class="gu-join__panel"'):html.index('</form>')]
+        assert '<a href="/privacy" class="gu-join__privacyLink">Privacy</a>' in form
+        footer = html[html.index('<footer'):]
+        rules = '>Spelregels</a>' if lang == 'nl' else '>Ground rules</a>'
+        after_rules = footer[footer.index(rules):]
+        assert after_rules.index('<a href="/privacy">Privacy</a>') < after_rules.index('</ul>')

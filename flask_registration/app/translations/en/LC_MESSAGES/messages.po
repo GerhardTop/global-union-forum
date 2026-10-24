@@ -634,3 +634,7 @@ msgstr "No conduct rules acceptance yet"
 
 msgid "Conduct rules not accepted yet"
 msgstr "Conduct rules not accepted yet"
+
+#: app/templates/_footer.html, app/templates/aanmelden/aanmelden.html
+msgid "Privacy"
+msgstr "Privacy"

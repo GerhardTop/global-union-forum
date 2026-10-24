@@ -634,3 +634,7 @@ msgstr "Nog geen akkoord op de gedragsregels"
 
 msgid "Conduct rules not accepted yet"
 msgstr "Gedragsregels nog niet geaccepteerd"
+
+#: app/templates/_footer.html, app/templates/aanmelden/aanmelden.html
+msgid "Privacy"
+msgstr "Privacy"

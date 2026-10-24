@@ -1,97 +1,126 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'nl' %}Privacy & Cookies{% else %}Privacy & Cookies{% endif %} · Global Union{% endblock %}
+{#
+  Privacyverklaring (/privacy). Langere redactionele tekst: inline tweetalig
+  ({% if lang == 'nl' %}), net als de andere editorial pagina's; niet via de
+  vertaalcatalogus. Werk bij een inhoudelijke wijziging ook de datum bij.
+#}
+{% block title %}{% if lang == 'nl' %}Privacyverklaring{% else %}Privacy statement{% endif %} · Global Union{% endblock %}
 
 {% block content %}
+{% set mail %}<a href="mailto:privacy@globalunionforum.org">privacy@globalunionforum.org</a>{% endset %}
 <div class="gu-profile" style="max-width: 720px;">
 
   <div class="gu-profile__head">
-    <p class="gu-eyebrow">Global Union Forum</p>
-    <h1 class="gu-profile__title">Privacy &amp; Cookies</h1>
+    <p class="gu-eyebrow">Privacy</p>
+    <h1 class="gu-profile__title">{% if lang == 'nl' %}Privacyverklaring Global Union Forum{% else %}Privacy statement Global Union Forum{% endif %}</h1>
+    <p class="gu-legal__updated">{% if lang == 'nl' %}Laatst bijgewerkt: 24 oktober 2026{% else %}Last updated: 24 October 2026{% endif %}</p>
   </div>
 
-  <div class="gu-join__panel">
+  <div class="gu-join__panel gu-legal">
 
     {% if lang == 'nl' %}
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Welke gegevens we opslaan</h2>
-    <p>Bij het aanmaken van een account slaan we de volgende gegevens op:</p>
-    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
-      <li>Naam (voor- en achternaam)</li>
-      <li>E-mailadres</li>
-      <li>LinkedIn profiel URL</li>
-    </ul>
-    <p>Daarnaast bewaren we je forumberichten en eventuele likes die je hebt gegeven.</p>
+    <section id="wie-zijn-wij">
+      <h2>Wie zijn wij</h2>
+      <p>Global Union Forum wordt beheerd door Stichting Global Union Forum (in oprichting). Heb je een vraag over je gegevens, mail dan {{ mail }}.</p>
+    </section>
 
-    <hr class="gu-auth__divider" style="margin: 28px 0;">
+    <section id="gegevens">
+      <h2>Welke gegevens we verzamelen</h2>
+      <p>Je gebruikersnaam (pseudoniem), die openbaar is. Je e-mailadres, dat privé is en dat andere gebruikers niet zien. Je wachtwoord, dat we versleuteld opslaan. Als je ze zelf invult: je voor- en achternaam en je LinkedIn-adres, die privé blijven tenzij je er in je profiel zelf voor kiest je echte naam te tonen. Wat je op het forum schrijft, je reacties en je eens- en oneens-stemmen; je bijdragen zijn openbaar onder je pseudoniem. En je IP-adres en technische loggegevens, die we gebruiken om misbruik tegen te gaan.</p>
+    </section>
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Waarom we deze gegevens gebruiken</h2>
-    <p>Je gegevens worden uitsluitend gebruikt voor:</p>
-    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
-      <li><strong>Identificatie</strong>, zodat deelnemers weten wie er spreekt in het forum</li>
-      <li><strong>Communicatie</strong>, om je te bereiken over je account of het platform</li>
-    </ul>
-    <p>We verkopen geen gegevens aan derden en delen ze niet met adverteerders.</p>
+    <section id="gebruik">
+      <h2>Waarvoor we ze gebruiken</h2>
+      <p>Om je account te laten werken en je aan te melden, om het forum te laten functioneren, om misbruik en overbelasting tegen te gaan, om je bijdragen te vertalen en van een kwaliteitsoordeel te voorzien, en om je e-mails te sturen die bij je account horen.</p>
+    </section>
 
-    <hr class="gu-auth__divider" style="margin: 28px 0;">
+    <section id="delen">
+      <h2>Met wie we gegevens delen</h2>
+      <p>We verkopen je gegevens niet. We gebruiken wel dienstverleners die namens ons gegevens verwerken: Neon (database), Render (hosting), Cloudflare (verkeer en beveiliging), Resend (e-mail) en Anthropic (automatische vertaling en het kwaliteitsoordeel). Voor dat laatste wordt de tekst van je bijdrage naar Anthropic gestuurd om te vertalen en te beoordelen. Sommige van deze diensten kunnen gegevens buiten de Europese Unie verwerken; in dat geval zorgen we voor passende waarborgen, zoals de standaardcontractbepalingen van de Europese Commissie. Je openbare bijdragen zijn zichtbaar voor iedereen; je echte naam en LinkedIn alleen als je daar zelf voor kiest.</p>
+    </section>
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Cookies</h2>
-    <p>Global Union Forum gebruikt alleen <strong>functionele cookies</strong>:</p>
-    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
-      <li>Een sessiecookie om je ingelogd te houden</li>
-      <li>Een cookie voor je taalvoorkeur (NL/EN)</li>
-    </ul>
-    <p>Er worden geen tracking- of advertentiecookies gebruikt. Er is dan ook geen cookie-banner nodig.</p>
+    <section id="bewaren">
+      <h2>Hoe lang we bewaren</h2>
+      <p>We bewaren je accountgegevens zolang je account bestaat. Vraag je om verwijdering, dan verwijderen we je persoonsgegevens; je openbare bijdragen maken we anoniem, zodat het gesprek leesbaar blijft. Technische loggegevens bewaren we zes maanden.</p>
+    </section>
 
-    <hr class="gu-auth__divider" style="margin: 28px 0;">
+    <section id="leeftijd">
+      <h2>Minimumleeftijd</h2>
+      <p>Je moet minstens 16 jaar zijn om een account aan te maken.</p>
+    </section>
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Account verwijderen</h2>
-    <p>Je kunt je account op elk moment verwijderen via je <a href="{{ url_for('profile.profile') }}" style="color: var(--gu-globe);">profielpagina</a>. Na verwijdering worden alle persoonlijke gegevens en forumberichten permanent en onherroepelijk gewist.</p>
+    <section id="cookies">
+      <h2>Cookies</h2>
+      <p>We gebruiken alleen functionele cookies, bijvoorbeeld om je ingelogd te houden en je taalkeuze te onthouden. We gebruiken geen cookies om je te volgen of voor advertenties.</p>
+    </section>
 
-    <hr class="gu-auth__divider" style="margin: 28px 0;">
+    <section id="beveiliging">
+      <h2>Beveiliging</h2>
+      <p>We slaan wachtwoorden versleuteld op, gebruiken een beveiligde verbinding (https) en beperken het aantal pogingen om misbruik tegen te gaan.</p>
+    </section>
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Vragen</h2>
-    <p>Heb je vragen over je privacy of je gegevens? Neem contact op via <a href="mailto:info@globalunionforum.org" style="color: var(--gu-globe);">info@globalunionforum.org</a>.</p>
+    <section id="rechten">
+      <h2>Jouw rechten</h2>
+      <p>Je mag je gegevens inzien, corrigeren of laten verwijderen, bezwaar maken tegen het gebruik, en je toestemming intrekken. Mail daarvoor {{ mail }}. Ben je het niet eens met hoe we met je gegevens omgaan, dan kun je een klacht indienen bij de Autoriteit Persoonsgegevens.</p>
+    </section>
+
+    <section id="wijzigingen">
+      <h2>Wijzigingen</h2>
+      <p>We kunnen deze verklaring aanpassen. De datum bovenaan laat zien wanneer we dat voor het laatst deden.</p>
+    </section>
 
     {% else %}
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">What data we store</h2>
-    <p>When you create an account, we store the following data:</p>
-    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
-      <li>Name (first and last name)</li>
-      <li>Email address</li>
-      <li>LinkedIn profile URL</li>
-    </ul>
-    <p>We also store your forum posts and any likes you have given.</p>
+    <section id="wie-zijn-wij">
+      <h2>Who we are</h2>
+      <p>Global Union Forum is run by Stichting Global Union Forum (in formation). If you have a question about your data, email {{ mail }}.</p>
+    </section>
 
-    <hr class="gu-auth__divider" style="margin: 28px 0;">
+    <section id="gegevens">
+      <h2>What data we collect</h2>
+      <p>Your username (pseudonym), which is public. Your email address, which is private and not visible to other users. Your password, which we store encrypted. If you fill them in yourself: your first and last name and your LinkedIn address, which stay private unless you choose in your profile to show your real name. What you write on the forum, your replies, and your agree and disagree votes; your contributions are public under your pseudonym. And your IP address and technical log data, which we use to prevent abuse.</p>
+    </section>
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Why we use this data</h2>
-    <p>Your data is used solely for:</p>
-    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
-      <li><strong>Identification</strong>, so that participants know who is speaking in the forum</li>
-      <li><strong>Communication</strong>, to reach you about your account or the platform</li>
-    </ul>
-    <p>We do not sell data to third parties and do not share it with advertisers.</p>
+    <section id="gebruik">
+      <h2>What we use it for</h2>
+      <p>To make your account work and sign you in, to run the forum, to prevent abuse and overload, to translate your contributions and give them a quality assessment, and to send you emails that relate to your account.</p>
+    </section>
 
-    <hr class="gu-auth__divider" style="margin: 28px 0;">
+    <section id="delen">
+      <h2>Who we share data with</h2>
+      <p>We do not sell your data. We do use service providers that process data on our behalf: Neon (database), Render (hosting), Cloudflare (traffic and security), Resend (email) and Anthropic (automatic translation and the quality assessment). For the latter, the text of your contribution is sent to Anthropic to translate and assess. Some of these services may process data outside the European Union; in that case we ensure appropriate safeguards, such as the European Commission's standard contractual clauses. Your public contributions are visible to everyone; your real name and LinkedIn only if you choose so.</p>
+    </section>
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Cookies</h2>
-    <p>Global Union Forum uses only <strong>functional cookies</strong>:</p>
-    <ul style="margin: 12px 0 20px 20px; line-height: 1.8;">
-      <li>A session cookie to keep you logged in</li>
-      <li>A cookie for your language preference (NL/EN)</li>
-    </ul>
-    <p>No tracking or advertising cookies are used. A cookie banner is therefore not required.</p>
+    <section id="bewaren">
+      <h2>How long we keep it</h2>
+      <p>We keep your account data as long as your account exists. If you ask for deletion, we delete your personal data; your public contributions we anonymise, so the conversation stays readable. We keep technical log data for six months.</p>
+    </section>
 
-    <hr class="gu-auth__divider" style="margin: 28px 0;">
+    <section id="leeftijd">
+      <h2>Minimum age</h2>
+      <p>You must be at least 16 years old to create an account.</p>
+    </section>
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Deleting your account</h2>
-    <p>You can delete your account at any time from your <a href="{{ url_for('profile.profile') }}" style="color: var(--gu-globe);">profile page</a>. After deletion, all personal data and forum posts are permanently and irrevocably erased.</p>
+    <section id="cookies">
+      <h2>Cookies</h2>
+      <p>We use only functional cookies, for example to keep you signed in and to remember your language choice. We do not use cookies to track you or for advertising.</p>
+    </section>
 
-    <hr class="gu-auth__divider" style="margin: 28px 0;">
+    <section id="beveiliging">
+      <h2>Security</h2>
+      <p>We store passwords encrypted, use a secure connection (https) and limit the number of attempts to prevent abuse.</p>
+    </section>
 
-    <h2 class="gu-join__h2" style="font-size: 1.125rem; margin-bottom: 12px;">Questions</h2>
-    <p>Do you have questions about your privacy or your data? Contact us at <a href="mailto:info@globalunionforum.org" style="color: var(--gu-globe);">info@globalunionforum.org</a>.</p>
+    <section id="rechten">
+      <h2>Your rights</h2>
+      <p>You may access, correct or delete your data, object to its use, and withdraw your consent. Email {{ mail }} for this. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens).</p>
+    </section>
+
+    <section id="wijzigingen">
+      <h2>Changes</h2>
+      <p>We may update this statement. The date at the top shows when we last did so.</p>
+    </section>
 
     {% endif %}
 
