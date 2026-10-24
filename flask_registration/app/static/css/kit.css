@@ -1652,6 +1652,10 @@ body {
 .gu-join__optionalNote { margin: 0 0 12px; }
 .gu-join__privacyLink { color: var(--gu-globe); white-space: nowrap; }
 
+/* Bewerken door de auteur: label en weigering */
+.gu-post__edited { color: var(--gu-fg-3); font-size: inherit; }
+.gu-post__editerror { margin: 6px 0 0; font-size: 0.8125rem; color: var(--gu-danger); }
+
 /* Fase D: gedragsregels in het gesprek */
 .gu-post--moved, .gu-post--hidden { padding: 12px 0; }
 .gu-post__movednote, .gu-post__hiddennote { margin: 0; font-size: 0.875rem; font-style: italic; color: var(--gu-fg-3); }

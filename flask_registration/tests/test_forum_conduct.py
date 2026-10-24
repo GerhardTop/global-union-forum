@@ -409,9 +409,11 @@ class TestBackgroundPage:
         db.session.commit()
         assert 'Besluit bevestigd door moderator' in _get(app, None, '/achtergrond').get_data(as_text=True)
 
-    def test_snapshot_survives_later_edit(self, app, db, make_user, thread, fake_ai):
+    def test_moved_post_cannot_be_edited_and_snapshot_stays(self, app, db, make_user, thread, fake_ai):
         anna, post, case = self._moved(app, make_user, thread, fake_ai, body='Origineel grof.')
-        _req(_client(app, anna), 'POST', f'/forum/post/{post.id}/bewerken', data={'body': 'Netjes gemaakt.'})
+        resp = _req(_client(app, anna), 'POST', f'/forum/post/{post.id}/bewerken', data={'body': 'Netjes gemaakt.'})
+        assert resp.status_code == 409 and resp.get_json()['error'] == 'removed'
+        assert 'Je kunt wel bezwaar maken.' in resp.get_json()['message']
         html = _get(app, None, '/achtergrond').get_data(as_text=True)
         assert 'Origineel grof.' in html and 'Netjes gemaakt.' not in html
 
@@ -599,3 +601,116 @@ class TestMigration:
             cols = {c['name'] for c in sa_inspect(db.engine).get_columns('quality_awards')}
             assert {'conduct_verdict', 'conduct_rule', 'conduct_explanation'} <= cols
         assert {'conduct_cases', 'conduct_objections'} <= set(sa_inspect(db.engine).get_table_names())
+
+
+# ── Bewerken en verwijderen ──────────────────────────────────────────────
+
+def _edit(app, user, post, body, lang='nl'):
+    return _req(_client(app, user, lang), 'POST', f'/forum/post/{post.id}/bewerken', data={'body': body})
+
+
+class TestModeratorCannotEditOrDelete:
+    def test_moderator_cannot_edit_or_delete_someone_elses_post(self, app, db, make_user, make_thread, fake_ai):
+        anna = make_user()
+        t = make_thread(op_user=anna)
+        op = Post.query.filter_by(thread_id=t.id, is_op=True).one()
+        # Een losse reactie van Anna in een ander gesprek (zonder reacties eronder).
+        other_thread = make_thread()
+        post = _reply(app, anna, other_thread, 'Van Anna, niet van de moderator.')
+        for role in ('moderator', 'senior_moderator'):
+            mod = make_user(role)
+            assert _edit(app, mod, post, 'Door de moderator.').status_code == 403
+            assert _req(_client(app, mod), 'POST', f'/forum/post/{post.id}/verwijderen').status_code == 403
+            assert _req(_client(app, mod), 'POST', f'/forum/post/{op.id}/verwijderen').status_code == 403
+            assert _req(_client(app, mod), 'GET', f'/forum/{t.id}/bewerken').status_code == 403
+            assert _req(_client(app, mod), 'POST', f'/forum/{t.id}/bewerken',
+                        data={'title': 'Moderatortitel', 'body': 'Moderatortekst'}).status_code == 403
+        db.session.expire_all()
+        assert db.session.get(Post, post.id).body == 'Van Anna, niet van de moderator.'
+        assert db.session.get(Post, op.id).body == op.body and db.session.get(Thread, t.id).title_prefix_nl != 'Moderatortitel'
+
+
+class TestAuthorEditing:
+    def test_edit_without_replies_works_with_label(self, app, db, make_user, thread, fake_ai):
+        anna = make_user()
+        post = _reply(app, anna, thread, 'Eerste versie.')
+        resp = _edit(app, anna, post, 'Tweede versie.')
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data['body'] == 'Tweede versie.' and data['edited'] == 'bewerkt zojuist'
+        assert data['poll_url'] == f'/forum/kwaliteit/{post.id}/status'
+        db.session.expire_all()
+        assert db.session.get(Post, post.id).edited_at is not None
+        for lang, label in (('nl', 'bewerkt zojuist'), ('en', 'edited just now')):
+            part = _part(_get(app, make_user(), f'/forum/{thread.id}', lang).get_data(as_text=True), post)
+            assert 'Tweede versie.' in part and label in part
+
+    def test_edit_refused_once_there_is_a_reply(self, app, db, make_user, thread, fake_ai):
+        anna, bram = make_user(), make_user()
+        post = _reply(app, anna, thread, 'Met reactie.')
+        _reply(app, bram, thread, 'Een reactie.', parent=post)
+        resp = _edit(app, anna, post, 'Stiekem aangepast.')
+        assert resp.status_code == 409 and resp.get_json()['error'] == 'replies'
+        assert resp.get_json()['message'] == 'Dit bericht heeft al reacties en kan daarom niet meer worden bewerkt.'
+        db.session.expire_all()
+        assert db.session.get(Post, post.id).body == 'Met reactie.'
+        own = _part(_get(app, anna, f'/forum/{thread.id}').get_data(as_text=True), post)
+        assert 'gu-post__edit-btn' not in own and 'gu-post__delete-btn' in own  # verwijderen kan wel
+        assert _req(_client(app, anna), 'POST', f'/forum/post/{post.id}/verwijderen').status_code == 302
+        db.session.expire_all()
+        assert db.session.get(Post, post.id).body == '[bericht verwijderd]'
+
+    def test_a_moved_or_hidden_reply_also_counts(self, app, db, make_user, thread, fake_ai):
+        from app import conduct
+        anna, bram = make_user(), make_user()
+        post = _reply(app, anna, thread, 'Met verborgen reactie.')
+        reply = _reply(app, bram, thread, 'Spam eronder.', parent=post)
+        conduct.hide(reply, 'Reclame.', 'nl', actor=make_user('moderator'))
+        db.session.commit()
+        assert _edit(app, anna, post, 'Toch aanpassen.').status_code == 409
+
+    def test_opening_post_counts_any_post_in_thread(self, app, db, make_user, make_thread, fake_ai):
+        anna = make_user()
+        t = make_thread(op_user=anna)
+        assert _req(_client(app, anna), 'GET', f'/forum/{t.id}/bewerken').status_code == 200
+        _reply(app, make_user(), t, 'Een reactie via het reactieveld.')
+        resp = _req(_client(app, anna), 'GET', f'/forum/{t.id}/bewerken')
+        assert resp.status_code == 302
+        op = Post.query.filter_by(thread_id=t.id, is_op=True).one()
+        assert _edit(app, anna, op, 'Nieuwe opening.').status_code == 409
+
+    def test_edit_reruns_quality_and_conduct(self, app, db, make_user, thread, fake_ai):
+        anna = make_user()
+        fake_ai['verdict'] = _verdict(suggested_criterion='K1', argument_is_new=True)
+        post = _reply(app, anna, thread, 'Een goed argument.')
+        assert QualityAward.query.filter_by(post_id=post.id).one().criterion == 'K1'
+        n_judge = len(fake_ai['judge'])
+        fake_ai['verdict'] = _verdict(**VIOLATION)
+        assert _edit(app, anna, post, 'Jij bent dom.').status_code == 200
+        assert len(fake_ai['judge']) == n_judge + 1
+        call = fake_ai['judge'][-1]['messages'][0]['content']
+        assert 'EN: Jij bent dom.' in call and '<original>\nJij bent dom.\n</original>' in call
+        assert 'Een goed argument.' not in call.split('New contribution to assess:')[1]  # oude tekst niet beoordeeld
+        db.session.expire_all()
+        award = QualityAward.query.filter_by(post_id=post.id).one()
+        assert award.criterion is None and award.conduct_verdict == 'violation'
+        case = _case(post)
+        assert case.action == 'verplaatst' and case.body_snapshot == 'Jij bent dom.'
+        # De uitkomst via de statuspoll, zoals bij een nieuw bericht.
+        data = _req(_client(app, anna), 'GET', f'/forum/kwaliteit/{post.id}/status').get_json()
+        assert data['status'] == 'geen' and data['conduct']['action'] == 'verplaatst'
+        assert 'Bijdrage verplaatst wegens de gedragsregels' in _get(app, make_user(), f'/forum/{thread.id}').get_data(as_text=True)
+
+    def test_edit_clears_doubt_and_polls_again(self, app, db, make_user, thread, fake_ai):
+        anna = make_user()
+        fake_ai['verdict'] = _verdict(**DOUBT)
+        post = _reply(app, anna, thread, 'Over het weer.')
+        assert _case(post).action == 'twijfel'
+        fake_ai['verdict'] = _verdict()
+        fake_ai['fail'] = RuntimeError('even weg')  # de herbeoordeling blijft uit
+        assert _edit(app, anna, post, 'Over het onderwerp.').status_code == 200
+        db.session.expire_all()
+        assert _case(post) is None and QualityAward.query.filter_by(post_id=post.id).count() == 0
+        page = _get(app, anna, f'/forum/{thread.id}').get_data(as_text=True)
+        assert f'data-quality-poll="/forum/kwaliteit/{post.id}/status"' in page
+        assert _req(_client(app, anna), 'GET', f'/forum/kwaliteit/{post.id}/status').get_json() == {'status': 'pending'}

@@ -25,7 +25,10 @@
 
 {% set time = post.time_ago[lang] %}
 {% set is_own = current_user.is_authenticated and post.user_id == current_user.id %}
-{% set can_edit = not is_deleted and current_user.is_authenticated and post.user_id == current_user.id %}
+{# Alleen de auteur. Bewerken alleen zonder reacties (welke status ook) en niet
+   bij een verplaatst of verborgen bericht; verwijderen kan altijd (niet het
+   openingsbericht). De server controleert hetzelfde (forum_post_bewerken). #}
+{% set has_replies = tree_children.get(post.id) %}
 {% set can_delete = not is_deleted and current_user.is_authenticated and post.user_id == current_user.id and not post.is_op %}
 
 {# Publieke auteur: pseudoniem tenzij de auteur zelf voor zijn echte naam koos
@@ -37,6 +40,7 @@
 {% set case = (conduct_cases or {}).get(post.id) %}
 {% set c_removed = case is not none and case.removes_from_thread %}
 {% set q_awarded = qa and qa.status == 'toegekend' and post.body != '[bericht verwijderd]' and not c_removed %}
+{% set can_edit = not is_deleted and is_own and not has_replies and not c_removed %}
 {% set author_linkedin = post.public_linkedin_url() %}
 
 <article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}{% if c_removed %} gu-post--removed{% endif %}"
@@ -62,6 +66,7 @@
         <div class="gu-post__sub">
           {# Punt 4: geen rol, status of andere badge bij de auteur; alleen de tijd. #}
           <span class="gu-post__time">{{ time }}</span>
+          <span class="gu-post__edited" id="edited-{{ post.id }}">{% if post.edited_at %}· {{ _('edited %(when)s', when=post.edited_ago[lang]) }}{% endif %}</span>
         </div>
       </div>
     </div>
@@ -201,6 +206,7 @@
   {% if can_edit %}
   <div class="gu-post__editform" id="edit-form-{{ post.id }}" hidden>
     <textarea class="gu-composer__input" rows="4">{{ post.body or '' }}</textarea>
+    <p class="gu-post__editerror" id="edit-error-{{ post.id }}" role="alert" hidden></p>
     <div class="gu-post__replyactions">
       <button type="button" class="gu-btn gu-btn--ghost gu-post__edit-cancel"
               data-post-id="{{ post.id }}">

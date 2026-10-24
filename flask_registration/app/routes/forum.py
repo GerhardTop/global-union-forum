@@ -703,9 +703,11 @@ def _render_thread(thread, branch_root=None):
     poll_ids = set()
     if current_user.is_authenticated:
         fresh = datetime.utcnow() - timedelta(minutes=2)
+        # Ook na een bewerking (edited_at): dan loopt de beoordeling opnieuw.
         poll_ids = {p.id for p in all_posts
                     if p.user_id == current_user.id and p.id not in quality_awards and not p.is_demo
-                    and p.body != '[bericht verwijderd]' and p.created_at and p.created_at >= fresh}
+                    and p.body != '[bericht verwijderd]'
+                    and (p.edited_at or p.created_at) and (p.edited_at or p.created_at) >= fresh}
     return render_template(
         'forum/thread.html',
         thread=thread,
@@ -894,14 +896,65 @@ def forum_nieuw():
     return render_template('forum/new_thread.html')
 
 
+# ── Bewerken en verwijderen door de auteur ────────────────────────────────
+# Alleen de auteur, nooit een moderator (die verplaatst, verbergt, plaatst
+# terug of geeft vrij, zie fase D). Bewerken kan alleen zolang er nog geen
+# reacties zijn (ongeacht hun status) en niet bij een verplaatst of verborgen
+# bericht (daarvoor is er de bezwaarstroom). Na een bewerking loopt de
+# AI-beoordeling (kwaliteit en handhaving) opnieuw op de nieuwe tekst.
+
+def _has_replies(post):
+    """Heeft dit bericht reacties? Bij het openingsbericht telt elke andere
+    bijdrage in het gesprek (reacties zonder parent horen eronder)."""
+    if post.is_op:
+        return Post.query.filter(Post.thread_id == post.thread_id, Post.id != post.id).first() is not None
+    return Post.query.filter_by(parent_id=post.id).first() is not None
+
+
+def _edit_refusal(post):
+    """None als de huidige gebruiker dit bericht mag bewerken, anders de
+    reden: 'forbidden', 'removed' of 'replies'."""
+    if post.user_id is None or post.user_id != current_user.id or post.body == '[bericht verwijderd]':
+        return 'forbidden'
+    case = post.conduct_case
+    if case is not None and case.removes_from_thread:
+        return 'removed'
+    if _has_replies(post):
+        return 'replies'
+    return None
+
+
+def _edit_refusal_message(reason):
+    if reason == 'replies':
+        return gettext('This post already has replies, so it can no longer be edited.')
+    return gettext('A moved or hidden post cannot be edited. You can object instead.')
+
+
+def _apply_edit(post, body):
+    post.body = body
+    post.edited_at = datetime.utcnow()
+    quality.reset_for_edit(post)
+    db.session.commit()
+    quality.schedule_judgement(post.id)
+
+
 @forum_bp.route('/forum/<int:thread_id>/bewerken', methods=['GET', 'POST'])
 @login_required
+@limiter.limit("10 per hour", methods=["POST"],
+               key_func=lambda: f"forum-edit-user-{current_user.get_id()}")
 def forum_bewerken(thread_id):
+    """De auteur van het openingsbericht bewerkt titel en opening, zolang er
+    nog geen reacties zijn."""
     thread = Thread.query.get_or_404(thread_id)
     op = next((p for p in thread.posts if p.is_op), None)
-    is_author = op and op.user_id == current_user.id
-    if not (is_author or current_user.can_moderate()):
+    if op is None:
+        abort(404)
+    reason = _edit_refusal(op)
+    if reason == 'forbidden':
         abort(403)
+    if reason is not None:
+        flash(_edit_refusal_message(reason), 'error')
+        return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#post-{op.id}')
     if request.method == 'POST':
         _require_csrf()
         title = request.form.get('title', '').strip()
@@ -913,36 +966,42 @@ def forum_bewerken(thread_id):
             thread.title_accent_en = None
             thread.title_suffix_nl = ''
             thread.title_suffix_en = ''
-            if op:
-                op.body = body
-            db.session.commit()
-        return redirect(url_for('forum.forum_thread', thread_id=thread_id))
-    op_body = op.body if op else ''
+            _apply_edit(op, body)
+        return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#post-{op.id}')
     title = thread.title_prefix_nl or thread.title_prefix_en
-    return render_template('forum/edit_thread.html', thread=thread, op_body=op_body, title=title)
+    return render_template('forum/edit_thread.html', thread=thread, op_body=op.body or '', title=title)
 
 
 @forum_bp.route('/forum/post/<int:post_id>/bewerken', methods=['POST'])
 @login_required
+@limiter.limit("10 per hour", key_func=lambda: f"forum-edit-user-{current_user.get_id()}")
 def forum_post_bewerken(post_id):
     post = Post.query.get_or_404(post_id)
-    if not (post.user_id == current_user.id or current_user.can_moderate()):
+    reason = _edit_refusal(post)
+    if reason == 'forbidden':
         abort(403)
     _require_csrf()
+    if reason is not None:
+        return jsonify({'error': reason, 'message': _edit_refusal_message(reason)}), 409
     body = request.form.get('body', '').strip()
     if body:
-        post.body = body
-        db.session.commit()
-    return jsonify({'body': post.body})
+        _apply_edit(post, body)
+    lang = session.get('lang', 'nl')
+    return jsonify({
+        'body': post.body,
+        'edited': gettext('edited %(when)s', when=post.edited_ago[lang]) if post.edited_at else None,
+        # De nieuwe beoordeling verschijnt via de statuspoll, net als bij een nieuw bericht.
+        'poll_url': url_for('forum.forum_quality_status', post_id=post.id),
+    })
 
 
 @forum_bp.route('/forum/post/<int:post_id>/verwijderen', methods=['POST'])
 @login_required
 def forum_post_verwijderen(post_id):
+    """De auteur verwijdert zijn eigen bericht (ook met reacties, ook als het
+    verplaatst of verborgen is); het openingsbericht niet. Moderators niet."""
     post = Post.query.get_or_404(post_id)
-    if not (post.user_id == current_user.id or current_user.can_moderate()):
-        abort(403)
-    if post.is_op and not current_user.can_moderate():
+    if post.user_id is None or post.user_id != current_user.id or post.is_op:
         abort(403)
     _require_csrf()
     thread_id = post.thread_id

@@ -35,9 +35,16 @@ def setup(app):  # noqa: F811
                      author_username='bram', body='Reply from Bram', source_lang='en')
     # Engels bericht, zodat bij een NL-lezer de vertaal(voorkeur)knoppen verschijnen.
     db.session.add_all([reply, bram_post])
+    # Een gesprek zonder reacties: alleen dan mag de auteur het openingsbericht
+    # (en de titel) nog bewerken.
+    solo = Thread(eyebrow_nl='Test', eyebrow_en='Test', title_prefix_nl='Solo', title_prefix_en='Solo')
+    db.session.add(solo)
+    db.session.flush()
+    db.session.add(Post(thread_id=solo.id, user_id=anna.id, author_name='Anna Test', author_username='anna',
+                        body='Opening zonder reacties', is_op=True))
     db.session.commit()
     return {'anna': anna, 'bram': bram, 'mod': mod, 'thread': t, 'op': op,
-            'reply': reply, 'bram_post': bram_post}
+            'reply': reply, 'bram_post': bram_post, 'solo': solo}
 
 
 def _post(client, path, data=None, token=None):
@@ -49,7 +56,7 @@ def _post(client, path, data=None, token=None):
 
 # Elke actie: (pad, data, wie, controle-functie na een geslaagde actie).
 def _actions(s):
-    t, reply, bram_post = s['thread'], s['reply'], s['bram_post']
+    t, reply, bram_post, solo = s['thread'], s['reply'], s['bram_post'], s['solo']
     return {
         'verwijderen': (f'/forum/post/{reply.id}/verwijderen', {}, 'anna',
                         lambda: db.session.get(Post, reply.id).body == '[bericht verwijderd]'),
@@ -62,8 +69,8 @@ def _actions(s):
                     lambda: db.session.get(Thread, t.id).is_closed is True),
         'draad_starten': ('/forum/nieuw', {'title': 'Nieuwe draad', 'body': 'Eerste bericht'}, 'anna',
                           lambda: Thread.query.filter_by(title_prefix_nl='Nieuwe draad').count() == 1),
-        'draad_bewerken': (f'/forum/{t.id}/bewerken', {'title': 'Andere titel', 'body': 'Andere opening'}, 'anna',
-                           lambda: db.session.get(Thread, t.id).title_prefix_nl == 'Andere titel'),
+        'draad_bewerken': (f'/forum/{solo.id}/bewerken', {'title': 'Andere titel', 'body': 'Andere opening'}, 'anna',
+                           lambda: db.session.get(Thread, solo.id).title_prefix_nl == 'Andere titel'),
         'vertaalvoorkeur': ('/profiel/vertaalvoorkeur', {'auto_translate': '1'}, 'anna',
                             lambda: db.session.get(User, s['anna'].id).auto_translate is True),
     }
@@ -147,7 +154,7 @@ def test_every_action_form_renders_a_token(setup, app):  # noqa: F811
     assert re.search(r'var csrfToken = "[^"]+";', page)
 
     for path, action in (('/forum/nieuw', '/forum/nieuw'),
-                         (f'/forum/{t.id}/bewerken', f'/forum/{t.id}/bewerken'),
+                         (f'/forum/{setup["solo"].id}/bewerken', f'/forum/{setup["solo"].id}/bewerken'),
                          ('/profile', '/profiel/vertaalvoorkeur')):
         html = _req(anna, 'GET', path).get_data(as_text=True)
         forms = _forms_with(html, action)

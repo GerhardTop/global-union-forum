@@ -784,3 +784,14 @@ msgstr "Geen openstaande bezwaren."
 #: app/templates/_footer.html
 msgid "Background"
 msgstr "Achtergrond"
+
+#: app/routes/forum.py, app/templates/forum/_post.html
+#, python-format
+msgid "edited %(when)s"
+msgstr "bewerkt %(when)s"
+
+msgid "This post already has replies, so it can no longer be edited."
+msgstr "Dit bericht heeft al reacties en kan daarom niet meer worden bewerkt."
+
+msgid "A moved or hidden post cannot be edited. You can object instead."
+msgstr "Een verplaatst of verborgen bericht kun je niet bewerken. Je kunt wel bezwaar maken."

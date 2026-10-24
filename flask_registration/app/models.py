@@ -214,6 +214,9 @@ class Post(db.Model):
     vote_count     = db.Column(db.Integer, default=0)
     image_url      = db.Column(db.String(500), nullable=True)
     created_at     = db.Column(db.DateTime, default=datetime.utcnow)
+    # Laatste bewerking door de auteur (alleen zolang er geen reacties zijn);
+    # toont het label "bewerkt" en start een nieuwe AI-beoordeling.
+    edited_at      = db.Column(db.DateTime, nullable=True)
     author         = db.relationship('User', foreign_keys=[user_id], lazy='joined')
     # Geneste reacties: parent_id wijst naar het bericht waarop gereageerd
     # wordt (NULL = bericht op het hoogste niveau). De threadpagina bouwt de
@@ -241,6 +244,10 @@ class Post(db.Model):
     @property
     def time_ago(self):
         return time_ago(self.created_at)
+
+    @property
+    def edited_ago(self):
+        return time_ago(self.edited_at)
 
 
 def time_ago(moment):

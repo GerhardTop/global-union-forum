@@ -121,6 +121,8 @@ def _migrate_columns():
             alters.append('ALTER TABLE posts ADD COLUMN image_url VARCHAR(500) NULL')
         if 'is_demo' not in cols:
             alters.append('ALTER TABLE posts ADD COLUMN is_demo BOOLEAN NOT NULL DEFAULT FALSE')
+        if 'edited_at' not in cols:
+            alters.append('ALTER TABLE posts ADD COLUMN edited_at TIMESTAMP NULL')
 
     if alters:
         with db.engine.connect() as conn:

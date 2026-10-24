@@ -312,6 +312,26 @@ def detach_user(user_id):
         {QualityAward.decided_by_id: None}, synchronize_session=False)
 
 
+def reset_for_edit(post):
+    """Na een bewerking door de auteur: het oude AI-oordeel (kwaliteit en
+    handhaving) hoort bij de oude tekst en gaat weg, zodat schedule_judgement
+    de nieuwe tekst opnieuw beoordeelt en niemand via bewerken een oordeel
+    omzeilt. Een open twijfelmarkering of een vrijgave hoort ook bij de oude
+    tekst. Een eerdere verplaatsing op de achtergrondpagina blijft staan
+    (die geschiedenis is openbaar). Commit niet zelf."""
+    from app.models import ConductCase, QualityObjection
+    award = QualityAward.query.filter_by(post_id=post.id).first()
+    if award is not None:
+        QualityReport.query.filter_by(award_id=award.id).delete(synchronize_session=False)
+        QualityObjection.query.filter_by(award_id=award.id).delete(synchronize_session=False)
+        db.session.delete(award)
+    case = ConductCase.query.filter_by(post_id=post.id).first()
+    if case is not None and case.action in ('twijfel', 'vrijgegeven') and not case.on_background:
+        db.session.delete(case)
+    # De vertaalcache hoort bij de oude tekst (en de AI beoordeelt de Engelse).
+    post.body_nl = post.body_en = None
+
+
 def delete_for_posts(post_ids):
     """Vóór het verwijderen van bijdragen: hun beoordelingen en meldingen weg."""
     post_ids = list(post_ids)

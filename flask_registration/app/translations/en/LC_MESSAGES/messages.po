@@ -784,3 +784,14 @@ msgstr "No open objections."
 #: app/templates/_footer.html
 msgid "Background"
 msgstr "Background"
+
+#: app/routes/forum.py, app/templates/forum/_post.html
+#, python-format
+msgid "edited %(when)s"
+msgstr "edited %(when)s"
+
+msgid "This post already has replies, so it can no longer be edited."
+msgstr "This post already has replies, so it can no longer be edited."
+
+msgid "A moved or hidden post cannot be edited. You can object instead."
+msgstr "A moved or hidden post cannot be edited. You can object instead."
