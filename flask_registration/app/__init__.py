@@ -139,6 +139,7 @@ def _migrate_columns():
     _migrate_stance(existing)
     _migrate_quality(existing)
     _migrate_conduct(existing)
+    _migrate_indexes()
     _migrate_username_and_backfill(insp, existing, is_pg)
 
 
@@ -218,6 +219,43 @@ def _migrate_conduct(existing):
     with db.engine.connect() as conn:
         for name, ddl in added:
             conn.execute(text(f'ALTER TABLE quality_awards ADD COLUMN {name} {ddl}'))
+        conn.commit()
+
+
+# Indexen op veelgebruikte kolommen. Postgres maakt bij een foreign key niet
+# vanzelf een index. De namen volgen SQLAlchemy (ix_<tabel>_<kolom>), zodat
+# een verse database via db.create_all() (index=True in app/models.py) en een
+# bestaande database via deze migratie hetzelfde schema krijgen.
+_INDEXES = (
+    ('posts', 'thread_id'),
+    ('posts', 'parent_id'),
+    ('posts', 'user_id'),
+    ('quality_reports', 'award_id'),
+    ('conduct_objections', 'case_id'),
+    ('quality_promotions', 'user_id'),
+)
+
+
+def _migrate_indexes():
+    """
+    Additief en idempotent: alleen een index aanmaken als er nog geen index
+    bestaat met precies die kolom (ook onder een andere naam). Draait na de
+    kolommigraties; de tabellen zijn klein, het aanmaken duurt milliseconden.
+    """
+    insp = sa_inspect(db.engine)
+    tables = set(insp.get_table_names())
+    missing = []
+    for table, column in _INDEXES:
+        if table not in tables:
+            continue
+        indexed = {tuple(ix['column_names']) for ix in insp.get_indexes(table)}
+        if (column,) not in indexed:
+            missing.append((table, column))
+    if not missing:
+        return
+    with db.engine.connect() as conn:
+        for table, column in missing:
+            conn.execute(text(f'CREATE INDEX ix_{table}_{column} ON {table} ({column})'))
         conn.commit()
 
 

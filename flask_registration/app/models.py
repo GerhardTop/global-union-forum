@@ -196,9 +196,11 @@ class Post(db.Model):
     __tablename__ = "posts"
 
     id             = db.Column(db.Integer, primary_key=True)
-    thread_id      = db.Column(db.Integer, db.ForeignKey('threads.id'), nullable=False)
-    user_id        = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    parent_id      = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
+    # Indexen (ook via _migrate_indexes voor bestaande databases): Postgres
+    # maakt bij een foreign key niet vanzelf een index.
+    thread_id      = db.Column(db.Integer, db.ForeignKey('threads.id'), nullable=False, index=True)
+    user_id        = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    parent_id      = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True, index=True)
     author_name    = db.Column(db.String(100), nullable=False)
     author_username = db.Column(db.String(30), nullable=False)
     author_role    = db.Column(db.String(20),  nullable=False, default='member')
@@ -383,7 +385,7 @@ class QualityReport(db.Model):
     __tablename__ = "quality_reports"
 
     id            = db.Column(db.Integer, primary_key=True)
-    award_id      = db.Column(db.Integer, db.ForeignKey('quality_awards.id'), nullable=False)
+    award_id      = db.Column(db.Integer, db.ForeignKey('quality_awards.id'), nullable=False, index=True)
     reporter_id   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     created_at    = db.Column(db.DateTime, default=datetime.utcnow)
     decision      = db.Column(db.String(12), nullable=True)        # handhaven/intrekken, None = open
@@ -458,7 +460,7 @@ class QualityPromotion(db.Model):
     __tablename__ = "quality_promotions"
 
     id          = db.Column(db.Integer, primary_key=True)
-    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     level       = db.Column(db.String(12), nullable=False)
     promoted_at = db.Column(db.DateTime, default=datetime.utcnow)
     seen_at     = db.Column(db.DateTime, nullable=True)
@@ -560,7 +562,7 @@ class ConductObjection(db.Model):
     __tablename__ = "conduct_objections"
 
     id            = db.Column(db.Integer, primary_key=True)
-    case_id       = db.Column(db.Integer, db.ForeignKey('conduct_cases.id'), nullable=False)
+    case_id       = db.Column(db.Integer, db.ForeignKey('conduct_cases.id'), nullable=False, index=True)
     author_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     text          = db.Column(db.Text, nullable=False)
     created_at    = db.Column(db.DateTime, default=datetime.utcnow)

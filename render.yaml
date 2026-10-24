@@ -3,7 +3,7 @@ services:
     name: global-union-forum
     env: python
     buildCommand: pip install -r flask_registration/requirements.txt
-    startCommand: cd flask_registration && gunicorn run:app
+    startCommand: cd flask_registration && gunicorn -c gunicorn.conf.py run:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0

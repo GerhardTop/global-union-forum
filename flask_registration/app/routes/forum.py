@@ -10,7 +10,7 @@ from sqlalchemy import func
 from app import db, bcrypt, limiter
 from app.forms import ForumActionForm, ForumReplyForm
 from app.models import (STANCES, QUALITY_CRITERIA, User, Thread, Post, PostLike, QualityAward,
-                        QualityReport)
+                        QualityReport, time_ago)
 from app import conduct, quality
 from app.utils import safe_next
 
@@ -88,7 +88,9 @@ def _get_or_create_demo_user(first_name, last_name, email, username):
 
 
 def _seed_forum():
-    """Seed 4 demo threads with demo users on first run."""
+    """Seed 4 demo threads with demo users on first run. Alleen bij het
+    opstarten (create_app), niet per verzoek: dat kostte op elke forumpagina
+    een databaseronde. reset-content laat de democontent staan."""
     if Thread.query.filter_by(is_demo=True).first():
         return
 
@@ -452,23 +454,32 @@ def _thread_list(closed=False):
     # Fase D: wat voor deze lezer uit het gesprek is (verplaatst of verborgen)
     # telt niet mee, en een gesprek met zo'n openingsbericht staat er niet in.
     removed, hidden_threads = conduct.removed_post_ids(current_user)
+    # Eén query voor de berichten van alle gesprekken (geen query per gesprek);
+    # alleen id, gesprek en tijdstip, meer is voor het overzicht niet nodig.
+    thread_ids = [thread.id for thread, _ in rows]
+    visible_times = {}
+    if thread_ids:
+        for post_id, thread_id, created_at in (
+                db.session.query(Post.id, Post.thread_id, Post.created_at)
+                .filter(Post.thread_id.in_(thread_ids))
+                .order_by(Post.created_at, Post.id)):
+            if post_id not in removed:
+                visible_times.setdefault(thread_id, []).append(created_at)
     result = []
     for thread, _ in rows:
         if thread.id in hidden_threads:
             continue
-        visible = [p for p in thread.posts if p.id not in removed]
-        last_post_obj = visible[-1] if visible else None
+        times = visible_times.get(thread.id, [])
         result.append({
             'thread': thread,
-            'reply_count': len(visible),
-            'last_time_ago': last_post_obj.time_ago if last_post_obj else None,
+            'reply_count': len(times),
+            'last_time_ago': time_ago(times[-1]) if times else None,
         })
     return result
 
 
 @forum_bp.route('/forum')
 def forum():
-    _seed_forum()
     return render_template('forum/index.html', threads=_thread_list(closed=False))
 
 
@@ -497,11 +508,10 @@ def forum_gesloten():
                key_func=lambda: f"forum-reply-user-{current_user.get_id()}",
                exempt_when=lambda: not current_user.is_authenticated)
 def forum_thread(thread_id):
-    _seed_forum()
     thread = Thread.query.get_or_404(thread_id)
-    _abort_if_thread_removed(thread)
     reply_form = ForumReplyForm()
     if request.method == 'POST' and current_user.is_authenticated and not thread.is_closed:
+        _abort_if_thread_removed(thread)
         if not current_user.can_contribute():
             return _rules_first_redirect()
         # CSRF, zelfde aanpak als /feedback: leeg FlaskForm, 400 bij een
@@ -615,7 +625,8 @@ def _inject_post_url():
 
 def _abort_if_thread_removed(thread):
     """Fase D: is het openingsbericht verplaatst of verborgen, dan is het hele
-    gesprek weg voor anderen; de auteur en moderators zien het wel."""
+    gesprek weg voor anderen; de auteur en moderators zien het wel. Voor het
+    reageren; de weergave doet dezelfde controle in _render_thread."""
     op = next((p for p in thread.posts if p.is_op), None)
     if op is not None and conduct.is_removed_for(op, current_user):
         abort(404)
@@ -625,18 +636,22 @@ def _abort_if_thread_removed(thread):
 def forum_branch(thread_id, post_id):
     """Doorlinkweergave: een bijdrage (in de volledige weergave op niveau 4)
     als nieuwe bovenkant, met de telling weer vanaf 1."""
-    _seed_forum()
     thread = Thread.query.get_or_404(thread_id)
-    _abort_if_thread_removed(thread)
-    root = Post.query.filter_by(id=post_id, thread_id=thread_id).first_or_404()
-    return _render_thread(thread, branch_root=root)
+    return _render_thread(thread, branch_root_id=post_id)
 
 
-def _render_thread(thread, branch_root=None):
+def _render_thread(thread, branch_root_id=None):
+    """De gesprekspagina (of een tak). De berichten en de handhavingsgegevens
+    worden hier één keer opgehaald en overal hergebruikt."""
     reply_form = ForumReplyForm()
     all_posts = Post.query.filter_by(thread_id=thread.id).order_by(Post.created_at).all()
     posts_by_id = {p.id: p for p in all_posts}
     op, tree_children = _tree(all_posts)
+    branch_root = None
+    if branch_root_id is not None:
+        branch_root = posts_by_id.get(branch_root_id)
+        if branch_root is None:
+            abort(404)
 
     # Kwaliteit is alleen een beloning: niets wordt op kwaliteit verborgen.
     all_ids = [p.id for p in all_posts]
@@ -650,6 +665,10 @@ def _render_thread(thread, branch_root=None):
     conduct_cases = conduct.cases_for(all_ids)
     removed_ids = {pid for pid, case in conduct_cases.items()
                    if conduct.removed_for(posts_by_id[pid], case, current_user)}
+    # Een verplaatst of verborgen openingsbericht verbergt het hele gesprek
+    # voor anderen (zelfde regel als _abort_if_thread_removed, zonder extra query's).
+    if op is not None and op.id in removed_ids:
+        abort(404)
     moved_ids = {pid for pid in removed_ids if conduct_cases[pid].action == 'verplaatst'}
     hidden_ids = removed_ids - moved_ids
 
@@ -864,7 +883,6 @@ def forum_reopen(thread_id):
 def forum_nieuw():
     if not current_user.can_contribute():
         return _rules_first_redirect()
-    _seed_forum()
     if request.method == 'POST':
         _require_csrf()
         title     = request.form.get('title', '').strip()
