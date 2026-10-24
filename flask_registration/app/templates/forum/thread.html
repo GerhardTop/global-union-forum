@@ -91,16 +91,26 @@
     {# Gelaagde weergave: elk bericht met zijn reacties ingesprongen eronder, met
        links een in- en uitklapknop en een verbindingslijn per niveau.
        Niveau 1 is de bovenkant; dieper dan max_level niet inspringen, maar een
-       doorlink naar een eigen weergave (forum_branch) die weer bij 1 begint. #}
+       doorlink naar een eigen weergave (forum_branch) die weer bij 1 begint.
+       Fase D: voor andere lezers staat op de plek van een verplaatste bijdrage
+       een verwijzing naar de achtergrondpagina; een verborgen bijdrage valt
+       weg, of wordt een neutrale placeholder als er zichtbare reacties onder staan. #}
     <div class="gu-thread">
       {% for post in top_posts recursive %}
         {% set level = loop.depth %}
         {% set nvis = descendant_counts.get(post.id, 0) %}
+        {# nshown: onderliggende berichten die iets tonen, ook een verwijzing naar
+           de achtergrondpagina (die telt niet mee in nvis). #}
+        {% set nshown = shown_counts.get(post.id, 0) %}
+        {% if not (post.id in hidden_ids and nvis == 0) %}
         <div class="gu-node gu-node--l{{ level }}" id="node-{{ post.id }}">
-          {% include 'forum/_post.html' %}
-          {% if nvis and level < max_level %}
+          {% if post.id in moved_ids %}{% include 'forum/_post_moved.html' %}
+          {% elif post.id in hidden_ids %}{% include 'forum/_post_hidden.html' %}
+          {% else %}{% include 'forum/_post.html' %}{% endif %}
+          {% if nshown and level < max_level %}
           {% set n_label = (('%d reactie' if nvis == 1 else '%d reacties') if lang == 'nl' else ('%d reply' if nvis == 1 else '%d replies')) | format(nvis) %}
           <div class="gu-node__branch">
+            {% if nvis %}
             <button type="button" class="gu-node__toggle" aria-expanded="true" aria-controls="replies-{{ post.id }}"
                     data-node="{{ post.id }}"
                     data-label-collapse="{% if lang == 'nl' %}Tak inklappen ({{ n_label }}){% else %}Collapse branch ({{ n_label }}){% endif %}"
@@ -108,6 +118,7 @@
                     aria-label="{% if lang == 'nl' %}Tak inklappen ({{ n_label }}){% else %}Collapse branch ({{ n_label }}){% endif %}"><span aria-hidden="true">−</span></button>
             <p class="gu-node__collapsed" id="collapsed-{{ post.id }}" data-count="{{ nvis }}" hidden>{% if lang == 'nl' %}{{ n_label }} verborgen{% else %}{{ n_label }} hidden{% endif %}</p>
             <button type="button" class="gu-node__line" data-node="{{ post.id }}" tabindex="-1" aria-hidden="true"></button>
+            {% endif %}
             <div class="gu-node__children" id="replies-{{ post.id }}">
               {{ loop(tree_children.get(post.id, [])) }}
             </div>
@@ -119,6 +130,7 @@
           </a>
           {% endif %}
         </div>
+        {% endif %}
       {% endfor %}
     </div>
 
@@ -320,6 +332,13 @@
         var slot = document.getElementById('quality-' + postId);
         if (slot && typeof data.html === 'string') slot.innerHTML = data.html;  // door de server gerenderd en ge-escaped
         var mark = document.getElementById('qmark-' + postId);
+        // Fase D: de handhavingsuitkomst (verplaatst of verborgen, met reden)
+        // voor de auteur, zonder verversen. Door de server gerenderd en ge-escaped.
+        if (data.conduct && typeof data.conduct.html === 'string') {
+          var cslot = document.getElementById('conduct-' + postId);
+          if (cslot) cslot.innerHTML = data.conduct.html;
+          article.classList.add('gu-post--removed');
+        }
         if (mark && data.status === 'toegekend' && !mark.querySelector('.gu-quality__mark')) {
           var tpl = document.getElementById('gu-quality-mark-template');
           if (tpl) {

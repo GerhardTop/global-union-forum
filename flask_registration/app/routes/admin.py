@@ -90,10 +90,21 @@ def moderator_dashboard():
                       .filter(QualityAward.id.is_(None), Post.is_demo.is_(False), live)
                       .order_by(Post.created_at.desc()).limit(20).all())
 
+    # Fase D: gedragsregels. Twijfelgevallen (blijven staan tot een moderator
+    # oordeelt) en openstaande bezwaren tegen een verplaatsing of verberging.
+    from app.models import ConductCase, ConductObjection
+    doubt_cases = (ConductCase.query.join(Post, ConductCase.post_id == Post.id)
+                   .filter(ConductCase.action == 'twijfel', live)
+                   .order_by(ConductCase.created_at).all())
+    open_conduct_objections = (ConductObjection.query.filter(ConductObjection.decision.is_(None))
+                               .order_by(ConductObjection.created_at).all())
+
     return render_template(
         'moderator/dashboard.html',
         open_reports=open_reports,
         unjudged_posts=unjudged_posts,
+        doubt_cases=doubt_cases,
+        open_conduct_objections=open_conduct_objections,
         active_threads=active_threads,
         posts_today=posts_today,
         threads_no_gerhard_count=len(threads_no_gerhard),

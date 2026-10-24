@@ -638,3 +638,149 @@ msgstr "Gedragsregels nog niet geaccepteerd"
 #: app/templates/_footer.html, app/templates/aanmelden/aanmelden.html
 msgid "Privacy"
 msgstr "Privacy"
+
+#: app/conduct.py
+msgid "About the idea, not the person"
+msgstr "Over het idee, niet de persoon"
+
+msgid "On topic"
+msgstr "Bij het onderwerp"
+
+msgid "Spam or abuse"
+msgstr "Spam of misbruik"
+
+#: app/templates/forum/_post_moved.html, app/templates/forum/_post_hidden.html
+msgid "Contribution moved because of the conduct rules"
+msgstr "Bijdrage verplaatst wegens de gedragsregels"
+
+msgid "View on the background page"
+msgstr "Bekijk op de achtergrondpagina"
+
+msgid "Contribution hidden"
+msgstr "Bijdrage verborgen"
+
+#: app/templates/forum/_conduct_notice.html
+#, python-format
+msgid "Moved to the background page because of the conduct rule: %(rule)s."
+msgstr "Verplaatst naar de achtergrondpagina wegens de gedragsregel: %(rule)s."
+
+msgid "Hidden from other readers as spam or abuse."
+msgstr "Verborgen voor andere lezers als spam of misbruik."
+
+#, python-format
+msgid "Marked for a moderator: possible violation of %(rule)s."
+msgstr "Gemarkeerd voor een moderator: mogelijke overtreding van %(rule)s."
+
+msgid "Marked for a moderator: possible violation of the conduct rules."
+msgstr "Gemarkeerd voor een moderator: mogelijke overtreding van de gedragsregels."
+
+msgid "Automatically by the AI"
+msgstr "Automatisch door de AI"
+
+msgid "By a moderator"
+msgstr "Door een moderator"
+
+msgid "Objection submitted, a moderator decides"
+msgstr "Bezwaar ingediend, een moderator beslist"
+
+msgid "Objection rejected, the decision stands."
+msgstr "Bezwaar afgewezen, het besluit blijft staan."
+
+msgid "Object to this decision"
+msgstr "Bezwaar maken tegen dit besluit"
+
+msgid "Briefly explain why you disagree."
+msgstr "Leg kort uit waarom je het er niet mee eens bent."
+
+#, python-format
+msgid "You can object until %(date)s. A moderator decides."
+msgstr "Je kunt bezwaar maken tot %(date)s. Een moderator beslist."
+
+msgid "Submit objection"
+msgstr "Bezwaar indienen"
+
+msgid "Decision confirmed by moderator"
+msgstr "Besluit bevestigd door moderator"
+
+msgid "Objection period ended"
+msgstr "Bezwaartermijn verlopen"
+
+#: app/templates/forum/_conduct_mod.html
+msgid "Doubt"
+msgstr "Twijfel"
+
+msgid "Note (optional)"
+msgstr "Toelichting (optioneel)"
+
+msgid "Restore to the conversation"
+msgstr "Terugplaatsen in het gesprek"
+
+msgid "No violation"
+msgstr "Geen overtreding"
+
+msgid "Rule"
+msgstr "Regel"
+
+msgid "Explanation (public on the background page)"
+msgstr "Uitleg (openbaar op de achtergrondpagina)"
+
+msgid "Move to the background page"
+msgstr "Verplaatsen naar de achtergrondpagina"
+
+msgid "Hide as spam or abuse"
+msgstr "Verbergen als spam of misbruik"
+
+#: app/templates/forum/achtergrond.html
+#, python-format
+msgid "Objection possible until %(date)s"
+msgstr "Bezwaar mogelijk tot %(date)s"
+
+msgid "Objection upheld, restored"
+msgstr "Bezwaar toegewezen, teruggeplaatst"
+
+msgid "Restored by a moderator"
+msgstr "Teruggeplaatst door een moderator"
+
+msgid "Why it was moved"
+msgstr "Waarom verplaatst"
+
+msgid "View in context"
+msgstr "In context bekijken"
+
+#: app/templates/moderator/dashboard.html
+msgid "Conduct rules: doubtful cases"
+msgstr "Gedragsregels: twijfelgevallen"
+
+msgid "AI:"
+msgstr "AI:"
+
+msgid "Your own contribution: another moderator decides."
+msgstr "Je eigen bijdrage: een andere moderator beslist."
+
+msgid "No doubtful cases."
+msgstr "Geen twijfelgevallen."
+
+msgid "Conduct rules: open objections"
+msgstr "Gedragsregels: openstaande bezwaren"
+
+msgid "A senior moderator or the admin decides, not the moderator who took the decision."
+msgstr "Een senior moderator of de admin beslist, niet de moderator die het besluit nam."
+
+msgid "Objection:"
+msgstr "Bezwaar:"
+
+msgid "Keep the decision"
+msgstr "Besluit handhaven"
+
+msgid "You took this decision: another senior moderator decides."
+msgstr "Jij nam dit besluit: een andere senior moderator beslist."
+
+msgid "A senior moderator or the admin decides."
+msgstr "Een senior moderator of de admin beslist."
+
+msgid "No open objections."
+msgstr "Geen openstaande bezwaren."
+
+#: app/templates/_footer.html
+msgid "Background"
+msgstr "Achtergrond"

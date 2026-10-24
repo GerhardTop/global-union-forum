@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_login import AnonymousUserMixin, UserMixin
 from app import db, login_manager
 
@@ -240,19 +240,26 @@ class Post(db.Model):
 
     @property
     def time_ago(self):
-        delta = datetime.utcnow() - self.created_at
-        d, s = delta.days, delta.seconds
-        if d >= 2:
-            return {'nl': f'{d} dagen geleden', 'en': f'{d} days ago'}
-        if d == 1:
-            return {'nl': '1 dag geleden', 'en': '1 day ago'}
-        h = s // 3600
-        if h >= 1:
-            return {'nl': f'{h} uur geleden', 'en': f'{h} hour{"s" if h > 1 else ""} ago'}
-        m = s // 60
-        if m >= 1:
-            return {'nl': f'{m} min geleden', 'en': f'{m} min ago'}
-        return {'nl': 'zojuist', 'en': 'just now'}
+        return time_ago(self.created_at)
+
+
+def time_ago(moment):
+    """{'nl': ..., 'en': ...}: hoe lang geleden, voor bijdragen en besluiten."""
+    if moment is None:
+        return {'nl': '', 'en': ''}
+    delta = datetime.utcnow() - moment
+    d, s = delta.days, delta.seconds
+    if d >= 2:
+        return {'nl': f'{d} dagen geleden', 'en': f'{d} days ago'}
+    if d == 1:
+        return {'nl': '1 dag geleden', 'en': '1 day ago'}
+    h = s // 3600
+    if h >= 1:
+        return {'nl': f'{h} uur geleden', 'en': f'{h} hour{"s" if h > 1 else ""} ago'}
+    m = s // 60
+    if m >= 1:
+        return {'nl': f'{m} min geleden', 'en': f'{m} min ago'}
+    return {'nl': 'zojuist', 'en': 'just now'}
 
 
 # Forum fase B: eens/oneens per bijdrage, los van elk kwaliteitssignaal.
@@ -316,6 +323,12 @@ class QualityAward(db.Model):
     # AI-oordeel (ai_criterion + explanation_*) blijft zo onveranderd in de
     # discussie staan; de huidige stand is criterion/status + deze notitie.
     moderator_note   = db.Column(db.String(400), nullable=True)
+    # Fase D: het handhavingsoordeel uit dezelfde AI-aanroep, zoals de AI het
+    # gaf (geen/overtreding/twijfel/spam, de regel en de uitleg in de taal van
+    # de bijdrage). Wat ermee gebeurde staat in ConductCase.
+    conduct_verdict     = db.Column(db.String(12), nullable=True)
+    conduct_rule        = db.Column(db.String(12), nullable=True)
+    conduct_explanation = db.Column(db.Text, nullable=True)
     created_at       = db.Column(db.DateTime, default=datetime.utcnow)
 
     post       = db.relationship('Post', backref=db.backref('quality_award', uselist=False))
@@ -447,3 +460,109 @@ class QualityPromotion(db.Model):
     user = db.relationship('User', backref=db.backref('promotions', lazy=True,
                                                       order_by='QualityPromotion.promoted_at',
                                                       cascade='all, delete-orphan'))
+
+
+# ── Fase D: handhaving van de gedragsregels ──────────────────────────────
+# Handhaafbaar uit de tekst: respect ("Over het idee, niet de persoon") en
+# "Bij het onderwerp". "Eén account per persoon" is accountbeheer en de
+# kwaliteitsrichtlijnen worden niet gehandhaafd.
+CONDUCT_RULES = ('respect', 'onderwerp')
+# verplaatst: naar de openbare achtergrondpagina, niet meer in het gesprek.
+# verborgen: spam of grof misbruik, volledig verborgen, niet op de achtergrond.
+# twijfel: blijft staan, gemarkeerd voor een moderator.
+# teruggeplaatst / vrijgegeven: weer (of nog steeds) gewoon in het gesprek.
+CONDUCT_ACTIONS = ('verplaatst', 'verborgen', 'twijfel', 'teruggeplaatst', 'vrijgegeven')
+REMOVING_ACTIONS = ('verplaatst', 'verborgen')
+OBJECTION_DAYS = 7
+
+
+class ConductCase(db.Model):
+    """De handhavingsstand van één bijdrage (hooguit één rij per bijdrage).
+    Niets wordt verwijderd: een verplaatste bijdrage staat met de regel en de
+    uitleg op de achtergrondpagina, met een momentopname van de tekst."""
+    __tablename__ = "conduct_cases"
+
+    id               = db.Column(db.Integer, primary_key=True)
+    post_id          = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False, unique=True)
+    action           = db.Column(db.String(16), nullable=False)
+    rule             = db.Column(db.String(12), nullable=True)      # None bij spam/misbruik
+    source           = db.Column(db.String(10), nullable=False, default='ai')  # ai/moderator
+    explanation      = db.Column(db.Text, nullable=True)
+    explanation_lang = db.Column(db.String(5), nullable=True)
+    body_snapshot    = db.Column(db.Text, nullable=True)
+    on_background    = db.Column(db.Boolean, nullable=False, default=False)
+    acted_at         = db.Column(db.DateTime, nullable=True)        # begin van de bezwaartermijn
+    acted_by_id      = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # None = AI
+    confirmed_by_id  = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    confirmed_at     = db.Column(db.DateTime, nullable=True)
+    restored_by_id   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    restored_at      = db.Column(db.DateTime, nullable=True)
+    created_at       = db.Column(db.DateTime, default=datetime.utcnow)
+
+    post         = db.relationship('Post', backref=db.backref('conduct_case', uselist=False,
+                                                              cascade='all, delete-orphan'))
+    acted_by     = db.relationship('User', foreign_keys=[acted_by_id])
+    confirmed_by = db.relationship('User', foreign_keys=[confirmed_by_id])
+    restored_by  = db.relationship('User', foreign_keys=[restored_by_id])
+
+    @property
+    def removes_from_thread(self):
+        return self.action in REMOVING_ACTIONS
+
+    @property
+    def objection_deadline(self):
+        return self.acted_at + timedelta(days=OBJECTION_DAYS) if self.acted_at else None
+
+    @property
+    def current_objections(self):
+        """Bezwaren tegen het huidige besluit (na de laatste verplaatsing of verberging)."""
+        return [o for o in self.objections if self.acted_at is None or o.created_at >= self.acted_at]
+
+    @property
+    def open_objection(self):
+        return next((o for o in self.objections if o.decision is None), None)
+
+    def can_object(self, now=None):
+        """De auteur kan binnen zeven dagen één keer bezwaar maken."""
+        now = now or datetime.utcnow()
+        return (self.removes_from_thread and self.objection_deadline is not None
+                and now <= self.objection_deadline and not self.current_objections)
+
+    @property
+    def background_status(self):
+        """De status op de achtergrondpagina."""
+        if self.action == 'teruggeplaatst':
+            return 'teruggeplaatst_bezwaar' if any(o.decision == 'terugplaatsen' for o in self.objections) \
+                else 'teruggeplaatst'
+        if self.confirmed_at is not None:
+            return 'bevestigd'
+        if self.open_objection is not None:
+            return 'bezwaar_open'
+        if self.objection_deadline and datetime.utcnow() <= self.objection_deadline:
+            return 'bezwaar_mogelijk'
+        return 'termijn_verlopen'
+
+    @property
+    def acted_ago(self):
+        return time_ago(self.acted_at or self.created_at)
+
+
+class ConductObjection(db.Model):
+    """Bezwaar van de auteur tegen een verplaatsing of verberging. Een mens
+    beslist (handhaven of terugplaatsen); er is geen AI-reactie."""
+    __tablename__ = "conduct_objections"
+
+    id            = db.Column(db.Integer, primary_key=True)
+    case_id       = db.Column(db.Integer, db.ForeignKey('conduct_cases.id'), nullable=False)
+    author_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    text          = db.Column(db.Text, nullable=False)
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
+    decision      = db.Column(db.String(14), nullable=True)        # handhaven/terugplaatsen, None = open
+    decision_note = db.Column(db.String(400), nullable=True)
+    decided_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    decided_at    = db.Column(db.DateTime, nullable=True)
+
+    case       = db.relationship('ConductCase', backref=db.backref(
+        'objections', lazy=True, order_by='ConductObjection.created_at', cascade='all, delete-orphan'))
+    author     = db.relationship('User', foreign_keys=[author_id])
+    decided_by = db.relationship('User', foreign_keys=[decided_by_id])

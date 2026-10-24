@@ -391,12 +391,18 @@ class TestRulesInTwoGroups:
         assert 'Deze gegevens blijven privé.' in nl  # de catalogus is compleet, geen terugval op Engels
 
     @pytest.mark.parametrize('lang,moderators,old', [
-        ('nl', 'Moderators houden toezicht op de gedragsregels en kunnen een gesprek sluiten.', 'bewerken of verwijderen'),
-        ('en', 'Moderators oversee the conduct rules and can close a conversation.', 'edit or remove'),
+        ('nl', ('Moderators houden toezicht op de gedragsregels.', 'wordt niet verwijderd maar verplaatst',
+                'Spam of grof misbruik wordt volledig verborgen.', 'Moderators kunnen ook een gesprek sluiten.'),
+         'bewerken of verwijderen'),
+        ('en', ('Moderators oversee the conduct rules.', 'is not deleted but moved',
+                'Spam or gross abuse is hidden completely.', 'Moderators can also close a conversation.'),
+         'edit or remove'),
     ])
     def test_moderator_sentence(self, app, lang, moderators, old):
         html = _req(_client(app, lang=lang), 'GET', '/spelregels').get_data(as_text=True)
-        assert moderators in html and old not in html
+        for text in moderators:
+            assert text in html
+        assert old not in html and 'href="/achtergrond"' in html
 
     @pytest.mark.parametrize('lang,texts', [
         ('nl', ('Je moet minstens 16 jaar zijn.',

@@ -2,7 +2,9 @@
   Partial: forum/_post.html
   Context: post, level (1 = bovenkant), thread, reply_form, tree_children,
            posts_by_id, descendant_counts, max_level, stance_counts, my_stances,
-           quality_awards, my_quality_reports, quality_labels, poll_ids
+           quality_awards, my_quality_reports, quality_labels, poll_ids,
+           conduct_cases (fase D; alleen de auteur en moderators krijgen hier
+           een verplaatste of verborgen bijdrage, voor anderen is er een placeholder)
 #}
 {% if post.body == '[bericht verwijderd]' %}
   {% set is_deleted = true %}
@@ -31,10 +33,13 @@
 {% set author_display = post.public_author_name() %}
 {# Kwaliteit (fase C1): los van eens/oneens. #}
 {% set qa = quality_awards.get(post.id) %}
-{% set q_awarded = qa and qa.status == 'toegekend' and post.body != '[bericht verwijderd]' %}
+{# Gedragsregels (fase D): een verplaatste of verborgen bijdrage heeft geen keurmerk. #}
+{% set case = (conduct_cases or {}).get(post.id) %}
+{% set c_removed = case is not none and case.removes_from_thread %}
+{% set q_awarded = qa and qa.status == 'toegekend' and post.body != '[bericht verwijderd]' and not c_removed %}
 {% set author_linkedin = post.public_linkedin_url() %}
 
-<article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}"
+<article class="gu-post{% if post.is_op %} gu-post--op{% endif %}{% if is_foreign %} gu-post--foreign{% endif %}{% if is_deleted %} gu-post--deleted{% endif %}{% if c_removed %} gu-post--removed{% endif %}"
          id="post-{{ post.id }}"{% if post.id in poll_ids %} data-quality-poll="{{ url_for('forum.forum_quality_status', post_id=post.id) }}"{% endif %}>
 
 
@@ -87,11 +92,18 @@
 
   {% if not is_deleted %}
 
+  {# Vaste plek voor de handhavingsuitkomst, zodat de statuspoll hem kan vullen.
+     Alleen voor de auteur en moderators; een twijfelmarkering alleen voor moderators. #}
+  <div class="gu-conduct-slot" id="conduct-{{ post.id }}">
+    {%- if c_removed or (case is not none and case.action == 'twijfel' and current_user.can_moderate()) %}{% include 'forum/_conduct_notice.html' %}{% endif -%}
+  </div>
+
   {# Vaste plek voor het oordeel, zodat de statuspoll hem kan vullen (punt 8). #}
   <div class="gu-quality-slot" id="quality-{{ post.id }}">{% include 'forum/_quality_block.html' %}</div>
 
   {% if current_user.can_moderate() and not is_own %}
-  {% include 'forum/_quality_mod.html' %}
+  {% if not c_removed %}{% include 'forum/_quality_mod.html' %}{% endif %}
+  {% include 'forum/_conduct_mod.html' %}
   {% endif %}
 
   <footer class="gu-post__actions">
@@ -100,7 +112,7 @@
        alleen als bijdrager, niet op je eigen bijdrage. #}
     {% set counts = stance_counts.get(post.id, {'eens': 0, 'oneens': 0}) %}
     {% set mine = my_stances.get(post.id) %}
-    {% set can_stance = current_user.can_contribute() and not is_own %}
+    {% set can_stance = current_user.can_contribute() and not is_own and not c_removed %}
     <div class="gu-stance" data-post-id="{{ post.id }}" role="group" aria-label="{{ _('Agree or disagree') }}">
       {% for s, label in [('eens', _('Agree')), ('oneens', _('Disagree'))] %}
       <button type="button" class="gu-post__action gu-stance__btn gu-stance__btn--{{ s }}{% if mine == s %} is-mine{% endif %}"
@@ -145,7 +157,7 @@
     {% endif %}
 
     {# Reageer button, primaire actieknop (elke diepte, not own post, can_contribute, thread open) #}
-    {% if current_user.can_contribute() and not thread.is_closed and not is_own %}
+    {% if current_user.can_contribute() and not thread.is_closed and not is_own and not c_removed %}
     <button class="gu-post__action gu-post__reply-btn"
             data-target="reply-form-{{ post.id }}">
       {% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
@@ -205,7 +217,7 @@
   {% endif %}
 
   {# Inline reply form #}
-  {% if current_user.can_contribute() and not thread.is_closed and not is_own %}
+  {% if current_user.can_contribute() and not thread.is_closed and not is_own and not c_removed %}
   <div class="gu-post__replyform" id="reply-form-{{ post.id }}" hidden>
     <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       {% if reply_form.meta.csrf %}{{ reply_form.csrf_token(id=False) }}{% endif %}

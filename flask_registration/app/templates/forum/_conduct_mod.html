@@ -1,0 +1,66 @@
+{#
+  Partial: forum/_conduct_mod.html (fase D)
+  Moderatorpaneel bij een bijdrage (niet de eigen): verplaatsen naar de
+  achtergrondpagina, verbergen als spam of misbruik, terugplaatsen, of een
+  twijfelgeval vrijgeven.
+  Context: post, case (ConductCase of None), optioneel conduct_next en conduct_open.
+#}
+{% set next_url = conduct_next or (request.path ~ '#post-' ~ post.id) %}
+<details class="gu-quality-mod gu-conduct-mod"{% if conduct_open %} open{% endif %}>
+  <summary>{{ _('Conduct rules') }}{% if case and case.removes_from_thread %} · {% if case.action == 'verplaatst' %}{{ conduct_rule_label(case.rule) }}{% else %}{{ conduct_rule_label(None) }}{% endif %}{% elif case and case.action == 'twijfel' %} · {{ _('Doubt') }}{% endif %}</summary>
+  <div class="gu-quality-mod__body">
+    {% if case and case.removes_from_thread %}
+    <form method="POST" action="{{ url_for('forum.conduct_restore', post_id=post.id) }}" class="gu-quality-mod__form">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <label class="gu-quality-mod__field">
+        <span>{{ _('Note (optional)') }}</span>
+        <input type="text" name="note" maxlength="400" class="gu-input">
+      </label>
+      <div class="gu-quality-mod__actions">
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Restore to the conversation') }}</button>
+      </div>
+    </form>
+    {% else %}
+    {% if case and case.action == 'twijfel' %}
+    <form method="POST" action="{{ url_for('forum.conduct_release', post_id=post.id) }}" class="gu-quality-mod__form">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <div class="gu-quality-mod__actions">
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('No violation') }}</button>
+      </div>
+    </form>
+    {% endif %}
+    <form method="POST" action="{{ url_for('forum.conduct_move', post_id=post.id) }}" class="gu-quality-mod__form">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <label class="gu-quality-mod__field">
+        <span>{{ _('Rule') }}</span>
+        <select name="rule" class="gu-input">
+          {% for r in ['respect', 'onderwerp'] %}
+          <option value="{{ r }}"{% if case and case.rule == r %} selected{% endif %}>{{ conduct_rule_label(r) }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="gu-quality-mod__field">
+        <span>{{ _('Explanation (public on the background page)') }}</span>
+        <input type="text" name="note" maxlength="1000" class="gu-input" required>
+      </label>
+      <div class="gu-quality-mod__actions">
+        <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Move to the background page') }}</button>
+      </div>
+    </form>
+    <form method="POST" action="{{ url_for('forum.conduct_hide', post_id=post.id) }}" class="gu-quality-mod__form">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <label class="gu-quality-mod__field">
+        <span>{{ _('Note (optional)') }}</span>
+        <input type="text" name="note" maxlength="400" class="gu-input">
+      </label>
+      <div class="gu-quality-mod__actions">
+        <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Hide as spam or abuse') }}</button>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+</details>

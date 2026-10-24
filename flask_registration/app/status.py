@@ -77,10 +77,14 @@ def set_thresholds(values, user_id=None):
 # ── Tellen en niveau bepalen ─────────────────────────────────────────────
 
 def quality_counts(user_id):
-    """(aantal toegekende kwaliteitsbijdragen, aantal onderwerpen) van een gebruiker."""
+    """(aantal toegekende kwaliteitsbijdragen, aantal onderwerpen) van een gebruiker.
+    Een bijdrage die wegens de gedragsregels uit het gesprek is (fase D), telt niet."""
+    from app.models import REMOVING_ACTIONS, ConductCase
+    removed = db.session.query(ConductCase.post_id).filter(ConductCase.action.in_(REMOVING_ACTIONS))
     row = (db.session.query(func.count(func.distinct(Post.id)), func.count(func.distinct(Post.thread_id)))
            .join(QualityAward, QualityAward.post_id == Post.id)
-           .filter(Post.user_id == user_id, QualityAward.status == 'toegekend').one())
+           .filter(Post.user_id == user_id, QualityAward.status == 'toegekend',
+                   Post.id.notin_(removed)).one())
     return int(row[0] or 0), int(row[1] or 0)
 
 

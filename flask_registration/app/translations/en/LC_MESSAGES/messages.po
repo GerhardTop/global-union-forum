@@ -638,3 +638,149 @@ msgstr "Conduct rules not accepted yet"
 #: app/templates/_footer.html, app/templates/aanmelden/aanmelden.html
 msgid "Privacy"
 msgstr "Privacy"
+
+#: app/conduct.py
+msgid "About the idea, not the person"
+msgstr "About the idea, not the person"
+
+msgid "On topic"
+msgstr "On topic"
+
+msgid "Spam or abuse"
+msgstr "Spam or abuse"
+
+#: app/templates/forum/_post_moved.html, app/templates/forum/_post_hidden.html
+msgid "Contribution moved because of the conduct rules"
+msgstr "Contribution moved because of the conduct rules"
+
+msgid "View on the background page"
+msgstr "View on the background page"
+
+msgid "Contribution hidden"
+msgstr "Contribution hidden"
+
+#: app/templates/forum/_conduct_notice.html
+#, python-format
+msgid "Moved to the background page because of the conduct rule: %(rule)s."
+msgstr "Moved to the background page because of the conduct rule: %(rule)s."
+
+msgid "Hidden from other readers as spam or abuse."
+msgstr "Hidden from other readers as spam or abuse."
+
+#, python-format
+msgid "Marked for a moderator: possible violation of %(rule)s."
+msgstr "Marked for a moderator: possible violation of %(rule)s."
+
+msgid "Marked for a moderator: possible violation of the conduct rules."
+msgstr "Marked for a moderator: possible violation of the conduct rules."
+
+msgid "Automatically by the AI"
+msgstr "Automatically by the AI"
+
+msgid "By a moderator"
+msgstr "By a moderator"
+
+msgid "Objection submitted, a moderator decides"
+msgstr "Objection submitted, a moderator decides"
+
+msgid "Objection rejected, the decision stands."
+msgstr "Objection rejected, the decision stands."
+
+msgid "Object to this decision"
+msgstr "Object to this decision"
+
+msgid "Briefly explain why you disagree."
+msgstr "Briefly explain why you disagree."
+
+#, python-format
+msgid "You can object until %(date)s. A moderator decides."
+msgstr "You can object until %(date)s. A moderator decides."
+
+msgid "Submit objection"
+msgstr "Submit objection"
+
+msgid "Decision confirmed by moderator"
+msgstr "Decision confirmed by moderator"
+
+msgid "Objection period ended"
+msgstr "Objection period ended"
+
+#: app/templates/forum/_conduct_mod.html
+msgid "Doubt"
+msgstr "Doubt"
+
+msgid "Note (optional)"
+msgstr "Note (optional)"
+
+msgid "Restore to the conversation"
+msgstr "Restore to the conversation"
+
+msgid "No violation"
+msgstr "No violation"
+
+msgid "Rule"
+msgstr "Rule"
+
+msgid "Explanation (public on the background page)"
+msgstr "Explanation (public on the background page)"
+
+msgid "Move to the background page"
+msgstr "Move to the background page"
+
+msgid "Hide as spam or abuse"
+msgstr "Hide as spam or abuse"
+
+#: app/templates/forum/achtergrond.html
+#, python-format
+msgid "Objection possible until %(date)s"
+msgstr "Objection possible until %(date)s"
+
+msgid "Objection upheld, restored"
+msgstr "Objection upheld, restored"
+
+msgid "Restored by a moderator"
+msgstr "Restored by a moderator"
+
+msgid "Why it was moved"
+msgstr "Why it was moved"
+
+msgid "View in context"
+msgstr "View in context"
+
+#: app/templates/moderator/dashboard.html
+msgid "Conduct rules: doubtful cases"
+msgstr "Conduct rules: doubtful cases"
+
+msgid "AI:"
+msgstr "AI:"
+
+msgid "Your own contribution: another moderator decides."
+msgstr "Your own contribution: another moderator decides."
+
+msgid "No doubtful cases."
+msgstr "No doubtful cases."
+
+msgid "Conduct rules: open objections"
+msgstr "Conduct rules: open objections"
+
+msgid "A senior moderator or the admin decides, not the moderator who took the decision."
+msgstr "A senior moderator or the admin decides, not the moderator who took the decision."
+
+msgid "Objection:"
+msgstr "Objection:"
+
+msgid "Keep the decision"
+msgstr "Keep the decision"
+
+msgid "You took this decision: another senior moderator decides."
+msgstr "You took this decision: another senior moderator decides."
+
+msgid "A senior moderator or the admin decides."
+msgstr "A senior moderator or the admin decides."
+
+msgid "No open objections."
+msgstr "No open objections."
+
+#: app/templates/_footer.html
+msgid "Background"
+msgstr "Background"

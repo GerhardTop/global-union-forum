@@ -1,0 +1,12 @@
+{#
+  Partial: forum/_post_moved.html (fase D)
+  Voor andere lezers op de plek van een bijdrage die wegens een gedragsregel
+  naar de achtergrondpagina is verplaatst. Neutraal: geen auteur, geen tekst.
+  Context: post, conduct_cases.
+#}
+<article class="gu-post gu-post--moved" id="post-{{ post.id }}">
+  <p class="gu-post__movednote">
+    {{ _('Contribution moved because of the conduct rules') }}
+    · <a href="{{ url_for('forum.achtergrond') }}#zaak-{{ conduct_cases[post.id].id }}">{{ _('View on the background page') }}</a>
+  </p>
+</article>

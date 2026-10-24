@@ -16,7 +16,7 @@
     {% with compact=false %}{% include '_rules_list.html' %}{% endwith %}
 
     <p style="color: var(--gu-fg-2);">
-      {{ _('Moderators oversee the conduct rules and can close a conversation.') }}
+      {% if lang == 'nl' %}Moderators houden toezicht op de gedragsregels. Een bijdrage die een gedragsregel overtreedt, wordt niet verwijderd maar verplaatst naar de openbare <a href="{{ url_for('forum.achtergrond') }}">achtergrondpagina</a>, met de regel en de uitleg. Spam of grof misbruik wordt volledig verborgen. De auteur kan binnen zeven dagen bezwaar maken, en een moderator beslist. Moderators kunnen ook een gesprek sluiten.{% else %}Moderators oversee the conduct rules. A contribution that breaks a conduct rule is not deleted but moved to the public <a href="{{ url_for('forum.achtergrond') }}">background page</a>, with the rule and the explanation. Spam or gross abuse is hidden completely. The author can object within seven days, and a moderator decides. Moderators can also close a conversation.{% endif %}
     </p>
 
     <hr class="gu-auth__divider" style="margin: 28px 0;">

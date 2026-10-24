@@ -24,6 +24,7 @@
         <li><a href="{{ url_for('forum.forum') }}">{{ _('Join the thinking') }}</a></li>
         <li><a href="{{ url_for('main.spelregels') }}">{{ _('Ground rules') }}</a></li>
         <li><a href="{{ url_for('main.privacy') }}">{{ _('Privacy') }}</a></li>
+        <li><a href="{{ url_for('forum.achtergrond') }}">{{ _('Background') }}</a></li>
       </ul>
     </div>
     <div>
@@ -36,7 +37,6 @@
   </div>
   <div class="gu-footer__legal">
     <span>&copy; 2026 Global Union Forum<br>{{ _('a movement in the making') }}</span>
-    <span><a href="{{ url_for('main.privacy') }}">Privacy &amp; Cookies</a></span>
   </div>
   {% if not current_user.is_authenticated %}
   <div class="gu-footer__lang">

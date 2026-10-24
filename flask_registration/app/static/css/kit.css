@@ -550,10 +550,13 @@ body {
     gap: 0;
     padding-bottom: 16px;
   }
-  /* Verberg tagline, De Denktank- en Meedoen-kolom */
+  /* Verberg tagline en De Denktank-kolom. De Meedoen-kolom blijft: daar
+     staan Spelregels, Privacy en Achtergrond (fase D), zonder kopje. */
   .gu-footer__brand .gu-payoff { display: none; }
-  .gu-footer__grid > div:nth-child(2),
-  .gu-footer__grid > div:nth-child(3) { display: none; }
+  .gu-footer__grid > div:nth-child(2) { display: none; }
+  .gu-footer__grid > div:nth-child(3) { margin-top: 1.25rem; }
+  .gu-footer__grid > div:nth-child(3) .gu-eyebrow { display: none; }
+  .gu-footer__grid > div:nth-child(4) { margin-top: 1rem; }
   /* Logo 2x groter, meer ruimte bovenaan */
   .gu-footer__brand { margin-top: 1.5rem; }
   .gu-footer__brand img { height: 56px; }
@@ -570,8 +573,6 @@ body {
     gap: 12px;
     padding-bottom: 2rem;
   }
-  /* Verberg Privacy & Cookies */
-  .gu-footer__legal > span:last-child { display: none; }
 }
 
 /* ============================================================
@@ -1650,6 +1651,41 @@ body {
 .gu-rules--compact .gu-rules__item p { font-size: 0.8125rem; line-height: 1.5; }
 .gu-join__optionalNote { margin: 0 0 12px; }
 .gu-join__privacyLink { color: var(--gu-globe); white-space: nowrap; }
+
+/* Fase D: gedragsregels in het gesprek */
+.gu-post--moved, .gu-post--hidden { padding: 12px 0; }
+.gu-post__movednote, .gu-post__hiddennote { margin: 0; font-size: 0.875rem; font-style: italic; color: var(--gu-fg-3); }
+.gu-post__movednote a { color: var(--gu-globe); font-style: normal; }
+.gu-post--removed .gu-post__body { opacity: 0.75; }
+.gu-conduct { margin: 10px 0; padding: 10px 12px; border: 1px dashed var(--gu-border); border-radius: 6px; font-size: 0.875rem; }
+.gu-conduct p { margin: 0 0 6px; }
+.gu-conduct p:last-child { margin-bottom: 0; }
+.gu-conduct__head { font-weight: 600; color: var(--gu-fg-1); }
+.gu-conduct__why { color: var(--gu-fg-2); }
+.gu-conduct__meta, .gu-conduct__status { font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-conduct--twijfel { border-color: var(--gu-quality, var(--gu-border)); }
+.gu-conduct__object { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.gu-conduct__object label { font-weight: 500; color: var(--gu-fg-1); }
+.gu-conduct__actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+
+/* Fase D: openbare achtergrondpagina (/achtergrond) */
+.gu-background__intro { margin: 12px 0 0; color: var(--gu-fg-2); line-height: 1.6; }
+.gu-background__intro a, .gu-background__context a { color: var(--gu-globe); }
+.gu-background { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.gu-background__card { padding: 18px 20px; border: 1px solid var(--gu-border); border-radius: 12px; background: var(--gu-bg); }
+.gu-background__top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.gu-background__rule { padding: 3px 10px; border-radius: 999px; background: var(--gu-bg-soft); color: var(--gu-globe-deep); font-size: 0.8125rem; font-weight: 600; }
+.gu-background__status { font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-background__status--teruggeplaatst_bezwaar, .gu-background__status--teruggeplaatst { color: var(--gu-globe-deep); }
+.gu-background__meta { margin: 8px 0 0; font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-background__text { margin: 12px 0 0; padding: 10px 14px; border-left: 3px solid var(--gu-border); color: var(--gu-fg-1); overflow-wrap: anywhere; }
+.gu-background__text p { margin: 0 0 8px; }
+.gu-background__text p:last-child { margin-bottom: 0; }
+.gu-background__why { margin-top: 12px; }
+.gu-background__whyhead { margin: 0 0 2px; font-size: 0.8125rem; font-weight: 600; color: var(--gu-fg-1); }
+.gu-background__why p:last-child { margin: 0; color: var(--gu-fg-2); }
+.gu-background__context { margin: 12px 0 0; font-size: 0.875rem; }
+.gu-background__footnote { margin: 24px 0 0; font-size: 0.875rem; color: var(--gu-fg-3); }
 
 /* Privacyverklaring (/privacy) */
 .gu-legal__updated { margin: 8px 0 0; font-size: 0.875rem; color: var(--gu-fg-3); }

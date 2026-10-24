@@ -136,6 +136,7 @@ def _migrate_columns():
     _migrate_quality_status(existing)
     _migrate_stance(existing)
     _migrate_quality(existing)
+    _migrate_conduct(existing)
     _migrate_username_and_backfill(insp, existing, is_pg)
 
 
@@ -192,6 +193,29 @@ def _migrate_quality(existing):
         conn.execute(text(
             "UPDATE quality_awards SET status = CASE WHEN criterion IS NOT NULL THEN 'toegekend' "
             "ELSE 'afgewezen' END WHERE status = 'voorgesteld' AND source = 'ai'"))
+        conn.commit()
+
+
+def _migrate_conduct(existing):
+    """
+    Fase D: het handhavingsoordeel van de AI bij quality_awards
+    (conduct_verdict, conduct_rule, conduct_explanation; alle nullable). Geen
+    backfill: oude oordelen hebben geen handhavingsoordeel. Vóór elke
+    ORM-query op QualityAward, zoals seed_demo_awards(). De tabellen
+    conduct_cases en conduct_objections maakt db.create_all() aan.
+    """
+    if 'quality_awards' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('quality_awards')}
+    added = [(name, ddl) for name, ddl in (('conduct_verdict', 'VARCHAR(12) NULL'),
+                                           ('conduct_rule', 'VARCHAR(12) NULL'),
+                                           ('conduct_explanation', 'TEXT NULL'))
+             if name not in cols]
+    if not added:
+        return
+    with db.engine.connect() as conn:
+        for name, ddl in added:
+            conn.execute(text(f'ALTER TABLE quality_awards ADD COLUMN {name} {ddl}'))
         conn.commit()
 
 

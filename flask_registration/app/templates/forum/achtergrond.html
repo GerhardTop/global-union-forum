@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{#
+  Openbare achtergrondpagina (/achtergrond, fase D). Per verplaatste bijdrage
+  een kaart: de overtreden gedragsregel, de status, wie besloot (AI of
+  moderator) en wanneer, de tekst (momentopname bij het verplaatsen), de
+  uitleg en een link naar de plek in het gesprek. De auteur blijft anoniem.
+  Langere redactionele tekst inline tweetalig; korte labels via de catalogus.
+  Context: cases (ConductCase), hidden_threads (gesprekken die deze lezer niet ziet).
+#}
+{% block title %}{% if lang == 'nl' %}Achtergrond{% else %}Background{% endif %} · Global Union{% endblock %}
+
+{% block content %}
+<div class="gu-profile" style="max-width: 720px;">
+
+  <div class="gu-profile__head">
+    <p class="gu-eyebrow">Global Union Forum</p>
+    <h1 class="gu-profile__title">{% if lang == 'nl' %}Achtergrond{% else %}Background{% endif %}</h1>
+    <p class="gu-background__intro">
+      {% if lang == 'nl' %}Hier staan bijdragen die uit een gesprek zijn verplaatst omdat ze een <a href="{{ url_for('main.spelregels') }}#gedragsregels">gedragsregel</a> overtraden. We verwijderen niets: elke verplaatsing staat hier met de regel, de uitleg en de status, zodat iedereen kan nagaan hoe er gemodereerd wordt. De auteur blijft anoniem en kan binnen zeven dagen bezwaar maken; een moderator beslist.{% else %}This page lists contributions that were moved out of a conversation because they broke a <a href="{{ url_for('main.spelregels') }}#gedragsregels">conduct rule</a>. We delete nothing: every move is listed here with the rule, the explanation and the status, so anyone can check how moderation works. The author stays anonymous and can object within seven days; a moderator decides.{% endif %}
+    </p>
+  </div>
+
+  {% if cases %}
+  <ol class="gu-background">
+    {% for case in cases %}
+    {% set status = case.background_status %}
+    <li class="gu-background__card" id="zaak-{{ case.id }}">
+      <div class="gu-background__top">
+        <span class="gu-background__rule">{{ conduct_rule_label(case.rule) }}</span>
+        <span class="gu-background__status gu-background__status--{{ status }}">
+          {%- if status == 'bezwaar_mogelijk' -%}{{ _('Objection possible until %(date)s', date=case.objection_deadline | dateformat('d MMMM y')) }}
+          {%- elif status == 'bezwaar_open' -%}{{ _('Objection submitted, a moderator decides') }}
+          {%- elif status == 'bevestigd' -%}{{ _('Decision confirmed by moderator') }}
+          {%- elif status == 'teruggeplaatst_bezwaar' -%}{{ _('Objection upheld, restored') }}
+          {%- elif status == 'teruggeplaatst' -%}{{ _('Restored by a moderator') }}
+          {%- else -%}{{ _('Objection period ended') }}{%- endif -%}
+        </span>
+      </div>
+      <p class="gu-background__meta">{% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %} · {{ case.acted_ago[lang] }}</p>
+      <blockquote class="gu-background__text" lang="{{ case.post.source_lang }}">
+        {% for para in (case.body_snapshot or case.post.body or '').split('\n\n') %}<p>{{ para }}</p>{% endfor %}
+      </blockquote>
+      {% if case.explanation %}
+      <div class="gu-background__why">
+        <p class="gu-background__whyhead">{{ _('Why it was moved') }}</p>
+        <p lang="{{ case.explanation_lang or lang }}">{{ case.explanation }}</p>
+      </div>
+      {% endif %}
+      {% if case.post.thread_id not in hidden_threads %}
+      <p class="gu-background__context"><a href="{{ post_url(case.post) }}">{{ _('View in context') }}</a></p>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <div class="gu-join__panel">
+    <p>{% if lang == 'nl' %}Er zijn nog geen bijdragen verplaatst.{% else %}No contributions have been moved yet.{% endif %}</p>
+  </div>
+  {% endif %}
+
+  <p class="gu-background__footnote">
+    {% if lang == 'nl' %}Pure spam en grof misbruik staan hier niet: die worden volledig verborgen.{% else %}Pure spam and gross abuse are not listed here: they are hidden completely.{% endif %}
+  </p>
+</div>
+{% endblock %}

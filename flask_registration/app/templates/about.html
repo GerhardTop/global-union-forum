@@ -51,7 +51,7 @@
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
             <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Moderators{% else %}Moderators{% endif %}</h3>
           </div>
-          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Zorgen dat het gesprek loopt, bijdragen verwijderen die niet voldoen aan de spelregels.{% else %}Keep the conversation flowing, remove contributions that don't meet the rules of engagement.{% endif %}</p>
+          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Zorgen dat het gesprek loopt en toezien op de gedragsregels. Een overtreding wordt niet verwijderd maar verplaatst naar de openbare <a href="{{ url_for('forum.achtergrond') }}">achtergrondpagina</a>; spam of misbruik wordt volledig verborgen. De auteur kan bezwaar maken, en een moderator beslist.{% else %}Keep the conversation flowing and oversee the conduct rules. A violation is not deleted but moved to the public <a href="{{ url_for('forum.achtergrond') }}">background page</a>; spam or abuse is hidden completely. The author can object, and a moderator decides.{% endif %}</p>
         </div>
 
       </div>

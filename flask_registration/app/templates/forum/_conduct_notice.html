@@ -1,0 +1,45 @@
+{#
+  Partial: forum/_conduct_notice.html (fase D)
+  Alleen voor de auteur en moderators: waarom een bijdrage uit het gesprek is
+  (verplaatst of verborgen), met de bezwaarmogelijkheid voor de auteur; voor
+  moderators ook een twijfelmarkering. Wordt ook los gerenderd door de
+  statuspoll (forum_quality_status).
+  Context: post, case, optioneel return_path.
+#}
+{% set is_author = current_user.is_authenticated and post.user_id == current_user.id %}
+<div class="gu-conduct gu-conduct--{{ case.action }}">
+  {% if case.action == 'verplaatst' %}
+    <p class="gu-conduct__head">{{ _('Moved to the background page because of the conduct rule: %(rule)s.', rule=conduct_rule_label(case.rule)) }}</p>
+  {% elif case.action == 'verborgen' %}
+    <p class="gu-conduct__head">{{ _('Hidden from other readers as spam or abuse.') }}</p>
+  {% elif case.action == 'twijfel' %}
+    <p class="gu-conduct__head">{% if case.rule %}{{ _('Marked for a moderator: possible violation of %(rule)s.', rule=conduct_rule_label(case.rule)) }}{% else %}{{ _('Marked for a moderator: possible violation of the conduct rules.') }}{% endif %}</p>
+  {% endif %}
+  {% if case.explanation %}<p class="gu-conduct__why" lang="{{ case.explanation_lang or lang }}">{{ case.explanation }}</p>{% endif %}
+  <p class="gu-conduct__meta">{% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %} · {{ case.acted_ago[lang] }}</p>
+
+  {% if case.removes_from_thread %}
+    {% set objection = case.current_objections[-1] if case.current_objections else None %}
+    {% if objection and objection.decision is none %}
+      <p class="gu-conduct__status">{{ _('Objection submitted, a moderator decides') }}</p>
+    {% elif objection and objection.decision == 'handhaven' %}
+      <p class="gu-conduct__status">{{ _('Objection rejected, the decision stands.') }}</p>
+    {% elif is_author and case.can_object() %}
+      <form method="POST" action="{{ url_for('forum.conduct_object', post_id=post.id) }}" class="gu-conduct__object">
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        <input type="hidden" name="next" value="{{ return_path or request.path }}#post-{{ post.id }}">
+        <label for="objection-{{ post.id }}">{{ _('Object to this decision') }}</label>
+        <textarea class="gu-composer__input" id="objection-{{ post.id }}" name="text" rows="2" maxlength="2000" required
+                  placeholder="{{ _('Briefly explain why you disagree.') }}"></textarea>
+        <div class="gu-conduct__actions">
+          <span class="gu-conduct__meta">{{ _('You can object until %(date)s. A moderator decides.', date=case.objection_deadline | dateformat('d MMMM y')) }}</span>
+          <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Submit objection') }}</button>
+        </div>
+      </form>
+    {% elif case.confirmed_at %}
+      <p class="gu-conduct__status">{{ _('Decision confirmed by moderator') }}</p>
+    {% elif case.objection_deadline %}
+      <p class="gu-conduct__status">{{ _('Objection period ended') }}</p>
+    {% endif %}
+  {% endif %}
+</div>

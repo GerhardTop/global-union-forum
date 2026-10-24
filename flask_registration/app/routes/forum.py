@@ -11,7 +11,7 @@ from app import db, bcrypt, limiter
 from app.forms import ForumActionForm, ForumReplyForm
 from app.models import (STANCES, QUALITY_CRITERIA, User, Thread, Post, PostLike, QualityAward,
                         QualityReport)
-from app import quality
+from app import conduct, quality
 from app.utils import safe_next
 
 forum_bp = Blueprint("forum", __name__)
@@ -24,7 +24,10 @@ def _inject_forum_action_form():
     return {'forum_action_form': ForumActionForm(), 'quality_labels': quality.CRITERIA_LABELS,
             # Fase C2: statuslabels en (lui) de ongeziene promotie voor de melding.
             'status_labels': status.STATUS_LABELS,
-            'pending_promotion': lambda: status.pending_promotion(current_user)}
+            'pending_promotion': lambda: status.pending_promotion(current_user),
+            # Fase D: gedragsregels.
+            'conduct_rule_label': conduct.rule_label,
+            'conduct_can_decide': lambda case: conduct.can_decide_objection(case, current_user)}
 
 
 def _rules_first_redirect():
@@ -446,12 +449,18 @@ def _thread_list(closed=False):
         .order_by(last_post_sq.c.last_at.desc().nulls_last(), Thread.created_at.desc())
         .all()
     )
+    # Fase D: wat voor deze lezer uit het gesprek is (verplaatst of verborgen)
+    # telt niet mee, en een gesprek met zo'n openingsbericht staat er niet in.
+    removed, hidden_threads = conduct.removed_post_ids(current_user)
     result = []
     for thread, _ in rows:
-        last_post_obj = thread.posts[-1] if thread.posts else None
+        if thread.id in hidden_threads:
+            continue
+        visible = [p for p in thread.posts if p.id not in removed]
+        last_post_obj = visible[-1] if visible else None
         result.append({
             'thread': thread,
-            'reply_count': len(thread.posts),
+            'reply_count': len(visible),
             'last_time_ago': last_post_obj.time_ago if last_post_obj else None,
         })
     return result
@@ -490,6 +499,7 @@ def forum_gesloten():
 def forum_thread(thread_id):
     _seed_forum()
     thread = Thread.query.get_or_404(thread_id)
+    _abort_if_thread_removed(thread)
     reply_form = ForumReplyForm()
     if request.method == 'POST' and current_user.is_authenticated and not thread.is_closed:
         if not current_user.can_contribute():
@@ -506,6 +516,8 @@ def forum_thread(thread_id):
         # thread wijzen (geen IDOR, alle posts zijn al publiek, maar wel een
         # corrupte reply-boomstructuur).
         parent = Post.query.filter_by(id=parent_id, thread_id=thread_id).first() if parent_id is not None else None
+        if parent is not None and conduct.is_removed_for(parent, current_user):
+            parent = None  # uit het gesprek voor deze lezer: alsof hij niet bestaat
         if parent is not None and parent.user_id == current_user.id:
             # Punt 7: niet reageren op je eigen bericht (de knop is ook verborgen).
             flash(
@@ -601,12 +613,21 @@ def _inject_post_url():
     return {'post_url': post_url}
 
 
+def _abort_if_thread_removed(thread):
+    """Fase D: is het openingsbericht verplaatst of verborgen, dan is het hele
+    gesprek weg voor anderen; de auteur en moderators zien het wel."""
+    op = next((p for p in thread.posts if p.is_op), None)
+    if op is not None and conduct.is_removed_for(op, current_user):
+        abort(404)
+
+
 @forum_bp.route('/forum/<int:thread_id>/tak/<int:post_id>')
 def forum_branch(thread_id, post_id):
     """Doorlinkweergave: een bijdrage (in de volledige weergave op niveau 4)
     als nieuwe bovenkant, met de telling weer vanaf 1."""
     _seed_forum()
     thread = Thread.query.get_or_404(thread_id)
+    _abort_if_thread_removed(thread)
     root = Post.query.filter_by(id=post_id, thread_id=thread_id).first_or_404()
     return _render_thread(thread, branch_root=root)
 
@@ -622,6 +643,16 @@ def _render_thread(thread, branch_root=None):
     quality_awards = {a.post_id: a for a in
                       QualityAward.query.filter(QualityAward.post_id.in_(all_ids)).all()} if all_ids else {}
 
+    # Fase D: gedragsregels. Voor anderen is een verplaatste bijdrage een
+    # verwijzing naar de achtergrondpagina en een verborgen bijdrage weg (of
+    # een neutrale placeholder als er zichtbare reacties onder staan). De
+    # auteur en moderators zien ze gemarkeerd met de reden.
+    conduct_cases = conduct.cases_for(all_ids)
+    removed_ids = {pid for pid, case in conduct_cases.items()
+                   if conduct.removed_for(posts_by_id[pid], case, current_user)}
+    moved_ids = {pid for pid in removed_ids if conduct_cases[pid].action == 'verplaatst'}
+    hidden_ids = removed_ids - moved_ids
+
     if branch_root is not None:
         top_posts = [branch_root]
     elif op is not None:
@@ -629,7 +660,7 @@ def _render_thread(thread, branch_root=None):
     else:  # geen openingsbericht (oude data): de hoofdberichten zelf bovenaan
         top_posts = [p for p in all_posts if p.parent_id is None]
 
-    # Aantal onderliggende reacties per bericht (alle niveaus), voor
+    # Aantal zichtbare onderliggende reacties per bericht (alle niveaus), voor
     # "n reacties verborgen" en de doorlink. Breedte-eerst, zonder recursie.
     order, queue = [], deque(top_posts)
     while queue:
@@ -638,8 +669,17 @@ def _render_thread(thread, branch_root=None):
         queue.extend(tree_children.get(p.id, []))
     descendant_counts = {}
     for p in reversed(order):
-        descendant_counts[p.id] = sum(1 + descendant_counts.get(c.id, 0)
+        descendant_counts[p.id] = sum((0 if c.id in removed_ids else 1) + descendant_counts.get(c.id, 0)
                                       for c in tree_children.get(p.id, []))
+    if branch_root is not None and branch_root.id in hidden_ids and not descendant_counts.get(branch_root.id):
+        abort(404)
+    # Onderliggende berichten die iets tonen: zichtbaar, of een verwijzing naar
+    # de achtergrondpagina, of een placeholder boven zichtbare reacties.
+    shown_counts = {}
+    for p in reversed(order):
+        shown_counts[p.id] = sum(
+            (0 if (c.id in hidden_ids and not descendant_counts.get(c.id)) else 1) + shown_counts.get(c.id, 0)
+            for c in tree_children.get(p.id, []))
 
     stance_counts = _stance_counts(all_ids)
     my_quality_reports = set()
@@ -670,13 +710,17 @@ def _render_thread(thread, branch_root=None):
         'forum/thread.html',
         thread=thread,
         reply_form=reply_form,
-        posts=all_posts,
+        posts=[p for p in all_posts if p.id not in removed_ids],  # zichtbare tellingen
         poll_ids=poll_ids,
+        conduct_cases=conduct_cases,
+        moved_ids=moved_ids,
+        hidden_ids=hidden_ids,
         top_posts=top_posts,
         tree_children=tree_children,
         branch_root=branch_root,
         posts_by_id=posts_by_id,
         descendant_counts=descendant_counts,
+        shown_counts=shown_counts,
         max_level=MAX_LEVEL,
         stance_counts=stance_counts,
         my_stances=my_stances,
@@ -699,6 +743,8 @@ def _render_thread(thread, branch_root=None):
 def forum_translate(post_id):
     _require_csrf()
     post = Post.query.get_or_404(post_id)
+    if conduct.is_removed_for(post, current_user):
+        abort(404)
     user_lang = session.get('lang', 'nl')
 
     if user_lang == post.source_lang:
@@ -764,6 +810,8 @@ def forum_stance(post_id):
     keuze in. Eén rij per gebruiker per bijdrage."""
     _require_csrf()
     post = Post.query.get_or_404(post_id)
+    if conduct.is_removed_for(post, current_user):
+        abort(404)
     if not current_user.can_contribute():
         return jsonify({'error': 'not allowed'}), 403
     if post.user_id == current_user.id:
@@ -956,8 +1004,12 @@ def forum_quality_decide(post_id):
 
 def _quality_page_visible(post, award):
     """Alleen een toegekend keurmerk heeft een (openbare) discussiepagina.
-    Zonder keurmerk is er niets te tonen: geen reden, geen bezwaar."""
-    return award is not None and award.status == 'toegekend'
+    Zonder keurmerk is er niets te tonen: geen reden, geen bezwaar. Een
+    bijdrage die wegens de gedragsregels uit het gesprek is, heeft geen
+    keurmerk (fase D), dus ook geen pagina."""
+    case = post.conduct_case
+    return (award is not None and award.status == 'toegekend'
+            and not (case is not None and case.removes_from_thread))
 
 
 
@@ -1024,18 +1076,31 @@ def forum_quality_status(post_id):
     verschijnt: pending (nog geen oordeel), toegekend (met de HTML van het
     keurmerkblok) of geen (geen keurmerk, en geen reden)."""
     post = Post.query.get_or_404(post_id)
+    if conduct.is_removed_for(post, current_user):
+        abort(404)
     qa = post.quality_award
     if qa is None:
         return jsonify({'status': 'pending'})
     is_own = post.user_id == current_user.id
-    q_awarded = qa.status == 'toegekend' and post.body != '[bericht verwijderd]'
+    case = post.conduct_case
+    removed = case is not None and case.removes_from_thread
+    q_awarded = qa.status == 'toegekend' and post.body != '[bericht verwijderd]' and not removed
     reported = {qa.id} if QualityReport.query.filter_by(
         award_id=qa.id, reporter_id=current_user.id, decision=None).first() else set()
     html = render_template('forum/_quality_block.html', post=post, qa=qa, q_awarded=q_awarded,
                            is_own=is_own, my_quality_reports=reported,
                            return_path=url_for('forum.forum_thread', thread_id=post.thread_id))
-    return jsonify({'status': 'toegekend' if q_awarded else 'geen',
-                    'criterion': qa.criterion if q_awarded else None, 'html': html})
+    result = {'status': 'toegekend' if q_awarded else 'geen',
+              'criterion': qa.criterion if q_awarded else None, 'html': html, 'conduct': None}
+    # Fase D: de handhavingsuitkomst voor de auteur (en moderators), zonder
+    # verversen; anderen krijgen deze bijdrage dan al niet meer (404 hierboven).
+    if removed:
+        result['conduct'] = {
+            'action': case.action,
+            'html': render_template('forum/_conduct_notice.html', post=post, case=case,
+                                    return_path=url_for('forum.forum_thread', thread_id=post.thread_id)),
+        }
+    return jsonify(result)
 
 
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/melden', methods=['POST'])
@@ -1047,7 +1112,7 @@ def forum_quality_report(post_id):
     _require_csrf()
     post = Post.query.get_or_404(post_id)
     award = post.quality_award
-    if post.user_id == current_user.id or award is None or award.status != 'toegekend':
+    if post.user_id == current_user.id or not _quality_page_visible(post, award):
         abort(403)
     already = QualityReport.query.filter_by(award_id=award.id, reporter_id=current_user.id,
                                             decision=None).first()
@@ -1085,4 +1150,133 @@ def forum_quality_report_decide(report_id):
         award.decided_at = now
     db.session.commit()
     quality._recalc_author(award.post)  # fase C2, alleen omhoog (nooit lager)
+    return redirect(safe_next(request.form.get('next'), url_for('admin.moderator_dashboard')))
+
+
+# ── Fase D: handhaving van de gedragsregels ───────────────────────────────
+
+@forum_bp.route('/achtergrond')
+def achtergrond():
+    """Openbare achtergrondpagina: bijdragen die wegens een gedragsregel uit
+    het gesprek zijn verplaatst, met regel, status en uitleg. De auteur blijft
+    anoniem. Spam, misbruik en open twijfelgevallen staan hier niet."""
+    cases = conduct.background_cases()
+    # "In context bekijken" alleen als het gesprek voor deze lezer zichtbaar is.
+    _removed, hidden_threads = conduct.removed_post_ids(current_user)
+    return render_template('forum/achtergrond.html', cases=cases, hidden_threads=hidden_threads)
+
+
+def _conduct_back(post):
+    return redirect(safe_next(request.form.get('next'), post_url(post)))
+
+
+def _moderator_for(post):
+    """Een moderator handelt niet op zijn eigen bijdrage."""
+    if not current_user.can_moderate():
+        abort(403)
+    _require_csrf()
+    if post.user_id == current_user.id:
+        abort(403)
+
+
+def _moderator_note():
+    return (request.form.get('note') or '').strip()[:1000]
+
+
+@forum_bp.route('/forum/handhaving/<int:post_id>/verplaatsen', methods=['POST'])
+@login_required
+def conduct_move(post_id):
+    """Moderator verplaatst een bijdrage naar de achtergrondpagina, met een
+    regel en een uitleg (die staat openbaar op de achtergrondpagina)."""
+    post = Post.query.get_or_404(post_id)
+    _moderator_for(post)
+    rule, note = request.form.get('rule'), _moderator_note()
+    if rule not in ('respect', 'onderwerp') or not note or post.body == '[bericht verwijderd]':
+        abort(400)
+    conduct.move(post, rule, note, session.get('lang', 'nl'), actor=current_user)
+    db.session.commit()
+    return _conduct_back(post)
+
+
+@forum_bp.route('/forum/handhaving/<int:post_id>/verbergen', methods=['POST'])
+@login_required
+def conduct_hide(post_id):
+    """Moderator verbergt spam of grof misbruik volledig."""
+    post = Post.query.get_or_404(post_id)
+    _moderator_for(post)
+    conduct.hide(post, _moderator_note() or None, session.get('lang', 'nl'), actor=current_user)
+    db.session.commit()
+    return _conduct_back(post)
+
+
+@forum_bp.route('/forum/handhaving/<int:post_id>/terugplaatsen', methods=['POST'])
+@login_required
+def conduct_restore(post_id):
+    """Moderator plaatst een verplaatste of verborgen bijdrage terug."""
+    post = Post.query.get_or_404(post_id)
+    _moderator_for(post)
+    case = post.conduct_case
+    if case is None or not case.removes_from_thread:
+        abort(400)
+    conduct.restore(case, current_user, _moderator_note() or None)
+    db.session.commit()
+    return _conduct_back(post)
+
+
+@forum_bp.route('/forum/handhaving/<int:post_id>/vrijgeven', methods=['POST'])
+@login_required
+def conduct_release(post_id):
+    """Moderator beoordeelt een twijfelgeval als geen overtreding."""
+    post = Post.query.get_or_404(post_id)
+    _moderator_for(post)
+    case = post.conduct_case
+    if case is None or case.action != 'twijfel':
+        abort(400)
+    conduct.release(case, current_user)
+    db.session.commit()
+    return _conduct_back(post)
+
+
+@forum_bp.route('/forum/handhaving/<int:post_id>/bezwaar', methods=['POST'])
+@login_required
+@limiter.limit("5 per hour", key_func=lambda: f"conduct-objection-user-{current_user.get_id()}")
+def conduct_object(post_id):
+    """De auteur maakt binnen zeven dagen bezwaar tegen een verplaatsing of
+    verberging, met een korte toelichting. Eén bezwaar per besluit."""
+    _require_csrf()
+    post = Post.query.get_or_404(post_id)
+    case = post.conduct_case
+    if post.user_id != current_user.id or case is None or not case.removes_from_thread:
+        abort(403)
+    if case.current_objections:
+        abort(409)
+    if not case.can_object():
+        abort(400)  # termijn verlopen
+    text = (request.form.get('text') or '').strip()[:2000]
+    if not text:
+        abort(400)
+    conduct.object_to(case, current_user, text)
+    db.session.commit()
+    return _conduct_back(post)
+
+
+@forum_bp.route('/forum/handhaving/bezwaar/<int:objection_id>/besluit', methods=['POST'])
+@login_required
+def conduct_objection_decide(objection_id):
+    """Een senior moderator (of de admin) beslist over een bezwaar: handhaven
+    of terugplaatsen. Niet de auteur en niet wie het besluit nam."""
+    from app.models import ConductObjection
+    _require_csrf()
+    objection = ConductObjection.query.get_or_404(objection_id)
+    case = objection.case
+    if objection.decision is not None or not conduct.can_decide_objection(case, current_user):
+        abort(403)
+    decision, note = request.form.get('decision'), _moderator_note()[:400] or None
+    if decision == 'handhaven':
+        conduct.confirm(case, current_user, note)
+    elif decision == 'terugplaatsen':
+        conduct.restore(case, current_user, note)
+    else:
+        abort(400)
+    db.session.commit()
     return redirect(safe_next(request.form.get('next'), url_for('admin.moderator_dashboard')))
