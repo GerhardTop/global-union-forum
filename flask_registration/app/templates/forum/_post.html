@@ -54,7 +54,7 @@
       <div class="gu-post__avatar">{{ post.public_author_initial() }}</div>
       <div class="gu-post__authormeta">
         <div class="gu-post__name">
-          {{ author_display }}<span id="qmark-{{ post.id }}">{% if q_awarded %} {% include 'forum/_quality_mark.html' %}{% endif %}</span>
+          {{ author_display }}
           {% if author_linkedin %}
           <a href="{{ author_linkedin }}" target="_blank" rel="noopener noreferrer"
              class="gu-post__linkedin" aria-label="{{ _('LinkedIn profile of %(name)s', name=author_display) }}">
@@ -81,6 +81,11 @@
   </div>
   {% endif %}
 
+  {# Kwaliteitskeurmerk: alleen het medaille-icoon direct vóór de tekst; een
+     klik opent het paneel met de onderbouwing (onder de bijdrage). Leeg
+     zonder keurmerk; de statuspoll vult het als het keurmerk later komt. #}
+  <div class="gu-post__content">
+  <span class="gu-post__qmark" id="qmark-{{ post.id }}">{% if q_awarded %}{% include 'forum/_quality_mark.html' %}{% endif %}</span>
   <div class="gu-post__body{% if is_deleted %} gu-post__body--deleted{% endif %}"
        id="body-{{ post.id }}"
        lang="{{ lang if is_pretranslated else post.source_lang }}">
@@ -89,6 +94,7 @@
         <p>{{ para | linkify }}</p>
       {% endfor %}
     {% endif %}
+  </div>
   </div>
 
   {% if post.image_url and not is_deleted %}

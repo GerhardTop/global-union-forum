@@ -1,5 +1,6 @@
-{# Klikbaar kwaliteitskeurmerk naast de auteur: linkt naar de discussiepagina
-   van het oordeel. Zonder `post` (sjabloon voor de statuspoll) zet de
-   JavaScript de link. #}
-{% set q_title = 'Kwaliteitskeurmerk: deze bijdrage voldoet aan de kwaliteitscriteria. Klik voor de onderbouwing.' if lang == 'nl' else 'Quality mark: this contribution meets the quality criteria. Click for the reasoning.' %}
-<a class="gu-quality__mark"{% if post is defined and post %} href="{{ url_for('forum.forum_quality_page', post_id=post.id) }}"{% endif %} title="{{ q_title }}" aria-label="{{ q_title }}">{% include 'forum/_medal.html' %}</a>
+{# Kwaliteitskeurmerk direct vóór de tekst van een bijdrage: alleen het
+   medaille-icoon, als knop die het paneel met de onderbouwing
+   (forum/_quality_block.html, id qpanel-<post>) opent en sluit. Zonder
+   `post` (sjabloon voor de statuspoll) zet de JavaScript aria-controls. #}
+{% set q_title = _('Quality mark, click for the reasoning') %}
+<button type="button" class="gu-quality__mark" aria-expanded="false"{% if post is defined and post %} aria-controls="qpanel-{{ post.id }}"{% endif %} title="{{ q_title }}" aria-label="{{ q_title }}">{% include 'forum/_medal.html' %}</button>

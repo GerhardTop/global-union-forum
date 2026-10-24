@@ -479,7 +479,18 @@
 
 <script nonce="{{ csp_nonce() }}">
   (function () {
-    var OFFSET = 96;
+    // Het menu blijft staan (sticky): op desktop als kolom links, op de
+    // telefoon als balk onder de sitekop. Hoogte van de sitekop voor de CSS
+    // (--gu-header-h), en de scrolpositie houdt rekening met kop en balk.
+    var header = document.getElementById('siteHeader');
+    var tocCol = document.querySelector('.gu-manifest__tocCol');
+    var mobile = window.matchMedia('(max-width: 768px)');
+    function headerHeight() { return header ? header.offsetHeight : 72; }
+    function syncHeader() { document.documentElement.style.setProperty('--gu-header-h', headerHeight() + 'px'); }
+    syncHeader();
+    window.addEventListener('resize', syncHeader);
+    function offset() { return headerHeight() + (mobile.matches && tocCol ? tocCol.offsetHeight : 0) + 16; }
+    var clickedAt = 0;
 
     // Smooth-scroll TOC links
     document.querySelectorAll('.gu-manifest__toc a').forEach(function (a) {
@@ -488,7 +499,11 @@
         var id = a.getAttribute('href').slice(1);
         var el = document.getElementById(id);
         if (!el) return;
-        window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - OFFSET, behavior: 'smooth' });
+        // Het aangeklikte onderdeel meteen markeren; de automatische markering
+        // wacht tot het soepele scrollen klaar is.
+        setActive(id);
+        clickedAt = Date.now();
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - offset(), behavior: 'smooth' });
       });
     });
 
@@ -500,10 +515,19 @@
 
     function setActive(id) {
       Object.values(tocItems).forEach(function (li) { li.classList.remove('is-active'); });
-      if (tocItems[id]) tocItems[id].classList.add('is-active');
+      var li = tocItems[id];
+      if (!li) return;
+      li.classList.add('is-active');
+      // Telefoon: het actieve onderdeel zichtbaar in de balk (alleen
+      // horizontaal, zonder de pagina zelf te verschuiven).
+      var list = li.parentElement;
+      if (mobile.matches && list && list.scrollWidth > list.clientWidth) {
+        list.scrollTo({ left: li.offsetLeft - list.offsetLeft - 8, behavior: 'smooth' });
+      }
     }
 
     var observer = new IntersectionObserver(function (entries) {
+      if (Date.now() - clickedAt < 1000) return;
       var visible = entries.filter(function (e) { return e.isIntersecting; });
       if (!visible.length) return;
       visible.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });

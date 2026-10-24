@@ -340,6 +340,20 @@
 
     {% include 'forum/_translate_script.html' %}
 
+    // Kwaliteitskeurmerk: de medailleknop vóór de tekst opent en sluit het
+    // paneel met de onderbouwing. Via delegatie, zodat het ook werkt voor een
+    // knop die de statuspoll later toevoegt. Een <button>, dus Enter en
+    // spatie werken vanzelf.
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('.gu-quality__mark');
+      if (!btn) return;
+      var panel = document.getElementById(btn.getAttribute('aria-controls'));
+      if (!panel) return;
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+      panel.hidden = open;
+    });
+
     // Punt 8: de medaille van een zojuist geplaatste eigen bijdrage verschijnt
     // vanzelf (zonder keurmerk verandert er niets). Elke 2 seconden de status vragen tot hij niet meer
     // pending is, maximaal ongeveer 60 seconden. Blijft het oordeel uit, dan
@@ -366,8 +380,8 @@
           var tpl = document.getElementById('gu-quality-mark-template');
           if (tpl) {
             var node = tpl.content.cloneNode(true);
-            var link = node.querySelector('a');
-            if (link) link.href = '/forum/kwaliteit/' + postId;
+            var btn = node.querySelector('button');
+            if (btn) btn.setAttribute('aria-controls', 'qpanel-' + postId);
             mark.appendChild(node);
           }
         }

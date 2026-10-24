@@ -767,3 +767,34 @@ class TestIndexPage:
         html = response.get_data(as_text=True)
         assert 'href="/manifest"' in html
         assert 'href="#manifest"' not in html
+
+
+class TestManifestMenuStaysVisible:
+    """Het linkermenu van de manifestpagina bleef niet staan na een klik:
+    de kolom was maar zo hoog als het menu (sticky had geen ruimte), onder
+    600px was het menu verborgen, en overflow-x: hidden op html en body
+    maakte sticky op telefoon onwerkzaam. In de browser gecontroleerd;
+    deze test bewaakt de oorzaken."""
+
+    def _css(self):
+        import os
+        return open(os.path.join(os.path.dirname(__file__), '..', 'app', 'static', 'css', 'kit.css')).read()
+
+    def test_column_stretches_and_menu_is_sticky(self):
+        css = self._css()
+        col = css[css.index('.gu-manifest__tocCol {'):]
+        assert 'align-self: stretch;' in col[:col.index('}')]
+        assert 'top: calc(var(--gu-header-h, 72px) + 16px);' in css
+
+    def test_menu_not_hidden_on_phone_and_sticky_works(self):
+        css = self._css()
+        assert '.gu-manifest__tocCol { display: none; }' not in css
+        assert 'html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }' in css
+        phone = css[css.index('@media (max-width: 768px) {\n  .gu-manifest__heroInner'):]
+        phone = phone[:phone.index('\n}\n')]
+        assert 'position: sticky;' in phone and 'overflow-x: auto' in phone
+
+    def test_scroll_offset_follows_header_and_bar(self, client):
+        html = client.get('/manifest').get_data(as_text=True)
+        assert "setProperty('--gu-header-h'" in html and 'function offset()' in html
+        assert 'gu-manifest__toc' in html

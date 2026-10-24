@@ -799,3 +799,16 @@ msgstr "Een verplaatst of verborgen bericht kun je niet bewerken. Je kunt wel be
 #: app/templates/forum/_post.html
 msgid "Delete conversation"
 msgstr "Gesprek verwijderen"
+
+#: app/templates/forum/_quality_mark.html, app/templates/forum/_quality_block.html
+msgid "Quality mark, click for the reasoning"
+msgstr "Kwaliteitskeurmerk, klik voor de onderbouwing"
+
+msgid "Quality mark"
+msgstr "Kwaliteitskeurmerk"
+
+msgid "Judged automatically by the AI"
+msgstr "Automatisch beoordeeld door de AI"
+
+msgid "View the full reasoning"
+msgstr "Bekijk de volledige onderbouwing"

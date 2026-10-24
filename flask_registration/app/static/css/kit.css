@@ -1377,13 +1377,18 @@ body {
 }
 
 /* TOC column */
+/* De kolom rekt mee met het artikel (align-self: stretch). Anders is hij
+   maar zo hoog als het menu zelf, heeft sticky geen ruimte en scrolt het
+   menu na een klik mee uit beeld. --gu-header-h zet het script (hoogte van
+   de sticky sitekop). */
 .gu-manifest__tocCol {
   width: 220px;
   flex-shrink: 0;
+  align-self: stretch;
 }
 .gu-manifest__toc {
   position: sticky;
-  top: 88px;
+  top: calc(var(--gu-header-h, 72px) + 16px);
 }
 .gu-manifest__toc .gu-eyebrow {
   margin-bottom: 12px;
@@ -2064,8 +2069,25 @@ body {
 @media (max-width: 768px) {
   .gu-manifest__heroInner { padding: 48px 24px 40px; }
   .gu-manifest__body { flex-direction: column; padding: 0 24px; gap: 40px; }
-  .gu-manifest__tocCol { width: 100%; }
+  /* Telefoon: het menu wordt een smalle balk die onder de sitekop blijft
+     staan, met de onderdelen horizontaal scrollbaar. */
+  .gu-manifest__tocCol {
+    width: auto;
+    align-self: stretch;
+    position: sticky;
+    top: var(--gu-header-h, 72px);
+    z-index: 5;
+    margin: 0 -24px;
+    padding: 8px 24px;
+    background: var(--gu-paper);
+    border-bottom: 1px solid var(--gu-border);
+  }
   .gu-manifest__toc { position: static; }
+  .gu-manifest__toc .gu-eyebrow { display: none; }
+  .gu-manifest__toc ol { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .gu-manifest__toc ol::-webkit-scrollbar { display: none; }
+  .gu-manifest__toc li { flex: 0 0 auto; margin: 0; }
+  .gu-manifest__toc a { white-space: nowrap; padding: 6px 12px; border: 1px solid var(--gu-border); border-radius: 999px; gap: 6px; }
   .gu-manifest__end { padding: 56px 24px; }
 }
 
@@ -2821,9 +2843,21 @@ body {
 
 /* Kwaliteitsbijdrage (forum fase C1): medaille-keurmerk, los van eens/oneens */
 .gu-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.gu-quality__mark { display: inline-flex; vertical-align: middle; color: var(--gu-quality); margin-left: 4px; text-decoration: none; border-radius: 4px; }
-.gu-quality__mark:hover { color: var(--gu-quality); filter: brightness(1.15); }
+/* Keurmerk vóór de tekst: alleen het icoon, als knop voor het paneel. */
+.gu-post__content { display: flex; align-items: flex-start; gap: 8px; }
+.gu-post__content > .gu-post__body { flex: 1; min-width: 0; }
+.gu-post__qmark { flex-shrink: 0; }
+.gu-post__qmark:empty { display: none; }
+.gu-quality__mark { display: inline-flex; align-items: center; justify-content: center; padding: 3px; margin: 0; border: 0; background: none; color: var(--gu-quality); cursor: pointer; border-radius: 6px; line-height: 0; }
+.gu-quality__mark:hover { color: var(--gu-quality); filter: brightness(1.15); background: var(--gu-bg-soft); }
+.gu-quality__mark[aria-expanded="true"] { background: var(--gu-bg-soft); }
 .gu-quality__mark:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
+.gu-quality-panel { margin: 10px 0 4px; padding: 10px 12px; border-left: 2px solid var(--gu-quality); background: var(--gu-bg-soft); border-radius: 0 6px 6px 0; font-size: 0.875rem; color: var(--gu-fg-2); }
+.gu-quality-panel[hidden] { display: none; }
+.gu-quality-panel p { margin: 0 0 6px; }
+.gu-quality-panel p:last-child { margin-bottom: 0; }
+.gu-quality-panel__title { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--gu-fg-1); }
+.gu-quality-panel__title .gu-quality__medal { color: var(--gu-quality); }
 .gu-quality__medal { flex-shrink: 0; }
 .gu-quality { margin: 8px 0 4px; font-size: 0.875rem; color: var(--gu-fg-2); }
 .gu-quality summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: var(--gu-quality); font-weight: 500; list-style: none; }
@@ -2928,8 +2962,11 @@ body {
   /* DEBUG — verwijder na inspectie */
   /* * { outline: 1px solid red; } */
 
-  /* Voorkom horizontale scroll op alle pagina's */
-  html, body { overflow-x: hidden; max-width: 100%; }
+  /* Voorkom horizontale scroll op alle pagina's. clip (niet alleen hidden):
+     hidden op html en body maakt de body een scrollcontainer, en dan werkt
+     position: sticky nergens meer (de sitekop en het manifestmenu scrollen
+     weg). hidden blijft als terugval voor browsers zonder clip. */
+  html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }
 
   /* Global container */
   .gu-container { padding: 0 16px; }
@@ -3021,8 +3058,9 @@ body {
   /* ── Manifest ───────────────────────────────────────────── */
   .gu-manifest__heroInner { padding: 40px 16px 32px; }
   .gu-manifest__body { padding: 0 16px; }
-  /* Hide TOC on small screens — article fills full width */
-  .gu-manifest__tocCol { display: none; }
+  /* Het menu blijft ook hier zichtbaar, als balk onder de sitekop (zie de
+     regels bij 768px); alleen de zijmarge volgt de smallere pagina. */
+  .gu-manifest__tocCol { margin: 0 -16px; padding: 8px 16px; }
   .gu-manifest__articleCol { min-width: 0; }
   .gu-manifest__end { padding: 48px 16px; }
 

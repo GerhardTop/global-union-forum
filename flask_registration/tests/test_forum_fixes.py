@@ -255,7 +255,10 @@ class TestStatusPoll:
         db.session.commit()
         data = _req(client, 'GET', f'/forum/kwaliteit/{p.id}/status').get_json()
         assert data['status'] == 'toegekend' and data['criterion'] == 'K1' and 'reason' not in data
-        assert '<details class="gu-quality">' in data['html'] and 'Nieuw argument.' in data['html']
+        assert f'id="qpanel-{p.id}"' in data['html'] and 'Nieuw argument.' in data['html']
+        assert 'hidden' in data['html'][:data['html'].index('>', data['html'].index('qpanel-'))]  # standaard dicht
+        page = _page(app, anna, t)
+        assert 'id="gu-quality-mark-template"' in page and "btn.setAttribute('aria-controls', 'qpanel-' + postId)" in page
         assert f'/forum/{t.id}#post-' not in data['html'] or 'status' not in data['html']
 
         # Geen keurmerk: alleen "geen medaille", geen reden, ook niet voor

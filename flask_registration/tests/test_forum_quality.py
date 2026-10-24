@@ -191,7 +191,7 @@ class TestAutomaticJudgement:
         assert (award.status, award.criterion, award.source) == ('toegekend', 'K1', 'ai')
         assert award.decided_by_id is None and award.model == 'claude-haiku-4-5' and award.post_lang == 'nl'
         part = _article(_req(_client(app), 'GET', f'/forum/{thread.id}').get_data(as_text=True), post)
-        assert 'gu-quality__mark' in part and 'Automatisch beoordeeld door de AI.' in part
+        assert 'gu-quality__mark' in part and 'Automatisch beoordeeld door de AI' in part
         assert f'/forum/kwaliteit/{post.id}' in part  # link naar de discussiepagina
 
     def test_no_criterion_stays_visible_without_medal_or_message(self, app, db, make_user, thread, fake_ai):

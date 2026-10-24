@@ -799,3 +799,16 @@ msgstr "A moved or hidden post cannot be edited. You can object instead."
 #: app/templates/forum/_post.html
 msgid "Delete conversation"
 msgstr "Delete conversation"
+
+#: app/templates/forum/_quality_mark.html, app/templates/forum/_quality_block.html
+msgid "Quality mark, click for the reasoning"
+msgstr "Quality mark, click for the reasoning"
+
+msgid "Quality mark"
+msgstr "Quality mark"
+
+msgid "Judged automatically by the AI"
+msgstr "Judged automatically by the AI"
+
+msgid "View the full reasoning"
+msgstr "View the full reasoning"

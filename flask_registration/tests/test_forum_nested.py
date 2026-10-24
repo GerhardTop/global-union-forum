@@ -329,18 +329,52 @@ class TestAuthorLine:
 
 
 class TestMedal:
-    def test_medal_links_to_discussion_with_explanation(self, client, db, forum_users, thread):
-        p = _chain(db, thread, forum_users, 1)[1]
+    """Alleen het medaille-icoon direct vóór de tekst; een klik opent onder de
+    bijdrage een paneel met de onderbouwing (standaard dicht)."""
+
+    @pytest.mark.parametrize('lang,title,head,ai,link', [
+        ('nl', 'Kwaliteitskeurmerk, klik voor de onderbouwing', 'Kwaliteitskeurmerk',
+         'Automatisch beoordeeld door de AI', 'Bekijk de volledige onderbouwing'),
+        ('en', 'Quality mark, click for the reasoning', 'Quality mark',
+         'Judged automatically by the AI', 'View the full reasoning'),
+    ])
+    def test_icon_before_text_opens_closed_panel(self, client, db, forum_users, thread, lang, title, head, ai, link):
+        posts = _chain(db, thread, forum_users, 2)
+        p, plain = posts[1], posts[2]
         db.session.add(QualityAward(post_id=p.id, source='ai', status='toegekend', criterion='K1',
-                                    ai_criterion='K1', post_lang='nl', explanation_nl='Nieuw.'))
+                                    ai_criterion='K1', post_lang='nl', explanation_nl='Nieuw argument over handel.'))
         db.session.commit()
-        html = _get(client, f'/forum/{thread.id}', 'nl')
-        tree = _parse(html)
-        marks = [(a, anc) for a, anc in _find(tree, 'a', 'gu-quality__mark') if f'post-{p.id}' in anc]
-        assert len(marks) == 1
-        a = marks[0][0]
-        title = 'Kwaliteitskeurmerk: deze bijdrage voldoet aan de kwaliteitscriteria. Klik voor de onderbouwing.'
-        assert a['href'] == f'/forum/kwaliteit/{p.id}' and a['title'] == title and a['aria-label'] == title
-        assert 'gu-quality__medal' in html and 'M6 0.5 L11.5 6' not in html  # geen diamant meer
-        db.session.delete(QualityAward.query.filter_by(post_id=p.id).one())
-        db.session.commit()
+        try:
+            html = _get(client, f'/forum/{thread.id}', lang)
+            tree = _parse(html)
+            marks = [(a, anc) for a, anc in _find(tree, 'button', 'gu-quality__mark') if f'post-{p.id}' in anc]
+            assert len(marks) == 1
+            btn = marks[0][0]
+            assert btn['type'] == 'button' and btn['aria-expanded'] == 'false'
+            assert btn['aria-controls'] == f'qpanel-{p.id}' and btn['title'] == title and btn['aria-label'] == title
+            # Direct vóór de tekst, niet meer in de regel met pseudoniem en tijd.
+            art = html[html.rindex('<article', 0, html.index(f'id="post-{p.id}"')):]
+            art = art[:art.index('</article>')]
+            name_line = art[art.index('gu-post__name'):art.index('gu-post__sub')]
+            assert 'gu-quality__mark' not in name_line
+            assert art.index('gu-quality__mark') < art.index(f'id="body-{p.id}"')
+            assert 'class="gu-post__content"' in art
+            # Het paneel staat onder de bijdrage, is dicht en bevat de onderbouwing.
+            panel = art[art.index(f'id="qpanel-{p.id}"'):]
+            panel_tag = panel[:panel.index('>')]
+            assert 'hidden' in panel_tag and art.index(f'id="body-{p.id}"') < art.index(f'id="qpanel-{p.id}"')
+            for text in (head, ai, 'Nieuw argument over handel.', link, f'href="/forum/kwaliteit/{p.id}"'):
+                assert text in panel, text
+            # Verder niets zichtbaars: geen label of uitleg buiten het paneel.
+            outside = art.replace(panel[:panel.index('</div>')], '')
+            assert 'Nieuw argument over handel.' not in outside and 'Kwaliteitsbijdrage:' not in outside
+            assert 'gu-quality__medal' in html and 'M6 0.5 L11.5 6' not in html  # geen diamant
+            # Zonder keurmerk: geen icoon en geen paneel.
+            plain_art = html[html.rindex('<article', 0, html.index(f'id="post-{plain.id}"')):]
+            plain_art = plain_art[:plain_art.index('</article>')]
+            assert 'gu-quality__mark' not in plain_art and 'qpanel-' not in plain_art
+            # De knop schakelt het paneel via het script (delegatie, aria-expanded).
+            assert "closest('.gu-quality__mark')" in html and "btn.setAttribute('aria-expanded'" in html
+        finally:
+            db.session.delete(QualityAward.query.filter_by(post_id=p.id).one())
+            db.session.commit()
