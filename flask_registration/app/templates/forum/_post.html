@@ -29,7 +29,9 @@
    bij een verplaatst of verborgen bericht; verwijderen kan altijd (niet het
    openingsbericht). De server controleert hetzelfde (forum_post_bewerken). #}
 {% set has_replies = tree_children.get(post.id) %}
-{% set can_delete = not is_deleted and current_user.is_authenticated and post.user_id == current_user.id and not post.is_op %}
+{# Het openingsbericht alleen zonder andere bijdragen: dan verdwijnt het hele gesprek. #}
+{% set can_delete = not is_deleted and current_user.is_authenticated and post.user_id == current_user.id
+                    and (not post.is_op or not has_replies) %}
 
 {# Publieke auteur: pseudoniem tenzij de auteur zelf voor zijn echte naam koos
    (Post.public_author_name / public_linkedin_url in app/models.py). #}
@@ -144,13 +146,13 @@
     </button>
     {% endif %}
 
-    {# Delete icon — eigen posts, niet OP #}
+    {# Verwijderen: eigen berichten; het openingsbericht alleen zonder andere bijdragen (dan het hele gesprek). #}
     {% if can_delete %}
     <form method="POST" action="{{ url_for('forum.forum_post_verwijderen', post_id=post.id) }}"
           class="gu-post__delete-form" style="display:inline;">
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
       <button type="submit" class="gu-post__action gu-post__action--icon gu-post__delete-btn"
-              aria-label="{% if lang == 'nl' %}Verwijderen{% else %}Delete {% endif %}">
+              aria-label="{% if post.is_op %}{{ _('Delete conversation') }}{% elif lang == 'nl' %}Verwijderen{% else %}Delete{% endif %}">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
              fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

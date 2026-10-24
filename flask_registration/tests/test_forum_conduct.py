@@ -144,7 +144,9 @@ def make_thread(db):
         db.session.flush()
         for p in Post.query.filter_by(thread_id=tid):
             db.session.delete(p)
-        db.session.delete(db.session.get(Thread, tid))
+        thread = db.session.get(Thread, tid)
+        if thread is not None:  # de auteur kan zijn gesprek zelf verwijderd hebben
+            db.session.delete(thread)
     db.session.commit()
 
 
@@ -714,3 +716,62 @@ class TestAuthorEditing:
         page = _get(app, anna, f'/forum/{thread.id}').get_data(as_text=True)
         assert f'data-quality-poll="/forum/kwaliteit/{post.id}/status"' in page
         assert _req(_client(app, anna), 'GET', f'/forum/kwaliteit/{post.id}/status').get_json() == {'status': 'pending'}
+
+
+class TestDeleteOpeningPost:
+    def _delete(self, app, user, post):
+        return _req(_client(app, user), 'POST', f'/forum/post/{post.id}/verwijderen')
+
+    def test_author_deletes_whole_thread_without_other_posts(self, app, db, make_user, make_thread, fake_ai):
+        from app import conduct
+        anna = make_user()
+        t = make_thread(op_user=anna)
+        op = Post.query.filter_by(thread_id=t.id, is_op=True).one()
+        # AI-oordeel, handhaving, een bezwaar en eens/oneens van een ander: alles moet mee weg.
+        award = QualityAward(post_id=op.id, status='toegekend', criterion='K1', source='ai', post_lang='nl')
+        db.session.add(award)
+        db.session.add(PostLike(post_id=op.id, user_id=make_user().id, stance='eens'))
+        case = conduct.move(op, 'onderwerp', 'Ander onderwerp.', 'nl')
+        db.session.commit()
+        conduct.object_to(case, anna, 'Bezwaar.')
+        db.session.commit()
+        case_id, award_id, tid, op_id = case.id, award.id, t.id, op.id
+        page = _get(app, anna, f'/forum/{t.id}').get_data(as_text=True)
+        assert 'aria-label="Gesprek verwijderen"' in _part(page, op)
+
+        resp = self._delete(app, anna, op)
+        assert resp.status_code == 302 and resp.headers['Location'].endswith('/forum')
+        db.session.expire_all()
+        assert Thread.query.filter_by(id=tid).count() == 0 and Post.query.filter_by(id=op_id).count() == 0
+        assert QualityAward.query.filter_by(id=award_id).count() == 0
+        assert ConductCase.query.filter_by(id=case_id).count() == 0
+        assert ConductObjection.query.filter_by(case_id=case_id).count() == 0
+        assert PostLike.query.filter_by(post_id=op_id).count() == 0
+        assert _get(app, anna, f'/forum/{tid}').status_code == 404
+
+    @pytest.mark.parametrize('kind', ['gewoon', 'verborgen'])
+    def test_refused_once_there_is_another_post(self, app, db, make_user, make_thread, fake_ai, kind):
+        from app import conduct
+        anna = make_user()
+        t = make_thread(op_user=anna)
+        op = Post.query.filter_by(thread_id=t.id, is_op=True).one()
+        reply = _reply(app, make_user(), t, 'Een bijdrage.')
+        if kind == 'verborgen':
+            conduct.hide(reply, 'Reclame.', 'nl', actor=make_user('moderator'))
+            db.session.commit()
+        page = _get(app, anna, f'/forum/{t.id}').get_data(as_text=True)
+        assert 'gu-post__delete-btn' not in _part(page, op)
+        assert self._delete(app, anna, op).status_code == 403
+        db.session.expire_all()
+        assert db.session.get(Thread, t.id) is not None and db.session.get(Post, op.id).body == op.body
+
+    def test_moderator_gets_403(self, app, db, make_user, make_thread, fake_ai):
+        anna = make_user()
+        t = make_thread(op_user=anna)
+        op = Post.query.filter_by(thread_id=t.id, is_op=True).one()
+        for role in ('moderator', 'senior_moderator'):
+            mod = make_user(role)
+            assert self._delete(app, mod, op).status_code == 403
+            assert 'gu-post__delete-btn' not in _part(_get(app, mod, f'/forum/{t.id}').get_data(as_text=True), op)
+        db.session.expire_all()
+        assert db.session.get(Thread, t.id) is not None

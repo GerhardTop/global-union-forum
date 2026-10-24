@@ -930,6 +930,20 @@ def _edit_refusal_message(reason):
     return gettext('A moved or hidden post cannot be edited. You can object instead.')
 
 
+def _delete_thread(thread):
+    """Het hele gesprek weg, met de opruimlogica van de rest van de app: de
+    AI-oordelen, meldingen, handhavingsgegevens en bezwaren via
+    quality.delete_for_posts, daarna eens/oneens, de berichten en het gesprek."""
+    post_ids = [pid for (pid,) in Post.query.filter_by(thread_id=thread.id).with_entities(Post.id)]
+    quality.delete_for_posts(post_ids)
+    if post_ids:
+        PostLike.query.filter(PostLike.post_id.in_(post_ids)).delete(synchronize_session=False)
+        Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
+    # Ook in bulk: een ORM-delete zou de (al verwijderde) berichten nog bijwerken.
+    Thread.query.filter_by(id=thread.id).delete(synchronize_session=False)
+    db.session.commit()
+
+
 def _apply_edit(post, body):
     post.body = body
     post.edited_at = datetime.utcnow()
@@ -999,12 +1013,19 @@ def forum_post_bewerken(post_id):
 @login_required
 def forum_post_verwijderen(post_id):
     """De auteur verwijdert zijn eigen bericht (ook met reacties, ook als het
-    verplaatst of verborgen is); het openingsbericht niet. Moderators niet."""
+    verplaatst of verborgen is). Zijn openingsbericht alleen zolang er geen
+    andere bijdragen zijn (welke status ook): dan verdwijnt het hele gesprek.
+    Moderators nooit."""
     post = Post.query.get_or_404(post_id)
-    if post.user_id is None or post.user_id != current_user.id or post.is_op:
+    if post.user_id is None or post.user_id != current_user.id:
+        abort(403)
+    if post.is_op and _has_replies(post):
         abort(403)
     _require_csrf()
     thread_id = post.thread_id
+    if post.is_op:
+        _delete_thread(post.thread)
+        return redirect(url_for('forum.forum'))
     post.body = '[bericht verwijderd]'
     post.body_nl = None
     post.body_en = None

@@ -795,3 +795,7 @@ msgstr "This post already has replies, so it can no longer be edited."
 
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "A moved or hidden post cannot be edited. You can object instead."
+
+#: app/templates/forum/_post.html
+msgid "Delete conversation"
+msgstr "Delete conversation"
