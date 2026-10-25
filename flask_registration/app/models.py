@@ -69,6 +69,11 @@ class User(UserMixin, db.Model):
     digest_email        = db.Column(db.Boolean, nullable=True, default=None)
     last_digest_at      = db.Column(db.DateTime, nullable=True, default=None)
     has_unread_digest   = db.Column(db.Boolean, nullable=True, default=None)
+    # Stored language preference ("nl" or "en"): set at registration and on
+    # every language switch, applied to the session at login, and used for
+    # the daily digest. NULL means no preference yet (the digest falls back to
+    # Dutch). Independent of auto_translate.
+    lang                = db.Column(db.String(5), nullable=True, default=None)
 
     def __repr__(self):
         return f"<User {self.email}>"

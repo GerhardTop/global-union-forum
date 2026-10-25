@@ -177,16 +177,20 @@ def build(user, now=None):
 
 # ── Versturen ────────────────────────────────────────────────────────────
 
-def _email_html(items):
-    """De e-mail in beide talen (de gebruiker heeft geen vaste taalvoorkeur):
-    eerst Nederlands, dan Engels."""
-    parts = []
-    for lang in ('nl', 'en'):
-        with force_locale(lang):
-            parts.append(render_template('email/digest.html', items=items, lang=lang,
-                                         base=url_for('main.index', _external=True).rstrip('/'),
-                                         profile_url=url_for('profile.profile', _external=True)))
-    return '<hr style="border:0;border-top:1px solid #ddd;margin:24px 0;">'.join(parts)
+def lang_for(user):
+    """The user's stored language (users.lang), falling back to Dutch."""
+    return user.lang if getattr(user, 'lang', None) in ('nl', 'en') else 'nl'
+
+
+def _email(items, lang):
+    """Subject and body of the digest email, in one language."""
+    from flask_babel import gettext
+    with force_locale(lang):
+        subject = gettext('Your daily summary')
+        html = render_template('email/digest.html', items=items, lang=lang,
+                               base=url_for('main.index', _external=True).rstrip('/'),
+                               profile_url=url_for('profile.profile', _external=True))
+    return subject, html
 
 
 def send_for(user, now=None):
@@ -212,9 +216,9 @@ def send_for(user, now=None):
     db.session.commit()
     db.session.refresh(user)
     if user.digest_email is not False and user.verified and user.email:
-        # Geen vaste taalvoorkeur: onderwerp en inhoud in beide talen.
-        subject = 'Je dagelijkse samenvatting · Your daily summary'
-        if send_email(user.email, subject, _email_html(items)):
+        # Subject and body in the user's stored language (Dutch by default).
+        subject, html = _email(items, lang_for(user))
+        if send_email(user.email, subject, html):
             digest.emailed_at = datetime.utcnow()
             db.session.commit()
     return digest

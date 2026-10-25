@@ -167,15 +167,22 @@ def profiel_vertaalvoorkeur():
 @profile_bp.route("/meldingen")
 @login_required
 def meldingen():
-    """De dagelijkse samenvattingen van je gevolgde voorstellen (in het forum,
-    in de taal van de lezer). Openen markeert ze als gelezen."""
+    """De dagelijkse samenvattingen van je gevolgde voorstellen (in het forum).
+    Openen markeert ze als gelezen. The summaries themselves are rendered in
+    the user's stored language (users.lang, Dutch by default), like the email."""
+    from flask_babel import force_locale
+    from markupsafe import Markup
     from app import digest
     digests = digest.recent_for(current_user)
     existing = digest.thread_exists({i['thread_id'] for d in digests for i in d.items})
+    cards = None
+    if digests:
+        with force_locale(digest.lang_for(current_user)):
+            cards = Markup(render_template("forum/_digest_cards.html", digests=digests, existing_threads=existing))
     if current_user.has_unread_digest:
         current_user.has_unread_digest = False
         db.session.commit()
-    return render_template("meldingen.html", digests=digests, existing_threads=existing)
+    return render_template("meldingen.html", digest_cards=cards)
 
 
 @profile_bp.route("/profiel/samenvatting", methods=["POST"])

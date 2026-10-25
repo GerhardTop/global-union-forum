@@ -144,6 +144,7 @@ def _migrate_columns():
     _migrate_show_real_name(existing)
     _migrate_quality_status(existing)
     _migrate_digest_user(existing)
+    _migrate_user_lang(existing)
     _migrate_stance(existing)
     _migrate_quality(existing)
     _migrate_conduct(existing)
@@ -335,6 +336,22 @@ def _migrate_digest_user(existing):
     with db.engine.connect() as conn:
         for name, ddl in added:
             conn.execute(text(f'ALTER TABLE users ADD COLUMN {name} {ddl}'))
+        conn.commit()
+
+
+def _migrate_user_lang(existing):
+    """
+    users.lang (nullable, "nl" or "en"): the stored language preference. No
+    backfill: existing users get it at their next language switch; until then
+    the digest falls back to Dutch. Runs before any ORM query on User.
+    """
+    if 'users' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('users')}
+    if 'lang' in cols:
+        return
+    with db.engine.connect() as conn:
+        conn.execute(text('ALTER TABLE users ADD COLUMN lang VARCHAR(5) NULL'))
         conn.commit()
 
 
@@ -579,6 +596,15 @@ def create_app():
     bcrypt.init_app(app)
     login_manager.init_app(app)
     limiter.init_app(app)
+
+    from flask_login import user_logged_in
+
+    @user_logged_in.connect_via(app)
+    def _apply_stored_lang(sender, user, **extra):
+        # Open the site in the user's stored language, also on a new device.
+        if getattr(user, 'lang', None) in ('nl', 'en'):
+            session['lang'] = user.lang
+
     oauth.init_app(app)
     def get_locale():
         lang_in_session = session.get('lang')

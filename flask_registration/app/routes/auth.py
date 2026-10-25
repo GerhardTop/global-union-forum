@@ -322,6 +322,7 @@ def auth_google_callback():
         google_id=google_id,
         verified=True,
         auto_translate=True if reg_lang == 'en' else None,
+        lang=reg_lang if reg_lang in ('nl', 'en') else 'nl',  # stored language preference
     )
     db.session.add(user)
     db.session.commit()

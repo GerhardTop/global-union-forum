@@ -10,15 +10,8 @@
     <p class="gu-digest__intro">{{ _('At most one summary a day of the public proposals you follow.') }}
       <a href="{{ url_for('profile.profile') }}#samenvatting">{{ _('Email settings') }}</a></p>
   </div>
-  {% if digests %}
-  <ol class="gu-digest">
-    {% for d in digests %}
-    <li class="gu-join__panel gu-digest__card">
-      <p class="gu-digest__date">{{ _('Summary of %(date)s', date=d.created_at | dateformat('d MMMM y')) }}</p>
-      {% with items=d.items, base='' %}{% include 'forum/_digest_items.html' %}{% endwith %}
-    </li>
-    {% endfor %}
-  </ol>
+  {% if digest_cards %}
+  {{ digest_cards }}
   {% else %}
   <div class="gu-join__panel">
     <p>{{ _('No summaries yet. Follow a public proposal to receive at most one summary a day.') }}</p>

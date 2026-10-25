@@ -137,8 +137,9 @@ class TestFollowing:
 
 
 class TestDigest:
-    def _setup(self, db, make_user, make_proposal, minutes_ago=0):
+    def _setup(self, db, make_user, make_proposal, minutes_ago=0, lang=None):
         anna = make_user()
+        anna.lang = lang
         t = make_proposal(started_minutes_ago=minutes_ago)
         digest.follow(t.proposal, anna)
         db.session.commit()
@@ -148,8 +149,18 @@ class TestDigest:
         db.session.commit()
         return anna, t
 
-    def test_summarises_phase_change_and_activity(self, app, db, make_user, make_proposal, mails):
-        anna, t = self._setup(db, make_user, make_proposal, minutes_ago=150)  # nu stemmen
+    @pytest.mark.parametrize('lang,expected,absent', [
+        ('nl', ('Je dagelijkse samenvatting', 'Het stemmen is geopend, tot ', 'Nieuwe reacties: 1'),
+         ('Your daily summary', 'Voting has opened', 'New replies')),
+        ('en', ('Your daily summary', 'Voting has opened, until ', 'New replies: 1'),
+         ('Je dagelijkse samenvatting', 'Het stemmen is geopend', 'Nieuwe reacties')),
+        # No stored preference yet: Dutch.
+        (None, ('Je dagelijkse samenvatting', 'Het stemmen is geopend, tot ', 'Nieuwe reacties: 1'),
+         ('Your daily summary', 'Voting has opened', 'New replies')),
+    ])
+    def test_summarises_phase_change_and_activity(self, app, db, make_user, make_proposal, mails,
+                                                  lang, expected, absent):
+        anna, t = self._setup(db, make_user, make_proposal, minutes_ago=150, lang=lang)  # nu stemmen
         bram = make_user()
         _reply_as(app, bram, t, 'Nieuwe reactie van Bram.')
         _reply_as(app, anna, t, 'Eigen reactie telt niet.')
@@ -164,8 +175,17 @@ class TestDigest:
         anna = db.session.get(User, anna.id)
         assert anna.has_unread_digest is True and anna.last_digest_at is not None
         mail = next(m for m in mails if m['to'] == anna.email)
-        assert 'Het stemmen is geopend, tot ' in mail['html'] and 'Voting has opened, until ' in mail['html']
-        assert 'Nieuwe reacties: 1' in mail['html'] and 'New replies: 1' in mail['html']
+        # One language only: the user's stored language, Dutch by default.
+        text = mail['subject'] + mail['html']
+        assert mail['subject'] == expected[0]
+        for snippet in expected:
+            assert snippet in text, (lang, snippet)
+        for snippet in absent:
+            assert snippet not in text, (lang, snippet)
+        # In the forum the summary uses the same language, whatever the session language.
+        other = 'nl' if lang == 'en' else 'en'
+        page = _req(_client(app, anna, other), 'GET', '/meldingen').get_data(as_text=True)
+        assert expected[1] in page and absent[1] not in page
         # Absolute links (de host komt uit SERVER_NAME of het verzoek).
         assert f'/forum/{t.id}"' in mail['html'] and 'href="https://' in mail['html']
         assert d.emailed_at is not None
@@ -251,7 +271,7 @@ class TestDigest:
 
 
 class TestMigration:
-    COLUMNS = ('digest_email', 'last_digest_at', 'has_unread_digest')
+    COLUMNS = ('digest_email', 'last_digest_at', 'has_unread_digest', 'lang')
 
     def test_user_columns_added_idempotently(self, app, db):
         from app import _migrate_columns

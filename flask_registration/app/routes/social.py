@@ -316,6 +316,7 @@ def aanmelden():
                 password_hash=password_hash,
                 linkedin_url=form_data["linkedin_url"] or None,
                 auto_translate=True if reg_lang == 'en' else None,
+                lang=reg_lang if reg_lang in ('nl', 'en') else 'nl',  # stored language preference
                 verified=bypass_verificatie,
             )
             user.accept_rules()  # wordt zo Contributor, zie errors["rules"] hierboven

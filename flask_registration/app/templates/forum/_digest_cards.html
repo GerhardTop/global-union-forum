@@ -1,0 +1,14 @@
+{#
+  Partial: forum/_digest_cards.html
+  The list of daily summaries on /meldingen. Rendered by the view under
+  force_locale(users.lang), so the summaries use the user's stored language.
+  Context: digests, existing_threads.
+#}
+<ol class="gu-digest">
+  {% for d in digests %}
+  <li class="gu-join__panel gu-digest__card">
+    <p class="gu-digest__date">{{ _('Summary of %(date)s', date=d.created_at | dateformat('d MMMM y')) }}</p>
+    {% with items=d.items, base='' %}{% include 'forum/_digest_items.html' %}{% endwith %}
+  </li>
+  {% endfor %}
+</ol>

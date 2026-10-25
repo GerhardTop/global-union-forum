@@ -69,6 +69,7 @@ def set_lang(code):
         session.permanent = True
         if current_user.is_authenticated:
             current_user.auto_translate = True if code == 'en' else None
+            current_user.lang = code  # keep the stored language preference in sync
             db.session.commit()
     return redirect(request.referrer or url_for('main.index'))
 
