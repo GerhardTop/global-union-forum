@@ -8,7 +8,7 @@
 # - GitHub-secret TICK_SECRET, met dezelfde waarde als de Render-variabele TICK_SECRET.
 # - Optioneel de repository-variabele TICK_URL, als het endpoint niet op
 #   https://globalunionforum.org/intern/tik staat.
-name: Tik (voorstellen en samenvatting)
+name: Tick (proposals and digest)
 
 on:
   schedule:
