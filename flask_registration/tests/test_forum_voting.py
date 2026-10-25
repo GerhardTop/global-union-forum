@@ -241,6 +241,26 @@ class TestResult:
         _req(_client(app, host), 'POST', f'/forum/{t.id}/voorstel/fase', data={'direction': 'volgende'})
         assert _proposal(t.id).result == 'aangenomen'
 
+    @pytest.mark.parametrize('choices,status,label_nl,label_en', [
+        (('voor', 'voor', 'tegen'), 'aangenomen', 'Aangenomen', 'Adopted'),
+        (('voor', 'tegen', 'tegen'), 'verworpen', 'Verworpen', 'Rejected'),
+    ])
+    def test_status_label_shows_result(self, app, db, make_user, voter, voting, choices, status, label_nl, label_en):
+        host = make_user()
+        t = voting(host=host)
+        for choice in choices:
+            _vote(app, voter(), t, choice)
+        _req(_client(app, host), 'POST', f'/forum/{t.id}/voorstel/fase', data={'direction': 'volgende'})
+        label = f'gu-proposal-status--{status}">{label_nl}</span>'
+        page = _page(app, None, t)
+        assert label in page and '>Gesloten<' not in page
+        assert f'gu-proposal-status--{status}">{label_en}</span>' in _page(app, None, t, 'en')
+        index = _req(_client(app), 'GET', '/forum').get_data(as_text=True)
+        row = index[index.index(f'/forum/{t.id}"'):]
+        assert label in row[:row.index('</li>')]
+        # De volledige uitslag blijft op de voorstelpagina.
+        assert 'id="uitslag"' in page and 'Uitgebrachte stemmen: 3' in page
+
     def test_discussion_stays_open_while_voting(self, app, db, make_user, voting):
         t = voting()
         _req(_client(app, make_user()), 'POST', f'/forum/{t.id}', data={'body': 'Reactie tijdens het stemmen'})

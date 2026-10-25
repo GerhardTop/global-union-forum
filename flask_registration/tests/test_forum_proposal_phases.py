@@ -93,12 +93,13 @@ class TestPublicTransitions:
         assert 'Wordt bijgesteld' in row[:row.index('</li>')]
 
     def test_status_label_follows_the_phase(self, app, db, make_proposal):
+        # In het vervolg de uitslag; zonder stemmen is dat verworpen.
         for minutes, label in ((0, 'In discussie'), (90, 'Wordt bijgesteld'), (150, 'Stemmen open tot '),
-                               (240, 'Gesloten')):
+                               (240, 'Verworpen')):
             t = make_proposal(started_minutes_ago=minutes)
             assert label in _status(_page(app, None, t)), (minutes, label)
         t = make_proposal(started_minutes_ago=240)
-        assert 'Closed' in _status(_page(app, None, t, 'en'))
+        assert 'Rejected' in _status(_page(app, None, t, 'en'))
 
 
 class TestEventTransitions:
@@ -118,7 +119,7 @@ class TestEventTransitions:
         assert self._step(app, None, t, 'volgende').status_code == 302 and _phase(t.id) == 'feiten'  # naar inloggen
         expected = [('bijstellen', 'Bijstellen sluiten en stemmen openen', 'Wordt bijgesteld'),
                     ('stemmen', 'Stemmen sluiten en naar vervolg', 'Stemmen open'),
-                    ('vervolg', None, 'Gesloten')]
+                    ('vervolg', None, 'Verworpen')]  # geen stemmen: verworpen
         for phase, next_label, status in expected:
             assert self._step(app, host, t, 'volgende').status_code == 302
             assert _phase(t.id) == phase

@@ -120,13 +120,14 @@ def create(thread, kind, host, minutes=None, show_live_tally=False, start=None, 
 def status(proposal):
     """(sleutel, datum) voor het statuslabel; de template maakt er tekst van.
     in_discussie, bijstellen, stemmen_tot (met einddatum), stemmen_open
-    (event, zonder datum) of gesloten."""
+    (event, zonder datum), en in het vervolg de uitslag: aangenomen of
+    verworpen. Zonder vastgelegde uitslag in het vervolg: gesloten."""
     if proposal.phase == 'stemmen':
         return ('stemmen_tot', proposal.stemmen_end) if proposal.stemmen_end else ('stemmen_open', None)
     if proposal.phase == 'bijstellen':
         return 'bijstellen', None
     if proposal.phase == 'vervolg':
-        return 'gesloten', None
+        return (proposal.result, None) if proposal.result in ('aangenomen', 'verworpen') else ('gesloten', None)
     return 'in_discussie', None
 
 

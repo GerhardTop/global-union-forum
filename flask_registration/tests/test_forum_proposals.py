@@ -209,6 +209,7 @@ class TestDisplay:
         _start(app, make_user(), 'Fasen later', **PUBLIC)
         _start(app, make_user(), 'Event later', type='voorstel', kind='event')
         public, event = _thread('Fasen later').proposal, _thread('Event later').proposal
+        # Vervolg zonder vastgelegde uitslag (met de hand gezet): de terugval "Gesloten".
         cases = [(public, 'stemmen', 'Stemmen open tot '), (public, 'bijstellen', 'Wordt bijgesteld'),
                  (public, 'vervolg', '>Gesloten<'), (event, 'stemmen', '>Stemmen open<')]
         for proposal, phase, text in cases:

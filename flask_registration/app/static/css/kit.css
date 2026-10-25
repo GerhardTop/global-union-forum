@@ -1717,6 +1717,8 @@ body {
 .gu-proposal-status { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 0.8125rem; font-weight: 600; background: var(--gu-bg-soft); color: var(--gu-globe-deep); white-space: nowrap; }
 .gu-proposal-status--stemmen_tot, .gu-proposal-status--stemmen_open { background: var(--gu-globe-deep); color: #fff; }
 .gu-proposal-status--gesloten { color: var(--gu-fg-3); }
+.gu-proposal-status--aangenomen { background: #e3f3ea; color: #11633d; }
+.gu-proposal-status--verworpen { background: #fde7e7; color: #b42318; }
 .gu-threadlist__eyebrow .gu-proposal-status { margin-left: 6px; font-size: 0.75rem; padding: 2px 8px; }
 .gu-proposal-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .gu-proposal-steps__step { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 8px; border-top: 3px solid var(--gu-border); background: var(--gu-bg-soft); }
