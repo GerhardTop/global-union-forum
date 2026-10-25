@@ -62,6 +62,13 @@ class User(UserMixin, db.Model):
     # Forum fase C2: verdiende status (alleen omhoog, zie app/status.py).
     # NULL betekent reader. Promoties met tijdstip staan in QualityPromotion.
     quality_status      = db.Column(db.String(12), nullable=True, default=None)
+    # Fase E, stap 5b: de dagelijkse samenvatting van gevolgde voorstellen.
+    # digest_email NULL of True = ook per e-mail; False = alleen in het forum.
+    # has_unread_digest staat op de gebruiker zelf, zodat de melding in beeld
+    # geen extra query kost.
+    digest_email        = db.Column(db.Boolean, nullable=True, default=None)
+    last_digest_at      = db.Column(db.DateTime, nullable=True, default=None)
+    has_unread_digest   = db.Column(db.Boolean, nullable=True, default=None)
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -698,3 +705,44 @@ class ProposalVote(db.Model):
     __table_args__ = (db.UniqueConstraint('proposal_id', 'user_id', name='uq_proposal_vote'),)
 
     proposal = db.relationship('Proposal', backref=db.backref('votes', lazy=True, cascade='all, delete-orphan'))
+
+
+# ── Fase E, stap 5b: volgen en de dagelijkse samenvatting ─────────────────
+
+class ProposalFollow(db.Model):
+    """Wie een publiek voorstel volgt. Eén rij per persoon per voorstel.
+    active False betekent: bewust ontvolgd, dan volgt meedoen niet opnieuw
+    automatisch (alleen de knop zet het weer aan)."""
+    __tablename__ = "proposal_follows"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    proposal_id = db.Column(db.Integer, db.ForeignKey('proposals.id'), nullable=False, index=True)
+    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    active      = db.Column(db.Boolean, nullable=False, default=True)
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('proposal_id', 'user_id', name='uq_proposal_follow'),)
+
+    proposal = db.relationship('Proposal', backref=db.backref('follows', lazy=True, cascade='all, delete-orphan'))
+
+
+class Digest(db.Model):
+    """Eén dagelijkse samenvatting voor één gebruiker: de belangrijke
+    veranderingen in zijn gevolgde voorstellen, als JSON (per voorstel de
+    titel, de veranderingen en de nieuwe activiteit). In het forum getoond in
+    de taal van de lezer; per e-mail in beide talen."""
+    __tablename__ = "digests"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    items_json = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    emailed_at = db.Column(db.DateTime, nullable=True)
+
+    @property
+    def items(self):
+        import json
+        try:
+            return json.loads(self.items_json)
+        except ValueError:
+            return []

@@ -1155,3 +1155,86 @@ msgstr "Opkomst: geen stemgerechtigden"
 #, python-format
 msgid "Threshold: more than %(pct)s%% in favour"
 msgstr "Drempel: meer dan %(pct)s%% voor"
+
+#: app/templates/forum/_digest_items.html, app/templates/meldingen.html, app/templates/email/digest.html
+#, python-format
+msgid "Voting has opened, until %(date)s"
+msgstr "Het stemmen is geopend, tot %(date)s"
+
+msgid "Voting has opened"
+msgstr "Het stemmen is geopend"
+
+#, python-format
+msgid "Voting closes soon: %(date)s"
+msgstr "Het stemmen sluit binnenkort: %(date)s"
+
+msgid "The proposal is being revised"
+msgstr "Het voorstel wordt bijgesteld"
+
+msgid "Result: rejected, no valid votes"
+msgstr "Uitslag: verworpen, geen geldige stemmen"
+
+#, python-format
+msgid "Result: adopted with %(pct)s%% in favour"
+msgstr "Uitslag: aangenomen met %(pct)s%% voor"
+
+#, python-format
+msgid "Result: rejected with %(pct)s%% in favour"
+msgstr "Uitslag: verworpen met %(pct)s%% voor"
+
+#, python-format
+msgid "New replies: %(n)s"
+msgstr "Nieuwe reacties: %(n)s"
+
+#, python-format
+msgid "New facts: %(n)s"
+msgstr "Nieuwe feiten: %(n)s"
+
+msgid "Your daily summary"
+msgstr "Je dagelijkse samenvatting"
+
+msgid "What changed in the proposals you follow:"
+msgstr "Wat er veranderde in de voorstellen die je volgt:"
+
+msgid "You receive this because you follow these proposals. You can turn off the email in your profile:"
+msgstr "Je krijgt dit omdat je deze voorstellen volgt. Je kunt de e-mail uitzetten in je profiel:"
+
+msgid "Daily summaries"
+msgstr "Dagelijkse samenvattingen"
+
+msgid "At most one summary a day of the public proposals you follow."
+msgstr "Hoogstens één samenvatting per dag van de publieke voorstellen die je volgt."
+
+msgid "Email settings"
+msgstr "E-mailinstellingen"
+
+#, python-format
+msgid "Summary of %(date)s"
+msgstr "Samenvatting van %(date)s"
+
+msgid "No summaries yet. Follow a public proposal to receive at most one summary a day."
+msgstr "Nog geen samenvattingen. Volg een publiek voorstel en je krijgt hoogstens één samenvatting per dag."
+
+msgid "You follow this proposal. You get at most one summary a day."
+msgstr "Je volgt dit voorstel. Je krijgt hoogstens één samenvatting per dag."
+
+msgid "Unfollow"
+msgstr "Ontvolgen"
+
+msgid "Follow this proposal"
+msgstr "Volg dit voorstel"
+
+msgid "You have a new daily summary."
+msgstr "Je hebt een nieuwe dagelijkse samenvatting."
+
+msgid "View"
+msgstr "Bekijken"
+
+msgid "Daily summary by email"
+msgstr "Dagelijkse samenvatting per e-mail"
+
+msgid "Also send me the daily summary of the proposals I follow by email. The summary in the forum always stays."
+msgstr "Stuur me de dagelijkse samenvatting van de voorstellen die ik volg ook per e-mail. De samenvatting in het forum blijft altijd."
+
+msgid "View your daily summaries"
+msgstr "Bekijk je dagelijkse samenvattingen"

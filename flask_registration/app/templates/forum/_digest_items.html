@@ -1,0 +1,35 @@
+{#
+  Partial: forum/_digest_items.html (fase E, stap 5b)
+  De inhoud van één dagelijkse samenvatting: per gevolgd voorstel de
+  belangrijke veranderingen en een lichte vermelding van nieuwe activiteit.
+  Gebruikt op /meldingen en in de e-mail.
+  Context: items, base (voor absolute links in de e-mail, anders leeg),
+           optioneel existing_threads (gesprekken die nog bestaan).
+#}
+<ul style="list-style:none;margin:0;padding:0;" class="gu-digest__items">
+  {% for item in items %}
+  <li style="margin:0 0 14px;" class="gu-digest__item">
+    {% set alive = existing_threads is not defined or item.thread_id in existing_threads %}
+    <p style="margin:0 0 4px;font-weight:600;" class="gu-digest__title">
+      {% if alive %}<a href="{{ base or '' }}{{ url_for('forum.forum_thread', thread_id=item.thread_id) }}">{{ item.title }}</a>{% else %}{{ item.title }}{% endif %}
+    </p>
+    <ul style="margin:0;padding-left:18px;" class="gu-digest__changes">
+      {% for c in item.changes %}
+      {% set until = digest_dt(c.get('until')) %}
+      <li>
+        {%- if c.type == 'stemmen_open' -%}{{ _('Voting has opened, until %(date)s', date=until | datetimeformat('d MMMM y HH:mm')) if until else _('Voting has opened') }}
+        {%- elif c.type == 'sluit_binnenkort' -%}{{ _('Voting closes soon: %(date)s', date=until | datetimeformat('d MMMM y HH:mm')) }}
+        {%- elif c.type == 'bijstellen' -%}{{ _('The proposal is being revised') }}
+        {%- elif c.type == 'uitslag' -%}
+          {%- if c.pct is none -%}{{ _('Result: rejected, no valid votes') }}
+          {%- elif c.result == 'aangenomen' -%}{{ _('Result: adopted with %(pct)s%% in favour', pct=c.pct | decimalformat('0.#')) }}
+          {%- else -%}{{ _('Result: rejected with %(pct)s%% in favour', pct=c.pct | decimalformat('0.#')) }}{%- endif -%}
+        {%- endif -%}
+      </li>
+      {% endfor %}
+      {% if item.new_posts %}<li>{{ _('New replies: %(n)s', n=item.new_posts) }}</li>{% endif %}
+      {% if item.new_facts %}<li>{{ _('New facts: %(n)s', n=item.new_facts) }}</li>{% endif %}
+    </ul>
+  </li>
+  {% endfor %}
+</ul>

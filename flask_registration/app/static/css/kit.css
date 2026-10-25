@@ -1766,6 +1766,15 @@ body {
 .gu-vote__verdict--aangenomen { background: #e3f3ea; color: #11633d; }
 .gu-vote__verdict--verworpen { background: #fde7e7; color: #b42318; }
 
+/* Fase E, stap 5b: volgen en de dagelijkse samenvatting */
+.gu-proposal__follow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.gu-digest__intro { margin: 8px 0 0; color: var(--gu-fg-2); }
+.gu-digest__intro a, .gu-digest__title a { color: var(--gu-globe-deep); }
+.gu-digest { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.gu-digest__date { margin: 0 0 10px; font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-digest__changes { color: var(--gu-fg-2); }
+.gu-digest-pref { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+
 /* Fase E, stap 2: feitenblok van een voorstel */
 .gu-facts { margin: 24px 0 32px; padding: 18px 20px; border: 1px solid var(--gu-border); border-radius: 12px; }
 .gu-facts__title { margin: 0; font-size: 1.125rem; font-weight: 600; color: var(--gu-fg-1); }

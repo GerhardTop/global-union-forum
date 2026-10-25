@@ -143,6 +143,7 @@ def _migrate_columns():
     _migrate_roles(existing)
     _migrate_show_real_name(existing)
     _migrate_quality_status(existing)
+    _migrate_digest_user(existing)
     _migrate_stance(existing)
     _migrate_quality(existing)
     _migrate_conduct(existing)
@@ -312,6 +313,28 @@ def _migrate_stance(existing):
         if 'stance' not in cols:
             conn.execute(text('ALTER TABLE post_likes ADD COLUMN stance VARCHAR(10) NULL'))
         conn.execute(text("UPDATE post_likes SET stance = 'eens' WHERE stance IS NULL"))
+        conn.commit()
+
+
+def _migrate_digest_user(existing):
+    """
+    Fase E, stap 5b: users.digest_email, last_digest_at en has_unread_digest
+    (alle nullable, geen backfill: NULL betekent e-mail aan, nog nooit een
+    samenvatting, niets ongelezen). Vóór elke ORM-query op User. De tabellen
+    proposal_follows en digests maakt db.create_all() aan.
+    """
+    if 'users' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('users')}
+    added = [(name, ddl) for name, ddl in (('digest_email', 'BOOLEAN NULL'),
+                                           ('last_digest_at', 'TIMESTAMP NULL'),
+                                           ('has_unread_digest', 'BOOLEAN NULL'))
+             if name not in cols]
+    if not added:
+        return
+    with db.engine.connect() as conn:
+        for name, ddl in added:
+            conn.execute(text(f'ALTER TABLE users ADD COLUMN {name} {ddl}'))
         conn.commit()
 
 
@@ -680,7 +703,7 @@ def create_app():
             return
         return redirect(url_for('auth.kies_gebruikersnaam'))
 
-    from app.routes import main, auth, forum_bp, profile_bp, admin_bp, social, wikipolitics
+    from app.routes import main, auth, forum_bp, profile_bp, admin_bp, social, wikipolitics, intern
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(forum_bp)
@@ -688,6 +711,7 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(social)
     app.register_blueprint(wikipolitics)
+    app.register_blueprint(intern)
 
     from app.cli import register_cli
     register_cli(app)

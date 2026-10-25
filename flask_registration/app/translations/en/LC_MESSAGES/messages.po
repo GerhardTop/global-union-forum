@@ -1155,3 +1155,86 @@ msgstr "Turnout: no eligible voters"
 #, python-format
 msgid "Threshold: more than %(pct)s%% in favour"
 msgstr "Threshold: more than %(pct)s%% in favour"
+
+#: app/templates/forum/_digest_items.html, app/templates/meldingen.html, app/templates/email/digest.html
+#, python-format
+msgid "Voting has opened, until %(date)s"
+msgstr "Voting has opened, until %(date)s"
+
+msgid "Voting has opened"
+msgstr "Voting has opened"
+
+#, python-format
+msgid "Voting closes soon: %(date)s"
+msgstr "Voting closes soon: %(date)s"
+
+msgid "The proposal is being revised"
+msgstr "The proposal is being revised"
+
+msgid "Result: rejected, no valid votes"
+msgstr "Result: rejected, no valid votes"
+
+#, python-format
+msgid "Result: adopted with %(pct)s%% in favour"
+msgstr "Result: adopted with %(pct)s%% in favour"
+
+#, python-format
+msgid "Result: rejected with %(pct)s%% in favour"
+msgstr "Result: rejected with %(pct)s%% in favour"
+
+#, python-format
+msgid "New replies: %(n)s"
+msgstr "New replies: %(n)s"
+
+#, python-format
+msgid "New facts: %(n)s"
+msgstr "New facts: %(n)s"
+
+msgid "Your daily summary"
+msgstr "Your daily summary"
+
+msgid "What changed in the proposals you follow:"
+msgstr "What changed in the proposals you follow:"
+
+msgid "You receive this because you follow these proposals. You can turn off the email in your profile:"
+msgstr "You receive this because you follow these proposals. You can turn off the email in your profile:"
+
+msgid "Daily summaries"
+msgstr "Daily summaries"
+
+msgid "At most one summary a day of the public proposals you follow."
+msgstr "At most one summary a day of the public proposals you follow."
+
+msgid "Email settings"
+msgstr "Email settings"
+
+#, python-format
+msgid "Summary of %(date)s"
+msgstr "Summary of %(date)s"
+
+msgid "No summaries yet. Follow a public proposal to receive at most one summary a day."
+msgstr "No summaries yet. Follow a public proposal to receive at most one summary a day."
+
+msgid "You follow this proposal. You get at most one summary a day."
+msgstr "You follow this proposal. You get at most one summary a day."
+
+msgid "Unfollow"
+msgstr "Unfollow"
+
+msgid "Follow this proposal"
+msgstr "Follow this proposal"
+
+msgid "You have a new daily summary."
+msgstr "You have a new daily summary."
+
+msgid "View"
+msgstr "View"
+
+msgid "Daily summary by email"
+msgstr "Daily summary by email"
+
+msgid "Also send me the daily summary of the proposals I follow by email. The summary in the forum always stays."
+msgstr "Also send me the daily summary of the proposals I follow by email. The summary in the forum always stays."
+
+msgid "View your daily summaries"
+msgstr "View your daily summaries"

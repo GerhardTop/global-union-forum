@@ -73,6 +73,14 @@
             </div>
             {% endif %}
 
+            {# Fase E, stap 5b: een nieuwe dagelijkse samenvatting (vlag op de gebruiker, geen query). #}
+            {% if current_user.is_authenticated and current_user.has_unread_digest and request.endpoint != 'profile.meldingen' %}
+            <div class="gu-promotion-banner gu-digest-banner" role="status">
+              <span>{{ _('You have a new daily summary.') }}</span>
+              <a href="{{ url_for('profile.meldingen') }}" class="gu-post__action gu-post__action--ghost">{{ _('View') }}</a>
+            </div>
+            {% endif %}
+
             {# Fase C2: eenmalige melding bij een promotie naar stemmer of hoger. #}
             {% set promo = pending_promotion() if current_user.is_authenticated else None %}
             {% if promo %}

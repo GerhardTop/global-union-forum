@@ -32,7 +32,14 @@ def _inject_forum_action_form():
             'proposal_status': _proposal_status,
             'proposal_is_host': lambda p: _proposals().is_host(p, current_user),
             'proposal_can_revise': lambda p: _proposals().can_revise(p, current_user),
-            'proposal_for_pct': lambda f, a: _proposals().for_pct(f, a)}
+            'proposal_for_pct': lambda f, a: _proposals().for_pct(f, a),
+            'proposal_following': lambda p: _digest().is_following(p, current_user),
+            'digest_dt': lambda s: datetime.fromisoformat(s) if s else None}
+
+
+def _digest():
+    from app import digest
+    return digest
 
 
 def _proposals():
@@ -579,6 +586,11 @@ def forum_thread(thread_id):
             )
             db.session.add(post)
             db.session.commit()
+            # Fase E, stap 5b: wie meedoet aan een publiek voorstel gaat het volgen.
+            if thread.proposal is not None:
+                from app import digest
+                if digest.auto_follow(thread.proposal, current_user) is not None:
+                    db.session.commit()
             # Kwaliteit (fase C1): AI-suggestie op de achtergrond, best-effort.
             quality.schedule_judgement(post.id)
             # Naar de weergave waar de nieuwe reactie staat (ook voorbij niveau 4).
@@ -965,8 +977,11 @@ def forum_nieuw():
             db.session.add(thread)
             db.session.flush()
             if is_proposal:
-                proposals.create(thread, kind, current_user, minutes=minutes,
-                                 show_live_tally=request.form.get('live') == '1', threshold=threshold)
+                proposal = proposals.create(thread, kind, current_user, minutes=minutes,
+                                            show_live_tally=request.form.get('live') == '1', threshold=threshold)
+                db.session.flush()
+                from app import digest
+                digest.follow(proposal, current_user)  # de indiener volgt zijn eigen (publieke) voorstel
             post = Post(
                 thread_id=thread.id,
                 user_id=current_user.id,
@@ -1512,6 +1527,8 @@ def fact_add(thread_id):
                 author_name='', author_role='member', body=data['text'], source_lang=session.get('lang', 'nl'),
                 kind=FACT_KIND, fact_direction=data['direction'], fact_source=data['source'])
     db.session.add(fact)
+    from app import digest
+    digest.auto_follow(thread.proposal, current_user)  # meedoen is volgen (fase E, stap 5b)
     db.session.commit()
     quality.schedule_judgement(fact.id)  # handhaving van de gedragsregels, zie quality.judge_post
     return redirect(url_for('forum.forum_thread', thread_id=thread.id) + f'#post-{fact.id}')
@@ -1635,5 +1652,29 @@ def proposal_vote(thread_id):
     if choice not in VOTE_CHOICES:
         abort(400)
     proposals.cast_vote(proposal, current_user, choice)
+    from app import digest
+    digest.auto_follow(proposal, current_user)  # meedoen is volgen (fase E, stap 5b)
     db.session.commit()
     return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#stemmen')
+
+
+# ── Fase E, stap 5b: volgen ───────────────────────────────────────────────
+
+@forum_bp.route('/forum/<int:thread_id>/voorstel/volgen', methods=['POST'])
+@login_required
+def proposal_follow(thread_id):
+    """Volg een publiek voorstel, of ontvolg het. Volgen geeft hoogstens één
+    samenvatting per dag; bij een event is iedereen live bij."""
+    from app import digest
+    thread = Thread.query.get_or_404(thread_id)
+    proposal = thread.proposal
+    if proposal is None or proposal.kind != 'publiek':
+        abort(404)
+    _abort_if_thread_removed(thread)
+    _require_csrf()
+    if request.form.get('action') == 'ontvolgen':
+        digest.unfollow(proposal, current_user)
+    else:
+        digest.follow(proposal, current_user)
+    db.session.commit()
+    return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#voorstel')

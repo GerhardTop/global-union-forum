@@ -160,3 +160,31 @@ def profiel_vertaalvoorkeur():
         return jsonify({'ok': True})
     # Alleen interne paden: anders valt de redirect terug op het profiel.
     return redirect(safe_next(request.form.get('next'), url_for("profile.profile")))
+
+
+# ── Fase E, stap 5b: de dagelijkse samenvatting ──────────────────────────
+
+@profile_bp.route("/meldingen")
+@login_required
+def meldingen():
+    """De dagelijkse samenvattingen van je gevolgde voorstellen (in het forum,
+    in de taal van de lezer). Openen markeert ze als gelezen."""
+    from app import digest
+    digests = digest.recent_for(current_user)
+    existing = digest.thread_exists({i['thread_id'] for d in digests for i in d.items})
+    if current_user.has_unread_digest:
+        current_user.has_unread_digest = False
+        db.session.commit()
+    return render_template("meldingen.html", digests=digests, existing_threads=existing)
+
+
+@profile_bp.route("/profiel/samenvatting", methods=["POST"])
+@login_required
+def profiel_samenvatting():
+    """Zet de dagelijkse samenvatting per e-mail aan of uit; de samenvatting
+    in het forum blijft altijd."""
+    if not ForumActionForm().validate_on_submit():
+        abort(400)
+    current_user.digest_email = request.form.get("digest_email") == "1"
+    db.session.commit()
+    return redirect(safe_next(request.form.get('next'), url_for("profile.profile")) + '#samenvatting')

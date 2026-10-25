@@ -71,6 +71,21 @@
           · {% if proposal.show_live_tally %}{{ _('Running tally visible during voting') }}{% else %}{{ _('Tally hidden until voting closes') }}{% endif %}
         </p>
 
+        {# Stap 5b: volgen (alleen publiek; bij een event is iedereen live bij). #}
+        {% if proposal.kind == 'publiek' and current_user.is_authenticated %}
+        {% set following = proposal_following(proposal) %}
+        <form method="POST" action="{{ url_for('forum.proposal_follow', thread_id=thread.id) }}" class="gu-proposal__follow">
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          <input type="hidden" name="action" value="{{ 'ontvolgen' if following else 'volgen' }}">
+          {% if following %}
+          <span class="gu-composer__hint">{{ _('You follow this proposal. You get at most one summary a day.') }}</span>
+          <button type="submit" class="gu-post__action gu-post__action--ghost">{{ _('Unfollow') }}</button>
+          {% else %}
+          <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Follow this proposal') }}</button>
+          {% endif %}
+        </form>
+        {% endif %}
+
         {# Stap 4: stemmen in de stemfase, de uitslag in het vervolg. #}
         {% include 'forum/_proposal_vote.html' %}
 

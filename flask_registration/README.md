@@ -108,6 +108,20 @@ Vereiste environment variabelen in Render dashboard:
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 | `ANTHROPIC_API_KEY` | Claude API key voor forumvertaling |
 | `ORIGIN_VERIFY_SECRET` | Geheime waarde die Cloudflare meestuurt in de header `X-GU-Origin-Verify` (zie hieronder) |
+| `TICK_SECRET` | Geheim voor de periodieke taak `POST /intern/tik` (zie hieronder) |
+
+### Periodieke taak: voorstellen en dagelijkse samenvatting
+
+Elk uur roept de GitHub Actions-workflow `.github/workflows/tik.yml` het beschermde endpoint `POST /intern/tik` aan. Dat schuift publieke voorstellen door naar hun volgende fase en verstuurt de dagelijkse samenvatting (hoogstens één per kalenderdag per gebruiker, in het forum en per e-mail). Het endpoint werkt alleen met het juiste geheim in de header `Authorization: Bearer <geheim>`; zonder `TICK_SECRET` staat het uit (403).
+
+Instellen:
+
+1. Kies een lange willekeurige waarde.
+2. Render: zet die als omgevingsvariabele `TICK_SECRET`.
+3. GitHub: zet dezelfde waarde als repository-secret `TICK_SECRET` (Settings > Secrets and variables > Actions).
+4. Staat het endpoint niet op `https://globalunionforum.org/intern/tik`, zet dan in GitHub de repository-variabele `TICK_URL`.
+
+Met de hand kan het ook: `flask --app run voorstellen-tick` (alleen de faseovergangen), of de workflow starten via "Run workflow".
 
 ### Echt client-IP achter Cloudflare
 

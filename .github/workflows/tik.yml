@@ -1,0 +1,35 @@
+# Fase E, stap 5b: de periodieke taak van Global Union Forum.
+# Roept elk uur het beschermde endpoint POST /intern/tik aan: de
+# faseovergangen van publieke voorstellen en de dagelijkse samenvatting
+# (hoogstens een per kalenderdag per gebruiker). Idempotent, dus een extra of
+# gemiste run is geen probleem.
+#
+# Nodig (zie flask_registration/README.md):
+# - GitHub-secret TICK_SECRET, met dezelfde waarde als de Render-variabele TICK_SECRET.
+# - Optioneel de repository-variabele TICK_URL, als het endpoint niet op
+#   https://globalunionforum.org/intern/tik staat.
+name: Tik (voorstellen en samenvatting)
+
+on:
+  schedule:
+    - cron: '7 * * * *'   # elk uur, zeven minuten na het hele uur
+  workflow_dispatch: {}    # ook met de hand te starten
+
+permissions: {}
+
+jobs:
+  tik:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Roep /intern/tik aan
+        env:
+          TICK_SECRET: ${{ secrets.TICK_SECRET }}
+          TICK_URL: ${{ vars.TICK_URL || 'https://globalunionforum.org/intern/tik' }}
+        run: |
+          if [ -z "$TICK_SECRET" ]; then
+            echo "Het GitHub-secret TICK_SECRET ontbreekt." >&2
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error --max-time 120 \
+            -X POST -H "Authorization: Bearer $TICK_SECRET" "$TICK_URL"

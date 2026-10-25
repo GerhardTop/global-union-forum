@@ -329,4 +329,6 @@ def delete_for_threads(thread_ids):
         proposal_ids = [pid for (pid,) in db.session.query(Proposal.id).filter(Proposal.thread_id.in_(thread_ids))]
         if proposal_ids:
             ProposalVote.query.filter(ProposalVote.proposal_id.in_(proposal_ids)).delete(synchronize_session='evaluate')
+            from app import digest
+            digest.delete_for_proposals(proposal_ids)
         Proposal.query.filter(Proposal.thread_id.in_(thread_ids)).delete(synchronize_session='evaluate')

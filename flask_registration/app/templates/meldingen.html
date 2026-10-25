@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{# Fase E, stap 5b: de dagelijkse samenvattingen van je gevolgde voorstellen. #}
+{% block title %}{{ _('Daily summaries') }} · Global Union{% endblock %}
+
+{% block content %}
+<div class="gu-profile" style="max-width: 720px;">
+  <div class="gu-profile__head">
+    <p class="gu-eyebrow">Global Union Forum</p>
+    <h1 class="gu-profile__title">{{ _('Daily summaries') }}</h1>
+    <p class="gu-digest__intro">{{ _('At most one summary a day of the public proposals you follow.') }}
+      <a href="{{ url_for('profile.profile') }}#samenvatting">{{ _('Email settings') }}</a></p>
+  </div>
+  {% if digests %}
+  <ol class="gu-digest">
+    {% for d in digests %}
+    <li class="gu-join__panel gu-digest__card">
+      <p class="gu-digest__date">{{ _('Summary of %(date)s', date=d.created_at | dateformat('d MMMM y')) }}</p>
+      {% with items=d.items, base='' %}{% include 'forum/_digest_items.html' %}{% endwith %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <div class="gu-join__panel">
+    <p>{{ _('No summaries yet. Follow a public proposal to receive at most one summary a day.') }}</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
