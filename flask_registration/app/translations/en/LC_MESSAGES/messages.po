@@ -1066,3 +1066,92 @@ msgstr "Back to %(phase)s"
 
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "The statement of a proposal can only be changed in the revision phase."
+
+#: app/templates/forum/_proposal_vote.html, app/templates/forum/new_thread.html
+msgid "Threshold for adoption"
+msgstr "Threshold for adoption"
+
+msgid "more than"
+msgstr "more than"
+
+msgid "percent in favour"
+msgstr "percent in favour"
+
+msgid "The percentage in favour of the valid votes (for plus against) that is needed. At least 50."
+msgstr "The percentage in favour of the valid votes (for plus against) that is needed. At least 50."
+
+msgid "Choose a threshold from 50 to 99 percent."
+msgstr "Choose a threshold from 50 to 99 percent."
+
+msgid "Abstain"
+msgstr "Abstain"
+
+msgid "Cast your vote"
+msgstr "Cast your vote"
+
+#, python-format
+msgid "Your vote: %(choice)s. You can change it until voting closes."
+msgstr "Your vote: %(choice)s. You can change it until voting closes."
+
+msgid "You can change your vote until voting closes."
+msgstr "You can change your vote until voting closes."
+
+msgid "You do not have voting rights yet"
+msgstr "You do not have voting rights yet"
+
+msgid "You earn voting rights with quality contributions: contributions that receive the quality mark."
+msgstr "You earn voting rights with quality contributions: contributions that receive the quality mark."
+
+msgid "Log in to vote."
+msgstr "Log in to vote."
+
+msgid "Running tally"
+msgstr "Running tally"
+
+#, python-format
+msgid "%(pct)s%% in favour of the valid votes"
+msgstr "%(pct)s%% in favour of the valid votes"
+
+msgid "Nobody has voted yet."
+msgstr "Nobody has voted yet."
+
+msgid "One person has voted so far."
+msgstr "One person has voted so far."
+
+#, python-format
+msgid "%(n)s people have voted so far."
+msgstr "%(n)s people have voted so far."
+
+msgid "The tally is shown when voting closes."
+msgstr "The tally is shown when voting closes."
+
+msgid "Result"
+msgstr "Result"
+
+msgid "Adopted"
+msgstr "Adopted"
+
+msgid "Rejected"
+msgstr "Rejected"
+
+#, python-format
+msgid "%(pro)s%% for, %(con)s%% against (of the valid votes)"
+msgstr "%(pro)s%% for, %(con)s%% against (of the valid votes)"
+
+msgid "No valid votes were cast."
+msgstr "No valid votes were cast."
+
+#, python-format
+msgid "Votes cast: %(n)s"
+msgstr "Votes cast: %(n)s"
+
+#, python-format
+msgid "Turnout: %(votes)s of %(eligible)s eligible voters (%(pct)s%%)"
+msgstr "Turnout: %(votes)s of %(eligible)s eligible voters (%(pct)s%%)"
+
+msgid "Turnout: no eligible voters"
+msgstr "Turnout: no eligible voters"
+
+#, python-format
+msgid "Threshold: more than %(pct)s%% in favour"
+msgstr "Threshold: more than %(pct)s%% in favour"

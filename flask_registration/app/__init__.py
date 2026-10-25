@@ -240,9 +240,17 @@ def _migrate_proposals(existing):
     if 'proposals' not in existing:
         return
     cols = {c['name'] for c in sa_inspect(db.engine).get_columns('proposals')}
+    # Stap 4: de uitslag (de tabel proposal_votes maakt db.create_all() aan).
     added = [(name, ddl) for name, ddl in (('phase_changed_at', 'TIMESTAMP NULL'),
                                            ('revised_at', 'TIMESTAMP NULL'),
-                                           ('original_statement', 'TEXT NULL'))
+                                           ('original_statement', 'TEXT NULL'),
+                                           ('result', 'VARCHAR(12) NULL'),
+                                           ('result_pct', 'FLOAT NULL'),
+                                           ('votes_for', 'INTEGER NULL'),
+                                           ('votes_against', 'INTEGER NULL'),
+                                           ('votes_abstain', 'INTEGER NULL'),
+                                           ('eligible_count', 'INTEGER NULL'),
+                                           ('result_at', 'TIMESTAMP NULL'))
              if name not in cols]
     if not added:
         return

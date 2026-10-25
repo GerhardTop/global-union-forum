@@ -71,6 +71,9 @@
           · {% if proposal.show_live_tally %}{{ _('Running tally visible during voting') }}{% else %}{{ _('Tally hidden until voting closes') }}{% endif %}
         </p>
 
+        {# Stap 4: stemmen in de stemfase, de uitslag in het vervolg. #}
+        {% include 'forum/_proposal_vote.html' %}
+
         {# Stap 3: de stelling is één keer bijgesteld; een eenvoudige markering. #}
         {% if proposal.revised_at %}
         <p class="gu-proposal__revised">

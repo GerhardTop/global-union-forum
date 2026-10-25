@@ -636,6 +636,16 @@ class Proposal(db.Model):
     phase_changed_at   = db.Column(db.DateTime, nullable=True)
     revised_at         = db.Column(db.DateTime, nullable=True)
     original_statement = db.Column(db.Text, nullable=True)
+    # Stap 4: de uitslag, berekend en vastgelegd bij het sluiten van de
+    # stemfase. Percentage voor van de geldige stemmen (voor plus tegen);
+    # onthoudingen tellen voor de opkomst, niet voor de uitslag.
+    result             = db.Column(db.String(12), nullable=True)   # aangenomen/verworpen
+    result_pct         = db.Column(db.Float, nullable=True)        # None bij nul geldige stemmen
+    votes_for          = db.Column(db.Integer, nullable=True)
+    votes_against      = db.Column(db.Integer, nullable=True)
+    votes_abstain      = db.Column(db.Integer, nullable=True)
+    eligible_count     = db.Column(db.Integer, nullable=True)      # stemgerechtigden bij het sluiten
+    result_at          = db.Column(db.DateTime, nullable=True)
     created_at         = db.Column(db.DateTime, default=datetime.utcnow)
 
     # lazy='joined': het voorstel komt mee met elke Thread-query (een LEFT
@@ -654,3 +664,37 @@ class Proposal(db.Model):
     @property
     def phase_index(self):
         return PROPOSAL_PHASES.index(self.phase) if self.phase in PROPOSAL_PHASES else 0
+
+    @property
+    def votes_total(self):
+        return (self.votes_for or 0) + (self.votes_against or 0) + (self.votes_abstain or 0)
+
+    @property
+    def against_pct(self):
+        return None if self.result_pct is None else round(100 - self.result_pct, 1)
+
+    @property
+    def turnout_pct(self):
+        if not self.eligible_count:
+            return None
+        return round(100.0 * self.votes_total / self.eligible_count, 1)
+
+
+VOTE_CHOICES = ('voor', 'tegen', 'onthouding')
+
+
+class ProposalVote(db.Model):
+    """Eén stem per persoon per voorstel (unieke koppeling). Wijzigen kan
+    zolang de stemfase loopt; daarna staat hij vast."""
+    __tablename__ = "proposal_votes"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    proposal_id = db.Column(db.Integer, db.ForeignKey('proposals.id'), nullable=False, index=True)
+    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    choice      = db.Column(db.String(12), nullable=False)              # voor/tegen/onthouding
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at  = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('proposal_id', 'user_id', name='uq_proposal_vote'),)
+
+    proposal = db.relationship('Proposal', backref=db.backref('votes', lazy=True, cascade='all, delete-orphan'))

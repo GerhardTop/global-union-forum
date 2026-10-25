@@ -1066,3 +1066,92 @@ msgstr "Terug naar %(phase)s"
 
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "De stelling van een voorstel kan alleen in de bijstelfase worden aangepast."
+
+#: app/templates/forum/_proposal_vote.html, app/templates/forum/new_thread.html
+msgid "Threshold for adoption"
+msgstr "Drempel voor aannemen"
+
+msgid "more than"
+msgstr "meer dan"
+
+msgid "percent in favour"
+msgstr "procent voor"
+
+msgid "The percentage in favour of the valid votes (for plus against) that is needed. At least 50."
+msgstr "Het percentage voor van de geldige stemmen (voor plus tegen) dat nodig is. Minimaal 50."
+
+msgid "Choose a threshold from 50 to 99 percent."
+msgstr "Kies een drempel van 50 tot en met 99 procent."
+
+msgid "Abstain"
+msgstr "Onthouding"
+
+msgid "Cast your vote"
+msgstr "Breng je stem uit"
+
+#, python-format
+msgid "Your vote: %(choice)s. You can change it until voting closes."
+msgstr "Je stem: %(choice)s. Je kunt je stem wijzigen tot het stemmen sluit."
+
+msgid "You can change your vote until voting closes."
+msgstr "Je kunt je stem wijzigen tot het stemmen sluit."
+
+msgid "You do not have voting rights yet"
+msgstr "Je hebt nog geen stemrecht"
+
+msgid "You earn voting rights with quality contributions: contributions that receive the quality mark."
+msgstr "Stemrecht verdien je met kwaliteitsbijdragen: bijdragen die het kwaliteitskeurmerk krijgen."
+
+msgid "Log in to vote."
+msgstr "Log in om te stemmen."
+
+msgid "Running tally"
+msgstr "Tussenstand"
+
+#, python-format
+msgid "%(pct)s%% in favour of the valid votes"
+msgstr "%(pct)s%% voor van de geldige stemmen"
+
+msgid "Nobody has voted yet."
+msgstr "Er is nog niet gestemd."
+
+msgid "One person has voted so far."
+msgstr "Eén persoon heeft al gestemd."
+
+#, python-format
+msgid "%(n)s people have voted so far."
+msgstr "%(n)s mensen hebben al gestemd."
+
+msgid "The tally is shown when voting closes."
+msgstr "De verdeling volgt als het stemmen sluit."
+
+msgid "Result"
+msgstr "Uitslag"
+
+msgid "Adopted"
+msgstr "Aangenomen"
+
+msgid "Rejected"
+msgstr "Verworpen"
+
+#, python-format
+msgid "%(pro)s%% for, %(con)s%% against (of the valid votes)"
+msgstr "%(pro)s%% voor, %(con)s%% tegen (van de geldige stemmen)"
+
+msgid "No valid votes were cast."
+msgstr "Er zijn geen geldige stemmen uitgebracht."
+
+#, python-format
+msgid "Votes cast: %(n)s"
+msgstr "Uitgebrachte stemmen: %(n)s"
+
+#, python-format
+msgid "Turnout: %(votes)s of %(eligible)s eligible voters (%(pct)s%%)"
+msgstr "Opkomst: %(votes)s van %(eligible)s stemgerechtigden (%(pct)s%%)"
+
+msgid "Turnout: no eligible voters"
+msgstr "Opkomst: geen stemgerechtigden"
+
+#, python-format
+msgid "Threshold: more than %(pct)s%% in favour"
+msgstr "Drempel: meer dan %(pct)s%% voor"

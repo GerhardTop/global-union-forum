@@ -1741,6 +1741,29 @@ body {
 .gu-proposal__host { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--gu-border); }
 .gu-proposal__hostactions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+/* Fase E, stap 4: drempel, stemmen en uitslag */
+.gu-threshold__row { display: flex; align-items: center; gap: 8px; color: var(--gu-fg-2); }
+.gu-threshold__row .gu-input { width: 88px; }
+.gu-vote { margin-top: 14px; padding: 14px 16px; border-radius: 10px; background: var(--gu-bg-soft); }
+.gu-vote__title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 10px; font-weight: 600; color: var(--gu-fg-1); }
+.gu-vote__choices { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.gu-vote__btn { padding: 8px 16px; border: 1px solid var(--gu-border); border-radius: 999px; background: var(--gu-paper); color: var(--gu-fg-1); font: inherit; font-weight: 500; cursor: pointer; }
+.gu-vote__btn:hover { border-color: var(--gu-globe-deep); }
+.gu-vote__btn:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
+.gu-vote__btn--voor.is-mine { background: #e3f3ea; border-color: #11633d; color: #11633d; }
+.gu-vote__btn--tegen.is-mine { background: #fde7e7; border-color: #b42318; color: #b42318; }
+.gu-vote__btn--onthouding.is-mine { background: #ececee; border-color: #4b4f58; color: #4b4f58; }
+.gu-vote__noright { margin: 0 0 4px; font-weight: 600; color: var(--gu-fg-1); }
+.gu-vote__norights a { color: var(--gu-globe-deep); }
+.gu-vote__tally { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--gu-border); }
+.gu-vote__tallytitle { margin: 0 0 6px; font-size: 0.875rem; font-weight: 600; color: var(--gu-fg-1); }
+.gu-vote__counts { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 6px 0; padding: 0; font-size: 0.875rem; color: var(--gu-fg-2); }
+.gu-vote__count strong { color: var(--gu-fg-1); }
+.gu-vote--result p { margin: 0 0 6px; }
+.gu-vote__verdict { padding: 2px 10px; border-radius: 999px; font-size: 0.8125rem; }
+.gu-vote__verdict--aangenomen { background: #e3f3ea; color: #11633d; }
+.gu-vote__verdict--verworpen { background: #fde7e7; color: #b42318; }
+
 /* Fase E, stap 2: feitenblok van een voorstel */
 .gu-facts { margin: 24px 0 32px; padding: 18px 20px; border: 1px solid var(--gu-border); border-radius: 12px; }
 .gu-facts__title { margin: 0; font-size: 1.125rem; font-weight: 600; color: var(--gu-fg-1); }

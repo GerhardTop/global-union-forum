@@ -16,20 +16,39 @@ in vier fasen: feiten en discussie, voorstel bijstellen, stemmen, vervolg.
 Overgangen (stap 3): een publiek voorstel schuift op zijn vaste datums door
 (advance, advance_due en het commando "flask voorstellen-tick"); een event
 schuift alleen via de host (de indiener of een moderator). Tijdens het
-bijstellen kan de indiener de stelling één keer aanpassen. Stemmen zelf
-komen in stap 4.
+bijstellen kan de indiener de stelling één keer aanpassen.
+
+Stemmen (stap 4): tijdens de stemfase brengt een stemgerechtigde (can_vote)
+één stem uit (voor, tegen of onthouding), te wijzigen zolang de fase loopt.
+Bij het sluiten (automatisch of door de host) wordt de uitslag berekend en
+vastgelegd: het percentage voor van de geldige stemmen (voor plus tegen),
+aangenomen als dat groter is dan de drempel. Onthoudingen tellen voor de
+opkomst, niet voor de uitslag.
 """
 from datetime import datetime, timedelta
 
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, func, or_
 
 from app import db
-from app.models import PROPOSAL_KINDS, PROPOSAL_PHASES, PROPOSAL_TIMED_PHASES, AppSetting, Proposal
+from app.models import (PROPOSAL_KINDS, PROPOSAL_PHASES, PROPOSAL_TIMED_PHASES, VOTE_CHOICES, AppSetting,
+                        Proposal, ProposalVote, User)
 
 DEFAULT_MAX_DAYS = {'feiten': 60, 'bijstellen': 10, 'stemmen': 14}
 _SETTING_KEYS = {phase: f'proposal_max_{phase}_dagen' for phase in PROPOSAL_TIMED_PHASES}
 UNITS = {'dagen': 24 * 60, 'uren': 60}
 DEFAULT_THRESHOLD_PCT = 50
+# Een meerderheid kan niet lager dan 50%; "meer dan 100%" kan niet.
+THRESHOLD_MIN, THRESHOLD_MAX = 50, 99
+
+
+def parse_threshold(raw):
+    """De drempel uit het startformulier, of None als hij ongeldig is."""
+    raw = (raw or '').strip()
+    if not raw:
+        return DEFAULT_THRESHOLD_PCT
+    if not raw.isdigit() or not THRESHOLD_MIN <= int(raw) <= THRESHOLD_MAX:
+        return None
+    return int(raw)
 
 
 # ── Maxima per fase (admin) ──────────────────────────────────────────────
@@ -82,12 +101,12 @@ def schedule(start, minutes):
     return windows
 
 
-def create(thread, kind, host, minutes=None, show_live_tally=False, start=None):
+def create(thread, kind, host, minutes=None, show_live_tally=False, start=None, threshold=DEFAULT_THRESHOLD_PCT):
     """Maak het voorstel bij een (net aangemaakt) gesprek. Commit niet zelf."""
     if kind not in PROPOSAL_KINDS:
         raise ValueError(f'onbekend soort voorstel: {kind}')
     start = start or datetime.utcnow()
-    proposal = Proposal(thread=thread, kind=kind, phase='feiten', threshold_pct=DEFAULT_THRESHOLD_PCT,
+    proposal = Proposal(thread=thread, kind=kind, phase='feiten', threshold_pct=threshold,
                         show_live_tally=bool(show_live_tally), host_id=host.id, started_at=start)
     if kind == 'publiek':
         for phase, (begin, end) in schedule(start, minutes).items():
@@ -135,9 +154,21 @@ def advance(proposal, now=None):
     target = due_phase(proposal, now)
     if PROPOSAL_PHASES.index(target) <= proposal.phase_index:
         return False
-    proposal.phase = target
-    proposal.phase_changed_at = now
+    _set_phase(proposal, target, now)
     return True
+
+
+def _set_phase(proposal, phase, now):
+    """Zet de fase. Naar vervolg: de stemfase is gesloten, dus de uitslag
+    vastleggen. Terug uit vervolg (alleen een event, via de host): het stemmen
+    gaat weer open, dus de vastgelegde uitslag vervalt."""
+    leaving_result = proposal.phase == 'vervolg' and phase != 'vervolg'
+    proposal.phase = phase
+    proposal.phase_changed_at = now
+    if phase == 'vervolg' and proposal.result is None:
+        finalize(proposal, now)
+    elif leaving_result:
+        clear_result(proposal)
 
 
 def advance_due(now=None):
@@ -182,8 +213,7 @@ def step(proposal, direction, now=None):
     index = proposal.phase_index + (1 if direction == 'volgende' else -1 if direction == 'vorige' else 0)
     if index == proposal.phase_index or not 0 <= index < len(PROPOSAL_PHASES):
         return False
-    proposal.phase = PROPOSAL_PHASES[index]
-    proposal.phase_changed_at = now or datetime.utcnow()
+    _set_phase(proposal, PROPOSAL_PHASES[index], now or datetime.utcnow())
     return True
 
 
@@ -213,10 +243,89 @@ def revise(proposal, statement, now=None):
     thread.title_suffix_nl = thread.title_suffix_en = ''
 
 
+# ── Stemmen ──────────────────────────────────────────────────────────────
+
+def can_vote_now(proposal, user):
+    """Stemmen kan alleen in de stemfase en alleen met stemrecht."""
+    return proposal.phase == 'stemmen' and getattr(user, 'is_authenticated', False) and user.can_vote()
+
+
+def cast_vote(proposal, user, choice):
+    """Breng een stem uit of wijzig hem (één rij per persoon per voorstel).
+    Commit niet zelf."""
+    if choice not in VOTE_CHOICES:
+        raise ValueError(f'onbekende stem: {choice}')
+    vote = ProposalVote.query.filter_by(proposal_id=proposal.id, user_id=user.id).first()
+    if vote is None:
+        vote = ProposalVote(proposal_id=proposal.id, user_id=user.id, choice=choice)
+        db.session.add(vote)
+    else:
+        vote.choice = choice
+    return vote
+
+
+def my_vote(proposal, user):
+    if not getattr(user, 'is_authenticated', False):
+        return None
+    row = (db.session.query(ProposalVote.choice)
+           .filter_by(proposal_id=proposal.id, user_id=user.id).first())
+    return row[0] if row else None
+
+
+def tally(proposal):
+    """{'voor': n, 'tegen': n, 'onthouding': n} in één query."""
+    counts = {choice: 0 for choice in VOTE_CHOICES}
+    for choice, n in (db.session.query(ProposalVote.choice, func.count(ProposalVote.id))
+                      .filter(ProposalVote.proposal_id == proposal.id).group_by(ProposalVote.choice)):
+        if choice in counts:
+            counts[choice] = n
+    return counts
+
+
+def for_pct(votes_for, votes_against):
+    """Percentage voor van de geldige stemmen, of None zonder geldige stemmen."""
+    valid = votes_for + votes_against
+    return round(100.0 * votes_for / valid, 1) if valid else None
+
+
+def eligible_voter_count():
+    """Aantal stemgerechtigden, dezelfde regel als User.can_vote(): admin,
+    verdiende status voter of hoger, of een handmatige rol voter of hoger."""
+    return User.query.filter(or_(
+        User.is_admin.is_(True),
+        User.quality_status.in_(('voter', 'moderator', 'senior')),
+        and_(User.rules_accepted_at.isnot(None), User.role.in_(('voter', 'moderator', 'senior_moderator'))),
+    )).count()
+
+
+def finalize(proposal, now=None):
+    """Bereken en leg de uitslag vast bij het sluiten van de stemfase.
+    Aangenomen als het percentage voor van de geldige stemmen groter is dan
+    de drempel (met gehele getallen vergeleken, zonder afrondingsverschil)."""
+    counts = tally(proposal)
+    votes_for, votes_against = counts['voor'], counts['tegen']
+    valid = votes_for + votes_against
+    adopted = valid > 0 and votes_for * 100 > proposal.threshold_pct * valid
+    proposal.result = 'aangenomen' if adopted else 'verworpen'
+    proposal.result_pct = for_pct(votes_for, votes_against)
+    proposal.votes_for, proposal.votes_against = votes_for, votes_against
+    proposal.votes_abstain = counts['onthouding']
+    proposal.eligible_count = eligible_voter_count()
+    proposal.result_at = now or datetime.utcnow()
+
+
+def clear_result(proposal):
+    proposal.result = proposal.result_pct = proposal.result_at = None
+    proposal.votes_for = proposal.votes_against = proposal.votes_abstain = proposal.eligible_count = None
+
+
 # ── Opruimen ─────────────────────────────────────────────────────────────
 
 def delete_for_threads(thread_ids):
     """Vóór het in bulk verwijderen van gesprekken: hun voorstellen weg."""
     thread_ids = list(thread_ids)
     if thread_ids:
+        proposal_ids = [pid for (pid,) in db.session.query(Proposal.id).filter(Proposal.thread_id.in_(thread_ids))]
+        if proposal_ids:
+            ProposalVote.query.filter(ProposalVote.proposal_id.in_(proposal_ids)).delete(synchronize_session='evaluate')
         Proposal.query.filter(Proposal.thread_id.in_(thread_ids)).delete(synchronize_session='evaluate')

@@ -31,7 +31,8 @@ def _inject_forum_action_form():
             # Fase E: statuslabel van een voorstel, host en bijstellen.
             'proposal_status': _proposal_status,
             'proposal_is_host': lambda p: _proposals().is_host(p, current_user),
-            'proposal_can_revise': lambda p: _proposals().can_revise(p, current_user)}
+            'proposal_can_revise': lambda p: _proposals().can_revise(p, current_user),
+            'proposal_for_pct': lambda f, a: _proposals().for_pct(f, a)}
 
 
 def _proposals():
@@ -729,6 +730,12 @@ def _render_thread(thread, branch_root_id=None):
             for c in tree_children.get(p.id, []))
 
     stance_counts = _stance_counts(all_ids)
+    # Stemmen (fase E, stap 4): alleen in de stemfase de tussenstand en je eigen stem.
+    vote_tally, vote_mine = None, None
+    if thread.proposal is not None and thread.proposal.phase == 'stemmen':
+        from app import proposals
+        vote_tally = proposals.tally(thread.proposal)
+        vote_mine = proposals.my_vote(thread.proposal, current_user)
     # Feitenblok (fase E): fouten en ingevulde waarden van een geweigerd feit (PRG).
     fact_errors, fact_data = _pop_form_state(f'feit-{thread.id}') if thread.proposal else ({}, {})
     my_quality_reports = set()
@@ -764,6 +771,8 @@ def _render_thread(thread, branch_root_id=None):
         posts=[p for p in all_posts if p.id not in removed_ids],  # zichtbare tellingen
         poll_ids=poll_ids,
         facts=facts,
+        vote_tally=vote_tally,
+        vote_mine=vote_mine,
         visible_fact_count=sum(1 for f in facts if f.id not in removed_ids),
         fact_errors=fact_errors,
         fact_data=fact_data,
@@ -928,14 +937,18 @@ def forum_nieuw():
         is_proposal = request.form.get('type') == 'voorstel'
         kind = request.form.get('kind')
         minutes, errors = {}, {}
+        threshold = proposals.DEFAULT_THRESHOLD_PCT
         if is_proposal:
             if kind not in ('publiek', 'event'):
                 errors['kind'] = 'invalid'
             elif kind == 'publiek':
                 minutes, errors = proposals.parse_durations(request.form, max_days)
+            threshold = proposals.parse_threshold(request.form.get('drempel'))
+            if threshold is None:
+                errors['threshold'] = 'invalid'
         if errors:
             # PRG: fouten en ingevulde waarden een GET lang bewaren.
-            keep = ('title', 'body', 'type', 'kind', 'live')
+            keep = ('title', 'body', 'type', 'kind', 'live', 'drempel')
             data = {k: request.form.get(k, '') for k in keep}
             for phase in minutes.keys() | errors.keys() | set(proposals.DEFAULT_MAX_DAYS):
                 data[f'duur_{phase}'] = request.form.get(f'duur_{phase}', '')
@@ -953,7 +966,7 @@ def forum_nieuw():
             db.session.flush()
             if is_proposal:
                 proposals.create(thread, kind, current_user, minutes=minutes,
-                                 show_live_tally=request.form.get('live') == '1')
+                                 show_live_tally=request.form.get('live') == '1', threshold=threshold)
             post = Post(
                 thread_id=thread.id,
                 user_id=current_user.id,
@@ -1593,3 +1606,34 @@ def proposal_revise(thread_id):
     proposals.revise(proposal, statement)
     db.session.commit()
     return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#voorstel')
+
+
+# ── Fase E, stap 4: stemmen ───────────────────────────────────────────────
+
+@forum_bp.route('/forum/<int:thread_id>/voorstel/stem', methods=['POST'])
+@login_required
+@limiter.limit("30 per minute", key_func=lambda: f"proposal-vote-user-{current_user.get_id()}")
+def proposal_vote(thread_id):
+    """Een stemgerechtigde brengt in de stemfase één stem uit (voor, tegen of
+    onthouding), te wijzigen tot het stemmen sluit. Buiten de stemfase of
+    zonder stemrecht geweigerd."""
+    from app import proposals
+    from app.models import VOTE_CHOICES
+    thread = Thread.query.get_or_404(thread_id)
+    proposal = thread.proposal
+    if proposal is None:
+        abort(404)
+    _abort_if_thread_removed(thread)
+    _require_csrf()
+    # Eerst de vaste datums bijwerken: na de einddatum kan er niet meer gestemd worden.
+    proposals.advance_loaded([proposal])
+    if proposal.phase != 'stemmen':
+        abort(403)
+    if not current_user.can_vote():
+        abort(403)
+    choice = request.form.get('choice')
+    if choice not in VOTE_CHOICES:
+        abort(400)
+    proposals.cast_vote(proposal, current_user, choice)
+    db.session.commit()
+    return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#stemmen')

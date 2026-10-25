@@ -1,0 +1,77 @@
+{#
+  Partial: forum/_proposal_vote.html (fase E, stap 4)
+  In de stemfase: stemmen (voor, tegen, onthouding) voor wie stemrecht heeft,
+  en de tussenstand volgens de instelling van het voorstel (verborgen: alleen
+  het aantal stemmers; live: de verdeling). In het vervolg: altijd de
+  volledige uitslag.
+  Context: thread, proposal, vote_tally, vote_mine, forum_action_form.
+#}
+{% set choice_labels = {'voor': _('For'), 'tegen': _('Against'), 'onthouding': _('Abstain')} %}
+{% if proposal.phase == 'stemmen' and vote_tally is not none %}
+<div class="gu-vote" id="stemmen">
+  <p class="gu-vote__title">{{ _('Cast your vote') }}</p>
+  {% if current_user.is_authenticated and current_user.can_vote() %}
+  <form method="POST" action="{{ url_for('forum.proposal_vote', thread_id=thread.id) }}" class="gu-vote__choices">
+    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+    {% for c in ['voor', 'tegen', 'onthouding'] %}
+    <button type="submit" name="choice" value="{{ c }}" class="gu-vote__btn gu-vote__btn--{{ c }}{% if vote_mine == c %} is-mine{% endif %}"
+            aria-pressed="{{ 'true' if vote_mine == c else 'false' }}">{{ choice_labels[c] }}</button>
+    {% endfor %}
+  </form>
+  <p class="gu-composer__hint">
+    {% if vote_mine %}{{ _('Your vote: %(choice)s. You can change it until voting closes.', choice=choice_labels[vote_mine]) }}
+    {% else %}{{ _('You can change your vote until voting closes.') }}{% endif %}
+  </p>
+  {% elif current_user.is_authenticated %}
+  <div class="gu-vote__norights">
+    <p class="gu-vote__noright">{{ _('You do not have voting rights yet') }}</p>
+    <p class="gu-composer__hint">{{ _('You earn voting rights with quality contributions: contributions that receive the quality mark.') }}
+      <a href="{{ url_for('main.spelregels') }}#kwaliteitsrichtlijnen">{{ _('Quality guidelines') }}</a></p>
+  </div>
+  {% else %}
+  <p class="gu-composer__hint"><a href="{{ url_for('auth.login') }}">{{ _('Log in to vote.') }}</a></p>
+  {% endif %}
+
+  {% set voted = vote_tally['voor'] + vote_tally['tegen'] + vote_tally['onthouding'] %}
+  <div class="gu-vote__tally">
+    {% if proposal.show_live_tally %}
+      <p class="gu-vote__tallytitle">{{ _('Running tally') }}</p>
+      <ul class="gu-vote__counts">
+        {% for c in ['voor', 'tegen', 'onthouding'] %}
+        <li class="gu-vote__count gu-vote__count--{{ c }}"><span>{{ choice_labels[c] }}</span> <strong>{{ vote_tally[c] }}</strong></li>
+        {% endfor %}
+      </ul>
+      {% set live_pct = proposal_for_pct(vote_tally['voor'], vote_tally['tegen']) %}
+      {% if live_pct is not none %}<p class="gu-composer__hint">{{ _('%(pct)s%% in favour of the valid votes', pct=live_pct | decimalformat('0.#')) }}</p>{% endif %}
+    {% else %}
+      <p class="gu-composer__hint">
+        {% if voted == 0 %}{{ _('Nobody has voted yet.') }}
+        {% elif voted == 1 %}{{ _('One person has voted so far.') }}
+        {% else %}{{ _('%(n)s people have voted so far.', n=voted) }}{% endif %}
+        {{ _('The tally is shown when voting closes.') }}
+      </p>
+    {% endif %}
+  </div>
+</div>
+{% elif proposal.phase == 'vervolg' and proposal.result %}
+<div class="gu-vote gu-vote--result" id="uitslag">
+  <p class="gu-vote__title">{{ _('Result') }}
+    <span class="gu-vote__verdict gu-vote__verdict--{{ proposal.result }}">{% if proposal.result == 'aangenomen' %}{{ _('Adopted') }}{% else %}{{ _('Rejected') }}{% endif %}</span>
+  </p>
+  {% if proposal.result_pct is not none %}
+  <p>{{ _('%(pro)s%% for, %(con)s%% against (of the valid votes)', pro=proposal.result_pct | decimalformat('0.#'), con=proposal.against_pct | decimalformat('0.#')) }}</p>
+  {% else %}
+  <p>{{ _('No valid votes were cast.') }}</p>
+  {% endif %}
+  <ul class="gu-vote__counts">
+    {% for c, n in [('voor', proposal.votes_for), ('tegen', proposal.votes_against), ('onthouding', proposal.votes_abstain)] %}
+    <li class="gu-vote__count gu-vote__count--{{ c }}"><span>{{ choice_labels[c] }}</span> <strong>{{ n or 0 }}</strong></li>
+    {% endfor %}
+  </ul>
+  <p class="gu-composer__hint">
+    {{ _('Votes cast: %(n)s', n=proposal.votes_total) }}
+    · {% if proposal.turnout_pct is not none %}{{ _('Turnout: %(votes)s of %(eligible)s eligible voters (%(pct)s%%)', votes=proposal.votes_total, eligible=proposal.eligible_count, pct=proposal.turnout_pct | decimalformat('0.#')) }}{% else %}{{ _('Turnout: no eligible voters') }}{% endif %}
+    · {{ _('Threshold: more than %(pct)s%% in favour', pct=proposal.threshold_pct) }}
+  </p>
+</div>
+{% endif %}

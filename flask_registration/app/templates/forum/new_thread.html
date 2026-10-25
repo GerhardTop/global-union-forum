@@ -92,7 +92,19 @@
           <input type="checkbox" name="live" value="1"{% if fd.get('live') == '1' %} checked{% endif %}>
           <span>{{ _('Show the running tally during voting') }}</span>
         </label>
-        <p class="gu-composer__hint">{{ _('Adopted with more than %(pct)s%% in favour', pct=50) }}</p>
+        {# Stap 4: de drempel, standaard 50, minimaal 50 (een meerderheid kan niet lager). #}
+        <div class="gu-forum__newfield gu-threshold">
+          <label for="drempel">{{ _('Threshold for adoption') }}</label>
+          <div class="gu-threshold__row">
+            <span>{{ _('more than') }}</span>
+            <input type="number" min="50" max="99" step="1" inputmode="numeric" id="drempel" name="drempel"
+                   class="gu-input{% if errs.get('threshold') %} gu-input--error{% endif %}"
+                   value="{{ fd.get('drempel') or 50 }}" aria-describedby="drempelHint">
+            <span>{{ _('percent in favour') }}</span>
+          </div>
+          <span class="gu-composer__hint" id="drempelHint">{{ _('The percentage in favour of the valid votes (for plus against) that is needed. At least 50.') }}</span>
+          {% if errs.get('threshold') %}<p class="gu-join__formError">{{ _('Choose a threshold from 50 to 99 percent.') }}</p>{% endif %}
+        </div>
       </div>
 
       <div class="gu-forum__newfield">
