@@ -960,3 +960,70 @@ msgstr "Default: %(days)s days"
 
 msgid "Enter a whole number from 1 to 365."
 msgstr "Enter a whole number from 1 to 365."
+
+#: app/templates/forum/_facts.html, app/templates/forum/achtergrond.html
+msgid "For"
+msgstr "For"
+
+msgid "Against"
+msgstr "Against"
+
+msgid "Neutral"
+msgstr "Neutral"
+
+msgid "Facts"
+msgstr "Facts"
+
+msgid "Fact"
+msgstr "Fact"
+
+msgid "Source"
+msgstr "Source"
+
+msgid "Facts that are relevant to the statement, each with a direction and a source."
+msgstr "Facts that are relevant to the statement, each with a direction and a source."
+
+msgid "No facts yet. Add the first one."
+msgstr "No facts yet. Add the first one."
+
+msgid "No facts were added."
+msgstr "No facts were added."
+
+msgid "The facts phase is over; the facts are fixed."
+msgstr "The facts phase is over; the facts are fixed."
+
+msgid "Fact moved because of the conduct rules"
+msgstr "Fact moved because of the conduct rules"
+
+msgid "Add a fact"
+msgstr "Add a fact"
+
+msgid "The fact"
+msgstr "The fact"
+
+msgid "Direction relative to the statement"
+msgstr "Direction relative to the statement"
+
+msgid "A link or a short source reference"
+msgstr "A link or a short source reference"
+
+msgid "Describe the fact (at most 1000 characters)."
+msgstr "Describe the fact (at most 1000 characters)."
+
+msgid "Choose a direction."
+msgstr "Choose a direction."
+
+msgid "Give a source."
+msgstr "Give a source."
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Log in to add a fact."
+msgstr "Log in to add a fact."

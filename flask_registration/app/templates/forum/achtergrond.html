@@ -27,6 +27,7 @@
     <li class="gu-background__card" id="zaak-{{ case.id }}">
       <div class="gu-background__top">
         <span class="gu-background__rule">{{ conduct_rule_label(case.rule) }}</span>
+        {% if case.post.is_fact %}<span class="gu-background__kind">{{ _('Fact') }}</span>{% endif %}
         <span class="gu-background__status gu-background__status--{{ status }}">
           {%- if status == 'bezwaar_mogelijk' -%}{{ _('Objection possible until %(date)s', date=case.objection_deadline | dateformat('d MMMM y')) }}
           {%- elif status == 'bezwaar_open' -%}{{ _('Objection submitted, a moderator decides') }}

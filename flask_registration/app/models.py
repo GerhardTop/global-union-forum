@@ -219,6 +219,13 @@ class Post(db.Model):
     # Laatste bewerking door de auteur (alleen zolang er geen reacties zijn);
     # toont het label "bewerkt" en start een nieuwe AI-beoordeling.
     edited_at      = db.Column(db.DateTime, nullable=True)
+    # Fase E: een feit in het feitenblok van een voorstel is ook een Post, met
+    # kind 'feit' (NULL = gewoon bericht), een richting en een bron. Zo geldt de
+    # handhaving (fase D) er vanzelf voor; feiten staan buiten de discussie,
+    # krijgen geen keurmerk en tellen niet voor de verdiende status.
+    kind           = db.Column(db.String(10), nullable=True)
+    fact_direction = db.Column(db.String(10), nullable=True)   # voor/tegen/neutraal
+    fact_source    = db.Column(db.String(500), nullable=True)
     author         = db.relationship('User', foreign_keys=[user_id], lazy='joined')
     # Geneste reacties: parent_id wijst naar het bericht waarop gereageerd
     # wordt (NULL = bericht op het hoogste niveau). De threadpagina bouwt de
@@ -251,6 +258,14 @@ class Post(db.Model):
     def edited_ago(self):
         return time_ago(self.edited_at)
 
+    @property
+    def is_fact(self):
+        return self.kind == FACT_KIND
+
+    @property
+    def fact_source_is_url(self):
+        return bool(self.fact_source) and self.fact_source.lower().startswith(('http://', 'https://'))
+
 
 def time_ago(moment):
     """{'nl': ..., 'en': ...}: hoe lang geleden, voor bijdragen en besluiten."""
@@ -269,6 +284,11 @@ def time_ago(moment):
     if m >= 1:
         return {'nl': f'{m} min geleden', 'en': f'{m} min ago'}
     return {'nl': 'zojuist', 'en': 'just now'}
+
+
+# Fase E: feiten bij een voorstel.
+FACT_KIND = 'feit'
+FACT_DIRECTIONS = ('voor', 'tegen', 'neutraal')
 
 
 # Forum fase B: eens/oneens per bijdrage, los van elk kwaliteitssignaal.

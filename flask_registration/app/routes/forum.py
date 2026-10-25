@@ -5,12 +5,12 @@ from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify, abort, current_app, flash, g
 from flask_babel import gettext
 from flask_login import login_required, current_user
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from app import db, bcrypt, limiter
 from app.forms import ForumActionForm, ForumReplyForm
-from app.models import (STANCES, QUALITY_CRITERIA, User, Thread, Post, PostLike, QualityAward,
-                        QualityReport, time_ago)
+from app.models import (FACT_DIRECTIONS, FACT_KIND, STANCES, QUALITY_CRITERIA, User, Thread, Post,
+                        PostLike, QualityAward, QualityReport, time_ago)
 from app import conduct, quality
 from app.utils import _pop_form_state, _stash_form_state, safe_next
 
@@ -468,7 +468,7 @@ def _thread_list(closed=False):
     if thread_ids:
         for post_id, thread_id, created_at in (
                 db.session.query(Post.id, Post.thread_id, Post.created_at)
-                .filter(Post.thread_id.in_(thread_ids))
+                .filter(Post.thread_id.in_(thread_ids), or_(Post.kind.is_(None), Post.kind != FACT_KIND))
                 .order_by(Post.created_at, Post.id)):
             if post_id not in removed:
                 visible_times.setdefault(thread_id, []).append(created_at)
@@ -533,8 +533,8 @@ def forum_thread(thread_id):
         # thread wijzen (geen IDOR, alle posts zijn al publiek, maar wel een
         # corrupte reply-boomstructuur).
         parent = Post.query.filter_by(id=parent_id, thread_id=thread_id).first() if parent_id is not None else None
-        if parent is not None and conduct.is_removed_for(parent, current_user):
-            parent = None  # uit het gesprek voor deze lezer: alsof hij niet bestaat
+        if parent is not None and (parent.is_fact or conduct.is_removed_for(parent, current_user)):
+            parent = None  # een feit, of uit het gesprek voor deze lezer: alsof hij niet bestaat
         if parent is not None and parent.user_id == current_user.id:
             # Punt 7: niet reageren op je eigen bericht (de knop is ook verborgen).
             flash(
@@ -651,25 +651,30 @@ def _render_thread(thread, branch_root_id=None):
     """De gesprekspagina (of een tak). De berichten en de handhavingsgegevens
     worden hier één keer opgehaald en overal hergebruikt."""
     reply_form = ForumReplyForm()
-    all_posts = Post.query.filter_by(thread_id=thread.id).order_by(Post.created_at).all()
-    posts_by_id = {p.id: p for p in all_posts}
+    # Eén query voor alle bijdragen; de feiten (fase E) staan in een eigen
+    # blok en buiten de discussieboom, de tellingen en eens/oneens.
+    everything = Post.query.filter_by(thread_id=thread.id).order_by(Post.created_at).all()
+    facts = [p for p in everything if p.is_fact]
+    all_posts = [p for p in everything if not p.is_fact]
+    posts_by_id = {p.id: p for p in everything}
     op, tree_children = _tree(all_posts)
     branch_root = None
     if branch_root_id is not None:
         branch_root = posts_by_id.get(branch_root_id)
-        if branch_root is None:
+        if branch_root is None or branch_root.is_fact:
             abort(404)
 
     # Kwaliteit is alleen een beloning: niets wordt op kwaliteit verborgen.
     all_ids = [p.id for p in all_posts]
+    every_id = [p.id for p in everything]
     quality_awards = {a.post_id: a for a in
-                      QualityAward.query.filter(QualityAward.post_id.in_(all_ids)).all()} if all_ids else {}
+                      QualityAward.query.filter(QualityAward.post_id.in_(every_id)).all()} if every_id else {}
 
     # Fase D: gedragsregels. Voor anderen is een verplaatste bijdrage een
     # verwijzing naar de achtergrondpagina en een verborgen bijdrage weg (of
     # een neutrale placeholder als er zichtbare reacties onder staan). De
     # auteur en moderators zien ze gemarkeerd met de reden.
-    conduct_cases = conduct.cases_for(all_ids)
+    conduct_cases = conduct.cases_for(every_id)
     removed_ids = {pid for pid, case in conduct_cases.items()
                    if conduct.removed_for(posts_by_id[pid], case, current_user)}
     # Een verplaatst of verborgen openingsbericht verbergt het hele gesprek
@@ -708,6 +713,8 @@ def _render_thread(thread, branch_root_id=None):
             for c in tree_children.get(p.id, []))
 
     stance_counts = _stance_counts(all_ids)
+    # Feitenblok (fase E): fouten en ingevulde waarden van een geweigerd feit (PRG).
+    fact_errors, fact_data = _pop_form_state(f'feit-{thread.id}') if thread.proposal else ({}, {})
     my_quality_reports = set()
     if current_user.is_authenticated and quality_awards:
         my_quality_reports = {r.award_id for r in QualityReport.query.filter(
@@ -730,7 +737,7 @@ def _render_thread(thread, branch_root_id=None):
     if current_user.is_authenticated:
         fresh = datetime.utcnow() - timedelta(minutes=2)
         # Ook na een bewerking (edited_at): dan loopt de beoordeling opnieuw.
-        poll_ids = {p.id for p in all_posts
+        poll_ids = {p.id for p in everything
                     if p.user_id == current_user.id and p.id not in quality_awards and not p.is_demo
                     and p.body != '[bericht verwijderd]'
                     and (p.edited_at or p.created_at) and (p.edited_at or p.created_at) >= fresh}
@@ -740,6 +747,10 @@ def _render_thread(thread, branch_root_id=None):
         reply_form=reply_form,
         posts=[p for p in all_posts if p.id not in removed_ids],  # zichtbare tellingen
         poll_ids=poll_ids,
+        facts=facts,
+        visible_fact_count=sum(1 for f in facts if f.id not in removed_ids),
+        fact_errors=fact_errors,
+        fact_data=fact_data,
         conduct_cases=conduct_cases,
         moved_ids=moved_ids,
         hidden_ids=hidden_ids,
@@ -838,7 +849,7 @@ def forum_stance(post_id):
     keuze in. Eén rij per gebruiker per bijdrage."""
     _require_csrf()
     post = Post.query.get_or_404(post_id)
-    if conduct.is_removed_for(post, current_user):
+    if post.is_fact or conduct.is_removed_for(post, current_user):
         abort(404)
     if not current_user.can_contribute():
         return jsonify({'error': 'not allowed'}), 403
@@ -964,7 +975,8 @@ def _has_replies(post):
 def _edit_refusal(post):
     """None als de huidige gebruiker dit bericht mag bewerken, anders de
     reden: 'forbidden', 'removed' of 'replies'."""
-    if post.user_id is None or post.user_id != current_user.id or post.body == '[bericht verwijderd]':
+    if (post.user_id is None or post.user_id != current_user.id or post.body == '[bericht verwijderd]'
+            or post.is_fact):
         return 'forbidden'
     case = post.conduct_case
     if case is not None and case.removes_from_thread:
@@ -1069,7 +1081,7 @@ def forum_post_verwijderen(post_id):
     andere bijdragen zijn (welke status ook): dan verdwijnt het hele gesprek.
     Moderators nooit."""
     post = Post.query.get_or_404(post_id)
-    if post.user_id is None or post.user_id != current_user.id:
+    if post.user_id is None or post.user_id != current_user.id or post.is_fact:
         abort(403)
     if post.is_op and _has_replies(post):
         abort(403)
@@ -1107,6 +1119,8 @@ def forum_quality_decide(post_id):
     post = Post.query.get_or_404(post_id)
     if post.user_id == current_user.id:
         abort(403)
+    if post.is_fact:
+        abort(400)  # het kwaliteitskeurmerk geldt niet voor feiten
     action = request.form.get('action')
     criterion = request.form.get('criterion') or None
     note = (request.form.get('explanation') or '').strip()[:400]
@@ -1140,7 +1154,7 @@ def _quality_page_visible(post, award):
     bijdrage die wegens de gedragsregels uit het gesprek is, heeft geen
     keurmerk (fase D), dus ook geen pagina."""
     case = post.conduct_case
-    return (award is not None and award.status == 'toegekend'
+    return (award is not None and award.status == 'toegekend' and not post.is_fact
             and not (case is not None and case.removes_from_thread))
 
 
@@ -1412,3 +1426,103 @@ def conduct_objection_decide(objection_id):
         abort(400)
     db.session.commit()
     return redirect(safe_next(request.form.get('next'), url_for('admin.moderator_dashboard')))
+
+
+# ── Fase E: feiten bij een voorstel ───────────────────────────────────────
+# Een feit is een Post met kind 'feit', een richting (voor, tegen, neutraal
+# ten opzichte van de stelling) en een bron. Alleen tijdens de feitenfase toe
+# te voegen, te bewerken en te verwijderen; daarna een vaste lijst. Geen
+# auteur in beeld (intern wel bewaard). Dezelfde AI-aanroep doet de
+# handhaving van de gedragsregels; het kwaliteitskeurmerk geldt niet.
+
+_FACT_MAX = 1000
+
+
+def _fact_form():
+    """(waarden, fouten) uit het feitformulier."""
+    data = {'text': (request.form.get('text') or '').strip(),
+            'direction': request.form.get('direction') or '',
+            'source': (request.form.get('source') or '').strip()}
+    errors = {}
+    if not data['text'] or len(data['text']) > _FACT_MAX:
+        errors['text'] = True
+    if data['direction'] not in FACT_DIRECTIONS:
+        errors['direction'] = True
+    if not data['source'] or len(data['source']) > 500:
+        errors['source'] = True
+    return data, errors
+
+
+def _fact_phase_open(thread):
+    proposal = thread.proposal
+    return proposal is not None and proposal.phase == 'feiten' and not thread.is_closed
+
+
+@forum_bp.route('/forum/<int:thread_id>/feiten', methods=['POST'])
+@login_required
+@limiter.limit("5 per minute", key_func=lambda: f"forum-fact-user-{current_user.get_id()}")
+def fact_add(thread_id):
+    thread = Thread.query.get_or_404(thread_id)
+    if thread.proposal is None:
+        abort(404)
+    _abort_if_thread_removed(thread)
+    if not current_user.can_contribute():
+        return _rules_first_redirect()
+    _require_csrf()
+    if not _fact_phase_open(thread):
+        abort(403)  # alleen tijdens de feitenfase
+    data, errors = _fact_form()
+    if errors:
+        _stash_form_state(f'feit-{thread.id}', errors, data)
+        return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#feiten', code=303)
+    fact = Post(thread_id=thread.id, user_id=current_user.id, author_username=current_user.username,
+                author_name='', author_role='member', body=data['text'], source_lang=session.get('lang', 'nl'),
+                kind=FACT_KIND, fact_direction=data['direction'], fact_source=data['source'])
+    db.session.add(fact)
+    db.session.commit()
+    quality.schedule_judgement(fact.id)  # handhaving van de gedragsregels, zie quality.judge_post
+    return redirect(url_for('forum.forum_thread', thread_id=thread.id) + f'#post-{fact.id}')
+
+
+def _own_fact_in_open_phase(post_id):
+    fact = Post.query.get_or_404(post_id)
+    if not fact.is_fact or fact.user_id is None or fact.user_id != current_user.id:
+        abort(403)
+    if not _fact_phase_open(fact.thread):
+        abort(403)  # na de feitenfase staan de feiten vast
+    return fact
+
+
+@forum_bp.route('/forum/feit/<int:post_id>/bewerken', methods=['POST'])
+@login_required
+@limiter.limit("10 per hour", key_func=lambda: f"forum-edit-user-{current_user.get_id()}")
+def fact_edit(post_id):
+    """De inbrenger bewerkt zijn feit zolang de feitenfase loopt, maar niet als
+    het verplaatst of verborgen is (daarvoor is de bezwaarstroom). De
+    handhaving loopt opnieuw op de nieuwe tekst."""
+    fact = _own_fact_in_open_phase(post_id)
+    _require_csrf()
+    case = fact.conduct_case
+    if case is not None and case.removes_from_thread:
+        abort(409)
+    data, errors = _fact_form()
+    if errors:
+        _stash_form_state(f'feit-{fact.thread_id}', {f'edit-{fact.id}': errors}, {f'edit-{fact.id}': data})
+        return redirect(url_for('forum.forum_thread', thread_id=fact.thread_id) + f'#post-{fact.id}', code=303)
+    fact.fact_direction, fact.fact_source = data['direction'], data['source']
+    _apply_edit(fact, data['text'])
+    return redirect(url_for('forum.forum_thread', thread_id=fact.thread_id) + f'#post-{fact.id}')
+
+
+@forum_bp.route('/forum/feit/<int:post_id>/verwijderen', methods=['POST'])
+@login_required
+def fact_delete(post_id):
+    """De inbrenger verwijdert zijn feit zolang de feitenfase loopt, met de
+    bestaande opruimlogica (oordeel, handhaving, bezwaren)."""
+    fact = _own_fact_in_open_phase(post_id)
+    _require_csrf()
+    thread_id = fact.thread_id
+    quality.delete_for_posts([fact.id])
+    db.session.delete(fact)
+    db.session.commit()
+    return redirect(url_for('forum.forum_thread', thread_id=thread_id) + '#feiten')

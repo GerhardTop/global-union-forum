@@ -111,6 +111,9 @@
        Fase D: voor andere lezers staat op de plek van een verplaatste bijdrage
        een verwijzing naar de achtergrondpagina; een verborgen bijdrage valt
        weg, of wordt een neutrale placeholder als er zichtbare reacties onder staan. #}
+    {# Fase E: het feitenblok van een voorstel, boven de discussie (niet in een tak). #}
+    {% if thread.proposal and branch_root is none %}{% include 'forum/_facts.html' %}{% endif %}
+
     <div class="gu-thread">
       {% for post in top_posts recursive %}
         {% set level = loop.depth %}

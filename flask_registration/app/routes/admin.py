@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, redirect, url_for, request, abort, jsonify, flash, session
 from flask_babel import gettext
+from sqlalchemy import or_
 from flask_login import login_required, current_user
 
 from app import db
@@ -88,7 +89,8 @@ def moderator_dashboard():
     open_reports = (QualityReport.query.filter(QualityReport.decision.is_(None))
                     .order_by(QualityReport.created_at).all())
     unjudged_posts = (Post.query.outerjoin(QualityAward, QualityAward.post_id == Post.id)
-                      .filter(QualityAward.id.is_(None), Post.is_demo.is_(False), live)
+                      .filter(QualityAward.id.is_(None), Post.is_demo.is_(False), live,
+                              or_(Post.kind.is_(None), Post.kind != 'feit'))  # feiten: geen keurmerk
                       .order_by(Post.created_at.desc()).limit(20).all())
 
     # Fase D: gedragsregels. Twijfelgevallen (blijven staan tot een moderator

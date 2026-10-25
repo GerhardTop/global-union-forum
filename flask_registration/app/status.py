@@ -20,7 +20,7 @@ de handmatige rol (is_admin, is_moderator, role) niet.
 """
 from datetime import datetime, timedelta
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from app import db
 from app.models import (STATUS_LADDER, AppSetting, Post, QualityAward, QualityPromotion,
@@ -76,6 +76,12 @@ def set_thresholds(values, user_id=None):
 
 # ── Tellen en niveau bepalen ─────────────────────────────────────────────
 
+def _not_a_fact():
+    """Feiten (fase E) krijgen geen keurmerk en tellen nergens mee voor kwaliteit."""
+    from app.models import FACT_KIND
+    return or_(Post.kind.is_(None), Post.kind != FACT_KIND)
+
+
 def quality_counts(user_id):
     """(aantal toegekende kwaliteitsbijdragen, aantal onderwerpen) van een gebruiker.
     Een bijdrage die wegens de gedragsregels uit het gesprek is (fase D), telt niet."""
@@ -84,7 +90,7 @@ def quality_counts(user_id):
     row = (db.session.query(func.count(func.distinct(Post.id)), func.count(func.distinct(Post.thread_id)))
            .join(QualityAward, QualityAward.post_id == Post.id)
            .filter(Post.user_id == user_id, QualityAward.status == 'toegekend',
-                   Post.id.notin_(removed)).one())
+                   Post.id.notin_(removed), _not_a_fact()).one())
     return int(row[0] or 0), int(row[1] or 0)
 
 
@@ -162,7 +168,7 @@ def language_monitor(period='30'):
     q = (db.session.query(Post.source_lang, func.count(QualityAward.id),
                           func.sum(db.case((QualityAward.ai_criterion.isnot(None), 1), else_=0)))
          .join(Post, QualityAward.post_id == Post.id)
-         .filter(QualityAward.source == 'ai'))
+         .filter(QualityAward.source == 'ai', _not_a_fact()))
     days = PERIODS.get(period, PERIODS['30'])
     if days is not None:
         q = q.filter(QualityAward.created_at >= datetime.utcnow() - timedelta(days=days))
@@ -180,7 +186,7 @@ def language_monitor(period='30'):
 def monitor_sample(lang=None, limit=50):
     """De recentste AI-oordelen (voor handmatige controle), filterbaar op taal."""
     q = (QualityAward.query.join(Post, QualityAward.post_id == Post.id)
-         .filter(QualityAward.source == 'ai'))
+         .filter(QualityAward.source == 'ai', _not_a_fact()))
     if lang in ('nl', 'en'):
         q = q.filter(Post.source_lang == lang)
     return q.order_by(QualityAward.created_at.desc(), QualityAward.id.desc()).limit(limit).all()

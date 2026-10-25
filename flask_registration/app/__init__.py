@@ -123,6 +123,13 @@ def _migrate_columns():
             alters.append('ALTER TABLE posts ADD COLUMN is_demo BOOLEAN NOT NULL DEFAULT FALSE')
         if 'edited_at' not in cols:
             alters.append('ALTER TABLE posts ADD COLUMN edited_at TIMESTAMP NULL')
+        # Fase E: feiten bij een voorstel (kind 'feit', richting, bron).
+        if 'kind' not in cols:
+            alters.append('ALTER TABLE posts ADD COLUMN kind VARCHAR(10) NULL')
+        if 'fact_direction' not in cols:
+            alters.append('ALTER TABLE posts ADD COLUMN fact_direction VARCHAR(10) NULL')
+        if 'fact_source' not in cols:
+            alters.append('ALTER TABLE posts ADD COLUMN fact_source VARCHAR(500) NULL')
 
     if alters:
         with db.engine.connect() as conn:

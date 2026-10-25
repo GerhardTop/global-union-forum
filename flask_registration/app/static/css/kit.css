@@ -1732,6 +1732,42 @@ body {
   .gu-durations__row { grid-template-columns: minmax(0, 1fr) 80px 96px; }
 }
 
+/* Fase E, stap 2: feitenblok van een voorstel */
+.gu-facts { margin: 24px 0 32px; padding: 18px 20px; border: 1px solid var(--gu-border); border-radius: 12px; }
+.gu-facts__title { margin: 0; font-size: 1.125rem; font-weight: 600; color: var(--gu-fg-1); }
+.gu-facts__count { font-weight: 400; color: var(--gu-fg-3); }
+.gu-facts__intro, .gu-facts__note, .gu-facts__empty { margin: 4px 0 0; font-size: 0.875rem; color: var(--gu-fg-2); }
+.gu-facts__note a { color: var(--gu-globe-deep); }
+.gu-facts__list { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.gu-fact { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 8px; background: var(--gu-bg-soft); }
+.gu-fact--moved { background: none; padding: 4px 0; }
+.gu-fact__main { flex: 1; min-width: 0; }
+.gu-fact__text { margin: 0; color: var(--gu-fg-1); line-height: 1.55; overflow-wrap: anywhere; }
+.gu-fact__source { margin: 6px 0 0; font-size: 0.8125rem; color: var(--gu-fg-3); overflow-wrap: anywhere; }
+.gu-fact__source a { color: var(--gu-globe-deep); }
+.gu-fact__dir { flex-shrink: 0; display: inline-flex; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.gu-fact__dir--voor { background: #e3f3ea; color: #11633d; }
+.gu-fact__dir--tegen { background: #fde7e7; color: #b42318; }
+.gu-fact__dir--neutraal { background: #ececee; color: #4b4f58; }
+.gu-fact > .gu-fact__dir { min-width: 76px; justify-content: center; margin-top: 2px; }
+@media (max-width: 600px) {
+  .gu-fact { flex-direction: column; gap: 6px; }
+  .gu-fact > .gu-fact__dir { min-width: 0; margin-top: 0; }
+}
+.gu-fact__own { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; margin-top: 8px; }
+.gu-fact__edit summary { cursor: pointer; font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-fact__edit[open] { flex-basis: 100%; }
+.gu-fact-form { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+.gu-fact-form--new { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gu-border); }
+.gu-fact-form__title { margin: 0; font-weight: 600; color: var(--gu-fg-1); }
+.gu-fact-form__field { display: flex; flex-direction: column; gap: 4px; border: 0; padding: 0; margin: 0; }
+.gu-fact-form__field label, .gu-fact-form__field legend { font-size: 0.875rem; font-weight: 500; color: var(--gu-fg-1); }
+.gu-fact-form__dirs { flex-direction: row; flex-wrap: wrap; gap: 8px 14px; }
+.gu-fact-form__dirs legend { width: 100%; margin-bottom: 4px; }
+.gu-fact-form__dir { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.gu-fact-form button { align-self: flex-start; }
+.gu-background__kind { padding: 3px 10px; border-radius: 999px; background: var(--gu-bg-soft); color: var(--gu-fg-2); font-size: 0.8125rem; }
+
 /* Privacyverklaring (/privacy) */
 .gu-legal__updated { margin: 8px 0 0; font-size: 0.875rem; color: var(--gu-fg-3); }
 .gu-legal section + section { margin-top: 24px; }

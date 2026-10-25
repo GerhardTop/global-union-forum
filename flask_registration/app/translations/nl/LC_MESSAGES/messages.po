@@ -960,3 +960,70 @@ msgstr "Standaard: %(days)s dagen"
 
 msgid "Enter a whole number from 1 to 365."
 msgstr "Vul een geheel getal van 1 tot en met 365 in."
+
+#: app/templates/forum/_facts.html, app/templates/forum/achtergrond.html
+msgid "For"
+msgstr "Voor"
+
+msgid "Against"
+msgstr "Tegen"
+
+msgid "Neutral"
+msgstr "Neutraal"
+
+msgid "Facts"
+msgstr "Feiten"
+
+msgid "Fact"
+msgstr "Feit"
+
+msgid "Source"
+msgstr "Bron"
+
+msgid "Facts that are relevant to the statement, each with a direction and a source."
+msgstr "Feiten die ertoe doen voor de stelling, elk met een richting en een bron."
+
+msgid "No facts yet. Add the first one."
+msgstr "Nog geen feiten. Breng het eerste feit in."
+
+msgid "No facts were added."
+msgstr "Er zijn geen feiten ingebracht."
+
+msgid "The facts phase is over; the facts are fixed."
+msgstr "De feitenfase is voorbij; de feiten staan vast."
+
+msgid "Fact moved because of the conduct rules"
+msgstr "Feit verplaatst wegens de gedragsregels"
+
+msgid "Add a fact"
+msgstr "Feit toevoegen"
+
+msgid "The fact"
+msgstr "Het feit"
+
+msgid "Direction relative to the statement"
+msgstr "Richting ten opzichte van de stelling"
+
+msgid "A link or a short source reference"
+msgstr "Een link of een korte bronvermelding"
+
+msgid "Describe the fact (at most 1000 characters)."
+msgstr "Beschrijf het feit (maximaal 1000 tekens)."
+
+msgid "Choose a direction."
+msgstr "Kies een richting."
+
+msgid "Give a source."
+msgstr "Geef een bron."
+
+msgid "Edit"
+msgstr "Bewerken"
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Log in to add a fact."
+msgstr "Log in om een feit toe te voegen."

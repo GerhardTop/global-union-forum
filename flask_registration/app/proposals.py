@@ -112,4 +112,4 @@ def delete_for_threads(thread_ids):
     """Vóór het in bulk verwijderen van gesprekken: hun voorstellen weg."""
     thread_ids = list(thread_ids)
     if thread_ids:
-        Proposal.query.filter(Proposal.thread_id.in_(thread_ids)).delete(synchronize_session=False)
+        Proposal.query.filter(Proposal.thread_id.in_(thread_ids)).delete(synchronize_session='evaluate')

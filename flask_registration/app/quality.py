@@ -191,11 +191,22 @@ def judge_post(post_id):
             f'Original text of the new contribution, as the author wrote it (use this for the '
             f'conduct verdict):\n<original>\n{original[:4 * _MAX_CHARS]}\n</original>\n\n'
             if original and original != text_en.strip() else '')
+        # Fase E: een feit in het feitenblok van een voorstel. Alleen de
+        # handhaving telt; het kwaliteitskeurmerk geldt niet voor feiten.
+        fact_block = (
+            'This contribution is a fact for the facts block of a proposal. The conversation title '
+            'is the statement of the proposal. The contributor says the fact points '
+            f'{ {"voor": "in favour of", "tegen": "against", "neutraal": "neither for nor against"}.get(post.fact_direction, "neither for nor against") } '
+            f'the statement and gives this source: <source>{(post.fact_source or "")[:500]}</source>. '
+            'Quality marks do not apply to facts: set suggested_criterion to none and k3_possible to '
+            'false. For on_topic, judge whether the fact is relevant to the statement.\n\n'
+            if post.is_fact else '')
         user_msg = (
             f'Conversation title: {_thread_title(post.thread)}\n\n'
             f'Earlier contributions, oldest first:\n<earlier>\n{earlier_text}\n</earlier>\n\n'
             f'New contribution to assess:\n<contribution>\n{text_en[:4 * _MAX_CHARS]}\n</contribution>\n\n'
             f'{original_block}'
+            f'{fact_block}'
             'Assess the new contribution. Set suggested_criterion to K2 if it adds a new fact with a '
             'new source, otherwise K1 if it makes a new argument, otherwise none. Write one short '
             f'sentence of explanation (explanation) in {_LANGUAGE_NAMES[lang]}, addressed to the '
@@ -220,11 +231,13 @@ def judge_post(post_id):
             return None
         data = json.loads(next(b.text for b in response.content if b.type == 'text'))
         criterion = data['suggested_criterion'] if data['suggested_criterion'] in ('K1', 'K2') else None
+        if post.is_fact:
+            criterion = None  # geen keurmerk voor feiten, wat de AI ook zegt
         # Automatisch oordeel: direct zichtbaar, geen bevestiging vooraf.
         award = QualityAward(
             post_id=post.id, status='toegekend' if criterion else 'afgewezen', source='ai',
             post_lang=post.source_lang, criterion=criterion, ai_criterion=criterion,
-            ai_k3_possible=bool(data['k3_possible']), ai_has_source=bool(data['has_source']),
+            ai_k3_possible=bool(data['k3_possible']) and not post.is_fact, ai_has_source=bool(data['has_source']),
             ai_source_is_new=bool(data['source_is_new']), ai_argument_is_new=bool(data['argument_is_new']),
             # Alleen in de taal van de bijdrage; lezers in de andere taal zien
             # via QualityAward.explanation() dezelfde tekst.
@@ -334,7 +347,10 @@ def reset_for_edit(post):
 
 
 def delete_for_posts(post_ids):
-    """Vóór het verwijderen van bijdragen: hun beoordelingen en meldingen weg."""
+    """Vóór het verwijderen van bijdragen: hun beoordelingen en meldingen weg.
+    synchronize_session='evaluate': de verwijderde objecten gaan ook uit de
+    sessie. Anders kan een later object met hetzelfde id (SQLite hergebruikt
+    id's) botsen met een achtergebleven exemplaar in dezelfde sessie."""
     post_ids = list(post_ids)
     if not post_ids:
         return
@@ -342,15 +358,15 @@ def delete_for_posts(post_ids):
     case_ids = [c.id for c in ConductCase.query.filter(ConductCase.post_id.in_(post_ids))
                 .with_entities(ConductCase.id)]
     if case_ids:
-        ConductObjection.query.filter(ConductObjection.case_id.in_(case_ids)).delete(synchronize_session=False)
-        ConductCase.query.filter(ConductCase.id.in_(case_ids)).delete(synchronize_session=False)
+        ConductObjection.query.filter(ConductObjection.case_id.in_(case_ids)).delete(synchronize_session='evaluate')
+        ConductCase.query.filter(ConductCase.id.in_(case_ids)).delete(synchronize_session='evaluate')
     award_ids = [a.id for a in QualityAward.query.filter(QualityAward.post_id.in_(post_ids))
                  .with_entities(QualityAward.id)]
     if award_ids:
         from app.models import QualityObjection
-        QualityObjection.query.filter(QualityObjection.award_id.in_(award_ids)).delete(synchronize_session=False)
-        QualityReport.query.filter(QualityReport.award_id.in_(award_ids)).delete(synchronize_session=False)
-        QualityAward.query.filter(QualityAward.id.in_(award_ids)).delete(synchronize_session=False)
+        QualityObjection.query.filter(QualityObjection.award_id.in_(award_ids)).delete(synchronize_session='evaluate')
+        QualityReport.query.filter(QualityReport.award_id.in_(award_ids)).delete(synchronize_session='evaluate')
+        QualityAward.query.filter(QualityAward.id.in_(award_ids)).delete(synchronize_session='evaluate')
 
 
 # ── Democontent ──────────────────────────────────────────────────────────
