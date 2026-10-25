@@ -18,11 +18,29 @@
       </h1>
     </header>
 
-    <form class="gu-forum__newform" method="POST" action="{{ url_for('forum.forum_nieuw') }}" enctype="multipart/form-data">
+    {% set fd = form_data or {} %}
+    {% set errs = errors or {} %}
+    {% set is_proposal = fd.get('type') == 'voorstel' %}
+    <form class="gu-forum__newform" method="POST" action="{{ url_for('forum.forum_nieuw') }}" enctype="multipart/form-data" novalidate>
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
 
+      {# Fase E: een gewoon gesprek of een voorstel. #}
+      <fieldset class="gu-forum__newfield gu-newtype">
+        <legend>{{ _('What do you want to start?') }}</legend>
+        <label class="gu-newtype__option">
+          <input type="radio" name="type" value="gesprek"{% if not is_proposal %} checked{% endif %}>
+          <span><strong>{{ _('A conversation') }}</strong><span class="gu-composer__hint">{{ _('An open conversation about a question or statement.') }}</span></span>
+        </label>
+        <label class="gu-newtype__option">
+          <input type="radio" name="type" value="voorstel"{% if is_proposal %} checked{% endif %}>
+          <span><strong>{{ _('A proposal') }}</strong><span class="gu-composer__hint">{{ _('A statement that goes to a vote in four phases.') }}</span></span>
+        </label>
+      </fieldset>
+
       <div class="gu-forum__newfield">
-        <label for="title">{% if lang == 'nl' %}Titel{% else %}Title{% endif %}</label>
+        <label for="title" id="titleLabel"
+               data-label-conversation="{% if lang == 'nl' %}Titel{% else %}Title{% endif %}"
+               data-label-proposal="{{ _('Statement') }}">{% if is_proposal %}{{ _('Statement') }}{% elif lang == 'nl' %}Titel{% else %}Title{% endif %}</label>
         <input
           type="text"
           name="title"
@@ -30,9 +48,51 @@
           class="gu-input"
           required
           maxlength="300"
+          value="{{ fd.get('title', '') }}"
           placeholder="{% if lang == 'nl' %}Formuleer je vraag of stelling…{% else %}Phrase your question or statement…{% endif %}"
           autocomplete="off"
         >
+      </div>
+
+      <div class="gu-proposal-settings" id="proposalSettings">
+        <fieldset class="gu-forum__newfield gu-newtype">
+          <legend>{{ _('Kind of proposal') }}</legend>
+          <label class="gu-newtype__option">
+            <input type="radio" name="kind" value="publiek"{% if fd.get('kind', 'publiek') != 'event' %} checked{% endif %}>
+            <span><strong>{{ _('Public proposal') }}</strong><span class="gu-composer__hint">{{ _('Fixed schedule: you set a duration for each phase.') }}</span></span>
+          </label>
+          <label class="gu-newtype__option">
+            <input type="radio" name="kind" value="event"{% if fd.get('kind') == 'event' %} checked{% endif %}>
+            <span><strong>{{ _('Event') }}</strong><span class="gu-composer__hint">{{ _('The host moves through the phases later, without fixed dates.') }}</span></span>
+          </label>
+          {% if errs.get('kind') %}<p class="gu-join__formError">{{ _('Choose a kind of proposal.') }}</p>{% endif %}
+        </fieldset>
+
+        <fieldset class="gu-forum__newfield gu-durations" id="proposalDurations">
+          <legend>{{ _('Duration per phase') }}</legend>
+          {% set phase_names = {'feiten': _('Facts and discussion'), 'bijstellen': _('Revise the proposal'), 'stemmen': _('Voting')} %}
+          {% for phase in ['feiten', 'bijstellen', 'stemmen'] %}
+          <div class="gu-durations__row">
+            <label for="duur_{{ phase }}">{{ phase_names[phase] }}</label>
+            <input type="number" min="1" step="1" inputmode="numeric" id="duur_{{ phase }}" name="duur_{{ phase }}"
+                   class="gu-input{% if errs.get(phase) %} gu-input--error{% endif %}"
+                   value="{{ fd.get('duur_' ~ phase, '') }}" aria-describedby="hint_{{ phase }}">
+            <select name="eenheid_{{ phase }}" class="gu-input" aria-label="{{ phase_names[phase] }}">
+              <option value="dagen"{% if fd.get('eenheid_' ~ phase, 'dagen') == 'dagen' %} selected{% endif %}>{{ _('days') }}</option>
+              <option value="uren"{% if fd.get('eenheid_' ~ phase) == 'uren' %} selected{% endif %}>{{ _('hours') }}</option>
+            </select>
+            <span class="gu-composer__hint" id="hint_{{ phase }}">{{ _('At most %(days)s days', days=max_days[phase]) }}</span>
+            {% if errs.get(phase) == 'invalid' %}<p class="gu-join__formError">{{ _('Enter a whole number greater than zero.') }}</p>
+            {% elif errs.get(phase) == 'too_long' %}<p class="gu-join__formError">{{ _('At most %(days)s days for this phase.', days=max_days[phase]) }}</p>{% endif %}
+          </div>
+          {% endfor %}
+        </fieldset>
+
+        <label class="gu-join__check">
+          <input type="checkbox" name="live" value="1"{% if fd.get('live') == '1' %} checked{% endif %}>
+          <span>{{ _('Show the running tally during voting') }}</span>
+        </label>
+        <p class="gu-composer__hint">{{ _('Adopted with more than %(pct)s%% in favour', pct=50) }}</p>
       </div>
 
       <div class="gu-forum__newfield">
@@ -44,7 +104,7 @@
           required
           rows="6"
           placeholder="{% if lang == 'nl' %}Licht je vraag toe. Wees concreet (geef context, een standpunt, of een tegenwerping).{% else %}Explain your question. Be concrete (give context, a position, or a pushback).{% endif %}"
-        ></textarea>
+        >{{ fd.get('body', '') }}</textarea>
         <span class="gu-composer__hint">
           {% if lang == 'nl' %}Je post wordt op verzoek vertaald voor andere lezers{% else %}Your post will be translated on request for other readers{% endif %}
         </span>
@@ -55,8 +115,10 @@
         <a href="{{ url_for('forum.forum') }}" class="gu-btn gu-btn--ghost">
           {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
         </a>
-        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg" id="newSubmit" disabled>
-          {% if lang == 'nl' %}Gesprek starten{% else %}Start conversation{% endif %} <span class="gu-arrow"></span>
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg" id="newSubmit" disabled
+                data-label-conversation="{% if lang == 'nl' %}Gesprek starten{% else %}Start conversation{% endif %}"
+                data-label-proposal="{{ _('Start proposal') }}">
+          <span id="newSubmitLabel">{% if is_proposal %}{{ _('Start proposal') }}{% elif lang == 'nl' %}Gesprek starten{% else %}Start conversation{% endif %}</span> <span class="gu-arrow"></span>
         </button>
       </div>
 
@@ -76,6 +138,26 @@
     }
     titleInput.addEventListener('input', check);
     bodyInput.addEventListener('input', check);
+    check();
+
+    // Fase E: de instellingen alleen bij een voorstel, de doorlooptijden
+    // alleen bij een publiek voorstel. Zonder JavaScript staat alles in beeld.
+    var settings = document.getElementById('proposalSettings');
+    var durations = document.getElementById('proposalDurations');
+    var titleLabel = document.getElementById('titleLabel');
+    var submitLabel = document.getElementById('newSubmitLabel');
+    function sync() {
+      var proposal = document.querySelector('input[name="type"]:checked').value === 'voorstel';
+      var kind = document.querySelector('input[name="kind"]:checked');
+      settings.hidden = !proposal;
+      durations.hidden = !(kind && kind.value === 'publiek');
+      titleLabel.textContent = proposal ? titleLabel.dataset.labelProposal : titleLabel.dataset.labelConversation;
+      submitLabel.textContent = proposal ? btn.dataset.labelProposal : btn.dataset.labelConversation;
+    }
+    document.querySelectorAll('input[name="type"], input[name="kind"]').forEach(function (r) {
+      r.addEventListener('change', sync);
+    });
+    sync();
 
   })();
 </script>

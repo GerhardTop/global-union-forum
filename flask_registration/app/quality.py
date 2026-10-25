@@ -293,7 +293,8 @@ def schedule_judgement(post_id):
 def detach_user(user_id):
     """Vóór het verwijderen van een gebruiker: zijn meldingen weg, zijn naam
     als beslisser of bezwaarmaker los (de beslissing en de thread blijven)."""
-    from app.models import AppSetting, ConductCase, ConductObjection, QualityObjection, QualityPromotion
+    from app.models import AppSetting, ConductCase, ConductObjection, Proposal, QualityObjection, QualityPromotion
+    Proposal.query.filter_by(host_id=user_id).update({Proposal.host_id: None}, synchronize_session=False)
     for column in (ConductCase.acted_by_id, ConductCase.confirmed_by_id, ConductCase.restored_by_id):
         ConductCase.query.filter(column == user_id).update({column: None}, synchronize_session=False)
     for column in (ConductObjection.author_id, ConductObjection.decided_by_id):

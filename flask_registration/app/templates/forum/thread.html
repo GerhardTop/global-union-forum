@@ -57,6 +57,22 @@
         {% endif %}
       </div>
 
+      {# Fase E: een voorstel heeft een statuslabel, de vier fasen en zijn instellingen. #}
+      {% if thread.proposal %}
+      {% set proposal = thread.proposal %}
+      <section class="gu-proposal" aria-label="{{ _('Proposal') }}">
+        <div class="gu-proposal__head">
+          {% include 'forum/_proposal_status.html' %}
+          <span class="gu-proposal__kind">{% if proposal.kind == 'publiek' %}{{ _('Public proposal') }}{% else %}{{ _('Event') }}{% endif %}</span>
+        </div>
+        {% include 'forum/_proposal_steps.html' %}
+        <p class="gu-proposal__settings">
+          {{ _('Adopted with more than %(pct)s%% in favour', pct=proposal.threshold_pct) }}
+          · {% if proposal.show_live_tally %}{{ _('Running tally visible during voting') }}{% else %}{{ _('Tally hidden until voting closes') }}{% endif %}
+        </p>
+      </section>
+      {% endif %}
+
       {# Moderator toolbar #}
       {% if current_user.can_moderate() %}
       <div class="gu-forum__modbar">

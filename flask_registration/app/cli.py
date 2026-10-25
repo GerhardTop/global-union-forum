@@ -144,6 +144,8 @@ def _execute(plan):
         if post_ids:
             Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
         if thread_ids:
+            from app import proposals
+            proposals.delete_for_threads(thread_ids)  # fase E: voorstellen bij die gesprekken
             Thread.query.filter(Thread.id.in_(thread_ids)).delete(synchronize_session=False)
         if user_ids:
             User.query.filter(User.id.in_(user_ids)).delete(synchronize_session=False)

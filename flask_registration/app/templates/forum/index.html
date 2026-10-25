@@ -45,6 +45,7 @@
             {% if t.is_closed %}
               <span class="gu-forum__closed-badge">{% if lang == 'nl' %}Gesloten{% else %}Closed{% endif %}</span>
             {% endif %}
+            {% if t.proposal %}{% with proposal=t.proposal %}{% include 'forum/_proposal_status.html' %}{% endwith %}{% endif %}
           </span>
           <span class="gu-threadlist__title">
             {%- if lang == 'nl' -%}

@@ -575,3 +575,57 @@ class ConductObjection(db.Model):
         'objections', lazy=True, order_by='ConductObjection.created_at', cascade='all, delete-orphan'))
     author     = db.relationship('User', foreign_keys=[author_id])
     decided_by = db.relationship('User', foreign_keys=[decided_by_id])
+
+
+# ── Fase E: het voorstel als bijzonder soort gesprek ─────────────────────
+# Een voorstel hangt één-op-één aan een gesprek (Thread); een gewoon gesprek
+# heeft geen Proposal. Vier fasen; in stap 1 staat elk voorstel in de eerste.
+PROPOSAL_KINDS = ('publiek', 'event')
+PROPOSAL_PHASES = ('feiten', 'bijstellen', 'stemmen', 'vervolg')
+# Fasen met een doorlooptijd (bij een publiek voorstel).
+PROPOSAL_TIMED_PHASES = ('feiten', 'bijstellen', 'stemmen')
+
+
+class Proposal(db.Model):
+    """Een voorstel: de titel van het gesprek is de stelling. Publiek: vaste
+    planning uit de starttijd en de doorlooptijden per fase. Event: de host
+    (indiener of moderator) stuurt de fasen later handmatig, zonder datums."""
+    __tablename__ = "proposals"
+
+    id                 = db.Column(db.Integer, primary_key=True)
+    thread_id          = db.Column(db.Integer, db.ForeignKey('threads.id'), nullable=False, unique=True)
+    kind               = db.Column(db.String(10), nullable=False)          # publiek/event
+    phase              = db.Column(db.String(12), nullable=False, default='feiten')
+    # Aangenomen bij meer dan dit percentage voor (later instelbaar).
+    threshold_pct      = db.Column(db.Integer, nullable=False, default=50)
+    show_live_tally    = db.Column(db.Boolean, nullable=False, default=False)
+    host_id            = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    started_at         = db.Column(db.DateTime, nullable=True)
+    # Doorlooptijden in minuten en de daaruit berekende vaste datums (alleen publiek).
+    feiten_minutes     = db.Column(db.Integer, nullable=True)
+    bijstellen_minutes = db.Column(db.Integer, nullable=True)
+    stemmen_minutes    = db.Column(db.Integer, nullable=True)
+    feiten_start       = db.Column(db.DateTime, nullable=True)
+    feiten_end         = db.Column(db.DateTime, nullable=True)
+    bijstellen_start   = db.Column(db.DateTime, nullable=True)
+    bijstellen_end     = db.Column(db.DateTime, nullable=True)
+    stemmen_start      = db.Column(db.DateTime, nullable=True)
+    stemmen_end        = db.Column(db.DateTime, nullable=True)
+    created_at         = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # lazy='joined': het voorstel komt mee met elke Thread-query (een LEFT
+    # JOIN), dus geen extra databaseronde in het overzicht of op de pagina.
+    thread = db.relationship('Thread', backref=db.backref('proposal', uselist=False, lazy='joined',
+                                                          cascade='all, delete-orphan'))
+    host   = db.relationship('User', foreign_keys=[host_id])
+
+    def window(self, phase):
+        """(begin, eind) van een fase; bij een event (None, None). Vervolg
+        begint als het stemmen eindigt en heeft geen eind."""
+        if phase == 'vervolg':
+            return self.stemmen_end, None
+        return getattr(self, f'{phase}_start', None), getattr(self, f'{phase}_end', None)
+
+    @property
+    def phase_index(self):
+        return PROPOSAL_PHASES.index(self.phase) if self.phase in PROPOSAL_PHASES else 0

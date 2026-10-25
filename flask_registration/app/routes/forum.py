@@ -12,7 +12,7 @@ from app.forms import ForumActionForm, ForumReplyForm
 from app.models import (STANCES, QUALITY_CRITERIA, User, Thread, Post, PostLike, QualityAward,
                         QualityReport, time_ago)
 from app import conduct, quality
-from app.utils import safe_next
+from app.utils import _pop_form_state, _stash_form_state, safe_next
 
 forum_bp = Blueprint("forum", __name__)
 
@@ -27,7 +27,14 @@ def _inject_forum_action_form():
             'pending_promotion': lambda: status.pending_promotion(current_user),
             # Fase D: gedragsregels.
             'conduct_rule_label': conduct.rule_label,
-            'conduct_can_decide': lambda case: conduct.can_decide_objection(case, current_user)}
+            'conduct_can_decide': lambda case: conduct.can_decide_objection(case, current_user),
+            # Fase E: statuslabel van een voorstel.
+            'proposal_status': _proposal_status}
+
+
+def _proposal_status(proposal):
+    from app import proposals
+    return proposals.status(proposal)
 
 
 def _rules_first_redirect():
@@ -881,21 +888,45 @@ def forum_reopen(thread_id):
 @forum_bp.route('/forum/nieuw', methods=['GET', 'POST'])
 @login_required
 def forum_nieuw():
+    """Een nieuw gesprek starten: een gewoon gesprek, of een voorstel (fase E)
+    met een stelling als titel en een levenscyclus in vier fasen."""
+    from app import proposals
     if not current_user.can_contribute():
         return _rules_first_redirect()
+    max_days = proposals.get_max_days()
     if request.method == 'POST':
         _require_csrf()
         title     = request.form.get('title', '').strip()
         body      = request.form.get('body', '').strip()
+        is_proposal = request.form.get('type') == 'voorstel'
+        kind = request.form.get('kind')
+        minutes, errors = {}, {}
+        if is_proposal:
+            if kind not in ('publiek', 'event'):
+                errors['kind'] = 'invalid'
+            elif kind == 'publiek':
+                minutes, errors = proposals.parse_durations(request.form, max_days)
+        if errors:
+            # PRG: fouten en ingevulde waarden een GET lang bewaren.
+            keep = ('title', 'body', 'type', 'kind', 'live')
+            data = {k: request.form.get(k, '') for k in keep}
+            for phase in minutes.keys() | errors.keys() | set(proposals.DEFAULT_MAX_DAYS):
+                data[f'duur_{phase}'] = request.form.get(f'duur_{phase}', '')
+                data[f'eenheid_{phase}'] = request.form.get(f'eenheid_{phase}', 'dagen')
+            _stash_form_state('forum_nieuw', errors, data)
+            return redirect(url_for('forum.forum_nieuw'), code=303)
         if title and body:
             thread = Thread(
-                eyebrow_nl='Forum · gesprek',
-                eyebrow_en='Forum · conversation',
+                eyebrow_nl='Forum · voorstel' if is_proposal else 'Forum · gesprek',
+                eyebrow_en='Forum · proposal' if is_proposal else 'Forum · conversation',
                 title_prefix_nl=title,
                 title_prefix_en=title,
             )
             db.session.add(thread)
             db.session.flush()
+            if is_proposal:
+                proposals.create(thread, kind, current_user, minutes=minutes,
+                                 show_live_tally=request.form.get('live') == '1')
             post = Post(
                 thread_id=thread.id,
                 user_id=current_user.id,
@@ -911,7 +942,8 @@ def forum_nieuw():
             db.session.commit()
             quality.schedule_judgement(post.id)
             return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#post-' + str(post.id))
-    return render_template('forum/new_thread.html')
+    errors, data = _pop_form_state('forum_nieuw')
+    return render_template('forum/new_thread.html', errors=errors, form_data=data, max_days=max_days)
 
 
 # ── Bewerken en verwijderen door de auteur ────────────────────────────────
@@ -958,6 +990,8 @@ def _delete_thread(thread):
         PostLike.query.filter(PostLike.post_id.in_(post_ids)).delete(synchronize_session=False)
         Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
     # Ook in bulk: een ORM-delete zou de (al verwijderde) berichten nog bijwerken.
+    from app import proposals
+    proposals.delete_for_threads([thread.id])
     Thread.query.filter_by(id=thread.id).delete(synchronize_session=False)
     db.session.commit()
 

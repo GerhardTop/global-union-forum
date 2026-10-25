@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, redirect, url_for, request, abort, jsonify, flash, session
+from flask_babel import gettext
 from flask_login import login_required, current_user
 
 from app import db
@@ -204,6 +205,36 @@ def admin_thresholds():
                            labels=status.THRESHOLD_LABELS, defaults=status.DEFAULT_THRESHOLDS,
                            errors=errors, form_values=request.form if errors else None,
                            admin_action_form=form)
+
+
+@admin_bp.route('/admin/voorstellen', methods=['GET', 'POST'])
+@login_required
+def admin_proposal_limits():
+    """Fase E: de admin stelt per fase de maximale doorlooptijd van een
+    publiek voorstel in (vangrail; standaard 60, 10 en 14 dagen). Gelden voor
+    nieuwe voorstellen; bestaande planningen veranderen niet."""
+    from app import proposals
+    if not current_user.is_admin:
+        abort(403)
+    form = AdminActionForm()
+    errors = {}
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            abort(400)
+        values = {}
+        for phase in proposals.DEFAULT_MAX_DAYS:
+            raw = (request.form.get(phase) or '').strip()
+            if not raw.isdigit() or not (1 <= int(raw) <= 365):
+                errors[phase] = True
+            else:
+                values[phase] = int(raw)
+        if not errors:
+            proposals.set_max_days(values, user_id=current_user.id)
+            flash(gettext('Maximum durations saved.'), 'success')
+            return redirect(url_for('admin.admin_proposal_limits'))
+    return render_template('admin/proposal_limits.html', max_days=proposals.get_max_days(),
+                           defaults=proposals.DEFAULT_MAX_DAYS, errors=errors,
+                           form_values=request.form if errors else None, admin_action_form=form)
 
 
 @admin_bp.route('/admin/taalmonitor')

@@ -1696,6 +1696,42 @@ body {
 .gu-background__context { margin: 12px 0 0; font-size: 0.875rem; }
 .gu-background__footnote { margin: 24px 0 0; font-size: 0.875rem; color: var(--gu-fg-3); }
 
+/* Fase E: voorstellen */
+.gu-newtype { border: 0; padding: 0; margin: 0 0 20px; }
+.gu-newtype legend { font-weight: 500; margin-bottom: 8px; color: var(--gu-fg-1); }
+.gu-newtype__option { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--gu-border); border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+.gu-newtype__option:has(input:checked) { border-color: var(--gu-globe); background: var(--gu-bg-soft); }
+.gu-newtype__option input { margin-top: 3px; }
+.gu-newtype__option > span { display: flex; flex-direction: column; gap: 2px; }
+.gu-proposal-settings { margin: 0 0 20px; padding: 16px; border: 1px solid var(--gu-border); border-radius: 10px; }
+.gu-proposal-settings[hidden], .gu-durations[hidden] { display: none; }
+.gu-durations { border: 0; padding: 0; margin: 0 0 16px; }
+.gu-durations legend { font-weight: 500; margin-bottom: 8px; color: var(--gu-fg-1); }
+.gu-durations__row { display: grid; grid-template-columns: minmax(0, 1fr) 96px 110px; gap: 6px 10px; align-items: center; margin-bottom: 10px; }
+.gu-durations__row label { color: var(--gu-fg-2); }
+.gu-durations__row .gu-composer__hint, .gu-durations__row .gu-join__formError { grid-column: 1 / -1; margin: 0; }
+.gu-proposal { margin: 16px 0 0; padding: 16px; border: 1px solid var(--gu-border); border-radius: 12px; }
+.gu-proposal__head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-bottom: 14px; }
+.gu-proposal__kind { font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-proposal__settings { margin: 12px 0 0; font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-proposal-status { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 0.8125rem; font-weight: 600; background: var(--gu-bg-soft); color: var(--gu-globe-deep); white-space: nowrap; }
+.gu-proposal-status--stemmen_tot, .gu-proposal-status--stemmen_open { background: var(--gu-globe-deep); color: #fff; }
+.gu-proposal-status--gesloten { color: var(--gu-fg-3); }
+.gu-threadlist__eyebrow .gu-proposal-status { margin-left: 6px; font-size: 0.75rem; padding: 2px 8px; }
+.gu-proposal-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.gu-proposal-steps__step { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 8px; border-top: 3px solid var(--gu-border); background: var(--gu-bg-soft); }
+.gu-proposal-steps__step.is-done { border-top-color: var(--gu-globe-deep); }
+.gu-proposal-steps__step.is-current { border-top-color: var(--gu-globe); background: var(--gu-paper); box-shadow: 0 0 0 1px var(--gu-globe) inset; }
+.gu-proposal-steps__n { font-size: 0.75rem; font-weight: 600; color: var(--gu-fg-3); }
+.gu-proposal-steps__step.is-current .gu-proposal-steps__n { color: var(--gu-globe); }
+.gu-proposal-steps__title { font-weight: 600; color: var(--gu-fg-1); font-size: 0.9375rem; }
+.gu-proposal-steps__text { font-size: 0.8125rem; color: var(--gu-fg-2); line-height: 1.45; }
+.gu-proposal-steps__when { font-size: 0.75rem; color: var(--gu-fg-3); }
+@media (max-width: 768px) {
+  .gu-proposal-steps { grid-template-columns: 1fr; }
+  .gu-durations__row { grid-template-columns: minmax(0, 1fr) 80px 96px; }
+}
+
 /* Privacyverklaring (/privacy) */
 .gu-legal__updated { margin: 8px 0 0; font-size: 0.875rem; color: var(--gu-fg-3); }
 .gu-legal section + section { margin-top: 24px; }

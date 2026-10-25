@@ -1,0 +1,31 @@
+{#
+  Partial: forum/_proposal_steps.html (fase E)
+  De vier fasen van een voorstel als stappenbalk, met onder elke fase een
+  korte uitleg en de huidige fase gemarkeerd. Bij een publiek voorstel met
+  de vaste datums, bij een event zonder.
+  Context: proposal.
+#}
+{% set steps = [
+  ('feiten', _('Facts and discussion'), _('Bring in facts and arguments and discuss the proposal.')),
+  ('bijstellen', _('Revise the proposal'), _('The proposer revises the proposal based on the discussion.')),
+  ('stemmen', _('Voting'), _('Everyone with voting rights votes for or against.')),
+  ('vervolg', _('Follow-up'), _('The outcome and what happens next.')),
+] %}
+<ol class="gu-proposal-steps" aria-label="{{ _('Phases of the proposal') }}">
+  {% for key, title, explanation in steps %}
+  {% set state = 'current' if loop.index0 == proposal.phase_index else ('done' if loop.index0 < proposal.phase_index else 'todo') %}
+  <li class="gu-proposal-steps__step is-{{ state }}"{% if state == 'current' %} aria-current="step"{% endif %}>
+    <span class="gu-proposal-steps__n" aria-hidden="true">{{ loop.index }}</span>
+    <span class="gu-proposal-steps__title">{{ title }}{% if state == 'current' %}<span class="gu-sr-only"> ({{ _('current phase') }})</span>{% endif %}</span>
+    <span class="gu-proposal-steps__text">{{ explanation }}</span>
+    {% if proposal.kind == 'publiek' %}
+    {% set w = proposal.window(key) %}
+    {% if w[0] and w[1] %}
+    <span class="gu-proposal-steps__when">{{ _('%(start)s to %(end)s', start=w[0] | datetimeformat('d MMM y HH:mm'), end=w[1] | datetimeformat('d MMM y HH:mm')) }}</span>
+    {% elif w[0] %}
+    <span class="gu-proposal-steps__when">{{ _('from %(start)s', start=w[0] | datetimeformat('d MMM y HH:mm')) }}</span>
+    {% endif %}
+    {% endif %}
+  </li>
+  {% endfor %}
+</ol>

@@ -812,3 +812,151 @@ msgstr "Automatisch beoordeeld door de AI"
 
 msgid "View the full reasoning"
 msgstr "Bekijk de volledige onderbouwing"
+
+#: app/templates/forum/new_thread.html
+msgid "What do you want to start?"
+msgstr "Wat wil je starten?"
+
+msgid "A conversation"
+msgstr "Een gesprek"
+
+msgid "An open conversation about a question or statement."
+msgstr "Een open gesprek over een vraag of stelling."
+
+msgid "A proposal"
+msgstr "Een voorstel"
+
+msgid "A statement that goes to a vote in four phases."
+msgstr "Een stelling die in vier fasen naar een stemming gaat."
+
+msgid "Statement"
+msgstr "Stelling"
+
+msgid "Kind of proposal"
+msgstr "Soort voorstel"
+
+msgid "Public proposal"
+msgstr "Publiek voorstel"
+
+msgid "Fixed schedule: you set a duration for each phase."
+msgstr "Vaste planning: je stelt per fase een doorlooptijd in."
+
+msgid "Event"
+msgstr "Event"
+
+msgid "The host moves through the phases later, without fixed dates."
+msgstr "De host stuurt de fasen later zelf, zonder vaste datums."
+
+msgid "Choose a kind of proposal."
+msgstr "Kies een soort voorstel."
+
+msgid "Duration per phase"
+msgstr "Doorlooptijd per fase"
+
+msgid "Facts and discussion"
+msgstr "Feiten en discussie"
+
+msgid "Revise the proposal"
+msgstr "Voorstel bijstellen"
+
+msgid "Voting"
+msgstr "Stemmen"
+
+msgid "days"
+msgstr "dagen"
+
+msgid "hours"
+msgstr "uren"
+
+#, python-format
+msgid "At most %(days)s days"
+msgstr "Maximaal %(days)s dagen"
+
+msgid "Enter a whole number greater than zero."
+msgstr "Vul een geheel getal groter dan nul in."
+
+#, python-format
+msgid "At most %(days)s days for this phase."
+msgstr "Voor deze fase maximaal %(days)s dagen."
+
+msgid "Show the running tally during voting"
+msgstr "Tussenstand live tonen tijdens het stemmen"
+
+#, python-format
+msgid "Adopted with more than %(pct)s%% in favour"
+msgstr "Aangenomen bij meer dan %(pct)s%% voor"
+
+msgid "Start proposal"
+msgstr "Voorstel starten"
+
+#: app/templates/forum/_proposal_status.html, app/templates/forum/_proposal_steps.html, app/templates/forum/thread.html
+#, python-format
+msgid "Voting open until %(date)s"
+msgstr "Stemmen open tot %(date)s"
+
+msgid "Voting open"
+msgstr "Stemmen open"
+
+msgid "Being revised"
+msgstr "Wordt bijgesteld"
+
+msgid "In discussion"
+msgstr "In discussie"
+
+msgid "Follow-up"
+msgstr "Vervolg"
+
+msgid "Bring in facts and arguments and discuss the proposal."
+msgstr "Breng feiten en argumenten in en bespreek het voorstel."
+
+msgid "The proposer revises the proposal based on the discussion."
+msgstr "De indiener stelt het voorstel bij op basis van de discussie."
+
+msgid "Everyone with voting rights votes for or against."
+msgstr "Iedereen met stemrecht stemt voor of tegen."
+
+msgid "The outcome and what happens next."
+msgstr "De uitkomst en wat ermee gebeurt."
+
+msgid "Phases of the proposal"
+msgstr "Fasen van het voorstel"
+
+msgid "current phase"
+msgstr "huidige fase"
+
+#, python-format
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s tot %(end)s"
+
+#, python-format
+msgid "from %(start)s"
+msgstr "vanaf %(start)s"
+
+msgid "Proposal"
+msgstr "Voorstel"
+
+msgid "Running tally visible during voting"
+msgstr "Tussenstand zichtbaar tijdens het stemmen"
+
+msgid "Tally hidden until voting closes"
+msgstr "Tussenstand verborgen tot het stemmen sluit"
+
+#: app/routes/admin.py, app/templates/admin/proposal_limits.html
+msgid "Proposals: maximum duration per phase"
+msgstr "Voorstellen: maximale doorlooptijd per fase"
+
+msgid "Maximum durations saved."
+msgstr "Maximale doorlooptijden opgeslagen."
+
+msgid "A public proposal has a fixed schedule. The starter chooses a duration per phase, up to these maximums. New maximums apply to new proposals; existing schedules stay as they are."
+msgstr "Een publiek voorstel heeft een vaste planning. De starter kiest per fase een doorlooptijd, tot deze maxima. Nieuwe maxima gelden voor nieuwe voorstellen; bestaande planningen blijven zoals ze zijn."
+
+msgid "maximum in days"
+msgstr "maximum in dagen"
+
+#, python-format
+msgid "Default: %(days)s days"
+msgstr "Standaard: %(days)s dagen"
+
+msgid "Enter a whole number from 1 to 365."
+msgstr "Vul een geheel getal van 1 tot en met 365 in."

@@ -1,0 +1,14 @@
+{#
+  Partial: forum/_proposal_status.html (fase E)
+  Het statuslabel van een voorstel, op de voorstelpagina en in het
+  forumoverzicht. Een gewoon gesprek heeft geen statuslabel.
+  Context: proposal.
+#}
+{% set st = proposal_status(proposal) %}
+<span class="gu-proposal-status gu-proposal-status--{{ st[0] }}">
+  {%- if st[0] == 'stemmen_tot' -%}{{ _('Voting open until %(date)s', date=st[1] | datetimeformat('d MMMM y HH:mm')) }}
+  {%- elif st[0] == 'stemmen_open' -%}{{ _('Voting open') }}
+  {%- elif st[0] == 'bijstellen' -%}{{ _('Being revised') }}
+  {%- elif st[0] == 'gesloten' -%}{{ _('Closed') }}
+  {%- else -%}{{ _('In discussion') }}{%- endif -%}
+</span>

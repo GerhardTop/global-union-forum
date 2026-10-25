@@ -11,6 +11,7 @@
       <p class="gu-admin__links">
         <a href="{{ url_for('admin.admin_thresholds') }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}Drempels verdiende status{% else %}Earned status thresholds{% endif %}</a>
         · <a href="{{ url_for('admin.language_monitor') }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}Taal-monitor{% else %}Language monitor{% endif %}</a>
+        · <a href="{{ url_for('admin.admin_proposal_limits') }}" class="gu-admin-table__threadlink">{{ _('Proposals: maximum duration per phase') }}</a>
       </p>
     </div>
 

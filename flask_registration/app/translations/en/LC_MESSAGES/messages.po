@@ -812,3 +812,151 @@ msgstr "Judged automatically by the AI"
 
 msgid "View the full reasoning"
 msgstr "View the full reasoning"
+
+#: app/templates/forum/new_thread.html
+msgid "What do you want to start?"
+msgstr "What do you want to start?"
+
+msgid "A conversation"
+msgstr "A conversation"
+
+msgid "An open conversation about a question or statement."
+msgstr "An open conversation about a question or statement."
+
+msgid "A proposal"
+msgstr "A proposal"
+
+msgid "A statement that goes to a vote in four phases."
+msgstr "A statement that goes to a vote in four phases."
+
+msgid "Statement"
+msgstr "Statement"
+
+msgid "Kind of proposal"
+msgstr "Kind of proposal"
+
+msgid "Public proposal"
+msgstr "Public proposal"
+
+msgid "Fixed schedule: you set a duration for each phase."
+msgstr "Fixed schedule: you set a duration for each phase."
+
+msgid "Event"
+msgstr "Event"
+
+msgid "The host moves through the phases later, without fixed dates."
+msgstr "The host moves through the phases later, without fixed dates."
+
+msgid "Choose a kind of proposal."
+msgstr "Choose a kind of proposal."
+
+msgid "Duration per phase"
+msgstr "Duration per phase"
+
+msgid "Facts and discussion"
+msgstr "Facts and discussion"
+
+msgid "Revise the proposal"
+msgstr "Revise the proposal"
+
+msgid "Voting"
+msgstr "Voting"
+
+msgid "days"
+msgstr "days"
+
+msgid "hours"
+msgstr "hours"
+
+#, python-format
+msgid "At most %(days)s days"
+msgstr "At most %(days)s days"
+
+msgid "Enter a whole number greater than zero."
+msgstr "Enter a whole number greater than zero."
+
+#, python-format
+msgid "At most %(days)s days for this phase."
+msgstr "At most %(days)s days for this phase."
+
+msgid "Show the running tally during voting"
+msgstr "Show the running tally during voting"
+
+#, python-format
+msgid "Adopted with more than %(pct)s%% in favour"
+msgstr "Adopted with more than %(pct)s%% in favour"
+
+msgid "Start proposal"
+msgstr "Start proposal"
+
+#: app/templates/forum/_proposal_status.html, app/templates/forum/_proposal_steps.html, app/templates/forum/thread.html
+#, python-format
+msgid "Voting open until %(date)s"
+msgstr "Voting open until %(date)s"
+
+msgid "Voting open"
+msgstr "Voting open"
+
+msgid "Being revised"
+msgstr "Being revised"
+
+msgid "In discussion"
+msgstr "In discussion"
+
+msgid "Follow-up"
+msgstr "Follow-up"
+
+msgid "Bring in facts and arguments and discuss the proposal."
+msgstr "Bring in facts and arguments and discuss the proposal."
+
+msgid "The proposer revises the proposal based on the discussion."
+msgstr "The proposer revises the proposal based on the discussion."
+
+msgid "Everyone with voting rights votes for or against."
+msgstr "Everyone with voting rights votes for or against."
+
+msgid "The outcome and what happens next."
+msgstr "The outcome and what happens next."
+
+msgid "Phases of the proposal"
+msgstr "Phases of the proposal"
+
+msgid "current phase"
+msgstr "current phase"
+
+#, python-format
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s to %(end)s"
+
+#, python-format
+msgid "from %(start)s"
+msgstr "from %(start)s"
+
+msgid "Proposal"
+msgstr "Proposal"
+
+msgid "Running tally visible during voting"
+msgstr "Running tally visible during voting"
+
+msgid "Tally hidden until voting closes"
+msgstr "Tally hidden until voting closes"
+
+#: app/routes/admin.py, app/templates/admin/proposal_limits.html
+msgid "Proposals: maximum duration per phase"
+msgstr "Proposals: maximum duration per phase"
+
+msgid "Maximum durations saved."
+msgstr "Maximum durations saved."
+
+msgid "A public proposal has a fixed schedule. The starter chooses a duration per phase, up to these maximums. New maximums apply to new proposals; existing schedules stay as they are."
+msgstr "A public proposal has a fixed schedule. The starter chooses a duration per phase, up to these maximums. New maximums apply to new proposals; existing schedules stay as they are."
+
+msgid "maximum in days"
+msgstr "maximum in days"
+
+#, python-format
+msgid "Default: %(days)s days"
+msgstr "Default: %(days)s days"
+
+msgid "Enter a whole number from 1 to 365."
+msgstr "Enter a whole number from 1 to 365."

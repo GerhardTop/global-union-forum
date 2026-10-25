@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{# Fase E: maximale doorlooptijd per fase van een publiek voorstel, alleen voor de admin. #}
+{% block title %}{{ _('Proposals: maximum duration per phase') }} · Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+{% set phase_names = {'feiten': _('Facts and discussion'), 'bijstellen': _('Revise the proposal'), 'stemmen': _('Voting')} %}
+<div class="gu-admin" lang="{{ lang }}">
+  <div class="gu-admin__inner">
+    <div class="gu-admin__head">
+      <p class="gu-eyebrow"><a href="{{ url_for('admin.admin_dashboard') }}" class="gu-admin-table__threadlink">Admin</a></p>
+      <h1 class="gu-admin__title">{{ _('Proposals: maximum duration per phase') }}</h1>
+    </div>
+
+    <section class="gu-admin__section">
+      <p class="gu-quality__meta">{{ _('A public proposal has a fixed schedule. The starter chooses a duration per phase, up to these maximums. New maximums apply to new proposals; existing schedules stay as they are.') }}</p>
+      <form method="POST" action="{{ url_for('admin.admin_proposal_limits') }}" class="gu-thresholds" novalidate>
+        {{ admin_action_form.hidden_tag() }}
+        {% for phase in ['feiten', 'bijstellen', 'stemmen'] %}
+        <div class="gu-join__field">
+          <label for="{{ phase }}">{{ phase_names[phase] }}: {{ _('maximum in days') }}</label>
+          <input type="number" min="1" max="365" step="1" id="{{ phase }}" name="{{ phase }}"
+                 class="gu-input{% if errors.get(phase) %} gu-input--error{% endif %}"
+                 value="{{ form_values.get(phase) if form_values else max_days[phase] }}">
+          <p class="gu-join__hint">{{ _('Default: %(days)s days', days=defaults[phase]) }}</p>
+          {% if errors.get(phase) %}<p class="gu-join__formError">{{ _('Enter a whole number from 1 to 365.') }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="gu-btn gu-btn--primary">{% if lang == 'nl' %}Opslaan{% else %}Save{% endif %} <span class="gu-arrow"></span></button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}{% endblock %}
