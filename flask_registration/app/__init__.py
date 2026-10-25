@@ -146,6 +146,7 @@ def _migrate_columns():
     _migrate_stance(existing)
     _migrate_quality(existing)
     _migrate_conduct(existing)
+    _migrate_proposals(existing)
     _migrate_indexes()
     _migrate_username_and_backfill(insp, existing, is_pg)
 
@@ -226,6 +227,28 @@ def _migrate_conduct(existing):
     with db.engine.connect() as conn:
         for name, ddl in added:
             conn.execute(text(f'ALTER TABLE quality_awards ADD COLUMN {name} {ddl}'))
+        conn.commit()
+
+
+def _migrate_proposals(existing):
+    """
+    Fase E, stap 3: proposals.phase_changed_at, revised_at en
+    original_statement (alle nullable). Vóór elke ORM-query op Thread: het
+    voorstel komt via een join mee met elk gesprek, dus de kolommen moeten
+    dan al bestaan. Op een verse database maakt db.create_all() ze aan.
+    """
+    if 'proposals' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('proposals')}
+    added = [(name, ddl) for name, ddl in (('phase_changed_at', 'TIMESTAMP NULL'),
+                                           ('revised_at', 'TIMESTAMP NULL'),
+                                           ('original_statement', 'TEXT NULL'))
+             if name not in cols]
+    if not added:
+        return
+    with db.engine.connect() as conn:
+        for name, ddl in added:
+            conn.execute(text(f'ALTER TABLE proposals ADD COLUMN {name} {ddl}'))
         conn.commit()
 
 

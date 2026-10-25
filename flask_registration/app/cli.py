@@ -27,6 +27,17 @@ from sqlalchemy import false, func, or_
 
 def register_cli(app):
     app.cli.add_command(reset_content)
+    app.cli.add_command(proposals_tick)
+
+
+@click.command('voorstellen-tick')
+def proposals_tick():
+    """Laat publieke voorstellen waarvan de huidige fase is afgelopen
+    doorschuiven naar de volgende fase. Idempotent; veilig om vaak te draaien
+    (de echte periodieke uitvoering volgt in stap 5)."""
+    from app import proposals
+    moved = proposals.advance_due()
+    click.echo(f'{moved} voorstel(len) doorgeschoven.')
 
 
 def _plan():

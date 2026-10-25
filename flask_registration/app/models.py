@@ -631,6 +631,11 @@ class Proposal(db.Model):
     bijstellen_end     = db.Column(db.DateTime, nullable=True)
     stemmen_start      = db.Column(db.DateTime, nullable=True)
     stemmen_end        = db.Column(db.DateTime, nullable=True)
+    # Stap 3: wanneer de fase voor het laatst wisselde, en het eenmalige
+    # bijstellen van de stelling (de oorspronkelijke tekst blijft bewaard).
+    phase_changed_at   = db.Column(db.DateTime, nullable=True)
+    revised_at         = db.Column(db.DateTime, nullable=True)
+    original_statement = db.Column(db.Text, nullable=True)
     created_at         = db.Column(db.DateTime, default=datetime.utcnow)
 
     # lazy='joined': het voorstel komt mee met elke Thread-query (een LEFT

@@ -28,8 +28,15 @@ def _inject_forum_action_form():
             # Fase D: gedragsregels.
             'conduct_rule_label': conduct.rule_label,
             'conduct_can_decide': lambda case: conduct.can_decide_objection(case, current_user),
-            # Fase E: statuslabel van een voorstel.
-            'proposal_status': _proposal_status}
+            # Fase E: statuslabel van een voorstel, host en bijstellen.
+            'proposal_status': _proposal_status,
+            'proposal_is_host': lambda p: _proposals().is_host(p, current_user),
+            'proposal_can_revise': lambda p: _proposals().can_revise(p, current_user)}
+
+
+def _proposals():
+    from app import proposals
+    return proposals
 
 
 def _proposal_status(proposal):
@@ -461,6 +468,10 @@ def _thread_list(closed=False):
     # Fase D: wat voor deze lezer uit het gesprek is (verplaatst of verborgen)
     # telt niet mee, en een gesprek met zo'n openingsbericht staat er niet in.
     removed, hidden_threads = conduct.removed_post_ids(current_user)
+    # Fase E: publieke voorstellen waarvan de fase is afgelopen schuiven door
+    # (lichte guard: de voorstellen zijn al geladen, geen extra query).
+    from app import proposals
+    proposals.advance_loaded([thread.proposal for thread, _ in rows if thread.proposal])
     # Eén query voor de berichten van alle gesprekken (geen query per gesprek);
     # alleen id, gesprek en tijdstip, meer is voor het overzicht niet nodig.
     thread_ids = [thread.id for thread, _ in rows]
@@ -650,6 +661,11 @@ def forum_branch(thread_id, post_id):
 def _render_thread(thread, branch_root_id=None):
     """De gesprekspagina (of een tak). De berichten en de handhavingsgegevens
     worden hier één keer opgehaald en overal hergebruikt."""
+    # Fase E: een publiek voorstel waarvan de fase is afgelopen schuift door
+    # (het voorstel is al met het gesprek geladen, dus normaal geen query).
+    if thread.proposal is not None:
+        from app import proposals
+        proposals.advance_loaded([thread.proposal])
     reply_form = ForumReplyForm()
     # Eén query voor alle bijdragen; de feiten (fase E) staan in een eigen
     # blok en buiten de discussieboom, de tellingen en eens/oneens.
@@ -987,6 +1003,8 @@ def _edit_refusal(post):
 
 
 def _edit_refusal_message(reason):
+    if reason == 'proposal':
+        return gettext('The statement of a proposal can only be changed in the revision phase.')
     if reason == 'replies':
         return gettext('This post already has replies, so it can no longer be edited.')
     return gettext('A moved or hidden post cannot be edited. You can object instead.')
@@ -1030,6 +1048,8 @@ def forum_bewerken(thread_id):
     reason = _edit_refusal(op)
     if reason == 'forbidden':
         abort(403)
+    if reason is None and thread.proposal is not None and thread.proposal.phase != 'feiten':
+        reason = 'proposal'  # daarna alleen nog het eenmalige bijstellen
     if reason is not None:
         flash(_edit_refusal_message(reason), 'error')
         return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#post-{op.id}')
@@ -1526,3 +1546,50 @@ def fact_delete(post_id):
     db.session.delete(fact)
     db.session.commit()
     return redirect(url_for('forum.forum_thread', thread_id=thread_id) + '#feiten')
+
+
+# ── Fase E, stap 3: faseovergangen (event) en bijstellen ──────────────────
+
+@forum_bp.route('/forum/<int:thread_id>/voorstel/fase', methods=['POST'])
+@login_required
+def proposal_step(thread_id):
+    """De host van een event (de indiener of een moderator) zet het voorstel
+    een fase vooruit of terug. Een publiek voorstel volgt zijn vaste datums."""
+    from app import proposals
+    thread = Thread.query.get_or_404(thread_id)
+    proposal = thread.proposal
+    if proposal is None:
+        abort(404)
+    if not proposals.is_host(proposal, current_user):
+        abort(403)
+    _require_csrf()
+    if proposal.kind != 'event':
+        abort(400)
+    if not proposals.step(proposal, request.form.get('direction')):
+        abort(400)
+    db.session.commit()
+    return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#voorstel')
+
+
+@forum_bp.route('/forum/<int:thread_id>/voorstel/bijstellen', methods=['POST'])
+@login_required
+def proposal_revise(thread_id):
+    """De indiener stelt in de bijstelfase de stelling één keer bij; daarna
+    staat hij vast. Anderen kunnen dat niet."""
+    from app import proposals
+    thread = Thread.query.get_or_404(thread_id)
+    proposal = thread.proposal
+    if proposal is None:
+        abort(404)
+    if not proposals.can_revise(proposal, current_user):
+        abort(403)
+    _require_csrf()
+    statement = (request.form.get('statement') or '').strip()
+    current = ' '.join(p for p in (thread.title_prefix_nl, thread.title_accent_nl, thread.title_suffix_nl) if p)
+    if not statement or len(statement) > proposals.STATEMENT_MAX or statement == current:
+        # Zelfde sleutel als het feitenformulier: de pagina leest één formulierstatus.
+        _stash_form_state(f'feit-{thread.id}', {'statement': True}, {'statement': statement})
+        return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#voorstel', code=303)
+    proposals.revise(proposal, statement)
+    db.session.commit()
+    return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#voorstel')

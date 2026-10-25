@@ -1732,6 +1732,15 @@ body {
   .gu-durations__row { grid-template-columns: minmax(0, 1fr) 80px 96px; }
 }
 
+/* Fase E, stap 3: bijstellen en host */
+.gu-proposal__revised { margin: 12px 0 0; font-size: 0.875rem; color: var(--gu-fg-2); }
+.gu-proposal__revised del { color: var(--gu-fg-3); }
+.gu-proposal__revisedtag { display: inline-flex; margin-right: 6px; padding: 1px 8px; border-radius: 999px; background: var(--gu-bg-soft); color: var(--gu-globe-deep); font-size: 0.75rem; font-weight: 600; }
+.gu-proposal__revise { margin-top: 12px; }
+.gu-proposal__revise summary { cursor: pointer; color: var(--gu-globe-deep); font-weight: 500; font-size: 0.875rem; }
+.gu-proposal__host { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--gu-border); }
+.gu-proposal__hostactions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
 /* Fase E, stap 2: feitenblok van een voorstel */
 .gu-facts { margin: 24px 0 32px; padding: 18px 20px; border: 1px solid var(--gu-border); border-radius: 12px; }
 .gu-facts__title { margin: 0; font-size: 1.125rem; font-weight: 600; color: var(--gu-fg-1); }

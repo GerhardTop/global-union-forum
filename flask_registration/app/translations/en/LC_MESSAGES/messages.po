@@ -1027,3 +1027,42 @@ msgstr "Delete"
 
 msgid "Log in to add a fact."
 msgstr "Log in to add a fact."
+
+#: app/templates/forum/thread.html, app/routes/forum.py
+msgid "Revised"
+msgstr "Revised"
+
+#, python-format
+msgid "The statement was revised on %(date)s."
+msgstr "The statement was revised on %(date)s."
+
+msgid "Original statement:"
+msgstr "Original statement:"
+
+msgid "Revise the statement"
+msgstr "Revise the statement"
+
+msgid "You can revise the statement once. After that it is fixed."
+msgstr "You can revise the statement once. After that it is fixed."
+
+msgid "Enter a statement (at most 300 characters) that differs from the current one."
+msgstr "Enter a statement (at most 300 characters) that differs from the current one."
+
+msgid "Close facts and open revision"
+msgstr "Close facts and open revision"
+
+msgid "Close revision and open voting"
+msgstr "Close revision and open voting"
+
+msgid "Close voting and go to the follow-up"
+msgstr "Close voting and go to the follow-up"
+
+msgid "You host this event: you move it through the phases."
+msgstr "You host this event: you move it through the phases."
+
+#, python-format
+msgid "Back to %(phase)s"
+msgstr "Back to %(phase)s"
+
+msgid "The statement of a proposal can only be changed in the revision phase."
+msgstr "The statement of a proposal can only be changed in the revision phase."

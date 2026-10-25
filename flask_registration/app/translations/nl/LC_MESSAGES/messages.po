@@ -1027,3 +1027,42 @@ msgstr "Verwijderen"
 
 msgid "Log in to add a fact."
 msgstr "Log in om een feit toe te voegen."
+
+#: app/templates/forum/thread.html, app/routes/forum.py
+msgid "Revised"
+msgstr "Bijgesteld"
+
+#, python-format
+msgid "The statement was revised on %(date)s."
+msgstr "De stelling is bijgesteld op %(date)s."
+
+msgid "Original statement:"
+msgstr "Oorspronkelijke stelling:"
+
+msgid "Revise the statement"
+msgstr "Stelling bijstellen"
+
+msgid "You can revise the statement once. After that it is fixed."
+msgstr "Je kunt de stelling één keer bijstellen. Daarna staat hij vast."
+
+msgid "Enter a statement (at most 300 characters) that differs from the current one."
+msgstr "Vul een stelling in (maximaal 300 tekens) die verschilt van de huidige."
+
+msgid "Close facts and open revision"
+msgstr "Feiten sluiten en bijstellen openen"
+
+msgid "Close revision and open voting"
+msgstr "Bijstellen sluiten en stemmen openen"
+
+msgid "Close voting and go to the follow-up"
+msgstr "Stemmen sluiten en naar vervolg"
+
+msgid "You host this event: you move it through the phases."
+msgstr "Jij bent host van dit event: jij stuurt de fasen."
+
+#, python-format
+msgid "Back to %(phase)s"
+msgstr "Terug naar %(phase)s"
+
+msgid "The statement of a proposal can only be changed in the revision phase."
+msgstr "De stelling van een voorstel kan alleen in de bijstelfase worden aangepast."

@@ -60,7 +60,7 @@
       {# Fase E: een voorstel heeft een statuslabel, de vier fasen en zijn instellingen. #}
       {% if thread.proposal %}
       {% set proposal = thread.proposal %}
-      <section class="gu-proposal" aria-label="{{ _('Proposal') }}">
+      <section class="gu-proposal" id="voorstel" aria-label="{{ _('Proposal') }}">
         <div class="gu-proposal__head">
           {% include 'forum/_proposal_status.html' %}
           <span class="gu-proposal__kind">{% if proposal.kind == 'publiek' %}{{ _('Public proposal') }}{% else %}{{ _('Event') }}{% endif %}</span>
@@ -70,6 +70,60 @@
           {{ _('Adopted with more than %(pct)s%% in favour', pct=proposal.threshold_pct) }}
           · {% if proposal.show_live_tally %}{{ _('Running tally visible during voting') }}{% else %}{{ _('Tally hidden until voting closes') }}{% endif %}
         </p>
+
+        {# Stap 3: de stelling is één keer bijgesteld; een eenvoudige markering. #}
+        {% if proposal.revised_at %}
+        <p class="gu-proposal__revised">
+          <span class="gu-proposal__revisedtag">{{ _('Revised') }}</span>
+          {{ _('The statement was revised on %(date)s.', date=proposal.revised_at | dateformat('d MMMM y')) }}
+          {{ _('Original statement:') }} <del>{{ proposal.original_statement }}</del>
+        </p>
+        {% endif %}
+
+        {# Alleen de indiener, alleen in de bijstelfase en maar één keer. #}
+        {% if proposal_can_revise(proposal) %}
+        {% set rev_err = (fact_errors or {}).get('statement') %}
+        <details class="gu-proposal__revise"{% if rev_err %} open{% endif %}>
+          <summary>{{ _('Revise the statement') }}</summary>
+          <form method="POST" action="{{ url_for('forum.proposal_revise', thread_id=thread.id) }}" class="gu-fact-form" novalidate>
+            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+            <div class="gu-fact-form__field">
+              <label for="revise-statement">{{ _('Statement') }}</label>
+              <input type="text" id="revise-statement" name="statement" maxlength="300" required
+                     class="gu-input{% if rev_err %} gu-input--error{% endif %}"
+                     value="{{ (fact_data or {}).get('statement') or thread.title_prefix_nl }}">
+              <span class="gu-composer__hint">{{ _('You can revise the statement once. After that it is fixed.') }}</span>
+              {% if rev_err %}<p class="gu-join__formError">{{ _('Enter a statement (at most 300 characters) that differs from the current one.') }}</p>{% endif %}
+            </div>
+            <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Revise the statement') }}</button>
+          </form>
+        </details>
+        {% endif %}
+
+        {# Event: de host (de indiener of een moderator) stuurt de fasen. #}
+        {% if proposal.kind == 'event' and proposal_is_host(proposal) %}
+        {% set next_labels = [_('Close facts and open revision'), _('Close revision and open voting'), _('Close voting and go to the follow-up')] %}
+        {% set phase_names = [_('Facts and discussion'), _('Revise the proposal'), _('Voting'), _('Follow-up')] %}
+        <div class="gu-proposal__host">
+          <p class="gu-composer__hint">{{ _('You host this event: you move it through the phases.') }}</p>
+          <div class="gu-proposal__hostactions">
+            {% if proposal.phase_index < 3 %}
+            <form method="POST" action="{{ url_for('forum.proposal_step', thread_id=thread.id) }}">
+              {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+              <input type="hidden" name="direction" value="volgende">
+              <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ next_labels[proposal.phase_index] }}</button>
+            </form>
+            {% endif %}
+            {% if proposal.phase_index > 0 %}
+            <form method="POST" action="{{ url_for('forum.proposal_step', thread_id=thread.id) }}">
+              {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+              <input type="hidden" name="direction" value="vorige">
+              <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Back to %(phase)s', phase=phase_names[proposal.phase_index - 1]) }}</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
       </section>
       {% endif %}
 
