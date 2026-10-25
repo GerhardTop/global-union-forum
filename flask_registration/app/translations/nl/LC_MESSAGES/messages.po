@@ -1238,3 +1238,45 @@ msgstr "Stuur me de dagelijkse samenvatting van de voorstellen die ik volg ook p
 
 msgid "View your daily summaries"
 msgstr "Bekijk je dagelijkse samenvattingen"
+
+#: app/templates/forum/_proposal_vote.html, app/templates/forum/_digest_items.html
+msgid "public"
+msgstr "publiek"
+
+msgid "event"
+msgstr "event"
+
+msgid "Results per round"
+msgstr "Uitslagen per ronde"
+
+#, python-format
+msgid "Round %(n)s (%(kind)s)"
+msgstr "Ronde %(n)s (%(kind)s)"
+
+msgid "Open a new public voting round"
+msgstr "Nieuwe publieke stemronde openen"
+
+msgid "Lay the proposal before the public again: a new voting period on the same statement. Facts and discussion stay."
+msgstr "Leg het voorstel opnieuw aan het publiek voor: een nieuwe stemperiode op dezelfde stelling. Feiten en discussie blijven staan."
+
+msgid "Voting period"
+msgstr "Stemperiode"
+
+msgid "Open the round"
+msgstr "Ronde openen"
+
+#, python-format
+msgid "Round %(n)s opened, voting until %(date)s"
+msgstr "Ronde %(n)s geopend, stemmen tot %(date)s"
+
+#, python-format
+msgid "Round %(n)s: rejected, no valid votes"
+msgstr "Ronde %(n)s: verworpen, geen geldige stemmen"
+
+#, python-format
+msgid "Round %(n)s: adopted with %(pct)s%% in favour"
+msgstr "Ronde %(n)s: aangenomen met %(pct)s%% voor"
+
+#, python-format
+msgid "Round %(n)s: rejected with %(pct)s%% in favour"
+msgstr "Ronde %(n)s: verworpen met %(pct)s%% voor"

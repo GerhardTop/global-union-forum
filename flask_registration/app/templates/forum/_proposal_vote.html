@@ -4,12 +4,41 @@
   en de tussenstand volgens de instelling van het voorstel (verborgen: alleen
   het aantal stemmers; live: de verdeling). In het vervolg: altijd de
   volledige uitslag.
-  Context: thread, proposal, vote_tally, vote_mine, forum_action_form.
+  Stap 5c: een lopende extra publieke ronde (vote_round) stemt zoals de
+  stemfase; met extra rondes staan alle uitslagen gelabeld per ronde.
+  Context: thread, proposal, vote_tally, vote_mine, vote_round, round_max_days,
+           fact_errors, fact_data, forum_action_form.
 #}
 {% set choice_labels = {'voor': _('For'), 'tegen': _('Against'), 'onthouding': _('Abstain')} %}
-{% if proposal.phase == 'stemmen' and vote_tally is not none %}
+{% set kind_labels = {'publiek': _('public'), 'event': _('event')} %}
+
+{# De volledige uitslag van een voorstel (ronde 1) of een extra ronde. #}
+{% macro result_details(src) %}
+  <p class="gu-vote__title">
+    <span class="gu-vote__verdict gu-vote__verdict--{{ src.result }}">{% if src.result == 'aangenomen' %}{{ _('Adopted') }}{% else %}{{ _('Rejected') }}{% endif %}</span>
+  </p>
+  {% if src.result_pct is not none %}
+  <p>{{ _('%(pro)s%% for, %(con)s%% against (of the valid votes)', pro=src.result_pct | decimalformat('0.#'), con=src.against_pct | decimalformat('0.#')) }}</p>
+  {% else %}
+  <p>{{ _('No valid votes were cast.') }}</p>
+  {% endif %}
+  <ul class="gu-vote__counts">
+    {% for c, n in [('voor', src.votes_for), ('tegen', src.votes_against), ('onthouding', src.votes_abstain)] %}
+    <li class="gu-vote__count gu-vote__count--{{ c }}"><span>{{ choice_labels[c] }}</span> <strong>{{ n or 0 }}</strong></li>
+    {% endfor %}
+  </ul>
+  <p class="gu-composer__hint">
+    {{ _('Votes cast: %(n)s', n=src.votes_total) }}
+    · {% if src.turnout_pct is not none %}{{ _('Turnout: %(votes)s of %(eligible)s eligible voters (%(pct)s%%)', votes=src.votes_total, eligible=src.eligible_count, pct=src.turnout_pct | decimalformat('0.#')) }}{% else %}{{ _('Turnout: no eligible voters') }}{% endif %}
+    · {{ _('Threshold: more than %(pct)s%% in favour', pct=proposal.threshold_pct) }}
+  </p>
+{% endmacro %}
+
+{% if (proposal.phase == 'stemmen' or vote_round) and vote_tally is not none %}
 <div class="gu-vote" id="stemmen">
-  <p class="gu-vote__title">{{ _('Cast your vote') }}</p>
+  <p class="gu-vote__title">{{ _('Cast your vote') }}
+    {% if vote_round %}<span class="gu-vote__round">{{ _('Round %(n)s (%(kind)s)', n=vote_round.number, kind=kind_labels['publiek']) }} · {{ _('Voting open until %(date)s', date=vote_round.voting_end | datetimeformat('d MMMM y HH:mm')) }}</span>{% endif %}
+  </p>
   {% if current_user.is_authenticated and current_user.can_vote() %}
   <form method="POST" action="{{ url_for('forum.proposal_vote', thread_id=thread.id) }}" class="gu-vote__choices">
     {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
@@ -53,25 +82,57 @@
     {% endif %}
   </div>
 </div>
+{% endif %}
+
+{# De uitslagen: met extra rondes allemaal, gelabeld per ronde; anders de ene uitslag. #}
+{% set closed_rounds = proposal.rounds | selectattr('closed_at') | list %}
+{% if proposal.rounds and (proposal.result or closed_rounds) %}
+<div class="gu-vote gu-vote--result" id="uitslag">
+  <p class="gu-vote__title">{{ _('Results per round') }}</p>
+  <ol class="gu-rounds">
+    {% if proposal.result %}
+    <li class="gu-rounds__round" id="ronde-1">
+      <p class="gu-rounds__label">{{ _('Round %(n)s (%(kind)s)', n=1, kind=kind_labels[proposal.kind]) }}</p>
+      {{ result_details(proposal) }}
+    </li>
+    {% endif %}
+    {% for rnd in closed_rounds %}
+    <li class="gu-rounds__round" id="ronde-{{ rnd.number }}">
+      <p class="gu-rounds__label">{{ _('Round %(n)s (%(kind)s)', n=rnd.number, kind=kind_labels['publiek']) }}</p>
+      {{ result_details(rnd) }}
+    </li>
+    {% endfor %}
+  </ol>
+</div>
 {% elif proposal.phase == 'vervolg' and proposal.result %}
 <div class="gu-vote gu-vote--result" id="uitslag">
-  <p class="gu-vote__title">{{ _('Result') }}
-    <span class="gu-vote__verdict gu-vote__verdict--{{ proposal.result }}">{% if proposal.result == 'aangenomen' %}{{ _('Adopted') }}{% else %}{{ _('Rejected') }}{% endif %}</span>
-  </p>
-  {% if proposal.result_pct is not none %}
-  <p>{{ _('%(pro)s%% for, %(con)s%% against (of the valid votes)', pro=proposal.result_pct | decimalformat('0.#'), con=proposal.against_pct | decimalformat('0.#')) }}</p>
-  {% else %}
-  <p>{{ _('No valid votes were cast.') }}</p>
-  {% endif %}
-  <ul class="gu-vote__counts">
-    {% for c, n in [('voor', proposal.votes_for), ('tegen', proposal.votes_against), ('onthouding', proposal.votes_abstain)] %}
-    <li class="gu-vote__count gu-vote__count--{{ c }}"><span>{{ choice_labels[c] }}</span> <strong>{{ n or 0 }}</strong></li>
-    {% endfor %}
-  </ul>
-  <p class="gu-composer__hint">
-    {{ _('Votes cast: %(n)s', n=proposal.votes_total) }}
-    · {% if proposal.turnout_pct is not none %}{{ _('Turnout: %(votes)s of %(eligible)s eligible voters (%(pct)s%%)', votes=proposal.votes_total, eligible=proposal.eligible_count, pct=proposal.turnout_pct | decimalformat('0.#')) }}{% else %}{{ _('Turnout: no eligible voters') }}{% endif %}
-    · {{ _('Threshold: more than %(pct)s%% in favour', pct=proposal.threshold_pct) }}
-  </p>
+  <p class="gu-vote__title">{{ _('Result') }}</p>
+  {{ result_details(proposal) }}
 </div>
+{% endif %}
+
+{# Stap 5c: de indiener of een admin legt het voorstel opnieuw aan het publiek voor. #}
+{% if proposal_can_open_round(proposal) and round_max_days %}
+{% set round_err = (fact_errors or {}).get('round') %}
+{% set rd = fact_data or {} %}
+<details class="gu-proposal__revise gu-round-open"{% if round_err %} open{% endif %}>
+  <summary>{{ _('Open a new public voting round') }}</summary>
+  <form method="POST" action="{{ url_for('forum.proposal_open_round', thread_id=thread.id) }}" class="gu-fact-form" novalidate>
+    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+    <p class="gu-composer__hint">{{ _('Lay the proposal before the public again: a new voting period on the same statement. Facts and discussion stay.') }}</p>
+    <div class="gu-durations__row">
+      <label for="duur_ronde">{{ _('Voting period') }}</label>
+      <input type="number" min="1" step="1" inputmode="numeric" id="duur_ronde" name="duur_ronde"
+             class="gu-input{% if round_err %} gu-input--error{% endif %}" value="{{ rd.get('duur_ronde', '') }}">
+      <select name="eenheid_ronde" class="gu-input" aria-label="{{ _('Voting period') }}">
+        <option value="dagen"{% if rd.get('eenheid_ronde', 'dagen') == 'dagen' %} selected{% endif %}>{{ _('days') }}</option>
+        <option value="uren"{% if rd.get('eenheid_ronde') == 'uren' %} selected{% endif %}>{{ _('hours') }}</option>
+      </select>
+      <span class="gu-composer__hint">{{ _('At most %(days)s days', days=round_max_days) }}</span>
+      {% if round_err == 'invalid' %}<p class="gu-join__formError">{{ _('Enter a whole number greater than zero.') }}</p>
+      {% elif round_err == 'too_long' %}<p class="gu-join__formError">{{ _('At most %(days)s days for this phase.', days=round_max_days) }}</p>{% endif %}
+    </div>
+    <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Open the round') }}</button>
+  </form>
+</details>
 {% endif %}

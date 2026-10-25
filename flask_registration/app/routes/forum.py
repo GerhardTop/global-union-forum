@@ -34,6 +34,7 @@ def _inject_forum_action_form():
             'proposal_can_revise': lambda p: _proposals().can_revise(p, current_user),
             'proposal_for_pct': lambda f, a: _proposals().for_pct(f, a),
             'proposal_following': lambda p: _digest().is_following(p, current_user),
+            'proposal_can_open_round': lambda p: _proposals().can_open_round(p, current_user),
             'digest_dt': lambda s: datetime.fromisoformat(s) if s else None}
 
 
@@ -45,6 +46,14 @@ def _digest():
 def _proposals():
     from app import proposals
     return proposals
+
+
+def _round_max_days(thread):
+    """Het maximum voor een nieuwe ronde, alleen nodig in het vervolg."""
+    proposal = thread.proposal
+    if proposal is None or proposal.phase != 'vervolg':
+        return None
+    return _proposals().get_max_days()['stemmen']
 
 
 def _proposal_status(proposal):
@@ -743,11 +752,17 @@ def _render_thread(thread, branch_root_id=None):
 
     stance_counts = _stance_counts(all_ids)
     # Stemmen (fase E, stap 4): alleen in de stemfase de tussenstand en je eigen stem.
-    vote_tally, vote_mine = None, None
-    if thread.proposal is not None and thread.proposal.phase == 'stemmen':
+    # Stap 5c: loopt er een extra publieke ronde, dan gaat het stemmen daarover.
+    vote_tally, vote_mine, vote_round = None, None, None
+    if thread.proposal is not None:
         from app import proposals
-        vote_tally = proposals.tally(thread.proposal)
-        vote_mine = proposals.my_vote(thread.proposal, current_user)
+        vote_round = thread.proposal.open_round
+        if vote_round is not None:
+            vote_tally = proposals.round_tally(vote_round)
+            vote_mine = proposals.my_round_vote(vote_round, current_user)
+        elif thread.proposal.phase == 'stemmen':
+            vote_tally = proposals.tally(thread.proposal)
+            vote_mine = proposals.my_vote(thread.proposal, current_user)
     # Feitenblok (fase E): fouten en ingevulde waarden van een geweigerd feit (PRG).
     fact_errors, fact_data = _pop_form_state(f'feit-{thread.id}') if thread.proposal else ({}, {})
     my_quality_reports = set()
@@ -785,6 +800,8 @@ def _render_thread(thread, branch_root_id=None):
         facts=facts,
         vote_tally=vote_tally,
         vote_mine=vote_mine,
+        vote_round=vote_round,
+        round_max_days=_round_max_days(thread),
         visible_fact_count=sum(1 for f in facts if f.id not in removed_ids),
         fact_errors=fact_errors,
         fact_data=fact_data,
@@ -1644,14 +1661,18 @@ def proposal_vote(thread_id):
     _require_csrf()
     # Eerst de vaste datums bijwerken: na de einddatum kan er niet meer gestemd worden.
     proposals.advance_loaded([proposal])
-    if proposal.phase != 'stemmen':
+    rnd = proposal.open_round  # stap 5c: een lopende extra publieke ronde
+    if rnd is None and proposal.phase != 'stemmen':
         abort(403)
     if not current_user.can_vote():
         abort(403)
     choice = request.form.get('choice')
     if choice not in VOTE_CHOICES:
         abort(400)
-    proposals.cast_vote(proposal, current_user, choice)
+    if rnd is not None:
+        proposals.cast_round_vote(rnd, current_user, choice)
+    else:
+        proposals.cast_vote(proposal, current_user, choice)
     from app import digest
     digest.auto_follow(proposal, current_user)  # meedoen is volgen (fase E, stap 5b)
     db.session.commit()
@@ -1668,7 +1689,7 @@ def proposal_follow(thread_id):
     from app import digest
     thread = Thread.query.get_or_404(thread_id)
     proposal = thread.proposal
-    if proposal is None or proposal.kind != 'publiek':
+    if proposal is None or not proposal.is_public:
         abort(404)
     _abort_if_thread_removed(thread)
     _require_csrf()
@@ -1678,3 +1699,34 @@ def proposal_follow(thread_id):
         digest.follow(proposal, current_user)
     db.session.commit()
     return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#voorstel')
+
+
+# ── Fase E, stap 5c: een extra publieke stemronde ─────────────────────────
+
+@forum_bp.route('/forum/<int:thread_id>/voorstel/ronde', methods=['POST'])
+@login_required
+def proposal_open_round(thread_id):
+    """De indiener of een admin opent in het vervolg een nieuwe, altijd
+    publieke stemronde op dezelfde stelling, met een vaste stemperiode.
+    Feiten en discussie blijven staan."""
+    from app import digest, proposals
+    thread = Thread.query.get_or_404(thread_id)
+    proposal = thread.proposal
+    if proposal is None:
+        abort(404)
+    _abort_if_thread_removed(thread)
+    proposals.advance_loaded([proposal])
+    if not proposals.can_open_round(proposal, current_user):
+        abort(403)
+    _require_csrf()
+    minutes, error = proposals.parse_round_duration(request.form, proposals.get_max_days())
+    if error:
+        _stash_form_state(f'feit-{thread.id}', {'round': error},
+                          {'duur_ronde': request.form.get('duur_ronde', ''),
+                           'eenheid_ronde': request.form.get('eenheid_ronde', 'dagen')})
+        return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#voorstel', code=303)
+    proposals.open_round(proposal, current_user, minutes)
+    db.session.flush()
+    digest.follow(proposal, current_user)  # nu publiek: de opener volgt het voorstel
+    db.session.commit()
+    return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#stemmen')

@@ -42,16 +42,22 @@ def _row(proposal, user):
     return ProposalFollow.query.filter_by(proposal_id=proposal.id, user_id=user.id).first()
 
 
+def _public_filter():
+    """SQL: een publiek voorstel, of een event met een publieke ronde (5c)."""
+    return or_(Proposal.kind == 'publiek', Proposal.rounds.any())
+
+
 def is_following(proposal, user):
-    if not getattr(user, 'is_authenticated', False) or proposal.kind != 'publiek':
+    if not getattr(user, 'is_authenticated', False) or not proposal.is_public:
         return False
     row = _row(proposal, user)
     return bool(row and row.active)
 
 
 def follow(proposal, user):
-    """Volgen via de knop (of als indiener). Alleen publieke voorstellen."""
-    if proposal.kind != 'publiek':
+    """Volgen via de knop (of als indiener). Alleen publieke voorstellen (ook
+    een event met een publieke ronde)."""
+    if not proposal.is_public:
         return None
     row = _row(proposal, user)
     if row is None:
@@ -74,7 +80,7 @@ def unfollow(proposal, user):
 
 def auto_follow(proposal, user):
     """Wie meedoet gaat volgen, behalve wie bewust ontvolgde."""
-    if proposal is None or proposal.kind != 'publiek' or not getattr(user, 'is_authenticated', False):
+    if proposal is None or not proposal.is_public or not getattr(user, 'is_authenticated', False):
         return None
     if _row(proposal, user) is None:
         return follow(proposal, user)
@@ -111,6 +117,15 @@ def _changes(proposal, since, now):
         changes.append({'type': 'sluit_binnenkort', 'until': _iso(proposal.stemmen_end)})
     if proposal.phase == 'vervolg' and proposal.result and proposal.result_at and proposal.result_at > since:
         changes.append({'type': 'uitslag', 'result': proposal.result, 'pct': proposal.result_pct})
+    # Stap 5c: extra publieke rondes.
+    for rnd in proposal.rounds:
+        if rnd.opened_at > since:
+            changes.append({'type': 'ronde_open', 'number': rnd.number, 'until': _iso(rnd.voting_end)})
+        elif rnd.closed_at is None and now < rnd.voting_end <= now + CLOSING_SOON:
+            changes.append({'type': 'sluit_binnenkort', 'until': _iso(rnd.voting_end)})
+        if rnd.result and rnd.result_at and rnd.result_at > since:
+            changes.append({'type': 'ronde_uitslag', 'number': rnd.number, 'result': rnd.result,
+                            'pct': rnd.result_pct})
     return changes
 
 
@@ -135,7 +150,7 @@ def build(user, now=None):
     now = now or datetime.utcnow()
     follows = (ProposalFollow.query.join(Proposal, ProposalFollow.proposal_id == Proposal.id)
                .filter(ProposalFollow.user_id == user.id, ProposalFollow.active.is_(True),
-                       Proposal.kind == 'publiek').all())
+                       _public_filter()).all())
     items, important = [], False
     for f in follows:
         proposal = f.proposal
@@ -212,7 +227,7 @@ def run_daily(now=None):
     now = now or datetime.utcnow()
     user_ids = [uid for (uid,) in (db.session.query(ProposalFollow.user_id)
                                    .join(Proposal, ProposalFollow.proposal_id == Proposal.id)
-                                   .filter(ProposalFollow.active.is_(True), Proposal.kind == 'publiek')
+                                   .filter(ProposalFollow.active.is_(True), _public_filter())
                                    .distinct())]
     sent = 0
     for uid in user_ids:

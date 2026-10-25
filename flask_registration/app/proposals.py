@@ -24,6 +24,11 @@ Bij het sluiten (automatisch of door de host) wordt de uitslag berekend en
 vastgelegd: het percentage voor van de geldige stemmen (voor plus tegen),
 aangenomen als dat groter is dan de drempel. Onthoudingen tellen voor de
 opkomst, niet voor de uitslag.
+
+Extra rondes (stap 5c): in het vervolg kan de indiener of een admin een
+nieuwe, altijd publieke stemronde openen op dezelfde stelling, met een vaste
+stemperiode. Ronde 1 is de oorspronkelijke cyclus; elke extra ronde heeft
+eigen stemmen (één per persoon per ronde) en een eigen vastgelegde uitslag.
 """
 from datetime import datetime, timedelta
 
@@ -31,7 +36,7 @@ from sqlalchemy import and_, func, or_
 
 from app import db
 from app.models import (PROPOSAL_KINDS, PROPOSAL_PHASES, PROPOSAL_TIMED_PHASES, VOTE_CHOICES, AppSetting,
-                        Proposal, ProposalVote, User)
+                        Proposal, ProposalRound, ProposalVote, RoundVote, User)
 
 DEFAULT_MAX_DAYS = {'feiten': 60, 'bijstellen': 10, 'stemmen': 14}
 _SETTING_KEYS = {phase: f'proposal_max_{phase}_dagen' for phase in PROPOSAL_TIMED_PHASES}
@@ -122,8 +127,14 @@ def status(proposal):
     in_discussie, bijstellen, stemmen_tot (met einddatum), stemmen_open
     (event, zonder datum), en in het vervolg de uitslag: aangenomen of
     verworpen. Zonder vastgelegde uitslag in het vervolg: gesloten."""
+    open_round = proposal.open_round
+    if open_round is not None:
+        return 'stemmen_tot', open_round.voting_end
     if proposal.phase == 'stemmen':
         return ('stemmen_tot', proposal.stemmen_end) if proposal.stemmen_end else ('stemmen_open', None)
+    last = proposal.last_closed_round
+    if proposal.phase == 'vervolg' and last is not None and last.result in ('aangenomen', 'verworpen'):
+        return last.result, None
     if proposal.phase == 'bijstellen':
         return 'bijstellen', None
     if proposal.phase == 'vervolg':
@@ -184,6 +195,9 @@ def advance_due(now=None):
             and_(Proposal.phase == 'bijstellen', Proposal.bijstellen_end <= now),
             and_(Proposal.phase == 'stemmen', Proposal.stemmen_end <= now))).all()
     moved = sum(1 for proposal in due if advance(proposal, now))
+    for rnd in ProposalRound.query.filter(ProposalRound.closed_at.is_(None), ProposalRound.voting_end <= now):
+        close_round(rnd, now)
+        moved += 1
     if moved:
         db.session.commit()
     return moved
@@ -194,7 +208,7 @@ def advance_loaded(proposals_seen, now=None):
     komen met het gesprek mee), dus dit kost geen query zolang er niets
     doorschuift. Commit alleen als er iets veranderde."""
     now = now or datetime.utcnow()
-    changed = [p for p in proposals_seen if advance(p, now)]
+    changed = [p for p in proposals_seen if advance(p, now) | close_due_round(p, now)]
     if changed:
         db.session.commit()
     return len(changed)
@@ -303,16 +317,102 @@ def finalize(proposal, now=None):
     """Bereken en leg de uitslag vast bij het sluiten van de stemfase.
     Aangenomen als het percentage voor van de geldige stemmen groter is dan
     de drempel (met gehele getallen vergeleken, zonder afrondingsverschil)."""
-    counts = tally(proposal)
+    _record_result(proposal, tally(proposal), proposal.threshold_pct, now)
+
+
+def _record_result(target, counts, threshold, now=None):
+    """Leg een uitslag vast op een voorstel (ronde 1) of een extra ronde."""
     votes_for, votes_against = counts['voor'], counts['tegen']
     valid = votes_for + votes_against
-    adopted = valid > 0 and votes_for * 100 > proposal.threshold_pct * valid
-    proposal.result = 'aangenomen' if adopted else 'verworpen'
-    proposal.result_pct = for_pct(votes_for, votes_against)
-    proposal.votes_for, proposal.votes_against = votes_for, votes_against
-    proposal.votes_abstain = counts['onthouding']
-    proposal.eligible_count = eligible_voter_count()
-    proposal.result_at = now or datetime.utcnow()
+    adopted = valid > 0 and votes_for * 100 > threshold * valid
+    target.result = 'aangenomen' if adopted else 'verworpen'
+    target.result_pct = for_pct(votes_for, votes_against)
+    target.votes_for, target.votes_against = votes_for, votes_against
+    target.votes_abstain = counts['onthouding']
+    target.eligible_count = eligible_voter_count()
+    target.result_at = now or datetime.utcnow()
+
+
+# ── Extra publieke rondes (stap 5c) ──────────────────────────────────────
+
+def can_open_round(proposal, user):
+    """De indiener (auteur van het openingsbericht) of een admin, alleen in het
+    vervolg en alleen als er geen ronde loopt."""
+    if not getattr(user, 'is_authenticated', False) or proposal.phase != 'vervolg' or proposal.open_round:
+        return False
+    if user.is_admin:
+        return True
+    op = next((p for p in proposal.thread.posts if p.is_op), None)
+    return op is not None and op.user_id == user.id
+
+
+def parse_round_duration(form, max_days):
+    """(minuten, fout) uit duur_ronde en eenheid_ronde; dezelfde regels en
+    hetzelfde maximum als de stemfase van een publiek voorstel."""
+    raw = (form.get('duur_ronde') or '').strip()
+    unit = form.get('eenheid_ronde') or 'dagen'
+    if not raw.isdigit() or int(raw) <= 0 or unit not in UNITS:
+        return None, 'invalid'
+    minutes = int(raw) * UNITS[unit]
+    if minutes > max_days['stemmen'] * UNITS['dagen']:
+        return None, 'too_long'
+    return minutes, None
+
+
+def open_round(proposal, user, minutes, now=None):
+    """Open een nieuwe publieke stemronde. Commit niet zelf."""
+    now = now or datetime.utcnow()
+    number = 2 + len(proposal.rounds)
+    rnd = ProposalRound(proposal=proposal, number=number, opened_by_id=user.id, opened_at=now,
+                        voting_minutes=minutes, voting_end=now + timedelta(minutes=minutes))
+    db.session.add(rnd)
+    return rnd
+
+
+def round_tally(rnd):
+    counts = {choice: 0 for choice in VOTE_CHOICES}
+    for choice, n in (db.session.query(RoundVote.choice, func.count(RoundVote.id))
+                      .filter(RoundVote.round_id == rnd.id).group_by(RoundVote.choice)):
+        if choice in counts:
+            counts[choice] = n
+    return counts
+
+
+def my_round_vote(rnd, user):
+    if not getattr(user, 'is_authenticated', False):
+        return None
+    row = db.session.query(RoundVote.choice).filter_by(round_id=rnd.id, user_id=user.id).first()
+    return row[0] if row else None
+
+
+def cast_round_vote(rnd, user, choice):
+    if choice not in VOTE_CHOICES:
+        raise ValueError(f'onbekende stem: {choice}')
+    vote = RoundVote.query.filter_by(round_id=rnd.id, user_id=user.id).first()
+    if vote is None:
+        vote = RoundVote(round_id=rnd.id, user_id=user.id, choice=choice)
+        db.session.add(vote)
+    else:
+        vote.choice = choice
+    return vote
+
+
+def close_round(rnd, now=None):
+    """Sluit een ronde en leg de uitslag vast (zelfde berekening en drempel)."""
+    now = now or datetime.utcnow()
+    _record_result(rnd, round_tally(rnd), rnd.proposal.threshold_pct, now)
+    rnd.closed_at = now
+
+
+def close_due_round(proposal, now=None):
+    """De lazy-controle: een lopende ronde na zijn einddatum sluiten. Geeft
+    True als er een ronde sloot. Commit niet zelf."""
+    now = now or datetime.utcnow()
+    rnd = proposal.open_round if proposal is not None else None
+    if rnd is None or now < rnd.voting_end:
+        return False
+    close_round(rnd, now)
+    return True
 
 
 def clear_result(proposal):
@@ -329,6 +429,11 @@ def delete_for_threads(thread_ids):
         proposal_ids = [pid for (pid,) in db.session.query(Proposal.id).filter(Proposal.thread_id.in_(thread_ids))]
         if proposal_ids:
             ProposalVote.query.filter(ProposalVote.proposal_id.in_(proposal_ids)).delete(synchronize_session='evaluate')
+            round_ids = [rid for (rid,) in db.session.query(ProposalRound.id)
+                         .filter(ProposalRound.proposal_id.in_(proposal_ids))]
+            if round_ids:
+                RoundVote.query.filter(RoundVote.round_id.in_(round_ids)).delete(synchronize_session='evaluate')
+                ProposalRound.query.filter(ProposalRound.id.in_(round_ids)).delete(synchronize_session='evaluate')
             from app import digest
             digest.delete_for_proposals(proposal_ids)
         Proposal.query.filter(Proposal.thread_id.in_(thread_ids)).delete(synchronize_session='evaluate')

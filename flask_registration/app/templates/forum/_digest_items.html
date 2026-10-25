@@ -20,6 +20,11 @@
         {%- if c.type == 'stemmen_open' -%}{{ _('Voting has opened, until %(date)s', date=until | datetimeformat('d MMMM y HH:mm')) if until else _('Voting has opened') }}
         {%- elif c.type == 'sluit_binnenkort' -%}{{ _('Voting closes soon: %(date)s', date=until | datetimeformat('d MMMM y HH:mm')) }}
         {%- elif c.type == 'bijstellen' -%}{{ _('The proposal is being revised') }}
+        {%- elif c.type == 'ronde_open' -%}{{ _('Round %(n)s opened, voting until %(date)s', n=c.number, date=until | datetimeformat('d MMMM y HH:mm')) }}
+        {%- elif c.type == 'ronde_uitslag' -%}
+          {%- if c.pct is none -%}{{ _('Round %(n)s: rejected, no valid votes', n=c.number) }}
+          {%- elif c.result == 'aangenomen' -%}{{ _('Round %(n)s: adopted with %(pct)s%% in favour', n=c.number, pct=c.pct | decimalformat('0.#')) }}
+          {%- else -%}{{ _('Round %(n)s: rejected with %(pct)s%% in favour', n=c.number, pct=c.pct | decimalformat('0.#')) }}{%- endif -%}
         {%- elif c.type == 'uitslag' -%}
           {%- if c.pct is none -%}{{ _('Result: rejected, no valid votes') }}
           {%- elif c.result == 'aangenomen' -%}{{ _('Result: adopted with %(pct)s%% in favour', pct=c.pct | decimalformat('0.#')) }}

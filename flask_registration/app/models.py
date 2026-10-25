@@ -686,6 +686,21 @@ class Proposal(db.Model):
             return None
         return round(100.0 * self.votes_total / self.eligible_count, 1)
 
+    # Fase E, stap 5c: extra publieke stemrondes.
+    @property
+    def open_round(self):
+        return next((r for r in self.rounds if r.closed_at is None), None)
+
+    @property
+    def last_closed_round(self):
+        closed = [r for r in self.rounds if r.closed_at is not None]
+        return closed[-1] if closed else None
+
+    @property
+    def is_public(self):
+        """Publiek: een publiek voorstel, of een event met een publieke ronde."""
+        return self.kind == 'publiek' or bool(self.rounds)
+
 
 VOTE_CHOICES = ('voor', 'tegen', 'onthouding')
 
@@ -705,6 +720,75 @@ class ProposalVote(db.Model):
     __table_args__ = (db.UniqueConstraint('proposal_id', 'user_id', name='uq_proposal_vote'),)
 
     proposal = db.relationship('Proposal', backref=db.backref('votes', lazy=True, cascade='all, delete-orphan'))
+
+
+class _ResultMixin:
+    """Gedeelde weergave van een uitslag (voorstel of extra ronde)."""
+
+    @property
+    def votes_total(self):
+        return (self.votes_for or 0) + (self.votes_against or 0) + (self.votes_abstain or 0)
+
+    @property
+    def against_pct(self):
+        return None if self.result_pct is None else round(100 - self.result_pct, 1)
+
+    @property
+    def turnout_pct(self):
+        if not self.eligible_count:
+            return None
+        return round(100.0 * self.votes_total / self.eligible_count, 1)
+
+
+class ProposalRound(_ResultMixin, db.Model):
+    """Fase E, stap 5c: een extra, altijd publieke stemronde na het vervolg,
+    op dezelfde (eventueel bijgestelde) stelling. Ronde 1 is de oorspronkelijke
+    cyclus (de uitslag staat op Proposal); extra rondes zijn 2, 3, enzovoort,
+    elk met een vaste einddatum en een eigen vastgelegde uitslag."""
+    __tablename__ = "proposal_rounds"
+
+    id             = db.Column(db.Integer, primary_key=True)
+    proposal_id    = db.Column(db.Integer, db.ForeignKey('proposals.id'), nullable=False, index=True)
+    number         = db.Column(db.Integer, nullable=False)
+    opened_by_id   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    opened_at      = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    voting_minutes = db.Column(db.Integer, nullable=False)
+    voting_end     = db.Column(db.DateTime, nullable=False)
+    closed_at      = db.Column(db.DateTime, nullable=True)
+    result         = db.Column(db.String(12), nullable=True)
+    result_pct     = db.Column(db.Float, nullable=True)
+    votes_for      = db.Column(db.Integer, nullable=True)
+    votes_against  = db.Column(db.Integer, nullable=True)
+    votes_abstain  = db.Column(db.Integer, nullable=True)
+    eligible_count = db.Column(db.Integer, nullable=True)
+    result_at      = db.Column(db.DateTime, nullable=True)
+
+    __table_args__ = (db.UniqueConstraint('proposal_id', 'number', name='uq_proposal_round'),)
+
+    # selectin: de rondes komen in één extra query mee met de geladen
+    # voorstellen (statuslabel in het overzicht), zonder query per voorstel.
+    proposal = db.relationship('Proposal', backref=db.backref(
+        'rounds', lazy='selectin', order_by='ProposalRound.number', cascade='all, delete-orphan'))
+
+    @property
+    def is_open(self):
+        return self.closed_at is None
+
+
+class RoundVote(db.Model):
+    """Eén stem per persoon per extra ronde (unieke koppeling ronde, gebruiker)."""
+    __tablename__ = "round_votes"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    round_id   = db.Column(db.Integer, db.ForeignKey('proposal_rounds.id'), nullable=False, index=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    choice     = db.Column(db.String(12), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('round_id', 'user_id', name='uq_round_vote'),)
+
+    round = db.relationship('ProposalRound', backref=db.backref('votes', lazy=True, cascade='all, delete-orphan'))
 
 
 # ── Fase E, stap 5b: volgen en de dagelijkse samenvatting ─────────────────

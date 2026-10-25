@@ -311,6 +311,10 @@ def detach_user(user_id):
     # Stemmen zijn persoonlijk; een vastgelegde uitslag houdt zijn aantallen.
     from app.models import ProposalVote
     ProposalVote.query.filter_by(user_id=user_id).delete(synchronize_session='evaluate')
+    from app.models import ProposalRound, RoundVote
+    RoundVote.query.filter_by(user_id=user_id).delete(synchronize_session='evaluate')
+    ProposalRound.query.filter_by(opened_by_id=user_id).update({ProposalRound.opened_by_id: None},
+                                                                synchronize_session=False)
     from app import digest
     digest.delete_for_user(user_id)  # gevolgde voorstellen en samenvattingen
     for column in (ConductCase.acted_by_id, ConductCase.confirmed_by_id, ConductCase.restored_by_id):

@@ -1238,3 +1238,45 @@ msgstr "Also send me the daily summary of the proposals I follow by email. The s
 
 msgid "View your daily summaries"
 msgstr "View your daily summaries"
+
+#: app/templates/forum/_proposal_vote.html, app/templates/forum/_digest_items.html
+msgid "public"
+msgstr "public"
+
+msgid "event"
+msgstr "event"
+
+msgid "Results per round"
+msgstr "Results per round"
+
+#, python-format
+msgid "Round %(n)s (%(kind)s)"
+msgstr "Round %(n)s (%(kind)s)"
+
+msgid "Open a new public voting round"
+msgstr "Open a new public voting round"
+
+msgid "Lay the proposal before the public again: a new voting period on the same statement. Facts and discussion stay."
+msgstr "Lay the proposal before the public again: a new voting period on the same statement. Facts and discussion stay."
+
+msgid "Voting period"
+msgstr "Voting period"
+
+msgid "Open the round"
+msgstr "Open the round"
+
+#, python-format
+msgid "Round %(n)s opened, voting until %(date)s"
+msgstr "Round %(n)s opened, voting until %(date)s"
+
+#, python-format
+msgid "Round %(n)s: rejected, no valid votes"
+msgstr "Round %(n)s: rejected, no valid votes"
+
+#, python-format
+msgid "Round %(n)s: adopted with %(pct)s%% in favour"
+msgstr "Round %(n)s: adopted with %(pct)s%% in favour"
+
+#, python-format
+msgid "Round %(n)s: rejected with %(pct)s%% in favour"
+msgstr "Round %(n)s: rejected with %(pct)s%% in favour"
