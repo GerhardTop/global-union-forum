@@ -1,0 +1,28 @@
+{#
+  Partial: issues/_steps.html (herontwerp stap 1)
+  De fasen van een vraagstuk als tijdlijn, met de huidige fase gemarkeerd.
+  Online: de geplande datums per fase; event: zonder datums. Bij de huidige
+  fase de deadline als die bekend is. Context: issue.
+#}
+{% set steps = [
+  ('feiten', _('Facts and discussion'), issue.days_facts),
+  ('bijstellen', _('Revise the proposal'), issue.days_adjust),
+  ('stemmen', _('Voting'), issue.days_vote),
+  ('vervolg', _('Follow-up'), None),
+] %}
+{% set plan = issue.plan() %}
+<ol class="gu-proposal-steps" aria-label="{{ _('Phases of the issue') }}">
+  {% for key, title, days in steps %}
+  {% set state = 'current' if loop.index0 == issue.phase_index else ('done' if loop.index0 < issue.phase_index else 'todo') %}
+  <li class="gu-proposal-steps__step is-{{ state }}"{% if state == 'current' %} aria-current="step"{% endif %}>
+    <span class="gu-proposal-steps__n" aria-hidden="true">{{ loop.index }}</span>
+    <span class="gu-proposal-steps__title">{{ title }}{% if state == 'current' %}<span class="gu-sr-only"> ({{ _('current phase') }})</span>{% endif %}</span>
+    {% if days %}<span class="gu-proposal-steps__text">{{ days }} {{ _('day') if days == 1 else _('days') }}</span>{% endif %}
+    {% if state == 'current' and issue.phase_deadline %}
+    <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=issue.phase_deadline | datetimeformat('d MMM y HH:mm')) }}</span>
+    {% elif issue.kind == 'online' and key in plan %}
+    <span class="gu-proposal-steps__when">{{ _('%(start)s to %(end)s', start=plan[key][0] | dateformat('d MMM y'), end=plan[key][1] | dateformat('d MMM y')) }}</span>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ol>

@@ -1,0 +1,12 @@
+{#
+  Partial: issues/_kind.html (herontwerp stap 1)
+  Het label online of event, met de datum (event: datum en plaats; online:
+  de stemdeadline). Context: issue.
+#}
+<span class="gu-issue-kind">
+  {%- if issue.kind == 'event' -%}
+    {{ _('Event') }}{% if issue.event_date %} · {{ issue.event_date | datetimeformat('d MMM y HH:mm') }}{% endif %}{% if issue.event_location %} · {{ issue.event_location }}{% endif %}
+  {%- else -%}
+    {{ _('Online') }}{% if issue.voting_deadline %} · {{ _('voting until %(date)s', date=issue.voting_deadline | dateformat('d MMM y')) }}{% endif %}
+  {%- endif -%}
+</span>

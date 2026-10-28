@@ -609,6 +609,64 @@ class ConductObjection(db.Model):
     decided_by = db.relationship('User', foreign_keys=[decided_by_id])
 
 
+# ── Herontwerp: het vraagstuk (Issue) ────────────────────────────────────
+# Een vraagstuk is de container waar voorstellen onder hangen: een vraag met
+# een eerste bericht, online of als event, met een planning per fase en de
+# stemregels. Bouwstap 1: het model, de backfill (elk bestaand voorstel in een
+# eigen vraagstuk) en de basispagina's. De fase-automatiek draait tot stap 6/7
+# nog op het voorstel; de fasevelden hier worden gezet en getoond.
+ISSUE_KINDS = ('online', 'event')
+
+
+class Issue(db.Model):
+    __tablename__ = "issues"
+
+    id                     = db.Column(db.Integer, primary_key=True)
+    title                  = db.Column(db.String(300), nullable=False)   # de vraag
+    intro                  = db.Column(db.Text, nullable=True)           # het eerste bericht
+    kind                   = db.Column(db.String(10), nullable=False, default='online')  # online/event
+    event_location         = db.Column(db.String(200), nullable=True)
+    event_date             = db.Column(db.DateTime, nullable=True)
+    voting_deadline        = db.Column(db.Date, nullable=True)
+    # Planning per fase in dagen.
+    days_facts             = db.Column(db.Integer, nullable=False, default=21)
+    days_adjust            = db.Column(db.Integer, nullable=False, default=5)
+    days_vote              = db.Column(db.Integer, nullable=False, default=7)
+    # Stemregels.
+    support_threshold      = db.Column(db.Integer, nullable=False, default=5)
+    proposal_threshold_pct = db.Column(db.Integer, nullable=False, default=50)
+    show_interim           = db.Column(db.Boolean, nullable=False, default=True)
+    final_vote             = db.Column(db.Boolean, nullable=False, default=True)
+    # Fase: dezelfde waarden als bij het voorstel (PROPOSAL_PHASES).
+    phase                  = db.Column(db.String(12), nullable=False, default='feiten')
+    phase_started_at       = db.Column(db.DateTime, nullable=True)
+    phase_deadline         = db.Column(db.DateTime, nullable=True)
+    created_by_id          = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    created_at             = db.Column(db.DateTime, default=datetime.utcnow)
+    lang                   = db.Column(db.String(5), nullable=True)
+    is_closed              = db.Column(db.Boolean, nullable=False, default=False)
+
+    created_by = db.relationship('User', foreign_keys=[created_by_id])
+
+    def days(self, phase):
+        return {'feiten': self.days_facts, 'bijstellen': self.days_adjust,
+                'stemmen': self.days_vote}.get(phase)
+
+    def plan(self):
+        """De geplande (begin, eind) per fase met een doorlooptijd, gerekend
+        vanaf de aanmaak: elke fase begint waar de vorige eindigt."""
+        windows, moment = {}, self.created_at or datetime.utcnow()
+        for phase in PROPOSAL_TIMED_PHASES:
+            end = moment + timedelta(days=self.days(phase) or 0)
+            windows[phase] = (moment, end)
+            moment = end
+        return windows
+
+    @property
+    def phase_index(self):
+        return PROPOSAL_PHASES.index(self.phase) if self.phase in PROPOSAL_PHASES else 0
+
+
 # ── Fase E: het voorstel als bijzonder soort gesprek ─────────────────────
 # Een voorstel hangt één-op-één aan een gesprek (Thread); een gewoon gesprek
 # heeft geen Proposal. Vier fasen; in stap 1 staat elk voorstel in de eerste.
@@ -659,12 +717,15 @@ class Proposal(db.Model):
     eligible_count     = db.Column(db.Integer, nullable=True)      # stemgerechtigden bij het sluiten
     result_at          = db.Column(db.DateTime, nullable=True)
     created_at         = db.Column(db.DateTime, default=datetime.utcnow)
+    # Herontwerp stap 1: het vraagstuk waar dit voorstel onder hangt.
+    issue_id           = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=True, index=True)
 
     # lazy='joined': het voorstel komt mee met elke Thread-query (een LEFT
     # JOIN), dus geen extra databaseronde in het overzicht of op de pagina.
     thread = db.relationship('Thread', backref=db.backref('proposal', uselist=False, lazy='joined',
                                                           cascade='all, delete-orphan'))
     host   = db.relationship('User', foreign_keys=[host_id])
+    issue  = db.relationship('Issue', backref=db.backref('proposals', lazy=True))
 
     def window(self, phase):
         """(begin, eind) van een fase; bij een event (None, None). Vervolg

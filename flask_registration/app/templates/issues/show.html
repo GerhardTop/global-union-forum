@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ issue.title }} · Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<main class="gu-forum" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
+      <a href="{{ url_for('issues.index') }}">{{ _('Conversations') }}</a>
+      <span aria-hidden="true">›</span>
+      <span>{{ _('Issue') }}</span>
+    </nav>
+
+    <header class="gu-forum__threadhead">
+      <p class="gu-eyebrow">{{ _('Issue') }} · {% include 'issues/_kind.html' %}
+        {% if issue.is_closed %}<span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}</p>
+      <h1 class="gu-forum__title">{{ issue.title }}</h1>
+    </header>
+
+    <section class="gu-issue__phase" aria-labelledby="issuePhase">
+      <h2 id="issuePhase" class="gu-eyebrow">{{ _('Phase') }}: {{ phase_labels[issue.phase] if issue.phase in phase_labels else issue.phase }}</h2>
+      {% include 'issues/_steps.html' %}
+    </section>
+
+    {% if issue.intro %}
+    <section class="gu-issue__intro" style="margin-top:24px;">
+      <p style="white-space:pre-line;">{{ issue.intro | linkify }}</p>
+    </section>
+    {% endif %}
+
+    {% if issue.proposals %}
+    <section class="gu-issue__proposals" style="margin-top:24px;">
+      <h2 class="gu-eyebrow">{{ _('Proposals') }}</h2>
+      <ul class="gu-threadlist">
+        {% for proposal in issue.proposals %}
+        <li class="gu-threadlist__row">
+          <a class="gu-threadlist__link" href="{{ url_for('forum.forum_thread', thread_id=proposal.thread_id) }}">
+            <span class="gu-threadlist__title">{{ proposal.thread.title_prefix_nl if lang == 'nl' else proposal.thread.title_prefix_en }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+  </div>
+</main>
+{% endblock %}{% endblock %}

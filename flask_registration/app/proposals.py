@@ -436,4 +436,7 @@ def delete_for_threads(thread_ids):
                 ProposalRound.query.filter(ProposalRound.id.in_(round_ids)).delete(synchronize_session='evaluate')
             from app import digest
             digest.delete_for_proposals(proposal_ids)
+        issue_ids = [iid for (iid,) in db.session.query(Proposal.issue_id).filter(Proposal.thread_id.in_(thread_ids))]
         Proposal.query.filter(Proposal.thread_id.in_(thread_ids)).delete(synchronize_session='evaluate')
+        from app import issues
+        issues.delete_wrappers(issue_ids)  # herontwerp: het eigen vraagstuk van zo'n voorstel

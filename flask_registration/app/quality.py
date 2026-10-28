@@ -308,6 +308,8 @@ def detach_user(user_id):
     als beslisser of bezwaarmaker los (de beslissing en de thread blijven)."""
     from app.models import AppSetting, ConductCase, ConductObjection, Proposal, QualityObjection, QualityPromotion
     Proposal.query.filter_by(host_id=user_id).update({Proposal.host_id: None}, synchronize_session=False)
+    from app.models import Issue
+    Issue.query.filter_by(created_by_id=user_id).update({Issue.created_by_id: None}, synchronize_session=False)
     # Stemmen zijn persoonlijk; een vastgelegde uitslag houdt zijn aantallen.
     from app.models import ProposalVote
     ProposalVote.query.filter_by(user_id=user_id).delete(synchronize_session='evaluate')

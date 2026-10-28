@@ -1280,3 +1280,125 @@ msgstr "Round %(n)s: adopted with %(pct)s%% in favour"
 #, python-format
 msgid "Round %(n)s: rejected with %(pct)s%% in favour"
 msgstr "Round %(n)s: rejected with %(pct)s%% in favour"
+
+# Herontwerp stap 1: vraagstukken (Issue)
+
+msgid "Conversations"
+msgstr "Conversations"
+
+msgid "Issue"
+msgstr "Issue"
+
+msgid "Issues"
+msgstr "Issues"
+
+msgid "Phase"
+msgstr "Phase"
+
+msgid "Proposals"
+msgstr "Proposals"
+
+msgid "New issue"
+msgstr "New issue"
+
+msgid "All conversations"
+msgstr "All conversations"
+
+msgid "No issues yet. Start the first one."
+msgstr "No issues yet. Start the first one."
+
+msgid "Phases of the issue"
+msgstr "Phases of the issue"
+
+msgid "day"
+msgstr "day"
+
+msgid "until %(date)s"
+msgstr "until %(date)s"
+
+msgid "Online"
+msgstr "Online"
+
+msgid "voting until %(date)s"
+msgstr "voting until %(date)s"
+
+msgid "Start a new issue"
+msgstr "Start a new issue"
+
+msgid "The question"
+msgstr "The question"
+
+msgid "Phrase the question this issue is about"
+msgstr "Phrase the question this issue is about"
+
+msgid "Enter a question of at most 300 characters."
+msgstr "Enter a question of at most 300 characters."
+
+msgid "First post"
+msgstr "First post"
+
+msgid "Explain the question. Give context and why it matters."
+msgstr "Explain the question. Give context and why it matters."
+
+msgid "Write a first post."
+msgstr "Write a first post."
+
+msgid "Online or event"
+msgstr "Online or event"
+
+msgid "Fully online, with a fixed schedule per phase."
+msgstr "Fully online, with a fixed schedule per phase."
+
+msgid "Linked to a meeting at a date and place."
+msgstr "Linked to a meeting at a date and place."
+
+msgid "Choose online or event."
+msgstr "Choose online or event."
+
+msgid "Date and time"
+msgstr "Date and time"
+
+msgid "Enter the date and time of the event."
+msgstr "Enter the date and time of the event."
+
+msgid "Location"
+msgstr "Location"
+
+msgid "Voting deadline"
+msgstr "Voting deadline"
+
+msgid "Optional. For an online issue the deadline follows from the schedule."
+msgstr "Optional. For an online issue the deadline follows from the schedule."
+
+msgid "Enter a valid date."
+msgstr "Enter a valid date."
+
+msgid "Schedule per phase"
+msgstr "Schedule per phase"
+
+msgid "Voting rules"
+msgstr "Voting rules"
+
+msgid "Support needed for a proposal"
+msgstr "Support needed for a proposal"
+
+msgid "supporters"
+msgstr "supporters"
+
+msgid "A proposal goes to the vote once it has this many supporters."
+msgstr "A proposal goes to the vote once it has this many supporters."
+
+msgid "Enter a whole number from 1 to 1000."
+msgstr "Enter a whole number from 1 to 1000."
+
+msgid "Show the interim result during voting"
+msgstr "Show the interim result during voting"
+
+msgid "End with a final vote"
+msgstr "End with a final vote"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Start issue"
+msgstr "Start issue"

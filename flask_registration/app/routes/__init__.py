@@ -6,5 +6,6 @@ from app.routes.admin import admin_bp
 from app.routes.social import social
 from app.routes.wikipolitics import wikipolitics
 from app.routes.intern import intern
+from app.routes.issues import issues_bp
 
-__all__ = ['main', 'auth', 'forum_bp', 'profile_bp', 'admin_bp', 'social', 'wikipolitics', 'intern', '_seed_forum']
+__all__ = ['main', 'auth', 'forum_bp', 'profile_bp', 'admin_bp', 'social', 'wikipolitics', 'intern', 'issues_bp', '_seed_forum']

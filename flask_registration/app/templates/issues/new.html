@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}{{ _('New issue') }} · Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<main class="gu-forum" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
+      <a href="{{ url_for('issues.index') }}">{{ _('Conversations') }}</a>
+      <span aria-hidden="true">›</span>
+      <span>{{ _('New issue') }}</span>
+    </nav>
+
+    <header class="gu-forum__threadhead">
+      <p class="gu-eyebrow">{{ _('Issue') }}</p>
+      <h1 class="gu-forum__title">{{ _('Start a new issue') }}</h1>
+    </header>
+
+    {% set fd = form_data or {} %}
+    {% set errs = errors or {} %}
+    {# Bij een eerste bezoek staan beide stemregel-vinkjes aan; na een fout de ingevulde stand. #}
+    {% set fresh = not fd %}
+    <form class="gu-forum__newform" method="POST" action="{{ url_for('issues.new') }}" novalidate>
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+
+      <div class="gu-forum__newfield">
+        <label for="title">{{ _('The question') }}</label>
+        <input type="text" name="title" id="title" required maxlength="300" autocomplete="off"
+               class="gu-input{% if errs.get('title') %} gu-input--error{% endif %}"
+               value="{{ fd.get('title', '') }}" placeholder="{{ _('Phrase the question this issue is about') }}">
+        {% if errs.get('title') %}<p class="gu-join__formError">{{ _('Enter a question of at most 300 characters.') }}</p>{% endif %}
+      </div>
+
+      <div class="gu-forum__newfield">
+        <label for="intro">{{ _('First post') }}</label>
+        <textarea name="intro" id="intro" class="gu-composer__input" required rows="6"
+                  placeholder="{{ _('Explain the question. Give context and why it matters.') }}">{{ fd.get('intro', '') }}</textarea>
+        {% if errs.get('intro') %}<p class="gu-join__formError">{{ _('Write a first post.') }}</p>{% endif %}
+      </div>
+
+      <fieldset class="gu-forum__newfield gu-newtype">
+        <legend>{{ _('Online or event') }}</legend>
+        <label class="gu-newtype__option">
+          <input type="radio" name="kind" value="online"{% if fd.get('kind', 'online') != 'event' %} checked{% endif %}>
+          <span><strong>{{ _('Online') }}</strong><span class="gu-composer__hint">{{ _('Fully online, with a fixed schedule per phase.') }}</span></span>
+        </label>
+        <label class="gu-newtype__option">
+          <input type="radio" name="kind" value="event"{% if fd.get('kind') == 'event' %} checked{% endif %}>
+          <span><strong>{{ _('Event') }}</strong><span class="gu-composer__hint">{{ _('Linked to a meeting at a date and place.') }}</span></span>
+        </label>
+        {% if errs.get('kind') %}<p class="gu-join__formError">{{ _('Choose online or event.') }}</p>{% endif %}
+      </fieldset>
+
+      <fieldset class="gu-forum__newfield gu-durations" id="eventFields">
+        <legend>{{ _('Event') }}</legend>
+        <div class="gu-durations__row">
+          <label for="event_date">{{ _('Date and time') }}</label>
+          <input type="datetime-local" id="event_date" name="event_date"
+                 class="gu-input{% if errs.get('event_date') %} gu-input--error{% endif %}" value="{{ fd.get('event_date', '') }}">
+          {% if errs.get('event_date') %}<p class="gu-join__formError">{{ _('Enter the date and time of the event.') }}</p>{% endif %}
+        </div>
+        <div class="gu-durations__row">
+          <label for="event_location">{{ _('Location') }}</label>
+          <input type="text" id="event_location" name="event_location" maxlength="200" class="gu-input"
+                 value="{{ fd.get('event_location', '') }}">
+        </div>
+        <div class="gu-durations__row">
+          <label for="voting_deadline">{{ _('Voting deadline') }}</label>
+          <input type="date" id="voting_deadline" name="voting_deadline"
+                 class="gu-input{% if errs.get('voting_deadline') %} gu-input--error{% endif %}" value="{{ fd.get('voting_deadline', '') }}">
+          <span class="gu-composer__hint">{{ _('Optional. For an online issue the deadline follows from the schedule.') }}</span>
+          {% if errs.get('voting_deadline') %}<p class="gu-join__formError">{{ _('Enter a valid date.') }}</p>{% endif %}
+        </div>
+      </fieldset>
+
+      <fieldset class="gu-forum__newfield gu-durations">
+        <legend>{{ _('Schedule per phase') }}</legend>
+        {% set phase_fields = [('days_facts', _('Facts and discussion')), ('days_adjust', _('Revise the proposal')), ('days_vote', _('Voting'))] %}
+        {% for name, label in phase_fields %}
+        <div class="gu-durations__row">
+          <label for="{{ name }}">{{ label }}</label>
+          <input type="number" min="1" max="365" step="1" inputmode="numeric" id="{{ name }}" name="{{ name }}"
+                 class="gu-input{% if errs.get(name) %} gu-input--error{% endif %}"
+                 value="{{ fd.get(name) or defaults[name] }}">
+          <span class="gu-composer__hint">{{ _('days') }}</span>
+          {% if errs.get(name) %}<p class="gu-join__formError">{{ _('Enter a whole number from 1 to 365.') }}</p>{% endif %}
+        </div>
+        {% endfor %}
+      </fieldset>
+
+      <fieldset class="gu-forum__newfield">
+        <legend>{{ _('Voting rules') }}</legend>
+        <div class="gu-forum__newfield gu-threshold">
+          <label for="support_threshold">{{ _('Support needed for a proposal') }}</label>
+          <div class="gu-threshold__row">
+            <input type="number" min="1" max="1000" step="1" inputmode="numeric" id="support_threshold" name="support_threshold"
+                   class="gu-input{% if errs.get('support_threshold') %} gu-input--error{% endif %}"
+                   value="{{ fd.get('support_threshold') or 5 }}">
+            <span>{{ _('supporters') }}</span>
+          </div>
+          <span class="gu-composer__hint">{{ _('A proposal goes to the vote once it has this many supporters.') }}</span>
+          {% if errs.get('support_threshold') %}<p class="gu-join__formError">{{ _('Enter a whole number from 1 to 1000.') }}</p>{% endif %}
+        </div>
+        <div class="gu-forum__newfield gu-threshold">
+          <label for="proposal_threshold_pct">{{ _('Threshold for adoption') }}</label>
+          <div class="gu-threshold__row">
+            <span>{{ _('more than') }}</span>
+            <input type="number" min="50" max="99" step="1" inputmode="numeric" id="proposal_threshold_pct" name="proposal_threshold_pct"
+                   class="gu-input{% if errs.get('proposal_threshold_pct') %} gu-input--error{% endif %}"
+                   value="{{ fd.get('proposal_threshold_pct') or 50 }}">
+            <span>{{ _('percent in favour') }}</span>
+          </div>
+          {% if errs.get('proposal_threshold_pct') %}<p class="gu-join__formError">{{ _('Choose a threshold from 50 to 99 percent.') }}</p>{% endif %}
+        </div>
+        <label class="gu-join__check">
+          <input type="checkbox" name="show_interim" value="1"{% if fresh or fd.get('show_interim') == '1' %} checked{% endif %}>
+          <span>{{ _('Show the interim result during voting') }}</span>
+        </label>
+        <label class="gu-join__check">
+          <input type="checkbox" name="final_vote" value="1"{% if fresh or fd.get('final_vote') == '1' %} checked{% endif %}>
+          <span>{{ _('End with a final vote') }}</span>
+        </label>
+      </fieldset>
+
+      <div class="gu-forum__newactions">
+        <a href="{{ url_for('issues.index') }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">
+          {{ _('Start issue') }} <span class="gu-arrow"></span>
+        </button>
+      </div>
+    </form>
+
+  </div>
+</main>
+{% endblock %}
+
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    // De eventvelden alleen bij een event. Zonder JavaScript staat alles in beeld.
+    var eventFields = document.getElementById('eventFields');
+    function sync() {
+      var kind = document.querySelector('input[name="kind"]:checked');
+      eventFields.hidden = !(kind && kind.value === 'event');
+    }
+    document.querySelectorAll('input[name="kind"]').forEach(function (r) {
+      r.addEventListener('change', sync);
+    });
+    sync();
+  })();
+</script>
+{% endblock %}

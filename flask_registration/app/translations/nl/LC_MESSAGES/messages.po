@@ -1280,3 +1280,125 @@ msgstr "Ronde %(n)s: aangenomen met %(pct)s%% voor"
 #, python-format
 msgid "Round %(n)s: rejected with %(pct)s%% in favour"
 msgstr "Ronde %(n)s: verworpen met %(pct)s%% voor"
+
+# Herontwerp stap 1: vraagstukken (Issue)
+
+msgid "Conversations"
+msgstr "Gesprekken"
+
+msgid "Issue"
+msgstr "Vraagstuk"
+
+msgid "Issues"
+msgstr "Vraagstukken"
+
+msgid "Phase"
+msgstr "Fase"
+
+msgid "Proposals"
+msgstr "Voorstellen"
+
+msgid "New issue"
+msgstr "Nieuw vraagstuk"
+
+msgid "All conversations"
+msgstr "Alle gesprekken"
+
+msgid "No issues yet. Start the first one."
+msgstr "Nog geen vraagstukken. Start het eerste vraagstuk."
+
+msgid "Phases of the issue"
+msgstr "Fasen van het vraagstuk"
+
+msgid "day"
+msgstr "dag"
+
+msgid "until %(date)s"
+msgstr "tot %(date)s"
+
+msgid "Online"
+msgstr "Online"
+
+msgid "voting until %(date)s"
+msgstr "stemmen tot %(date)s"
+
+msgid "Start a new issue"
+msgstr "Nieuw vraagstuk starten"
+
+msgid "The question"
+msgstr "De vraag"
+
+msgid "Phrase the question this issue is about"
+msgstr "Formuleer de vraag waar dit vraagstuk over gaat"
+
+msgid "Enter a question of at most 300 characters."
+msgstr "Vul een vraag in van hooguit 300 tekens."
+
+msgid "First post"
+msgstr "Eerste bericht"
+
+msgid "Explain the question. Give context and why it matters."
+msgstr "Licht de vraag toe. Geef context en waarom het ertoe doet."
+
+msgid "Write a first post."
+msgstr "Schrijf een eerste bericht."
+
+msgid "Online or event"
+msgstr "Online of event"
+
+msgid "Fully online, with a fixed schedule per phase."
+msgstr "Volledig online, met een vaste planning per fase."
+
+msgid "Linked to a meeting at a date and place."
+msgstr "Gekoppeld aan een bijeenkomst op een datum en plaats."
+
+msgid "Choose online or event."
+msgstr "Kies online of event."
+
+msgid "Date and time"
+msgstr "Datum en tijd"
+
+msgid "Enter the date and time of the event."
+msgstr "Vul de datum en tijd van het event in."
+
+msgid "Location"
+msgstr "Locatie"
+
+msgid "Voting deadline"
+msgstr "Stemdeadline"
+
+msgid "Optional. For an online issue the deadline follows from the schedule."
+msgstr "Optioneel. Bij een online vraagstuk volgt de deadline uit de planning."
+
+msgid "Enter a valid date."
+msgstr "Vul een geldige datum in."
+
+msgid "Schedule per phase"
+msgstr "Planning per fase"
+
+msgid "Voting rules"
+msgstr "Stemregels"
+
+msgid "Support needed for a proposal"
+msgstr "Steun nodig voor een voorstel"
+
+msgid "supporters"
+msgstr "steunbetuigingen"
+
+msgid "A proposal goes to the vote once it has this many supporters."
+msgstr "Een voorstel gaat naar de stemming zodra het zoveel steunbetuigingen heeft."
+
+msgid "Enter a whole number from 1 to 1000."
+msgstr "Vul een geheel getal van 1 tot en met 1000 in."
+
+msgid "Show the interim result during voting"
+msgstr "Tussenstand tonen tijdens het stemmen"
+
+msgid "End with a final vote"
+msgstr "Afsluiten met een eindstemming"
+
+msgid "Cancel"
+msgstr "Annuleer"
+
+msgid "Start issue"
+msgstr "Vraagstuk starten"

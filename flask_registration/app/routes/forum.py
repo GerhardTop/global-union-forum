@@ -1011,6 +1011,9 @@ def forum_nieuw():
                 is_op=True,
             )
             db.session.add(post)
+            if is_proposal:
+                from app import issues
+                issues.wrap(proposal)  # herontwerp: elk voorstel hangt onder een vraagstuk
             db.session.commit()
             quality.schedule_judgement(post.id)
             return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#post-' + str(post.id))

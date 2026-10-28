@@ -151,6 +151,9 @@ def _migrate_columns():
     _migrate_proposals(existing)
     _migrate_indexes()
     _migrate_username_and_backfill(insp, existing, is_pg)
+    # Na alle kolommigraties: de backfill gebruikt de ORM op Proposal en Thread.
+    from app import issues
+    issues.backfill()
 
 
 def _migrate_roles(existing):
@@ -252,7 +255,10 @@ def _migrate_proposals(existing):
                                            ('votes_against', 'INTEGER NULL'),
                                            ('votes_abstain', 'INTEGER NULL'),
                                            ('eligible_count', 'INTEGER NULL'),
-                                           ('result_at', 'TIMESTAMP NULL'))
+                                           ('result_at', 'TIMESTAMP NULL'),
+                                           # Herontwerp stap 1: het vraagstuk (de tabel issues
+                                           # maakt db.create_all() eerder in de start aan).
+                                           ('issue_id', 'INTEGER NULL REFERENCES issues(id)'))
              if name not in cols]
     if not added:
         return
@@ -273,6 +279,8 @@ _INDEXES = (
     ('quality_reports', 'award_id'),
     ('conduct_objections', 'case_id'),
     ('quality_promotions', 'user_id'),
+    ('proposals', 'issue_id'),
+    ('issues', 'created_by_id'),
 )
 
 
@@ -729,7 +737,7 @@ def create_app():
             return
         return redirect(url_for('auth.kies_gebruikersnaam'))
 
-    from app.routes import main, auth, forum_bp, profile_bp, admin_bp, social, wikipolitics, intern
+    from app.routes import main, auth, forum_bp, profile_bp, admin_bp, social, wikipolitics, intern, issues_bp
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(forum_bp)
@@ -738,6 +746,7 @@ def create_app():
     app.register_blueprint(social)
     app.register_blueprint(wikipolitics)
     app.register_blueprint(intern)
+    app.register_blueprint(issues_bp)
 
     from app.cli import register_cli
     register_cli(app)

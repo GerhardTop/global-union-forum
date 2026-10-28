@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Conversations') }} · Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+<main class="gu-forum" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    <div class="gu-forum__topbar">
+      <header class="gu-forum__indexhead">
+        <p class="gu-eyebrow">{{ _('Issues') }}</p>
+        <h1 class="gu-forum__title">{{ _('Conversations') }}</h1>
+      </header>
+      <div class="gu-forum__topactions">
+        {% if current_user.is_authenticated %}
+        {% if current_user.can_contribute() %}
+        <a href="{{ url_for('issues.new') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
+          <span style="font-size:1.1em;line-height:1">+</span>
+          {{ _('New issue') }}
+        </a>
+        {% else %}
+        <a href="{{ url_for('main.spelregels', next=request.path) }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
+          {{ _('Accept the conduct rules to join in') }}
+        </a>
+        {% endif %}
+        {% endif %}
+        <a href="{{ url_for('forum.forum') }}" class="gu-forum__closed-link">{{ _('All conversations') }}</a>
+      </div>
+    </div>
+
+    {% if issues %}
+    <ul class="gu-threadlist">
+      {% for issue in issues %}
+      <li class="gu-threadlist__row">
+        <a class="gu-threadlist__link" href="{{ url_for('issues.show', issue_id=issue.id) }}">
+          <span class="gu-threadlist__eyebrow">{% include 'issues/_kind.html' %}</span>
+          <span class="gu-threadlist__title">{{ issue.title }}</span>
+          <span class="gu-threadlist__meta">
+            <span>{{ _('Phase') }}: {{ phase_labels[issue.phase] if issue.phase in phase_labels else issue.phase }}</span>
+          </span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="gu-threadlist__empty">{{ _('No issues yet. Start the first one.') }}</p>
+    {% endif %}
+
+  </div>
+</main>
+{% endblock %}{% endblock %}
