@@ -3538,3 +3538,22 @@ body {
 .gu-ipdetail__versionexpl { margin-top: 4px; font-size: 0.875rem; color: var(--gu-fg-3); white-space: pre-line; }
 .gu-ipdetail__back { margin-top: 24px; }
 .gu-cockpit__proposal .gu-ip-status { align-self: flex-start; }
+
+/* ── FAQ (/faq) ───────────────────────────────────────────────────────────
+   Per thema een lijst met uitklapbare vragen (<details>), standaard dicht. */
+.gu-faq__theme { margin-top: 32px; }
+.gu-faq__themetitle { margin: 0 0 12px; font-size: 1.125rem; font-weight: 600; color: var(--gu-fg-1); }
+.gu-faq__list { border: 1px solid var(--gu-border); border-radius: 12px; background: var(--gu-paper); overflow: hidden; }
+.gu-faq__item + .gu-faq__item { border-top: 1px solid var(--gu-border); }
+.gu-faq__question {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  padding: 14px 18px; cursor: pointer; list-style: none; font-weight: 500; color: var(--gu-fg-1); line-height: 1.45;
+}
+.gu-faq__question::-webkit-details-marker { display: none; }
+.gu-faq__question::after { content: '+'; flex-shrink: 0; color: var(--gu-globe-deep); font-weight: 600; }
+.gu-faq__item[open] > .gu-faq__question::after { content: '−'; }
+.gu-faq__question:hover { background: var(--gu-bg-soft); }
+.gu-faq__question:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: -2px; }
+.gu-faq__answer { padding: 0 18px 16px; color: var(--gu-fg-2); line-height: 1.6; }
+.gu-faq__answer p { margin: 0; }
+.gu-faq__answer a { color: var(--gu-globe-deep); }

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{#
+  Veelgestelde vragen (/faq). Redactionele tekst uit app/faq.py, tweetalig
+  zoals de andere inhoudspagina's. Elke vraag klapt uit met <details>, dus
+  zonder JavaScript te gebruiken; standaard staat alles dicht.
+#}
+{% block title %}{% if lang == 'nl' %}Veelgestelde vragen{% else %}FAQ{% endif %} · Global Union{% endblock %}
+
+{% block content %}
+<div class="gu-profile gu-faq" style="max-width: 720px;" lang="{{ lang }}">
+
+  <div class="gu-profile__head">
+    <p class="gu-eyebrow">FAQ</p>
+    <h1 class="gu-profile__title">{% if lang == 'nl' %}Veelgestelde vragen{% else %}FAQ{% endif %}</h1>
+  </div>
+
+  {% for theme, questions in themes %}
+  {% set t = loop.index %}
+  <section class="gu-faq__theme" aria-labelledby="faq-thema-{{ t }}">
+    <h2 class="gu-faq__themetitle" id="faq-thema-{{ t }}">{{ theme }}</h2>
+    <div class="gu-faq__list">
+      {% for question, answer in questions %}
+      <details class="gu-faq__item" id="faq-{{ t }}-{{ loop.index }}">
+        <summary class="gu-faq__question">{{ question }}</summary>
+        <div class="gu-faq__answer"><p>{{ answer }}</p></div>
+      </details>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+</div>
+{% endblock %}

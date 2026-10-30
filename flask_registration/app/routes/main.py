@@ -118,6 +118,12 @@ def privacy():
     return render_template("privacy.html")
 
 
+@main.route("/faq")
+def faq():
+    from app import faq as faq_content
+    return render_template("faq.html", themes=faq_content.for_lang(session.get('lang', 'nl')))
+
+
 @main.route("/spelregels")
 def spelregels():
     """Publieke, tweetalige pagina met de spelregels: de gedragsregels (waarmee

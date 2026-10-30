@@ -11,6 +11,8 @@
        {% if request.endpoint and request.endpoint.startswith(('issues.', 'forum.')) %}class="is-active"{% endif %}>{{ _('Conversations') }}</a>
     <a href="{{ url_for('main.manifest') }}"
        {% if request.endpoint == 'main.manifest' %}class="is-active"{% endif %}>Manifest</a>
+    <a href="{{ url_for('main.faq') }}"
+       {% if request.endpoint == 'main.faq' %}class="is-active"{% endif %}>FAQ</a>
     <a href="{{ url_for('main.about') }}"
        {% if request.endpoint == 'main.about' %}class="is-active"{% endif %}>{{ _('About') }}</a>
     {% if not current_user.is_authenticated %}
