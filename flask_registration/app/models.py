@@ -645,8 +645,12 @@ class Issue(db.Model):
     created_at             = db.Column(db.DateTime, default=datetime.utcnow)
     lang                   = db.Column(db.String(5), nullable=True)
     is_closed              = db.Column(db.Boolean, nullable=False, default=False)
+    # Stap 2: het gesprek met de gedeelde discussie (de middenkolom van de
+    # cockpit). Bij een ingepakt voorstel het gesprek van dat voorstel.
+    thread_id              = db.Column(db.Integer, db.ForeignKey('threads.id'), nullable=True, index=True)
 
     created_by = db.relationship('User', foreign_keys=[created_by_id])
+    thread     = db.relationship('Thread', foreign_keys=[thread_id])
 
     def days(self, phase):
         return {'feiten': self.days_facts, 'bijstellen': self.days_adjust,

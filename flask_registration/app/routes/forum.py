@@ -602,8 +602,10 @@ def forum_thread(thread_id):
                     db.session.commit()
             # Kwaliteit (fase C1): AI-suggestie op de achtergrond, best-effort.
             quality.schedule_judgement(post.id)
-            # Naar de weergave waar de nieuwe reactie staat (ook voorbij niveau 4).
-            return redirect(post_url(post))
+            # Naar de weergave waar de nieuwe reactie staat (ook voorbij niveau 4);
+            # vanuit de cockpit van een vraagstuk terug naar de cockpit.
+            return redirect(_issue_post_url(request.form.get('return_to', type=int), thread, post)
+                            or post_url(post))
         return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#{anchor}')
 
     return _render_thread(thread)
@@ -658,6 +660,21 @@ def post_url(post):
     return url_for('forum.forum_branch', thread_id=post.thread_id, post_id=root.id) + f'#post-{post.id}'
 
 
+def _issue_post_url(issue_id, thread, post):
+    """De plek van een reactie in de cockpit van het vraagstuk bij dit gesprek,
+    of None (geen of een ander vraagstuk, of dieper dan de cockpit toont)."""
+    if issue_id is None:
+        return None
+    from app.models import Issue
+    issue = db.session.get(Issue, issue_id)
+    if issue is None or issue.thread_id != thread.id:
+        return None
+    url = post_url(post)
+    if not url.startswith(url_for('forum.forum_thread', thread_id=thread.id) + '#'):
+        return None
+    return url_for('issues.show', issue_id=issue.id) + f'#post-{post.id}'
+
+
 @forum_bp.app_context_processor
 def _inject_post_url():
     return {'post_url': post_url}
@@ -681,8 +698,14 @@ def forum_branch(thread_id, post_id):
 
 
 def _render_thread(thread, branch_root_id=None):
-    """De gesprekspagina (of een tak). De berichten en de handhavingsgegevens
-    worden hier één keer opgehaald en overal hergebruikt."""
+    """De gesprekspagina (of een tak)."""
+    return render_template('forum/thread.html', **_thread_context(thread, branch_root_id))
+
+
+def _thread_context(thread, branch_root_id=None):
+    """De templatecontext van de discussie (de gesprekspagina, een tak of de
+    cockpit van een vraagstuk). De berichten en de handhavingsgegevens worden
+    hier één keer opgehaald en overal hergebruikt."""
     # Fase E: een publiek voorstel waarvan de fase is afgelopen schuift door
     # (het voorstel is al met het gesprek geladen, dus normaal geen query).
     if thread.proposal is not None:
@@ -791,8 +814,7 @@ def _render_thread(thread, branch_root_id=None):
                     if p.user_id == current_user.id and p.id not in quality_awards and not p.is_demo
                     and p.body != '[bericht verwijderd]'
                     and (p.edited_at or p.created_at) and (p.edited_at or p.created_at) >= fresh}
-    return render_template(
-        'forum/thread.html',
+    return dict(
         thread=thread,
         reply_form=reply_form,
         posts=[p for p in all_posts if p.id not in removed_ids],  # zichtbare tellingen

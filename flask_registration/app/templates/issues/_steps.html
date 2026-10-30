@@ -1,8 +1,9 @@
 {#
-  Partial: issues/_steps.html (herontwerp stap 1)
-  De fasen van een vraagstuk als tijdlijn, met de huidige fase gemarkeerd.
+  Partial: issues/_steps.html (herontwerp stap 1 en 2)
+  De fase-strip van een vraagstuk: de vier fasen, de huidige gemarkeerd.
   Online: de geplande datums per fase; event: zonder datums. Bij de huidige
-  fase de deadline als die bekend is. Context: issue.
+  fase de deadline en de resterende tijd als die bekend zijn.
+  Context: issue, remaining (optioneel, uit issues.remaining).
 #}
 {% set steps = [
   ('feiten', _('Facts and discussion'), issue.days_facts),
@@ -20,6 +21,15 @@
     {% if days %}<span class="gu-proposal-steps__text">{{ days }} {{ _('day') if days == 1 else _('days') }}</span>{% endif %}
     {% if state == 'current' and issue.phase_deadline %}
     <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=issue.phase_deadline | datetimeformat('d MMM y HH:mm')) }}</span>
+    {% if remaining %}
+    {% set n, unit = remaining %}
+    <span class="gu-proposal-steps__left">
+      {%- if unit == 'over' -%}{{ _('Deadline passed') }}
+      {%- elif unit == 'days' -%}{{ _('1 day left') if n == 1 else _('%(num)s days left', num=n) }}
+      {%- elif unit == 'hours' -%}{{ _('1 hour left') if n == 1 else _('%(num)s hours left', num=n) }}
+      {%- else -%}{{ _('1 minute left') if n == 1 else _('%(num)s minutes left', num=n) }}{%- endif -%}
+    </span>
+    {% endif %}
     {% elif issue.kind == 'online' and key in plan %}
     <span class="gu-proposal-steps__when">{{ _('%(start)s to %(end)s', start=plan[key][0] | dateformat('d MMM y'), end=plan[key][1] | dateformat('d MMM y')) }}</span>
     {% endif %}

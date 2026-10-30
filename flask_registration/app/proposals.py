@@ -426,6 +426,8 @@ def delete_for_threads(thread_ids):
     """Vóór het in bulk verwijderen van gesprekken: hun voorstellen weg."""
     thread_ids = list(thread_ids)
     if thread_ids:
+        from app import issues
+        issues.detach_threads(thread_ids)  # herontwerp: de discussie van een vraagstuk
         proposal_ids = [pid for (pid,) in db.session.query(Proposal.id).filter(Proposal.thread_id.in_(thread_ids))]
         if proposal_ids:
             ProposalVote.query.filter(ProposalVote.proposal_id.in_(proposal_ids)).delete(synchronize_session='evaluate')
@@ -438,5 +440,4 @@ def delete_for_threads(thread_ids):
             digest.delete_for_proposals(proposal_ids)
         issue_ids = [iid for (iid,) in db.session.query(Proposal.issue_id).filter(Proposal.thread_id.in_(thread_ids))]
         Proposal.query.filter(Proposal.thread_id.in_(thread_ids)).delete(synchronize_session='evaluate')
-        from app import issues
         issues.delete_wrappers(issue_ids)  # herontwerp: het eigen vraagstuk van zo'n voorstel

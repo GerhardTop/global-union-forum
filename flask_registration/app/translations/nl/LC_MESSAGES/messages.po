@@ -347,9 +347,6 @@ msgstr "om mee te doen aan het gesprek."
 msgid "The manifesto"
 msgstr "Het manifest"
 
-msgid "About"
-msgstr "Over ons"
-
 #: app/templates/_header.html
 msgid "Profile"
 msgstr "Profiel"
@@ -410,9 +407,6 @@ msgstr "Maak een account aan of log in om te beginnen."
 
 msgid "Register"
 msgstr "Registreren"
-
-msgid "Already have an account?"
-msgstr "Al een account?"
 
 msgid "Log in here."
 msgstr "Log hier in."
@@ -1402,3 +1396,85 @@ msgstr "Annuleer"
 
 msgid "Start issue"
 msgstr "Vraagstuk starten"
+
+# Herontwerp stap 2: de cockpit van een vraagstuk
+
+msgid "What this is about"
+msgstr "Waar gaat dit over"
+
+msgid "No introduction yet."
+msgstr "Nog geen toelichting."
+
+msgid "Discussion"
+msgstr "Discussie"
+
+msgid "Facts and research"
+msgstr "Feiten en onderzoek"
+
+msgid "Argues for"
+msgstr "Pleit voor"
+
+msgid "Argues against"
+msgstr "Pleit tegen"
+
+msgid "No facts yet."
+msgstr "Nog geen feiten."
+
+msgid "All facts and research"
+msgstr "Alle feiten en onderzoek"
+
+msgid "This issue has no discussion yet."
+msgstr "Dit vraagstuk heeft nog geen discussie."
+
+msgid "No proposals yet."
+msgstr "Nog geen voorstellen."
+
+msgid "Make a new proposal"
+msgstr "Nieuw voorstel doen"
+
+msgid "Your right to vote"
+msgstr "Jouw stemrecht"
+
+msgid "You have the right to vote."
+msgstr "Je hebt stemrecht."
+
+#, python-format
+msgid "%(count)s of %(needed)s quality marks for the right to vote"
+msgstr "%(count)s van %(needed)s keurmerken voor stemrecht"
+
+msgid "Progress to the right to vote"
+msgstr "Voortgang naar stemrecht"
+
+msgid "You earn a quality mark with a well argued contribution to a discussion."
+msgstr "Een keurmerk verdien je met een goed onderbouwde bijdrage aan een discussie."
+
+msgid "to see your right to vote."
+msgstr "om je stemrecht te zien."
+
+msgid "Deadline passed"
+msgstr "Deadline verstreken"
+
+msgid "1 day left"
+msgstr "nog 1 dag"
+
+#, python-format
+msgid "%(num)s days left"
+msgstr "nog %(num)s dagen"
+
+msgid "1 hour left"
+msgstr "nog 1 uur"
+
+#, python-format
+msgid "%(num)s hours left"
+msgstr "nog %(num)s uur"
+
+msgid "1 minute left"
+msgstr "nog 1 minuut"
+
+#, python-format
+msgid "%(num)s minutes left"
+msgstr "nog %(num)s minuten"
+
+#, python-format
+msgid "voting closes %(date)s"
+msgstr "stemmen sluit %(date)s"

@@ -235,6 +235,7 @@
   <div class="gu-post__replyform" id="reply-form-{{ post.id }}" hidden>
     <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
       {% if reply_form.meta.csrf %}{{ reply_form.csrf_token(id=False) }}{% endif %}
+      {% if return_to %}<input type="hidden" name="return_to" value="{{ return_to }}">{% endif %}
       <input type="hidden" name="parent_id" value="{{ post.id }}">
       <textarea
         class="gu-composer__input"

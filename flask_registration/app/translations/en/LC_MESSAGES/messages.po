@@ -411,9 +411,6 @@ msgstr "Create an account or log in to get started."
 msgid "Register"
 msgstr "Register"
 
-msgid "Already have an account?"
-msgstr "Already have an account?"
-
 msgid "Log in here."
 msgstr "Log in here."
 
@@ -1402,3 +1399,85 @@ msgstr "Cancel"
 
 msgid "Start issue"
 msgstr "Start issue"
+
+# Herontwerp stap 2: de cockpit van een vraagstuk
+
+msgid "What this is about"
+msgstr "What this is about"
+
+msgid "No introduction yet."
+msgstr "No introduction yet."
+
+msgid "Discussion"
+msgstr "Discussion"
+
+msgid "Facts and research"
+msgstr "Facts and research"
+
+msgid "Argues for"
+msgstr "Argues for"
+
+msgid "Argues against"
+msgstr "Argues against"
+
+msgid "No facts yet."
+msgstr "No facts yet."
+
+msgid "All facts and research"
+msgstr "All facts and research"
+
+msgid "This issue has no discussion yet."
+msgstr "This issue has no discussion yet."
+
+msgid "No proposals yet."
+msgstr "No proposals yet."
+
+msgid "Make a new proposal"
+msgstr "Make a new proposal"
+
+msgid "Your right to vote"
+msgstr "Your right to vote"
+
+msgid "You have the right to vote."
+msgstr "You have the right to vote."
+
+#, python-format
+msgid "%(count)s of %(needed)s quality marks for the right to vote"
+msgstr "%(count)s of %(needed)s quality marks for the right to vote"
+
+msgid "Progress to the right to vote"
+msgstr "Progress to the right to vote"
+
+msgid "You earn a quality mark with a well argued contribution to a discussion."
+msgstr "You earn a quality mark with a well argued contribution to a discussion."
+
+msgid "to see your right to vote."
+msgstr "to see your right to vote."
+
+msgid "Deadline passed"
+msgstr "Deadline passed"
+
+msgid "1 day left"
+msgstr "1 day left"
+
+#, python-format
+msgid "%(num)s days left"
+msgstr "%(num)s days left"
+
+msgid "1 hour left"
+msgstr "1 hour left"
+
+#, python-format
+msgid "%(num)s hours left"
+msgstr "%(num)s hours left"
+
+msgid "1 minute left"
+msgstr "1 minute left"
+
+#, python-format
+msgid "%(num)s minutes left"
+msgstr "%(num)s minutes left"
+
+#, python-format
+msgid "voting closes %(date)s"
+msgstr "voting closes %(date)s"

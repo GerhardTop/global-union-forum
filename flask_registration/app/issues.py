@@ -11,7 +11,11 @@ proposals.issue_id onder.
   voorstellen met issue_id NULL, dus veilig bij elke start.
 - Een nieuw voorstel via het oude startformulier krijgt meteen zo'n
   vraagstuk (wrap), zodat elk voorstel er een heeft.
-- Een nieuw vraagstuk via /gesprekken/nieuw start in de feitenfase.
+- Een nieuw vraagstuk via /gesprekken/nieuw start in de feitenfase, met
+  een eigen gesprek (het eerste bericht als openingsbericht).
+- Stap 2: issues.thread_id wijst naar het gesprek met de gedeelde
+  discussie. Bij een ingepakt voorstel is dat het gesprek van het voorstel;
+  de backfill vult het ook voor vraagstukken uit stap 1.
 
 De fase-automatiek (de tik) draait in deze stap nog op het voorstel; de
 fasevelden van een vraagstuk worden hier gezet en getoond, niet bijgewerkt.
@@ -20,7 +24,7 @@ import math
 from datetime import date, datetime, timedelta
 
 from app import db
-from app.models import ISSUE_KINDS, Issue, Post, Proposal
+from app.models import ISSUE_KINDS, Issue, Post, Proposal, Thread
 
 # Grenzen voor het startformulier.
 DAYS_MIN, DAYS_MAX = 1, 365
@@ -71,20 +75,58 @@ def wrap(proposal):
         created_at=proposal.started_at or proposal.created_at or datetime.utcnow(),
         lang=lang,
         is_closed=bool(thread.is_closed) if thread is not None else False,
+        thread=thread,
     )
     db.session.add(issue)
     proposal.issue = issue
     return issue
 
 
+def _open_thread(issue, user):
+    """Een eigen gesprek voor een vraagstuk, met het eerste bericht als
+    openingsbericht. Geeft het openingsbericht terug. Commit niet zelf."""
+    thread = Thread(eyebrow_nl='Vraagstuk', eyebrow_en='Issue',
+                    title_prefix_nl=issue.title, title_prefix_en=issue.title, is_closed=bool(issue.is_closed))
+    db.session.add(thread)
+    db.session.flush()
+    issue.thread = thread
+    op = Post(thread_id=thread.id, user_id=user.id,
+              author_name=f'{user.first_name} {user.last_name}' if user.first_name else '',
+              author_username=user.username, author_role='member', body=issue.intro or issue.title,
+              source_lang=issue.lang or 'nl', is_op=True)
+    db.session.add(op)
+    return op
+
+
 def backfill():
-    """Elk voorstel zonder vraagstuk in een eigen vraagstuk. Idempotent."""
+    """Elk voorstel zonder vraagstuk in een eigen vraagstuk, en elk vraagstuk
+    zonder gesprek een gesprek: dat van zijn (eerste) voorstel, anders een
+    eigen gesprek. Idempotent. Geeft het aantal aangepaste rijen."""
     loose = Proposal.query.filter(Proposal.issue_id.is_(None)).order_by(Proposal.id).all()
     for proposal in loose:
         wrap(proposal)
-    if loose:
+    db.session.flush()
+    threadless = Issue.query.filter(Issue.thread_id.is_(None)).order_by(Issue.id).all()
+    changed = len(loose)
+    for issue in threadless:
+        first = min(issue.proposals, key=lambda p: p.id, default=None)
+        if first is not None:
+            issue.thread_id = first.thread_id
+        elif issue.created_by is not None:
+            _open_thread(issue, issue.created_by)
+        else:
+            continue  # zonder maker geen openingsbericht; blijft zonder discussie
+        changed += 1
+    if changed:
         db.session.commit()
-    return len(loose)
+    return changed
+
+
+def detach_threads(thread_ids):
+    """Vóór het verwijderen van gesprekken: vraagstukken laten los. Commit niet zelf."""
+    if thread_ids:
+        Issue.query.filter(Issue.thread_id.in_(thread_ids)).update({Issue.thread_id: None},
+                                                                     synchronize_session=False)
 
 
 def delete_wrappers(issue_ids):
@@ -167,4 +209,40 @@ def create(values, user, lang=None, now=None):
     if issue.kind == 'online':
         issue.voting_deadline = issue.plan()['stemmen'][1].date()
     db.session.add(issue)
+    _open_thread(issue, user)
     return issue
+
+
+def opening_post(issue):
+    if issue.thread_id is None:
+        return None
+    return Post.query.filter_by(thread_id=issue.thread_id, is_op=True).order_by(Post.id).first()
+
+
+# ── De cockpit (stap 2): alleen tonen ────────────────────────────────────
+
+def remaining(issue, now=None):
+    """(aantal, eenheid) tot de deadline van de huidige fase: dagen, uren of
+    minuten; ('verlopen', None) voorbij de deadline; None zonder deadline."""
+    if issue.phase_deadline is None:
+        return None
+    left = issue.phase_deadline - (now or datetime.utcnow())
+    if left.total_seconds() <= 0:
+        return 0, 'over'
+    if left >= timedelta(days=1):
+        return left.days, 'days'
+    if left >= timedelta(hours=1):
+        return int(left.total_seconds() // 3600), 'hours'
+    return max(1, int(left.total_seconds() // 60)), 'minutes'
+
+
+def voting_right(user):
+    """Jouw stemrecht voor de rechterkolom: de bestaande verdiende status en
+    de voortgang naar stemrecht (aantal keurmerken tegen de drempel)."""
+    if not getattr(user, 'is_authenticated', False):
+        return None
+    from app import status
+    count, _topics = status.quality_counts(user.id)
+    needed = status.get_thresholds()['voter_min']
+    return {'status': user.effective_status, 'can_vote': user.can_vote(), 'count': count, 'needed': needed,
+            'pct': 100 if user.can_vote() else min(100, round(100 * count / needed)) if needed else 100}

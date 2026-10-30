@@ -149,6 +149,7 @@ def _migrate_columns():
     _migrate_quality(existing)
     _migrate_conduct(existing)
     _migrate_proposals(existing)
+    _migrate_issues(existing)
     _migrate_indexes()
     _migrate_username_and_backfill(insp, existing, is_pg)
     # Na alle kolommigraties: de backfill gebruikt de ORM op Proposal en Thread.
@@ -268,6 +269,22 @@ def _migrate_proposals(existing):
         conn.commit()
 
 
+def _migrate_issues(existing):
+    """
+    Herontwerp stap 2: issues.thread_id (nullable), het gesprek met de
+    gedeelde discussie. Vóór de backfill in app/issues.py, die het vult. Op
+    een verse database maakt db.create_all() de kolom aan.
+    """
+    if 'issues' not in existing:
+        return
+    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('issues')}
+    if 'thread_id' in cols:
+        return
+    with db.engine.connect() as conn:
+        conn.execute(text('ALTER TABLE issues ADD COLUMN thread_id INTEGER NULL REFERENCES threads(id)'))
+        conn.commit()
+
+
 # Indexen op veelgebruikte kolommen. Postgres maakt bij een foreign key niet
 # vanzelf een index. De namen volgen SQLAlchemy (ix_<tabel>_<kolom>), zodat
 # een verse database via db.create_all() (index=True in app/models.py) en een
@@ -281,6 +298,7 @@ _INDEXES = (
     ('quality_promotions', 'user_id'),
     ('proposals', 'issue_id'),
     ('issues', 'created_by_id'),
+    ('issues', 'thread_id'),
 )
 
 

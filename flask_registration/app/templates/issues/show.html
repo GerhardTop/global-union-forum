@@ -1,9 +1,17 @@
 {% extends "base.html" %}
 {% block title %}{{ issue.title }} · Global Union{% endblock %}
 
+{#
+  De cockpit van een vraagstuk (herontwerp stap 2). Breed: drie kolommen,
+  links de context en de feiten, in het midden de gedeelde discussie (de
+  bestaande forumweergave), rechts de voorstellen en jouw stemrecht. Smal:
+  de context en de fase-strip erboven, daaronder tabs (Discussie standaard).
+  Zonder JavaScript staat alles onder elkaar in beeld.
+#}
 {% block content_outer %}{% block content %}
-<main class="gu-forum" lang="{{ lang }}">
-  <div class="gu-forum__inner">
+{% if has_discussion %}<template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>{% endif %}
+<main class="gu-forum gu-cockpit" lang="{{ lang }}" id="cockpit">
+  <div class="gu-cockpit__inner">
 
     <nav class="gu-forum__crumbs" aria-label="breadcrumb">
       <a href="{{ url_for('issues.index') }}">{{ _('Conversations') }}</a>
@@ -11,38 +19,150 @@
       <span>{{ _('Issue') }}</span>
     </nav>
 
-    <header class="gu-forum__threadhead">
-      <p class="gu-eyebrow">{{ _('Issue') }} · {% include 'issues/_kind.html' %}
+    <header class="gu-cockpit__head">
+      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}
         {% if issue.is_closed %}<span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}</p>
       <h1 class="gu-forum__title">{{ issue.title }}</h1>
+      <section class="gu-cockpit__phase" aria-labelledby="issuePhase">
+        <h2 id="issuePhase" class="gu-sr-only">{{ _('Phase') }}: {{ phase_labels.get(issue.phase, issue.phase) }}</h2>
+        {% include 'issues/_steps.html' %}
+      </section>
     </header>
 
-    <section class="gu-issue__phase" aria-labelledby="issuePhase">
-      <h2 id="issuePhase" class="gu-eyebrow">{{ _('Phase') }}: {{ phase_labels[issue.phase] if issue.phase in phase_labels else issue.phase }}</h2>
-      {% include 'issues/_steps.html' %}
-    </section>
+    <div class="gu-cockpit__grid">
 
-    {% if issue.intro %}
-    <section class="gu-issue__intro" style="margin-top:24px;">
-      <p style="white-space:pre-line;">{{ issue.intro | linkify }}</p>
-    </section>
-    {% endif %}
+      <section class="gu-cockpit__panel gu-cockpit__about" aria-labelledby="aboutTitle">
+        <h2 class="gu-cockpit__title" id="aboutTitle">{{ _('What this is about') }}</h2>
+        {% if issue.intro %}
+        <div class="gu-cockpit__intro" lang="{{ issue.lang or lang }}">{{ issue.intro | linkify }}</div>
+        {% else %}
+        <p class="gu-composer__hint">{{ _('No introduction yet.') }}</p>
+        {% endif %}
+      </section>
 
-    {% if issue.proposals %}
-    <section class="gu-issue__proposals" style="margin-top:24px;">
-      <h2 class="gu-eyebrow">{{ _('Proposals') }}</h2>
-      <ul class="gu-threadlist">
-        {% for proposal in issue.proposals %}
-        <li class="gu-threadlist__row">
-          <a class="gu-threadlist__link" href="{{ url_for('forum.forum_thread', thread_id=proposal.thread_id) }}">
-            <span class="gu-threadlist__title">{{ proposal.thread.title_prefix_nl if lang == 'nl' else proposal.thread.title_prefix_en }}</span>
-          </a>
-        </li>
-        {% endfor %}
-      </ul>
-    </section>
-    {% endif %}
+      <div class="gu-cockpit__tabs" role="tablist" aria-label="{{ _('Issue') }}" hidden>
+        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-discussion" aria-controls="panel-discussion" data-tab="discussion" aria-selected="true">{{ _('Discussion') }}</button>
+        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-proposals" aria-controls="panel-proposals" data-tab="proposals" aria-selected="false" tabindex="-1">{{ _('Proposals') }}</button>
+        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-facts" aria-controls="panel-facts" data-tab="facts" aria-selected="false" tabindex="-1">{{ _('Facts and research') }}</button>
+      </div>
 
+      <section class="gu-cockpit__panel gu-cockpit__facts" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
+        <h2 class="gu-cockpit__title" id="factsTitle">{{ _('Facts and research') }}{% if fact_total %} <span class="gu-facts__count">({{ fact_total }})</span>{% endif %}</h2>
+        {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
+        {% if top_facts %}
+        <ol class="gu-cockpit__factlist">
+          {% for fact in top_facts %}
+          <li class="gu-fact gu-fact--{{ fact.fact_direction }}">
+            <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
+            <div class="gu-fact__main">
+              <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+              {% if fact.fact_source %}
+              <p class="gu-fact__source">{{ _('Source') }}:
+                {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
+                {% else %}{{ fact.fact_source }}{% endif %}
+              </p>
+              {% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ol>
+        {% else %}
+        <p class="gu-composer__hint">{{ _('No facts yet.') }}</p>
+        {% endif %}
+        {# De aparte feitenpagina (sorteren, nuttig) volgt in stap 3; tot dan het feitenblok van het voorstel. #}
+        {% if thread and thread.proposal %}
+        <a class="gu-cockpit__more" href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}#feiten">{{ _('All facts and research') }} <span class="gu-arrow" aria-hidden="true"></span></a>
+        {% endif %}
+      </section>
+
+      <section class="gu-cockpit__panel gu-cockpit__discussion" id="panel-discussion" data-panel="discussion" role="tabpanel" aria-labelledby="discussionTitle">
+        <h2 class="gu-cockpit__title" id="discussionTitle">{{ _('Discussion') }}</h2>
+        {% if has_discussion %}
+          {% include 'forum/_discussion.html' %}
+        {% else %}
+          <p class="gu-composer__hint">{{ _('This issue has no discussion yet.') }}</p>
+        {% endif %}
+      </section>
+
+      <section class="gu-cockpit__panel gu-cockpit__proposals" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
+        <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}</h2>
+        {% if issue.proposals %}
+        <ul class="gu-cockpit__proposallist">
+          {% for proposal in issue.proposals %}
+          <li class="gu-cockpit__proposal">
+            <a href="{{ url_for('forum.forum_thread', thread_id=proposal.thread_id) }}#voorstel">
+              {%- if lang == 'nl' -%}{{ proposal.thread.title_prefix_nl }}{% if proposal.thread.title_accent_nl %} {{ proposal.thread.title_accent_nl }}{% endif %}{{ proposal.thread.title_suffix_nl }}
+              {%- else -%}{{ proposal.thread.title_prefix_en }}{% if proposal.thread.title_accent_en %} {{ proposal.thread.title_accent_en }}{% endif %}{{ proposal.thread.title_suffix_en }}{%- endif -%}
+            </a>
+            {% include 'forum/_proposal_status.html' %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="gu-composer__hint">{{ _('No proposals yet.') }}</p>
+        {% endif %}
+        {# De volledige flow voor een nieuw voorstel volgt in stap 4; tot dan het bestaande startformulier. #}
+        {% if current_user.is_authenticated and current_user.can_contribute() and not issue.is_closed %}
+        <a href="{{ url_for('forum.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-cockpit__newproposal">+ {{ _('Make a new proposal') }}</a>
+        {% endif %}
+      </section>
+
+      <section class="gu-cockpit__panel gu-cockpit__rights" data-panel="proposals" aria-labelledby="rightsTitle">
+        <h2 class="gu-cockpit__title" id="rightsTitle">{{ _('Your right to vote') }}</h2>
+        {% if voting_right %}
+        <p><span class="gu-status-badge gu-status-badge--{{ voting_right.status }}">{{ status_labels[voting_right.status][lang] }}</span></p>
+        {% if voting_right.can_vote %}
+        <p class="gu-cockpit__rightsline">{{ _('You have the right to vote.') }}</p>
+        {% else %}
+        <p class="gu-cockpit__rightsline">{{ _('%(count)s of %(needed)s quality marks for the right to vote', count=voting_right.count, needed=voting_right.needed) }}</p>
+        <div class="gu-cockpit__progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ voting_right.needed }}" aria-valuenow="{{ voting_right.count }}"
+             aria-label="{{ _('Progress to the right to vote') }}"><span style="width: {{ voting_right.pct }}%"></span></div>
+        <p class="gu-composer__hint">{{ _('You earn a quality mark with a well argued contribution to a discussion.') }}</p>
+        {% endif %}
+        {% else %}
+        <p class="gu-composer__hint"><a href="{{ url_for('auth.login') }}">{{ _('Log in') }}</a> {{ _('to see your right to vote.') }}</p>
+        {% endif %}
+      </section>
+
+    </div>
   </div>
 </main>
-{% endblock %}{% endblock %}
+{% endblock %}
+
+{% if has_discussion %}{% include 'forum/_thread_script.html' %}{% endif %}
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    // Tabs op een smal scherm. Breed staan alle kolommen naast elkaar en
+    // doen de tabs niets. Zonder JavaScript staat alles onder elkaar.
+    var root = document.getElementById('cockpit');
+    var tablist = root.querySelector('.gu-cockpit__tabs');
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('.gu-cockpit__tab'));
+    function show(name, focus) {
+      tabs.forEach(function (tab) {
+        var on = tab.dataset.tab === name;
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        tab.tabIndex = on ? 0 : -1;
+        if (on && focus) tab.focus();
+      });
+      root.querySelectorAll('[data-panel]').forEach(function (panel) {
+        panel.classList.toggle('is-shown', panel.dataset.panel === name);
+      });
+    }
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('click', function () { show(tab.dataset.tab); });
+      tab.addEventListener('keydown', function (e) {
+        var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        show(tabs[(i + step + tabs.length) % tabs.length].dataset.tab, true);
+      });
+    });
+    tablist.hidden = false;
+    root.classList.add('gu-cockpit--tabs');
+    // Een link naar een bericht of feit opent de tab waar het staat.
+    var target = location.hash && document.getElementById(location.hash.slice(1));
+    var panel = target && target.closest('[data-panel]');
+    show(panel ? panel.dataset.panel : 'discussion');
+  })();
+</script>
+{% endblock %}

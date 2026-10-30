@@ -227,3 +227,149 @@ def test_nav_item_is_conversations(app):
     en = _req(_client(app, lang='en'), 'GET', '/gesprekken').get_data(as_text=True)
     assert '>Gesprekken</a>' in nl and '>Forum</a>' not in nl
     assert '>Conversations</a>' in en
+
+
+# ── Stap 2: de cockpit ───────────────────────────────────────────────────
+
+def _fact(db, proposal, user, body, direction, source):
+    from app.models import FACT_KIND
+    f = Post(thread_id=proposal.thread_id, user_id=user.id, author_name='', author_username=user.username,
+             body=body, source_lang='nl', kind=FACT_KIND, fact_direction=direction, fact_source=source)
+    db.session.add(f)
+    db.session.commit()
+    return f
+
+
+def _reply(db, thread_id, user, body):
+    p = Post(thread_id=thread_id, user_id=user.id, author_name='', author_username=user.username,
+             body=body, source_lang='nl')
+    db.session.add(p)
+    db.session.commit()
+    return p
+
+
+def test_backfill_links_the_discussion_thread(db, make_user):
+    user = make_user()
+    proposal = _old_proposal(db, user, 'Met gesprek')
+    issues.backfill()
+    db.session.refresh(proposal)
+    assert proposal.issue.thread_id == proposal.thread_id
+
+
+def test_backfill_gives_a_threadless_issue_its_own_thread(db, make_user):
+    user = make_user()
+    issue = Issue(title='Uit stap 1', intro='Toelichting uit stap 1.', created_by_id=user.id, lang='en')
+    db.session.add(issue)
+    db.session.commit()
+    assert issue.thread_id is None
+    issues.backfill()
+    db.session.refresh(issue)
+    op = issues.opening_post(issue)
+    assert issue.thread is not None and issue.thread.title_prefix_nl == 'Uit stap 1'
+    assert op.body == 'Toelichting uit stap 1.' and op.user_id == user.id and op.source_lang == 'en'
+    issues.backfill()
+    assert Thread.query.filter_by(title_prefix_nl='Uit stap 1').count() == 1
+
+
+def test_new_issue_gets_its_own_thread(app, db, make_user):
+    user = make_user()
+    _req(_client(app, user), 'POST', '/gesprekken/nieuw', data={
+        'title': 'Een eigen gesprek', 'intro': 'Het eerste bericht.', 'kind': 'online'})
+    issue = Issue.query.filter_by(created_by_id=user.id).one()
+    op = issues.opening_post(issue)
+    assert op is not None and op.body == 'Het eerste bericht.' and op.is_op
+
+
+def test_cockpit_shows_context_facts_discussion_and_proposals(app, db, make_user):
+    user, other = make_user(), make_user()
+    proposal = _old_proposal(db, user, 'Moet het plein groener?')
+    for i in range(4):
+        _fact(db, proposal, user, f'Feit nummer {i}', ('voor', 'tegen', 'neutraal', 'voor')[i], f'https://example.org/{i}')
+    _reply(db, proposal.thread_id, other, 'Een reactie in de discussie.')
+    issues.backfill()
+    db.session.refresh(proposal)
+
+    body = _req(_client(app, other, 'nl'), 'GET', f'/vraagstuk/{proposal.issue_id}').get_data(as_text=True)
+    assert 'Moet het plein groener?' in body
+    assert 'Waar gaat dit over' in body and 'Het eerste bericht.' in body
+    # Feiten links: de bovenste drie, met richting en bron, en de link naar alle feiten.
+    assert 'Feiten en onderzoek' in body and '(4)' in body
+    assert 'Feit nummer 0' in body and 'Feit nummer 2' in body and 'Feit nummer 3' not in body
+    assert 'Pleit voor' in body and 'Pleit tegen' in body and 'https://example.org/1' in body
+    assert f'/forum/{proposal.thread_id}#feiten' in body and 'Alle feiten en onderzoek' in body
+    # Discussie in het midden: de bestaande boom met de reactie-invoer, zonder de feiten.
+    discussion = body.split('id="panel-discussion"')[1].split('id="panel-proposals"')[0]
+    assert 'Een reactie in de discussie.' in discussion and 'Feit nummer' not in discussion
+    assert 'id="composer"' in discussion and f'name="return_to" value="{proposal.issue_id}"' in discussion
+    # Rechts: het voorstel met zijn status, de knop en het stemrecht.
+    assert f'/forum/{proposal.thread_id}#voorstel' in body and 'In discussie' in body
+    assert 'Nieuw voorstel doen' in body and 'Jouw stemrecht' in body
+    assert '0 van 3 keurmerken voor stemrecht' in body
+    assert 'role="tablist"' in body and 'Discussie' in body
+
+
+def test_cockpit_in_english(app, db, make_user):
+    user = make_user()
+    proposal = _old_proposal(db, user, 'English issue')
+    issues.backfill()
+    db.session.refresh(proposal)
+    body = _req(_client(app, user, 'en'), 'GET', f'/vraagstuk/{proposal.issue_id}').get_data(as_text=True)
+    for text in ('What this is about', 'Facts and research', 'Discussion', 'Your right to vote',
+                 'Make a new proposal', 'voting closes'):
+        assert text in body
+    assert 'hours left' in body  # feitenfase van één dag, net begonnen
+
+
+def test_cockpit_anonymous(app, db, make_user):
+    user = make_user()
+    proposal = _old_proposal(db, user, 'Anoniem bekeken')
+    issues.backfill()
+    db.session.refresh(proposal)
+    body = _req(_client(app), 'GET', f'/vraagstuk/{proposal.issue_id}').get_data(as_text=True)
+    assert 'om je stemrecht te zien.' in body
+    assert 'id="composer"' not in body and 'Nieuw voorstel doen' not in body
+
+
+def test_reply_from_cockpit_returns_to_cockpit(app, db, make_user):
+    user, other = make_user(), make_user()
+    proposal = _old_proposal(db, user, 'Terug naar de cockpit')
+    issues.backfill()
+    db.session.refresh(proposal)
+    r = _req(_client(app, other), 'POST', f'/forum/{proposal.thread_id}',
+             data={'body': 'Mijn reactie.', 'return_to': str(proposal.issue_id)})
+    post = Post.query.filter_by(body='Mijn reactie.').one()
+    assert r.headers['Location'].endswith(f'/vraagstuk/{proposal.issue_id}#post-{post.id}')
+    # Zonder (of met een vreemd) vraagstuk gewoon naar het gesprek.
+    r = _req(_client(app, other), 'POST', f'/forum/{proposal.thread_id}',
+             data={'body': 'Nog een reactie.', 'return_to': '999999'})
+    assert f'/forum/{proposal.thread_id}#post-' in r.headers['Location']
+
+
+def test_deleting_an_issue_thread_detaches_it(db, make_user):
+    from app.routes.forum import _delete_thread
+    user = make_user()
+    issue = issues.create({'title': 'Los te koppelen', 'intro': 'x', 'kind': 'online'}, user)
+    db.session.commit()
+    _delete_thread(issue.thread)
+    db.session.refresh(issue)
+    assert issue.thread_id is None
+
+
+def test_remaining_time():
+    now = datetime(2026, 10, 1, 12, 0)
+    issue = Issue(phase_deadline=now + timedelta(days=3, hours=2))
+    assert issues.remaining(issue, now) == (3, 'days')
+    issue.phase_deadline = now + timedelta(hours=5, minutes=10)
+    assert issues.remaining(issue, now) == (5, 'hours')
+    issue.phase_deadline = now + timedelta(minutes=7)
+    assert issues.remaining(issue, now) == (7, 'minutes')
+    issue.phase_deadline = now - timedelta(minutes=1)
+    assert issues.remaining(issue, now) == (0, 'over')
+    issue.phase_deadline = None
+    assert issues.remaining(issue, now) is None
+
+
+def test_voting_right_progress(db, make_user):
+    user = make_user()
+    right = issues.voting_right(user)
+    assert right['can_vote'] is False and right['count'] == 0 and right['needed'] == 3 and right['pct'] == 0

@@ -1,0 +1,86 @@
+{#
+  Partial: forum/_discussion.html
+  De discussieboom van een gesprek met de reactie-invoer eronder. Gebruikt
+  door de gesprekspagina en de cockpit van een vraagstuk. Context: zie
+  _thread_context (forum.py); return_to (optioneel) stuurt na het reageren
+  terug naar de cockpit.
+#}
+<div class="gu-thread">
+  {% for post in top_posts recursive %}
+    {% set level = loop.depth %}
+    {% set nvis = descendant_counts.get(post.id, 0) %}
+    {# nshown: onderliggende berichten die iets tonen, ook een verwijzing naar
+       de achtergrondpagina (die telt niet mee in nvis). #}
+    {% set nshown = shown_counts.get(post.id, 0) %}
+    {% if not (post.id in hidden_ids and nvis == 0) %}
+    <div class="gu-node gu-node--l{{ level }}" id="node-{{ post.id }}">
+      {% if post.id in moved_ids %}{% include 'forum/_post_moved.html' %}
+      {% elif post.id in hidden_ids %}{% include 'forum/_post_hidden.html' %}
+      {% else %}{% include 'forum/_post.html' %}{% endif %}
+      {% if nshown and level < max_level %}
+      {% set n_label = (('%d reactie' if nvis == 1 else '%d reacties') if lang == 'nl' else ('%d reply' if nvis == 1 else '%d replies')) | format(nvis) %}
+      <div class="gu-node__branch">
+        {% if nvis %}
+        <button type="button" class="gu-node__toggle" aria-expanded="true" aria-controls="replies-{{ post.id }}"
+                data-node="{{ post.id }}"
+                data-label-collapse="{% if lang == 'nl' %}Tak inklappen ({{ n_label }}){% else %}Collapse branch ({{ n_label }}){% endif %}"
+                data-label-expand="{% if lang == 'nl' %}Tak uitklappen ({{ n_label }}){% else %}Expand branch ({{ n_label }}){% endif %}"
+                aria-label="{% if lang == 'nl' %}Tak inklappen ({{ n_label }}){% else %}Collapse branch ({{ n_label }}){% endif %}"><span aria-hidden="true">−</span></button>
+        <p class="gu-node__collapsed" id="collapsed-{{ post.id }}" data-count="{{ nvis }}" hidden>{% if lang == 'nl' %}{{ n_label }} verborgen{% else %}{{ n_label }} hidden{% endif %}</p>
+        <button type="button" class="gu-node__line" data-node="{{ post.id }}" tabindex="-1" aria-hidden="true"></button>
+        {% endif %}
+        <div class="gu-node__children" id="replies-{{ post.id }}">
+          {{ loop(tree_children.get(post.id, [])) }}
+        </div>
+      </div>
+      {% elif nvis %}
+      <a class="gu-node__more" href="{{ url_for('forum.forum_branch', thread_id=thread.id, post_id=post.id) }}" data-count="{{ nvis }}">
+        {% if lang == 'nl' %}Verder in dit gesprek ({{ nvis }} {{ 'reactie' if nvis == 1 else 'reacties' }}){% else %}Continue this conversation ({{ nvis }} {{ 'reply' if nvis == 1 else 'replies' }}){% endif %}
+        <span class="gu-arrow" aria-hidden="true"></span>
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+{# Composer / closed notice (niet in de doorlinkweergave: reageer daar
+   via de reageerknop bij een bericht) #}
+{% if branch_root %}
+{% elif thread.is_closed %}
+  <div class="gu-composer gu-composer--closed">
+    <p>{% if lang == 'nl' %}Dit gesprek is gesloten.{% else %}This conversation is closed.{% endif %}</p>
+  </div>
+{% elif current_user.can_contribute() %}
+<form class="gu-composer" id="composer" method="POST" action="{{ url_for('forum.forum_thread', thread_id=thread.id) }}" enctype="multipart/form-data">
+  {% if reply_form.meta.csrf %}{{ reply_form.csrf_token(id=False) }}{% endif %}
+  {% if return_to %}<input type="hidden" name="return_to" value="{{ return_to }}">{% endif %}
+  <textarea
+    class="gu-composer__input"
+    name="body"
+    id="composerBody"
+    rows="3"
+    placeholder="{% if lang == 'nl' %}Schrijf je reactie. Wees concreet (een gedachte, een vraag, een tegenwerping).{% else %}Write your reply. Be concrete (a thought, a question, a pushback).{% endif %}"
+  ></textarea>
+  <div class="gu-composer__actions">
+    <span class="gu-composer__hint"></span>
+    <button type="submit" class="gu-btn gu-btn--primary" id="composerSubmit" disabled>
+      {% if lang == 'nl' %}Plaats reactie{% else %}Post reply{% endif %} <span class="gu-arrow"></span>
+    </button>
+  </div>
+</form>
+{% elif current_user.is_authenticated %}
+{# Ingelogd zonder akkoord op de gedragsregels (nieuwe registratie): eerst akkoord. #}
+<div class="gu-composer gu-composer--locked">
+  <p>
+    <a href="{{ url_for('main.spelregels', next=request.path) }}">{{ _('Accept the conduct rules to join in') }}</a>.
+  </p>
+</div>
+{% else %}
+<div class="gu-composer gu-composer--locked">
+  <p>
+    <a href="{{ url_for('auth.login') }}">{% if lang == 'nl' %}Log in{% else %}Log in{% endif %}</a>
+    {% if lang == 'nl' %}om mee te doen aan het gesprek.{% else %}to join the conversation.{% endif %}
+  </p>
+</div>
+{% endif %}
