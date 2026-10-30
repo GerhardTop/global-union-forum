@@ -194,6 +194,8 @@ def delete_for_posts(post_ids):
     """Vóór het verwijderen van bijdragen: nuttig en bezwaren bij die feiten weg."""
     post_ids = list(post_ids)
     if post_ids:
+        from app import issue_proposals
+        issue_proposals.delete_links_for_facts(post_ids)  # stap 5: koppelingen aan voorstellen
         FactUsefulVote.query.filter(FactUsefulVote.fact_post_id.in_(post_ids)).delete(synchronize_session='evaluate')
         FactDispute.query.filter(FactDispute.fact_post_id.in_(post_ids)).delete(synchronize_session='evaluate')
 

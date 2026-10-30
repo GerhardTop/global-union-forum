@@ -49,10 +49,63 @@
       {% endif %}
     </section>
 
-    {# Plek voor de gekoppelde feiten (stap 5). #}
-    <section class="gu-ipdetail__section" aria-labelledby="basisTitle">
-      <h2 class="gu-cockpit__title" id="basisTitle">{{ _('What this proposal is based on') }}</h2>
-      <p class="gu-composer__hint">{{ _('Linking facts to a proposal follows soon.') }}</p>
+    {# Stap 5: de gekoppelde feiten, met hun richting zodat het beeld eerlijk blijft. #}
+    {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
+    {% set fact_errs = (errors or {}).get('fact', {}) %}
+    <section class="gu-ipdetail__section" id="basis" aria-labelledby="basisTitle">
+      <h2 class="gu-cockpit__title" id="basisTitle">{{ _('What this proposal is based on') }}{% if links %} <span class="gu-facts__count">({{ links|length }})</span>{% endif %}</h2>
+      {% if links %}
+      <ol class="gu-facts__list gu-ipdetail__facts">
+        {% for row, fact in links %}
+        <li class="gu-fact gu-fact--{{ fact.fact_direction }}" id="koppeling-{{ row.id }}">
+          <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
+          <div class="gu-fact__main">
+            <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+            <p class="gu-fact__source">{{ _('Source') }}:
+              {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
+              {% else %}{{ fact.fact_source }}{% endif %}
+            </p>
+            <div class="gu-ipdetail__factmeta">
+              <span>{{ _('Linked by') }} {{ row.linked_by.public_name if row.linked_by else '@deleted_user' }}</span>
+              {% if can_unlink(row) %}
+              <form method="POST" action="{{ url_for('issues.proposal_unlink', issue_id=issue.id, proposal_id=proposal.id, link_id=row.id) }}" class="gu-ipdetail__unlink">
+                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                <button type="submit" class="gu-post__action gu-post__action--ghost">{{ _('Unlink') }}</button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="gu-composer__hint">{{ _('No facts linked yet.') }}</p>
+      {% endif %}
+
+      {% if can_link %}
+      <details class="gu-ipdetail__link"{% if fact_errs %} open{% endif %}>
+        <summary>{{ _('Link a fact') }}</summary>
+        <p class="gu-composer__hint">{{ _('Anyone can link facts, also facts that argue against the proposal. The direction stays visible.') }}</p>
+        {% if candidates %}
+        <form method="POST" action="{{ url_for('issues.proposal_link', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-ipdetail__linkform">
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          {% with choices=candidates, chosen=[] %}{% include 'issues/_fact_choices.html' %}{% endwith %}
+          <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Link') }}</button>
+        </form>
+        {% else %}
+        <p class="gu-composer__hint">{{ _('There are no other facts in this issue to link.') }}</p>
+        {% endif %}
+        {% if can_add_fact %}
+        <form method="POST" action="{{ url_for('issues.proposal_new_fact', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-fact-form gu-ipdetail__newfact" novalidate>
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          <p class="gu-fact-form__title">{{ _('Or add a new fact') }}</p>
+          {% from 'forum/_fact_fields.html' import fact_fields with context %}
+          {{ fact_fields('basis-fact', (form_data or {}).get('fact') or {}, fact_errs) }}
+          <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Add and link') }}</button>
+        </form>
+        {% endif %}
+      </details>
+      {% endif %}
       <a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts and research') }} <span class="gu-arrow" aria-hidden="true"></span></a>
     </section>
 
@@ -80,12 +133,12 @@
       </ol>
 
       {% if can_revise %}
-      {% set errs = errors or {} %}
+      {% set errs = (errors or {}).get('revise', {}) %}
       <details class="gu-proposal__revise" id="bijstellen"{% if errs %} open{% endif %}>
         <summary>{{ _('Revise the proposal') }}</summary>
         <form method="POST" action="{{ url_for('issues.proposal_revise', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-forum__newform" novalidate>
           {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-          {{ ip_fields('revise', form_data or {'statement': proposal.statement, 'explanation': proposal.explanation or ''}, errs) }}
+          {{ ip_fields('revise', (form_data or {}).get('revise') or {'statement': proposal.statement, 'explanation': proposal.explanation or ''}, errs) }}
           {% if errs.get('unchanged') %}<p class="gu-join__formError">{{ _('Change the statement or the explanation.') }}</p>{% endif %}
           <p class="gu-composer__hint">{{ _('You can revise once. The original version stays visible.') }}</p>
           <button type="submit" class="gu-btn gu-btn--primary">{{ _('Save the revision') }}</button>

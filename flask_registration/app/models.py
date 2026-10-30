@@ -752,6 +752,26 @@ class IssueProposalSupport(db.Model):
                                                                    cascade='all, delete-orphan'))
 
 
+class IssueProposalFact(db.Model):
+    """Stap 5: een feit gekoppeld aan een voorstel. Koppelen, niet kopiëren:
+    het feit blijft in de gedeelde lijst van het vraagstuk (een Post met kind
+    'feit' in het gesprek van het vraagstuk). Eén keer per voorstel en feit."""
+    __tablename__ = "issue_proposal_facts"
+
+    id           = db.Column(db.Integer, primary_key=True)
+    proposal_id  = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=False, index=True)
+    fact_post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False, index=True)
+    linked_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    created_at   = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('proposal_id', 'fact_post_id', name='uq_issue_proposal_fact'),)
+
+    proposal  = db.relationship('IssueProposal', backref=db.backref('fact_links', lazy=True,
+                                                                    cascade='all, delete-orphan'))
+    fact      = db.relationship('Post', foreign_keys=[fact_post_id])
+    linked_by = db.relationship('User', foreign_keys=[linked_by_id])
+
+
 # ── Fase E: het voorstel als bijzonder soort gesprek ─────────────────────
 # Een voorstel hangt één-op-één aan een gesprek (Thread); een gewoon gesprek
 # heeft geen Proposal. Vier fasen; in stap 1 staat elk voorstel in de eerste.

@@ -24,6 +24,26 @@
     <form class="gu-forum__newform" method="POST" action="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" novalidate>
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
       {{ ip_fields('new', form_data or {}, errors or {}) }}
+
+      {# Stap 5: optioneel al feiten koppelen, of een nieuw feit toevoegen. #}
+      {% set fd = form_data or {} %}
+      {% set fact_errs = (errors or {}).get('fact', {}) %}
+      {% if issue_facts or can_add_fact %}
+      <section class="gu-forum__newfield gu-newproposal__facts" aria-labelledby="linkFactsTitle">
+        <p class="gu-fact-form__title" id="linkFactsTitle">{{ _('Link relevant facts and research') }} <span class="gu-composer__hint">({{ _('optional') }})</span></p>
+        {% if issue_facts %}
+        {% with choices=issue_facts, chosen=fd.get('fact_ids') or [] %}{% include 'issues/_fact_choices.html' %}{% endwith %}
+        {% endif %}
+        {% if can_add_fact %}
+        <details class="gu-newproposal__newfact"{% if fact_errs or fd.get('fact_text') or fd.get('fact_source') %} open{% endif %}>
+          <summary>{{ _('Add a new fact') }}</summary>
+          {% from 'forum/_fact_fields.html' import fact_fields with context %}
+          {{ fact_fields('new-fact', {'text': fd.get('fact_text', ''), 'direction': fd.get('fact_direction', ''), 'source': fd.get('fact_source', '')}, fact_errs, 'fact_') }}
+          <p class="gu-composer__hint">{{ _('The fact goes into the shared list of this issue and is linked to your proposal.') }}</p>
+        </details>
+        {% endif %}
+      </section>
+      {% endif %}
       <p class="gu-composer__hint">{{ _('Others can support your proposal. With %(n)s supporters it goes to the voting list.', n=issue.support_threshold) }}</p>
       <div class="gu-forum__newactions">
         <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>

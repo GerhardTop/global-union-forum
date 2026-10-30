@@ -1535,11 +1535,13 @@ def conduct_objection_decide(objection_id):
 _FACT_MAX = 1000
 
 
-def _fact_form():
-    """(waarden, fouten) uit het feitformulier."""
-    data = {'text': (request.form.get('text') or '').strip(),
-            'direction': request.form.get('direction') or '',
-            'source': (request.form.get('source') or '').strip()}
+def _fact_form(prefix=''):
+    """(waarden, fouten) uit het feitformulier. Met prefix (bijvoorbeeld
+    'fact_') voor een feitblok binnen een ander formulier (stap 5)."""
+    form = request.form
+    data = {'text': (form.get(f'{prefix}text') or '').strip(),
+            'direction': form.get(f'{prefix}direction') or '',
+            'source': (form.get(f'{prefix}source') or '').strip()}
     errors = {}
     if not data['text'] or len(data['text']) > _FACT_MAX:
         errors['text'] = True
@@ -1596,6 +1598,16 @@ def fact_add(thread_id):
     if errors:
         _stash_form_state(f'feit-{thread.id}', errors, data)
         return redirect(_fact_back(thread, '#feiten'), code=303)
+    fact = _new_fact(thread, data)
+    db.session.commit()
+    quality.schedule_judgement(fact.id)  # handhaving van de gedragsregels, zie quality.judge_post
+    return redirect(_fact_back(thread, f'#post-{fact.id}'))
+
+
+def _new_fact(thread, data):
+    """Een nieuw feit van de huidige gebruiker in dit gesprek (de fase en de
+    invoer zijn al gecontroleerd). Commit niet zelf; daarna
+    quality.schedule_judgement voor de handhaving."""
     fact = Post(thread_id=thread.id, user_id=current_user.id, author_username=current_user.username,
                 author_name='', author_role='member', body=data['text'], source_lang=session.get('lang', 'nl'),
                 kind=FACT_KIND, fact_direction=data['direction'], fact_source=data['source'])
@@ -1603,9 +1615,8 @@ def fact_add(thread_id):
     if thread.proposal is not None:
         from app import digest
         digest.auto_follow(thread.proposal, current_user)  # meedoen is volgen (fase E, stap 5b)
-    db.session.commit()
-    quality.schedule_judgement(fact.id)  # handhaving van de gedragsregels, zie quality.judge_post
-    return redirect(_fact_back(thread, f'#post-{fact.id}'))
+    db.session.flush()
+    return fact
 
 
 def _own_fact_in_open_phase(post_id):

@@ -3557,3 +3557,33 @@ body {
 .gu-faq__answer { padding: 0 18px 16px; color: var(--gu-fg-2); line-height: 1.6; }
 .gu-faq__answer p { margin: 0; }
 .gu-faq__answer a { color: var(--gu-globe-deep); }
+
+/* ── Herontwerp stap 5: feiten koppelen aan een voorstel ────────────────── */
+.gu-ipdetail__facts { margin: 0 0 12px; }
+.gu-ipdetail__factmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; font-size: 0.75rem; color: var(--gu-fg-3); }
+.gu-ipdetail__unlink { margin: 0; }
+.gu-ipdetail__link { margin: 4px 0 12px; }
+.gu-ipdetail__link > summary {
+  display: inline-flex; align-items: center; padding: 4px 12px; border: 1px solid var(--gu-border); border-radius: 999px;
+  cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--gu-fg-1); list-style: none; background: var(--gu-paper);
+}
+.gu-ipdetail__link > summary::-webkit-details-marker { display: none; }
+.gu-ipdetail__link > summary::before { content: '+'; margin-right: 6px; color: var(--gu-globe-deep); font-weight: 600; }
+.gu-ipdetail__link[open] > summary { margin-bottom: 8px; }
+.gu-ipdetail__linkform { display: grid; gap: 10px; margin-bottom: 16px; }
+.gu-ipdetail__linkform .gu-btn, .gu-ipdetail__newfact .gu-btn { justify-self: start; }
+.gu-ipdetail__newfact { padding-top: 12px; border-top: 1px solid var(--gu-border); }
+.gu-factchoices { border: 0; margin: 0; padding: 0; min-width: 0; }
+.gu-factchoices legend { font-size: 0.8125rem; font-weight: 600; color: var(--gu-fg-1); margin-bottom: 6px; }
+.gu-factchoices__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 320px; overflow-y: auto; }
+.gu-factchoices__item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 8px; background: var(--gu-bg-soft); cursor: pointer; }
+.gu-factchoices__item input { margin-top: 3px; flex-shrink: 0; }
+.gu-factchoices__item .gu-fact__dir { flex-shrink: 0; }
+.gu-factchoices__text { font-weight: 400; font-size: 0.875rem; color: var(--gu-fg-1); line-height: 1.45; overflow-wrap: anywhere; min-width: 0; }
+.gu-newproposal__facts { display: grid; gap: 10px; padding: 14px 16px; border: 1px solid var(--gu-border); border-radius: 12px; }
+.gu-newproposal__newfact summary { cursor: pointer; font-size: 0.875rem; color: var(--gu-globe-deep); }
+.gu-newproposal__newfact[open] summary { margin-bottom: 8px; }
+@media (max-width: 480px) {
+  .gu-factchoices__item { flex-wrap: wrap; }
+  .gu-factchoices__text { flex-basis: 100%; padding-left: 24px; }
+}

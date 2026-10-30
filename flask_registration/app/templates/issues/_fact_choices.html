@@ -1,0 +1,21 @@
+{#
+  Partial: issues/_fact_choices.html (herontwerp stap 5)
+  Een keuzelijst van feiten van het vraagstuk (vinkjes, name="fact_ids"),
+  met het richtinglabel, voor het koppelen aan een voorstel.
+  Context: choices (feiten), chosen (gekozen id's).
+#}
+{% set choice_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
+<fieldset class="gu-factchoices">
+  <legend>{{ _('Choose from the facts of this issue') }}</legend>
+  <ul class="gu-factchoices__list">
+    {% for fact in choices %}
+    <li>
+      <label class="gu-factchoices__item">
+        <input type="checkbox" name="fact_ids" value="{{ fact.id }}"{% if fact.id in chosen %} checked{% endif %}>
+        <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ choice_labels.get(fact.fact_direction, '') }}</span>
+        <span class="gu-factchoices__text" lang="{{ fact.source_lang }}">{{ fact.body | truncate(180) }}</span>
+      </label>
+    </li>
+    {% endfor %}
+  </ul>
+</fieldset>

@@ -20,8 +20,8 @@ from app import conduct, db, issues, limiter
 from app import facts as fact_signals
 from app import issue_proposals as ip
 from app.models import FACT_DIRECTIONS, Issue, IssueProposal
-from app.routes.forum import (_abort_if_thread_removed, _fact_phase_open, _require_csrf, _rules_first_redirect,
-                              _thread_context)
+from app.routes.forum import (_abort_if_thread_removed, _fact_form, _fact_phase_open, _new_fact, _require_csrf,
+                              _rules_first_redirect, _thread_context)
 from app.utils import _pop_form_state, _stash_form_state, safe_next
 
 issues_bp = Blueprint("issues", __name__)
@@ -173,16 +173,37 @@ def proposal_new(issue_id):
         if not ip.can_propose(issue, current_user):
             abort(403)
         statement, explanation, errors = ip.parse_form(request.form)
+        # Stap 5: optioneel al feiten koppelen, en eventueel een nieuw feit (zelfde regel als elders).
+        fact_ids = request.form.getlist('fact_ids', type=int)
+        new_fact = None
+        if any((request.form.get(k) or '').strip() for k in ('fact_text', 'fact_source')):
+            if not _can_add_fact(issue):
+                abort(403)
+            new_fact, fact_errors = _fact_form('fact_')
+            if fact_errors:
+                errors['fact'] = fact_errors
         if errors:
-            _stash_form_state(form_key, errors, {'statement': request.form.get('statement', ''),
-                                                 'explanation': request.form.get('explanation', '')})
+            keep = ('statement', 'explanation', 'fact_text', 'fact_direction', 'fact_source')
+            data = {k: request.form.get(k, '') for k in keep}
+            data['fact_ids'] = fact_ids
+            _stash_form_state(form_key, errors, data)
             return redirect(url_for('issues.proposal_new', issue_id=issue.id), code=303)
         proposal = ip.create(issue, current_user, statement, explanation, lang=session.get('lang', 'nl'))
+        db.session.flush()
+        ip.link_ids(proposal, fact_ids, current_user)
+        fact = _new_fact(issue.thread, new_fact) if new_fact is not None else None
+        if fact is not None:
+            ip.link(proposal, fact, current_user)
         db.session.commit()
+        if fact is not None:
+            from app import quality
+            quality.schedule_judgement(fact.id)
         return redirect(url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id))
     errors, data = _pop_form_state(form_key)
     return render_template('issues/proposal_new.html', issue=issue, errors=errors, form_data=data,
-                           can_propose=ip.can_propose(issue, current_user))
+                           can_propose=ip.can_propose(issue, current_user),
+                           issue_facts=ip.visible_issue_facts(issue, current_user),
+                           can_add_fact=_can_add_fact(issue))
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>')
@@ -191,10 +212,17 @@ def proposal(issue_id, proposal_id):
     proposal = _proposal_or_404(issue, proposal_id)
     count = ip.support_counts([proposal.id]).get(proposal.id, 0)
     supported = proposal.id in ip.my_supports([proposal.id], current_user)
-    errors, data = _pop_form_state(f'voorstel-bijstellen-{proposal.id}')
+    # Eén formulierstaat per detailpagina: errors['revise'] of errors['fact'].
+    errors, data = _pop_form_state(f'voorstel-{proposal.id}')
+    links = ip.linked(proposal, current_user)
+    linked_ids = {fact.id for _link, fact in links}
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),
-                           can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data)
+                           can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data,
+                           links=links, can_link=ip.can_link(proposal, current_user),
+                           can_unlink=lambda row: ip.can_unlink(row, current_user),
+                           candidates=[f for f in ip.visible_issue_facts(issue, current_user) if f.id not in linked_ids],
+                           can_add_fact=_can_add_fact(issue))
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/steunen', methods=['POST'])
@@ -230,10 +258,77 @@ def proposal_revise(issue_id, proposal_id):
         errors['unchanged'] = True
     detail = url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id)
     if errors:
-        _stash_form_state(f'voorstel-bijstellen-{proposal.id}', errors,
-                          {'statement': request.form.get('statement', ''),
-                           'explanation': request.form.get('explanation', '')})
+        _stash_form_state(f'voorstel-{proposal.id}', {'revise': errors},
+                          {'revise': {'statement': request.form.get('statement', ''),
+                                      'explanation': request.form.get('explanation', '')}})
         return redirect(detail + '#bijstellen', code=303)
     ip.revise(proposal, statement, explanation)
     db.session.commit()
     return redirect(detail)
+
+
+# ── Stap 5: feiten koppelen aan een voorstel ─────────────────────────────
+
+def _can_add_fact(issue):
+    """Een nieuw feit toevoegen volgt de bestaande feitregel (de feitenfase)."""
+    return (current_user.is_authenticated and current_user.can_contribute() and issue.thread is not None
+            and _fact_phase_open(issue.thread))
+
+
+def _basis_url(issue, proposal):
+    return url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) + '#basis'
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/koppelen', methods=['POST'])
+@login_required
+@limiter.limit("60 per minute", key_func=lambda: f"issue-link-user-{current_user.get_id()}")
+def proposal_link(issue_id, proposal_id):
+    issue = _issue_or_404(issue_id)
+    proposal = _proposal_or_404(issue, proposal_id)
+    _require_csrf()
+    if not ip.can_link(proposal, current_user):
+        abort(403)
+    if not ip.link_ids(proposal, request.form.getlist('fact_ids', type=int), current_user):
+        flash(gettext('Choose at least one fact that is not linked yet.'), 'error')
+    db.session.commit()
+    return redirect(_basis_url(issue, proposal))
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/feit', methods=['POST'])
+@login_required
+@limiter.limit("5 per minute", key_func=lambda: f"forum-fact-user-{current_user.get_id()}")
+def proposal_new_fact(issue_id, proposal_id):
+    """Een nieuw feit in de gedeelde lijst van het vraagstuk, meteen gekoppeld."""
+    issue = _issue_or_404(issue_id)
+    proposal = _proposal_or_404(issue, proposal_id)
+    _require_csrf()
+    if not ip.can_link(proposal, current_user) or not _can_add_fact(issue):
+        abort(403)
+    data, errors = _fact_form()
+    if errors:
+        _stash_form_state(f'voorstel-{proposal.id}', {'fact': errors}, {'fact': data})
+        return redirect(_basis_url(issue, proposal), code=303)
+    fact = _new_fact(issue.thread, data)
+    ip.link(proposal, fact, current_user)
+    db.session.commit()
+    from app import quality
+    quality.schedule_judgement(fact.id)
+    return redirect(_basis_url(issue, proposal))
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/ontkoppelen/<int:link_id>',
+                 methods=['POST'])
+@login_required
+def proposal_unlink(issue_id, proposal_id, link_id):
+    from app.models import IssueProposalFact
+    issue = _issue_or_404(issue_id)
+    proposal = _proposal_or_404(issue, proposal_id)
+    _require_csrf()
+    row = db.session.get(IssueProposalFact, link_id)
+    if row is None or row.proposal_id != proposal.id:
+        abort(404)
+    if not ip.can_unlink(row, current_user):
+        abort(403)
+    ip.unlink(row)
+    db.session.commit()
+    return redirect(_basis_url(issue, proposal))

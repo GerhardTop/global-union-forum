@@ -1689,3 +1689,50 @@ msgstr "Collecting support (%(count)s of %(needed)s)"
 
 msgid "You already support this proposal."
 msgstr "You already support this proposal."
+
+# Herontwerp stap 5: feiten koppelen aan een voorstel
+
+msgid "Linked by"
+msgstr "Linked by"
+
+msgid "Unlink"
+msgstr "Unlink"
+
+msgid "No facts linked yet."
+msgstr "No facts linked yet."
+
+msgid "Link a fact"
+msgstr "Link a fact"
+
+msgid "Anyone can link facts, also facts that argue against the proposal. The direction stays visible."
+msgstr "Anyone can link facts, also facts that argue against the proposal. The direction stays visible."
+
+msgid "Link"
+msgstr "Link"
+
+msgid "There are no other facts in this issue to link."
+msgstr "There are no other facts in this issue to link."
+
+msgid "Or add a new fact"
+msgstr "Or add a new fact"
+
+msgid "Add and link"
+msgstr "Add and link"
+
+msgid "Choose from the facts of this issue"
+msgstr "Choose from the facts of this issue"
+
+msgid "Link relevant facts and research"
+msgstr "Link relevant facts and research"
+
+msgid "optional"
+msgstr "optional"
+
+msgid "Add a new fact"
+msgstr "Add a new fact"
+
+msgid "The fact goes into the shared list of this issue and is linked to your proposal."
+msgstr "The fact goes into the shared list of this issue and is linked to your proposal."
+
+msgid "Choose at least one fact that is not linked yet."
+msgstr "Choose at least one fact that is not linked yet."
