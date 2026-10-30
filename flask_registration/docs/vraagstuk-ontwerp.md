@@ -12,7 +12,7 @@ Een vraagstuk is een bak met één gedeelde discussie en één tijdlijn. Uit de 
 - Proposal-velden: kind (online/publiek of event), phase, threshold_pct, show_live_tally, host_id, started_at; per fase (feiten, bijstellen, stemmen) een *_minutes, *_start, *_end; phase_changed_at, revised_at, original_statement, uitslagvelden, created_at. Daaromheen proposal_votes, proposal_rounds met round_votes, proposal_follows.
 - Fase-waarden zijn strings: 'feiten', 'bijstellen', 'stemmen', 'vervolg' (PROPOSAL_PHASES). Het vraagstuk gebruikt dezelfde waarden.
 - Geen aparte feiten-tabel. Een feit is een Post met kind='feit', met fact_direction en fact_source. Feiten vind je via voorstel, gesprek, vraagstuk.
-- Issue (issues): title, intro, kind (online/event), event_location, event_date, voting_deadline, days_facts, days_adjust, days_vote, support_threshold, proposal_threshold_pct, show_interim, final_vote, phase, phase_started_at, phase_deadline, created_by_id (nullable, relatie created_by), created_at, lang, is_closed. proposals.issue_id is een nullable FK met index.
+- Issue (issues): title, intro, kind (online/event), event_location, event_date, voting_deadline, days_facts, days_adjust, days_vote, support_threshold, proposal_threshold_pct, show_interim, final_vote, phase, phase_started_at, phase_deadline, created_by_id (nullable, relatie created_by), created_at, lang, is_closed, thread_id (nullable FK naar het gesprek). proposals.issue_id is een nullable FK met index.
 
 ## Schermen
 
@@ -47,7 +47,7 @@ Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (
 
 ## Bouwstappen
 1. Datamodel en het vraagstuk als bak, plus navigatie. Af, lokaal gecommit (01fd408), getest op Postgres, nog niet gepusht.
-2. De cockpit, responsive. In uitvoering.
+2. De cockpit, responsive. Af, lokaal gecommit (0ad3f37), getest, nog niet gepusht.
 3. Feiten en onderzoek (model, nuttig, sorteren, betwisten, pagina en panel).
 4. Voorstellen: ontstaan, steun, bijstellen, formulier, pagina, detail.
 5. Feiten koppelen aan voorstellen.
