@@ -1391,8 +1391,8 @@ msgstr "Enter a whole number from 1 to 1000."
 msgid "Show the interim result during voting"
 msgstr "Show the interim result during voting"
 
-msgid "End with a final vote"
-msgstr "End with a final vote"
+msgid "End with an ultimate proposal and a new vote"
+msgstr "End with an ultimate proposal and a new vote"
 
 msgid "Cancel"
 msgstr "Cancel"
@@ -1736,3 +1736,66 @@ msgstr "The fact goes into the shared list of this issue and is linked to your p
 
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Choose at least one fact that is not linked yet."
+
+# Herontwerp stap 6: stemmen, uitslag en het ultieme voorstel
+
+msgid "Ultimate proposal"
+msgstr "Ultimate proposal"
+
+msgid "As the initiator, you can now make an ultimate proposal based on all proposals and the discussion."
+msgstr "As the initiator, you can now make an ultimate proposal based on all proposals and the discussion."
+
+msgid "Make the ultimate proposal"
+msgstr "Make the ultimate proposal"
+
+#, python-format
+msgid "Based on all proposals and the discussion, you make one ultimate proposal. The participants vote on it again, for %(days)s days, with the same threshold."
+msgstr "Based on all proposals and the discussion, you make one ultimate proposal. The participants vote on it again, for %(days)s days, with the same threshold."
+
+msgid "The proposals and their results"
+msgstr "The proposals and their results"
+
+msgid "Adjust the issue (optional)"
+msgstr "Adjust the issue (optional)"
+
+msgid "Submit the ultimate proposal"
+msgstr "Submit the ultimate proposal"
+
+msgid "Rejected, no valid votes"
+msgstr "Rejected, no valid votes"
+
+#, python-format
+msgid "Adopted with %(pct)s%% in favour"
+msgstr "Adopted with %(pct)s%% in favour"
+
+#, python-format
+msgid "Rejected with %(pct)s%% in favour"
+msgstr "Rejected with %(pct)s%% in favour"
+
+#, python-format
+msgid "Not on the voting list (%(count)s of %(needed)s)"
+msgstr "Not on the voting list (%(count)s of %(needed)s)"
+
+msgid "Final vote"
+msgstr "Final vote"
+
+msgid "This proposal is not on the voting list. Only proposals with enough support are voted on."
+msgstr "This proposal is not on the voting list. Only proposals with enough support are voted on."
+
+#, python-format
+msgid "Your vote: %(choice)s."
+msgstr "Your vote: %(choice)s."
+
+#, python-format
+msgid "You may vote after %(n)s quality contributions: contributions that receive the quality mark."
+msgstr "You may vote after %(n)s quality contributions: contributions that receive the quality mark."
+
+#, python-format
+msgid "Adopted with more than %(pct)s%% in favour of the valid votes (for plus against). Abstentions count for turnout, not for the result."
+msgstr "Adopted with more than %(pct)s%% in favour of the valid votes (for plus against). Abstentions count for turnout, not for the result."
+
+msgid "At the end, the initiator can make an ultimate proposal based on all proposals and the discussion, which is voted on again."
+msgstr "At the end, the initiator can make an ultimate proposal based on all proposals and the discussion, which is voted on again."
+
+msgid "Not on the voting list"
+msgstr "Not on the voting list"

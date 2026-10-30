@@ -22,16 +22,32 @@ pleiten (de richting blijft zichtbaar). Ontkoppelen: wie het koppelde of een
 moderator. Beide in de feitenfase en de bijstelfase, niet als het vraagstuk
 gesloten is. Koppelen, niet kopiëren: het feit blijft één Post.
 
+Stap 6, stemmen en uitslag:
+- Een gewoon voorstel op de stemlijst krijgt stemmen (voor, tegen,
+  onthouding) van stemgerechtigden (User.can_vote) zolang het vraagstuk in
+  de stemfase is en niet gesloten. Eén stem per persoon, te wijzigen zolang
+  het stemmen loopt. De uitslag (na de stemfase): aangenomen als het
+  percentage voor van de geldige stemmen (voor plus tegen) groter is dan
+  proposal_threshold_pct; onthoudingen tellen mee in de opkomst, niet in de
+  uitslag. De tussenstand is zichtbaar tijdens het stemmen als show_interim
+  aanstaat, anders pas na afloop.
+- Het ultieme voorstel (als final_vote aanstaat): een IssueProposal met
+  is_final, gemaakt door de initiatiefnemer in de vervolgfase, één per
+  vraagstuk, zonder steunronde. De stemming erover loopt days_vote dagen
+  vanaf het aanmaken, met dezelfde stemregels en drempel. Daarbij kan de
+  initiatiefnemer de vraag en de toelichting van het vraagstuk aanpassen.
+
 De fase van het vraagstuk wordt hier alleen gelezen; de fase-engine en de
 tik veranderen niet (stap 6/7). Het oude voorstel (Proposal, een voorstel is
 een gesprek) blijft ernaast werken tot stap 7.
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from app import db
-from app.models import FACT_KIND, IssueProposal, IssueProposalFact, IssueProposalSupport, Post
+from app.models import (FACT_KIND, PROPOSAL_PHASES, VOTE_CHOICES, IssueProposal, IssueProposalFact,
+                        IssueProposalSupport, IssueProposalVote, Post)
 
 STATEMENT_MAX = 300
 EXPLANATION_MAX = 5000
@@ -99,18 +115,30 @@ def my_supports(proposal_ids, user):
 
 
 def on_list(proposal, count):
-    return count >= proposal.issue.support_threshold
+    """Op de stemlijst: genoeg steun. Het ultieme voorstel staat er altijd op."""
+    return bool(proposal.is_final) or count >= proposal.issue.support_threshold
 
 
 def status(proposal, count):
-    """('stemlijst', None) of ('steun', (aantal, drempel)); de template maakt er tekst van."""
+    """(sleutel, info) voor het statuslabel; de template maakt er tekst van.
+    Gewoon voorstel: 'steun' (aantal, drempel) in de feitenfase, daarna
+    'niet_op_lijst' (aantal, drempel) of 'stemlijst'; na het stemmen de
+    uitslag 'aangenomen' of 'verworpen' (met de uitslag). Ultiem voorstel:
+    'ultiem_stemmen' (einddatum) tijdens de stemming, daarna de uitslag."""
     if on_list(proposal, count):
+        if voting_over(proposal):
+            res = result(proposal)
+            return ('aangenomen' if res['adopted'] else 'verworpen'), res
+        if proposal.is_final:
+            return 'ultiem_stemmen', final_voting_end(proposal)
         return 'stemlijst', None
-    return 'steun', (count, proposal.issue.support_threshold)
+    if proposal.issue.phase == 'feiten' and not proposal.issue.is_closed:
+        return 'steun', (count, proposal.issue.support_threshold)
+    return 'niet_op_lijst', (count, proposal.issue.support_threshold)
 
 
 def can_support(proposal, user, count, supported=False):
-    return (_is_contributor(user) and proposal.created_by_id != user.id and not supported
+    return (not proposal.is_final and _is_contributor(user) and proposal.created_by_id != user.id and not supported
             and _open(proposal.issue) and not on_list(proposal, count))
 
 
@@ -123,7 +151,7 @@ def support(proposal, user):
 
 def can_revise(proposal, user):
     issue = proposal.issue
-    return (getattr(user, 'is_authenticated', False) and proposal.created_by_id == user.id
+    return (not proposal.is_final and getattr(user, 'is_authenticated', False) and proposal.created_by_id == user.id
             and proposal.revised_at is None and not issue.is_closed and issue.phase == 'bijstellen')
 
 
@@ -142,7 +170,7 @@ def _link_open(issue):
 
 
 def can_link(proposal, user):
-    return _is_contributor(user) and _link_open(proposal.issue)
+    return not proposal.is_final and _is_contributor(user) and _link_open(proposal.issue)
 
 
 def can_unlink(link, user):
@@ -197,11 +225,125 @@ def unlink(row):
     db.session.delete(row)
 
 
+# ── Stemmen en uitslag (stap 6) ──────────────────────────────────────────
+
+def _phase_index(phase):
+    return PROPOSAL_PHASES.index(phase) if phase in PROPOSAL_PHASES else 0
+
+
+def final_voting_end(proposal):
+    return (proposal.created_at or datetime.utcnow()) + timedelta(days=proposal.issue.days_vote or 7)
+
+
+def voting_open(proposal, count=None, now=None):
+    """Kan er nu over dit voorstel gestemd worden?"""
+    issue = proposal.issue
+    if issue.is_closed:
+        return False
+    if proposal.is_final:
+        return issue.phase == 'vervolg' and (now or datetime.utcnow()) < final_voting_end(proposal)
+    if count is None:
+        count = support_counts([proposal.id]).get(proposal.id, 0)
+    return issue.phase == 'stemmen' and on_list(proposal, count)
+
+
+def voting_over(proposal, now=None):
+    """Is de stemming voorbij (dan staat de uitslag vast)?"""
+    issue = proposal.issue
+    if proposal.is_final:
+        return issue.is_closed or (now or datetime.utcnow()) >= final_voting_end(proposal)
+    stemmen = _phase_index('stemmen')
+    return _phase_index(issue.phase) > stemmen or (issue.is_closed and _phase_index(issue.phase) == stemmen)
+
+
+def can_vote(proposal, user, count=None):
+    return getattr(user, 'is_authenticated', False) and user.can_vote() and voting_open(proposal, count)
+
+
+def cast_vote(proposal, user, choice):
+    """Nieuwe stem of de keuze wijzigen. Commit niet zelf."""
+    if choice not in VOTE_CHOICES:
+        raise ValueError(choice)
+    row = IssueProposalVote.query.filter_by(proposal_id=proposal.id, user_id=user.id).first()
+    if row is None:
+        db.session.add(IssueProposalVote(proposal_id=proposal.id, user_id=user.id, choice=choice))
+    else:
+        row.choice = choice
+
+
+def my_vote(proposal, user):
+    if not getattr(user, 'is_authenticated', False):
+        return None
+    row = IssueProposalVote.query.filter_by(proposal_id=proposal.id, user_id=user.id).first()
+    return row.choice if row is not None else None
+
+
+def tally(proposal):
+    counts = dict.fromkeys(VOTE_CHOICES, 0)
+    for choice, n in (db.session.query(IssueProposalVote.choice, func.count(IssueProposalVote.id))
+                      .filter(IssueProposalVote.proposal_id == proposal.id).group_by(IssueProposalVote.choice)):
+        counts[choice] = int(n)
+    return counts
+
+
+def result(proposal, counts=None):
+    """De uitslag: aantallen, percentage voor en tegen van de geldige stemmen
+    (None zonder geldige stemmen) en of het voorstel is aangenomen."""
+    from app.proposals import for_pct
+    counts = counts or tally(proposal)
+    pct = for_pct(counts['voor'], counts['tegen'])
+    threshold = proposal.issue.proposal_threshold_pct
+    return {'counts': counts, 'total': sum(counts.values()), 'pct_for': pct,
+            'pct_against': None if pct is None else round(100 - pct, 1),
+            'threshold': threshold, 'adopted': pct is not None and pct > threshold}
+
+
+def show_tally(proposal, count=None):
+    """De aantallen zijn zichtbaar na afloop, en tijdens het stemmen alleen
+    als de tussenstand (show_interim) aanstaat."""
+    return voting_over(proposal) or (bool(proposal.issue.show_interim) and voting_open(proposal, count))
+
+
+# ── Het ultieme voorstel (stap 6) ────────────────────────────────────────
+
+def final_proposal(issue):
+    return IssueProposal.query.filter_by(issue_id=issue.id, is_final=True).first()
+
+
+def can_make_final(issue, user):
+    return (getattr(user, 'is_authenticated', False) and bool(issue.final_vote) and not issue.is_closed
+            and issue.phase == 'vervolg' and issue.created_by_id == user.id and final_proposal(issue) is None)
+
+
+def create_final(issue, user, statement, explanation=None, lang=None, title=None, intro=None):
+    """Het ultieme voorstel; eventueel met een aangepaste vraag en toelichting
+    van het vraagstuk. Commit niet zelf."""
+    if title:
+        issue.title = title
+        thread = issue.thread
+        if thread is not None and thread.proposal is None:  # het gesprek van een oud voorstel niet hernoemen
+            thread.title_prefix_nl = thread.title_prefix_en = title
+            thread.title_accent_nl = thread.title_accent_en = None
+            thread.title_suffix_nl = thread.title_suffix_en = ''
+    if intro is not None:
+        issue.intro = intro or issue.intro
+    proposal = IssueProposal(issue_id=issue.id, statement=statement, explanation=explanation,
+                             created_by_id=user.id, lang=lang, is_final=True)
+    db.session.add(proposal)
+    return proposal
+
+
 # ── Lijst ────────────────────────────────────────────────────────────────
+
+def regular_query(issue):
+    """De gewone voorstellen van een vraagstuk (zonder het ultieme)."""
+    return IssueProposal.query.filter(IssueProposal.issue_id == issue.id,
+                                      or_(IssueProposal.is_final.is_(None), IssueProposal.is_final.is_(False)))
+
 
 def listing(issue, which='alle', order=DEFAULT_ORDER):
     """[(voorstel, aantal steunbetuigingen)], gefilterd en gesorteerd."""
-    proposals = IssueProposal.query.filter_by(issue_id=issue.id).all()
+    proposals = regular_query(issue).all()
     counts = support_counts(p.id for p in proposals)
     rows = [(p, counts.get(p.id, 0)) for p in proposals]
     if which == 'stemlijst':
@@ -224,6 +366,9 @@ def detach_user(user_id):
     """Vóór het verwijderen van een gebruiker: zijn steun weg, zijn naam bij
     zijn voorstellen los (het voorstel blijft bij het vraagstuk)."""
     IssueProposalSupport.query.filter_by(user_id=user_id).delete(synchronize_session='evaluate')
+    # Stemmen blijven meetellen, zonder naam: de uitslag mag niet veranderen.
+    IssueProposalVote.query.filter_by(user_id=user_id).update({IssueProposalVote.user_id: None},
+                                                               synchronize_session=False)
     IssueProposal.query.filter_by(created_by_id=user_id).update({IssueProposal.created_by_id: None},
                                                                  synchronize_session=False)
     IssueProposalFact.query.filter_by(linked_by_id=user_id).update({IssueProposalFact.linked_by_id: None},

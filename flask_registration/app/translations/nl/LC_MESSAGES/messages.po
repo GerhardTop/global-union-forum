@@ -1388,8 +1388,8 @@ msgstr "Vul een geheel getal van 1 tot en met 1000 in."
 msgid "Show the interim result during voting"
 msgstr "Tussenstand tonen tijdens het stemmen"
 
-msgid "End with a final vote"
-msgstr "Afsluiten met een eindstemming"
+msgid "End with an ultimate proposal and a new vote"
+msgstr "Afsluiten met een ultiem voorstel en een nieuwe stemming"
 
 msgid "Cancel"
 msgstr "Annuleer"
@@ -1733,3 +1733,66 @@ msgstr "Het feit komt in de gedeelde lijst van dit vraagstuk en wordt aan je voo
 
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Kies minstens één feit dat nog niet gekoppeld is."
+
+# Herontwerp stap 6: stemmen, uitslag en het ultieme voorstel
+
+msgid "Ultimate proposal"
+msgstr "Ultiem voorstel"
+
+msgid "As the initiator, you can now make an ultimate proposal based on all proposals and the discussion."
+msgstr "Als initiatiefnemer kun je nu op basis van alle voorstellen en de discussie een ultiem voorstel doen."
+
+msgid "Make the ultimate proposal"
+msgstr "Ultiem voorstel doen"
+
+#, python-format
+msgid "Based on all proposals and the discussion, you make one ultimate proposal. The participants vote on it again, for %(days)s days, with the same threshold."
+msgstr "Op basis van alle voorstellen en de discussie doe je één ultiem voorstel. De deelnemers stemmen er opnieuw over, %(days)s dagen lang, met dezelfde drempel."
+
+msgid "The proposals and their results"
+msgstr "De voorstellen en hun uitslag"
+
+msgid "Adjust the issue (optional)"
+msgstr "Het vraagstuk aanpassen (optioneel)"
+
+msgid "Submit the ultimate proposal"
+msgstr "Ultiem voorstel indienen"
+
+msgid "Rejected, no valid votes"
+msgstr "Verworpen, geen geldige stemmen"
+
+#, python-format
+msgid "Adopted with %(pct)s%% in favour"
+msgstr "Aangenomen met %(pct)s%% voor"
+
+#, python-format
+msgid "Rejected with %(pct)s%% in favour"
+msgstr "Verworpen met %(pct)s%% voor"
+
+#, python-format
+msgid "Not on the voting list (%(count)s of %(needed)s)"
+msgstr "Niet op de stemlijst (%(count)s van %(needed)s)"
+
+msgid "Final vote"
+msgstr "Eindstemming"
+
+msgid "This proposal is not on the voting list. Only proposals with enough support are voted on."
+msgstr "Dit voorstel staat niet op de stemlijst. Alleen over voorstellen met genoeg steun wordt gestemd."
+
+#, python-format
+msgid "Your vote: %(choice)s."
+msgstr "Je stem: %(choice)s."
+
+#, python-format
+msgid "You may vote after %(n)s quality contributions: contributions that receive the quality mark."
+msgstr "Je mag meestemmen na %(n)s kwaliteitsbijdragen: bijdragen die het keurmerk krijgen."
+
+#, python-format
+msgid "Adopted with more than %(pct)s%% in favour of the valid votes (for plus against). Abstentions count for turnout, not for the result."
+msgstr "Aangenomen bij meer dan %(pct)s%% voor van de geldige stemmen (voor plus tegen). Onthoudingen tellen mee voor de opkomst, niet voor de uitslag."
+
+msgid "At the end, the initiator can make an ultimate proposal based on all proposals and the discussion, which is voted on again."
+msgstr "Aan het einde kan de initiatiefnemer op basis van alle voorstellen en de discussie een ultiem voorstel doen, waarover opnieuw wordt gestemd."
+
+msgid "Not on the voting list"
+msgstr "Niet op de stemlijst"

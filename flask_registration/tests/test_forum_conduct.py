@@ -77,10 +77,14 @@ def fake_ai(monkeypatch, app):
 def _fresh_rate_limits(app):
     # Eerdere testbestanden kunnen de limiter zonder opslag hebben
     # geïnitialiseerd (RATELIMIT_ENABLED uit); dan is er niets te resetten.
+    # Ook kan de limiter nog wijzen naar de database van een eigen testapp
+    # van een eerder bestand, die inmiddels is opgeruimd ("no such table:
+    # rate_limit_counters"); ook dan is er niets te resetten.
+    from sqlalchemy.exc import OperationalError
     from app import limiter
     try:
         limiter.reset()
-    except AssertionError:
+    except (AssertionError, OperationalError):
         pass
     yield
 

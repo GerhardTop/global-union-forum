@@ -732,6 +732,9 @@ class IssueProposal(db.Model):
     original_statement   = db.Column(db.String(300), nullable=True)
     original_explanation = db.Column(db.Text, nullable=True)
     revised_at           = db.Column(db.DateTime, nullable=True)
+    # Stap 6: het ultieme voorstel van de initiatiefnemer (aan het einde, als
+    # final_vote van het vraagstuk aanstaat). NULL telt als False.
+    is_final             = db.Column(db.Boolean, nullable=True, default=False)
 
     issue      = db.relationship('Issue', backref=db.backref('issue_proposals', lazy=True))
     created_by = db.relationship('User', foreign_keys=[created_by_id])
@@ -750,6 +753,25 @@ class IssueProposalSupport(db.Model):
 
     proposal = db.relationship('IssueProposal', backref=db.backref('supports', lazy=True,
                                                                    cascade='all, delete-orphan'))
+
+
+class IssueProposalVote(db.Model):
+    """Stap 6: één stem per stemgerechtigde per voorstel (voor, tegen,
+    onthouding), te wijzigen zolang het stemmen loopt. De uitslag wordt uit
+    deze rijen berekend; bij het verwijderen van een account blijft de stem
+    staan zonder naam (user_id NULL), zodat de uitslag niet verandert."""
+    __tablename__ = "issue_proposal_votes"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    proposal_id = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=False, index=True)
+    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    choice      = db.Column(db.String(12), nullable=False)              # VOTE_CHOICES
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at  = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('proposal_id', 'user_id', name='uq_issue_proposal_vote'),)
+
+    proposal = db.relationship('IssueProposal', backref=db.backref('votes', lazy=True, cascade='all, delete-orphan'))
 
 
 class IssueProposalFact(db.Model):

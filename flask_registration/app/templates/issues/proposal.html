@@ -22,7 +22,7 @@
     </nav>
 
     <header class="gu-forum__threadhead">
-      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
+      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}{% if proposal.is_final %} · <span class="gu-ip-final">{{ _('Ultimate proposal') }}</span>{% endif %}</p>
       <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
       <h1 class="gu-forum__title gu-ipdetail__statement" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</h1>
       <div class="gu-ipdetail__meta">
@@ -34,11 +34,8 @@
       {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
     </header>
 
-    {# Plek voor de stemming (stap 6); op mobiel straks bovenaan. #}
-    <section class="gu-ipdetail__section gu-ipdetail__vote" aria-labelledby="voteTitle">
-      <h2 class="gu-cockpit__title" id="voteTitle">{{ _('Vote') }}</h2>
-      <p class="gu-composer__hint">{{ _('Voting on proposals on the voting list opens in the voting phase.') }}</p>
-    </section>
+    {# Stap 6: de stemming, bovenaan (op mobiel prominent). #}
+    {% include 'issues/_ip_vote.html' %}
 
     <section class="gu-ipdetail__section" aria-labelledby="explTitle">
       <h2 class="gu-cockpit__title" id="explTitle">{{ _('Explanation') }}</h2>
@@ -127,7 +124,7 @@
         {% else %}
         <li>
           <p class="gu-ipdetail__versionlabel">{{ _('Original version') }} · {{ proposal.created_at | datetimeformat('d MMM y HH:mm') }}</p>
-          <p class="gu-composer__hint">{{ _('Not revised. The proposer can refine it once during the revision phase.') }}</p>
+          {% if not proposal.is_final %}<p class="gu-composer__hint">{{ _('Not revised. The proposer can refine it once during the revision phase.') }}</p>{% endif %}
         </li>
         {% endif %}
       </ol>

@@ -273,16 +273,23 @@ def _migrate_issues(existing):
     """
     Herontwerp stap 2: issues.thread_id (nullable), het gesprek met de
     gedeelde discussie. Vóór de backfill in app/issues.py, die het vult. Op
-    een verse database maakt db.create_all() de kolom aan.
+    een verse database maakt db.create_all() de kolom aan. Stap 6:
+    issue_proposals.is_final.
     """
-    if 'issues' not in existing:
-        return
-    cols = {c['name'] for c in sa_inspect(db.engine).get_columns('issues')}
-    if 'thread_id' in cols:
-        return
-    with db.engine.connect() as conn:
-        conn.execute(text('ALTER TABLE issues ADD COLUMN thread_id INTEGER NULL REFERENCES threads(id)'))
-        conn.commit()
+    if 'issues' in existing:
+        cols = {c['name'] for c in sa_inspect(db.engine).get_columns('issues')}
+        if 'thread_id' not in cols:
+            with db.engine.connect() as conn:
+                conn.execute(text('ALTER TABLE issues ADD COLUMN thread_id INTEGER NULL REFERENCES threads(id)'))
+                conn.commit()
+    # Stap 6: issue_proposals.is_final (nullable, NULL = gewoon voorstel). De
+    # tabel issue_proposal_votes maakt db.create_all() aan.
+    if 'issue_proposals' in existing:
+        cols = {c['name'] for c in sa_inspect(db.engine).get_columns('issue_proposals')}
+        if 'is_final' not in cols:
+            with db.engine.connect() as conn:
+                conn.execute(text('ALTER TABLE issue_proposals ADD COLUMN is_final BOOLEAN NULL'))
+                conn.commit()
 
 
 # Indexen op veelgebruikte kolommen. Postgres maakt bij een foreign key niet

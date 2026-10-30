@@ -1,11 +1,23 @@
 {#
-  Partial: issues/_ip_status.html (herontwerp stap 4)
-  De status van een voorstel onder een vraagstuk: verzamelt steun (x van n),
-  of op de stemlijst. Context: proposal, count (aantal steunbetuigingen).
+  Partial: issues/_ip_status.html (herontwerp stap 4 en 6)
+  De status van een voorstel onder een vraagstuk: verzamelt steun (x van n)
+  in de feitenfase, daarna op de stemlijst of niet op de stemlijst, en na het
+  stemmen de uitslag. Het ultieme voorstel: stemmen tot, daarna de uitslag.
+  Context: proposal, count (aantal steunbetuigingen).
 #}
 {% set st = ip_status(proposal, count) %}
-{% if st[0] == 'stemlijst' %}
+{% if st[0] in ('aangenomen', 'verworpen') %}
+<span class="gu-ip-status gu-ip-status--{{ st[0] }}">
+  {%- if st[1].pct_for is none -%}{{ _('Rejected, no valid votes') }}
+  {%- elif st[0] == 'aangenomen' -%}{{ _('Adopted with %(pct)s%% in favour', pct=st[1].pct_for | decimalformat('0.#')) }}
+  {%- else -%}{{ _('Rejected with %(pct)s%% in favour', pct=st[1].pct_for | decimalformat('0.#')) }}{%- endif -%}
+</span>
+{% elif st[0] == 'ultiem_stemmen' %}
+<span class="gu-ip-status gu-ip-status--list">{{ _('Voting open until %(date)s', date=st[1] | datetimeformat('d MMMM y HH:mm')) }}</span>
+{% elif st[0] == 'stemlijst' %}
 <span class="gu-ip-status gu-ip-status--list">{{ _('On the voting list') }}</span>
+{% elif st[0] == 'niet_op_lijst' %}
+<span class="gu-ip-status gu-ip-status--support">{{ _('Not on the voting list (%(count)s of %(needed)s)', count=st[1][0], needed=st[1][1]) }}</span>
 {% else %}
 <span class="gu-ip-status gu-ip-status--support">{{ _('Collecting support (%(count)s of %(needed)s)', count=st[1][0], needed=st[1][1]) }}</span>
 {% endif %}

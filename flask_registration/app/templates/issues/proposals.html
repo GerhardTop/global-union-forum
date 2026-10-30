@@ -26,7 +26,9 @@
 
     <div class="gu-factspage__bar">
       <nav class="gu-factspage__filter" aria-label="{{ _('Filter proposals') }}">
-        {% for key, label in [('alle', _('All')), ('stemlijst', _('On the voting list')), ('steun', _('Collecting support'))] %}
+        {# Na de feitenfase verzamelt niets meer steun: dan heet dat filter "niet op de stemlijst". #}
+        {% set rest_label = _('Collecting support') if issue.phase == 'feiten' and not issue.is_closed else _('Not on the voting list') %}
+        {% for key, label in [('alle', _('All')), ('stemlijst', _('On the voting list')), ('steun', rest_label)] %}
         <a href="{{ url_for('issues.proposals', issue_id=issue.id, filter=None if key == 'alle' else key, sorteer=order) }}"
            class="gu-factspage__chip{% if which == key %} is-active{% endif %}"{% if which == key %} aria-current="true"{% endif %}>{{ label }}</a>
         {% endfor %}
@@ -45,6 +47,8 @@
       <a href="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" class="gu-btn gu-btn--primary gu-btn--sm gu-factspage__add">+ {{ _('Make a new proposal') }}</a>
       {% endif %}
     </div>
+
+    {% include 'issues/_ip_final.html' %}
 
     <p class="gu-composer__hint">{{ _('A proposal goes to the voting list once it has %(n)s supporters.', n=issue.support_threshold) }}</p>
 

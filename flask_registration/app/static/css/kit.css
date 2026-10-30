@@ -3587,3 +3587,17 @@ body {
   .gu-factchoices__item { flex-wrap: wrap; }
   .gu-factchoices__text { flex-basis: 100%; padding-left: 24px; }
 }
+
+/* ── Herontwerp stap 6: stemmen, uitslag en het ultieme voorstel ────────── */
+.gu-ip-status--aangenomen { background: #e3f3ea; color: #11633d; }
+.gu-ip-status--verworpen { background: #fde7e7; color: #b42318; }
+.gu-ip-final { color: var(--gu-globe-deep); font-weight: 600; }
+.gu-ip-finalbox { display: grid; gap: 8px; margin: 0 0 16px; padding: 14px 16px; border: 2px solid var(--gu-globe); border-radius: 12px; background: color-mix(in srgb, var(--gu-globe) 6%, var(--gu-paper)); }
+.gu-ip-finalbox .gu-eyebrow { margin: 0; }
+.gu-ip-finalbox__statement { font-weight: 600; color: var(--gu-fg-1); text-decoration: none; line-height: 1.45; overflow-wrap: anywhere; }
+.gu-ip-finalbox__statement:hover { color: var(--gu-globe-deep); }
+.gu-ip-finalbox .gu-ip-status, .gu-ip-finalbox .gu-btn { justify-self: start; }
+.gu-ip-finalbox--todo { border-style: dashed; }
+.gu-ipdetail__vote.is-open { border-style: solid; border-color: var(--gu-globe); }
+.gu-ipdetail__threshold { margin-top: 10px; }
+.gu-final__issue { border: 1px solid var(--gu-border); border-radius: 12px; padding: 12px 16px; }

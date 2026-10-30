@@ -87,6 +87,8 @@
 
       <section class="gu-cockpit__panel gu-cockpit__proposals" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
         <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}{% if proposal_total %} <span class="gu-facts__count">({{ proposal_total }})</span>{% endif %}</h2>
+        {# Stap 6: het ultieme voorstel bovenaan. #}
+        {% include 'issues/_ip_final.html' %}
         {# Stap 4: de voorstellen onder dit vraagstuk, stemlijst eerst, met hun status. #}
         {% if proposal_rows %}
         <ul class="gu-cockpit__proposallist">

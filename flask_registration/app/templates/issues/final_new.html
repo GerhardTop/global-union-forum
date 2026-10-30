@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Make the ultimate proposal') }} · Global Union{% endblock %}
+
+{#
+  Het ultieme voorstel (herontwerp stap 6): de initiatiefnemer doet in de
+  vervolgfase, op basis van alle voorstellen en de discussie, één ultiem
+  voorstel waarover de deelnemers opnieuw stemmen. Daarbij kan de vraag en
+  de toelichting van het vraagstuk worden aangepast.
+#}
+{% block content_outer %}{% block content %}
+{% from 'issues/_ip_fields.html' import ip_fields with context %}
+{% set fd = form_data or {} %}
+{% set errs = errors or {} %}
+<main class="gu-forum" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
+      <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('Issue') }}</a>
+      <span aria-hidden="true">›</span>
+      <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals') }}</a>
+      <span aria-hidden="true">›</span>
+      <span>{{ _('Ultimate proposal') }}</span>
+    </nav>
+
+    <header class="gu-forum__threadhead">
+      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
+      <h1 class="gu-forum__title">{{ _('Make the ultimate proposal') }}</h1>
+      <p class="gu-composer__hint">{{ _('Based on all proposals and the discussion, you make one ultimate proposal. The participants vote on it again, for %(days)s days, with the same threshold.', days=issue.days_vote) }}</p>
+    </header>
+
+    {% if rows %}
+    <section class="gu-ipdetail__section" aria-labelledby="resultsTitle">
+      <h2 class="gu-cockpit__title" id="resultsTitle">{{ _('The proposals and their results') }}</h2>
+      <ul class="gu-cockpit__proposallist">
+        {% for proposal, count in rows %}
+        <li class="gu-cockpit__proposal">
+          <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</a>
+          {% include 'issues/_ip_status.html' %}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <form class="gu-forum__newform" method="POST" action="{{ url_for('issues.final_new', issue_id=issue.id) }}" novalidate style="margin-top:24px;">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <fieldset class="gu-forum__newfield gu-final__issue">
+        <legend>{{ _('Adjust the issue (optional)') }}</legend>
+        <div class="gu-forum__newfield">
+          <label for="title">{{ _('The question') }}</label>
+          <input type="text" name="title" id="title" maxlength="300" class="gu-input{% if errs.get('title') %} gu-input--error{% endif %}" value="{{ fd.get('title', '') }}">
+          {% if errs.get('title') %}<p class="gu-join__formError">{{ _('Enter a question of at most 300 characters.') }}</p>{% endif %}
+        </div>
+        <div class="gu-forum__newfield">
+          <label for="intro">{{ _('What this is about') }}</label>
+          <textarea name="intro" id="intro" rows="4" class="gu-composer__input">{{ fd.get('intro', '') }}</textarea>
+        </div>
+      </fieldset>
+      {{ ip_fields('final', fd, errs) }}
+      <div class="gu-forum__newactions">
+        <a href="{{ url_for('issues.show', issue_id=issue.id) }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">{{ _('Submit the ultimate proposal') }} <span class="gu-arrow"></span></button>
+      </div>
+    </form>
+
+  </div>
+</main>
+{% endblock %}{% endblock %}

@@ -10,7 +10,10 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
                      betwisten en toevoegen
 /vraagstuk/<id>/voorstellen, /voorstellen/nieuw, /voorstel/<pid>
                      voorstellen onder het vraagstuk (stap 4): doen, steunen,
-                     bijstellen, de lijst en het detail
+                     bijstellen, de lijst en het detail; stap 5 feiten
+                     koppelen; stap 6 stemmen (/voorstel/<pid>/stemmen)
+/vraagstuk/<id>/ultiem-voorstel
+                     het ultieme voorstel van de initiatiefnemer (stap 6)
 """
 from flask import Blueprint, abort, flash, redirect, render_template, request, session, url_for
 from flask_babel import gettext
@@ -90,7 +93,8 @@ def show(issue_id):
                            top_facts=top[:FACTS_SHOWN], fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
                            proposal_rows=ip.listing(issue, order='stemlijst')[:COCKPIT_PROPOSALS],
-                           proposal_total=len(issue.issue_proposals),
+                           proposal_total=ip.regular_query(issue).count(),
+                           final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
                            return_to=issue.id, **discussion)
 
@@ -157,7 +161,8 @@ def proposals(issue_id):
     rows = ip.listing(issue, which, order)
     return render_template('issues/proposals.html', issue=issue, rows=rows, which=which, order=order,
                            my_supports=ip.my_supports([p.id for p, _n in rows], current_user),
-                           can_propose=ip.can_propose(issue, current_user))
+                           can_propose=ip.can_propose(issue, current_user),
+                           final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user))
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstellen/nieuw', methods=['GET', 'POST'])
@@ -222,7 +227,20 @@ def proposal(issue_id, proposal_id):
                            links=links, can_link=ip.can_link(proposal, current_user),
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
                            candidates=[f for f in ip.visible_issue_facts(issue, current_user) if f.id not in linked_ids],
-                           can_add_fact=_can_add_fact(issue))
+                           can_add_fact=_can_add_fact(issue), vote=_vote_context(proposal, count))
+
+
+def _vote_context(proposal, count):
+    """Alles voor de stemming op het detail (stap 6)."""
+    from app import status
+    show = ip.show_tally(proposal, count)
+    return {'open': ip.voting_open(proposal, count), 'over': ip.voting_over(proposal),
+            'on_list': ip.on_list(proposal, count), 'can_vote': ip.can_vote(proposal, current_user, count),
+            'mine': ip.my_vote(proposal, current_user), 'show': show,
+            'result': ip.result(proposal) if show else None,
+            'voters': sum(ip.tally(proposal).values()),
+            'final_end': ip.final_voting_end(proposal) if proposal.is_final else None,
+            'voter_min': status.get_thresholds()['voter_min']}
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/steunen', methods=['POST'])
@@ -332,3 +350,55 @@ def proposal_unlink(issue_id, proposal_id, link_id):
     ip.unlink(row)
     db.session.commit()
     return redirect(_basis_url(issue, proposal))
+
+
+# ── Stap 6: stemmen en het ultieme voorstel ──────────────────────────────
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/stemmen', methods=['POST'])
+@login_required
+@limiter.limit("60 per minute", key_func=lambda: f"issue-vote-user-{current_user.get_id()}")
+def proposal_vote(issue_id, proposal_id):
+    from app.models import VOTE_CHOICES
+    issue = _issue_or_404(issue_id)
+    proposal = _proposal_or_404(issue, proposal_id)
+    _require_csrf()
+    if not ip.can_vote(proposal, current_user):
+        abort(403)
+    choice = request.form.get('choice')
+    if choice not in VOTE_CHOICES:
+        abort(400)
+    ip.cast_vote(proposal, current_user, choice)
+    db.session.commit()
+    return redirect(url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) + '#stemming')
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/ultiem-voorstel', methods=['GET', 'POST'])
+@login_required
+def final_new(issue_id):
+    """De initiatiefnemer doet in de vervolgfase het ultieme voorstel, op basis
+    van alle voorstellen en de discussie, en kan daarbij de vraag en de
+    toelichting van het vraagstuk aanpassen."""
+    issue = _issue_or_404(issue_id)
+    if not ip.can_make_final(issue, current_user):
+        abort(403)
+    form_key = f'ultiem-{issue.id}'
+    if request.method == 'POST':
+        _require_csrf()
+        statement, explanation, errors = ip.parse_form(request.form)
+        title = ' '.join((request.form.get('title') or '').split())
+        intro = (request.form.get('intro') or '').strip()
+        if not title or len(title) > issues.TITLE_MAX:
+            errors['title'] = True
+        if errors:
+            _stash_form_state(form_key, errors, {k: request.form.get(k, '')
+                                                 for k in ('statement', 'explanation', 'title', 'intro')})
+            return redirect(url_for('issues.final_new', issue_id=issue.id), code=303)
+        proposal = ip.create_final(issue, current_user, statement, explanation, lang=session.get('lang', 'nl'),
+                                   title=title if title != issue.title else None,
+                                   intro=intro if intro != (issue.intro or '') else None)
+        db.session.commit()
+        return redirect(url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id))
+    errors, data = _pop_form_state(form_key)
+    rows = ip.listing(issue, order='stemlijst')
+    return render_template('issues/final_new.html', issue=issue, errors=errors,
+                           form_data=data or {'title': issue.title, 'intro': issue.intro or ''}, rows=rows)
