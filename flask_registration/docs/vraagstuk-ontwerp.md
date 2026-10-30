@@ -1,0 +1,64 @@
+# Vraagstuk-model (Issue), bouw-specificatie
+
+Canoniek voor de bouw van het vraagstuk-model in Global Union Forum. Claude Code werkt hieruit. De strategie en de bredere beslissingen staan in het claude.ai-Project (forum-fasering.md). Bij verschil over bouwdetails geldt dit document.
+
+Naamgeving: nl "Vraagstuk", en "Issue". Het menu heet "Gesprekken" (en "Conversations"). App-tekst tweetalig nl/en, geen lange of korte streepjes. Ontwikkelaarstekst en commit-teksten in het Engels.
+
+## Het model in het kort
+Een vraagstuk is een bak met één gedeelde discussie en één tijdlijn. Uit de discussie ontstaan voorstellen; die worden per stuk verfijnd en gestemd, met optioneel een eindstemming over het geheel. Feiten en onderzoek staan gedeeld op vraagstuk-niveau en kunnen aan voorstellen gekoppeld worden.
+
+## Bestaand schema waarop we bouwen (aangetroffen in stap 1)
+- Een voorstel (proposals) hangt aan precies één gesprek via thread_id. De stelling is de titel van dat gesprek.
+- Proposal-velden: kind (online/publiek of event), phase, threshold_pct, show_live_tally, host_id, started_at; per fase (feiten, bijstellen, stemmen) een *_minutes, *_start, *_end; phase_changed_at, revised_at, original_statement, uitslagvelden, created_at. Daaromheen proposal_votes, proposal_rounds met round_votes, proposal_follows.
+- Fase-waarden zijn strings: 'feiten', 'bijstellen', 'stemmen', 'vervolg' (PROPOSAL_PHASES). Het vraagstuk gebruikt dezelfde waarden.
+- Geen aparte feiten-tabel. Een feit is een Post met kind='feit', met fact_direction en fact_source. Feiten vind je via voorstel, gesprek, vraagstuk.
+- Issue (issues): title, intro, kind (online/event), event_location, event_date, voting_deadline, days_facts, days_adjust, days_vote, support_threshold, proposal_threshold_pct, show_interim, final_vote, phase, phase_started_at, phase_deadline, created_by_id (nullable, relatie created_by), created_at, lang, is_closed. proposals.issue_id is een nullable FK met index.
+
+## Schermen
+
+### Cockpit: /vraagstuk/<id>
+Boven de kolommen: het online/event-label met datum (online: "stemmen sluit <datum>"; event: "<datum>, <locatie>"), de titel (de vraag), en een fase-strip (feiten, bijstellen, stemmen, vervolg) met de huidige fase gemarkeerd en de resterende tijd.
+Desktop, drie kolommen:
+- Links (context en feiten): "Waar gaat dit over" (de intro), en "Feiten en onderzoek" met de top-feiten (posts kind='feit') met richting en bron, plus een link naar de volledige feiten-pagina.
+- Midden (gedeelde discussie): de thread van het gesprek met de bestaande forumweergave (geneste reacties tot 4 diep, keurmerk, eens, handhaving). Feiten-posts staan hier niet, die staan links. Onderaan de reactie-invoer.
+- Rechts (voorstellen en stemrecht): de voorstellen onder het vraagstuk, compact met status (op de stemlijst / verzamelt steun x van n), link naar het detail, en een knop "nieuw voorstel doen". Daaronder "jouw stemrecht" (voortgang, aantal keurmerken).
+Mobiel: tabs met de context en fase-strip erboven. Tabs: Discussie (standaard), Voorstellen, Feiten en onderzoek.
+
+### Feiten en onderzoek
+Gedeelde lijst op vraagstuk-niveau. Per feit: richting (pleit voor / pleit tegen / neutraal), tekst, bron, een "nuttig"-knop (één positieve knop, geen omlaag), en "betwisten" met reden (geen bron, klopt niet, niet relevant, misleidend) dat naar een moderator gaat. Filter op richting, sorteren (kwaliteit eerst, nieuwste, meest nuttig), een "toevoegen"-knop, en "toon meer" bij lange lijsten. Kwaliteit loopt via bron en keurmerk, niet via stemmen.
+
+### Voorstellen (lijst)
+Alle voorstellen bij het vraagstuk. Per voorstel: status (op de stemlijst / verzamelt steun x van n), inbrenger, de stelling. Filter (alle / op de stemlijst / verzamelt steun) en sorteren (meeste steun / nieuwste / stemlijst eerst). Een "steunen"-knop bij voorstellen die nog steun verzamelen, en "nieuw voorstel doen".
+
+### Voorstel-detail
+De stelling, de status, de toelichting, de bijstel-historie (versies), en de sectie "waarop dit voorstel zich baseert" met de gekoppelde feiten en hun richting-labels plus een "feit koppelen"-knop (iedereen mag koppelen, ook tegenfeiten). De stemming (voor, tegen, onthouding) met de drempel per voorstel en de tussenstand als die aanstaat, en de melding dat het meetelt in de eindstemming. De discussie gefilterd op dit voorstel. Mobiel: de stemming prominent bovenaan.
+
+### Vraagstuk starten: /gesprekken/nieuw
+De vraag, het eerste bericht, de keuze online of event (met datum, en locatie bij event), de planning per fase (feiten 21, bijstellen 5, stemmen 7 dagen), en de stemregels (drempel per voorstel 50 procent, steundrempel 5, tussenstand aan/uit, eindstemming aan/uit).
+
+### Event of online
+Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (met datum en locatie), met een eigen label en kleur.
+
+## Beslissingen (en waarom)
+- Eén cockpit per vraagstuk met één gedeelde discussie, niet een discussie per voorstel. Dat houdt de deliberatie bij elkaar (één burgerberaad, één tijdlijn).
+- Op feiten een "nuttig"-knop, geen omlaag-knop. Een omlaag-knop zou een waar maar onwelgevallig feit wegdrukken. Kwaliteit loopt via bron en keurmerk. Consistent met "eens" op meningen.
+- Iedereen mag feiten aan een voorstel koppelen, ook tegenfeiten, met labels zichtbaar, zodat het beeld eerlijk blijft. Koppelen, niet kopiëren.
+- Stemmen per voorstel (voor, tegen, onthouding), met optioneel een eindstemming over het geheel.
+
+## Bouwstappen
+1. Datamodel en het vraagstuk als bak, plus navigatie. Af, lokaal gecommit (01fd408), getest op Postgres, nog niet gepusht.
+2. De cockpit, responsive. In uitvoering.
+3. Feiten en onderzoek (model, nuttig, sorteren, betwisten, pagina en panel).
+4. Voorstellen: ontstaan, steun, bijstellen, formulier, pagina, detail.
+5. Feiten koppelen aan voorstellen.
+6. Stemmen, eindstemming, uitslag.
+7. Vervolg, fase-overgangen via de uurtaak, notificaties, opnieuw openstellen, oude losse-voorstel uitfaseren.
+
+## Regels bij elke stap
+- Additieve, nullable migratie via de bestaande idempotente aanpak (_migrate_* en _migrate_indexes), getest op een Postgres-kopie over meerdere starts. Vooraf een Neon-snapshot (doet Gerhard).
+- App-tekst tweetalig nl/en, geen lange of korte streepjes. Ontwikkelaarstekst en commit-teksten Engels.
+- Responsive volgens de mobiele ontwerpen.
+- De fase-engine en de tik blijven ongewijzigd tot stap 6/7.
+
+## Standaardwaarden (instelbaar in beheer)
+Feiten en discussie 21 dagen of 5 dagen stilte; bijstellen 5 dagen, maximaal één keer; stemmen 7 dagen; vervolg open. Steundrempel 5; drempel per voorstel 50 procent voor. Stemrecht na 3 keurmerken; moderator meer dan 10 over minstens 3 onderwerpen; senior meer dan 100 handelingen.
