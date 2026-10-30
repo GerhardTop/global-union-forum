@@ -5,7 +5,9 @@ Canoniek voor de bouw van het vraagstuk-model in Global Union Forum. Claude Code
 Naamgeving: nl "Vraagstuk", en "Issue". Het menu heet "Gesprekken" (en "Conversations"). App-tekst tweetalig nl/en, geen lange of korte streepjes. Ontwikkelaarstekst en commit-teksten in het Engels.
 
 ## Het model in het kort
-Een vraagstuk is een bak met één gedeelde discussie en één tijdlijn. Uit de discussie ontstaan voorstellen; die worden per stuk verfijnd en gestemd, met optioneel een eindstemming over het geheel. Feiten en onderzoek staan gedeeld op vraagstuk-niveau en kunnen aan voorstellen gekoppeld worden.
+Een vraagstuk is een bak met één gedeelde discussie en één tijdlijn. Uit de discussie ontstaan voorstellen; die worden per stuk verfijnd en gestemd. Aan het einde kan de initiatiefnemer op basis van alle voorstellen en de discussie het vraagstuk aanpassen en een ultiem voorstel doen, waarover de deelnemers opnieuw stemmen. Dat is optioneel per vraagstuk (de aan/uit-keuze bij het starten). Feiten en onderzoek staan gedeeld op vraagstuk-niveau en kunnen aan voorstellen gekoppeld worden.
+
+Een voorstel doen en steunen kan alleen in de feitenfase. Daarna ligt de stemlijst vast. In de bijstelfase stelt alleen de inbrenger bestaande voorstellen bij.
 
 ## Bestaand schema waarop we bouwen (aangetroffen in stap 1)
 - Een voorstel (proposals) hangt aan precies één gesprek via thread_id. De stelling is de titel van dat gesprek.
@@ -31,10 +33,10 @@ Gedeelde lijst op vraagstuk-niveau. Per feit: richting (pleit voor / pleit tegen
 Alle voorstellen bij het vraagstuk. Per voorstel: status (op de stemlijst / verzamelt steun x van n), inbrenger, de stelling. Filter (alle / op de stemlijst / verzamelt steun) en sorteren (meeste steun / nieuwste / stemlijst eerst). Een "steunen"-knop bij voorstellen die nog steun verzamelen, en "nieuw voorstel doen".
 
 ### Voorstel-detail
-De stelling, de status, de toelichting, de bijstel-historie (versies), en de sectie "waarop dit voorstel zich baseert" met de gekoppelde feiten en hun richting-labels plus een "feit koppelen"-knop (iedereen mag koppelen, ook tegenfeiten). De stemming (voor, tegen, onthouding) met de drempel per voorstel en de tussenstand als die aanstaat, en de melding dat het meetelt in de eindstemming. De discussie gefilterd op dit voorstel. Mobiel: de stemming prominent bovenaan.
+De stelling, de status, de toelichting, de bijstel-historie (versies), en de sectie "waarop dit voorstel zich baseert" met de gekoppelde feiten en hun richting-labels plus een "feit koppelen"-knop (iedereen mag koppelen, ook tegenfeiten). De stemming (voor, tegen, onthouding) met de drempel per voorstel en de tussenstand als die aanstaat, en, als dat bij het vraagstuk aanstaat, de melding dat de initiatiefnemer aan het einde op basis van alle voorstellen en de discussie een ultiem voorstel kan doen, waarover opnieuw wordt gestemd. De discussie gefilterd op dit voorstel. Mobiel: de stemming prominent bovenaan.
 
 ### Vraagstuk starten: /gesprekken/nieuw
-De vraag, het eerste bericht, de keuze online of event (met datum, en locatie bij event), de planning per fase (feiten 21, bijstellen 5, stemmen 7 dagen), en de stemregels (drempel per voorstel 50 procent, steundrempel 5, tussenstand aan/uit, eindstemming aan/uit).
+De vraag, het eerste bericht, de keuze online of event (met datum, en locatie bij event), de planning per fase (feiten 21, bijstellen 5, stemmen 7 dagen), en de stemregels (drempel per voorstel 50 procent, steundrempel 5, tussenstand aan/uit, ultiem voorstel met nieuwe stemming aan/uit).
 
 ### Event of online
 Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (met datum en locatie), met een eigen label en kleur.
@@ -43,7 +45,7 @@ Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (
 - Eén cockpit per vraagstuk met één gedeelde discussie, niet een discussie per voorstel. Dat houdt de deliberatie bij elkaar (één burgerberaad, één tijdlijn).
 - Op feiten een "nuttig"-knop, geen omlaag-knop. Een omlaag-knop zou een waar maar onwelgevallig feit wegdrukken. Kwaliteit loopt via bron en keurmerk. Consistent met "eens" op meningen.
 - Iedereen mag feiten aan een voorstel koppelen, ook tegenfeiten, met labels zichtbaar, zodat het beeld eerlijk blijft. Koppelen, niet kopiëren.
-- Stemmen per voorstel (voor, tegen, onthouding), met optioneel een eindstemming over het geheel.
+- Stemmen per voorstel (voor, tegen, onthouding). Optioneel per vraagstuk: aan het einde past de initiatiefnemer op basis van alle voorstellen en de discussie het vraagstuk aan en doet een ultiem voorstel, waarover de deelnemers opnieuw stemmen.
 
 ## Bouwstappen
 1. Datamodel en het vraagstuk als bak, plus navigatie. Af, lokaal gecommit (01fd408), getest op Postgres, nog niet gepusht.
@@ -51,7 +53,7 @@ Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (
 3. Feiten en onderzoek (model, nuttig, sorteren, betwisten, pagina en panel).
 4. Voorstellen: ontstaan, steun, bijstellen, formulier, pagina, detail.
 5. Feiten koppelen aan voorstellen.
-6. Stemmen, eindstemming, uitslag.
+6. Stemmen, het ultieme voorstel met de stemming daarover, uitslag.
 7. Vervolg, fase-overgangen via de uurtaak, notificaties, opnieuw openstellen, oude losse-voorstel uitfaseren.
 
 ## Regels bij elke stap
