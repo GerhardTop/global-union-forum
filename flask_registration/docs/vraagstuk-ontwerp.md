@@ -41,6 +41,17 @@ De vraag, het eerste bericht, de keuze online of event (met datum, en locatie bi
 ### Event of online
 Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (met datum en locatie), met een eigen label en kleur.
 
+## Fasen en levenscyclus
+- Volgorde: feiten, bijstellen, stemmen, vervolg. Bij elke overgang krijgen phase, phase_started_at en phase_deadline een nieuwe waarde uit days_facts, days_adjust en days_vote. Uit de vervolgfase gaat niets automatisch verder.
+- Online: de uurtaak (/intern/tik) zet een vraagstuk door zodra de deadline van de huidige fase verstreken is. Een overgang op de deadline begint op die deadline, zodat de planning blijft kloppen; een gemiste tik wordt ingehaald, zo nodig over meerdere fasen.
+- De feitenfase sluit na days_facts dagen, of eerder na 5 dagen zonder nieuw keurmerk in het vraagstuk (de stilte telt vanaf het begin van de feitenfase of het laatste keurmerk). De stilte-drempel is instelbaar in beheer.
+- Events worden met de hand verzet: de initiatiefnemer of een moderator zet het vraagstuk naar de volgende fase, zonder datums. Bij online kan dezelfde actie een fase vroegtijdig afsluiten.
+- In de vervolgfase beschrijft de initiatiefnemer of een moderator wat er met het vraagstuk gebeurt (de vervolgtekst). Een afgerond of gesloten vraagstuk kan na een bevestiging opnieuw worden opengesteld: terug naar de feitenfase met een nieuwe planning. Voorstellen, steun en stemmen blijven bewaard.
+- Het ultieme voorstel ontstaat in de vervolgfase (alleen de initiatiefnemer, als dat bij het vraagstuk aanstaat) en heeft een eigen stemperiode van days_vote dagen vanaf het aanmaken, met dezelfde drempel.
+- De uitslag wordt live uit de stemmen berekend, niet vastgelegd. Bij het verwijderen van een account blijft een stem meetellen zonder naam, zodat een uitslag niet verandert.
+- Een vraagstuk dat een oud voorstel inpakt (uit de backfill van stap 1) volgt de fase van dat oude voorstel en heeft geen eigen automatiek, tot het oude model is uitgefaseerd.
+- Meldingen lopen via de bestaande dagelijkse samenvatting: de initiatiefnemer en wie heeft bijgedragen (berichten, feiten, voorstellen, steun, stemmen) krijgen een melding bij een faseovergang, het openen van de stemming, de uitslag, het ultieme voorstel, de vervolgtekst en het opnieuw openstellen.
+
 ## Beslissingen (en waarom)
 - Eén cockpit per vraagstuk met één gedeelde discussie, niet een discussie per voorstel. Dat houdt de deliberatie bij elkaar (één burgerberaad, één tijdlijn).
 - Op feiten een "nuttig"-knop, geen omlaag-knop. Een omlaag-knop zou een waar maar onwelgevallig feit wegdrukken. Kwaliteit loopt via bron en keurmerk. Consistent met "eens" op meningen.
@@ -54,7 +65,8 @@ Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (
 4. Voorstellen: ontstaan, steun, bijstellen, formulier, pagina, detail.
 5. Feiten koppelen aan voorstellen.
 6. Stemmen, het ultieme voorstel met de stemming daarover, uitslag.
-7. Vervolg, fase-overgangen via de uurtaak, notificaties, opnieuw openstellen, oude losse-voorstel uitfaseren.
+7. Vervolg, fase-overgangen via de uurtaak, notificaties, opnieuw openstellen.
+8. Opruimen: het oude losse-voorstel-model uitfaseren.
 
 ## Regels bij elke stap
 - Additieve, nullable migratie via de bestaande idempotente aanpak (_migrate_* en _migrate_indexes), getest op een Postgres-kopie over meerdere starts. Vooraf een Neon-snapshot (doet Gerhard).

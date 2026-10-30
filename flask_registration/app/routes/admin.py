@@ -239,9 +239,31 @@ def admin_proposal_limits():
             proposals.set_max_days(values, user_id=current_user.id)
             flash(gettext('Maximum durations saved.'), 'success')
             return redirect(url_for('admin.admin_proposal_limits'))
+    from app import issue_lifecycle
     return render_template('admin/proposal_limits.html', max_days=proposals.get_max_days(),
                            defaults=proposals.DEFAULT_MAX_DAYS, errors=errors,
-                           form_values=request.form if errors else None, admin_action_form=form)
+                           form_values=request.form if errors else None, admin_action_form=form,
+                           silence_days=issue_lifecycle.get_silence_days(),
+                           silence_default=issue_lifecycle.DEFAULT_SILENCE_DAYS)
+
+
+@admin_bp.route('/admin/vraagstukken/stilte', methods=['POST'])
+@login_required
+def admin_issue_silence():
+    """Herontwerp stap 7: na hoeveel dagen zonder nieuw keurmerk de
+    feitenfase van een online vraagstuk sluit (standaard 5)."""
+    from app import issue_lifecycle
+    if not current_user.is_admin:
+        abort(403)
+    if not AdminActionForm().validate_on_submit():
+        abort(400)
+    raw = (request.form.get('silence_days') or '').strip()
+    if not raw.isdigit() or not issue_lifecycle.SILENCE_MIN <= int(raw) <= issue_lifecycle.SILENCE_MAX:
+        flash(gettext('Enter a whole number from 1 to 365.'), 'error')
+    else:
+        issue_lifecycle.set_silence_days(int(raw), user_id=current_user.id)
+        flash(gettext('Saved.'), 'success')
+    return redirect(url_for('admin.admin_proposal_limits') + '#stilte')
 
 
 @admin_bp.route('/admin/taalmonitor')

@@ -274,13 +274,20 @@ def _migrate_issues(existing):
     Herontwerp stap 2: issues.thread_id (nullable), het gesprek met de
     gedeelde discussie. Vóór de backfill in app/issues.py, die het vult. Op
     een verse database maakt db.create_all() de kolom aan. Stap 6:
-    issue_proposals.is_final.
+    issue_proposals.is_final. Stap 7: issues.followup_text en followup_at.
     """
     if 'issues' in existing:
         cols = {c['name'] for c in sa_inspect(db.engine).get_columns('issues')}
-        if 'thread_id' not in cols:
+        added = [ddl for name, ddl in (
+            ('thread_id', 'ADD COLUMN thread_id INTEGER NULL REFERENCES threads(id)'),
+            # Stap 7: de vervolgtekst.
+            ('followup_text', 'ADD COLUMN followup_text TEXT NULL'),
+            ('followup_at', 'ADD COLUMN followup_at TIMESTAMP NULL'),
+        ) if name not in cols]
+        if added:
             with db.engine.connect() as conn:
-                conn.execute(text('ALTER TABLE issues ADD COLUMN thread_id INTEGER NULL REFERENCES threads(id)'))
+                for ddl in added:
+                    conn.execute(text(f'ALTER TABLE issues {ddl}'))
                 conn.commit()
     # Stap 6: issue_proposals.is_final (nullable, NULL = gewoon voorstel). De
     # tabel issue_proposal_votes maakt db.create_all() aan.

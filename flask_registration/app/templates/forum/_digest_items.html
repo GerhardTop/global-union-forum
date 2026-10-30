@@ -11,7 +11,9 @@
   <li style="margin:0 0 14px;" class="gu-digest__item">
     {% set alive = existing_threads is not defined or item.thread_id in existing_threads %}
     <p style="margin:0 0 4px;font-weight:600;" class="gu-digest__title">
-      {% if alive %}<a href="{{ base or '' }}{{ url_for('forum.forum_thread', thread_id=item.thread_id) }}">{{ item.title }}</a>{% else %}{{ item.title }}{% endif %}
+      {%- if item.issue_id -%}{# Stap 7: een vraagstuk, met een link naar de cockpit. #}
+        <a href="{{ base or '' }}{{ url_for('issues.show', issue_id=item.issue_id) }}">{{ item.title }}</a>
+      {%- elif alive -%}<a href="{{ base or '' }}{{ url_for('forum.forum_thread', thread_id=item.thread_id) }}">{{ item.title }}</a>{% else %}{{ item.title }}{% endif %}
     </p>
     <ul style="margin:0;padding-left:18px;" class="gu-digest__changes">
       {% for c in item.changes %}
@@ -25,6 +27,22 @@
           {%- if c.pct is none -%}{{ _('Round %(n)s: rejected, no valid votes', n=c.number) }}
           {%- elif c.result == 'aangenomen' -%}{{ _('Round %(n)s: adopted with %(pct)s%% in favour', n=c.number, pct=c.pct | decimalformat('0.#')) }}
           {%- else -%}{{ _('Round %(n)s: rejected with %(pct)s%% in favour', n=c.number, pct=c.pct | decimalformat('0.#')) }}{%- endif -%}
+        {%- elif c.type == 'issue_bijstellen' -%}{{ _('The revision phase has started: proposers can refine their proposals') }}
+        {%- elif c.type == 'issue_heropend' -%}{{ _('The issue has been reopened for discussion') }}
+        {%- elif c.type == 'issue_vervolgtekst' -%}{{ _('The initiator has described what happens next') }}
+        {%- elif c.type == 'issue_uitslag' -%}{{ _('Voting has closed. The results:') }}
+          {%- if c.results -%}
+          <ul style="margin:4px 0 0;padding-left:18px;">
+            {%- for r in c.results -%}
+            <li>{{ r.statement }}: {% if r.pct is none %}{{ _('rejected, no valid votes') }}{% elif r.adopted %}{{ _('adopted with %(pct)s%% in favour', pct=r.pct | decimalformat('0.#')) }}{% else %}{{ _('rejected with %(pct)s%% in favour', pct=r.pct | decimalformat('0.#')) }}{% endif %}</li>
+            {%- endfor -%}
+          </ul>
+          {%- else %} {{ _('no proposals were on the voting list.') }}{%- endif -%}
+        {%- elif c.type == 'ultiem_open' -%}{{ _('Ultimate proposal "%(statement)s": voting open until %(date)s', statement=c.statement, date=until | datetimeformat('d MMMM y HH:mm')) }}
+        {%- elif c.type == 'ultiem_uitslag' -%}
+          {%- if c.pct is none -%}{{ _('Ultimate proposal "%(statement)s": rejected, no valid votes', statement=c.statement) }}
+          {%- elif c.adopted -%}{{ _('Ultimate proposal "%(statement)s": adopted with %(pct)s%% in favour', statement=c.statement, pct=c.pct | decimalformat('0.#')) }}
+          {%- else -%}{{ _('Ultimate proposal "%(statement)s": rejected with %(pct)s%% in favour', statement=c.statement, pct=c.pct | decimalformat('0.#')) }}{%- endif -%}
         {%- elif c.type == 'uitslag' -%}
           {%- if c.pct is none -%}{{ _('Result: rejected, no valid votes') }}
           {%- elif c.result == 'aangenomen' -%}{{ _('Result: adopted with %(pct)s%% in favour', pct=c.pct | decimalformat('0.#')) }}

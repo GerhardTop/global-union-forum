@@ -28,6 +28,21 @@
         <button type="submit" class="gu-btn gu-btn--primary">{% if lang == 'nl' %}Opslaan{% else %}Save{% endif %} <span class="gu-arrow"></span></button>
       </form>
     </section>
+
+    {# Herontwerp stap 7: de stilte-regel van de feitenfase van een vraagstuk. #}
+    <section class="gu-admin__section" id="stilte">
+      <p class="gu-eyebrow gu-eyebrow--section">{{ _('Issues: silence in the facts phase') }}</p>
+      <p class="gu-quality__meta">{{ _('The facts phase of an online issue closes after its planned number of days, or earlier after this many days without a new quality mark in the issue.') }}</p>
+      <form method="POST" action="{{ url_for('admin.admin_issue_silence') }}" class="gu-thresholds" novalidate>
+        {{ admin_action_form.hidden_tag() }}
+        <div class="gu-join__field">
+          <label for="silence_days">{{ _('Days without a new quality mark') }}</label>
+          <input type="number" min="1" max="365" step="1" id="silence_days" name="silence_days" class="gu-input" value="{{ silence_days }}">
+          <p class="gu-join__hint">{{ _('Default: %(days)s days', days=silence_default) }}</p>
+        </div>
+        <button type="submit" class="gu-btn gu-btn--primary">{% if lang == 'nl' %}Opslaan{% else %}Save{% endif %} <span class="gu-arrow"></span></button>
+      </form>
+    </section>
   </div>
 </div>
 {% endblock %}{% endblock %}

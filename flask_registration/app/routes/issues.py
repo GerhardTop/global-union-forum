@@ -14,6 +14,9 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
                      koppelen; stap 6 stemmen (/voorstel/<pid>/stemmen)
 /vraagstuk/<id>/ultiem-voorstel
                      het ultieme voorstel van de initiatiefnemer (stap 6)
+/vraagstuk/<id>/volgende-fase, /vervolg, /heropenen
+                     de levenscyclus met de hand (stap 7): een fase verder,
+                     de vervolgtekst, opnieuw openstellen
 """
 from flask import Blueprint, abort, flash, redirect, render_template, request, session, url_for
 from flask_babel import gettext
@@ -21,6 +24,7 @@ from flask_login import current_user, login_required
 
 from app import conduct, db, issues, limiter
 from app import facts as fact_signals
+from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
 from app.models import FACT_DIRECTIONS, Issue, IssueProposal
 from app.routes.forum import (_abort_if_thread_removed, _fact_form, _fact_phase_open, _new_fact, _require_csrf,
@@ -33,6 +37,7 @@ issues_bp = Blueprint("issues", __name__)
 FACTS_SHOWN = 3
 # Zoveel voorstellen in de rechterkolom; de rest via de voorstellenpagina.
 COCKPIT_PROPOSALS = 5
+FOLLOWUP_MAX = 5000
 
 
 @issues_bp.context_processor
@@ -96,6 +101,10 @@ def show(issue_id):
                            proposal_total=ip.regular_query(issue).count(),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
+                           can_step=lifecycle.can_step(issue, current_user),
+                           can_reopen=lifecycle.can_reopen(issue, current_user),
+                           can_edit_followup=lifecycle.can_edit_followup(issue, current_user),
+                           silence_end=lifecycle.silence_end(issue) if issue.kind == 'online' else None,
                            return_to=issue.id, **discussion)
 
 
@@ -402,3 +411,54 @@ def final_new(issue_id):
     rows = ip.listing(issue, order='stemlijst')
     return render_template('issues/final_new.html', issue=issue, errors=errors,
                            form_data=data or {'title': issue.title, 'intro': issue.intro or ''}, rows=rows)
+
+
+# ── Stap 7: de levenscyclus met de hand ──────────────────────────────────
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/volgende-fase', methods=['POST'])
+@login_required
+def next_phase(issue_id):
+    """De initiatiefnemer of een moderator zet het vraagstuk een fase verder:
+    bij een event de gewone weg, bij online om een fase vroeg af te sluiten."""
+    issue = _issue_or_404(issue_id)
+    _require_csrf()
+    if not lifecycle.can_step(issue, current_user):
+        abort(403)
+    lifecycle.step_forward(issue)
+    db.session.commit()
+    flash(gettext('The issue is now in the next phase.'), 'success')
+    return redirect(url_for('issues.show', issue_id=issue.id))
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/vervolg', methods=['POST'])
+@login_required
+def followup(issue_id):
+    issue = _issue_or_404(issue_id)
+    _require_csrf()
+    if not lifecycle.can_edit_followup(issue, current_user):
+        abort(403)
+    text = (request.form.get('followup_text') or '').strip()
+    if len(text) > FOLLOWUP_MAX:
+        flash(gettext('The text can be at most %(n)s characters.', n=FOLLOWUP_MAX), 'error')
+        return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg', code=303)
+    lifecycle.set_followup(issue, text)
+    db.session.commit()
+    return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg')
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/heropenen', methods=['POST'])
+@login_required
+def reopen(issue_id):
+    """Opnieuw openstellen, terug naar de discussie; alleen met het vinkje
+    ter bevestiging."""
+    issue = _issue_or_404(issue_id)
+    _require_csrf()
+    if not lifecycle.can_reopen(issue, current_user):
+        abort(403)
+    if request.form.get('confirm') != '1':
+        flash(gettext('Tick the box to confirm that you want to reopen the issue.'), 'error')
+        return redirect(url_for('issues.show', issue_id=issue.id) + '#beheer', code=303)
+    lifecycle.reopen(issue)
+    db.session.commit()
+    flash(gettext('The issue is open again for discussion.'), 'success')
+    return redirect(url_for('issues.show', issue_id=issue.id))

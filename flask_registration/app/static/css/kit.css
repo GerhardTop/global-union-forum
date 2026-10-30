@@ -3601,3 +3601,16 @@ body {
 .gu-ipdetail__vote.is-open { border-style: solid; border-color: var(--gu-globe); }
 .gu-ipdetail__threshold { margin-top: 10px; }
 .gu-final__issue { border: 1px solid var(--gu-border); border-radius: 12px; padding: 12px 16px; }
+
+/* ── Herontwerp stap 7: vervolg en het beheer van de fasen ─────────────── */
+.gu-cockpit__silence { margin: 8px 0 0; }
+.gu-cockpit__followup { margin-top: 16px; padding: 16px 18px; border: 2px solid var(--gu-globe); border-radius: 12px; background: var(--gu-paper); }
+.gu-cockpit__followupedit summary { cursor: pointer; font-size: 0.875rem; color: var(--gu-globe-deep); margin-top: 8px; }
+.gu-cockpit__followupedit .gu-forum__newform { margin-top: 8px; }
+.gu-cockpit__followupedit .gu-btn { justify-self: start; }
+.gu-cockpit__manage { margin-top: 12px; }
+.gu-cockpit__manage > summary { cursor: pointer; font-size: 0.875rem; color: var(--gu-fg-2); }
+.gu-cockpit__managebody { display: grid; gap: 14px; margin-top: 10px; padding: 14px 16px; border: 1px dashed var(--gu-border-strong); border-radius: 12px; }
+.gu-cockpit__manageform { display: grid; gap: 8px; margin: 0; }
+.gu-cockpit__manageform .gu-btn { justify-self: start; }
+.gu-cockpit__manageform p { margin: 0; }

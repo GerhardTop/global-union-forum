@@ -26,7 +26,11 @@
       <section class="gu-cockpit__phase" aria-labelledby="issuePhase">
         <h2 id="issuePhase" class="gu-sr-only">{{ _('Phase') }}: {{ phase_labels.get(issue.phase, issue.phase) }}</h2>
         {% include 'issues/_steps.html' %}
+        {% if silence_end and issue.phase == 'feiten' and not issue.is_closed and (not issue.phase_deadline or silence_end < issue.phase_deadline) %}
+        <p class="gu-composer__hint gu-cockpit__silence">{{ _('The facts phase closes earlier if no new quality mark is awarded before %(date)s.', date=silence_end | datetimeformat('d MMM y HH:mm')) }}</p>
+        {% endif %}
       </section>
+      {% include 'issues/_lifecycle.html' %}
     </header>
 
     <div class="gu-cockpit__grid">

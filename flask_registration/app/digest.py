@@ -14,6 +14,12 @@ voorstellen; bij een event is iedereen live bij).
 - Kanaal: in het forum (/meldingen) en per e-mail, tenzij de gebruiker de
   e-mail in zijn profiel uitzette. Geen losse meldingen per gebeurtenis.
 
+Herontwerp stap 7: ook vraagstukken. Wie bij een vraagstuk betrokken is (de
+initiatiefnemer en wie heeft bijgedragen, zie issue_lifecycle.participants)
+krijgt in dezelfde samenvatting de faseovergangen, het openen van de
+stemming, de uitslag, het ultieme voorstel en de vervolgtekst. De tik zet
+eerst de vraagstukken door (issue_lifecycle.advance_due).
+
 Alles hier is idempotent en veilig om elk uur te draaien (POST /intern/tik).
 """
 import json
@@ -132,9 +138,13 @@ def _changes(proposal, since, now):
 def _activity(proposal, user, since):
     """(nieuwe reacties, nieuwe feiten) sinds `since`, van anderen, zonder wat
     wegens de gedragsregels uit het gesprek is."""
+    return _thread_activity(proposal.thread_id, user, since)
+
+
+def _thread_activity(thread_id, user, since):
     removed = db.session.query(ConductCase.post_id).filter(ConductCase.action.in_(REMOVING_ACTIONS))
     rows = (db.session.query(Post.kind, func.count(Post.id))
-            .filter(Post.thread_id == proposal.thread_id, Post.created_at > since,
+            .filter(Post.thread_id == thread_id, Post.created_at > since,
                     Post.is_op.isnot(True), or_(Post.user_id.is_(None), Post.user_id != user.id),
                     Post.body != '[bericht verwijderd]', Post.id.notin_(removed))
             .group_by(Post.kind).all())
@@ -143,9 +153,10 @@ def _activity(proposal, user, since):
     return posts, facts
 
 
-def build(user, now=None):
+def build(user, now=None, issue_participants=None):
     """De inhoud van de samenvatting voor één gebruiker, of [] als er geen
-    belangrijke verandering is."""
+    belangrijke verandering is. issue_participants: {vraagstuk: deelnemers},
+    vooraf berekend door run_daily (anders hier)."""
     from app import conduct
     now = now or datetime.utcnow()
     follows = (ProposalFollow.query.join(Proposal, ProposalFollow.proposal_id == Proposal.id)
@@ -167,6 +178,25 @@ def build(user, now=None):
         items.append({'thread_id': thread.id,
                       'title': ' '.join(p for p in (thread.title_prefix_nl, thread.title_accent_nl,
                                                     thread.title_suffix_nl) if p),
+                      'changes': changes, 'new_posts': posts, 'new_facts': facts})
+    # Stap 7: de vraagstukken waarbij deze gebruiker betrokken is.
+    from app import issue_lifecycle
+    if issue_participants is None:
+        issue_participants = {i: issue_lifecycle.participants(i) for i in issue_lifecycle.notifiable_issues()}
+    for issue, people in issue_participants.items():
+        if user.id not in people:
+            continue
+        op = (Post.query.filter_by(thread_id=issue.thread_id, is_op=True).first()
+              if issue.thread_id is not None else None)
+        if op is not None and conduct.is_removed_for(op, user):
+            continue
+        since = user.last_digest_at or issue.created_at or now
+        changes = issue_lifecycle.changes(issue, since, now)
+        posts, facts = _thread_activity(issue.thread_id, user, since) if issue.thread_id else (0, 0)
+        if not changes and not posts and not facts:
+            continue
+        important = important or bool(changes)
+        items.append({'issue_id': issue.id, 'thread_id': issue.thread_id, 'title': issue.title,
                       'changes': changes, 'new_posts': posts, 'new_facts': facts})
     if not important:
         return []
@@ -193,7 +223,7 @@ def _email(items, lang):
     return subject, html
 
 
-def send_for(user, now=None):
+def send_for(user, now=None, issue_participants=None):
     """Maak en verstuur de samenvatting voor één gebruiker, hoogstens één keer
     per kalenderdag. De dag wordt atomair geclaimd, zodat twee gelijktijdige
     tikken nooit twee berichten opleveren. Geeft de Digest of None."""
@@ -201,7 +231,7 @@ def send_for(user, now=None):
     now = now or datetime.utcnow()
     if user.last_digest_at and local_date(user.last_digest_at) == local_date(now):
         return None
-    items = build(user, now)
+    items = build(user, now, issue_participants)
     if not items:
         return None
     claimed = (User.query.filter(User.id == user.id,
@@ -229,17 +259,22 @@ def run_daily(now=None):
     gebruiker breken de rest niet. Geeft het aantal verstuurde samenvattingen."""
     from flask import current_app
     now = now or datetime.utcnow()
-    user_ids = [uid for (uid,) in (db.session.query(ProposalFollow.user_id)
+    from app import issue_lifecycle
+    user_ids = {uid for (uid,) in (db.session.query(ProposalFollow.user_id)
                                    .join(Proposal, ProposalFollow.proposal_id == Proposal.id)
                                    .filter(ProposalFollow.active.is_(True), _public_filter())
-                                   .distinct())]
+                                   .distinct())}
+    # Stap 7: de betrokkenen bij vraagstukken, één keer berekend voor iedereen.
+    issue_participants = {i: issue_lifecycle.participants(i) for i in issue_lifecycle.notifiable_issues()}
+    for people in issue_participants.values():
+        user_ids |= people
     sent = 0
-    for uid in user_ids:
+    for uid in sorted(user_ids):
         user = db.session.get(User, uid)
         if user is None:
             continue
         try:
-            if send_for(user, now) is not None:
+            if send_for(user, now, issue_participants) is not None:
                 sent += 1
         except Exception as exc:  # een fout bij één gebruiker: door met de rest
             db.session.rollback()
@@ -248,12 +283,14 @@ def run_daily(now=None):
 
 
 def tick(now=None):
-    """De periodieke taak: eerst de faseovergangen, dan de samenvattingen."""
-    from app import proposals
+    """De periodieke taak: eerst de faseovergangen (de oude voorstellen en,
+    stap 7, de vraagstukken), dan de samenvattingen."""
+    from app import issue_lifecycle, proposals
     now = now or datetime.utcnow()
     moved = proposals.advance_due(now)
+    issues_moved = issue_lifecycle.advance_due(now)
     sent = run_daily(now)
-    return {'moved': moved, 'digests': sent}
+    return {'moved': moved, 'issues_moved': issues_moved, 'digests': sent}
 
 
 # ── Opruimen ─────────────────────────────────────────────────────────────

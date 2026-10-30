@@ -685,6 +685,10 @@ class Issue(db.Model):
     # Stap 2: het gesprek met de gedeelde discussie (de middenkolom van de
     # cockpit). Bij een ingepakt voorstel het gesprek van dat voorstel.
     thread_id              = db.Column(db.Integer, db.ForeignKey('threads.id'), nullable=True, index=True)
+    # Stap 7: wat er met het vraagstuk gebeurt (de vervolgtekst), door de
+    # initiatiefnemer of een moderator, met het moment van de laatste wijziging.
+    followup_text          = db.Column(db.Text, nullable=True)
+    followup_at            = db.Column(db.DateTime, nullable=True)
 
     created_by = db.relationship('User', foreign_keys=[created_by_id])
     # Met de backref zet ook een ORM-delete van het gesprek thread_id op NULL

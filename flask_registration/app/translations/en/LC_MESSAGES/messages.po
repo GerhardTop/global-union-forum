@@ -1799,3 +1799,117 @@ msgstr "At the end, the initiator can make an ultimate proposal based on all pro
 
 msgid "Not on the voting list"
 msgstr "Not on the voting list"
+
+# Herontwerp stap 7: levenscyclus, meldingen en vervolg
+
+#, python-format
+msgid "The facts phase closes earlier if no new quality mark is awarded before %(date)s."
+msgstr "The facts phase closes earlier if no new quality mark is awarded before %(date)s."
+
+msgid "What happens next"
+msgstr "What happens next"
+
+#, python-format
+msgid "Updated %(date)s"
+msgstr "Updated %(date)s"
+
+msgid "Edit the text"
+msgstr "Edit the text"
+
+msgid "Describe what happens with this issue"
+msgstr "Describe what happens with this issue"
+
+msgid "For example: who takes the outcome further, and when."
+msgstr "For example: who takes the outcome further, and when."
+
+msgid "Manage the phases"
+msgstr "Manage the phases"
+
+msgid "At an event you move the phases on yourself."
+msgstr "At an event you move the phases on yourself."
+
+msgid "The phases move on automatically at the deadline. You can close the current phase early."
+msgstr "The phases move on automatically at the deadline. You can close the current phase early."
+
+#, python-format
+msgid "Next phase: %(phase)s."
+msgstr "Next phase: %(phase)s."
+
+msgid "To the next phase"
+msgstr "To the next phase"
+
+msgid "Reopening takes the issue back to the facts phase with a new schedule. Proposals, support and votes are kept, and the results are no longer final."
+msgstr "Reopening takes the issue back to the facts phase with a new schedule. Proposals, support and votes are kept, and the results are no longer final."
+
+msgid "Yes, reopen this issue for discussion"
+msgstr "Yes, reopen this issue for discussion"
+
+msgid "Reopen"
+msgstr "Reopen"
+
+msgid "The issue is now in the next phase."
+msgstr "The issue is now in the next phase."
+
+#, python-format
+msgid "The text can be at most %(n)s characters."
+msgstr "The text can be at most %(n)s characters."
+
+msgid "Tick the box to confirm that you want to reopen the issue."
+msgstr "Tick the box to confirm that you want to reopen the issue."
+
+msgid "The issue is open again for discussion."
+msgstr "The issue is open again for discussion."
+
+msgid "The revision phase has started: proposers can refine their proposals"
+msgstr "The revision phase has started: proposers can refine their proposals"
+
+msgid "The issue has been reopened for discussion"
+msgstr "The issue has been reopened for discussion"
+
+msgid "The initiator has described what happens next"
+msgstr "The initiator has described what happens next"
+
+msgid "Voting has closed. The results:"
+msgstr "Voting has closed. The results:"
+
+msgid "rejected, no valid votes"
+msgstr "rejected, no valid votes"
+
+#, python-format
+msgid "adopted with %(pct)s%% in favour"
+msgstr "adopted with %(pct)s%% in favour"
+
+#, python-format
+msgid "rejected with %(pct)s%% in favour"
+msgstr "rejected with %(pct)s%% in favour"
+
+msgid "no proposals were on the voting list."
+msgstr "no proposals were on the voting list."
+
+#, python-format
+msgid "Ultimate proposal \"%(statement)s\": voting open until %(date)s"
+msgstr "Ultimate proposal \"%(statement)s\": voting open until %(date)s"
+
+#, python-format
+msgid "Ultimate proposal \"%(statement)s\": rejected, no valid votes"
+msgstr "Ultimate proposal \"%(statement)s\": rejected, no valid votes"
+
+#, python-format
+msgid "Ultimate proposal \"%(statement)s\": adopted with %(pct)s%% in favour"
+msgstr "Ultimate proposal \"%(statement)s\": adopted with %(pct)s%% in favour"
+
+#, python-format
+msgid "Ultimate proposal \"%(statement)s\": rejected with %(pct)s%% in favour"
+msgstr "Ultimate proposal \"%(statement)s\": rejected with %(pct)s%% in favour"
+
+msgid "Issues: silence in the facts phase"
+msgstr "Issues: silence in the facts phase"
+
+msgid "The facts phase of an online issue closes after its planned number of days, or earlier after this many days without a new quality mark in the issue."
+msgstr "The facts phase of an online issue closes after its planned number of days, or earlier after this many days without a new quality mark in the issue."
+
+msgid "Days without a new quality mark"
+msgstr "Days without a new quality mark"
+
+msgid "Saved."
+msgstr "Saved."

@@ -1796,3 +1796,117 @@ msgstr "Aan het einde kan de initiatiefnemer op basis van alle voorstellen en de
 
 msgid "Not on the voting list"
 msgstr "Niet op de stemlijst"
+
+# Herontwerp stap 7: levenscyclus, meldingen en vervolg
+
+#, python-format
+msgid "The facts phase closes earlier if no new quality mark is awarded before %(date)s."
+msgstr "De feitenfase sluit eerder als er vóór %(date)s geen nieuw keurmerk wordt toegekend."
+
+msgid "What happens next"
+msgstr "Wat er nu gebeurt"
+
+#, python-format
+msgid "Updated %(date)s"
+msgstr "Bijgewerkt op %(date)s"
+
+msgid "Edit the text"
+msgstr "Tekst bewerken"
+
+msgid "Describe what happens with this issue"
+msgstr "Beschrijf wat er met dit vraagstuk gebeurt"
+
+msgid "For example: who takes the outcome further, and when."
+msgstr "Bijvoorbeeld: wie de uitkomst verder brengt, en wanneer."
+
+msgid "Manage the phases"
+msgstr "Fasen beheren"
+
+msgid "At an event you move the phases on yourself."
+msgstr "Bij een event zet je de fasen zelf door."
+
+msgid "The phases move on automatically at the deadline. You can close the current phase early."
+msgstr "De fasen gaan op de deadline vanzelf verder. Je kunt de huidige fase eerder afsluiten."
+
+#, python-format
+msgid "Next phase: %(phase)s."
+msgstr "Volgende fase: %(phase)s."
+
+msgid "To the next phase"
+msgstr "Naar de volgende fase"
+
+msgid "Reopening takes the issue back to the facts phase with a new schedule. Proposals, support and votes are kept, and the results are no longer final."
+msgstr "Opnieuw openstellen zet het vraagstuk terug naar de feitenfase, met een nieuwe planning. Voorstellen, steun en stemmen blijven bewaard, en de uitslagen liggen niet meer vast."
+
+msgid "Yes, reopen this issue for discussion"
+msgstr "Ja, stel dit vraagstuk opnieuw open voor discussie"
+
+msgid "Reopen"
+msgstr "Opnieuw openstellen"
+
+msgid "The issue is now in the next phase."
+msgstr "Het vraagstuk staat nu in de volgende fase."
+
+#, python-format
+msgid "The text can be at most %(n)s characters."
+msgstr "De tekst kan hooguit %(n)s tekens zijn."
+
+msgid "Tick the box to confirm that you want to reopen the issue."
+msgstr "Vink het vakje aan om te bevestigen dat je het vraagstuk opnieuw wilt openstellen."
+
+msgid "The issue is open again for discussion."
+msgstr "Het vraagstuk staat weer open voor discussie."
+
+msgid "The revision phase has started: proposers can refine their proposals"
+msgstr "De bijstelfase is begonnen: inbrengers kunnen hun voorstellen verfijnen"
+
+msgid "The issue has been reopened for discussion"
+msgstr "Het vraagstuk is opnieuw opengesteld voor discussie"
+
+msgid "The initiator has described what happens next"
+msgstr "De initiatiefnemer heeft beschreven wat er nu gebeurt"
+
+msgid "Voting has closed. The results:"
+msgstr "Het stemmen is gesloten. De uitslagen:"
+
+msgid "rejected, no valid votes"
+msgstr "verworpen, geen geldige stemmen"
+
+#, python-format
+msgid "adopted with %(pct)s%% in favour"
+msgstr "aangenomen met %(pct)s%% voor"
+
+#, python-format
+msgid "rejected with %(pct)s%% in favour"
+msgstr "verworpen met %(pct)s%% voor"
+
+msgid "no proposals were on the voting list."
+msgstr "er stonden geen voorstellen op de stemlijst."
+
+#, python-format
+msgid "Ultimate proposal \"%(statement)s\": voting open until %(date)s"
+msgstr "Ultiem voorstel \"%(statement)s\": stemmen open tot %(date)s"
+
+#, python-format
+msgid "Ultimate proposal \"%(statement)s\": rejected, no valid votes"
+msgstr "Ultiem voorstel \"%(statement)s\": verworpen, geen geldige stemmen"
+
+#, python-format
+msgid "Ultimate proposal \"%(statement)s\": adopted with %(pct)s%% in favour"
+msgstr "Ultiem voorstel \"%(statement)s\": aangenomen met %(pct)s%% voor"
+
+#, python-format
+msgid "Ultimate proposal \"%(statement)s\": rejected with %(pct)s%% in favour"
+msgstr "Ultiem voorstel \"%(statement)s\": verworpen met %(pct)s%% voor"
+
+msgid "Issues: silence in the facts phase"
+msgstr "Vraagstukken: stilte in de feitenfase"
+
+msgid "The facts phase of an online issue closes after its planned number of days, or earlier after this many days without a new quality mark in the issue."
+msgstr "De feitenfase van een online vraagstuk sluit na het geplande aantal dagen, of eerder na zoveel dagen zonder nieuw keurmerk in het vraagstuk."
+
+msgid "Days without a new quality mark"
+msgstr "Dagen zonder nieuw keurmerk"
+
+msgid "Saved."
+msgstr "Opgeslagen."
