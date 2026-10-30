@@ -136,6 +136,9 @@ def delete_wrappers(issue_ids):
     if not issue_ids:
         return
     still_used = {i for (i,) in db.session.query(Proposal.issue_id).filter(Proposal.issue_id.in_(issue_ids))}
+    # Stap 4: een vraagstuk met eigen voorstellen blijft ook staan.
+    from app.models import IssueProposal
+    still_used |= {i for (i,) in db.session.query(IssueProposal.issue_id).filter(IssueProposal.issue_id.in_(issue_ids))}
     empty = issue_ids - still_used
     if empty:
         Issue.query.filter(Issue.id.in_(empty)).delete(synchronize_session=False)

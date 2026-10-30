@@ -1582,3 +1582,110 @@ msgstr "Mark as handled"
 
 msgid "No disputed facts."
 msgstr "No disputed facts."
+
+# Herontwerp stap 4: voorstellen onder een vraagstuk
+
+msgid "All proposals"
+msgstr "All proposals"
+
+msgid "Vote"
+msgstr "Vote"
+
+msgid "Voting on proposals on the voting list opens in the voting phase."
+msgstr "Voting on proposals on the voting list opens in the voting phase."
+
+msgid "No explanation."
+msgstr "No explanation."
+
+msgid "What this proposal is based on"
+msgstr "What this proposal is based on"
+
+msgid "Linking facts to a proposal follows soon."
+msgstr "Linking facts to a proposal follows soon."
+
+msgid "Versions"
+msgstr "Versions"
+
+msgid "Revised version"
+msgstr "Revised version"
+
+msgid "Original version"
+msgstr "Original version"
+
+msgid "Not revised. The proposer can refine it once during the revision phase."
+msgstr "Not revised. The proposer can refine it once during the revision phase."
+
+msgid "Change the statement or the explanation."
+msgstr "Change the statement or the explanation."
+
+msgid "You can revise once. The original version stays visible."
+msgstr "You can revise once. The original version stays visible."
+
+msgid "Save the revision"
+msgstr "Save the revision"
+
+msgid "To the discussion of this issue"
+msgstr "To the discussion of this issue"
+
+msgid "You support this proposal"
+msgstr "You support this proposal"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "One sentence: what do you propose?"
+msgstr "One sentence: what do you propose?"
+
+msgid "Write the statement in one sentence of at most 300 characters."
+msgstr "Write the statement in one sentence of at most 300 characters."
+
+msgid "Why this proposal? Refer to the discussion and the facts."
+msgstr "Why this proposal? Refer to the discussion and the facts."
+
+msgid "The explanation can be at most 5000 characters."
+msgstr "The explanation can be at most 5000 characters."
+
+msgid "Filter proposals"
+msgstr "Filter proposals"
+
+msgid "On the voting list"
+msgstr "On the voting list"
+
+msgid "Collecting support"
+msgstr "Collecting support"
+
+msgid "Most support"
+msgstr "Most support"
+
+msgid "Voting list first"
+msgstr "Voting list first"
+
+#, python-format
+msgid "A proposal goes to the voting list once it has %(n)s supporters."
+msgstr "A proposal goes to the voting list once it has %(n)s supporters."
+
+msgid "No proposals with this status."
+msgstr "No proposals with this status."
+
+msgid "Earlier proposal"
+msgstr "Earlier proposal"
+
+msgid "New"
+msgstr "New"
+
+#, python-format
+msgid "Others can support your proposal. With %(n)s supporters it goes to the voting list."
+msgstr "Others can support your proposal. With %(n)s supporters it goes to the voting list."
+
+msgid "Submit proposal"
+msgstr "Submit proposal"
+
+msgid "New proposals can be made during the facts phase and the revision phase."
+msgstr "New proposals can be made during the facts phase and the revision phase."
+
+#, python-format
+msgid "Collecting support (%(count)s of %(needed)s)"
+msgstr "Collecting support (%(count)s of %(needed)s)"
+
+msgid "You already support this proposal."
+msgstr "You already support this proposal."

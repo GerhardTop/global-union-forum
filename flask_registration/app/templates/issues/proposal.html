@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}{{ proposal.statement }} · Global Union{% endblock %}
+
+{#
+  Voorstel-detail (herontwerp stap 4): de stelling, de status, de inbrenger,
+  de toelichting en de bijstel-historie, met steunen en (in de bijstelfase,
+  één keer) bijstellen. De stemming (stap 6) en "waarop dit voorstel zich
+  baseert" (stap 5) hebben hun plek al, maar werken nog niet. Op mobiel komt
+  de stemming straks bovenaan.
+#}
+{% block content_outer %}{% block content %}
+{% from 'issues/_ip_fields.html' import ip_fields with context %}
+<main class="gu-forum gu-ipdetail" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
+      <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('Issue') }}</a>
+      <span aria-hidden="true">›</span>
+      <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals') }}</a>
+      <span aria-hidden="true">›</span>
+      <span>{{ _('Proposal') }}</span>
+    </nav>
+
+    <header class="gu-forum__threadhead">
+      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
+      <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
+      <h1 class="gu-forum__title gu-ipdetail__statement" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</h1>
+      <div class="gu-ipdetail__meta">
+        {% include 'issues/_ip_status.html' %}
+        <span class="gu-iplist__by">{{ _('by') }} {{ proposal.created_by.public_name if proposal.created_by else '@deleted_user' }}
+          · {{ proposal.created_at | datetimeformat('d MMM y') }}</span>
+        {% if proposal.revised_at %}<span class="gu-proposal__revisedtag">{{ _('Revised') }}</span>{% endif %}
+      </div>
+      {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
+    </header>
+
+    {# Plek voor de stemming (stap 6); op mobiel straks bovenaan. #}
+    <section class="gu-ipdetail__section gu-ipdetail__vote" aria-labelledby="voteTitle">
+      <h2 class="gu-cockpit__title" id="voteTitle">{{ _('Vote') }}</h2>
+      <p class="gu-composer__hint">{{ _('Voting on proposals on the voting list opens in the voting phase.') }}</p>
+    </section>
+
+    <section class="gu-ipdetail__section" aria-labelledby="explTitle">
+      <h2 class="gu-cockpit__title" id="explTitle">{{ _('Explanation') }}</h2>
+      {% if proposal.explanation %}
+      <div class="gu-cockpit__intro" lang="{{ proposal.lang or lang }}">{{ proposal.explanation | linkify }}</div>
+      {% else %}
+      <p class="gu-composer__hint">{{ _('No explanation.') }}</p>
+      {% endif %}
+    </section>
+
+    {# Plek voor de gekoppelde feiten (stap 5). #}
+    <section class="gu-ipdetail__section" aria-labelledby="basisTitle">
+      <h2 class="gu-cockpit__title" id="basisTitle">{{ _('What this proposal is based on') }}</h2>
+      <p class="gu-composer__hint">{{ _('Linking facts to a proposal follows soon.') }}</p>
+      <a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts and research') }} <span class="gu-arrow" aria-hidden="true"></span></a>
+    </section>
+
+    <section class="gu-ipdetail__section" aria-labelledby="historyTitle">
+      <h2 class="gu-cockpit__title" id="historyTitle">{{ _('Versions') }}</h2>
+      <ol class="gu-ipdetail__versions">
+        {% if proposal.revised_at %}
+        <li>
+          <p class="gu-ipdetail__versionlabel">{{ _('Revised version') }} · {{ proposal.revised_at | datetimeformat('d MMM y HH:mm') }}</p>
+          <p class="gu-ipdetail__versiontext">{{ proposal.statement }}</p>
+        </li>
+        <li>
+          <p class="gu-ipdetail__versionlabel">{{ _('Original version') }} · {{ proposal.created_at | datetimeformat('d MMM y HH:mm') }}</p>
+          <p class="gu-ipdetail__versiontext"><del>{{ proposal.original_statement }}</del></p>
+          {% if proposal.original_explanation and proposal.original_explanation != proposal.explanation %}
+          <div class="gu-ipdetail__versionexpl">{{ proposal.original_explanation | linkify }}</div>
+          {% endif %}
+        </li>
+        {% else %}
+        <li>
+          <p class="gu-ipdetail__versionlabel">{{ _('Original version') }} · {{ proposal.created_at | datetimeformat('d MMM y HH:mm') }}</p>
+          <p class="gu-composer__hint">{{ _('Not revised. The proposer can refine it once during the revision phase.') }}</p>
+        </li>
+        {% endif %}
+      </ol>
+
+      {% if can_revise %}
+      {% set errs = errors or {} %}
+      <details class="gu-proposal__revise" id="bijstellen"{% if errs %} open{% endif %}>
+        <summary>{{ _('Revise the proposal') }}</summary>
+        <form method="POST" action="{{ url_for('issues.proposal_revise', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-forum__newform" novalidate>
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          {{ ip_fields('revise', form_data or {'statement': proposal.statement, 'explanation': proposal.explanation or ''}, errs) }}
+          {% if errs.get('unchanged') %}<p class="gu-join__formError">{{ _('Change the statement or the explanation.') }}</p>{% endif %}
+          <p class="gu-composer__hint">{{ _('You can revise once. The original version stays visible.') }}</p>
+          <button type="submit" class="gu-btn gu-btn--primary">{{ _('Save the revision') }}</button>
+        </form>
+      </details>
+      {% endif %}
+    </section>
+
+    <p class="gu-ipdetail__back"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('To the discussion of this issue') }} <span class="gu-arrow" aria-hidden="true"></span></a></p>
+
+  </div>
+</main>
+{% endblock %}{% endblock %}

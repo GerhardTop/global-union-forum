@@ -1,0 +1,14 @@
+{#
+  Partial: issues/_ip_support.html (herontwerp stap 4)
+  De steunen-knop bij een voorstel dat nog steun verzamelt, of de melding
+  dat je het al steunt. Context: proposal, issue, supported, can_support, next_url.
+#}
+{% if supported %}
+<span class="gu-ip-supported">{{ _('You support this proposal') }}</span>
+{% elif can_support %}
+<form method="POST" action="{{ url_for('issues.proposal_support', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-ip-supportform">
+  {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+  <input type="hidden" name="next" value="{{ next_url }}">
+  <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Support') }}</button>
+</form>
+{% endif %}

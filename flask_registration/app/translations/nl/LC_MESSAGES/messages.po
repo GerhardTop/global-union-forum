@@ -1579,3 +1579,110 @@ msgstr "Afgehandeld"
 
 msgid "No disputed facts."
 msgstr "Geen betwiste feiten."
+
+# Herontwerp stap 4: voorstellen onder een vraagstuk
+
+msgid "All proposals"
+msgstr "Alle voorstellen"
+
+msgid "Vote"
+msgstr "Stemming"
+
+msgid "Voting on proposals on the voting list opens in the voting phase."
+msgstr "Het stemmen over voorstellen op de stemlijst gaat open in de stemfase."
+
+msgid "No explanation."
+msgstr "Geen toelichting."
+
+msgid "What this proposal is based on"
+msgstr "Waarop dit voorstel zich baseert"
+
+msgid "Linking facts to a proposal follows soon."
+msgstr "Feiten aan een voorstel koppelen volgt binnenkort."
+
+msgid "Versions"
+msgstr "Versies"
+
+msgid "Revised version"
+msgstr "Bijgestelde versie"
+
+msgid "Original version"
+msgstr "Oorspronkelijke versie"
+
+msgid "Not revised. The proposer can refine it once during the revision phase."
+msgstr "Niet bijgesteld. De inbrenger kan het in de bijstelfase één keer verfijnen."
+
+msgid "Change the statement or the explanation."
+msgstr "Verander de stelling of de toelichting."
+
+msgid "You can revise once. The original version stays visible."
+msgstr "Je kunt één keer bijstellen. De oorspronkelijke versie blijft zichtbaar."
+
+msgid "Save the revision"
+msgstr "Bijstelling opslaan"
+
+msgid "To the discussion of this issue"
+msgstr "Naar de discussie van dit vraagstuk"
+
+msgid "You support this proposal"
+msgstr "Je steunt dit voorstel"
+
+msgid "Support"
+msgstr "Steunen"
+
+msgid "One sentence: what do you propose?"
+msgstr "Eén zin: wat stel je voor?"
+
+msgid "Write the statement in one sentence of at most 300 characters."
+msgstr "Schrijf de stelling in één zin van hooguit 300 tekens."
+
+msgid "Why this proposal? Refer to the discussion and the facts."
+msgstr "Waarom dit voorstel? Verwijs naar de discussie en de feiten."
+
+msgid "The explanation can be at most 5000 characters."
+msgstr "De toelichting kan hooguit 5000 tekens zijn."
+
+msgid "Filter proposals"
+msgstr "Voorstellen filteren"
+
+msgid "On the voting list"
+msgstr "Op de stemlijst"
+
+msgid "Collecting support"
+msgstr "Verzamelt steun"
+
+msgid "Most support"
+msgstr "Meeste steun"
+
+msgid "Voting list first"
+msgstr "Stemlijst eerst"
+
+#, python-format
+msgid "A proposal goes to the voting list once it has %(n)s supporters."
+msgstr "Een voorstel komt op de stemlijst zodra het %(n)s steunbetuigingen heeft."
+
+msgid "No proposals with this status."
+msgstr "Geen voorstellen met deze status."
+
+msgid "Earlier proposal"
+msgstr "Eerder voorstel"
+
+msgid "New"
+msgstr "Nieuw"
+
+#, python-format
+msgid "Others can support your proposal. With %(n)s supporters it goes to the voting list."
+msgstr "Anderen kunnen je voorstel steunen. Met %(n)s steunbetuigingen komt het op de stemlijst."
+
+msgid "Submit proposal"
+msgstr "Voorstel indienen"
+
+msgid "New proposals can be made during the facts phase and the revision phase."
+msgstr "Nieuwe voorstellen kun je doen tijdens de feitenfase en de bijstelfase."
+
+#, python-format
+msgid "Collecting support (%(count)s of %(needed)s)"
+msgstr "Verzamelt steun (%(count)s van %(needed)s)"
+
+msgid "You already support this proposal."
+msgstr "Je steunt dit voorstel al."

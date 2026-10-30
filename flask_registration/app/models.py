@@ -710,6 +710,48 @@ class Issue(db.Model):
         return PROPOSAL_PHASES.index(self.phase) if self.phase in PROPOSAL_PHASES else 0
 
 
+# ── Herontwerp stap 4: voorstellen als onderdeel van een vraagstuk ───────
+# Een licht voorstel onder een vraagstuk: een stelling, een toelichting en
+# een inbrenger, zonder eigen gesprek (de discussie is die van het
+# vraagstuk). Bewust een eigen tabel naast Proposal: dat oude model (een
+# voorstel is een gesprek, met de tik, stemrondes en samenvattingen) blijft
+# ongemoeid tot het in stap 7 wordt uitgefaseerd. Zie app/issue_proposals.py.
+
+class IssueProposal(db.Model):
+    __tablename__ = "issue_proposals"
+
+    id                   = db.Column(db.Integer, primary_key=True)
+    issue_id             = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=False, index=True)
+    statement            = db.Column(db.String(300), nullable=False)   # één zin
+    explanation          = db.Column(db.Text, nullable=True)
+    created_by_id        = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    created_at           = db.Column(db.DateTime, default=datetime.utcnow)
+    lang                 = db.Column(db.String(5), nullable=True)
+    # Bijstellen: één keer, in de bijstelfase van het vraagstuk; de
+    # oorspronkelijke versie blijft bewaard (zoals bij Proposal).
+    original_statement   = db.Column(db.String(300), nullable=True)
+    original_explanation = db.Column(db.Text, nullable=True)
+    revised_at           = db.Column(db.DateTime, nullable=True)
+
+    issue      = db.relationship('Issue', backref=db.backref('issue_proposals', lazy=True))
+    created_by = db.relationship('User', foreign_keys=[created_by_id])
+
+
+class IssueProposalSupport(db.Model):
+    """Eén steunbetuiging per gebruiker per voorstel (niet het eigen voorstel)."""
+    __tablename__ = "issue_proposal_supports"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    proposal_id = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=False, index=True)
+    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('proposal_id', 'user_id', name='uq_issue_proposal_support'),)
+
+    proposal = db.relationship('IssueProposal', backref=db.backref('supports', lazy=True,
+                                                                   cascade='all, delete-orphan'))
+
+
 # ── Fase E: het voorstel als bijzonder soort gesprek ─────────────────────
 # Een voorstel hangt één-op-één aan een gesprek (Thread); een gewoon gesprek
 # heeft geen Proposal. Vier fasen; in stap 1 staat elk voorstel in de eerste.

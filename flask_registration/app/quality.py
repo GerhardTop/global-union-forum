@@ -312,6 +312,8 @@ def detach_user(user_id):
     Issue.query.filter_by(created_by_id=user_id).update({Issue.created_by_id: None}, synchronize_session=False)
     from app import facts
     facts.detach_user(user_id)
+    from app import issue_proposals
+    issue_proposals.detach_user(user_id)
     # Stemmen zijn persoonlijk; een vastgelegde uitslag houdt zijn aantallen.
     from app.models import ProposalVote
     ProposalVote.query.filter_by(user_id=user_id).delete(synchronize_session='evaluate')

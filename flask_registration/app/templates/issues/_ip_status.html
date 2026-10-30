@@ -1,0 +1,11 @@
+{#
+  Partial: issues/_ip_status.html (herontwerp stap 4)
+  De status van een voorstel onder een vraagstuk: verzamelt steun (x van n),
+  of op de stemlijst. Context: proposal, count (aantal steunbetuigingen).
+#}
+{% set st = ip_status(proposal, count) %}
+{% if st[0] == 'stemlijst' %}
+<span class="gu-ip-status gu-ip-status--list">{{ _('On the voting list') }}</span>
+{% else %}
+<span class="gu-ip-status gu-ip-status--support">{{ _('Collecting support (%(count)s of %(needed)s)', count=st[1][0], needed=st[1][1]) }}</span>
+{% endif %}

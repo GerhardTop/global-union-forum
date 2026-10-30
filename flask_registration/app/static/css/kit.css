@@ -3512,3 +3512,29 @@ body {
 @media (max-width: 600px) {
   .gu-factspage__add { margin-left: 0; width: 100%; justify-content: center; }
 }
+
+/* ── Herontwerp stap 4: voorstellen onder een vraagstuk ─────────────────── */
+.gu-ip-status { display: inline-flex; padding: 1px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.gu-ip-status--support { background: var(--gu-bg-soft); color: var(--gu-fg-2); }
+.gu-ip-status--list { background: color-mix(in srgb, var(--gu-globe) 14%, transparent); color: var(--gu-globe-deep); }
+.gu-ip-supported { font-size: 0.8125rem; color: var(--gu-globe-deep); font-weight: 600; }
+.gu-ip-supportform { margin: 0; }
+.gu-iplist { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
+.gu-iplist__item { display: grid; gap: 8px; padding: 14px 16px; border-radius: 10px; background: var(--gu-bg-soft); }
+.gu-iplist__head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.gu-iplist__by { font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-iplist__statement { font-weight: 600; color: var(--gu-fg-1); text-decoration: none; line-height: 1.45; overflow-wrap: anywhere; }
+.gu-iplist__statement:hover { color: var(--gu-globe-deep); }
+.gu-iplist__item .gu-ip-supportform, .gu-iplist__item .gu-ip-supported { justify-self: start; }
+.gu-ippage__legacy { margin-top: 32px; }
+.gu-ipdetail__statement { overflow-wrap: anywhere; }
+.gu-ipdetail__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 12px; }
+.gu-ipdetail__section { margin-top: 20px; padding: 16px 18px; border: 1px solid var(--gu-border); border-radius: 12px; }
+.gu-ipdetail__vote { border-style: dashed; }
+.gu-ipdetail__versions { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.gu-ipdetail__versionlabel { margin: 0; font-size: 0.75rem; color: var(--gu-fg-3); }
+.gu-ipdetail__versiontext { margin: 4px 0 0; color: var(--gu-fg-1); overflow-wrap: anywhere; }
+.gu-ipdetail__versiontext del { color: var(--gu-fg-3); }
+.gu-ipdetail__versionexpl { margin-top: 4px; font-size: 0.875rem; color: var(--gu-fg-3); white-space: pre-line; }
+.gu-ipdetail__back { margin-top: 24px; }
+.gu-cockpit__proposal .gu-ip-status { align-self: flex-start; }

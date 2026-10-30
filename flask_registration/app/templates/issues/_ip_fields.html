@@ -1,0 +1,22 @@
+{#
+  Macro: issues/_ip_fields.html (herontwerp stap 4)
+  De velden van een voorstel (stelling en toelichting), gedeeld door het
+  formulier voor een nieuw voorstel en het bijstellen.
+  Gebruik: {% from 'issues/_ip_fields.html' import ip_fields with context %}
+#}
+{% macro ip_fields(prefix, data, errs) %}
+  <div class="gu-forum__newfield">
+    <label for="{{ prefix }}-statement">{{ _('Statement') }}</label>
+    <input type="text" name="statement" id="{{ prefix }}-statement" required maxlength="300" autocomplete="off"
+           class="gu-input{% if errs.get('statement') %} gu-input--error{% endif %}"
+           value="{{ data.get('statement', '') }}" placeholder="{{ _('One sentence: what do you propose?') }}">
+    {% if errs.get('statement') %}<p class="gu-join__formError">{{ _('Write the statement in one sentence of at most 300 characters.') }}</p>{% endif %}
+  </div>
+  <div class="gu-forum__newfield">
+    <label for="{{ prefix }}-explanation">{{ _('Explanation') }}</label>
+    <textarea name="explanation" id="{{ prefix }}-explanation" rows="6" maxlength="5000"
+              class="gu-composer__input{% if errs.get('explanation') %} gu-input--error{% endif %}"
+              placeholder="{{ _('Why this proposal? Refer to the discussion and the facts.') }}">{{ data.get('explanation', '') }}</textarea>
+    {% if errs.get('explanation') %}<p class="gu-join__formError">{{ _('The explanation can be at most 5000 characters.') }}</p>{% endif %}
+  </div>
+{% endmacro %}

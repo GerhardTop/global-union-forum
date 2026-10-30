@@ -86,7 +86,19 @@
       </section>
 
       <section class="gu-cockpit__panel gu-cockpit__proposals" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
-        <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}</h2>
+        <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}{% if proposal_total %} <span class="gu-facts__count">({{ proposal_total }})</span>{% endif %}</h2>
+        {# Stap 4: de voorstellen onder dit vraagstuk, stemlijst eerst, met hun status. #}
+        {% if proposal_rows %}
+        <ul class="gu-cockpit__proposallist">
+          {% for proposal, count in proposal_rows %}
+          <li class="gu-cockpit__proposal">
+            <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</a>
+            {% include 'issues/_ip_status.html' %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {# Het oude model (een voorstel is een gesprek) blijft zichtbaar tot stap 7. #}
         {% if issue.proposals %}
         <ul class="gu-cockpit__proposallist">
           {% for proposal in issue.proposals %}
@@ -99,12 +111,13 @@
           </li>
           {% endfor %}
         </ul>
-        {% else %}
+        {% endif %}
+        {% if not proposal_rows and not issue.proposals %}
         <p class="gu-composer__hint">{{ _('No proposals yet.') }}</p>
         {% endif %}
-        {# De volledige flow voor een nieuw voorstel volgt in stap 4; tot dan het bestaande startformulier. #}
-        {% if current_user.is_authenticated and current_user.can_contribute() and not issue.is_closed %}
-        <a href="{{ url_for('forum.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-cockpit__newproposal">+ {{ _('Make a new proposal') }}</a>
+        <a class="gu-cockpit__more" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('All proposals') }} <span class="gu-arrow" aria-hidden="true"></span></a>
+        {% if can_propose %}
+        <a href="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" class="gu-btn gu-btn--ghost gu-cockpit__newproposal">+ {{ _('Make a new proposal') }}</a>
         {% endif %}
       </section>
 
