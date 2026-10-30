@@ -12,29 +12,7 @@
 {% set proposal = thread.proposal %}
 {% set phase_open = proposal.phase == 'feiten' and not thread.is_closed %}
 {% set dir_labels = {'voor': _('For'), 'tegen': _('Against'), 'neutraal': _('Neutral')} %}
-{% macro fact_fields(prefix, data, errs) %}
-  <div class="gu-fact-form__field">
-    <label for="{{ prefix }}-text">{{ _('The fact') }}</label>
-    <textarea class="gu-composer__input{% if errs.get('text') %} gu-input--error{% endif %}" id="{{ prefix }}-text" name="text" rows="3" maxlength="1000" required>{{ data.get('text', '') }}</textarea>
-    {% if errs.get('text') %}<p class="gu-join__formError">{{ _('Describe the fact (at most 1000 characters).') }}</p>{% endif %}
-  </div>
-  <fieldset class="gu-fact-form__field gu-fact-form__dirs">
-    <legend>{{ _('Direction relative to the statement') }}</legend>
-    {% for d in ['voor', 'tegen', 'neutraal'] %}
-    <label class="gu-fact-form__dir">
-      <input type="radio" name="direction" value="{{ d }}"{% if data.get('direction') == d %} checked{% endif %} required>
-      <span class="gu-fact__dir gu-fact__dir--{{ d }}">{{ dir_labels[d] }}</span>
-    </label>
-    {% endfor %}
-    {% if errs.get('direction') %}<p class="gu-join__formError">{{ _('Choose a direction.') }}</p>{% endif %}
-  </fieldset>
-  <div class="gu-fact-form__field">
-    <label for="{{ prefix }}-source">{{ _('Source') }}</label>
-    <input type="text" class="gu-input{% if errs.get('source') %} gu-input--error{% endif %}" id="{{ prefix }}-source" name="source" maxlength="500" required value="{{ data.get('source', '') }}">
-    <span class="gu-composer__hint">{{ _('A link or a short source reference') }}</span>
-    {% if errs.get('source') %}<p class="gu-join__formError">{{ _('Give a source.') }}</p>{% endif %}
-  </div>
-{% endmacro %}
+{% from 'forum/_fact_fields.html' import fact_fields with context %}
 
 <section class="gu-facts" id="feiten" aria-labelledby="feiten-title">
   <h2 class="gu-facts__title" id="feiten-title">{{ _('Facts') }} <span class="gu-facts__count">({{ visible_fact_count }})</span></h2>
@@ -62,6 +40,7 @@
             {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
             {% else %}{{ fact.fact_source }}{% endif %}
           </p>
+          {% include 'forum/_fact_signals.html' %}
           {# Handhaving (fase D) voor de inbrenger en moderators, ook via de statuspoll. #}
           <div class="gu-conduct-slot" id="conduct-{{ fact.id }}">
             {%- if c_removed or (case is not none and case.action == 'twijfel' and current_user.can_moderate()) %}{% with post=fact %}{% include 'forum/_conduct_notice.html' %}{% endwith %}{% endif -%}

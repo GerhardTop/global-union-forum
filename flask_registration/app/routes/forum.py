@@ -788,6 +788,9 @@ def _thread_context(thread, branch_root_id=None):
             vote_mine = proposals.my_vote(thread.proposal, current_user)
     # Feitenblok (fase E): fouten en ingevulde waarden van een geweigerd feit (PRG).
     fact_errors, fact_data = _pop_form_state(f'feit-{thread.id}') if thread.proposal else ({}, {})
+    # Herontwerp stap 3: nuttig en betwisten op de feiten.
+    from app import facts as fact_signals
+    fact_ids = [f.id for f in facts]
     my_quality_reports = set()
     if current_user.is_authenticated and quality_awards:
         my_quality_reports = {r.award_id for r in QualityReport.query.filter(
@@ -827,6 +830,10 @@ def _thread_context(thread, branch_root_id=None):
         visible_fact_count=sum(1 for f in facts if f.id not in removed_ids),
         fact_errors=fact_errors,
         fact_data=fact_data,
+        fact_useful_counts=fact_signals.useful_counts(fact_ids),
+        fact_my_useful=fact_signals.my_useful(fact_ids, current_user),
+        fact_disputed=fact_signals.disputed_ids(fact_ids) if current_user.is_authenticated and current_user.can_moderate() else set(),
+        fact_my_disputed=fact_signals.my_disputed(fact_ids, current_user),
         conduct_cases=conduct_cases,
         moved_ids=moved_ids,
         hidden_ids=hidden_ids,
@@ -1544,16 +1551,40 @@ def _fact_form():
 
 
 def _fact_phase_open(thread):
+    """Feiten toevoegen, bewerken en verwijderen: tijdens de feitenfase van het
+    voorstel, of (herontwerp stap 3) bij een gesprek van een vraagstuk zonder
+    voorstel tijdens de feitenfase van het vraagstuk."""
+    if thread.is_closed:
+        return False
     proposal = thread.proposal
-    return proposal is not None and proposal.phase == 'feiten' and not thread.is_closed
+    if proposal is not None:
+        return proposal.phase == 'feiten'
+    from app import facts
+    return facts.issue_phase_open(facts.issue_for_thread(thread.id))
+
+
+def _fact_back(thread, anchor=''):
+    """Waarheen na een feitactie: de feitenpagina van het vraagstuk als het
+    formulier daarvandaan kwam (return_to), of als het gesprek geen voorstel
+    heeft (dan toont de gesprekspagina geen feitenblok); anders het gesprek."""
+    from app import facts
+    from app.models import Issue
+    issue_id = request.form.get('return_to', type=int)
+    issue = db.session.get(Issue, issue_id) if issue_id is not None else None
+    if issue is None or issue.thread_id != thread.id:
+        issue = facts.issue_for_thread(thread.id) if thread.proposal is None else None
+    if issue is not None:
+        return url_for('issues.facts', issue_id=issue.id) + anchor
+    return url_for('forum.forum_thread', thread_id=thread.id) + anchor
 
 
 @forum_bp.route('/forum/<int:thread_id>/feiten', methods=['POST'])
 @login_required
 @limiter.limit("5 per minute", key_func=lambda: f"forum-fact-user-{current_user.get_id()}")
 def fact_add(thread_id):
+    from app import facts
     thread = Thread.query.get_or_404(thread_id)
-    if thread.proposal is None:
+    if thread.proposal is None and facts.issue_for_thread(thread.id) is None:
         abort(404)
     _abort_if_thread_removed(thread)
     if not current_user.can_contribute():
@@ -1564,16 +1595,17 @@ def fact_add(thread_id):
     data, errors = _fact_form()
     if errors:
         _stash_form_state(f'feit-{thread.id}', errors, data)
-        return redirect(url_for('forum.forum_thread', thread_id=thread.id) + '#feiten', code=303)
+        return redirect(_fact_back(thread, '#feiten'), code=303)
     fact = Post(thread_id=thread.id, user_id=current_user.id, author_username=current_user.username,
                 author_name='', author_role='member', body=data['text'], source_lang=session.get('lang', 'nl'),
                 kind=FACT_KIND, fact_direction=data['direction'], fact_source=data['source'])
     db.session.add(fact)
-    from app import digest
-    digest.auto_follow(thread.proposal, current_user)  # meedoen is volgen (fase E, stap 5b)
+    if thread.proposal is not None:
+        from app import digest
+        digest.auto_follow(thread.proposal, current_user)  # meedoen is volgen (fase E, stap 5b)
     db.session.commit()
     quality.schedule_judgement(fact.id)  # handhaving van de gedragsregels, zie quality.judge_post
-    return redirect(url_for('forum.forum_thread', thread_id=thread.id) + f'#post-{fact.id}')
+    return redirect(_fact_back(thread, f'#post-{fact.id}'))
 
 
 def _own_fact_in_open_phase(post_id):
@@ -1600,10 +1632,10 @@ def fact_edit(post_id):
     data, errors = _fact_form()
     if errors:
         _stash_form_state(f'feit-{fact.thread_id}', {f'edit-{fact.id}': errors}, {f'edit-{fact.id}': data})
-        return redirect(url_for('forum.forum_thread', thread_id=fact.thread_id) + f'#post-{fact.id}', code=303)
+        return redirect(_fact_back(fact.thread, f'#post-{fact.id}'), code=303)
     fact.fact_direction, fact.fact_source = data['direction'], data['source']
     _apply_edit(fact, data['text'])
-    return redirect(url_for('forum.forum_thread', thread_id=fact.thread_id) + f'#post-{fact.id}')
+    return redirect(_fact_back(fact.thread, f'#post-{fact.id}'))
 
 
 @forum_bp.route('/forum/feit/<int:post_id>/verwijderen', methods=['POST'])
@@ -1613,11 +1645,82 @@ def fact_delete(post_id):
     bestaande opruimlogica (oordeel, handhaving, bezwaren)."""
     fact = _own_fact_in_open_phase(post_id)
     _require_csrf()
-    thread_id = fact.thread_id
+    back = _fact_back(fact.thread, '#feiten')
     quality.delete_for_posts([fact.id])
     db.session.delete(fact)
     db.session.commit()
-    return redirect(url_for('forum.forum_thread', thread_id=thread_id) + '#feiten')
+    return redirect(back)
+
+
+# ── Herontwerp stap 3: nuttig en betwisten op een feit ────────────────────
+# Zie app/facts.py. Beide werken ook zonder JavaScript (formulier met next);
+# nuttig geeft met X-Requested-With JSON terug voor de knop zonder herladen.
+
+def _live_fact(post_id):
+    fact = Post.query.get_or_404(post_id)
+    if not fact.is_fact or conduct.is_removed_for(fact, current_user):
+        abort(404)
+    return fact
+
+
+def _fact_next(fact):
+    return safe_next(request.form.get('next'), _fact_back(fact.thread, f'#post-{fact.id}'))
+
+
+@forum_bp.route('/forum/feit/<int:post_id>/nuttig', methods=['POST'])
+@login_required
+@limiter.limit("60 per minute", key_func=lambda: f"forum-useful-user-{current_user.get_id()}")
+def fact_useful(post_id):
+    from app import facts
+    _require_csrf()
+    fact = _live_fact(post_id)
+    ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    if not facts.can_mark_useful(fact, current_user):
+        if ajax:
+            return jsonify({'error': 'not allowed'}), 403
+        abort(403)
+    mine = facts.toggle_useful(fact, current_user)
+    db.session.commit()
+    if ajax:
+        return jsonify({'count': facts.useful_counts([fact.id]).get(fact.id, 0), 'mine': mine})
+    return redirect(_fact_next(fact))
+
+
+@forum_bp.route('/forum/feit/<int:post_id>/betwisten', methods=['POST'])
+@login_required
+@limiter.limit("10 per hour", key_func=lambda: f"forum-dispute-user-{current_user.get_id()}")
+def fact_dispute(post_id):
+    from app import facts
+    _require_csrf()
+    fact = _live_fact(post_id)
+    if not facts.can_dispute(fact, current_user):
+        abort(403)
+    reason, note, errors = facts.parse_dispute(request.form)
+    if errors:
+        flash(gettext('Choose a reason (and keep the note under 500 characters).'), 'error')
+    elif facts.has_open_dispute(fact, current_user):
+        flash(gettext('You already disputed this fact; a moderator will look at it.'), 'info')
+    else:
+        facts.dispute(fact, current_user, reason, note)
+        db.session.commit()
+        flash(gettext('Thank you. A moderator will look at your objection; the fact stays visible meanwhile.'),
+              'success')
+    return redirect(_fact_next(fact))
+
+
+@forum_bp.route('/forum/feit/betwisting/<int:dispute_id>/afhandelen', methods=['POST'])
+@login_required
+def fact_dispute_resolve(dispute_id):
+    from app import facts
+    from app.models import FactDispute
+    _require_csrf()
+    row = FactDispute.query.get_or_404(dispute_id)
+    if not facts.can_resolve(row, current_user):
+        abort(403)
+    if row.status == 'open':
+        facts.resolve(row, current_user)
+        db.session.commit()
+    return redirect(safe_next(request.form.get('next'), url_for('admin.moderator_dashboard') + '#betwist'))
 
 
 # ── Fase E, stap 3: faseovergangen (event) en bijstellen ──────────────────

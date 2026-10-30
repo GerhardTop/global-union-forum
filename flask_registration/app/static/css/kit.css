@@ -3467,3 +3467,48 @@ body {
   .gu-cockpit__proposals { grid-area: proposals; }
   .gu-cockpit__rights { grid-area: rights; }
 }
+
+/* ── Herontwerp stap 3: nuttig en betwisten op een feit, de feitenpagina ── */
+.gu-fact__signals { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.gu-fact__usefulform { display: inline; margin: 0; }
+.gu-fact__useful {
+  display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border: 1px solid var(--gu-border);
+  border-radius: 999px; background: var(--gu-paper); font: inherit; font-size: 0.8125rem; color: var(--gu-fg-2); cursor: pointer;
+}
+.gu-fact__useful:hover:not([disabled]) { background: var(--gu-bg-soft); }
+.gu-fact__useful:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
+.gu-fact__useful.is-mine { color: var(--gu-globe-deep); border-color: var(--gu-globe); background: color-mix(in srgb, var(--gu-globe) 10%, transparent); }
+.gu-fact__useful--static { cursor: default; }
+.gu-fact__usefulcount { font-variant-numeric: tabular-nums; color: var(--gu-fg-3); }
+.gu-fact__useful.is-mine .gu-fact__usefulcount { color: inherit; }
+.gu-fact__disputed { display: inline-flex; padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: #fff4e0; color: #8a5300; }
+.gu-fact__dispute summary { cursor: pointer; font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-fact__dispute[open] { flex-basis: 100%; }
+.gu-fact__disputeform { display: grid; gap: 8px; margin-top: 8px; }
+.gu-fact__disputeform fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.gu-fact__disputeform legend { font-size: 0.8125rem; font-weight: 600; margin-bottom: 4px; color: var(--gu-fg-1); }
+.gu-fact__disputereason { font-size: 0.8125rem; color: var(--gu-fg-2); display: inline-flex; gap: 6px; align-items: center; }
+.gu-fact__disputenote { display: grid; gap: 4px; font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-fact__disputeform .gu-btn { justify-self: start; }
+.gu-cockpit__factmeta { margin: 6px 0 0; }
+
+.gu-factspage__question { margin: -8px 0 0; }
+.gu-factspage__question a { color: var(--gu-fg-2); text-decoration: none; }
+.gu-factspage__question a:hover { color: var(--gu-globe-deep); }
+.gu-factspage__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 24px 0 8px; }
+.gu-factspage__filter { display: flex; flex-wrap: wrap; gap: 6px; }
+.gu-factspage__chip {
+  padding: 4px 12px; border: 1px solid var(--gu-border); border-radius: 999px; font-size: 0.8125rem;
+  color: var(--gu-fg-2); text-decoration: none; background: var(--gu-paper);
+}
+.gu-factspage__chip:hover { background: var(--gu-bg-soft); }
+.gu-factspage__chip.is-active { border-color: var(--gu-globe); color: var(--gu-globe-deep); font-weight: 600; }
+.gu-factspage__sort { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-factspage__sort select { width: auto; padding-top: 4px; padding-bottom: 4px; }
+.gu-factspage__add { margin-left: auto; }
+.gu-factspage__list { margin-top: 16px; }
+.gu-factspage__more { text-align: center; margin: 20px 0 0; }
+.gu-factspage__addsection { margin-top: 32px; }
+@media (max-width: 600px) {
+  .gu-factspage__add { margin-left: 0; width: 100%; justify-content: center; }
+}

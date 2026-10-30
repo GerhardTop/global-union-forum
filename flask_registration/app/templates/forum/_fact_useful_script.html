@@ -1,0 +1,25 @@
+{#
+  Partial: forum/_fact_useful_script.html (herontwerp stap 3)
+  De nuttig-knop zonder herladen. Zonder JavaScript post het formulier gewoon.
+#}
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    document.querySelectorAll('.gu-fact__usefulform').forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var button = form.querySelector('.gu-fact__useful');
+        button.disabled = true;
+        fetch(button.dataset.usefulUrl, { method: 'POST', body: new FormData(form),
+                                          headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          .then(function (r) { return r.json().catch(function () { return {}; }); })
+          .then(function (data) {
+            if (typeof data.count !== 'number') return;
+            button.querySelector('.gu-fact__usefulcount').textContent = data.count;
+            button.classList.toggle('is-mine', !!data.mine);
+            button.setAttribute('aria-pressed', data.mine ? 'true' : 'false');
+          })
+          .finally(function () { button.disabled = false; });
+      });
+    });
+  })();
+</script>

@@ -1478,3 +1478,104 @@ msgstr "nog %(num)s minuten"
 #, python-format
 msgid "voting closes %(date)s"
 msgstr "stemmen sluit %(date)s"
+
+# Herontwerp stap 3: feiten en onderzoek
+
+msgid "Useful"
+msgstr "Nuttig"
+
+msgid "Filter on direction"
+msgstr "Filter op richting"
+
+msgid "All"
+msgstr "Alle"
+
+msgid "Sort"
+msgstr "Sorteren"
+
+msgid "Quality first"
+msgstr "Kwaliteit eerst"
+
+msgid "Newest"
+msgstr "Nieuwste"
+
+msgid "Most useful"
+msgstr "Meest nuttig"
+
+msgid "Apply"
+msgstr "Toepassen"
+
+msgid "Add a fact or research"
+msgstr "Feit of onderzoek toevoegen"
+
+msgid "Quality comes from the source and the quality mark, not from votes. Useful only breaks a tie."
+msgstr "Kwaliteit komt van de bron en het keurmerk, niet van stemmen. Nuttig beslist alleen bij gelijke stand."
+
+msgid "Show more"
+msgstr "Toon meer"
+
+msgid "No facts in this direction."
+msgstr "Geen feiten in deze richting."
+
+msgid "Marked useful"
+msgstr "Als nuttig gemarkeerd"
+
+msgid "Disputed"
+msgstr "Betwist"
+
+msgid "You disputed this fact"
+msgstr "Je hebt dit feit betwist"
+
+msgid "Dispute"
+msgstr "Betwisten"
+
+msgid "What is wrong with this fact?"
+msgstr "Wat klopt er niet aan dit feit?"
+
+msgid "No source"
+msgstr "Geen bron"
+
+msgid "Not correct"
+msgstr "Klopt niet"
+
+msgid "Not relevant"
+msgstr "Niet relevant"
+
+msgid "Misleading"
+msgstr "Misleidend"
+
+msgid "Explanation (optional)"
+msgstr "Toelichting (optioneel)"
+
+msgid "A moderator assesses your objection. The fact stays visible meanwhile."
+msgstr "Een moderator beoordeelt je bezwaar. Het feit blijft zolang zichtbaar."
+
+msgid "Send to a moderator"
+msgstr "Naar een moderator sturen"
+
+msgid "Choose a reason (and keep the note under 500 characters)."
+msgstr "Kies een reden (en houd de toelichting onder 500 tekens)."
+
+msgid "You already disputed this fact; a moderator will look at it."
+msgstr "Je hebt dit feit al betwist; een moderator kijkt ernaar."
+
+msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
+msgstr "Dank je. Een moderator kijkt naar je bezwaar; het feit blijft zolang zichtbaar."
+
+msgid "Disputed facts"
+msgstr "Betwiste feiten"
+
+msgid "The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled."
+msgstr "Het feit blijft zichtbaar. Controleer het, grijp zo nodig in via de gedragsregels, en markeer het bezwaar als afgehandeld."
+
+msgid "by"
+msgstr "door"
+
+msgid "Explanation"
+msgstr "Toelichting"
+
+msgid "Mark as handled"
+msgstr "Afgehandeld"
+
+msgid "No disputed facts."
+msgstr "Geen betwiste feiten."

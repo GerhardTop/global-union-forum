@@ -1481,3 +1481,104 @@ msgstr "%(num)s minutes left"
 #, python-format
 msgid "voting closes %(date)s"
 msgstr "voting closes %(date)s"
+
+# Herontwerp stap 3: feiten en onderzoek
+
+msgid "Useful"
+msgstr "Useful"
+
+msgid "Filter on direction"
+msgstr "Filter on direction"
+
+msgid "All"
+msgstr "All"
+
+msgid "Sort"
+msgstr "Sort"
+
+msgid "Quality first"
+msgstr "Quality first"
+
+msgid "Newest"
+msgstr "Newest"
+
+msgid "Most useful"
+msgstr "Most useful"
+
+msgid "Apply"
+msgstr "Apply"
+
+msgid "Add a fact or research"
+msgstr "Add a fact or research"
+
+msgid "Quality comes from the source and the quality mark, not from votes. Useful only breaks a tie."
+msgstr "Quality comes from the source and the quality mark, not from votes. Useful only breaks a tie."
+
+msgid "Show more"
+msgstr "Show more"
+
+msgid "No facts in this direction."
+msgstr "No facts in this direction."
+
+msgid "Marked useful"
+msgstr "Marked useful"
+
+msgid "Disputed"
+msgstr "Disputed"
+
+msgid "You disputed this fact"
+msgstr "You disputed this fact"
+
+msgid "Dispute"
+msgstr "Dispute"
+
+msgid "What is wrong with this fact?"
+msgstr "What is wrong with this fact?"
+
+msgid "No source"
+msgstr "No source"
+
+msgid "Not correct"
+msgstr "Not correct"
+
+msgid "Not relevant"
+msgstr "Not relevant"
+
+msgid "Misleading"
+msgstr "Misleading"
+
+msgid "Explanation (optional)"
+msgstr "Explanation (optional)"
+
+msgid "A moderator assesses your objection. The fact stays visible meanwhile."
+msgstr "A moderator assesses your objection. The fact stays visible meanwhile."
+
+msgid "Send to a moderator"
+msgstr "Send to a moderator"
+
+msgid "Choose a reason (and keep the note under 500 characters)."
+msgstr "Choose a reason (and keep the note under 500 characters)."
+
+msgid "You already disputed this fact; a moderator will look at it."
+msgstr "You already disputed this fact; a moderator will look at it."
+
+msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
+msgstr "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
+
+msgid "Disputed facts"
+msgstr "Disputed facts"
+
+msgid "The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled."
+msgstr "The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled."
+
+msgid "by"
+msgstr "by"
+
+msgid "Explanation"
+msgstr "Explanation"
+
+msgid "Mark as handled"
+msgstr "Mark as handled"
+
+msgid "No disputed facts."
+msgstr "No disputed facts."

@@ -1,0 +1,58 @@
+{#
+  Partial: forum/_fact_signals.html (herontwerp stap 3)
+  Bij een feit: de nuttig-knop met teller (één positief signaal, geen omlaag,
+  geen eens/oneens), voor moderators het label "betwist" bij een openstaand
+  bezwaar, en het betwisten met een reden. Werkt zonder JavaScript (formulier
+  met next); forum/_fact_useful_script.html maakt nuttig sneller.
+  Context: fact, fact_useful_counts, fact_my_useful, fact_disputed,
+           fact_my_disputed, optioneel signal_next.
+#}
+{% set back = signal_next or (request.path ~ '#post-' ~ fact.id) %}
+{% set n_useful = (fact_useful_counts or {}).get(fact.id, 0) %}
+{% set mine = fact.id in (fact_my_useful or ()) %}
+{% set is_own = current_user.is_authenticated and fact.user_id == current_user.id %}
+{% set can_signal = current_user.is_authenticated and current_user.can_contribute() and not is_own %}
+<div class="gu-fact__signals">
+  {% if can_signal %}
+  <form method="POST" action="{{ url_for('forum.fact_useful', post_id=fact.id) }}" class="gu-fact__usefulform">
+    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+    <input type="hidden" name="next" value="{{ back }}">
+    <button type="submit" class="gu-fact__useful{% if mine %} is-mine{% endif %}" aria-pressed="{{ 'true' if mine else 'false' }}"
+            data-useful-url="{{ url_for('forum.fact_useful', post_id=fact.id) }}">
+      {{ _('Useful') }} <span class="gu-fact__usefulcount">{{ n_useful }}</span>
+    </button>
+  </form>
+  {% else %}
+  <span class="gu-fact__useful gu-fact__useful--static" title="{{ _('Marked useful') }}">{{ _('Useful') }} <span class="gu-fact__usefulcount">{{ n_useful }}</span></span>
+  {% endif %}
+
+  {% if fact.id in (fact_disputed or ()) %}
+  <span class="gu-fact__disputed">{{ _('Disputed') }}</span>
+  {% endif %}
+
+  {% if can_signal %}
+    {% if fact.id in (fact_my_disputed or ()) %}
+    <span class="gu-composer__hint">{{ _('You disputed this fact') }}</span>
+    {% else %}
+    <details class="gu-fact__dispute">
+      <summary>{{ _('Dispute') }}</summary>
+      <form method="POST" action="{{ url_for('forum.fact_dispute', post_id=fact.id) }}" class="gu-fact__disputeform">
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        <input type="hidden" name="next" value="{{ back }}">
+        <fieldset>
+          <legend>{{ _('What is wrong with this fact?') }}</legend>
+          {% for key, label in [('geen_bron', _('No source')), ('klopt_niet', _('Not correct')), ('niet_relevant', _('Not relevant')), ('misleidend', _('Misleading'))] %}
+          <label class="gu-fact__disputereason"><input type="radio" name="reason" value="{{ key }}" required> {{ label }}</label>
+          {% endfor %}
+        </fieldset>
+        <label class="gu-fact__disputenote">
+          <span>{{ _('Explanation (optional)') }}</span>
+          <textarea name="note" rows="2" maxlength="500" class="gu-composer__input"></textarea>
+        </label>
+        <p class="gu-composer__hint">{{ _('A moderator assesses your objection. The fact stays visible meanwhile.') }}</p>
+        <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Send to a moderator') }}</button>
+      </form>
+    </details>
+    {% endif %}
+  {% endif %}
+</div>

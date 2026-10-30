@@ -292,11 +292,14 @@ def test_cockpit_shows_context_facts_discussion_and_proposals(app, db, make_user
     body = _req(_client(app, other, 'nl'), 'GET', f'/vraagstuk/{proposal.issue_id}').get_data(as_text=True)
     assert 'Moet het plein groener?' in body
     assert 'Waar gaat dit over' in body and 'Het eerste bericht.' in body
-    # Feiten links: de bovenste drie, met richting en bron, en de link naar alle feiten.
+    # Feiten links: de bovenste drie volgens kwaliteit eerst (alle vier met een
+    # link als bron, niemand vond iets nuttig: de nieuwste), met richting, bron
+    # en de nuttig-teller, en de link naar de feitenpagina (stap 3).
     assert 'Feiten en onderzoek' in body and '(4)' in body
-    assert 'Feit nummer 0' in body and 'Feit nummer 2' in body and 'Feit nummer 3' not in body
+    assert 'Feit nummer 3' in body and 'Feit nummer 1' in body and 'Feit nummer 0' not in body
     assert 'Pleit voor' in body and 'Pleit tegen' in body and 'https://example.org/1' in body
-    assert f'/forum/{proposal.thread_id}#feiten' in body and 'Alle feiten en onderzoek' in body
+    assert f'/vraagstuk/{proposal.issue_id}/feiten' in body and 'Alle feiten en onderzoek' in body
+    assert 'Nuttig' in body
     # Discussie in het midden: de bestaande boom met de reactie-invoer, zonder de feiten.
     discussion = body.split('id="panel-discussion"')[1].split('id="panel-proposals"')[0]
     assert 'Een reactie in de discussie.' in discussion and 'Feit nummer' not in discussion

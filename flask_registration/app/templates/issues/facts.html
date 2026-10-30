@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Facts and research') }} · {{ issue.title }} · Global Union{% endblock %}
+
+{#
+  Feiten en onderzoek van een vraagstuk (herontwerp stap 3). Filter op
+  richting, sorteren (kwaliteit eerst, nieuwste, meest nuttig), per feit de
+  nuttig-knop en betwisten, en een feit of onderzoek toevoegen tijdens de
+  feitenfase. Standaard de bovenste tien, met "toon meer".
+#}
+{% block content_outer %}{% block content %}
+{% from 'forum/_fact_fields.html' import fact_fields with context %}
+{% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
+<main class="gu-forum gu-factspage" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
+      <a href="{{ url_for('issues.index') }}">{{ _('Conversations') }}</a>
+      <span aria-hidden="true">›</span>
+      <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('Issue') }}</a>
+      <span aria-hidden="true">›</span>
+      <span>{{ _('Facts and research') }}</span>
+    </nav>
+
+    <header class="gu-forum__threadhead">
+      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
+      <h1 class="gu-forum__title">{{ _('Facts and research') }}</h1>
+      <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
+    </header>
+
+    <div class="gu-factspage__bar">
+      <nav class="gu-factspage__filter" aria-label="{{ _('Filter on direction') }}">
+        {% for key, label in [(None, _('All')), ('voor', _('Argues for')), ('tegen', _('Argues against')), ('neutraal', _('Neutral'))] %}
+        <a href="{{ url_for('issues.facts', issue_id=issue.id, richting=key, sorteer=order) }}"
+           class="gu-factspage__chip{% if direction == key %} is-active{% endif %}"{% if direction == key %} aria-current="true"{% endif %}>{{ label }}</a>
+        {% endfor %}
+      </nav>
+      <form method="GET" action="{{ url_for('issues.facts', issue_id=issue.id) }}" class="gu-factspage__sort">
+        {% if direction %}<input type="hidden" name="richting" value="{{ direction }}">{% endif %}
+        <label for="sorteer">{{ _('Sort') }}</label>
+        <select name="sorteer" id="sorteer" class="gu-input">
+          <option value="kwaliteit"{% if order == 'kwaliteit' %} selected{% endif %}>{{ _('Quality first') }}</option>
+          <option value="nieuwste"{% if order == 'nieuwste' %} selected{% endif %}>{{ _('Newest') }}</option>
+          <option value="nuttig"{% if order == 'nuttig' %} selected{% endif %}>{{ _('Most useful') }}</option>
+        </select>
+        <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm" id="sortSubmit">{{ _('Apply') }}</button>
+      </form>
+      {% if phase_open and current_user.is_authenticated and current_user.can_contribute() %}
+      <a href="#toevoegen" class="gu-btn gu-btn--primary gu-btn--sm gu-factspage__add">+ {{ _('Add a fact or research') }}</a>
+      {% endif %}
+    </div>
+
+    <p class="gu-composer__hint">{{ _('Quality comes from the source and the quality mark, not from votes. Useful only breaks a tie.') }}</p>
+
+    {% if facts %}
+    <ol class="gu-facts__list gu-factspage__list">
+      {% for fact in facts %}
+      {% set case = conduct_cases.get(fact.id) %}
+      {% set c_removed = case is not none and case.removes_from_thread %}
+      {% set is_own = current_user.is_authenticated and fact.user_id == current_user.id %}
+      <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if c_removed %} gu-post--removed{% endif %}" id="post-{{ fact.id }}">
+        <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
+        <div class="gu-fact__main">
+          <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+          <p class="gu-fact__source">{{ _('Source') }}:
+            {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
+            {% else %}{{ fact.fact_source }}{% endif %}
+          </p>
+          {% include 'forum/_fact_signals.html' %}
+          <div class="gu-conduct-slot" id="conduct-{{ fact.id }}">
+            {%- if c_removed or (case is not none and case.action == 'twijfel' and current_user.can_moderate()) %}{% with post=fact %}{% include 'forum/_conduct_notice.html' %}{% endwith %}{% endif -%}
+          </div>
+          {% if current_user.can_moderate() and not is_own %}
+            {% with post=fact %}{% include 'forum/_conduct_mod.html' %}{% endwith %}
+          {% endif %}
+          {% if is_own and phase_open and not c_removed %}
+          {% set edit_errs = (fact_errors or {}).get('edit-' ~ fact.id, {}) %}
+          {% set edit_data = (fact_data or {}).get('edit-' ~ fact.id) or {'text': fact.body, 'direction': fact.fact_direction, 'source': fact.fact_source} %}
+          <div class="gu-fact__own">
+            <details class="gu-fact__edit"{% if edit_errs %} open{% endif %}>
+              <summary>{{ _('Edit') }}</summary>
+              <form method="POST" action="{{ url_for('forum.fact_edit', post_id=fact.id) }}" class="gu-fact-form" novalidate>
+                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                <input type="hidden" name="return_to" value="{{ issue.id }}">
+                {{ fact_fields('edit-' ~ fact.id, edit_data, edit_errs) }}
+                <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Save') }}</button>
+              </form>
+            </details>
+            <form method="POST" action="{{ url_for('forum.fact_delete', post_id=fact.id) }}" class="gu-fact__delete">
+              {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+              <input type="hidden" name="return_to" value="{{ issue.id }}">
+              <button type="submit" class="gu-post__action gu-post__action--ghost">{{ _('Delete') }}</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+    {% if listed_count > shown %}
+    <p class="gu-factspage__more">
+      <a href="{{ url_for('issues.facts', issue_id=issue.id, richting=direction, sorteer=order, n=shown + 10) }}#post-{{ facts[-1].id }}" class="gu-btn gu-btn--ghost">{{ _('Show more') }} ({{ listed_count - shown }})</a>
+    </p>
+    {% endif %}
+    {% elif total %}
+    <p class="gu-facts__empty">{{ _('No facts in this direction.') }}</p>
+    {% else %}
+    <p class="gu-facts__empty">{{ _('No facts yet.') }}</p>
+    {% endif %}
+
+    <section class="gu-factspage__addsection" id="toevoegen">
+    {% if phase_open %}
+      {% if current_user.is_authenticated and current_user.can_contribute() %}
+      <form method="POST" action="{{ url_for('forum.fact_add', thread_id=thread.id) }}" class="gu-fact-form gu-fact-form--new" novalidate>
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        <input type="hidden" name="return_to" value="{{ issue.id }}">
+        <p class="gu-fact-form__title">{{ _('Add a fact or research') }}</p>
+        {% set fe = fact_errors or {} %}
+        {% set new_errs = {'text': fe.get('text'), 'direction': fe.get('direction'), 'source': fe.get('source')} %}
+        {% set new_data = (fact_data or {}) if (fe.get('text') or fe.get('direction') or fe.get('source')) else {} %}
+        {{ fact_fields('new-fact', new_data, new_errs) }}
+        <button type="submit" class="gu-btn gu-btn--primary">{{ _('Add a fact') }} <span class="gu-arrow"></span></button>
+      </form>
+      {% elif current_user.is_authenticated %}
+      <p class="gu-facts__note"><a href="{{ url_for('main.spelregels', next=request.path) }}">{{ _('Accept the conduct rules to join in') }}</a>.</p>
+      {% else %}
+      <p class="gu-facts__note"><a href="{{ url_for('auth.login') }}">{{ _('Log in to add a fact.') }}</a></p>
+      {% endif %}
+    {% elif thread %}
+      <p class="gu-facts__note">{{ _('The facts phase is over; the facts are fixed.') }}</p>
+    {% endif %}
+    </section>
+
+  </div>
+</main>
+{% endblock %}
+
+{% include 'forum/_fact_useful_script.html' %}
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    // Sorteren direct bij het kiezen; zonder JavaScript via de knop.
+    var select = document.getElementById('sorteer');
+    var button = document.getElementById('sortSubmit');
+    if (select && button) {
+      button.style.display = 'none';  // .gu-btn zet display, dus hidden alleen werkt niet
+      select.addEventListener('change', function () { select.form.submit(); });
+    }
+  })();
+</script>
+{% endblock %}

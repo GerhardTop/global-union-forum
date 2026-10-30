@@ -101,6 +101,9 @@ def moderator_dashboard():
                    .order_by(ConductCase.created_at).all())
     open_conduct_objections = (ConductObjection.query.filter(ConductObjection.decision.is_(None))
                                .order_by(ConductObjection.created_at).all())
+    # Herontwerp stap 3: betwiste feiten (het feit blijft staan tot een moderator oordeelt).
+    from app import facts
+    fact_disputes = [(row, facts.fact_url(row.fact)) for row in facts.open_disputes() if row.fact is not None]
 
     return render_template(
         'moderator/dashboard.html',
@@ -108,6 +111,8 @@ def moderator_dashboard():
         unjudged_posts=unjudged_posts,
         doubt_cases=doubt_cases,
         open_conduct_objections=open_conduct_objections,
+        fact_disputes=fact_disputes,
+        fact_can_resolve=lambda row: facts.can_resolve(row, current_user),
         active_threads=active_threads,
         posts_today=posts_today,
         threads_no_gerhard_count=len(threads_no_gerhard),

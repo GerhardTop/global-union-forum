@@ -302,6 +302,43 @@ def time_ago(moment):
 FACT_KIND = 'feit'
 FACT_DIRECTIONS = ('voor', 'tegen', 'neutraal')
 
+# Herontwerp stap 3: nuttig en betwisten op een feit (zie app/facts.py).
+FACT_DISPUTE_REASONS = ('geen_bron', 'klopt_niet', 'niet_relevant', 'misleidend')
+FACT_DISPUTE_STATUSES = ('open', 'resolved')
+
+
+class FactUsefulVote(db.Model):
+    """Eén positief "nuttig"-signaal per gebruiker per feit, aan en uit te
+    zetten. Geen omlaag: een waar maar onwelgevallig feit mag niet wegzakken."""
+    __tablename__ = "fact_useful_votes"
+
+    id           = db.Column(db.Integer, primary_key=True)
+    fact_post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False, index=True)
+    user_id      = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    created_at   = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('fact_post_id', 'user_id', name='uq_fact_useful_vote'),)
+
+
+class FactDispute(db.Model):
+    """Een feit betwisten met een reden uit een vaste lijst en een optionele
+    toelichting. Gaat naar de moderatorweergave; het feit blijft staan."""
+    __tablename__ = "fact_disputes"
+
+    id             = db.Column(db.Integer, primary_key=True)
+    fact_post_id   = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False, index=True)
+    user_id        = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    reason         = db.Column(db.String(16), nullable=False)               # FACT_DISPUTE_REASONS
+    note           = db.Column(db.String(500), nullable=True)
+    status         = db.Column(db.String(10), nullable=False, default='open')  # open/resolved
+    created_at     = db.Column(db.DateTime, default=datetime.utcnow)
+    resolved_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    resolved_at    = db.Column(db.DateTime, nullable=True)
+
+    fact        = db.relationship('Post', foreign_keys=[fact_post_id])
+    user        = db.relationship('User', foreign_keys=[user_id])
+    resolved_by = db.relationship('User', foreign_keys=[resolved_by_id])
+
 
 # Forum fase B: eens/oneens per bijdrage, los van elk kwaliteitssignaal.
 STANCES = ('eens', 'oneens')
@@ -650,7 +687,9 @@ class Issue(db.Model):
     thread_id              = db.Column(db.Integer, db.ForeignKey('threads.id'), nullable=True, index=True)
 
     created_by = db.relationship('User', foreign_keys=[created_by_id])
-    thread     = db.relationship('Thread', foreign_keys=[thread_id])
+    # Met de backref zet ook een ORM-delete van het gesprek thread_id op NULL
+    # (de bulkpaden lopen via proposals.delete_for_threads en issues.detach_threads).
+    thread     = db.relationship('Thread', foreign_keys=[thread_id], backref=db.backref('issues', lazy=True))
 
     def days(self, phase):
         return {'feiten': self.days_facts, 'bijstellen': self.days_adjust,
