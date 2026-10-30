@@ -120,13 +120,8 @@ def test_invalid_proposal_is_refused(app, db, make_user, statement, explanation)
 
 def test_proposing_rules(app, db, make_user):
     author, newbie = make_user(), make_user(rules=False)
-    issue = _issue(db, author, phase='stemmen')
-    assert _propose(app, author, issue).status_code == 403
-    page = _req(_client(app, author), 'GET', f'/vraagstuk/{issue.id}/voorstellen/nieuw').get_data(as_text=True)
-    assert 'tijdens de feitenfase en de bijstelfase' in page
-    issue.phase = 'bijstellen'
-    db.session.commit()
-    assert _propose(app, author, issue).status_code == 302
+    issue = _issue(db, author)
+    assert _propose(app, author, issue).status_code == 302  # feitenfase
     assert '/spelregels' in _propose(app, newbie, issue).headers['Location']
     r = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}/voorstellen/nieuw')
     assert r.status_code == 302 and '/login' in r.headers['Location']
@@ -309,3 +304,56 @@ def test_wrapper_issue_with_own_proposals_survives_thread_delete(db, make_user):
     issue_id = issue.id
     _delete_thread(proposal.thread)
     assert db.session.get(Issue, issue_id) is not None
+
+
+# ── Alleen in de feitenfase: voorstellen doen en steunen ─────────────────
+
+@pytest.mark.parametrize('phase,closed', [('bijstellen', False), ('stemmen', False), ('vervolg', False),
+                                          ('feiten', True)])
+def test_propose_and_support_only_in_facts_phase(app, db, make_user, phase, closed):
+    author, a = make_user(), make_user()
+    issue = _issue(db, author)
+    _propose(app, author, issue, 'Gedaan in de feitenfase.')
+    proposal = IssueProposal.query.filter_by(issue_id=issue.id).one()
+    issue.phase, issue.is_closed = phase, closed
+    db.session.commit()
+
+    # Serverkant: de routes weigeren.
+    assert _propose(app, a, issue, 'Te laat.').status_code == 403
+    assert _support(app, a, issue, proposal).status_code == 403
+    assert IssueProposal.query.filter_by(issue_id=issue.id).count() == 1
+    assert IssueProposalSupport.query.filter_by(proposal_id=proposal.id).count() == 0
+
+    # Weergave: geen knoppen op het formulier, de voorstellenpagina, het detail en in de cockpit.
+    form = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstellen/nieuw').get_data(as_text=True)
+    assert 'alleen in de feitenfase' in form and 'Voorstel indienen' not in form
+    listing = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
+    assert '>Steunen<' not in listing and 'Nieuw voorstel doen' not in listing
+    detail = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}').get_data(as_text=True)
+    assert '>Steunen<' not in detail
+    cockpit = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
+    panel = cockpit.split('id="panel-proposals"')[1].split('</section>')[0]
+    assert 'Nieuw voorstel doen' not in panel and 'Gedaan in de feitenfase.' in panel
+
+
+def test_buttons_shown_in_facts_phase(app, db, make_user):
+    author, a = make_user(), make_user()
+    issue = _issue(db, author)
+    _propose(app, author, issue)
+    listing = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
+    assert '>Steunen<' in listing and 'Nieuw voorstel doen' in listing
+    cockpit = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
+    assert 'Nieuw voorstel doen' in cockpit.split('id="panel-proposals"')[1].split('</section>')[0]
+
+
+def test_revision_phase_is_only_for_revising(app, db, make_user):
+    author = make_user()
+    issue = _issue(db, author)
+    _propose(app, author, issue, 'Eerste versie.')
+    proposal = IssueProposal.query.filter_by(issue_id=issue.id).one()
+    issue.phase = 'bijstellen'
+    db.session.commit()
+    assert _propose(app, author, issue, 'Nieuw in de bijstelfase.').status_code == 403
+    r = _req(_client(app, author), 'POST', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}/bijstellen',
+             data={'statement': 'Bijgestelde versie.', 'explanation': ''})
+    assert r.status_code == 302

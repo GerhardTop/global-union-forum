@@ -6,9 +6,11 @@ zin), een toelichting en een inbrenger. Het heeft geen eigen gesprek: de
 gedeelde discussie is die van het vraagstuk. Meerdere voorstellen per
 vraagstuk.
 
-- Voorstellen doen en steunen: zolang het vraagstuk in de feitenfase of de
-  bijstelfase is en niet gesloten. Steunen kan één keer per persoon, niet
-  het eigen voorstel, en alleen zolang het voorstel nog steun verzamelt.
+- Voorstellen doen en steunen: alleen in de feitenfase van het vraagstuk en
+  niet als het gesloten is. Aan het eind van de feitenfase ligt de
+  stemlijst dus vast; de bijstelfase is alleen voor het bijstellen van
+  bestaande voorstellen. Steunen kan één keer per persoon, niet het eigen
+  voorstel, en alleen zolang het voorstel nog steun verzamelt.
 - Status: "verzamelt steun (x van n)" tot de steundrempel van het vraagstuk
   (support_threshold) is gehaald, daarna "op de stemlijst".
 - Bijstellen: de inbrenger, in de bijstelfase van het vraagstuk, één keer;
@@ -27,7 +29,8 @@ from app.models import IssueProposal, IssueProposalSupport
 
 STATEMENT_MAX = 300
 EXPLANATION_MAX = 5000
-OPEN_PHASES = ('feiten', 'bijstellen')
+# Voorstellen doen en steunen: alleen in de feitenfase (de stemlijst ligt daarna vast).
+OPEN_PHASES = ('feiten',)
 FILTERS = ('alle', 'stemlijst', 'steun')
 ORDERS = ('steun', 'nieuwste', 'stemlijst')
 DEFAULT_ORDER = 'steun'

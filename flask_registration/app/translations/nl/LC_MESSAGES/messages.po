@@ -1677,8 +1677,8 @@ msgstr "Anderen kunnen je voorstel steunen. Met %(n)s steunbetuigingen komt het 
 msgid "Submit proposal"
 msgstr "Voorstel indienen"
 
-msgid "New proposals can be made during the facts phase and the revision phase."
-msgstr "Nieuwe voorstellen kun je doen tijdens de feitenfase en de bijstelfase."
+msgid "New proposals can only be made during the facts phase. After that the voting list is fixed."
+msgstr "Nieuwe voorstellen kun je alleen in de feitenfase doen. Daarna ligt de stemlijst vast."
 
 #, python-format
 msgid "Collecting support (%(count)s of %(needed)s)"

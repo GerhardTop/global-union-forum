@@ -1680,8 +1680,8 @@ msgstr "Others can support your proposal. With %(n)s supporters it goes to the v
 msgid "Submit proposal"
 msgstr "Submit proposal"
 
-msgid "New proposals can be made during the facts phase and the revision phase."
-msgstr "New proposals can be made during the facts phase and the revision phase."
+msgid "New proposals can only be made during the facts phase. After that the voting list is fixed."
+msgstr "New proposals can only be made during the facts phase. After that the voting list is fixed."
 
 #, python-format
 msgid "Collecting support (%(count)s of %(needed)s)"
