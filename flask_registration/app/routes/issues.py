@@ -277,8 +277,23 @@ def proposal(issue_id, proposal_id):
                            links=links, can_link=ip.can_link(proposal, current_user),
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
                            candidates=[f for f in ip.visible_issue_facts(issue, current_user) if f.id not in linked_ids],
-                           can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue), vote=_vote_context(proposal, count),
+                           can_add_fact=_can_add_fact(issue), vote=_vote_context(proposal, count),
+                           timeline=ip.timeline(proposal), current_version=ip.current_version(proposal),
+                           reactions=_visible_reactions(proposal), can_react=_can_react(issue),
                            fact_marks=fact_signals.marked_ids(f.id for f in ip.visible_issue_facts(issue, current_user)))
+
+
+def _visible_reactions(proposal):
+    """Polijstronde P5: de reacties bij dit voorstel die deze lezer ziet
+    (verplaatst of verborgen is weg, zoals in de discussie)."""
+    rows = ip.reactions(proposal)
+    cases = conduct.cases_for([p.id for p in rows])
+    return [p for p in rows if p.id not in cases or not conduct.removed_for(p, cases[p.id], current_user)]
+
+
+def _can_react(issue):
+    return (current_user.is_authenticated and current_user.can_contribute() and issue.thread is not None
+            and not issue.thread.is_closed and issues.is_open_now(issue))
 
 
 def _vote_context(proposal, count):

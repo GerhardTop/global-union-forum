@@ -2142,3 +2142,59 @@ msgstr "Het platform is nu niet open voor bijdragen. Zie de dagen van het event 
 
 msgid "The platform is not open for contributions to this issue right now."
 msgstr "Het platform is nu niet open voor bijdragen aan dit vraagstuk."
+
+# Polijstronde P5: voorstel doen en voorstel-detail
+
+msgid "Post proposal"
+msgstr "Voorstel posten"
+
+msgid "Version %(n)s"
+msgstr "Versie %(n)s"
+
+msgid "current"
+msgstr "huidig"
+
+msgid "The original proposal."
+msgstr "Het oorspronkelijke voorstel."
+
+msgid "Statement and explanation changed."
+msgstr "Stelling en toelichting gewijzigd."
+
+msgid "Statement changed."
+msgstr "Stelling gewijzigd."
+
+msgid "Explanation changed."
+msgstr "Toelichting gewijzigd."
+
+msgid "Explanation in this version"
+msgstr "Toelichting in deze versie"
+
+msgid "Not revised yet. The proposer can revise it during the revision phase."
+msgstr "Nog niet bijgesteld. De inbrenger kan het bijstellen in de bijstelfase."
+
+msgid "Each revision becomes a new version. Earlier versions stay visible."
+msgstr "Elke bijstelling wordt een nieuwe versie. Eerdere versies blijven zichtbaar."
+
+msgid "Reactions to this proposal"
+msgstr "Reacties op dit voorstel"
+
+msgid "on version %(n)s"
+msgstr "op versie %(n)s"
+
+msgid "In the discussion"
+msgstr "In de discussie"
+
+msgid "No reactions to this proposal yet."
+msgstr "Nog geen reacties op dit voorstel."
+
+msgid "Your reaction to version %(n)s"
+msgstr "Jouw reactie op versie %(n)s"
+
+msgid "Your reaction also appears in the shared discussion of the issue."
+msgstr "Je reactie verschijnt ook in de gedeelde discussie van het vraagstuk."
+
+msgid "Post"
+msgstr "Posten"
+
+msgid "About proposal"
+msgstr "Bij voorstel"

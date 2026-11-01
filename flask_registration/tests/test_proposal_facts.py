@@ -48,6 +48,11 @@ def make_user(db):
         IssueProposalFact.query.filter(IssueProposalFact.proposal_id.in_(proposal_ids)).delete(synchronize_session=False)
         IssueProposalSupport.query.filter(IssueProposalSupport.proposal_id.in_(proposal_ids)).delete(
             synchronize_session=False)
+        from app.models import IssueProposalVersion  # polijstronde P5
+        IssueProposalVersion.query.filter(IssueProposalVersion.proposal_id.in_(proposal_ids)).delete(
+            synchronize_session=False)
+        Post.query.filter(Post.issue_proposal_id.in_(proposal_ids)).update(
+            {Post.issue_proposal_id: None}, synchronize_session=False)
         IssueProposal.query.filter(IssueProposal.id.in_(proposal_ids)).delete(synchronize_session=False)
     db.session.commit()
     for tid in [t.id for t in Thread.query.join(Post).filter(Post.user_id.in_(made)).distinct()]:

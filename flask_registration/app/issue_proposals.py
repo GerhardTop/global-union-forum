@@ -13,8 +13,9 @@ vraagstuk.
   voorstel, en alleen zolang het voorstel nog steun verzamelt.
 - Status: "verzamelt steun (x van n)" tot de steundrempel van het vraagstuk
   (support_threshold) is gehaald, daarna "op de stemlijst".
-- Bijstellen: de inbrenger, in de bijstelfase van het vraagstuk, één keer;
-  de oorspronkelijke stelling en toelichting blijven bewaard.
+- Bijstellen: de inbrenger, in de bijstelfase van het vraagstuk;
+  polijstronde P5: vaker dan eens, met elke versie bewaard
+  (IssueProposalVersion) en reacties gekoppeld aan de versie waarop ze slaan.
 
 Stap 5, feiten koppelen: iedereen die mag bijdragen koppelt feiten uit de
 gedeelde lijst van het vraagstuk aan een voorstel, ook feiten die ertegen
@@ -46,8 +47,10 @@ from datetime import datetime, timedelta
 from sqlalchemy import func, or_
 
 from app import db
+from types import SimpleNamespace
+
 from app.models import (FACT_KIND, PROPOSAL_PHASES, VOTE_CHOICES, IssueProposal, IssueProposalFact,
-                        IssueProposalSupport, IssueProposalVote, Post)
+                        IssueProposalSupport, IssueProposalVersion, IssueProposalVote, Post)
 
 STATEMENT_MAX = 300
 EXPLANATION_MAX = 5000
@@ -88,9 +91,11 @@ def parse_form(form):
 
 
 def create(issue, user, statement, explanation=None, lang=None):
-    """Commit niet zelf."""
+    """Commit niet zelf. Versie 1 komt erbij (polijstronde P5)."""
     proposal = IssueProposal(issue_id=issue.id, statement=statement, explanation=explanation,
-                             created_by_id=user.id, lang=lang)
+                             created_by_id=user.id, lang=lang, created_at=datetime.utcnow())
+    proposal.version_rows.append(IssueProposalVersion(number=1, statement=statement, explanation=explanation,
+                                                      created_at=proposal.created_at))
     db.session.add(proposal)
     return proposal
 
@@ -148,20 +153,76 @@ def support(proposal, user):
     db.session.add(IssueProposalSupport(proposal_id=proposal.id, user_id=user.id))
 
 
-# ── Bijstellen ───────────────────────────────────────────────────────────
+# ── Bijstellen en versies (polijstronde P5) ──────────────────────────────
 
 def can_revise(proposal, user):
+    """De inbrenger, in de bijstelfase, zo vaak als nodig."""
     issue = proposal.issue
     return (not proposal.is_final and getattr(user, 'is_authenticated', False) and proposal.created_by_id == user.id
-            and proposal.revised_at is None and not issue.is_closed and issue.phase == 'bijstellen')
+            and not issue.is_closed and issue.phase == 'bijstellen')
+
+
+def versions(proposal):
+    """De versies, oudste eerst: de rijen, of voor een voorstel van vóór P5
+    afgeleid (het origineel en, na de ene bijstelling, de huidige tekst)."""
+    if proposal.version_rows:
+        return list(proposal.version_rows)
+    first = SimpleNamespace(number=1, created_at=proposal.created_at,
+                            statement=proposal.original_statement or proposal.statement,
+                            explanation=(proposal.original_explanation if proposal.revised_at
+                                         else proposal.explanation))
+    if not proposal.revised_at:
+        return [first]
+    return [first, SimpleNamespace(number=2, created_at=proposal.revised_at, statement=proposal.statement,
+                                   explanation=proposal.explanation)]
+
+
+def current_version(proposal):
+    return len(versions(proposal))
+
+
+def timeline(proposal):
+    """[(versie, wat veranderde)] nieuwste eerst; per versie of de stelling
+    en de toelichting veranderden ten opzichte van de vorige."""
+    rows, out, previous = versions(proposal), [], None
+    for version in rows:
+        changed = {'statement': previous is not None and version.statement != previous.statement,
+                   'explanation': previous is not None and (version.explanation or '') != (previous.explanation or ''),
+                   'previous': previous}
+        out.append((version, changed))
+        previous = version
+    return list(reversed(out))
 
 
 def revise(proposal, statement, explanation, now=None):
-    """Eén keer verfijnen; de oorspronkelijke versie blijft bewaard. Commit niet zelf."""
-    proposal.original_statement = proposal.statement
-    proposal.original_explanation = proposal.explanation
+    """Een nieuwe versie; alle eerdere blijven bewaard. Commit niet zelf."""
+    now = now or datetime.utcnow()
+    if not proposal.version_rows:  # een voorstel van vóór P5: eerst de afgeleide versies vastleggen
+        for version in versions(proposal):
+            proposal.version_rows.append(IssueProposalVersion(
+                number=version.number, statement=version.statement, explanation=version.explanation,
+                created_at=version.created_at))
+    if proposal.original_statement is None:
+        proposal.original_statement = proposal.statement
+        proposal.original_explanation = proposal.explanation
     proposal.statement, proposal.explanation = statement, explanation
-    proposal.revised_at = now or datetime.utcnow()
+    proposal.revised_at = now
+    proposal.version_rows.append(IssueProposalVersion(number=len(proposal.version_rows) + 1, statement=statement,
+                                                      explanation=explanation, created_at=now))
+
+
+# ── Reacties bij een voorstel (polijstronde P5) ──────────────────────────
+
+def reactions(proposal):
+    """De reacties die bij dit voorstel zijn geplaatst (in de gedeelde
+    discussie van het vraagstuk), oudste eerst."""
+    return (Post.query.filter_by(issue_proposal_id=proposal.id)
+            .order_by(Post.created_at, Post.id).all())
+
+
+def proposals_by_id(ids):
+    ids = {i for i in ids if i is not None}
+    return {p.id: p for p in IssueProposal.query.filter(IssueProposal.id.in_(ids))} if ids else {}
 
 
 # ── Feiten koppelen (stap 5) ─────────────────────────────────────────────

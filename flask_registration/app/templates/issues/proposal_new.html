@@ -12,7 +12,10 @@
     <header class="gu-forum__threadhead">
       <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
       <h1 class="gu-forum__title">{{ _('Make a new proposal') }}</h1>
-      <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
+      <div class="gu-newproposal__issue">
+        <p class="gu-newproposal__issuelabel">{{ _('Issue') }}</p>
+        <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a></p>
+      </div>
     </header>
 
     {% if can_propose %}
@@ -39,11 +42,13 @@
         {% endif %}
       </section>
       {% endif %}
-      <p class="gu-composer__hint">{{ _('Others can support your proposal. With %(n)s supporters it goes to the voting list.', n=issue.support_threshold) }}</p>
       <div class="gu-forum__newactions">
         <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>
-        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">{{ _('Submit proposal') }} <span class="gu-arrow"></span></button>
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">{{ _('Post proposal') }} <span class="gu-arrow"></span></button>
       </div>
+      {% if issue.support_threshold >= 1 %}
+      <p class="gu-composer__hint gu-newproposal__threshold">{{ _('Others can support your proposal. With %(n)s supporters it goes to the voting list.', n=issue.support_threshold) }}</p>
+      {% endif %}
     </form>
     {% else %}
     <p class="gu-facts__note">{{ _('New proposals can only be made during the facts phase. After that the voting list is fixed.') }}</p>

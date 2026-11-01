@@ -238,6 +238,10 @@ class Post(db.Model):
     kind           = db.Column(db.String(10), nullable=True)
     fact_direction = db.Column(db.String(10), nullable=True)   # voor/tegen/neutraal
     fact_source    = db.Column(db.String(500), nullable=True)
+    # Polijstronde P5: een reactie bij een voorstel onder een vraagstuk, met
+    # de versie van dat voorstel waarop ze slaat (NULL: een gewone reactie).
+    issue_proposal_id = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=True, index=True)
+    proposal_version  = db.Column(db.Integer, nullable=True)
     # Polijstronde P2: het soort feit (FACT_TYPES); NULL telt als 'feit'.
     # 'media' is nieuws, een podcast, een video en dergelijke.
     fact_type      = db.Column(db.String(10), nullable=True)
@@ -796,8 +800,9 @@ class IssueProposal(db.Model):
     created_by_id        = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
     created_at           = db.Column(db.DateTime, default=datetime.utcnow)
     lang                 = db.Column(db.String(5), nullable=True)
-    # Bijstellen: één keer, in de bijstelfase van het vraagstuk; de
-    # oorspronkelijke versie blijft bewaard (zoals bij Proposal).
+    # Bijstellen in de bijstelfase van het vraagstuk (polijstronde P5: vaker
+    # dan eens, met de versies in IssueProposalVersion); de oorspronkelijke
+    # versie blijft ook hier bewaard (zoals bij Proposal).
     original_statement   = db.Column(db.String(300), nullable=True)
     original_explanation = db.Column(db.Text, nullable=True)
     revised_at           = db.Column(db.DateTime, nullable=True)
@@ -807,6 +812,28 @@ class IssueProposal(db.Model):
 
     issue      = db.relationship('Issue', backref=db.backref('issue_proposals', lazy=True))
     created_by = db.relationship('User', foreign_keys=[created_by_id])
+
+
+class IssueProposalVersion(db.Model):
+    """Polijstronde P5: een versie van een voorstel. Versie 1 is het
+    oorspronkelijke voorstel; elke bijstelling (meerdere keren mogelijk in de
+    bijstelfase) voegt een versie toe. Voorstellen van vóór P5 hebben nog
+    geen rijen; app/issue_proposals.versions leidt ze dan af uit
+    original_statement en de huidige tekst."""
+    __tablename__ = "issue_proposal_versions"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    proposal_id = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=False, index=True)
+    number      = db.Column(db.Integer, nullable=False)
+    statement   = db.Column(db.String(300), nullable=False)
+    explanation = db.Column(db.Text, nullable=True)
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('proposal_id', 'number', name='uq_issue_proposal_version'),)
+
+    proposal = db.relationship('IssueProposal', backref=db.backref('version_rows', lazy=True,
+                                                                   order_by='IssueProposalVersion.number',
+                                                                   cascade='all, delete-orphan'))
 
 
 class IssueProposalSupport(db.Model):

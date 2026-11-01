@@ -84,6 +84,14 @@
   {# Kwaliteitskeurmerk: alleen het medaille-icoon direct vóór de tekst; een
      klik opent het paneel met de onderbouwing (onder de bijdrage). Leeg
      zonder keurmerk; de statuspoll vult het als het keurmerk later komt. #}
+  {# Polijstronde P5: een reactie bij een voorstel, met de versie waarop ze slaat. #}
+  {% set linked_proposal = (post_proposals or {}).get(post.issue_proposal_id) if post_proposals is defined and post.issue_proposal_id else none %}
+  {% if linked_proposal %}
+  <p class="gu-post__proposalref">{{ _('About proposal') }}:
+    <a href="{{ url_for('issues.proposal', issue_id=linked_proposal.issue_id, proposal_id=linked_proposal.id) }}" lang="{{ linked_proposal.lang or lang }}">{{ linked_proposal.statement | truncate(90) }}</a>
+    {% if post.proposal_version %}<span class="gu-versionchip">{{ _('on version %(n)s', n=post.proposal_version) }}</span>{% endif %}
+  </p>
+  {% endif %}
   <div class="gu-post__content">
   <span class="gu-post__qmark" id="qmark-{{ post.id }}">{% if q_awarded %}{% include 'forum/_quality_mark.html' %}{% endif %}</span>
   <div class="gu-post__body{% if is_deleted %} gu-post__body--deleted{% endif %}"

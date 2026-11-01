@@ -44,8 +44,15 @@ Het kwaliteitsmerk (polijstronde P2) komt uit dezelfde AI-aanroep als de handhav
 ### Voorstellen (lijst)
 Alle voorstellen bij het vraagstuk. Per voorstel: status (op de stemlijst / verzamelt steun x van n), inbrenger, de stelling. Filter (alle / op de stemlijst / verzamelt steun) en sorteren (meeste steun / nieuwste / stemlijst eerst). Een "steunen"-knop bij voorstellen die nog steun verzamelen, en "nieuw voorstel doen".
 
+### Voorstel doen
+Kopje "Vraagstuk" met de vraag erboven, de stelling en de toelichting (geen helptekst eronder), het koppelblok voor feiten, de knop "Voorstel posten", en onder de knop de regel over de steundrempel, alleen als er minstens 1 steunbetuiging nodig is.
+
 ### Voorstel-detail
-De stelling, de status, de toelichting, de bijstel-historie (versies), en de sectie "waarop dit voorstel zich baseert" met de gekoppelde feiten en hun richting-labels plus een "feit koppelen"-knop (iedereen mag koppelen, ook tegenfeiten). De stemming (voor, tegen, onthouding) met de drempel per voorstel en de tussenstand als die aanstaat, en, als dat bij het vraagstuk aanstaat, de melding dat de initiatiefnemer aan het einde op basis van alle voorstellen en de discussie een samenvattend voorstel kan doen, waarover opnieuw wordt gestemd. De discussie gefilterd op dit voorstel. Mobiel: de stemming prominent bovenaan.
+Een fase-chip bovenaan, de stelling, de status en de huidige versie, de stemming (voor, tegen, onthouding) met de drempel per voorstel en de tussenstand als die aanstaat (mobiel prominent bovenaan), de toelichting, de sectie "waarop dit voorstel zich baseert" met de gekoppelde feiten, hun richting-labels en het kwaliteitsmerk, plus een "feit koppelen"-knop (iedereen mag koppelen, ook tegenfeiten).
+
+Versies (polijstronde P5): de inbrenger kan in de bijstelfase vaker bijstellen; elke bijstelling is een nieuwe versie (tabel issue_proposal_versions, versie 1 is het origineel). De versie-tijdlijn toont per versie wat veranderde (stelling, toelichting), met de vorige stelling doorgestreept. Voorstellen van vóór P5 zonder versierijen krijgen hun versies afgeleid uit original_statement en de huidige tekst; bij de eerstvolgende bijstelling worden die vastgelegd.
+
+Reacties bij een voorstel: onderaan het detail staan de reacties op dit voorstel, elk met de versie waarop ze sloeg ("op versie 2"), en een invoer "Jouw reactie op versie N". Zo'n reactie is een gewoon bericht in de gedeelde discussie van het vraagstuk (posts.issue_proposal_id en posts.proposal_version) en staat daar met "Bij voorstel ... op versie N". Dit is ook de discussie gefilterd op dit voorstel.
 
 ### Vraagstuk starten: /gesprekken/nieuw
 De vraag, de toelichting, de keuze online of event, en de stemregels in de gewone, vlakke lay-out (drempel per voorstel 50 procent, steundrempel 5 (0 mag: dan staat een voorstel meteen op de stemlijst), tussenstand aan/uit, "Afsluiten met een samenvattend voorstel" aan/uit). Optioneel al feiten (een of meer, met "nog een feit toevoegen").

@@ -304,7 +304,11 @@ def _migrate_issues(existing):
 # verse database maakt db.create_all() ze aan; nieuwe tabellen ook.
 _POLISH_COLUMNS = {
     # P2: het soort feit (media) en het kwaliteitsmerk van een feit.
-    'posts': (('fact_type', 'VARCHAR(10) NULL'),),
+    'posts': (('fact_type', 'VARCHAR(10) NULL'),
+              # P5: een reactie bij een voorstel, met de versie (de tabel
+              # issue_proposal_versions maakt db.create_all() aan).
+              ('issue_proposal_id', 'INTEGER NULL REFERENCES issue_proposals(id)'),
+              ('proposal_version', 'INTEGER NULL')),
     'quality_awards': (('fact_mark', 'BOOLEAN NULL'), ('fact_has_source', 'BOOLEAN NULL'),
                        ('fact_link_findable', 'BOOLEAN NULL'), ('fact_has_location', 'BOOLEAN NULL'),
                        ('fact_on_topic', 'BOOLEAN NULL'), ('fact_is_new', 'BOOLEAN NULL')),
@@ -345,6 +349,7 @@ _INDEXES = (
     ('proposals', 'issue_id'),
     ('issues', 'created_by_id'),
     ('issues', 'thread_id'),
+    ('posts', 'issue_proposal_id'),  # polijstronde P5
 )
 
 

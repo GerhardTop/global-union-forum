@@ -601,6 +601,13 @@ def forum_thread(thread_id):
                 source_lang=session.get('lang', 'nl'),
                 parent_id=parent_id,
             )
+            # Polijstronde P5: een reactie bij een voorstel van het vraagstuk
+            # van dit gesprek, met de versie waarop ze slaat.
+            linked = _reply_proposal(thread, request.form.get('issue_proposal_id', type=int))
+            if linked is not None:
+                from app import issue_proposals
+                post.issue_proposal_id = linked.id
+                post.proposal_version = issue_proposals.current_version(linked)
             db.session.add(post)
             db.session.commit()
             # Fase E, stap 5b: wie meedoet aan een publiek voorstel gaat het volgen.
@@ -611,7 +618,11 @@ def forum_thread(thread_id):
             # Kwaliteit (fase C1): AI-suggestie op de achtergrond, best-effort.
             quality.schedule_judgement(post.id)
             # Naar de weergave waar de nieuwe reactie staat (ook voorbij niveau 4);
-            # vanuit de cockpit van een vraagstuk terug naar de cockpit.
+            # vanuit de cockpit van een vraagstuk terug naar de cockpit, vanaf
+            # een voorstel terug naar het voorstel.
+            if linked is not None and request.form.get('return_proposal') == '1':
+                return redirect(url_for('issues.proposal', issue_id=linked.issue_id, proposal_id=linked.id)
+                                + f'#post-{post.id}')
             return redirect(_issue_post_url(request.form.get('return_to', type=int), thread, post)
                             or post_url(post))
         return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#{anchor}')
@@ -666,6 +677,23 @@ def post_url(post):
     root_level = MAX_LEVEL + (MAX_LEVEL - 1) * ((level - MAX_LEVEL - 1) // (MAX_LEVEL - 1))
     root = chain[level - root_level]
     return url_for('forum.forum_branch', thread_id=post.thread_id, post_id=root.id) + f'#post-{post.id}'
+
+
+def _post_proposals(posts):
+    from app import issue_proposals
+    return issue_proposals.proposals_by_id(getattr(p, 'issue_proposal_id', None) for p in posts)
+
+
+def _reply_proposal(thread, proposal_id):
+    """Polijstronde P5: het voorstel waarbij een reactie hoort, alleen als
+    het bij het vraagstuk van dit gesprek hoort; anders None."""
+    if proposal_id is None:
+        return None
+    from app.models import IssueProposal
+    proposal = db.session.get(IssueProposal, proposal_id)
+    if proposal is None or proposal.issue is None or proposal.issue.thread_id != thread.id:
+        return None
+    return proposal
 
 
 def _issue_post_url(issue_id, thread, post):
@@ -839,6 +867,7 @@ def _thread_context(thread, branch_root_id=None):
         fact_errors=fact_errors,
         fact_data=fact_data,
         fact_marks=fact_signals.marked_ids(fact_ids),  # polijstronde P2: het kwaliteitsmerk
+        post_proposals=_post_proposals(all_posts),  # polijstronde P5: reacties bij een voorstel
         fact_disputed=fact_signals.disputed_ids(fact_ids) if current_user.is_authenticated and current_user.can_moderate() else set(),
         fact_my_disputed=fact_signals.my_disputed(fact_ids, current_user),
         conduct_cases=conduct_cases,

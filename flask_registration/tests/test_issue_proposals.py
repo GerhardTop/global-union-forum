@@ -49,6 +49,11 @@ def make_user(db):
         if proposal_ids:
             IssueProposalSupport.query.filter(IssueProposalSupport.proposal_id.in_(proposal_ids)).delete(
                 synchronize_session=False)
+            from app.models import IssueProposalVersion  # polijstronde P5
+            IssueProposalVersion.query.filter(IssueProposalVersion.proposal_id.in_(proposal_ids)).delete(
+                synchronize_session=False)
+            Post.query.filter(Post.issue_proposal_id.in_(proposal_ids)).update(
+                {Post.issue_proposal_id: None}, synchronize_session=False)
             IssueProposal.query.filter(IssueProposal.id.in_(proposal_ids)).delete(synchronize_session=False)
         Issue.query.filter(Issue.id.in_(issue_ids)).delete(synchronize_session=False)
     db.session.commit()
@@ -184,7 +189,7 @@ def test_proposal_of_another_issue_is_404(app, db, make_user):
 
 # ── Bijstellen ───────────────────────────────────────────────────────────
 
-def test_revise_once_in_revision_phase_keeping_the_original(app, db, make_user):
+def test_revise_in_revision_phase_keeping_every_version(app, db, make_user):
     author, other = make_user(), make_user()
     issue = _issue(db, author)
     _propose(app, author, issue, 'Meer bomen.', 'Eerste toelichting.')
@@ -206,11 +211,15 @@ def test_revise_once_in_revision_phase_keeping_the_original(app, db, make_user):
     assert (proposal.statement, proposal.explanation) == ('Meer bomen, ook op pleinen.', 'Aangescherpt.')
     assert (proposal.original_statement, proposal.original_explanation) == ('Meer bomen.', 'Eerste toelichting.')
     assert proposal.revised_at is not None
-    assert _req(_client(app, author), 'POST', url, data={'statement': 'Nog eens.'}).status_code == 403
+    # Polijstronde P5: nog een keer bijstellen kan; elke versie blijft bewaard.
+    assert _req(_client(app, author), 'POST', url, data={'statement': 'Nog eens.'}).status_code == 302
+    db.session.refresh(proposal)
+    assert proposal.original_statement == 'Meer bomen.'
+    assert [v.statement for v in ip.versions(proposal)] == ['Meer bomen.', 'Meer bomen, ook op pleinen.', 'Nog eens.']
 
     page = _req(_client(app, other), 'GET', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}').get_data(as_text=True)
-    assert 'Bijgestelde versie' in page and 'Oorspronkelijke versie' in page
-    assert '<del>Meer bomen.</del>' in page and 'Bijstelling opslaan' not in page
+    assert 'Versie 3' in page and 'Het oorspronkelijke voorstel.' in page and 'Stelling en toelichting gewijzigd.' in page
+    assert '>Meer bomen.</del>' in page and 'Bijstelling opslaan' not in page
 
 
 # ── Pagina's ─────────────────────────────────────────────────────────────
@@ -253,7 +262,7 @@ def test_detail_page_sections_in_english(app, db, make_user):
     proposal = IssueProposal.query.filter_by(issue_id=issue.id).one()
     page = _req(_client(app, lang='en'), 'GET', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}').get_data(as_text=True)
     for text in ('Plant more trees.', 'Shade and green.', 'Collecting support (0 of 2)', author.username,
-                 'What this proposal is based on', 'Vote', 'Versions', 'Original version'):
+                 'What this proposal is based on', 'Vote', 'Versions', 'The original proposal.'):
         assert text in page
 
 

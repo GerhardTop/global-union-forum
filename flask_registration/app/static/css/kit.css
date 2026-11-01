@@ -3726,3 +3726,31 @@ body {
   .gu-schedule__row label { grid-column: 1 / -1; }
   .gu-schedule__default { grid-column: 2; }
 }
+
+/* ── Polijstronde P5: voorstel doen en voorstel-detail ─────────────────── */
+.gu-newproposal__issue { margin-top: 4px; }
+.gu-newproposal__issuelabel { margin: 0 0 2px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gu-fg-3); }
+.gu-newproposal__threshold { margin-top: 10px; }
+.gu-phasechip { display: inline-block; margin: 0 0 10px; padding: 2px 10px; border-radius: 999px; font-size: 0.8125rem; font-weight: 600; color: var(--gu-globe-deep); background: color-mix(in srgb, var(--gu-globe) 12%, transparent); }
+.gu-phasechip.is-closed { color: var(--gu-fg-3); background: var(--gu-bg-soft); }
+.gu-versionchip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; color: var(--gu-fg-2); background: var(--gu-bg-soft); border: 1px solid var(--gu-border); white-space: nowrap; }
+.gu-versionchip.is-old { color: var(--gu-fg-3); }
+.gu-versionline { list-style: none; margin: 0 0 12px; padding: 0 0 0 14px; border-left: 2px solid var(--gu-border); display: grid; gap: 14px; }
+.gu-versionline__item { position: relative; }
+.gu-versionline__item::before { content: ""; position: absolute; left: -21px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--gu-paper); border: 2px solid var(--gu-border-strong, var(--gu-border)); }
+.gu-versionline__item.is-current::before { background: var(--gu-globe); border-color: var(--gu-globe); }
+.gu-versionline__head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 4px; }
+.gu-versionline__now { font-size: 0.75rem; font-weight: 600; color: var(--gu-globe-deep); }
+.gu-versionline__when { font-size: 0.75rem; color: var(--gu-fg-3); }
+.gu-versionline__what { margin: 0 0 4px; font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-versionline__expl summary { cursor: pointer; font-size: 0.8125rem; color: var(--gu-globe-deep); }
+.gu-ipreactions { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 12px; }
+.gu-ipreactions__item { padding: 12px 14px; border: 1px solid var(--gu-border); border-radius: 10px; }
+.gu-ipreactions__meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 6px; font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-ipreactions__meta strong { color: var(--gu-fg-1); }
+.gu-ipreactions__body { white-space: pre-line; overflow-wrap: anywhere; }
+.gu-ipreactions__link { display: inline-block; margin-top: 6px; font-size: 0.8125rem; }
+.gu-ipreactions__form label { font-weight: 600; font-size: 0.875rem; color: var(--gu-fg-2); }
+.gu-ipreactions__form .gu-btn { justify-self: start; }
+.gu-post__proposalref { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 6px; font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-post__proposalref a { color: var(--gu-globe-deep); }

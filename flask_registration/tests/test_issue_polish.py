@@ -14,6 +14,10 @@ Dekt per onderdeel:
 - P4: het startformulier (planning in momenten, eventdagen, steundrempel 0,
   feiten bij het aanmaken, de bewaarde invoer), en dat bijdragen alleen
   kunnen als het platform open is.
+- P5: het voorstelformulier (kopje Vraagstuk, "Voorstel posten", de
+  steunregel alleen bij een drempel van minstens 1), meerdere bijstellingen
+  met de versie-tijdlijn, reacties gekoppeld aan een versie, het merk bij
+  gekoppelde feiten en de fase-chip.
 
 Gedeelde conftest-app (CSRF uit).
 """
@@ -55,6 +59,11 @@ def make_user(db):
     if proposal_ids:
         for model in (IssueProposalVote, IssueProposalFact, IssueProposalSupport):
             model.query.filter(model.proposal_id.in_(proposal_ids)).delete(synchronize_session=False)
+        from app.models import IssueProposalVersion  # polijstronde P5
+        IssueProposalVersion.query.filter(IssueProposalVersion.proposal_id.in_(proposal_ids)).delete(
+            synchronize_session=False)
+        Post.query.filter(Post.issue_proposal_id.in_(proposal_ids)).update(
+            {Post.issue_proposal_id: None}, synchronize_session=False)
         IssueProposal.query.filter(IssueProposal.id.in_(proposal_ids)).delete(synchronize_session=False)
     db.session.commit()
     for tid in [t.id for t in Thread.query.join(Post).filter(Post.user_id.in_(made)).distinct()]:
@@ -417,3 +426,98 @@ def test_online_times_are_shown_in_dutch_time(app, db, make_user):
     page = _get(app, f'/vraagstuk/{issue.id}', host)
     assert '4 jan. 2027 00:00' in page or '4 jan 2027 00:00' in page
     assert r.status_code == 302
+
+
+# ── P5: voorstel doen en voorstel-detail ─────────────────────────────────
+
+def test_proposal_form_wording(app, db, make_user):
+    host = make_user()
+    issue = _issue(db, host, 'Waar komt het fietspad?')
+    page = _get(app, f'/vraagstuk/{issue.id}/voorstellen/nieuw', host)
+    head = page.split('gu-forum__threadhead')[1].split('</header>')[0]
+    assert 'gu-newproposal__issuelabel">Vraagstuk' in head and 'Waar komt het fietspad?' in head
+    assert 'Voorstel posten' in page and 'Voorstel indienen' not in page
+    form = page.split('Voorstel posten')[1]
+    assert 'steunbetuigingen komt het op de stemlijst' in form  # onder de knop
+    issue.support_threshold = 0
+    db.session.commit()
+    assert 'komt het op de stemlijst' not in _get(app, f'/vraagstuk/{issue.id}/voorstellen/nieuw', host)
+
+
+def test_versions_timeline_and_reactions_per_version(app, db, make_user):
+    host, anna = make_user(), make_user()
+    issue = _issue(db, host)
+    proposal = ip.create(issue, host, 'Eerste stelling.', 'Uitleg een.')
+    db.session.commit()
+    assert [v.number for v in proposal.version_rows] == [1]
+    detail = f'/vraagstuk/{issue.id}/voorstel/{proposal.id}'
+    r = _req(_client(app, anna), 'POST', f'/forum/{issue.thread_id}',
+             data={'body': 'Reactie op de eerste versie.', 'issue_proposal_id': proposal.id, 'return_proposal': '1'})
+    first = Post.query.filter_by(body='Reactie op de eerste versie.').one()
+    assert (first.issue_proposal_id, first.proposal_version) == (proposal.id, 1)
+    assert r.headers['Location'].endswith(f'{detail}#post-{first.id}')
+
+    issue.phase = 'bijstellen'
+    db.session.commit()
+    c = _client(app, host)
+    for statement, explanation in (('Tweede stelling.', 'Uitleg een.'), ('Tweede stelling.', 'Uitleg drie.')):
+        assert _req(c, 'POST', f'{detail}/bijstellen', data={'statement': statement, 'explanation': explanation}).status_code == 302
+    db.session.refresh(proposal)
+    assert ip.current_version(proposal) == 3
+    _req(_client(app, anna), 'POST', f'/forum/{issue.thread_id}',
+         data={'body': 'Reactie op versie drie.', 'issue_proposal_id': proposal.id})
+    assert Post.query.filter_by(body='Reactie op versie drie.').one().proposal_version == 3
+
+    page = _get(app, detail, anna)
+    assert 'Fase: Voorstel bijstellen' in page and 'Versie 3' in page
+    timeline = page.split('id="versies"')[1].split('id="reacties"')[0]
+    assert timeline.index('Versie 3') < timeline.index('Versie 2') < timeline.index('Versie 1')
+    assert 'Toelichting gewijzigd.' in timeline and 'Stelling gewijzigd.' in timeline
+    assert '>Eerste stelling.</del>' in timeline
+    reactions = page.split('id="reacties"')[1]
+    assert 'op versie 1' in reactions and 'op versie 3' in reactions and 'Jouw reactie op versie 3' in reactions
+    # In de gedeelde discussie staat de reactie met het voorstel en de versie.
+    cockpit = _get(app, f'/vraagstuk/{issue.id}', anna)
+    assert 'Bij voorstel' in cockpit and 'op versie 1' in cockpit
+
+
+def test_reaction_cannot_point_to_a_proposal_of_another_issue(app, db, make_user):
+    host, anna = make_user(), make_user()
+    issue, other = _issue(db, host), _issue(db, host, 'Ander vraagstuk')
+    foreign = ip.create(other, host, 'Elders.')
+    db.session.commit()
+    _req(_client(app, anna), 'POST', f'/forum/{issue.thread_id}', data={'body': 'Verkeerd.', 'issue_proposal_id': foreign.id})
+    post = Post.query.filter_by(body='Verkeerd.').one()
+    assert post.issue_proposal_id is None and post.proposal_version is None
+
+
+def test_old_proposal_without_version_rows(app, db, make_user):
+    from app.models import IssueProposalVersion
+    host = make_user()
+    issue = _issue(db, host)
+    proposal = ip.create(issue, host, 'Oud.', 'Oude uitleg.')
+    db.session.commit()
+    IssueProposalVersion.query.filter_by(proposal_id=proposal.id).delete()
+    proposal.original_statement, proposal.original_explanation = 'Heel oud.', 'Heel oude uitleg.'
+    proposal.revised_at = datetime.utcnow()
+    db.session.commit()
+    db.session.expire_all()
+    assert [v.statement for v in ip.versions(proposal)] == ['Heel oud.', 'Oud.']
+    ip.revise(proposal, 'Nieuw.', None)
+    db.session.commit()
+    assert [(v.number, v.statement) for v in proposal.version_rows] == [(1, 'Heel oud.'), (2, 'Oud.'), (3, 'Nieuw.')]
+
+
+def test_linked_facts_show_the_mark(app, db, make_user):
+    from app.models import QualityAward
+    host = make_user()
+    issue = _issue(db, host)
+    fact = _fact(db, issue, host, 'Gekoppeld feit.')
+    db.session.add(QualityAward(post_id=fact.id, status='afgewezen', source='ai', fact_mark=True))
+    proposal = ip.create(issue, host, 'Met basis.')
+    db.session.flush()
+    ip.link(proposal, fact, host)
+    db.session.commit()
+    page = _get(app, f'/vraagstuk/{issue.id}/voorstel/{proposal.id}')
+    basis = page.split('id="basis"')[1].split('</section>')[0]
+    assert 'Gekoppeld feit.' in basis and 'gu-factmark' in basis
