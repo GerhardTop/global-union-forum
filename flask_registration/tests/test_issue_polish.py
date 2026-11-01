@@ -9,6 +9,8 @@ Dekt per onderdeel:
 - P2: het AI-kwaliteitsmerk op feiten (alle vijf punten nodig, geen keurmerk,
   de prompt sluit betrouwbaarheid uit), het media-label en -type, en het
   sorteren met het merk eerst.
+- P3: de fase-indicator met iconen, de uitklapbare toelichting, volgen (ook
+  in de meldingen), vergroten, de "+"-knoppen en "Posten".
 
 Gedeelde conftest-app (CSRF uit).
 """
@@ -20,8 +22,8 @@ from flask import g
 from flask_babel import refresh
 
 from app import bcrypt, issue_lifecycle as lifecycle, issue_proposals as ip, issues
-from app.models import (Issue, IssueProposal, IssueProposalFact, IssueProposalSupport, IssueProposalVote, Post,
-                        Thread, User)
+from app.models import (Issue, IssueFollow, IssueProposal, IssueProposalFact, IssueProposalSupport,
+                        IssueProposalVote, Post, Thread, User)
 from tests.test_forum_conduct import _fresh_rate_limits, _verdict, fake_ai  # noqa: F401  (autouse)
 
 
@@ -54,7 +56,9 @@ def make_user(db):
     db.session.commit()
     for tid in [t.id for t in Thread.query.join(Post).filter(Post.user_id.in_(made)).distinct()]:
         _delete_thread(db.session.get(Thread, tid))
+    IssueFollow.query.filter(IssueFollow.user_id.in_(made)).delete(synchronize_session=False)
     if issue_ids:
+        IssueFollow.query.filter(IssueFollow.issue_id.in_(issue_ids)).delete(synchronize_session=False)
         Issue.query.filter(Issue.id.in_(issue_ids)).delete(synchronize_session=False)
     db.session.commit()
     for uid in made:
@@ -242,3 +246,72 @@ def test_media_type_and_label(app, db, make_user):
                'type': 'feit', 'return_to': str(issue.id)})
     db.session.refresh(media)
     assert media.fact_type == 'feit'
+
+
+# ── P3: de cockpit ───────────────────────────────────────────────────────
+
+def test_cockpit_head_intro_phases_and_plus_buttons(app, db, make_user):
+    host = make_user()
+    issue = _issue(db, host, 'Hoe maken we de wijk groener?')
+    body = _get(app, f'/vraagstuk/{issue.id}', host)
+    assert 'id="toelichting"' in body and 'Lees de toelichting' in body and 'Toelichting.' in body
+    assert body.count('gu-phasebar__icon') == 4 and 'aria-current="step"' in body
+    assert 'Volgen' in body and 'gu-cockpit__follow' in body
+    head = body.split('id="panel-proposals"')[1].split('</h2>')[1].split('</div>')[0]
+    assert 'class="gu-iconbtn"' in head and 'title="Nieuw voorstel"' in head
+    facts_head = body.split('id="panel-facts"')[1].split('</div>')[0]
+    assert 'title="Feit toevoegen"' in facts_head and 'data-expand="facts"' in facts_head
+    assert 'data-expand="discussion"' in body and 'Terug naar de cockpit' in body
+    assert 'Posten' in body and 'Plaats reactie' not in body
+    assert 'data-follow-url' not in _get(app, f'/vraagstuk/{issue.id}')  # niet ingelogd
+
+
+def test_cockpit_renders_extra_rows_for_the_large_view(app, db, make_user):
+    host, anna = make_user(), make_user()
+    issue = _issue(db, host)
+    for i in range(5):
+        _fact(db, issue, anna, f'Feit {i}')
+    for i in range(7):
+        ip.create(issue, anna, f'Voorstel {i}')
+    db.session.commit()
+    body = _get(app, f'/vraagstuk/{issue.id}')
+    facts = body.split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
+    assert facts.count('gu-cockpit__extra') == 2 and 'Feit 0' in facts
+    proposals = body.split('id="panel-proposals"')[1].split('gu-cockpit__rights')[0]
+    assert proposals.count('gu-cockpit__extra') == 2
+
+
+def test_follow_toggles_and_followers_get_updates(app, db, make_user):
+    from app import digest
+    host, fan = make_user(), make_user()
+    issue = _issue(db, host)
+    c = _client(app, fan)
+    r = _req(c, 'POST', f'/vraagstuk/{issue.id}/volgen', headers={'X-Requested-With': 'XMLHttpRequest'})
+    assert r.get_json() == {'following': True}
+    assert lifecycle.is_following(issue, fan) and fan.id in lifecycle.recipients(issue)
+    assert fan.id not in lifecycle.participants(issue)
+    assert 'aria-pressed="true"' in _get(app, f'/vraagstuk/{issue.id}', fan)
+    # Een faseovergang komt in de samenvatting van de volger.
+    lifecycle.set_phase(issue, 'bijstellen', datetime.utcnow())
+    db.session.commit()
+    fan.last_digest_at = datetime.utcnow() - timedelta(hours=1)
+    db.session.commit()
+    items = digest.build(fan, datetime.utcnow() + timedelta(minutes=1))
+    assert any(item.get('issue_id') == issue.id for item in items)
+    # Zonder JavaScript: terug naar de cockpit; nogmaals is ontvolgen.
+    r = _req(c, 'POST', f'/vraagstuk/{issue.id}/volgen')
+    assert r.status_code == 302 and r.headers['Location'].endswith(f'/vraagstuk/{issue.id}')
+    assert not lifecycle.is_following(issue, fan)
+    assert _req(_client(app), 'POST', f'/vraagstuk/{issue.id}/volgen').status_code == 302  # naar inloggen
+    assert IssueFollow.query.filter_by(issue_id=issue.id).count() == 0
+
+
+def test_deleting_a_user_removes_follows(app, db, make_user):
+    from app import quality
+    host, fan = make_user(), make_user()
+    issue = _issue(db, host)
+    lifecycle.toggle_follow(issue, fan)
+    db.session.commit()
+    quality.detach_user(fan.id)
+    db.session.commit()
+    assert IssueFollow.query.filter_by(issue_id=issue.id).count() == 0

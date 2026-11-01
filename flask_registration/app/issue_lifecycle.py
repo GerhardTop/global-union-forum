@@ -27,15 +27,16 @@ Fasen: feiten, bijstellen, stemmen, vervolg (PROPOSAL_PHASES).
 
 Meldingen: digest_items levert per vraagstuk de belangrijke veranderingen
 voor de bestaande dagelijkse samenvatting (app/digest.py); de ontvangers zijn
-de initiatiefnemer en wie heeft bijgedragen (participants).
+de initiatiefnemer en wie heeft bijgedragen (participants), en (polijstronde
+P3) wie het vraagstuk volgt (IssueFollow).
 """
 from datetime import datetime, timedelta
 
 from sqlalchemy import func, or_
 
 from app import db
-from app.models import (AppSetting, Issue, IssueProposal, IssueProposalSupport, IssueProposalVote, Post,
-                        QualityAward)
+from app.models import (AppSetting, Issue, IssueFollow, IssueProposal, IssueProposalSupport, IssueProposalVote,
+                        Post, QualityAward)
 
 SILENCE_KEY = 'issue_facts_silence_days'
 DEFAULT_SILENCE_DAYS = 5
@@ -211,13 +212,47 @@ def participants(issue):
     return ids
 
 
+def followers(issue):
+    return {u for (u,) in db.session.query(IssueFollow.user_id).filter(IssueFollow.issue_id == issue.id)}
+
+
+def recipients(issue):
+    """Wie de meldingen van een vraagstuk krijgt: de betrokkenen en de volgers."""
+    return participants(issue) | followers(issue)
+
+
+def is_following(issue, user):
+    return (getattr(user, 'is_authenticated', False)
+            and IssueFollow.query.filter_by(issue_id=issue.id, user_id=user.id).first() is not None)
+
+
+def toggle_follow(issue, user):
+    """Volgen aan of uit. Geeft True als de gebruiker nu volgt. Commit niet zelf."""
+    row = IssueFollow.query.filter_by(issue_id=issue.id, user_id=user.id).first()
+    if row is not None:
+        db.session.delete(row)
+        return False
+    db.session.add(IssueFollow(issue_id=issue.id, user_id=user.id))
+    return True
+
+
+def delete_follows(issue_ids=None, user_id=None):
+    """Opruimen vóór het verwijderen van vraagstukken of een gebruiker."""
+    query = IssueFollow.query
+    if issue_ids is not None:
+        query = query.filter(IssueFollow.issue_id.in_(list(issue_ids)))
+    if user_id is not None:
+        query = query.filter(IssueFollow.user_id == user_id)
+    query.delete(synchronize_session=False)
+
+
 def notifiable_issues():
     """Vraagstukken met eigen meldingen (de ingepakte volgen het oude voorstel)."""
     return [i for i in Issue.query.all() if not is_wrapper(i)]
 
 
 def issues_for_user(user_id):
-    return [i for i in notifiable_issues() if user_id in participants(i)]
+    return [i for i in notifiable_issues() if user_id in recipients(i)]
 
 
 def _iso(moment):

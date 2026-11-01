@@ -734,6 +734,20 @@ class Issue(db.Model):
         return PROPOSAL_PHASES.index(self.phase) if self.phase in PROPOSAL_PHASES else 0
 
 
+class IssueFollow(db.Model):
+    """Polijstronde P3: een gebruiker volgt een vraagstuk en krijgt de
+    meldingen ervan in de dagelijkse samenvatting, naast de initiatiefnemer
+    en wie heeft bijgedragen. Eén keer per gebruiker per vraagstuk."""
+    __tablename__ = "issue_follows"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    issue_id   = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=False, index=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('issue_id', 'user_id', name='uq_issue_follow'),)
+
+
 # ── Herontwerp stap 4: voorstellen als onderdeel van een vraagstuk ───────
 # Een licht voorstel onder een vraagstuk: een stelling, een toelichting en
 # een inbrenger, zonder eigen gesprek (de discussie is die van het

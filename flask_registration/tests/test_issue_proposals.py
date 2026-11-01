@@ -333,7 +333,7 @@ def test_propose_and_support_only_in_facts_phase(app, db, make_user, phase, clos
     assert '>Steunen<' not in detail
     cockpit = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
     panel = cockpit.split('id="panel-proposals"')[1].split('</section>')[0]
-    assert 'Nieuw voorstel doen' not in panel and 'Gedaan in de feitenfase.' in panel
+    assert 'title="Nieuw voorstel"' not in panel and 'Gedaan in de feitenfase.' in panel
 
 
 def test_buttons_shown_in_facts_phase(app, db, make_user):
@@ -343,7 +343,7 @@ def test_buttons_shown_in_facts_phase(app, db, make_user):
     listing = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
     assert '>Steunen<' in listing and 'Nieuw voorstel doen' in listing
     cockpit = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
-    assert 'Nieuw voorstel doen' in cockpit.split('id="panel-proposals"')[1].split('</section>')[0]
+    assert 'title="Nieuw voorstel"' in cockpit.split('id="panel-proposals"')[1].split('</section>')[0]
 
 
 def test_revision_phase_is_only_for_revising(app, db, make_user):

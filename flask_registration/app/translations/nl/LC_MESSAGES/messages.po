@@ -2006,3 +2006,29 @@ msgstr "Een link, en waar het in de bron staat (pagina, hoofdstuk of tijdstip)"
 
 msgid "Quality first: facts with the quality mark, then facts with a link as source. The mark checks the source, not how reliable it is."
 msgstr "Kwaliteit eerst: feiten met het kwaliteitsmerk, dan feiten met een link als bron. Het merk controleert de bron, niet hoe betrouwbaar die is."
+
+# Polijstronde P3: cockpit
+
+msgid "Following"
+msgstr "Volgend"
+
+msgid "Follow"
+msgstr "Volgen"
+
+msgid "Followers get the updates of this issue in their daily summary."
+msgstr "Volgers krijgen de meldingen van dit vraagstuk in hun dagelijkse samenvatting."
+
+msgid "Read the introduction"
+msgstr "Lees de toelichting"
+
+msgid "Back to the cockpit"
+msgstr "Terug naar de cockpit"
+
+msgid "Enlarge"
+msgstr "Vergroten"
+
+msgid "New proposal"
+msgstr "Nieuw voorstel"
+
+msgid "done"
+msgstr "afgerond"

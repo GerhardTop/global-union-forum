@@ -25,12 +25,16 @@ Alle vraagstukken, nieuwste eerst. Per vraagstuk de titel, het online- of event-
 Bovenaan de cockpit en alle onderliggende pagina's: "Denk mee" (naar het overzicht), dan de naam van het vraagstuk (naar de cockpit), dan eventueel de pagina zelf.
 
 ### Cockpit: /vraagstuk/<id>
-Boven de kolommen: het online/event-label met datum (online: "stemmen sluit <datum>"; event: "<datum>, <locatie>"), de titel (de vraag), en een fase-strip (feiten, bijstellen, stemmen, vervolg) met de huidige fase gemarkeerd en de resterende tijd.
+Boven de kolommen: het online/event-label met datum (online: "stemmen sluit <datum>"; event: "<datum>, <locatie>"), de titel (de vraag) met rechts de knop "Volgen", daaronder "Lees de toelichting" als uitklapbaar blok (bij het eerste bezoek open, daarna dicht; per browser onthouden), en de fase-indicator: per fase een icoon, de huidige gemarkeerd, de voorbije afgevinkt, met de data per fase als die er zijn en de resterende tijd.
 Desktop, drie kolommen:
-- Links (context en feiten): "Waar gaat dit over" (de intro), en "Feiten en achtergrond" met de top-feiten (posts kind='feit') met richting en bron, plus een link naar de volledige feiten-pagina.
-- Midden (gedeelde discussie): de thread van het gesprek met de bestaande forumweergave (geneste reacties tot 4 diep, keurmerk, eens, handhaving). Feiten-posts staan hier niet, die staan links. Onderaan de reactie-invoer.
-- Rechts (voorstellen en stemrecht): de voorstellen onder het vraagstuk, compact met status (op de stemlijst / verzamelt steun x van n), link naar het detail, en een knop "nieuw voorstel doen". Daaronder "jouw stemrecht" (voortgang, aantal keurmerken).
-Mobiel: tabs met de context en fase-strip erboven. Tabs: Discussie (standaard), Voorstellen, Feiten en achtergrond.
+- Links: "Feiten en achtergrond" met de top-feiten (kwaliteit eerst) met richting, bron, media-label en kwaliteitsmerk, plus een link naar de volledige feitenpagina.
+- Midden (gedeelde discussie): de thread van het gesprek met de bestaande forumweergave (geneste reacties tot 4 diep, keurmerk, eens, handhaving). Feiten-posts staan hier niet. Onderaan de reactie-invoer; de knop heet "Posten".
+- Rechts (voorstellen en stemrecht): de voorstellen onder het vraagstuk, compact met status, link naar het detail, en daaronder "jouw stemrecht".
+Mobiel: tabs onder de kop en de fase-indicator. Tabs: Discussie (standaard), Voorstellen, Feiten en achtergrond.
+
+Paneelkoppen: in de krappe koppen een icoon-"+" met tooltip (nieuw voorstel, feit toevoegen); op volledige pagina's een "+" met woord. Elk paneel (discussie, feiten, voorstellen) heeft een knop "Vergroten": dat paneel komt groot onder de fase-indicator (die niet herhaald wordt), met alle feiten of voorstellen in plaats van de top, en een knop "Terug naar de cockpit" (ook met Escape).
+
+Volgen (polijstronde P3, tabel issue_follows met issue_id en user_id): volgers krijgen de meldingen van het vraagstuk in de dagelijkse samenvatting, naast de initiatiefnemer en wie heeft bijgedragen. Ontvolgen kan met dezelfde knop; wie heeft bijgedragen blijft ontvanger.
 
 ### Feiten, onderzoek en media
 Gedeelde lijst op vraagstuk-niveau. Per feit: richting (pleit voor / pleit tegen / neutraal), tekst, bron, het soort (feit of onderzoek, of media: nieuws, podcast, video, getoond als label "media"), het AI-kwaliteitsmerk (groen vinkje met de criteria bij mouse-over), en "betwisten" met reden (geen bron, klopt niet, niet relevant, misleidend) dat naar een moderator gaat. Filter op richting, sorteren (kwaliteit eerst, nieuwste), een "toevoegen"-knop, en "toon meer" bij lange lijsten.
@@ -58,7 +62,7 @@ Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (
 - Het samenvattende voorstel ontstaat in de vervolgfase (alleen de initiatiefnemer, als dat bij het vraagstuk aanstaat) en heeft een eigen stemperiode van days_vote dagen vanaf het aanmaken, met dezelfde drempel.
 - De uitslag wordt live uit de stemmen berekend, niet vastgelegd. Bij het verwijderen van een account blijft een stem meetellen zonder naam, zodat een uitslag niet verandert.
 - Een vraagstuk dat een oud voorstel inpakt (uit de backfill van stap 1) volgt de fase van dat oude voorstel en heeft geen eigen automatiek, tot het oude model is uitgefaseerd.
-- Meldingen lopen via de bestaande dagelijkse samenvatting: de initiatiefnemer en wie heeft bijgedragen (berichten, feiten, voorstellen, steun, stemmen) krijgen een melding bij een faseovergang, het openen van de stemming, de uitslag, het samenvattende voorstel, de vervolgtekst en het opnieuw openstellen.
+- Meldingen lopen via de bestaande dagelijkse samenvatting: de initiatiefnemer, wie heeft bijgedragen (berichten, feiten, voorstellen, steun, stemmen) en de volgers krijgen een melding bij een faseovergang, het openen van de stemming, de uitslag, het samenvattende voorstel, de vervolgtekst en het opnieuw openstellen.
 
 ## Beslissingen (en waarom)
 - Eén cockpit per vraagstuk met één gedeelde discussie, niet een discussie per voorstel. Dat houdt de deliberatie bij elkaar (één burgerberaad, één tijdlijn).

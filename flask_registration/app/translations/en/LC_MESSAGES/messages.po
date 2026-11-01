@@ -2009,3 +2009,29 @@ msgstr "A link, and where in the source it can be found (page, chapter or time)"
 
 msgid "Quality first: facts with the quality mark, then facts with a link as source. The mark checks the source, not how reliable it is."
 msgstr "Quality first: facts with the quality mark, then facts with a link as source. The mark checks the source, not how reliable it is."
+
+# Polijstronde P3: cockpit
+
+msgid "Following"
+msgstr "Following"
+
+msgid "Follow"
+msgstr "Follow"
+
+msgid "Followers get the updates of this issue in their daily summary."
+msgstr "Followers get the updates of this issue in their daily summary."
+
+msgid "Read the introduction"
+msgstr "Read the introduction"
+
+msgid "Back to the cockpit"
+msgstr "Back to the cockpit"
+
+msgid "Enlarge"
+msgstr "Enlarge"
+
+msgid "New proposal"
+msgstr "New proposal"
+
+msgid "done"
+msgstr "done"

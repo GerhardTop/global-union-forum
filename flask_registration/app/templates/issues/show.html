@@ -2,11 +2,14 @@
 {% block title %}{{ issue.title }} · Global Union{% endblock %}
 
 {#
-  De cockpit van een vraagstuk (herontwerp stap 2). Breed: drie kolommen,
-  links de context en de feiten, in het midden de gedeelde discussie (de
+  De cockpit van een vraagstuk (herontwerp stap 2, polijstronde P3). Breed:
+  drie kolommen, links de feiten, in het midden de gedeelde discussie (de
   bestaande forumweergave), rechts de voorstellen en jouw stemrecht. Smal:
-  de context en de fase-strip erboven, daaronder tabs (Discussie standaard).
-  Zonder JavaScript staat alles onder elkaar in beeld.
+  de kop en de fase-indicator erboven, daaronder tabs (Discussie standaard).
+  Onder de titel de toelichting om uit te klappen (bij het eerste bezoek
+  open) en de knop Volgen. Elk paneel kan vergroot worden tot een grote
+  weergave onder de fase-indicator. Zonder JavaScript staat alles onder
+  elkaar in beeld.
 #}
 {% block content_outer %}{% block content %}
 {% from 'issues/_crumbs.html' import crumbs with context %}
@@ -19,7 +22,26 @@
     <header class="gu-cockpit__head">
       <p class="gu-eyebrow">{% include 'issues/_kind.html' %}
         {% if issue.is_closed %}<span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}</p>
-      <h1 class="gu-forum__title">{{ issue.title }}</h1>
+      <div class="gu-cockpit__titlerow">
+        <h1 class="gu-forum__title" lang="{{ issue.lang or lang }}">{{ issue.title }}</h1>
+        {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('issues.follow', issue_id=issue.id) }}" class="gu-cockpit__followform">
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          <button type="submit" class="gu-btn gu-btn--sm {{ 'gu-btn--primary' if following else 'gu-btn--ghost' }} gu-cockpit__follow"
+                  aria-pressed="{{ 'true' if following else 'false' }}" data-follow-url="{{ url_for('issues.follow', issue_id=issue.id) }}"
+                  data-label-on="{{ _('Following') }}" data-label-off="{{ _('Follow') }}"
+                  title="{{ _('Followers get the updates of this issue in their daily summary.') }}">{{ _('Following') if following else _('Follow') }}</button>
+        </form>
+        {% endif %}
+      </div>
+      <details class="gu-cockpit__about" id="toelichting" data-issue="{{ issue.id }}" open>
+        <summary>{{ _('Read the introduction') }}</summary>
+        {% if issue.intro %}
+        <div class="gu-cockpit__intro" lang="{{ issue.lang or lang }}">{{ issue.intro | linkify }}</div>
+        {% else %}
+        <p class="gu-composer__hint">{{ _('No introduction yet.') }}</p>
+        {% endif %}
+      </details>
       <section class="gu-cockpit__phase" aria-labelledby="issuePhase">
         <h2 id="issuePhase" class="gu-sr-only">{{ _('Phase') }}: {{ phase_labels.get(issue.phase, issue.phase) }}</h2>
         {% include 'issues/_steps.html' %}
@@ -30,16 +52,12 @@
       {% include 'issues/_lifecycle.html' %}
     </header>
 
+    <div class="gu-cockpit__expandbar" hidden>
+      <button type="button" class="gu-btn gu-btn--ghost gu-btn--sm" data-collapse>{{ _('Back to the cockpit') }}</button>
+    </div>
+
     <div class="gu-cockpit__grid">
 
-      <section class="gu-cockpit__panel gu-cockpit__about" aria-labelledby="aboutTitle">
-        <h2 class="gu-cockpit__title" id="aboutTitle">{{ _('What this is about') }}</h2>
-        {% if issue.intro %}
-        <div class="gu-cockpit__intro" lang="{{ issue.lang or lang }}">{{ issue.intro | linkify }}</div>
-        {% else %}
-        <p class="gu-composer__hint">{{ _('No introduction yet.') }}</p>
-        {% endif %}
-      </section>
 
       <div class="gu-cockpit__tabs" role="tablist" aria-label="{{ _('Issue') }}" hidden>
         <button type="button" role="tab" class="gu-cockpit__tab" id="tab-discussion" aria-controls="panel-discussion" data-tab="discussion" aria-selected="true">{{ _('Discussion') }}</button>
@@ -48,12 +66,16 @@
       </div>
 
       <section class="gu-cockpit__panel gu-cockpit__facts" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
-        <h2 class="gu-cockpit__title" id="factsTitle">{{ _('Facts and background') }}{% if fact_total %} <span class="gu-facts__count">({{ fact_total }})</span>{% endif %}</h2>
+        <div class="gu-cockpit__panelhead">
+          <h2 class="gu-cockpit__title" id="factsTitle">{{ _('Facts and background') }}{% if fact_total %} <span class="gu-facts__count">({{ fact_total }})</span>{% endif %}</h2>
+          {% if can_add_fact %}<a href="{{ url_for('issues.facts', issue_id=issue.id) }}#toevoegen" class="gu-iconbtn" title="{{ _('Add a fact') }}" aria-label="{{ _('Add a fact') }}"><span aria-hidden="true">+</span></a>{% endif %}
+          <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="facts" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Facts and background') }}" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+        </div>
         {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
         {% if top_facts %}
         <ol class="gu-cockpit__factlist">
           {% for fact in top_facts %}
-          <li class="gu-fact gu-fact--{{ fact.fact_direction }}">
+          <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if loop.index > facts_shown %} gu-cockpit__extra{% endif %}">
             <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
             <div class="gu-fact__main">
               {% include 'issues/_fact_badges.html' %}
@@ -78,7 +100,10 @@
       </section>
 
       <section class="gu-cockpit__panel gu-cockpit__discussion" id="panel-discussion" data-panel="discussion" role="tabpanel" aria-labelledby="discussionTitle">
-        <h2 class="gu-cockpit__title" id="discussionTitle">{{ _('Discussion') }}</h2>
+        <div class="gu-cockpit__panelhead">
+          <h2 class="gu-cockpit__title" id="discussionTitle">{{ _('Discussion') }}</h2>
+          <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="discussion" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Discussion') }}" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+        </div>
         {% if has_discussion %}
           {% include 'forum/_discussion.html' %}
         {% else %}
@@ -87,14 +112,18 @@
       </section>
 
       <section class="gu-cockpit__panel gu-cockpit__proposals" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
-        <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}{% if proposal_total %} <span class="gu-facts__count">({{ proposal_total }})</span>{% endif %}</h2>
+        <div class="gu-cockpit__panelhead">
+          <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}{% if proposal_total %} <span class="gu-facts__count">({{ proposal_total }})</span>{% endif %}</h2>
+          {% if can_propose %}<a href="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" class="gu-iconbtn" title="{{ _('New proposal') }}" aria-label="{{ _('New proposal') }}"><span aria-hidden="true">+</span></a>{% endif %}
+          <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="proposals" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Proposals') }}" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+        </div>
         {# Stap 6: het samenvattende voorstel bovenaan. #}
         {% include 'issues/_ip_final.html' %}
         {# Stap 4: de voorstellen onder dit vraagstuk, stemlijst eerst, met hun status. #}
         {% if proposal_rows %}
         <ul class="gu-cockpit__proposallist">
           {% for proposal, count in proposal_rows %}
-          <li class="gu-cockpit__proposal">
+          <li class="gu-cockpit__proposal{% if loop.index > proposals_shown %} gu-cockpit__extra{% endif %}">
             <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</a>
             {% include 'issues/_ip_status.html' %}
           </li>
@@ -119,9 +148,6 @@
         <p class="gu-composer__hint">{{ _('No proposals yet.') }}</p>
         {% endif %}
         <a class="gu-cockpit__more" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('All proposals') }} <span class="gu-arrow" aria-hidden="true"></span></a>
-        {% if can_propose %}
-        <a href="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" class="gu-btn gu-btn--ghost gu-cockpit__newproposal">+ {{ _('Make a new proposal') }}</a>
-        {% endif %}
       </section>
 
       <section class="gu-cockpit__panel gu-cockpit__rights" data-panel="proposals" aria-labelledby="rightsTitle">
@@ -176,6 +202,56 @@
     });
     tablist.hidden = false;
     root.classList.add('gu-cockpit--tabs');
+    // Polijstronde P3: de toelichting staat bij het eerste bezoek open,
+    // daarna dicht (per browser onthouden).
+    var about = document.getElementById('toelichting');
+    if (about) {
+      var seenKey = 'guf-issue-intro-seen-' + about.dataset.issue;
+      try {
+        if (localStorage.getItem(seenKey)) about.open = false;
+        else localStorage.setItem(seenKey, '1');
+      } catch (e) {}
+    }
+    // Volgen zonder herladen.
+    var followBtn = root.querySelector('.gu-cockpit__follow');
+    if (followBtn) {
+      followBtn.form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        fetch(followBtn.dataset.followUrl, {method: 'POST', body: new FormData(followBtn.form),
+                                            headers: {'X-Requested-With': 'XMLHttpRequest'}})
+          .then(function (r) { return r.ok ? r.json() : Promise.reject(r); })
+          .then(function (data) {
+            followBtn.setAttribute('aria-pressed', data.following ? 'true' : 'false');
+            followBtn.textContent = data.following ? followBtn.dataset.labelOn : followBtn.dataset.labelOff;
+            followBtn.classList.toggle('gu-btn--primary', data.following);
+            followBtn.classList.toggle('gu-btn--ghost', !data.following);
+          })
+          .catch(function () { followBtn.form.submit(); });
+      });
+    }
+    // Vergroten: één paneel groot onder de fase-indicator, de rest weg.
+    var bar = root.querySelector('.gu-cockpit__expandbar');
+    function collapse() {
+      root.classList.remove('gu-cockpit--expanded');
+      root.querySelectorAll('[data-panel].is-expanded').forEach(function (p) { p.classList.remove('is-expanded'); });
+      bar.hidden = true;
+    }
+    root.querySelectorAll('[data-expand]').forEach(function (btn) {
+      btn.hidden = false;
+      btn.addEventListener('click', function () {
+        var name = btn.dataset.expand;
+        collapse();
+        root.classList.add('gu-cockpit--expanded');
+        root.querySelectorAll('[data-panel="' + name + '"]').forEach(function (p) { p.classList.add('is-expanded'); });
+        bar.hidden = false;
+        show(name);
+        bar.querySelector('[data-collapse]').focus();
+      });
+    });
+    bar.querySelector('[data-collapse]').addEventListener('click', collapse);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && root.classList.contains('gu-cockpit--expanded')) collapse();
+    });
     // Een link naar een bericht of feit opent de tab waar het staat.
     var target = location.hash && document.getElementById(location.hash.slice(1));
     var panel = target && target.closest('[data-panel]');

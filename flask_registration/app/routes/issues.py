@@ -17,8 +17,10 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
 /vraagstuk/<id>/volgende-fase, /vervolg, /heropenen
                      de levenscyclus met de hand (stap 7): een fase verder,
                      de vervolgtekst, opnieuw openstellen
+/vraagstuk/<id>/volgen
+                     volgen aan of uit (polijstronde P3)
 """
-from flask import Blueprint, abort, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_babel import gettext
 from flask_login import current_user, login_required
 
@@ -98,9 +100,9 @@ def show(issue_id):
                if f.id not in discussion['hidden_ids'] and f.id not in discussion['moved_ids']]
     top = fact_signals.listing(visible, order='kwaliteit')  # kwaliteit eerst: merk, dan een link als bron
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
-                           top_facts=top[:FACTS_SHOWN], fact_total=len(visible),
+                           top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
-                           proposal_rows=ip.listing(issue, order='stemlijst')[:COCKPIT_PROPOSALS],
+                           proposal_rows=ip.listing(issue, order='stemlijst'), proposals_shown=COCKPIT_PROPOSALS,
                            proposal_total=ip.regular_query(issue).count(),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
@@ -108,6 +110,8 @@ def show(issue_id):
                            can_reopen=lifecycle.can_reopen(issue, current_user),
                            can_edit_followup=lifecycle.can_edit_followup(issue, current_user),
                            silence_end=lifecycle.silence_end(issue) if issue.kind == 'online' else None,
+                           following=lifecycle.is_following(issue, current_user),
+                           can_add_fact=_can_add_fact(issue),
                            return_to=issue.id, **discussion)
 
 
@@ -416,6 +420,23 @@ def final_new(issue_id):
     rows = ip.listing(issue, order='stemlijst')
     return render_template('issues/final_new.html', issue=issue, errors=errors,
                            form_data=data or {'title': issue.title, 'intro': issue.intro or ''}, rows=rows)
+
+
+# ── Polijstronde P3: een vraagstuk volgen ────────────────────────────────
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/volgen', methods=['POST'])
+@login_required
+@limiter.limit("30 per minute", key_func=lambda: f"issue-follow-user-{current_user.get_id()}")
+def follow(issue_id):
+    """Volgen aan of uit; volgers krijgen de meldingen in de dagelijkse
+    samenvatting. Met X-Requested-With JSON, anders terug naar de cockpit."""
+    issue = _issue_or_404(issue_id)
+    _require_csrf()
+    following = lifecycle.toggle_follow(issue, current_user)
+    db.session.commit()
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'following': following})
+    return redirect(url_for('issues.show', issue_id=issue.id))
 
 
 # ── Stap 7: de levenscyclus met de hand ──────────────────────────────────

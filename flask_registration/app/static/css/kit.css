@@ -3411,7 +3411,7 @@ body {
 .gu-cockpit__head .gu-forum__title { margin-bottom: 16px; }
 .gu-cockpit__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 .gu-cockpit__panel { min-width: 0; }
-.gu-cockpit__about, .gu-cockpit__facts, .gu-cockpit__proposals, .gu-cockpit__rights {
+.gu-cockpit__facts, .gu-cockpit__proposals, .gu-cockpit__rights {
   padding: 16px 18px; border: 1px solid var(--gu-border); border-radius: 12px; background: var(--gu-paper);
 }
 .gu-cockpit__title { margin: 0 0 12px; font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); }
@@ -3457,11 +3457,10 @@ body {
   .gu-cockpit__grid {
     grid-template-columns: 280px minmax(0, 1fr) 280px;
     grid-template-rows: auto 1fr;
-    grid-template-areas: "about discussion proposals" "facts discussion rights";
+    grid-template-areas: "facts discussion proposals" "facts discussion rights";
     align-items: start;
   }
   .gu-cockpit__tabs { display: none !important; }
-  .gu-cockpit__about { grid-area: about; }
   .gu-cockpit__facts { grid-area: facts; }
   .gu-cockpit__discussion { grid-area: discussion; }
   .gu-cockpit__proposals { grid-area: proposals; }
@@ -3652,4 +3651,49 @@ body {
 .gu-factmark__note { color: var(--gu-fg-3); font-size: 0.75rem; }
 @media (max-width: 640px) {
   .gu-factmark__tip { left: 0; transform: none; }
+}
+
+/* ── Polijstronde P3: cockpit (kop, toelichting, volgen, vergroten, +) ──── */
+.gu-cockpit__titlerow { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.gu-cockpit__titlerow .gu-forum__title { margin-bottom: 8px; flex: 1 1 20rem; min-width: 0; overflow-wrap: anywhere; }
+.gu-cockpit__followform { margin: 4px 0 0; }
+.gu-cockpit__about { margin: 0 0 16px; }
+.gu-cockpit__about > summary { cursor: pointer; font-size: 0.9375rem; font-weight: 600; color: var(--gu-globe-deep); width: max-content; max-width: 100%; }
+.gu-cockpit__about[open] > summary { margin-bottom: 8px; }
+.gu-cockpit__about .gu-cockpit__intro { max-width: 72ch; }
+.gu-cockpit__panelhead { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.gu-cockpit__panelhead .gu-cockpit__title { margin: 0; flex: 1; min-width: 0; }
+.gu-iconbtn {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 30px; height: 30px; border-radius: 8px; padding: 0;
+  border: 1px solid var(--gu-border); background: var(--gu-paper); color: var(--gu-fg-1);
+  font-size: 1.125rem; line-height: 1; text-decoration: none; cursor: pointer;
+}
+.gu-iconbtn:hover { background: var(--gu-bg-soft); color: var(--gu-globe-deep); }
+.gu-iconbtn:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
+.gu-iconbtn[hidden] { display: none; }
+.gu-cockpit__extra { display: none; }
+.gu-cockpit__expandbar { margin: -8px 0 16px; }
+.gu-cockpit__expandbar[hidden] { display: none; }
+.gu-cockpit--expanded .gu-cockpit__grid { display: block; }
+.gu-cockpit--expanded .gu-cockpit__tabs { display: none !important; }
+.gu-cockpit--expanded [data-panel]:not(.is-expanded) { display: none !important; }
+.gu-cockpit--expanded [data-panel].is-expanded { display: block; max-width: 960px; margin: 0 auto 20px; }
+.gu-cockpit--expanded .gu-cockpit__extra { display: flex; }
+.gu-cockpit--expanded .gu-cockpit__expand { display: none; }
+/* De fase-indicator: per fase een icoon. */
+.gu-phasebar { grid-template-columns: repeat(var(--steps, 4), minmax(0, 1fr)); }
+.gu-phasebar__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  color: var(--gu-fg-3); background: var(--gu-paper); border: 1.5px solid var(--gu-border);
+}
+.gu-phasebar__step.is-done .gu-phasebar__icon { color: #fff; background: var(--gu-globe-deep); border-color: var(--gu-globe-deep); }
+.gu-phasebar__step.is-current .gu-phasebar__icon { color: #fff; background: var(--gu-globe); border-color: var(--gu-globe); }
+@media (max-width: 1023px) {
+  .gu-cockpit .gu-phasebar { grid-template-columns: repeat(var(--steps, 4), minmax(0, 1fr)); }
+  .gu-phasebar__icon { width: 26px; height: 26px; }
+}
+@media (max-width: 480px) {
+  .gu-cockpit .gu-phasebar__step:not(.is-current) .gu-proposal-steps__title { font-size: 0.6875rem; }
 }

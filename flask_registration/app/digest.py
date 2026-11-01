@@ -182,7 +182,7 @@ def build(user, now=None, issue_participants=None):
     # Stap 7: de vraagstukken waarbij deze gebruiker betrokken is.
     from app import issue_lifecycle
     if issue_participants is None:
-        issue_participants = {i: issue_lifecycle.participants(i) for i in issue_lifecycle.notifiable_issues()}
+        issue_participants = {i: issue_lifecycle.recipients(i) for i in issue_lifecycle.notifiable_issues()}
     for issue, people in issue_participants.items():
         if user.id not in people:
             continue
@@ -265,7 +265,7 @@ def run_daily(now=None):
                                    .filter(ProposalFollow.active.is_(True), _public_filter())
                                    .distinct())}
     # Stap 7: de betrokkenen bij vraagstukken, één keer berekend voor iedereen.
-    issue_participants = {i: issue_lifecycle.participants(i) for i in issue_lifecycle.notifiable_issues()}
+    issue_participants = {i: issue_lifecycle.recipients(i) for i in issue_lifecycle.notifiable_issues()}
     for people in issue_participants.values():
         user_ids |= people
     sent = 0

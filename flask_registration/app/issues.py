@@ -141,6 +141,8 @@ def delete_wrappers(issue_ids):
     still_used |= {i for (i,) in db.session.query(IssueProposal.issue_id).filter(IssueProposal.issue_id.in_(issue_ids))}
     empty = issue_ids - still_used
     if empty:
+        from app import issue_lifecycle
+        issue_lifecycle.delete_follows(issue_ids=empty)  # polijstronde P3
         Issue.query.filter(Issue.id.in_(empty)).delete(synchronize_session=False)
 
 

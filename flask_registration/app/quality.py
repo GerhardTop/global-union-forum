@@ -346,6 +346,8 @@ def detach_user(user_id):
     facts.detach_user(user_id)
     from app import issue_proposals
     issue_proposals.detach_user(user_id)
+    from app import issue_lifecycle
+    issue_lifecycle.delete_follows(user_id=user_id)  # polijstronde P3: gevolgde vraagstukken
     # Stemmen zijn persoonlijk; een vastgelegde uitslag houdt zijn aantallen.
     from app.models import ProposalVote
     ProposalVote.query.filter_by(user_id=user_id).delete(synchronize_session='evaluate')
