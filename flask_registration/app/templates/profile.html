@@ -45,6 +45,26 @@
           </span>
         </span>
       </div>
+      {# Polijststap P7: de hele statusladder met je plek erop, en zonder stemrecht de voortgang ernaartoe. #}
+      <div class="gu-statusladder" aria-label="{% if lang == 'nl' %}Statusladder{% else %}Status ladder{% endif %}">
+        <ol class="gu-statusladder__steps">
+          {% for key in ['reader', 'contributor', 'voter', 'moderator', 'senior'] %}
+          {% set reached = loop.index0 <= ['reader', 'contributor', 'voter', 'moderator', 'senior'].index(st) %}
+          <li class="gu-statusladder__step{% if key == st %} is-current{% elif reached %} is-done{% endif %}"{% if key == st %} aria-current="step"{% endif %}>
+            <span class="gu-statusladder__dot" aria-hidden="true"></span>
+            <span class="gu-statusladder__label">{{ status_labels[key][lang] }}</span>
+          </li>
+          {% endfor %}
+        </ol>
+        {% if current_user.can_vote() %}
+        <p class="gu-statusladder__note">{% if lang == 'nl' %}Je hebt stemrecht.{% else %}You have the right to vote.{% endif %}</p>
+        {% else %}
+        {% set needed = thresholds.voter_min %}
+        <p class="gu-statusladder__note">{% if lang == 'nl' %}Op weg naar stemrecht: {{ quality_count }} van {{ needed }} kwaliteitsbijdragen.{% else %}On the way to the right to vote: {{ quality_count }} of {{ needed }} quality contributions.{% endif %}</p>
+        <div class="gu-cockpit__progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ needed }}" aria-valuenow="{{ [quality_count, needed] | min }}"
+             aria-label="{% if lang == 'nl' %}Voortgang naar stemrecht{% else %}Progress to the right to vote{% endif %}"><span style="width: {{ (100 * ([quality_count, needed] | min) / needed) | round | int if needed else 100 }}%"></span></div>
+        {% endif %}
+      </div>
     </div>
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">

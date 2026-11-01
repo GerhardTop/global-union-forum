@@ -25,7 +25,7 @@
                 data-node="{{ post.id }}"
                 data-label-collapse="{% if lang == 'nl' %}Tak inklappen ({{ n_label }}){% else %}Collapse branch ({{ n_label }}){% endif %}"
                 data-label-expand="{% if lang == 'nl' %}Tak uitklappen ({{ n_label }}){% else %}Expand branch ({{ n_label }}){% endif %}"
-                aria-label="{% if lang == 'nl' %}Tak inklappen ({{ n_label }}){% else %}Collapse branch ({{ n_label }}){% endif %}"><span aria-hidden="true">−</span></button>
+                aria-label="{% if lang == 'nl' %}Tak inklappen ({{ n_label }}){% else %}Collapse branch ({{ n_label }}){% endif %}"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
         <p class="gu-node__collapsed" id="collapsed-{{ post.id }}" data-count="{{ nvis }}" hidden>{% if lang == 'nl' %}{{ n_label }} verborgen{% else %}{{ n_label }} hidden{% endif %}</p>
         <button type="button" class="gu-node__line" data-node="{{ post.id }}" tabindex="-1" aria-hidden="true"></button>
         {% endif %}

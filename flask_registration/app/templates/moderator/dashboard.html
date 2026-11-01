@@ -126,6 +126,43 @@
       {% endif %}
     </section>
 
+    {# Polijststap P7: de fasen van vraagstukken; in de cockpit ziet alleen de initiatiefnemer "Fasen beheren". #}
+    <section class="gu-admin__section" id="vraagstukken">
+      <p class="gu-eyebrow gu-eyebrow--section">{{ _('Issues: manage the phases') }} ({{ phase_issues|length }})</p>
+      {% if phase_issues %}
+      <ul class="gu-quality-queue">
+        {% for issue, next_key, can_step, can_reopen in phase_issues %}
+        <li class="gu-quality-queue__item gu-modissue">
+          <div>
+            <a href="{{ url_for('issues.show', issue_id=issue.id) }}" class="gu-admin-table__threadlink" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
+            · {{ _('Closed') if issue.is_closed else phase_labels_all.get(issue.phase, issue.phase) }}
+            · {{ _('Event') if issue.kind == 'event' else _('Online') }}
+          </div>
+          <div class="gu-modissue__actions">
+            {% if can_step and next_key %}
+            <form method="POST" action="{{ url_for('issues.next_phase', issue_id=issue.id) }}" class="gu-quality-mod__form">
+              {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+              <input type="hidden" name="next" value="{{ url_for('admin.moderator_dashboard') }}#vraagstukken">
+              <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('To the next phase') }}: {{ phase_labels_all.get(next_key, next_key) }}</button>
+            </form>
+            {% endif %}
+            {% if can_reopen %}
+            <form method="POST" action="{{ url_for('issues.reopen', issue_id=issue.id) }}" class="gu-quality-mod__form">
+              {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+              <input type="hidden" name="next" value="{{ url_for('admin.moderator_dashboard') }}#vraagstukken">
+              <label class="gu-join__check"><input type="checkbox" name="confirm" value="1" required> <span>{{ _('Yes, reopen this issue for discussion') }}</span></label>
+              <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Reopen') }}</button>
+            </form>
+            {% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="gu-admin__empty">{{ _('No issues.') }}</p>
+      {% endif %}
+    </section>
+
     <section class="gu-admin__section" id="betwist">
       <p class="gu-eyebrow gu-eyebrow--section">{{ _('Disputed facts') }} ({{ fact_disputes|length }})</p>
       <p class="gu-quality__meta">{{ _('The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled.') }}</p>

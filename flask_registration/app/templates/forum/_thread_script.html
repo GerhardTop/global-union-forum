@@ -45,7 +45,6 @@
       if (note) note.hidden = !expanded;
       button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
       button.setAttribute('aria-label', expanded ? button.dataset.labelExpand : button.dataset.labelCollapse);
-      button.querySelector('span').textContent = expanded ? '+' : '−';
       button.closest('.gu-node').classList.toggle('is-collapsed', expanded);
     }
     document.querySelectorAll('.gu-node__toggle, .gu-node__line').forEach(function (el) {

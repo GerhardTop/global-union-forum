@@ -12,30 +12,29 @@
   elkaar in beeld.
 #}
 {% block content_outer %}{% block content %}
-{% from 'issues/_crumbs.html' import crumbs with context %}
 {% if has_discussion %}<template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>{% endif %}
 <main class="gu-forum gu-cockpit" lang="{{ lang }}" id="cockpit">
   <div class="gu-cockpit__inner">
 
-    {{ crumbs(issue) }}
-
+    {# P7: geen kruimelpad en geen detailregel; terug via het menu "Denk mee". #}
     <header class="gu-cockpit__head">
-      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}
-        {% if issue.is_closed %}<span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}</p>
       <div class="gu-cockpit__titlerow">
-        <h1 class="gu-forum__title" lang="{{ issue.lang or lang }}">{{ issue.title }}</h1>
+        <h1 class="gu-forum__title" lang="{{ issue.lang or lang }}">{{ issue.title }}{% if issue.is_closed %} <span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}</h1>
         {% if current_user.is_authenticated %}
         <form method="POST" action="{{ url_for('issues.follow', issue_id=issue.id) }}" class="gu-cockpit__followform">
           {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
           <button type="submit" class="gu-btn gu-btn--sm {{ 'gu-btn--primary' if following else 'gu-btn--ghost' }} gu-cockpit__follow"
                   aria-pressed="{{ 'true' if following else 'false' }}" data-follow-url="{{ url_for('issues.follow', issue_id=issue.id) }}"
                   data-label-on="{{ _('Following') }}" data-label-off="{{ _('Follow') }}"
-                  title="{{ _('Followers get the updates of this issue in their daily summary.') }}">{{ _('Following') if following else _('Follow') }}</button>
+                  title="{{ _('Followers get the updates of this issue in their daily summary.') }}"><svg class="gu-cockpit__bell" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="gu-cockpit__followlabel">{{ _('Following') if following else _('Follow') }}</span></button>
         </form>
         {% endif %}
       </div>
-      <details class="gu-cockpit__about" id="toelichting" data-issue="{{ issue.id }}" open>
-        <summary>{{ _('Read the introduction') }}</summary>
+      {# P7: alleen een klein pijltje vóór de tekst om in en uit te klappen (zonder JavaScript staat alles open). #}
+      <div class="gu-cockpit__about" id="toelichting" data-issue="{{ issue.id }}">
+        <button type="button" class="gu-disclosure gu-cockpit__abouttoggle" aria-expanded="true" aria-controls="aboutBody"
+                title="{{ _('Show or hide the introduction') }}" aria-label="{{ _('Show or hide the introduction') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="gu-cockpit__aboutbody" id="aboutBody">
         {% if issue.intro %}
         <div class="gu-cockpit__intro" lang="{{ issue.lang or lang }}">{{ issue.intro | linkify }}</div>
         {% else %}
@@ -55,23 +54,17 @@
           {% endif %}
         </div>
         {% endif %}
-      </details>
+        </div>
+      </div>
       <section class="gu-cockpit__phase" aria-labelledby="issuePhase">
         <h2 id="issuePhase" class="gu-sr-only">{{ _('Phase') }}: {{ phase_labels.get(issue.phase, issue.phase) }}</h2>
         {% include 'issues/_steps.html' %}
         {% if not open_now and not issue.is_closed %}
         <p class="gu-cockpit__closednote">{% if issue.kind == 'online' and issue.starts_at %}{{ _('The platform opens for contributions on %(date)s.', date=issue.starts_at | local | datetimeformat('d MMM y HH:mm')) }}{% else %}{{ _('The platform is not open for contributions right now. See the days of the event in the introduction.') }}{% endif %}</p>
         {% endif %}
-        {% if silence_end and issue.phase == 'feiten' and not issue.is_closed and (not issue.phase_deadline or silence_end < issue.phase_deadline) %}
-        <p class="gu-composer__hint gu-cockpit__silence">{{ _('The facts phase closes earlier if no new quality mark is awarded before %(date)s.', date=silence_end | local | datetimeformat('d MMM y HH:mm')) }}</p>
-        {% endif %}
       </section>
       {% include 'issues/_lifecycle.html' %}
     </header>
-
-    <div class="gu-cockpit__expandbar" hidden>
-      <button type="button" class="gu-btn gu-btn--ghost gu-btn--sm" data-collapse>{{ _('Back to the cockpit') }}</button>
-    </div>
 
     <div class="gu-cockpit__grid">
 
@@ -86,11 +79,13 @@
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="factsTitle">{{ _('Facts and background') }}{% if fact_total %} <span class="gu-facts__count">({{ fact_total }})</span>{% endif %}</h2>
           {% if can_add_fact %}<a href="{{ url_for('issues.facts', issue_id=issue.id) }}#toevoegen" class="gu-iconbtn" title="{{ _('Add a fact') }}" aria-label="{{ _('Add a fact') }}"><span aria-hidden="true">+</span></a>{% endif %}
-          <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="facts" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Facts and background') }}" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+          <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="facts" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Facts and background') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+          <button type="button" class="gu-iconbtn gu-cockpit__shrink" data-collapse title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ _('Facts and background') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button>
         </div>
+        <div class="gu-cockpit__box">
         {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
         {% if top_facts %}
-        <ol class="gu-cockpit__factlist">
+        <ol class="gu-cockpit__factlist" data-more-list data-step="{{ facts_shown }}">
           {% for fact in top_facts %}
           <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if loop.index > facts_shown %} gu-cockpit__extra{% endif %}">
             <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
@@ -110,16 +105,21 @@
         {% else %}
         <p class="gu-composer__hint">{{ _('No facts yet.') }}</p>
         {% endif %}
-        {# Stap 3: de bovenste drie volgens kwaliteit eerst; alles op de feitenpagina. #}
-        {% if has_discussion %}
-        <a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts, research and media') }} <span class="gu-arrow" aria-hidden="true"></span></a>
+        {# P7: de bovenste volgens kwaliteit eerst; de rest met "toon meer" (alleen als er meer is). #}
+        {% if top_facts | length > facts_shown %}
+        <button type="button" class="gu-disclosure gu-showmore" data-more title="{{ _('Show more') }}" aria-label="{{ _('Show more') }}: {{ _('Facts and background') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
+        <noscript><a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('Show more') }}</a></noscript>
         {% endif %}
+        {# In de grote weergave: de volledige pagina met filters, sorteren en betwisten. #}
+        {% if has_discussion %}<a class="gu-cockpit__fullpage" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('Facts page with filters and sorting') }}</a>{% endif %}
+        </div>
       </section>
 
       <section class="gu-cockpit__panel gu-cockpit__discussion" id="panel-discussion" data-panel="discussion" role="tabpanel" aria-labelledby="discussionTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="discussionTitle">{{ _('Discussion') }}</h2>
-          <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="discussion" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Discussion') }}" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+          <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="discussion" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Discussion') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+          <button type="button" class="gu-iconbtn gu-cockpit__shrink" data-collapse title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ _('Discussion') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button>
         </div>
         {% if has_discussion %}
           {% include 'forum/_discussion.html' %}
@@ -132,13 +132,15 @@
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}{% if proposal_total %} <span class="gu-facts__count">({{ proposal_total }})</span>{% endif %}</h2>
           {% if can_propose %}<a href="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" class="gu-iconbtn" title="{{ _('New proposal') }}" aria-label="{{ _('New proposal') }}"><span aria-hidden="true">+</span></a>{% endif %}
-          <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="proposals" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Proposals') }}" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+          <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="proposals" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Proposals') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+          <button type="button" class="gu-iconbtn gu-cockpit__shrink" data-collapse title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ _('Proposals') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button>
         </div>
+        <div class="gu-cockpit__box">
         {# Stap 6: het samenvattende voorstel bovenaan. #}
         {% include 'issues/_ip_final.html' %}
         {# Stap 4: de voorstellen onder dit vraagstuk, stemlijst eerst, met hun status. #}
         {% if proposal_rows %}
-        <ul class="gu-cockpit__proposallist">
+        <ul class="gu-cockpit__proposallist" data-more-list data-step="{{ proposals_shown }}">
           {% for proposal, count in proposal_rows %}
           <li class="gu-cockpit__proposal{% if loop.index > proposals_shown %} gu-cockpit__extra{% endif %}">
             <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</a>
@@ -164,11 +166,19 @@
         {% if not proposal_rows and not issue.proposals %}
         <p class="gu-composer__hint">{{ _('No proposals yet.') }}</p>
         {% endif %}
-        <a class="gu-cockpit__more" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('All proposals') }} <span class="gu-arrow" aria-hidden="true"></span></a>
+        {% if proposal_rows | length > proposals_shown %}
+        <button type="button" class="gu-disclosure gu-showmore" data-more title="{{ _('Show more') }}" aria-label="{{ _('Show more') }}: {{ _('Proposals') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
+        <noscript><a class="gu-cockpit__more" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Show more') }}</a></noscript>
+        {% endif %}
+        <a class="gu-cockpit__fullpage" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals page with filters and sorting') }}</a>
+        </div>
       </section>
 
+      {# P7: alleen voor wie nog geen stemrecht heeft. #}
+      {% if not (voting_right and voting_right.can_vote) %}
       <section class="gu-cockpit__panel gu-cockpit__rights" data-panel="proposals" aria-labelledby="rightsTitle">
-        <h2 class="gu-cockpit__title" id="rightsTitle">{{ _('Your right to vote') }}</h2>
+        <div class="gu-cockpit__panelhead"><h2 class="gu-cockpit__title" id="rightsTitle">{{ _('Your right to vote') }}</h2></div>
+        <div class="gu-cockpit__box">
         {% if voting_right %}
         <p><span class="gu-status-badge gu-status-badge--{{ voting_right.status }}">{{ status_labels[voting_right.status][lang] }}</span></p>
         {% if voting_right.can_vote %}
@@ -182,7 +192,9 @@
         {% else %}
         <p class="gu-composer__hint"><a href="{{ url_for('auth.login') }}">{{ _('Log in') }}</a> {{ _('to see your right to vote.') }}</p>
         {% endif %}
+        </div>
       </section>
+      {% endif %}
 
     </div>
   </div>
@@ -219,15 +231,23 @@
     });
     tablist.hidden = false;
     root.classList.add('gu-cockpit--tabs');
-    // Polijstronde P3: de toelichting staat bij het eerste bezoek open,
-    // daarna dicht (per browser onthouden).
+    // De toelichting: bij het eerste bezoek open, daarna ingeklapt tot één
+    // regel (per browser onthouden). Het pijltje vóór de tekst klapt in en uit.
     var about = document.getElementById('toelichting');
     if (about) {
+      var aboutToggle = about.querySelector('.gu-cockpit__abouttoggle');
       var seenKey = 'guf-issue-intro-seen-' + about.dataset.issue;
-      try {
-        if (localStorage.getItem(seenKey)) about.open = false;
-        else localStorage.setItem(seenKey, '1');
-      } catch (e) {}
+      function setAbout(open) {
+        about.classList.toggle('is-collapsed', !open);
+        aboutToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      aboutToggle.hidden = false;
+      var seen = false;
+      try { seen = !!localStorage.getItem(seenKey); localStorage.setItem(seenKey, '1'); } catch (e) {}
+      setAbout(!seen);
+      aboutToggle.addEventListener('click', function () {
+        setAbout(aboutToggle.getAttribute('aria-expanded') !== 'true');
+      });
     }
     // Volgen zonder herladen.
     var followBtn = root.querySelector('.gu-cockpit__follow');
@@ -239,33 +259,61 @@
           .then(function (r) { return r.ok ? r.json() : Promise.reject(r); })
           .then(function (data) {
             followBtn.setAttribute('aria-pressed', data.following ? 'true' : 'false');
-            followBtn.textContent = data.following ? followBtn.dataset.labelOn : followBtn.dataset.labelOff;
+            followBtn.querySelector('.gu-cockpit__followlabel').textContent =
+              data.following ? followBtn.dataset.labelOn : followBtn.dataset.labelOff;
             followBtn.classList.toggle('gu-btn--primary', data.following);
             followBtn.classList.toggle('gu-btn--ghost', !data.following);
           })
           .catch(function () { followBtn.form.submit(); });
       });
     }
-    // Vergroten: één paneel groot onder de fase-indicator, de rest weg.
-    var bar = root.querySelector('.gu-cockpit__expandbar');
+    // "Toon meer": in de kolom een handvol, in de grote weergave ongeveer 15;
+    // het pijltje laadt er steeds een stap bij en verdwijnt als er niets meer is.
+    var BIG = 15;
+    var lists = Array.prototype.slice.call(root.querySelectorAll('[data-more-list]'));
+    function showList(list, n) {
+      var items = list.children, more = list.parentNode.querySelector('[data-more]');
+      list.dataset.shown = n;
+      for (var i = 0; i < items.length; i++) items[i].hidden = i >= n;
+      if (more) more.hidden = n >= items.length;
+    }
+    function baseCount(list) {
+      return root.classList.contains('gu-cockpit--expanded') && list.closest('.is-expanded')
+        ? BIG : Number(list.dataset.step);
+    }
+    lists.forEach(function (list) {
+      Array.prototype.forEach.call(list.children, function (li) { li.classList.remove('gu-cockpit__extra'); });
+      showList(list, baseCount(list));
+      var more = list.parentNode.querySelector('[data-more]');
+      if (more) more.addEventListener('click', function () {
+        var step = list.closest('.is-expanded') ? BIG : 5;
+        showList(list, Number(list.dataset.shown) + step);
+      });
+    });
+    // Vergroten: één paneel groot onder de fase-indicator, de rest weg; het
+    // verklein-icoon naast de plus (of Escape) gaat terug.
+    function resetLists() { lists.forEach(function (list) { showList(list, baseCount(list)); }); }
     function collapse() {
+      var was = root.querySelector('[data-panel].is-expanded [data-expand]');
       root.classList.remove('gu-cockpit--expanded');
       root.querySelectorAll('[data-panel].is-expanded').forEach(function (p) { p.classList.remove('is-expanded'); });
-      bar.hidden = true;
+      resetLists();
+      if (was) was.focus();
     }
     root.querySelectorAll('[data-expand]').forEach(function (btn) {
       btn.hidden = false;
       btn.addEventListener('click', function () {
         var name = btn.dataset.expand;
-        collapse();
+        root.querySelectorAll('[data-panel].is-expanded').forEach(function (p) { p.classList.remove('is-expanded'); });
         root.classList.add('gu-cockpit--expanded');
         root.querySelectorAll('[data-panel="' + name + '"]').forEach(function (p) { p.classList.add('is-expanded'); });
-        bar.hidden = false;
         show(name);
-        bar.querySelector('[data-collapse]').focus();
+        resetLists();
+        var shrink = root.querySelector('[data-panel="' + name + '"] [data-collapse]');
+        if (shrink) shrink.focus();
       });
     });
-    bar.querySelector('[data-collapse]').addEventListener('click', collapse);
+    root.querySelectorAll('[data-collapse]').forEach(function (btn) { btn.addEventListener('click', collapse); });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && root.classList.contains('gu-cockpit--expanded')) collapse();
     });

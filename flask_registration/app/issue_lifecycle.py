@@ -181,6 +181,18 @@ def _is_host(issue, user):
     return getattr(user, 'is_authenticated', False) and (issue.created_by_id == user.id or user.can_moderate())
 
 
+def is_initiator(issue, user):
+    """Polijststap P7: "Fasen beheren" in de cockpit is alleen voor de
+    initiatiefnemer; moderators doen het via hun eigen weergave."""
+    return getattr(user, 'is_authenticated', False) and issue.created_by_id == user.id
+
+
+def manageable_issues():
+    """Voor de moderator-weergave: de vraagstukken met eigen fasen (geen
+    ingepakt oud voorstel), nieuwste eerst."""
+    return [i for i in Issue.query.order_by(Issue.created_at.desc(), Issue.id.desc()).all() if not is_wrapper(i)]
+
+
 def can_step(issue, user):
     return (_is_host(issue, user) and not is_wrapper(issue) and not issue.is_closed
             and next_phase(issue) is not None)

@@ -140,10 +140,11 @@ def show(issue_id):
                            proposal_total=ip.regular_query(issue).count(),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
-                           can_step=lifecycle.can_step(issue, current_user), next_phase=lifecycle.next_phase(issue),
-                           can_reopen=lifecycle.can_reopen(issue, current_user),
+                           # P7: "Fasen beheren" in de cockpit alleen voor de initiatiefnemer.
+                           can_step=lifecycle.can_step(issue, current_user) and lifecycle.is_initiator(issue, current_user),
+                           next_phase=lifecycle.next_phase(issue),
+                           can_reopen=lifecycle.can_reopen(issue, current_user) and lifecycle.is_initiator(issue, current_user),
                            can_edit_followup=lifecycle.can_edit_followup(issue, current_user),
-                           silence_end=lifecycle.silence_end(issue) if issue.kind == 'online' else None,
                            following=lifecycle.is_following(issue, current_user),
                            can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue),
                            return_to=issue.id, **discussion)
@@ -152,7 +153,7 @@ def show(issue_id):
 @issues_bp.route('/vraagstuk/<int:issue_id>/feiten')
 def facts(issue_id):
     """Alle feiten en onderzoek van een vraagstuk, met filter op richting,
-    sorteren en "toon meer" (steeds tien erbij, zonder JavaScript)."""
+    sorteren en "toon meer" (P7: eerst 15, dan steeds 15 erbij, zonder JavaScript)."""
     issue = db.session.get(Issue, issue_id)
     if issue is None:
         abort(404)
@@ -174,7 +175,7 @@ def facts(issue_id):
     shown = min(max(request.args.get('n', type=int) or fact_signals.PAGE_SIZE, fact_signals.PAGE_SIZE), 1000)
     listed = fact_signals.listing(visible, direction, order)
     ids = [f.id for f in listed]
-    is_mod = current_user.is_authenticated and current_user.can_moderate()
+    is_mod = conduct.mod_view(current_user)  # P7: niet als de moderator als deelnemer kijkt
     return render_template(
         'issues/facts.html', issue=issue, thread=thread, facts=listed[:shown], listed_count=len(listed),
         total=len(visible), shown=shown, direction=direction, order=order,
@@ -504,7 +505,7 @@ def next_phase(issue_id):
     lifecycle.step_forward(issue)
     db.session.commit()
     flash(gettext('The issue is now in the next phase.'), 'success')
-    return redirect(url_for('issues.show', issue_id=issue.id))
+    return redirect(safe_next(request.form.get('next'), url_for('issues.show', issue_id=issue.id)))
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/vervolg', methods=['POST'])
@@ -532,10 +533,12 @@ def reopen(issue_id):
     _require_csrf()
     if not lifecycle.can_reopen(issue, current_user):
         abort(403)
+    back = safe_next(request.form.get('next'), url_for('issues.show', issue_id=issue.id))
     if request.form.get('confirm') != '1':
         flash(gettext('Tick the box to confirm that you want to reopen the issue.'), 'error')
-        return redirect(url_for('issues.show', issue_id=issue.id) + '#beheer', code=303)
+        return redirect(back if request.form.get('next') else url_for('issues.show', issue_id=issue.id) + '#beheer',
+                        code=303)
     lifecycle.reopen(issue)
     db.session.commit()
     flash(gettext('The issue is open again for discussion.'), 'success')
-    return redirect(url_for('issues.show', issue_id=issue.id))
+    return redirect(back)

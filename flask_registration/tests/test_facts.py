@@ -188,12 +188,13 @@ def test_facts_page_filter_sort_and_more(app, db, make_user):
     assert order(sorteer='nuttig') == order()  # bestaat niet meer: valt terug op kwaliteit eerst
     assert order(richting='tegen') == ['Zonder link']
 
-    for i in range(10):
+    # Polijststap P7: eerst 15, dan in stappen van 15; het pijltje alleen als er meer is.
+    for i in range(15):
         _fact(db, issue, author, f'Extra feit {i:02d}', when=base - timedelta(hours=i + 1))
     page = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
-    assert page.count('class="gu-fact gu-fact--') == 10 and 'Toon meer (3)' in page
-    page = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}/feiten?n=20').get_data(as_text=True)
-    assert page.count('class="gu-fact gu-fact--') == 13 and 'Toon meer' not in page
+    assert page.count('class="gu-fact gu-fact--') == 15 and 'Toon meer (3)' in page and 'n=30' in page
+    page = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}/feiten?n=30').get_data(as_text=True)
+    assert page.count('class="gu-fact gu-fact--') == 18 and 'Toon meer' not in page
 
 
 def test_add_fact_from_facts_page_on_issue_without_proposal(app, db, make_user):

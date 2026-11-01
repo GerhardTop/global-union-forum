@@ -225,7 +225,7 @@ class TestAiVerdict:
 
         own = _part(_get(app, anna, f'/forum/{thread.id}').get_data(as_text=True), post)
         assert 'Jij bent gewoon dom.' in own and 'gu-post--removed' in own
-        assert 'Verplaatst naar de achtergrondpagina wegens de gedragsregel: Over het idee, niet de persoon.' in own
+        assert 'Verplaatst naar de achtergrondpagina' in own and 'Gedragsregel: Over het idee, niet de persoon.' in own
         assert case.explanation in own and 'Bezwaar maken tegen dit besluit' in own
 
         mod = _part(_get(app, make_user('moderator'), f'/forum/{thread.id}').get_data(as_text=True), post)
@@ -246,7 +246,7 @@ class TestAiVerdict:
         other = _get(app, make_user(), f'/forum/{thread.id}').get_data(as_text=True)
         assert f'id="post-{post.id}"' not in other and 'horloges' not in other
         own = _part(_get(app, anna, f'/forum/{thread.id}').get_data(as_text=True), post)
-        assert 'horloges' in own and 'Verborgen voor andere lezers als spam of misbruik.' in own
+        assert 'horloges' in own and 'Verborgen als spam of misbruik' in own
         assert 'horloges' not in _get(app, None, '/achtergrond').get_data(as_text=True)
 
     def test_hidden_post_with_visible_reply_gets_neutral_placeholder(self, app, db, make_user, thread, fake_ai):
@@ -275,7 +275,7 @@ class TestAiVerdict:
             assert 'Gemarkeerd voor een moderator' not in part and 'gu-post--removed' not in part
         mod = make_user('moderator')
         part = _part(_get(app, mod, f'/forum/{thread.id}').get_data(as_text=True), post)
-        assert 'Gemarkeerd voor een moderator: mogelijke overtreding van Bij het onderwerp.' in part
+        assert 'Gemarkeerd voor een moderator' in part and 'Mogelijke overtreding van de gedragsregel: Bij het onderwerp.' in part
         dash = _get(app, mod, '/moderator').get_data(as_text=True)
         assert 'Gedragsregels: twijfelgevallen (1)' in dash and 'Iets over het weer.' in dash
         assert 'Iets over het weer.' not in _get(app, None, '/achtergrond').get_data(as_text=True)

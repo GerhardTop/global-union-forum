@@ -3411,7 +3411,8 @@ body {
 .gu-cockpit__head .gu-forum__title { margin-bottom: 16px; }
 .gu-cockpit__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 .gu-cockpit__panel { min-width: 0; }
-.gu-cockpit__facts, .gu-cockpit__proposals, .gu-cockpit__rights {
+/* P7: de kop staat boven het kader, net als bij de discussie. */
+.gu-cockpit__box {
   padding: 16px 18px; border: 1px solid var(--gu-border); border-radius: 12px; background: var(--gu-paper);
 }
 .gu-cockpit__title { margin: 0 0 12px; font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); }
@@ -3673,13 +3674,10 @@ body {
 .gu-iconbtn:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
 .gu-iconbtn[hidden] { display: none; }
 .gu-cockpit__extra { display: none; }
-.gu-cockpit__expandbar { margin: -8px 0 16px; }
-.gu-cockpit__expandbar[hidden] { display: none; }
 .gu-cockpit--expanded .gu-cockpit__grid { display: block; }
 .gu-cockpit--expanded .gu-cockpit__tabs { display: none !important; }
 .gu-cockpit--expanded [data-panel]:not(.is-expanded) { display: none !important; }
 .gu-cockpit--expanded [data-panel].is-expanded { display: block; max-width: 960px; margin: 0 auto 20px; }
-.gu-cockpit--expanded .gu-cockpit__extra { display: flex; }
 .gu-cockpit--expanded .gu-cockpit__expand { display: none; }
 /* De fase-indicator: per fase een icoon. */
 .gu-phasebar { grid-template-columns: repeat(var(--steps, 4), minmax(0, 1fr)); }
@@ -3761,3 +3759,97 @@ body {
   .gu-cockpit .gu-phasebar__step { padding: 6px 5px; }
   .gu-cockpit .gu-phasebar__step .gu-proposal-steps__title { font-size: 0.6875rem; }
 }
+
+/* ── Polijststap P7: rustiger cockpit, één stijl voor in- en uitklappen ─── */
+.gu-cockpit__panelhead { min-height: 30px; }
+.gu-cockpit__head .gu-forum__closed-badge { vertical-align: middle; font-size: 0.75rem; }
+.gu-cockpit__follow { display: inline-flex; align-items: center; gap: 6px; }
+.gu-cockpit__bell { flex: none; }
+.gu-cockpit__follow[aria-pressed="true"] .gu-cockpit__bell path:first-child { fill: currentColor; }
+/* Het in- en uitklap-icoon: overal hetzelfde, licht grijs, binnen een klein kadertje. */
+.gu-disclosure {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 22px; height: 22px; padding: 0; border-radius: 6px;
+  border: 1px solid var(--gu-border); background: var(--gu-paper);
+  color: var(--gu-fg-3); cursor: pointer; line-height: 0;
+}
+.gu-disclosure:hover { color: var(--gu-fg-2); border-color: var(--gu-border-strong, var(--gu-border)); }
+.gu-disclosure:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
+.gu-disclosure[hidden] { display: none; }
+.gu-disclosure svg { transition: transform 0.15s; }
+.gu-disclosure[aria-expanded="false"] svg { transform: rotate(-90deg); }
+.gu-iconbtn { color: var(--gu-fg-2); }
+.gu-iconbtn svg { color: var(--gu-fg-3); }
+.gu-iconbtn:hover svg { color: var(--gu-globe-deep); }
+.gu-cockpit__shrink { display: none; }
+.gu-cockpit--expanded [data-panel].is-expanded .gu-cockpit__shrink { display: inline-flex; }
+/* "Toon meer": een pijltje naar beneden, gecentreerd onder de lijst. */
+.gu-showmore { display: flex; margin: 4px auto 0; }
+.gu-showmore[hidden] { display: none; }
+/* De toelichting: een klein pijltje vóór de tekst; ingeklapt één regel. */
+.gu-cockpit__about { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 16px; }
+.gu-cockpit__abouttoggle { margin-top: 2px; }
+.gu-cockpit__aboutbody { flex: 1; min-width: 0; }
+.gu-cockpit__about.is-collapsed .gu-cockpit__aboutbody > .gu-cockpit__intro {
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; white-space: normal;
+}
+.gu-cockpit__about.is-collapsed .gu-cockpit__aboutbody > :not(.gu-cockpit__intro) { display: none; }
+/* De takken in de discussie: hetzelfde icoon (een pijltje in een kadertje). */
+.gu-node__toggle {
+  width: 20px; height: 20px; border-radius: 6px; border-color: var(--gu-border);
+  color: var(--gu-fg-3); background: var(--gu-paper);
+}
+.gu-node__toggle:hover { color: var(--gu-fg-2); border-color: var(--gu-border-strong, var(--gu-border)); }
+.gu-node__toggle svg { transition: transform 0.15s; }
+.gu-node__toggle[aria-expanded="false"] svg { transform: rotate(-90deg); }
+/* Uitklapblokken in de cockpit (zoals "Fasen beheren"): hetzelfde pijltje. */
+.gu-cockpit__manage > summary, .gu-cockpit__followupedit > summary { list-style: none; display: inline-flex; align-items: center; gap: 8px; }
+.gu-cockpit__manage > summary::-webkit-details-marker, .gu-cockpit__followupedit > summary::-webkit-details-marker { display: none; }
+.gu-cockpit__manage > summary::before, .gu-cockpit__followupedit > summary::before {
+  content: ""; width: 20px; height: 20px; flex: none; border: 1px solid var(--gu-border); border-radius: 6px;
+  background: var(--gu-paper) no-repeat center / 12px
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239aa1ab' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  transform: rotate(-90deg); transition: transform 0.15s;
+}
+.gu-cockpit__manage[open] > summary::before, .gu-cockpit__followupedit[open] > summary::before { transform: none; }
+/* Moderator-aantekening: ingeklapt achter een klein icoon. */
+.gu-conduct--fold { padding: 0; border: 0; background: none; }
+.gu-conduct--fold > summary { list-style: none; display: inline-flex; }
+.gu-conduct--fold > summary::-webkit-details-marker { display: none; }
+.gu-conduct__toggle {
+  align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px;
+  border: 1px solid var(--gu-border); background: var(--gu-paper); color: var(--gu-fg-3); cursor: pointer;
+}
+.gu-conduct--fold.gu-conduct--twijfel > .gu-conduct__toggle { color: #b7791f; }
+.gu-conduct--fold.gu-conduct--verplaatst > .gu-conduct__toggle, .gu-conduct--fold.gu-conduct--verborgen > .gu-conduct__toggle { color: #c53030; }
+.gu-conduct--fold[open] { padding: 10px 12px; border: 1px solid var(--gu-border); border-radius: 8px; background: var(--gu-bg-soft); }
+.gu-conduct--fold[open] > summary { margin-bottom: 6px; }
+.gu-conduct__rule { font-weight: 700; }
+/* De schakelaar "Bekijk als deelnemer" in het menu. */
+.gu-header__dropdown-form { margin: 0; }
+.gu-header__switch { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px;
+  border: 0; background: none; cursor: pointer; font: inherit; text-align: left; }
+.gu-header__switch:hover { background: var(--gu-bg-soft); }
+.gu-switch { position: relative; flex: none; width: 30px; height: 18px; border-radius: 999px; background: var(--gu-border); transition: background 0.15s; }
+.gu-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 0.15s; }
+.gu-switch.is-on { background: var(--gu-globe); }
+.gu-switch.is-on::after { transform: translateX(12px); }
+.gu-modissue__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) {
+  .gu-disclosure svg, .gu-node__toggle svg, .gu-switch, .gu-switch::after { transition: none; }
+}
+.gu-factspage__tools { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
+.gu-factspage__more .gu-showmore { margin: 8px auto 0; }
+/* Polijststap P7: de statusladder in het profiel. */
+.gu-statusladder { margin: 16px 0 4px; }
+.gu-statusladder__steps { list-style: none; margin: 0 0 10px; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.gu-statusladder__step { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; font-size: 0.75rem; color: var(--gu-fg-3); min-width: 0; }
+.gu-statusladder__dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--gu-border); background: var(--gu-paper); }
+.gu-statusladder__step.is-done .gu-statusladder__dot { background: var(--gu-globe-deep); border-color: var(--gu-globe-deep); }
+.gu-statusladder__step.is-current .gu-statusladder__dot { background: var(--gu-globe); border-color: var(--gu-globe); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gu-globe) 25%, transparent); }
+.gu-statusladder__step.is-current .gu-statusladder__label { color: var(--gu-fg-1); font-weight: 700; }
+.gu-statusladder__label { overflow-wrap: anywhere; }
+.gu-statusladder__note { margin: 0 0 6px; font-size: 0.875rem; color: var(--gu-fg-2); }
+.gu-cockpit__fullpage { display: none; margin-top: 12px; font-size: 0.875rem; }
+.gu-cockpit--expanded [data-panel].is-expanded .gu-cockpit__fullpage { display: inline-block; }
+[data-more-list] > [hidden] { display: none !important; }

@@ -39,9 +39,13 @@
         </select>
         <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm" id="sortSubmit">{{ _('Apply') }}</button>
       </form>
-      {% if phase_open and current_user.is_authenticated and current_user.can_contribute() %}
-      <a href="#toevoegen" class="gu-btn gu-btn--primary gu-btn--sm gu-factspage__add">+ {{ _('Add a fact, research or media') }}</a>
-      {% endif %}
+      <div class="gu-factspage__tools">
+        {% if phase_open and current_user.is_authenticated and current_user.can_contribute() %}
+        <a href="#toevoegen" class="gu-btn gu-btn--primary gu-btn--sm gu-factspage__add">+ {{ _('Add a fact, research or media') }}</a>
+        {% endif %}
+        {# P7: een klein verklein-icoon terug naar de cockpit, zoals het vergroot-icoon daar. #}
+        <a href="{{ url_for('issues.show', issue_id=issue.id) }}#panel-facts" class="gu-iconbtn" title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ _('back to the cockpit') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></a>
+      </div>
     </div>
 
     <p class="gu-composer__hint">{{ _('Quality first: facts with the quality mark, then facts with a link as source. The mark checks the source, not how reliable it is.') }}</p>
@@ -63,9 +67,9 @@
           </p>
           {% include 'forum/_fact_signals.html' %}
           <div class="gu-conduct-slot" id="conduct-{{ fact.id }}">
-            {%- if c_removed or (case is not none and case.action == 'twijfel' and current_user.can_moderate()) %}{% with post=fact %}{% include 'forum/_conduct_notice.html' %}{% endwith %}{% endif -%}
+            {%- if c_removed or (case is not none and case.action == 'twijfel' and mod_view) %}{% with post=fact %}{% include 'forum/_conduct_notice.html' %}{% endwith %}{% endif -%}
           </div>
-          {% if current_user.can_moderate() and not is_own %}
+          {% if mod_view and not is_own %}
             {% with post=fact %}{% include 'forum/_conduct_mod.html' %}{% endwith %}
           {% endif %}
           {% if is_own and phase_open and not c_removed %}
@@ -94,7 +98,8 @@
     </ol>
     {% if listed_count > shown %}
     <p class="gu-factspage__more">
-      <a href="{{ url_for('issues.facts', issue_id=issue.id, richting=direction, sorteer=order, n=shown + 10) }}#post-{{ facts[-1].id }}" class="gu-btn gu-btn--ghost">{{ _('Show more') }} ({{ listed_count - shown }})</a>
+      <a href="{{ url_for('issues.facts', issue_id=issue.id, richting=direction, sorteer=order, n=shown + 15) }}#post-{{ facts[-1].id }}"
+         class="gu-disclosure gu-showmore" title="{{ _('Show more') }} ({{ listed_count - shown }})" aria-label="{{ _('Show more') }} ({{ listed_count - shown }})"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></a>
     </p>
     {% endif %}
     {% elif total %}

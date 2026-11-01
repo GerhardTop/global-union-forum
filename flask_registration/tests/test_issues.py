@@ -319,7 +319,7 @@ def test_cockpit_shows_context_facts_discussion_and_proposals(app, db, make_user
 
     body = _req(_client(app, other, 'nl'), 'GET', f'/vraagstuk/{proposal.issue_id}').get_data(as_text=True)
     assert 'Moet het plein groener?' in body
-    assert 'Lees de toelichting' in body and 'Het eerste bericht.' in body
+    assert 'Toelichting in- of uitklappen' in body and 'Het eerste bericht.' in body
     # Feiten links: de bovenste drie volgens kwaliteit eerst (alle vier met een
     # link als bron, geen kwaliteitsmerk: de nieuwste), met richting en bron,
     # en de link naar de feitenpagina (stap 3; P2: geen nuttig-teller meer).
@@ -328,7 +328,7 @@ def test_cockpit_shows_context_facts_discussion_and_proposals(app, db, make_user
     # P3: de vierde staat er alleen voor de grote weergave (verborgen in de kolom).
     assert 'gu-cockpit__extra' in body.split('Feit nummer 0')[0].rsplit('<li', 1)[1]
     assert 'Pleit voor' in body and 'Pleit tegen' in body and 'https://example.org/1' in body
-    assert f'/vraagstuk/{proposal.issue_id}/feiten' in body and 'Alle feiten, onderzoek en media' in body
+    assert f'/vraagstuk/{proposal.issue_id}/feiten' in body and 'Feitenpagina met filters en sorteren' in body
     assert 'Nuttig' not in body
     # Discussie in het midden: de bestaande boom met de reactie-invoer, zonder de feiten.
     discussion = body.split('id="panel-discussion"')[1].split('id="panel-proposals"')[0]
@@ -347,8 +347,8 @@ def test_cockpit_in_english(app, db, make_user):
     issues.backfill()
     db.session.refresh(proposal)
     body = _req(_client(app, user, 'en'), 'GET', f'/vraagstuk/{proposal.issue_id}').get_data(as_text=True)
-    for text in ('Read the introduction', 'Facts and background', 'Discussion', 'Your right to vote',
-                 'New proposal', 'voting closes'):
+    for text in ('Show or hide the introduction', 'Facts and background', 'Discussion', 'Your right to vote',
+                 'New proposal'):
         assert text in body
     assert 'hours left' in body  # feitenfase van één dag, net begonnen
 

@@ -27,6 +27,10 @@ def _inject_forum_action_form():
             'pending_promotion': lambda: status.pending_promotion(current_user),
             # Fase D: gedragsregels.
             'conduct_rule_label': conduct.rule_label,
+            'conduct_rule_short': conduct.rule_short,
+            # Polijststap P7: moderator-aantekeningen, tenzij "bekijk als deelnemer".
+            'mod_view': conduct.mod_view(current_user),
+            'participant_view': conduct.participant_view(),
             'conduct_can_decide': lambda case: conduct.can_decide_objection(case, current_user),
             # Fase E: statuslabel van een voorstel, host en bijstellen.
             'proposal_status': _proposal_status,
@@ -578,7 +582,9 @@ def forum_thread(thread_id):
                 else 'You cannot reply to your own post.',
                 'error'
             )
-            return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#post-{parent.id}')
+            # Polijststap P7: vanuit de cockpit terug naar de cockpit.
+            return redirect(_issue_post_url(request.form.get('return_to', type=int), thread, parent)
+                            or url_for('forum.forum_thread', thread_id=thread_id) + f'#post-{parent.id}')
         if parent_id is not None and parent is None:
             flash(
                 'Ongeldige reactie: het bericht waarop je reageert bestaat niet in dit gesprek.'
@@ -868,7 +874,7 @@ def _thread_context(thread, branch_root_id=None):
         fact_data=fact_data,
         fact_marks=fact_signals.marked_ids(fact_ids),  # polijstronde P2: het kwaliteitsmerk
         post_proposals=_post_proposals(all_posts),  # polijstronde P5: reacties bij een voorstel
-        fact_disputed=fact_signals.disputed_ids(fact_ids) if current_user.is_authenticated and current_user.can_moderate() else set(),
+        fact_disputed=fact_signals.disputed_ids(fact_ids) if conduct.mod_view(current_user) else set(),
         fact_my_disputed=fact_signals.my_disputed(fact_ids, current_user),
         conduct_cases=conduct_cases,
         moved_ids=moved_ids,
@@ -1715,6 +1721,17 @@ def _live_fact(post_id):
 
 def _fact_next(fact):
     return safe_next(request.form.get('next'), _fact_back(fact.thread, f'#post-{fact.id}'))
+
+
+@forum_bp.route('/weergave/deelnemer', methods=['POST'])
+@login_required
+def participant_view_toggle():
+    """Polijststap P7: een moderator zet "bekijk als deelnemer" aan of uit."""
+    if not current_user.can_moderate():
+        abort(403)
+    _require_csrf()
+    session[conduct.PARTICIPANT_VIEW_KEY] = not session.get(conduct.PARTICIPANT_VIEW_KEY)
+    return redirect(safe_next(request.form.get('next'), url_for('issues.index')))
 
 
 @forum_bp.route('/forum/feit/<int:post_id>/betwisten', methods=['POST'])

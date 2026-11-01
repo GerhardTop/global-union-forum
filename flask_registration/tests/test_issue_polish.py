@@ -18,6 +18,12 @@ Dekt per onderdeel:
   steunregel alleen bij een drempel van minstens 1), meerdere bijstellingen
   met de versie-tijdlijn, reacties gekoppeld aan een versie, het merk bij
   gekoppelde feiten en de fase-chip.
+- P7: de rustiger cockpit (geen kruimelpad of detailregel, de toelichting
+  met een pijltje, geen tekst over de vroege sluiting, volgen met een
+  belletje, "toon meer" alleen als er meer is), stemrecht alleen zonder
+  stemrecht, de statusladder in het profiel, "Fasen beheren" alleen voor de
+  initiatiefnemer (moderators via hun weergave), niet reageren op je eigen
+  bericht, "Bekijk als deelnemer" en de korte regelnaam bij een markering.
 - P6: de fase samenvatten tussen stemmen en vervolg (alleen met final_vote),
   de tik erdoorheen, de stemming over het samenvattende voorstel in die
   fase, de vervolgfase als nazorg en de migratie van een lopende stemming.
@@ -152,9 +158,8 @@ def test_breadcrumb_names_the_issue(app, db, make_user):
     issue = _issue(db, host, 'Wat doen we met het plein?')
     proposal = ip.create(issue, host, 'Bomen planten.')
     db.session.commit()
-    cockpit = _get(app, f'/vraagstuk/{issue.id}')
-    crumbs = cockpit.split('gu-forum__crumbs gu-issue-crumbs')[1].split('</nav>')[0]
-    assert '>Denk mee</a>' in crumbs and 'aria-current="page"' in crumbs and 'Wat doen we met het plein?' in crumbs
+    # P7: de cockpit zelf heeft geen kruimelpad meer; de onderliggende pagina's wel.
+    assert 'gu-issue-crumbs' not in _get(app, f'/vraagstuk/{issue.id}')
     for path in (f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen',
                  f'/vraagstuk/{issue.id}/voorstel/{proposal.id}'):
         crumbs = _get(app, path).split('gu-forum__crumbs gu-issue-crumbs')[1].split('</nav>')[0]
@@ -271,14 +276,14 @@ def test_cockpit_head_intro_phases_and_plus_buttons(app, db, make_user):
     host = make_user()
     issue = _issue(db, host, 'Hoe maken we de wijk groener?')
     body = _get(app, f'/vraagstuk/{issue.id}', host)
-    assert 'id="toelichting"' in body and 'Lees de toelichting' in body and 'Toelichting.' in body
+    assert 'id="toelichting"' in body and 'Toelichting in- of uitklappen' in body and 'Toelichting.' in body
     assert body.count('gu-phasebar__icon') == 5 and 'aria-current="step"' in body  # P6: met samenvatten
     assert 'Volgen' in body and 'gu-cockpit__follow' in body
     head = body.split('id="panel-proposals"')[1].split('</h2>')[1].split('</div>')[0]
     assert 'class="gu-iconbtn"' in head and 'title="Nieuw voorstel"' in head
     facts_head = body.split('id="panel-facts"')[1].split('</div>')[0]
     assert 'title="Feit toevoegen"' in facts_head and 'data-expand="facts"' in facts_head
-    assert 'data-expand="discussion"' in body and 'Terug naar de cockpit' in body
+    assert 'data-expand="discussion"' in body and 'data-collapse' in body
     assert 'Posten' in body and 'Plaats reactie' not in body
     assert 'data-follow-url' not in _get(app, f'/vraagstuk/{issue.id}')  # niet ingelogd
 
@@ -595,3 +600,137 @@ def test_running_summary_vote_moves_to_its_own_phase(db, make_user):
     assert issue.phase == 'samenvatten' and issue.phase_deadline == ip.final_voting_end(final)
     assert ip.voting_open(final)
     assert lifecycle.migrate_summary_phase() == 0  # idempotent
+
+
+# ── P7: rustiger cockpit, rechten en moderator-weergave ──────────────────
+
+def test_cockpit_is_calmer(app, db, make_user):
+    host = make_user()
+    issue = _issue(db, host, 'Een rustige cockpit?')
+    issue.phase_started_at = datetime.utcnow() - timedelta(days=1)
+    db.session.commit()
+    body = _get(app, f'/vraagstuk/{issue.id}', host)
+    head = body.split('gu-cockpit__head')[1].split('gu-cockpit__phase')[0]
+    assert 'gu-issue-crumbs' not in body and 'gu-issue-kind' not in head  # geen kruimelpad, geen detailregel
+    assert 'Lees de toelichting' not in body and 'gu-cockpit__abouttoggle' in head
+    assert 'sluit eerder' not in body  # geen tekst over de vroege sluiting
+    assert 'gu-cockpit__bell' in head and 'Volgen' in head
+    # De koppen staan boven het kader, net als bij de discussie.
+    facts = body.split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
+    assert facts.index('gu-cockpit__panelhead') < facts.index('gu-cockpit__box')
+    assert 'Alle feiten' not in body and 'Alle voorstellen' not in body
+
+
+def test_show_more_only_when_there_is_more(app, db, make_user):
+    host, anna = make_user(), make_user()
+    issue = _issue(db, host)
+    for i in range(3):
+        _fact(db, issue, anna, f'Feit {i}')
+    body = _get(app, f'/vraagstuk/{issue.id}')
+    facts = body.split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
+    assert 'data-more ' not in facts and 'data-more-list' in facts
+    _fact(db, issue, anna, 'Feit 3')
+    facts = _get(app, f'/vraagstuk/{issue.id}').split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
+    assert 'gu-showmore' in facts and 'Toon meer' in facts
+
+
+def test_voting_right_block_only_without_the_right(app, db, make_user):
+    host, voter = make_user(), make_user('voter')
+    issue = _issue(db, host)
+    assert 'Jouw stemrecht' in _get(app, f'/vraagstuk/{issue.id}', host)
+    assert 'Jouw stemrecht' not in _get(app, f'/vraagstuk/{issue.id}', voter)
+
+
+def test_profile_shows_status_ladder_and_progress(app, db, make_user):
+    newbie, voter = make_user(), make_user('voter')
+    page = _get(app, '/profile', newbie)
+    ladder = page.split('gu-statusladder"')[1].split('</div>\n    </div>')[0]
+    for label in ('Lezer', 'Bijdrager', 'Stemmer', 'Moderator', 'Senior'):
+        assert label in ladder
+    assert 'aria-current="step"' in ladder and 'Op weg naar stemrecht: 0 van 3' in ladder and 'progressbar' in ladder
+    voter_page = _get(app, '/profile', voter)
+    assert 'Je hebt stemrecht.' in voter_page and 'Op weg naar stemrecht' not in voter_page
+
+
+def test_manage_phases_only_for_the_initiator(app, db, make_user):
+    host, mod = make_user(), make_user('moderator')
+    issue = _issue(db, host)
+    assert 'Fasen beheren' in _get(app, f'/vraagstuk/{issue.id}', host)
+    assert 'Fasen beheren' not in _get(app, f'/vraagstuk/{issue.id}', mod)
+    # Moderators doen het via hun eigen weergave.
+    dash = _get(app, '/moderator', mod)
+    section = dash.split('id="vraagstukken"')[1].split('</section>')[0]
+    assert issue.title in section and 'Naar de volgende fase' in section
+    r = _req(_client(app, mod), 'POST', f'/vraagstuk/{issue.id}/volgende-fase', data={'next': '/moderator#vraagstukken'})
+    assert r.status_code == 302 and r.headers['Location'].endswith('/moderator#vraagstukken')
+    db.session.refresh(issue)
+    assert issue.phase == 'bijstellen'
+
+
+def test_no_reply_to_your_own_post(app, db, make_user):
+    host, anna = make_user(), make_user()
+    issue = _issue(db, host)
+    _req(_client(app, anna), 'POST', f'/forum/{issue.thread_id}', data={'body': 'Mijn reactie.'})
+    own = Post.query.filter_by(body='Mijn reactie.').one()
+    page = _get(app, f'/vraagstuk/{issue.id}', anna)
+    post = page.split(f'id="post-{own.id}"')[1].split('</article>')[0]
+    assert 'gu-post__reply-btn' not in post and f'name="parent_id" value="{own.id}"' not in page
+    r = _req(_client(app, anna), 'POST', f'/forum/{issue.thread_id}',
+             data={'body': 'Op mezelf.', 'parent_id': own.id, 'return_to': issue.id})
+    assert Post.query.filter_by(body='Op mezelf.').count() == 0
+    assert r.headers['Location'].endswith(f'/vraagstuk/{issue.id}#post-{own.id}')
+    # Wel op andermans reactie.
+    _req(_client(app, host), 'POST', f'/forum/{issue.thread_id}', data={'body': 'Op anna.', 'parent_id': own.id})
+    assert Post.query.filter_by(body='Op anna.').one().parent_id == own.id
+
+
+def _doubtful_post(db, issue, author):
+    from app.models import ConductCase
+    post = Post(thread_id=issue.thread_id, user_id=author.id, author_name='', author_username=author.username,
+                body='Een twijfelachtige bijdrage.', source_lang='nl')
+    db.session.add(post)
+    db.session.flush()
+    db.session.add(ConductCase(post_id=post.id, action='twijfel', rule='respect', source='ai',
+                               explanation='Dit klinkt persoonlijk.', explanation_lang='nl'))
+    db.session.commit()
+    return post
+
+
+def test_marking_shows_a_short_rule_name_folded_for_moderators(app, db, make_user):
+    host, anna, mod = make_user(), make_user(), make_user('moderator')
+    issue = _issue(db, host)
+    post = _doubtful_post(db, issue, anna)
+    page = _get(app, f'/vraagstuk/{issue.id}', mod)
+    slot = page.split(f'id="conduct-{post.id}"')[1].split('gu-quality-slot')[0]
+    assert '<details class="gu-conduct gu-conduct--twijfel gu-conduct--fold">' in slot
+    head = slot.split('gu-conduct__head">')[1].split('</p>')[0]
+    visible = __import__('re').sub(r'<[^>]+>', '', head)  # de volledige naam staat alleen in de tooltip
+    assert visible == 'Gemarkeerd voor een moderator · Respect' and 'title="Over het idee, niet de persoon"' in head
+    assert 'Over het idee, niet de persoon' in slot and 'Dit klinkt persoonlijk.' in slot
+
+
+def test_view_as_participant_hides_moderator_notes(app, db, make_user):
+    from app.models import ConductCase
+    host, anna, mod = make_user(), make_user(), make_user('moderator')
+    issue = _issue(db, host)
+    post = _doubtful_post(db, issue, anna)
+    moved = Post(thread_id=issue.thread_id, user_id=anna.id, author_name='', author_username=anna.username,
+                 body='Een verplaatste bijdrage.', source_lang='nl')
+    db.session.add(moved)
+    db.session.flush()
+    db.session.add(ConductCase(post_id=moved.id, action='verplaatst', rule='respect', source='ai'))
+    db.session.commit()
+    c = _client(app, mod)
+    page = _req(c, 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
+    assert 'gu-conduct--fold' in page and 'Een verplaatste bijdrage.' in page and 'gu-conduct-mod' in page
+    assert 'Bekijk als deelnemer' in page and 'aria-checked="false"' in page
+    r = _req(c, 'POST', '/weergave/deelnemer', data={'next': f'/vraagstuk/{issue.id}'})
+    assert r.status_code == 302 and r.headers['Location'].endswith(f'/vraagstuk/{issue.id}')
+    page = _req(c, 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
+    assert 'gu-conduct' not in page.split('id="panel-discussion"')[1].split('id="composer"')[0].replace('gu-conduct-slot', '')
+    assert 'Een verplaatste bijdrage.' not in page and 'aria-checked="true"' in page
+    assert 'Een twijfelachtige bijdrage.' in page  # de bijdrage zelf blijft gewoon staan
+    _req(c, 'POST', '/weergave/deelnemer', data={'next': '/gesprekken'})
+    assert 'gu-conduct--fold' in _req(c, 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
+    # Alleen voor moderators.
+    assert _req(_client(app, anna), 'POST', '/weergave/deelnemer').status_code == 403

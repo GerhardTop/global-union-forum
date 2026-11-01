@@ -224,7 +224,7 @@ class TestConduct:
         other = _facts_block(_get(app, make_user(), f'/forum/{t.id}').get_data(as_text=True))
         assert 'horloges' not in other and f'id="post-{fact.id}"' not in other
         own = _facts_block(_get(app, anna, f'/forum/{t.id}').get_data(as_text=True))
-        assert 'horloges' in own and 'Verborgen voor andere lezers als spam of misbruik.' in own
+        assert 'horloges' in own and 'Verborgen als spam of misbruik' in own
         assert 'horloges' not in _get(app, None, '/achtergrond').get_data(as_text=True)
 
     def test_moderator_can_move_a_fact(self, app, db, make_user, proposal_thread, fake_ai):

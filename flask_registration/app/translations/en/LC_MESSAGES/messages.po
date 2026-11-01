@@ -2218,3 +2218,55 @@ msgstr "For example: who takes the outcome further, through lobbying, the media 
 
 msgid "The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again."
 msgstr "The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again."
+
+# Polijststap P7: rustiger cockpit en moderator-weergave
+
+msgid "View as participant"
+msgstr "View as participant"
+
+msgid "Respect"
+msgstr "Respect"
+
+msgid "Spam"
+msgstr "Spam"
+
+msgid "Moved to the background page"
+msgstr "Moved to the background page"
+
+msgid "Hidden as spam or abuse"
+msgstr "Hidden as spam or abuse"
+
+msgid "Marked for a moderator"
+msgstr "Marked for a moderator"
+
+msgid "Possible violation of the conduct rule: %(rule)s."
+msgstr "Possible violation of the conduct rule: %(rule)s."
+
+msgid "Possible violation of the conduct rules."
+msgstr "Possible violation of the conduct rules."
+
+msgid "Conduct rule: %(rule)s."
+msgstr "Conduct rule: %(rule)s."
+
+msgid "Issues: manage the phases"
+msgstr "Issues: manage the phases"
+
+msgid "No issues."
+msgstr "No issues."
+
+msgid "Show or hide the introduction"
+msgstr "Show or hide the introduction"
+
+msgid "Reduce"
+msgstr "Reduce"
+
+msgid "back to the cockpit"
+msgstr "back to the cockpit"
+
+# Polijststap P7: volledige pagina vanuit de grote weergave
+
+msgid "Facts page with filters and sorting"
+msgstr "Facts page with filters and sorting"
+
+msgid "Proposals page with filters and sorting"
+msgstr "Proposals page with filters and sorting"

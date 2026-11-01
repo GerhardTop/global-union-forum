@@ -146,7 +146,7 @@
       {% endif %}
 
       {# Moderator toolbar #}
-      {% if current_user.can_moderate() %}
+      {% if mod_view %}
       <div class="gu-forum__modbar">
         {% if thread.is_closed %}
         <form method="POST" action="{{ url_for('forum.forum_reopen', thread_id=thread.id) }}" style="display:inline;">

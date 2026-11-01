@@ -22,7 +22,7 @@
           {{ _('Accept the conduct rules to join in') }}
         </a>
         {% endif %}
-        {% if current_user.can_moderate() %}
+        {% if mod_view %}
         <a href="{{ url_for('forum.forum_gesloten') }}" class="gu-forum__closed-link">
           {% if lang == 'nl' %}Gesloten gesprekken{% else %}Closed conversations{% endif %}
         </a>

@@ -279,7 +279,8 @@ def test_cockpit_lists_proposals_with_status(app, db, make_user):
     assert panel.index('Op de lijst.') < panel.index('Nog niet.')  # stemlijst eerst
     assert f'/vraagstuk/{issue.id}/voorstel/{listed.id}' in panel
     assert f'/vraagstuk/{issue.id}/voorstellen/nieuw' in panel and '/forum/nieuw' not in panel
-    assert f'/vraagstuk/{issue.id}/voorstellen"' in panel
+    # P7: geen link "Alle voorstellen" meer; "toon meer" alleen als er meer is.
+    assert 'data-more' not in panel.split('data-more-list')[1]
 
 
 # ── Opruimen ─────────────────────────────────────────────────────────────

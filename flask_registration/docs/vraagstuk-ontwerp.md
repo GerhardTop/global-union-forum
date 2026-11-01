@@ -25,19 +25,29 @@ Alle vraagstukken, nieuwste eerst. Per vraagstuk de titel, het online- of event-
 Bovenaan de cockpit en alle onderliggende pagina's: "Denk mee" (naar het overzicht), dan de naam van het vraagstuk (naar de cockpit), dan eventueel de pagina zelf.
 
 ### Cockpit: /vraagstuk/<id>
-Boven de kolommen: het online/event-label met datum (online: "stemmen sluit <datum>"; event: "<naam> · <eerste dag>, <locatie>"), de titel (de vraag) met rechts de knop "Volgen", daaronder "Lees de toelichting" als uitklapbaar blok (bij het eerste bezoek open, daarna dicht; per browser onthouden), en de fase-indicator: per fase een icoon, de huidige gemarkeerd, de voorbije afgevinkt, met de data per fase als die er zijn en de resterende tijd.
-Desktop, drie kolommen:
-- Links: "Feiten en achtergrond" met de top-feiten (kwaliteit eerst) met richting, bron, media-label en kwaliteitsmerk, plus een link naar de volledige feitenpagina.
-- Midden (gedeelde discussie): de thread van het gesprek met de bestaande forumweergave (geneste reacties tot 4 diep, keurmerk, eens, handhaving). Feiten-posts staan hier niet. Onderaan de reactie-invoer; de knop heet "Posten".
-- Rechts (voorstellen en stemrecht): de voorstellen onder het vraagstuk, compact met status, link naar het detail, en daaronder "jouw stemrecht".
+Bovenaan alleen de titel (de vraag) met rechts de knop "Volgen" (met een belletje), daaronder de toelichting met een klein pijltje vóór de tekst om in en uit te klappen (bij het eerste bezoek open, daarna ingeklapt tot één regel; per browser onthouden), en de fase-indicator: per fase een icoon, de huidige gemarkeerd, de voorbije afgevinkt, met de data per fase als die er zijn en de resterende tijd. Geen kruimelpad en geen online/event-detailregel in de cockpit (polijststap P7): terug gaat via het menu "Denk mee"; de eventgegevens staan in de toelichting. Geen tekst over de vroege sluiting van de feitenfase in beeld (de regel zelf blijft gelden).
+Desktop, drie kolommen met dezelfde opzet: de kop boven het blok, het blok in een kader (de discussie zonder kader).
+- Links: "Feiten en achtergrond" met de top-feiten (kwaliteit eerst) met richting, bron, media-label en kwaliteitsmerk.
+- Midden (gedeelde discussie): de thread van het gesprek met de bestaande forumweergave (geneste reacties tot 4 diep, keurmerk, eens, handhaving). Feiten-posts staan hier niet. Onderaan de reactie-invoer; de knop heet "Posten". Je kunt niet reageren op je eigen bericht of je eigen reactie (verborgen en door de server geweigerd).
+- Rechts: de voorstellen onder het vraagstuk, compact met status en een link naar het detail; daaronder "Jouw stemrecht", alleen voor wie nog geen stemrecht heeft.
 Mobiel: tabs onder de kop en de fase-indicator. Tabs: Discussie (standaard), Voorstellen, Feiten en achtergrond.
 
-Paneelkoppen: in de krappe koppen een icoon-"+" met tooltip (nieuw voorstel, feit toevoegen); op volledige pagina's een "+" met woord. Elk paneel (discussie, feiten, voorstellen) heeft een knop "Vergroten": dat paneel komt groot onder de fase-indicator (die niet herhaald wordt), met alle feiten of voorstellen in plaats van de top, en een knop "Terug naar de cockpit" (ook met Escape).
+Lijsten in de panelen: standaard een handvol (feiten 3, voorstellen 5), de rest met een pijltje naar beneden ("toon meer", in stappen), alleen als er meer is. Paneelkoppen: in de krappe koppen een icoon-"+" met tooltip (nieuw voorstel, feit toevoegen); op volledige pagina's een "+" met woord. Elk paneel (discussie, feiten, voorstellen) heeft een vergroot-icoon: dat paneel komt groot onder de fase-indicator (die niet herhaald wordt), eerst ongeveer 15 items en de rest in stappen, met een link naar de volledige pagina (filters, sorteren, betwisten), en een klein verklein-icoon naast de plus om terug te gaan (ook met Escape).
+
+In- en uitklappen ziet er overal hetzelfde uit: een licht grijs pijltje in een klein kadertje (toelichting, takken in de discussie, toon meer, uitklapblokken).
+
+"Fasen beheren" staat in de cockpit alleen voor de initiatiefnemer. Moderators zetten de fasen door en stellen opnieuw open via hun eigen weergave (/moderator, sectie "Vraagstukken: fasen beheren").
 
 Volgen (polijstronde P3, tabel issue_follows met issue_id en user_id): volgers krijgen de meldingen van het vraagstuk in de dagelijkse samenvatting, naast de initiatiefnemer en wie heeft bijgedragen. Ontvolgen kan met dezelfde knop; wie heeft bijgedragen blijft ontvanger.
 
+### Moderator-weergave (polijststap P7)
+Een moderator heeft in het menu één schakelaar "Bekijk als deelnemer" (per sessie). Aan: alle moderator-aantekeningen zijn weg (AI-markeringen, betwist-labels, de moderatorpanelen, verplaatste of verborgen bijdragen van anderen), zoals een deelnemer de pagina ziet. Uit: de AI-notitie per bijdrage staat standaard ingeklapt achter een klein icoon. Een markering toont in de kop een korte regelnaam ("Respect", "Bij het onderwerp", "Spam", de volledige naam als tooltip) en de uitleg eronder. De auteur ziet de eigen markering open, met de bezwaarmogelijkheid.
+
+### Profiel
+De status van de gebruiker (lezer, bijdrager, stemmer, moderator of senior) als ladder met de eigen plek gemarkeerd, en zonder stemrecht de voortgang ernaartoe (aantal kwaliteitsbijdragen van de drempel, met een balk).
+
 ### Feiten, onderzoek en media
-Gedeelde lijst op vraagstuk-niveau. Per feit: richting (pleit voor / pleit tegen / neutraal), tekst, bron, het soort (feit of onderzoek, of media: nieuws, podcast, video, getoond als label "media"), het AI-kwaliteitsmerk (groen vinkje met de criteria bij mouse-over), en "betwisten" met reden (geen bron, klopt niet, niet relevant, misleidend) dat naar een moderator gaat. Filter op richting, sorteren (kwaliteit eerst, nieuwste), een "toevoegen"-knop, en "toon meer" bij lange lijsten.
+Gedeelde lijst op vraagstuk-niveau (eerst 15, dan met een pijltje steeds 15 erbij; een klein verklein-icoon naast de plus gaat terug naar de cockpit). Per feit: richting (pleit voor / pleit tegen / neutraal), tekst, bron, het soort (feit of onderzoek, of media: nieuws, podcast, video, getoond als label "media"), het AI-kwaliteitsmerk (groen vinkje met de criteria bij mouse-over), en "betwisten" met reden (geen bron, klopt niet, niet relevant, misleidend) dat naar een moderator gaat. Filter op richting, sorteren (kwaliteit eerst, nieuwste), een "toevoegen"-knop, en "toon meer" bij lange lijsten.
 
 Het kwaliteitsmerk (polijstronde P2) komt uit dezelfde AI-aanroep als de handhaving. De AI beoordeelt alleen controleerbare punten: is er een bron, is de bron een vindbare link, staat erbij waar in de bron het te vinden is, is het op het onderwerp, en is het een nieuw feit. Niet de betrouwbaarheid van de bron. Het merk staat als alle vijf kloppen (een vindbare link moet ook echt met http of https beginnen). Het merk is geen keurmerk en telt niet voor stemrecht of de stilte-regel. Kwaliteit eerst betekent: merk, dan een link als bron, dan de nieuwste. Het oude "nuttig"-signaal is weg; de tabel fact_useful_votes blijft staan maar wordt niet meer gebruikt. Kolommen: posts.fact_type, quality_awards.fact_mark en de vijf punten (fact_has_source, fact_link_findable, fact_has_location, fact_on_topic, fact_is_new).
 

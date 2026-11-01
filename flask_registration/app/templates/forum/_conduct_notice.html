@@ -7,14 +7,26 @@
   Context: post, case, optioneel return_path.
 #}
 {% set is_author = current_user.is_authenticated and post.user_id == current_user.id %}
-<div class="gu-conduct gu-conduct--{{ case.action }}">
-  {% if case.action == 'verplaatst' %}
-    <p class="gu-conduct__head">{{ _('Moved to the background page because of the conduct rule: %(rule)s.', rule=conduct_rule_label(case.rule)) }}</p>
-  {% elif case.action == 'verborgen' %}
-    <p class="gu-conduct__head">{{ _('Hidden from other readers as spam or abuse.') }}</p>
-  {% elif case.action == 'twijfel' %}
-    <p class="gu-conduct__head">{% if case.rule %}{{ _('Marked for a moderator: possible violation of %(rule)s.', rule=conduct_rule_label(case.rule)) }}{% else %}{{ _('Marked for a moderator: possible violation of the conduct rules.') }}{% endif %}</p>
-  {% endif %}
+{# Polijststap P7: in de kop een korte regelnaam (de volledige naam als tooltip),
+   de uitleg eronder. Voor moderators (niet de auteur) standaard ingeklapt achter
+   een klein icoon, zodat de pagina rustig blijft; de auteur ziet het open. #}
+{% if case.action == 'verplaatst' %}
+  {% set c_head = _('Moved to the background page') %}
+{% elif case.action == 'verborgen' %}
+  {% set c_head = _('Hidden as spam or abuse') %}
+{% else %}
+  {% set c_head = _('Marked for a moderator') %}
+{% endif %}
+{% set c_rule = conduct_rule_short(case.rule) if (case.rule or case.action == 'verborgen') else none %}
+{% set c_rule_full = conduct_rule_label(case.rule) if case.rule else '' %}
+{% if is_author %}<div class="gu-conduct gu-conduct--{{ case.action }}">{% else %}<details class="gu-conduct gu-conduct--{{ case.action }} gu-conduct--fold">
+  <summary class="gu-conduct__toggle" title="{{ c_head }}{% if c_rule %}: {{ c_rule }}{% endif %}">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>
+    <span class="gu-sr-only">{{ c_head }}</span>
+  </summary>{% endif %}
+  <p class="gu-conduct__head">{{ c_head }}{% if c_rule %} · <span class="gu-conduct__rule"{% if c_rule_full %} title="{{ c_rule_full }}"{% endif %}>{{ c_rule }}</span>{% endif %}</p>
+  {% if case.action == 'twijfel' %}<p class="gu-conduct__why">{% if case.rule %}{{ _('Possible violation of the conduct rule: %(rule)s.', rule=c_rule_full) }}{% else %}{{ _('Possible violation of the conduct rules.') }}{% endif %}</p>
+  {% elif case.action == 'verplaatst' and c_rule_full %}<p class="gu-conduct__why">{{ _('Conduct rule: %(rule)s.', rule=c_rule_full) }}</p>{% endif %}
   {% if case.explanation %}<p class="gu-conduct__why" lang="{{ case.explanation_lang or lang }}">{{ case.explanation }}</p>{% endif %}
   <p class="gu-conduct__meta">{% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %} · {{ case.acted_ago[lang] }}</p>
 
@@ -42,4 +54,4 @@
       <p class="gu-conduct__status">{{ _('Objection period ended') }}</p>
     {% endif %}
   {% endif %}
-</div>
+{% if is_author %}</div>{% else %}</details>{% endif %}

@@ -42,6 +42,12 @@ def admin_dashboard():
     )
 
 
+def _phase_issues():
+    from app import issue_lifecycle as lifecycle
+    return [(i, lifecycle.next_phase(i), lifecycle.can_step(i, current_user), lifecycle.can_reopen(i, current_user))
+            for i in lifecycle.manageable_issues()]
+
+
 @admin_bp.route('/moderator')
 @login_required
 def moderator_dashboard():
@@ -113,6 +119,11 @@ def moderator_dashboard():
         open_conduct_objections=open_conduct_objections,
         fact_disputes=fact_disputes,
         fact_can_resolve=lambda row: facts.can_resolve(row, current_user),
+        # Polijststap P7: de fasen van vraagstukken beheren moderators hier.
+        phase_issues=_phase_issues(),
+        phase_labels_all={'feiten': gettext('Facts and discussion'), 'bijstellen': gettext('Revise the proposal'),
+                          'stemmen': gettext('Voting'), 'samenvatten': gettext('Summary proposal'),
+                          'vervolg': gettext('Follow-up')},
         active_threads=active_threads,
         posts_today=posts_today,
         threads_no_gerhard_count=len(threads_no_gerhard),

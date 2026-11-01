@@ -28,6 +28,31 @@ from app.models import (CONDUCT_RULES, REMOVING_ACTIONS, ConductCase, ConductObj
 AI_RULES = {'respect': 'respect', 'on_topic': 'onderwerp'}
 
 
+PARTICIPANT_VIEW_KEY = 'participant_view'
+
+
+def participant_view():
+    """Polijststap P7: een moderator bekijkt de pagina's als deelnemer (een
+    sessievlag); dan zijn alle moderator-aantekeningen verborgen."""
+    from flask import has_request_context, session
+    return has_request_context() and bool(session.get(PARTICIPANT_VIEW_KEY))
+
+
+def mod_view(user):
+    """Ziet deze gebruiker nu de moderator-aantekeningen? Een moderator,
+    tenzij die de pagina's als deelnemer bekijkt."""
+    return getattr(user, 'is_authenticated', False) and user.can_moderate() and not participant_view()
+
+
+def rule_short(rule):
+    """Polijststap P7: een korte regelnaam voor de kop van een markering."""
+    if rule == 'respect':
+        return gettext('Respect')
+    if rule == 'onderwerp':
+        return gettext('On topic')
+    return gettext('Spam')
+
+
 def rule_label(rule):
     """De naam van een gedragsregel in de taal van de lezer (catalogus)."""
     if rule == 'respect':
@@ -40,10 +65,11 @@ def rule_label(rule):
 # ── Zichtbaarheid ────────────────────────────────────────────────────────
 
 def is_privileged(post, user):
-    """De auteur en moderators zien een verplaatste of verborgen bijdrage nog."""
+    """De auteur en moderators zien een verplaatste of verborgen bijdrage nog
+    (een moderator niet als die als deelnemer kijkt, polijststap P7)."""
     if not getattr(user, 'is_authenticated', False):
         return False
-    return post.user_id == user.id or user.can_moderate()
+    return post.user_id == user.id or mod_view(user)
 
 
 def removed_for(post, case, user):

@@ -25,7 +25,7 @@ from app.models import (FACT_DIRECTIONS, FACT_DISPUTE_REASONS, FACT_KIND, FactDi
 
 ORDERS = ('kwaliteit', 'nieuwste')
 DEFAULT_ORDER = 'kwaliteit'
-PAGE_SIZE = 10
+PAGE_SIZE = 15  # polijststap P7: ongeveer 15, de rest in stappen
 NOTE_MAX = 500
 
 
