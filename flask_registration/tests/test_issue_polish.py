@@ -6,6 +6,9 @@ Dekt per onderdeel:
 - P1: het menu-item "Denk mee", het overzicht met filters en aantallen, het
   kruimelpad, de term "samenvattend voorstel", de namen van de
   feitenverzameling, en LinkedIn als optioneel profielveld.
+- P2: het AI-kwaliteitsmerk op feiten (alle vijf punten nodig, geen keurmerk,
+  de prompt sluit betrouwbaarheid uit), het media-label en -type, en het
+  sorteren met het merk eerst.
 
 Gedeelde conftest-app (CSRF uit).
 """
@@ -19,7 +22,7 @@ from flask_babel import refresh
 from app import bcrypt, issue_lifecycle as lifecycle, issue_proposals as ip, issues
 from app.models import (Issue, IssueProposal, IssueProposalFact, IssueProposalSupport, IssueProposalVote, Post,
                         Thread, User)
-from tests.test_forum_conduct import _fresh_rate_limits  # noqa: F401  (autouse)
+from tests.test_forum_conduct import _fresh_rate_limits, _verdict, fake_ai  # noqa: F401  (autouse)
 
 
 @pytest.fixture
@@ -161,3 +164,81 @@ def test_linkedin_is_optional_in_profile(app, db, make_user):
     assert r.status_code == 200 and r.get_json()['ok']
     db.session.refresh(user)
     assert user.linkedin_url is None
+
+
+# ── P2: het kwaliteitsmerk op feiten en media ────────────────────────────
+
+FACT_OK = dict(fact_has_source=True, fact_link_findable=True, fact_has_location=True, fact_on_topic=True,
+               fact_is_new=True)
+
+
+def _add_fact(app, user, issue, text, source='https://cbs.example/rapport#tabel-3', kind='feit'):
+    return _req(_client(app, user), 'POST', f'/forum/{issue.thread_id}/feiten',
+                data={'text': text, 'direction': 'voor', 'source': source, 'type': kind,
+                      'return_to': str(issue.id)})
+
+
+def test_fact_gets_the_mark_when_all_points_hold(app, db, make_user, fake_ai):
+    from app.models import QualityAward
+    from app.status import quality_counts
+    host, anna = make_user(), make_user()
+    issue = _issue(db, host)
+    fake_ai['verdict'] = _verdict(**FACT_OK)
+    _add_fact(app, anna, issue, 'Het verkeer daalde met 30 procent.')
+    fact = Post.query.filter_by(body='Het verkeer daalde met 30 procent.').one()
+    award = QualityAward.query.filter_by(post_id=fact.id).one()
+    assert award.fact_mark and award.status == 'afgewezen' and award.criterion is None
+    assert quality_counts(anna.id) == (0, 0)  # het merk is geen keurmerk
+    call = fake_ai['judge'][-1]
+    content = call['messages'][0]['content']
+    assert 'Do NOT judge whether the source is reliable' in content and 'fact_has_location' in content
+    assert 'fact_is_new' in call['output_config']['format']['schema']['required']
+    page = _get(app, f'/vraagstuk/{issue.id}/feiten')
+    item = page.split(f'id="post-{fact.id}"')[1].split('</li>')[0]
+    assert 'gu-factmark' in item and 'Het merk zegt niets over hoe betrouwbaar de bron is.' in item
+    cockpit = _get(app, f'/vraagstuk/{issue.id}')
+    assert 'gu-factmark' in cockpit.split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
+
+
+def test_no_mark_when_a_point_fails_or_the_source_is_no_link(app, db, make_user, fake_ai):
+    from app.models import QualityAward
+    host, anna = make_user(), make_user()
+    issue = _issue(db, host)
+    fake_ai['verdict'] = _verdict(**{**FACT_OK, 'fact_has_location': False})
+    _add_fact(app, anna, issue, 'Zonder vindplaats.')
+    fake_ai['verdict'] = _verdict(**FACT_OK)  # de AI zegt ja, maar de bron is geen link
+    _add_fact(app, anna, issue, 'Zonder link.', source='Jaarverslag 2024, blz. 12')
+    for text in ('Zonder vindplaats.', 'Zonder link.'):
+        fact = Post.query.filter_by(body=text).one()
+        assert not QualityAward.query.filter_by(post_id=fact.id).one().fact_mark
+    assert 'gu-factmark' not in _get(app, f'/vraagstuk/{issue.id}/feiten').split('<main')[1].split('id="toevoegen"')[0]
+
+
+def test_ordinary_post_gets_no_fact_fields(app, db, make_user, fake_ai):
+    from app.models import QualityAward
+    host = make_user()
+    issue = _issue(db, host)
+    fake_ai['verdict'] = _verdict(argument_is_new=True, suggested_criterion='K1')
+    _req(_client(app, host), 'POST', f'/forum/{issue.thread_id}', data={'body': 'Een gewone bijdrage.'})
+    post = Post.query.filter_by(body='Een gewone bijdrage.').one()
+    award = QualityAward.query.filter_by(post_id=post.id).one()
+    assert award.fact_mark is None and award.status == 'toegekend'
+    assert 'fact_is_new' not in fake_ai['judge'][-1]['output_config']['format']['schema']['properties']
+
+
+def test_media_type_and_label(app, db, make_user):
+    host, anna = make_user(), make_user()
+    issue = _issue(db, host)
+    _add_fact(app, anna, issue, 'Een podcast over het plein.', kind='media')
+    _add_fact(app, anna, issue, 'Een onderzoek.', kind='onzin')
+    media = Post.query.filter_by(body='Een podcast over het plein.').one()
+    assert media.fact_type == 'media' and media.is_media
+    assert Post.query.filter_by(body='Een onderzoek.').one().fact_type == 'feit'
+    page = _get(app, f'/vraagstuk/{issue.id}/feiten', anna)
+    assert 'gu-fact__media' in page.split(f'id="post-{media.id}"')[1].split('</li>')[0]
+    assert 'Media: nieuws, podcast, video' in page  # het soort in het formulier
+    _req(_client(app, anna), 'POST', f'/forum/feit/{media.id}/bewerken',
+         data={'text': 'Een podcast over het plein.', 'direction': 'voor', 'source': 'https://x.example',
+               'type': 'feit', 'return_to': str(issue.id)})
+    db.session.refresh(media)
+    assert media.fact_type == 'feit'

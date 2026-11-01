@@ -56,6 +56,7 @@
           <li class="gu-fact gu-fact--{{ fact.fact_direction }}">
             <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
             <div class="gu-fact__main">
+              {% include 'issues/_fact_badges.html' %}
               <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
               {% if fact.fact_source %}
               <p class="gu-fact__source">{{ _('Source') }}:
@@ -63,7 +64,6 @@
                 {% else %}{{ fact.fact_source }}{% endif %}
               </p>
               {% endif %}
-              <p class="gu-cockpit__factmeta"><span class="gu-fact__useful gu-fact__useful--static">{{ _('Useful') }} <span class="gu-fact__usefulcount">{{ (fact_useful_counts or {}).get(fact.id, 0) }}</span></span></p>
             </div>
           </li>
           {% endfor %}

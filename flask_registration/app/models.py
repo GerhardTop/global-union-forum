@@ -238,6 +238,9 @@ class Post(db.Model):
     kind           = db.Column(db.String(10), nullable=True)
     fact_direction = db.Column(db.String(10), nullable=True)   # voor/tegen/neutraal
     fact_source    = db.Column(db.String(500), nullable=True)
+    # Polijstronde P2: het soort feit (FACT_TYPES); NULL telt als 'feit'.
+    # 'media' is nieuws, een podcast, een video en dergelijke.
+    fact_type      = db.Column(db.String(10), nullable=True)
     author         = db.relationship('User', foreign_keys=[user_id], lazy='joined')
     # Geneste reacties: parent_id wijst naar het bericht waarop gereageerd
     # wordt (NULL = bericht op het hoogste niveau). De threadpagina bouwt de
@@ -278,6 +281,10 @@ class Post(db.Model):
     def fact_source_is_url(self):
         return bool(self.fact_source) and self.fact_source.lower().startswith(('http://', 'https://'))
 
+    @property
+    def is_media(self):
+        return self.fact_type == 'media'
+
 
 def time_ago(moment):
     """{'nl': ..., 'en': ...}: hoe lang geleden, voor bijdragen en besluiten."""
@@ -301,6 +308,8 @@ def time_ago(moment):
 # Fase E: feiten bij een voorstel.
 FACT_KIND = 'feit'
 FACT_DIRECTIONS = ('voor', 'tegen', 'neutraal')
+# Polijstronde P2: feit of onderzoek, of media (nieuws, podcast, video).
+FACT_TYPES = ('feit', 'media')
 
 # Herontwerp stap 3: nuttig en betwisten op een feit (zie app/facts.py).
 FACT_DISPUTE_REASONS = ('geen_bron', 'klopt_niet', 'niet_relevant', 'misleidend')
@@ -407,6 +416,17 @@ class QualityAward(db.Model):
     conduct_verdict     = db.Column(db.String(12), nullable=True)
     conduct_rule        = db.Column(db.String(12), nullable=True)
     conduct_explanation = db.Column(db.Text, nullable=True)
+    # Polijstronde P2: het kwaliteitsmerk van een feit, uit dezelfde AI-
+    # aanroep. De AI beoordeelt alleen wat na te gaan is (niet hoe
+    # betrouwbaar de bron is): een bron, een vindbare link, waar in de bron,
+    # op het onderwerp en een nieuw feit. Het merk staat als alle vijf
+    # kloppen. Telt niet als keurmerk (status blijft 'afgewezen').
+    fact_mark           = db.Column(db.Boolean, nullable=True)
+    fact_has_source     = db.Column(db.Boolean, nullable=True)
+    fact_link_findable  = db.Column(db.Boolean, nullable=True)
+    fact_has_location   = db.Column(db.Boolean, nullable=True)
+    fact_on_topic       = db.Column(db.Boolean, nullable=True)
+    fact_is_new         = db.Column(db.Boolean, nullable=True)
     created_at       = db.Column(db.DateTime, default=datetime.utcnow)
 
     post       = db.relationship('Post', backref=db.backref('quality_award', uselist=False))

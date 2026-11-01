@@ -1965,3 +1965,47 @@ msgstr "Your LinkedIn profile."
 
 msgid "Update your password."
 msgstr "Update your password."
+
+# Polijstronde P2: kwaliteitsmerk en media bij feiten
+
+msgid "Media"
+msgstr "Media"
+
+msgid "Quality mark for facts"
+msgstr "Quality mark for facts"
+
+msgid "The AI checked that:"
+msgstr "The AI checked that:"
+
+msgid "a source is given"
+msgstr "a source is given"
+
+msgid "the source is a findable link"
+msgstr "the source is a findable link"
+
+msgid "it says where in the source to find it"
+msgstr "it says where in the source to find it"
+
+msgid "it is on the topic"
+msgstr "it is on the topic"
+
+msgid "it is a new fact"
+msgstr "it is a new fact"
+
+msgid "The mark does not judge how reliable the source is."
+msgstr "The mark does not judge how reliable the source is."
+
+msgid "Kind"
+msgstr "Kind"
+
+msgid "Fact or research"
+msgstr "Fact or research"
+
+msgid "Media: news, podcast, video"
+msgstr "Media: news, podcast, video"
+
+msgid "A link, and where in the source it can be found (page, chapter or time)"
+msgstr "A link, and where in the source it can be found (page, chapter or time)"
+
+msgid "Quality first: facts with the quality mark, then facts with a link as source. The mark checks the source, not how reliable it is."
+msgstr "Quality first: facts with the quality mark, then facts with a link as source. The mark checks the source, not how reliable it is."

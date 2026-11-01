@@ -22,10 +22,20 @@
     {% endfor %}
     {% if errs.get('direction') %}<p class="gu-join__formError">{{ _('Choose a direction.') }}</p>{% endif %}
   </fieldset>
+  {# Polijstronde P2: feit of onderzoek, of media (nieuws, podcast, video). #}
+  <fieldset class="gu-fact-form__field gu-fact-form__dirs">
+    <legend>{{ _('Kind') }}</legend>
+    {% for t, label in [('feit', _('Fact or research')), ('media', _('Media: news, podcast, video'))] %}
+    <label class="gu-fact-form__dir">
+      <input type="radio" name="{{ name_prefix }}type" value="{{ t }}"{% if (data.get('type') or 'feit') == t %} checked{% endif %}>
+      <span>{{ label }}</span>
+    </label>
+    {% endfor %}
+  </fieldset>
   <div class="gu-fact-form__field">
     <label for="{{ prefix }}-source">{{ _('Source') }}</label>
     <input type="text" class="gu-input{% if errs.get('source') %} gu-input--error{% endif %}" id="{{ prefix }}-source" name="{{ name_prefix }}source" maxlength="500" required value="{{ data.get('source', '') }}">
-    <span class="gu-composer__hint">{{ _('A link or a short source reference') }}</span>
+    <span class="gu-composer__hint">{{ _('A link, and where in the source it can be found (page, chapter or time)') }}</span>
     {% if errs.get('source') %}<p class="gu-join__formError">{{ _('Give a source.') }}</p>{% endif %}
   </div>
 {% endmacro %}

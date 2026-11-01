@@ -9,7 +9,7 @@ from sqlalchemy import func, or_
 
 from app import db, bcrypt, limiter
 from app.forms import ForumActionForm, ForumReplyForm
-from app.models import (FACT_DIRECTIONS, FACT_KIND, STANCES, QUALITY_CRITERIA, User, Thread, Post,
+from app.models import (FACT_DIRECTIONS, FACT_KIND, FACT_TYPES, STANCES, QUALITY_CRITERIA, User, Thread, Post,
                         PostLike, QualityAward, QualityReport, time_ago)
 from app import conduct, quality
 from app.utils import _pop_form_state, _stash_form_state, safe_next
@@ -830,8 +830,7 @@ def _thread_context(thread, branch_root_id=None):
         visible_fact_count=sum(1 for f in facts if f.id not in removed_ids),
         fact_errors=fact_errors,
         fact_data=fact_data,
-        fact_useful_counts=fact_signals.useful_counts(fact_ids),
-        fact_my_useful=fact_signals.my_useful(fact_ids, current_user),
+        fact_marks=fact_signals.marked_ids(fact_ids),  # polijstronde P2: het kwaliteitsmerk
         fact_disputed=fact_signals.disputed_ids(fact_ids) if current_user.is_authenticated and current_user.can_moderate() else set(),
         fact_my_disputed=fact_signals.my_disputed(fact_ids, current_user),
         conduct_cases=conduct_cases,
@@ -1541,7 +1540,9 @@ def _fact_form(prefix=''):
     form = request.form
     data = {'text': (form.get(f'{prefix}text') or '').strip(),
             'direction': form.get(f'{prefix}direction') or '',
-            'source': (form.get(f'{prefix}source') or '').strip()}
+            'source': (form.get(f'{prefix}source') or '').strip(),
+            # Polijstronde P2: feit of onderzoek, of media; standaard een feit.
+            'type': form.get(f'{prefix}type') if form.get(f'{prefix}type') in FACT_TYPES else 'feit'}
     errors = {}
     if not data['text'] or len(data['text']) > _FACT_MAX:
         errors['text'] = True
@@ -1610,7 +1611,8 @@ def _new_fact(thread, data):
     quality.schedule_judgement voor de handhaving."""
     fact = Post(thread_id=thread.id, user_id=current_user.id, author_username=current_user.username,
                 author_name='', author_role='member', body=data['text'], source_lang=session.get('lang', 'nl'),
-                kind=FACT_KIND, fact_direction=data['direction'], fact_source=data['source'])
+                kind=FACT_KIND, fact_direction=data['direction'], fact_source=data['source'],
+                fact_type=data.get('type') or 'feit')
     db.session.add(fact)
     if thread.proposal is not None:
         from app import digest
@@ -1644,7 +1646,7 @@ def fact_edit(post_id):
     if errors:
         _stash_form_state(f'feit-{fact.thread_id}', {f'edit-{fact.id}': errors}, {f'edit-{fact.id}': data})
         return redirect(_fact_back(fact.thread, f'#post-{fact.id}'), code=303)
-    fact.fact_direction, fact.fact_source = data['direction'], data['source']
+    fact.fact_direction, fact.fact_source, fact.fact_type = data['direction'], data['source'], data['type']
     _apply_edit(fact, data['text'])
     return redirect(_fact_back(fact.thread, f'#post-{fact.id}'))
 
@@ -1663,9 +1665,9 @@ def fact_delete(post_id):
     return redirect(back)
 
 
-# ── Herontwerp stap 3: nuttig en betwisten op een feit ────────────────────
-# Zie app/facts.py. Beide werken ook zonder JavaScript (formulier met next);
-# nuttig geeft met X-Requested-With JSON terug voor de knop zonder herladen.
+# ── Herontwerp stap 3: betwisten op een feit ─────────────────────────────
+# Zie app/facts.py. Werkt zonder JavaScript (formulier met next). Het oude
+# nuttig-signaal is in polijstronde P2 vervangen door het kwaliteitsmerk.
 
 def _live_fact(post_id):
     fact = Post.query.get_or_404(post_id)
@@ -1676,25 +1678,6 @@ def _live_fact(post_id):
 
 def _fact_next(fact):
     return safe_next(request.form.get('next'), _fact_back(fact.thread, f'#post-{fact.id}'))
-
-
-@forum_bp.route('/forum/feit/<int:post_id>/nuttig', methods=['POST'])
-@login_required
-@limiter.limit("60 per minute", key_func=lambda: f"forum-useful-user-{current_user.get_id()}")
-def fact_useful(post_id):
-    from app import facts
-    _require_csrf()
-    fact = _live_fact(post_id)
-    ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-    if not facts.can_mark_useful(fact, current_user):
-        if ajax:
-            return jsonify({'error': 'not allowed'}), 403
-        abort(403)
-    mine = facts.toggle_useful(fact, current_user)
-    db.session.commit()
-    if ajax:
-        return jsonify({'count': facts.useful_counts([fact.id]).get(fact.id, 0), 'mine': mine})
-    return redirect(_fact_next(fact))
 
 
 @forum_bp.route('/forum/feit/<int:post_id>/betwisten', methods=['POST'])

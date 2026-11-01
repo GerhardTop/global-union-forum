@@ -7,7 +7,7 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
                      discussie in het midden, voorstellen en stemrecht rechts
 /vraagstuk/<id>/feiten
                      feiten en onderzoek (stap 3): filteren, sorteren, nuttig,
-                     betwisten en toevoegen
+                     betwisten en toevoegen (P2: kwaliteitsmerk i.p.v. nuttig)
 /vraagstuk/<id>/voorstellen, /voorstellen/nieuw, /voorstel/<pid>
                      voorstellen onder het vraagstuk (stap 4): doen, steunen,
                      bijstellen, de lijst en het detail; stap 5 feiten
@@ -96,7 +96,7 @@ def show(issue_id):
     discussion = _thread_context(issue.thread) if issue.thread is not None else {}
     visible = [f for f in discussion.get('facts', ())
                if f.id not in discussion['hidden_ids'] and f.id not in discussion['moved_ids']]
-    top, _counts = fact_signals.listing(visible, order='kwaliteit')  # stap 3: kwaliteit eerst
+    top = fact_signals.listing(visible, order='kwaliteit')  # kwaliteit eerst: merk, dan een link als bron
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
                            top_facts=top[:FACTS_SHOWN], fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
@@ -134,7 +134,7 @@ def facts(issue_id):
     order = request.args.get('sorteer')
     order = order if order in fact_signals.ORDERS else fact_signals.DEFAULT_ORDER
     shown = min(max(request.args.get('n', type=int) or fact_signals.PAGE_SIZE, fact_signals.PAGE_SIZE), 1000)
-    listed, counts = fact_signals.listing(visible, direction, order)
+    listed = fact_signals.listing(visible, direction, order)
     ids = [f.id for f in listed]
     is_mod = current_user.is_authenticated and current_user.can_moderate()
     return render_template(
@@ -142,7 +142,7 @@ def facts(issue_id):
         total=len(visible), shown=shown, direction=direction, order=order,
         phase_open=thread is not None and _fact_phase_open(thread),
         conduct_cases=cases, fact_errors=fact_errors, fact_data=fact_data, return_to=issue.id,
-        fact_useful_counts=counts, fact_my_useful=fact_signals.my_useful(ids, current_user),
+        fact_marks=fact_signals.marked_ids(ids),
         fact_disputed=fact_signals.disputed_ids(ids) if is_mod else set(),
         fact_my_disputed=fact_signals.my_disputed(ids, current_user))
 
@@ -220,7 +220,8 @@ def proposal_new(issue_id):
     return render_template('issues/proposal_new.html', issue=issue, errors=errors, form_data=data,
                            can_propose=ip.can_propose(issue, current_user),
                            issue_facts=ip.visible_issue_facts(issue, current_user),
-                           can_add_fact=_can_add_fact(issue))
+                           can_add_fact=_can_add_fact(issue),
+                           fact_marks=fact_signals.marked_ids(f.id for f in ip.visible_issue_facts(issue, current_user)))
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>')
@@ -239,7 +240,8 @@ def proposal(issue_id, proposal_id):
                            links=links, can_link=ip.can_link(proposal, current_user),
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
                            candidates=[f for f in ip.visible_issue_facts(issue, current_user) if f.id not in linked_ids],
-                           can_add_fact=_can_add_fact(issue), vote=_vote_context(proposal, count))
+                           can_add_fact=_can_add_fact(issue), vote=_vote_context(proposal, count),
+                           fact_marks=fact_signals.marked_ids(f.id for f in ip.visible_issue_facts(issue, current_user)))
 
 
 def _vote_context(proposal, count):

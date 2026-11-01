@@ -33,7 +33,9 @@ Desktop, drie kolommen:
 Mobiel: tabs met de context en fase-strip erboven. Tabs: Discussie (standaard), Voorstellen, Feiten en achtergrond.
 
 ### Feiten, onderzoek en media
-Gedeelde lijst op vraagstuk-niveau. Per feit: richting (pleit voor / pleit tegen / neutraal), tekst, bron, een "nuttig"-knop (één positieve knop, geen omlaag), en "betwisten" met reden (geen bron, klopt niet, niet relevant, misleidend) dat naar een moderator gaat. Filter op richting, sorteren (kwaliteit eerst, nieuwste, meest nuttig), een "toevoegen"-knop, en "toon meer" bij lange lijsten. Kwaliteit loopt via bron en keurmerk, niet via stemmen.
+Gedeelde lijst op vraagstuk-niveau. Per feit: richting (pleit voor / pleit tegen / neutraal), tekst, bron, het soort (feit of onderzoek, of media: nieuws, podcast, video, getoond als label "media"), het AI-kwaliteitsmerk (groen vinkje met de criteria bij mouse-over), en "betwisten" met reden (geen bron, klopt niet, niet relevant, misleidend) dat naar een moderator gaat. Filter op richting, sorteren (kwaliteit eerst, nieuwste), een "toevoegen"-knop, en "toon meer" bij lange lijsten.
+
+Het kwaliteitsmerk (polijstronde P2) komt uit dezelfde AI-aanroep als de handhaving. De AI beoordeelt alleen controleerbare punten: is er een bron, is de bron een vindbare link, staat erbij waar in de bron het te vinden is, is het op het onderwerp, en is het een nieuw feit. Niet de betrouwbaarheid van de bron. Het merk staat als alle vijf kloppen (een vindbare link moet ook echt met http of https beginnen). Het merk is geen keurmerk en telt niet voor stemrecht of de stilte-regel. Kwaliteit eerst betekent: merk, dan een link als bron, dan de nieuwste. Het oude "nuttig"-signaal is weg; de tabel fact_useful_votes blijft staan maar wordt niet meer gebruikt. Kolommen: posts.fact_type, quality_awards.fact_mark en de vijf punten (fact_has_source, fact_link_findable, fact_has_location, fact_on_topic, fact_is_new).
 
 ### Voorstellen (lijst)
 Alle voorstellen bij het vraagstuk. Per voorstel: status (op de stemlijst / verzamelt steun x van n), inbrenger, de stelling. Filter (alle / op de stemlijst / verzamelt steun) en sorteren (meeste steun / nieuwste / stemlijst eerst). Een "steunen"-knop bij voorstellen die nog steun verzamelen, en "nieuw voorstel doen".
@@ -60,7 +62,7 @@ Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (
 
 ## Beslissingen (en waarom)
 - Eén cockpit per vraagstuk met één gedeelde discussie, niet een discussie per voorstel. Dat houdt de deliberatie bij elkaar (één burgerberaad, één tijdlijn).
-- Op feiten een "nuttig"-knop, geen omlaag-knop. Een omlaag-knop zou een waar maar onwelgevallig feit wegdrukken. Kwaliteit loopt via bron en keurmerk. Consistent met "eens" op meningen.
+- Op feiten geen stemknoppen: een omlaag-knop zou een waar maar onwelgevallig feit wegdrukken. Kwaliteit loopt via het AI-kwaliteitsmerk op controleerbare punten (polijstronde P2; vervangt de eerdere "nuttig"-knop).
 - Iedereen mag feiten aan een voorstel koppelen, ook tegenfeiten, met labels zichtbaar, zodat het beeld eerlijk blijft. Koppelen, niet kopiëren.
 - Stemmen per voorstel (voor, tegen, onthouding). Optioneel per vraagstuk: aan het einde past de initiatiefnemer op basis van alle voorstellen en de discussie het vraagstuk aan en doet een samenvattend voorstel, waarover de deelnemers opnieuw stemmen.
 

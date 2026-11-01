@@ -64,9 +64,11 @@ FAQ = {
              'Iemand start een vraagstuk met een vraag of probleem. In de eerste fase breng je feiten in en '
              'bespreek je het samen. Daar komen voorstellen uit voort. Daarna kan de inbrenger een voorstel '
              'bijstellen. Vervolgens wordt er gestemd. Tot slot volgt de vervolgfase: wat gebeurt ermee.'),
-            ('Wat zijn feiten en onderzoek en hoe tellen ze mee?',
-             'Feiten en onderzoek zijn onderbouwde bijdragen met een bron. Elk feit heeft een richting: pleit '
-             'voor, pleit tegen of neutraal. Ze onderbouwen de discussie en de voorstellen.'),
+            ('Wat zijn feiten, onderzoek en media en hoe tellen ze mee?',
+             'Feiten en onderzoek zijn onderbouwde bijdragen met een bron; media zijn nieuwsberichten, podcasts '
+             'of video\'s. Elk feit heeft een richting: pleit voor, pleit tegen of neutraal. Een feit krijgt een '
+             'groen kwaliteitsmerk als de AI een bron vindt, een vindbare link, waar in de bron het staat, dat het '
+             'over het onderwerp gaat en dat het nieuw is. Het merk zegt niets over hoe betrouwbaar de bron is.'),
             ('Hoe ontstaan voorstellen en hoe wordt erover gestemd?',
              'Voorstellen komen voort uit de discussie. Een voorstel komt op de stemlijst zodra genoeg mensen het '
              'steunen. Er wordt per voorstel gestemd met voor, tegen of onthouding. Op basis van alle voorstellen '
@@ -159,9 +161,11 @@ FAQ = {
              'Someone starts an issue with a question or problem. In the first phase you bring in facts and '
              'discuss it together. Proposals come out of that. After that, the proposer can revise a proposal. '
              'Then there is a vote. Finally there is the follow-up phase: what happens with it.'),
-            ('What are facts and research, and how do they count?',
-             'Facts and research are well-founded contributions with a source. Each fact has a direction: argues '
-             'for, argues against or neutral. They support the discussion and the proposals.'),
+            ('What are facts, research and media, and how do they count?',
+             'Facts and research are well-founded contributions with a source; media are news items, podcasts '
+             'or videos. Each fact has a direction: argues for, argues against or neutral. A fact gets a green '
+             'quality mark when the AI finds a source, a findable link, where in the source it is, that it is on '
+             'the topic and that it is new. The mark does not judge how reliable the source is.'),
             ('How do proposals come about, and how is the vote held?',
              'Proposals come out of the discussion. A proposal goes on the voting list as soon as enough people '
              'support it. Each proposal is voted on with for, against or abstain. Based on all proposals and the '

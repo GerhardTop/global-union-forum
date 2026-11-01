@@ -1,10 +1,9 @@
 """
-Herontwerp, bouwstap 3: feiten en onderzoek (app/facts.py, de routes voor
-nuttig en betwisten in app/routes/forum.py en de feitenpagina in
-app/routes/issues.py).
+Herontwerp, bouwstap 3: feiten en onderzoek (app/facts.py, de route voor
+betwisten in app/routes/forum.py en de feitenpagina in app/routes/issues.py).
 
-Dekt: nuttig aan en uit met teller (ook als JSON), niet op het eigen feit en
-niet zonder akkoord op de spelregels; geen eens/oneens op feiten; betwisten
+Dekt: geen nuttig meer (polijstronde P2, vervangen door het kwaliteitsmerk);
+geen eens/oneens op feiten; betwisten
 met een reden (het feit blijft staan), één openstaand bezwaar per persoon,
 het label alleen voor moderators, de moderatorweergave en afhandelen; de
 feitenpagina met filter, sorteren, "toon meer" en toevoegen (ook bij een
@@ -90,39 +89,15 @@ def _fact(db, issue, user, body, direction='voor', source='https://example.org',
     return f
 
 
-# ── Nuttig ───────────────────────────────────────────────────────────────
+# ── Nuttig is weg (polijstronde P2) ──────────────────────────────────────
 
-def test_useful_toggles_on_and_off(app, db, make_user):
+def test_useful_route_is_gone(app, db, make_user):
     author, reader = make_user(), make_user()
     issue = _issue(db, author)
     fact = _fact(db, issue, author, 'Een feit')
-    c = _client(app, reader)
-    r = _req(c, 'POST', f'/forum/feit/{fact.id}/nuttig', headers={'X-Requested-With': 'XMLHttpRequest'})
-    assert r.get_json() == {'count': 1, 'mine': True}
-    r = _req(c, 'POST', f'/forum/feit/{fact.id}/nuttig', headers={'X-Requested-With': 'XMLHttpRequest'})
-    assert r.get_json() == {'count': 0, 'mine': False}
-    # Zonder JavaScript: terug naar next.
-    r = _req(c, 'POST', f'/forum/feit/{fact.id}/nuttig', data={'next': f'/vraagstuk/{issue.id}/feiten#post-{fact.id}'})
-    assert r.status_code == 302 and r.headers['Location'].endswith(f'/vraagstuk/{issue.id}/feiten#post-{fact.id}')
-    assert FactUsefulVote.query.filter_by(fact_post_id=fact.id).count() == 1
-
-
-def test_useful_not_on_own_fact_nor_without_rules(app, db, make_user):
-    author, newbie = make_user(), make_user(rules=False)
-    issue = _issue(db, author)
-    fact = _fact(db, issue, author, 'Mijn eigen feit')
-    assert _req(_client(app, author), 'POST', f'/forum/feit/{fact.id}/nuttig').status_code == 403
-    assert _req(_client(app, newbie), 'POST', f'/forum/feit/{fact.id}/nuttig').status_code == 403
-    r = _req(_client(app), 'POST', f'/forum/feit/{fact.id}/nuttig')
-    assert r.status_code == 302 and '/login' in r.headers['Location']
-    assert FactUsefulVote.query.filter_by(fact_post_id=fact.id).count() == 0
-
-
-def test_useful_only_on_facts(app, db, make_user):
-    author, reader = make_user(), make_user()
-    issue = _issue(db, author)
-    op = issues.opening_post(issue)
-    assert _req(_client(app, reader), 'POST', f'/forum/feit/{op.id}/nuttig').status_code == 404
+    assert _req(_client(app, reader), 'POST', f'/forum/feit/{fact.id}/nuttig').status_code in (404, 405)
+    page = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
+    assert 'Nuttig' not in page and 'nuttig' not in page.split('<main')[1]
 
 
 def test_no_agree_disagree_on_facts(app, db, make_user):
@@ -131,7 +106,7 @@ def test_no_agree_disagree_on_facts(app, db, make_user):
     fact = _fact(db, issue, author, 'Geen eens hier')
     page = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
     item = page.split(f'id="post-{fact.id}"')[1].split('</li>')[0]
-    assert 'Nuttig' in item and 'gu-stance' not in item
+    assert 'Betwisten' in item and 'gu-stance' not in item
     assert _req(_client(app, reader), 'POST', f'/forum/stance/{fact.id}', data={'stance': 'eens'}).status_code == 404
 
 
@@ -196,9 +171,9 @@ def test_facts_page_filter_sort_and_more(app, db, make_user):
     plain = _fact(db, issue, author, 'Zonder link', 'tegen', 'Krant van gisteren', when=base + timedelta(hours=3))
     old_link = _fact(db, issue, author, 'Oud met link', 'voor', 'https://a.example', when=base)
     new_link = _fact(db, issue, author, 'Nieuw met link', 'neutraal', 'https://b.example', when=base + timedelta(hours=2))
-    for u in (reader, other):
-        db.session.add(FactUsefulVote(fact_post_id=old_link.id, user_id=u.id))
-    db.session.add(FactUsefulVote(fact_post_id=plain.id, user_id=reader.id))
+    # Polijstronde P2: het kwaliteitsmerk gaat voor alles; dan een link als bron.
+    from app.models import QualityAward
+    db.session.add(QualityAward(post_id=plain.id, status='afgewezen', source='ai', fact_mark=True))
     db.session.commit()
 
     def order(**args):
@@ -207,10 +182,10 @@ def test_facts_page_filter_sort_and_more(app, db, make_user):
         names = ['Zonder link', 'Oud met link', 'Nieuw met link']
         return sorted((n for n in names if n in page), key=page.index)
 
-    # Kwaliteit eerst: bron met link boven, daarbinnen nuttig; dan de rest.
-    assert order() == ['Oud met link', 'Nieuw met link', 'Zonder link']
+    # Kwaliteit eerst: het merk boven, dan een link als bron, daarbinnen de nieuwste.
+    assert order() == ['Zonder link', 'Nieuw met link', 'Oud met link']
     assert order(sorteer='nieuwste') == ['Zonder link', 'Nieuw met link', 'Oud met link']
-    assert order(sorteer='nuttig') == ['Oud met link', 'Zonder link', 'Nieuw met link']
+    assert order(sorteer='nuttig') == order()  # bestaat niet meer: valt terug op kwaliteit eerst
     assert order(richting='tegen') == ['Zonder link']
 
     for i in range(10):
@@ -247,7 +222,7 @@ def test_no_new_facts_after_the_facts_phase(app, db, make_user):
              data={'text': 'Te laat', 'direction': 'voor', 'source': 'https://x.example'})
     assert r.status_code == 403
     page = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
-    assert 'Feit of onderzoek toevoegen' not in page and 'de feiten staan vast' in page
+    assert 'Feit, onderzoek of media toevoegen' not in page and 'de feiten staan vast' in page
 
 
 def test_facts_page_in_english(app, db, make_user):
@@ -255,8 +230,9 @@ def test_facts_page_in_english(app, db, make_user):
     issue = _issue(db, author)
     _fact(db, issue, author, 'A fact', 'tegen')
     page = _req(_client(app, lang='en'), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
-    for text in ('Facts, research and media', 'Argues against', 'Quality first', 'Most useful', 'Useful'):
+    for text in ('Facts, research and media', 'Argues against', 'Quality first', 'Newest'):
         assert text in page
+    assert 'Most useful' not in page
 
 
 def test_facts_page_404(app):
@@ -266,25 +242,23 @@ def test_facts_page_404(app):
 def test_cockpit_links_to_facts_page_with_counts(app, db, make_user):
     author, reader = make_user(), make_user()
     issue = _issue(db, author)
-    fact = _fact(db, issue, author, 'Feit in de cockpit')
-    db.session.add(FactUsefulVote(fact_post_id=fact.id, user_id=reader.id))
-    db.session.commit()
+    _fact(db, issue, author, 'Feit in de cockpit')
     body = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
     panel = body.split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
     assert f'/vraagstuk/{issue.id}/feiten' in panel and 'Feit in de cockpit' in panel
-    assert '<span class="gu-fact__usefulcount">1</span>' in panel
+    assert 'Nuttig' not in panel
 
 
 # ── Sorteren en opruimen ─────────────────────────────────────────────────
 
-def test_sort_quality_first_prefers_award_then_link():
+def test_sort_quality_first_prefers_mark_then_link():
     now = datetime(2026, 10, 1)
     a = Post(id=1, body='a', kind=FACT_KIND, fact_source='tekst', created_at=now)
     b = Post(id=2, body='b', kind=FACT_KIND, fact_source='https://b', created_at=now - timedelta(days=2))
     c = Post(id=3, body='c', kind=FACT_KIND, fact_source='https://c', created_at=now - timedelta(days=1))
     d = Post(id=4, body='d', kind=FACT_KIND, fact_source='tekst', created_at=now - timedelta(days=3))
-    got = facts.sort_facts([a, b, c, d], 'kwaliteit', {b.id: 5, a.id: 9}, awarded={d.id})
-    assert [p.id for p in got] == [4, 2, 3, 1]
+    got = facts.sort_facts([a, b, c, d], 'kwaliteit', marked={d.id})
+    assert [p.id for p in got] == [4, 3, 2, 1]
 
 
 def test_deleting_a_thread_removes_signals(db, make_user):

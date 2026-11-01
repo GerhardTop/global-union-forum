@@ -150,6 +150,7 @@ def _migrate_columns():
     _migrate_conduct(existing)
     _migrate_proposals(existing)
     _migrate_issues(existing)
+    _migrate_polish(existing)
     _migrate_indexes()
     _migrate_username_and_backfill(insp, existing, is_pg)
     # Na alle kolommigraties: de backfill gebruikt de ORM op Proposal en Thread.
@@ -296,6 +297,31 @@ def _migrate_issues(existing):
         if 'is_final' not in cols:
             with db.engine.connect() as conn:
                 conn.execute(text('ALTER TABLE issue_proposals ADD COLUMN is_final BOOLEAN NULL'))
+                conn.commit()
+
+
+# Polijstronde van het vraagstuk-model: nullable kolommen per tabel. Op een
+# verse database maakt db.create_all() ze aan; nieuwe tabellen ook.
+_POLISH_COLUMNS = {
+    # P2: het soort feit (media) en het kwaliteitsmerk van een feit.
+    'posts': (('fact_type', 'VARCHAR(10) NULL'),),
+    'quality_awards': (('fact_mark', 'BOOLEAN NULL'), ('fact_has_source', 'BOOLEAN NULL'),
+                       ('fact_link_findable', 'BOOLEAN NULL'), ('fact_has_location', 'BOOLEAN NULL'),
+                       ('fact_on_topic', 'BOOLEAN NULL'), ('fact_is_new', 'BOOLEAN NULL')),
+}
+
+
+def _migrate_polish(existing):
+    """Polijstronde P1 tot en met P6: additieve, nullable kolommen, idempotent."""
+    for table, columns in _POLISH_COLUMNS.items():
+        if table not in existing:
+            continue
+        cols = {c['name'] for c in sa_inspect(db.engine).get_columns(table)}
+        added = [f'ALTER TABLE {table} ADD COLUMN {name} {ddl}' for name, ddl in columns if name not in cols]
+        if added:
+            with db.engine.connect() as conn:
+                for ddl in added:
+                    conn.execute(text(ddl))
                 conn.commit()
 
 

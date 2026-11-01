@@ -90,6 +90,15 @@ _JUDGE_SCHEMA = {
     "additionalProperties": False,
 }
 
+# Polijstronde P2: bij een feit vraagt dezelfde aanroep ook het
+# kwaliteitsmerk van het feit, alleen op na te gane punten.
+_FACT_FIELDS = ("fact_has_source", "fact_link_findable", "fact_has_location", "fact_on_topic", "fact_is_new")
+_FACT_JUDGE_SCHEMA = {
+    **_JUDGE_SCHEMA,
+    "properties": {**_JUDGE_SCHEMA["properties"], **{name: {"type": "boolean"} for name in _FACT_FIELDS}},
+    "required": _JUDGE_SCHEMA["required"] + list(_FACT_FIELDS),
+}
+
 _MAX_EARLIER_POSTS = 25
 _MAX_CHARS = 1500
 
@@ -191,15 +200,26 @@ def judge_post(post_id):
             f'Original text of the new contribution, as the author wrote it (use this for the '
             f'conduct verdict):\n<original>\n{original[:4 * _MAX_CHARS]}\n</original>\n\n'
             if original and original != text_en.strip() else '')
-        # Fase E: een feit in het feitenblok van een voorstel. Alleen de
-        # handhaving telt; het kwaliteitskeurmerk geldt niet voor feiten.
+        # Fase E: een feit in het feitenblok van een voorstel. Het
+        # kwaliteitskeurmerk geldt niet voor feiten; wel de handhaving en
+        # (polijstronde P2) het eigen kwaliteitsmerk van een feit.
         fact_block = (
             'This contribution is a fact for the facts block of a proposal. The conversation title '
             'is the statement of the proposal. The contributor says the fact points '
             f'{ {"voor": "in favour of", "tegen": "against", "neutraal": "neither for nor against"}.get(post.fact_direction, "neither for nor against") } '
             f'the statement and gives this source: <source>{(post.fact_source or "")[:500]}</source>. '
+            f'{"The contributor marks it as media (news, a podcast, a video or similar). " if post.is_media else ""}'
             'Quality marks do not apply to facts: set suggested_criterion to none and k3_possible to '
             'false. For on_topic, judge whether the fact is relevant to the statement.\n\n'
+            'Also give the fact quality mark, judging only these checkable points, each true or '
+            'false: fact_has_source (a source is given that identifies where the fact comes from, '
+            'not just an opinion or "everyone knows"); fact_link_findable (the source is a complete '
+            'web link that looks like it leads to a specific, findable page); fact_has_location '
+            '(it says where in the source the fact can be found, such as a page, chapter, table, '
+            'timestamp or a link straight to the specific article or passage); fact_on_topic (the '
+            'fact is relevant to the statement); fact_is_new (the fact is not already among the '
+            'earlier contributions). Do NOT judge whether the source is reliable or trustworthy, '
+            'and do not let that influence any of these points.\n\n'
             if post.is_fact else '')
         user_msg = (
             f'Conversation title: {_thread_title(post.thread)}\n\n'
@@ -224,7 +244,8 @@ def judge_post(post_id):
             max_tokens=2048,
             system=system,
             messages=[{'role': 'user', 'content': user_msg}],
-            output_config={'format': {'type': 'json_schema', 'schema': _JUDGE_SCHEMA}},
+            output_config={'format': {'type': 'json_schema',
+                                      'schema': _FACT_JUDGE_SCHEMA if post.is_fact else _JUDGE_SCHEMA}},
         )
         if response.stop_reason == 'refusal':
             current_app.logger.warning('Kwaliteitsbeoordeling geweigerd voor post %s', post_id)
@@ -251,6 +272,8 @@ def judge_post(post_id):
         conduct_rule = data.get('conduct_rule') if data.get('conduct_rule') in ('respect', 'on_topic') else None
         conduct_text = (data.get('conduct_explanation') or '')[:1000] or None
         award.conduct_verdict, award.conduct_rule, award.conduct_explanation = verdict, conduct_rule, conduct_text
+        if post.is_fact:
+            _apply_fact_mark(award, post, data)
         db.session.add(award)
         # Fase D: het handhavingsoordeel meteen uitvoeren (in dezelfde commit).
         from app import conduct
@@ -262,6 +285,15 @@ def judge_post(post_id):
         db.session.rollback()
         current_app.logger.error('Kwaliteitsbeoordeling mislukt voor post %s: %s', post_id, exc)
         return None
+
+
+def _apply_fact_mark(award, post, data):
+    """Polijstronde P2: de punten van het feitmerk en het merk zelf. Een
+    vindbare link moet ook echt een link zijn (http of https)."""
+    for name in _FACT_FIELDS:
+        setattr(award, name, bool(data.get(name)))
+    award.fact_link_findable = award.fact_link_findable and post.fact_source_is_url
+    award.fact_mark = all(getattr(award, name) for name in _FACT_FIELDS)
 
 
 def _recalc_author(post):

@@ -35,6 +35,7 @@
           {%- if fact.id in poll_ids %} data-quality-poll="{{ url_for('forum.forum_quality_status', post_id=fact.id) }}"{% endif %}>
         <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
         <div class="gu-fact__main">
+          {% include 'issues/_fact_badges.html' %}
           <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
           <p class="gu-fact__source">{{ _('Source') }}:
             {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
@@ -50,7 +51,7 @@
           {% endif %}
           {% if is_own and phase_open %}
           {% set edit_errs = (fact_errors or {}).get('edit-' ~ fact.id, {}) %}
-          {% set edit_data = (fact_data or {}).get('edit-' ~ fact.id) or {'text': fact.body, 'direction': fact.fact_direction, 'source': fact.fact_source} %}
+          {% set edit_data = (fact_data or {}).get('edit-' ~ fact.id) or {'text': fact.body, 'direction': fact.fact_direction, 'source': fact.fact_source, 'type': fact.fact_type} %}
           <div class="gu-fact__own">
             {% if not c_removed %}
             <details class="gu-fact__edit"{% if edit_errs %} open{% endif %}>

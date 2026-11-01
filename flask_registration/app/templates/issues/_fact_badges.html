@@ -1,0 +1,31 @@
+{#
+  Partial: issues/_fact_badges.html (polijstronde P2)
+  Bij een feit: het label "media" (nieuws, podcast, video) en het AI-
+  kwaliteitsmerk, een groen vinkje met de criteria bij mouse-over of focus.
+  De AI beoordeelt alleen wat na te gaan is, niet hoe betrouwbaar de bron is.
+  Context: fact, fact_marks (de id's met het merk, uit facts.marked_ids, in
+  één query voor de hele lijst).
+#}
+{% set mark = fact.id in (fact_marks or ()) %}
+{% if fact.is_media or mark %}
+<span class="gu-fact__badges">
+  {% if fact.is_media %}<span class="gu-fact__media">{{ _('Media') }}</span>{% endif %}
+  {% if mark %}
+  <span class="gu-factmark" tabindex="0" role="img" aria-label="{{ _('Quality mark for facts') }}" aria-describedby="factmark-{{ fact.id }}">
+    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="gu-factmark__tip" role="tooltip" id="factmark-{{ fact.id }}">
+      <strong>{{ _('Quality mark for facts') }}</strong>
+      <span>{{ _('The AI checked that:') }}</span>
+      <span class="gu-factmark__list">
+        <span>{{ _('a source is given') }}</span>
+        <span>{{ _('the source is a findable link') }}</span>
+        <span>{{ _('it says where in the source to find it') }}</span>
+        <span>{{ _('it is on the topic') }}</span>
+        <span>{{ _('it is a new fact') }}</span>
+      </span>
+      <span class="gu-factmark__note">{{ _('The mark does not judge how reliable the source is.') }}</span>
+    </span>
+  </span>
+  {% endif %}
+</span>
+{% endif %}

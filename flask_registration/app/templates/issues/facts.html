@@ -2,10 +2,11 @@
 {% block title %}{{ _('Facts, research and media') }} · {{ issue.title }} · Global Union{% endblock %}
 
 {#
-  Feiten en onderzoek van een vraagstuk (herontwerp stap 3). Filter op
-  richting, sorteren (kwaliteit eerst, nieuwste, meest nuttig), per feit de
-  nuttig-knop en betwisten, en een feit of onderzoek toevoegen tijdens de
-  feitenfase. Standaard de bovenste tien, met "toon meer".
+  Feiten, onderzoek en media van een vraagstuk (herontwerp stap 3,
+  polijstronde P2). Filter op richting, sorteren (kwaliteit eerst,
+  nieuwste), per feit het kwaliteitsmerk, het media-label en betwisten, en
+  een feit toevoegen tijdens de feitenfase. Standaard de bovenste tien, met
+  "toon meer".
 #}
 {% block content_outer %}{% block content %}
 {% from 'issues/_crumbs.html' import crumbs with context %}
@@ -35,7 +36,6 @@
         <select name="sorteer" id="sorteer" class="gu-input">
           <option value="kwaliteit"{% if order == 'kwaliteit' %} selected{% endif %}>{{ _('Quality first') }}</option>
           <option value="nieuwste"{% if order == 'nieuwste' %} selected{% endif %}>{{ _('Newest') }}</option>
-          <option value="nuttig"{% if order == 'nuttig' %} selected{% endif %}>{{ _('Most useful') }}</option>
         </select>
         <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm" id="sortSubmit">{{ _('Apply') }}</button>
       </form>
@@ -44,7 +44,7 @@
       {% endif %}
     </div>
 
-    <p class="gu-composer__hint">{{ _('Quality comes from the source and the quality mark, not from votes. Useful only breaks a tie.') }}</p>
+    <p class="gu-composer__hint">{{ _('Quality first: facts with the quality mark, then facts with a link as source. The mark checks the source, not how reliable it is.') }}</p>
 
     {% if facts %}
     <ol class="gu-facts__list gu-factspage__list">
@@ -55,6 +55,7 @@
       <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if c_removed %} gu-post--removed{% endif %}" id="post-{{ fact.id }}">
         <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
         <div class="gu-fact__main">
+          {% include 'issues/_fact_badges.html' %}
           <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
           <p class="gu-fact__source">{{ _('Source') }}:
             {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
@@ -69,7 +70,7 @@
           {% endif %}
           {% if is_own and phase_open and not c_removed %}
           {% set edit_errs = (fact_errors or {}).get('edit-' ~ fact.id, {}) %}
-          {% set edit_data = (fact_data or {}).get('edit-' ~ fact.id) or {'text': fact.body, 'direction': fact.fact_direction, 'source': fact.fact_source} %}
+          {% set edit_data = (fact_data or {}).get('edit-' ~ fact.id) or {'text': fact.body, 'direction': fact.fact_direction, 'source': fact.fact_source, 'type': fact.fact_type} %}
           <div class="gu-fact__own">
             <details class="gu-fact__edit"{% if edit_errs %} open{% endif %}>
               <summary>{{ _('Edit') }}</summary>
@@ -129,7 +130,6 @@
 </main>
 {% endblock %}
 
-{% include 'forum/_fact_useful_script.html' %}
 <script nonce="{{ csp_nonce() }}">
   (function () {
     // Sorteren direct bij het kiezen; zonder JavaScript via de knop.
