@@ -41,12 +41,29 @@
         {% else %}
         <p class="gu-composer__hint">{{ _('No introduction yet.') }}</p>
         {% endif %}
+        {% if issue.kind == 'event' and (issue.event_note or issue.event_days) %}
+        <div class="gu-cockpit__event">
+          {% if issue.event_name %}<p class="gu-cockpit__eventname">{{ issue.event_name }}</p>{% endif %}
+          {% if issue.event_note %}<div class="gu-cockpit__intro">{{ issue.event_note | linkify }}</div>{% endif %}
+          {% if issue.event_days %}
+          <ul class="gu-cockpit__eventdays">
+            {% for day in issue.event_days %}
+            <li>{{ day.starts_at | local | datetimeformat('EEEE d MMMM y, HH:mm') }} {{ _('to') }} {{ day.ends_at | local | datetimeformat('HH:mm') }}</li>
+            {% endfor %}
+          </ul>
+          {% if issue.event_online_between %}<p class="gu-composer__hint">{{ _('Online contributions are open between the first and the last day.') }}</p>{% endif %}
+          {% endif %}
+        </div>
+        {% endif %}
       </details>
       <section class="gu-cockpit__phase" aria-labelledby="issuePhase">
         <h2 id="issuePhase" class="gu-sr-only">{{ _('Phase') }}: {{ phase_labels.get(issue.phase, issue.phase) }}</h2>
         {% include 'issues/_steps.html' %}
+        {% if not open_now and not issue.is_closed %}
+        <p class="gu-cockpit__closednote">{% if issue.kind == 'online' and issue.starts_at %}{{ _('The platform opens for contributions on %(date)s.', date=issue.starts_at | local | datetimeformat('d MMM y HH:mm')) }}{% else %}{{ _('The platform is not open for contributions right now. See the days of the event in the introduction.') }}{% endif %}</p>
+        {% endif %}
         {% if silence_end and issue.phase == 'feiten' and not issue.is_closed and (not issue.phase_deadline or silence_end < issue.phase_deadline) %}
-        <p class="gu-composer__hint gu-cockpit__silence">{{ _('The facts phase closes earlier if no new quality mark is awarded before %(date)s.', date=silence_end | datetimeformat('d MMM y HH:mm')) }}</p>
+        <p class="gu-composer__hint gu-cockpit__silence">{{ _('The facts phase closes earlier if no new quality mark is awarded before %(date)s.', date=silence_end | local | datetimeformat('d MMM y HH:mm')) }}</p>
         {% endif %}
       </section>
       {% include 'issues/_lifecycle.html' %}

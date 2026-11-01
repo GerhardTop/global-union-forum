@@ -71,6 +71,11 @@ def is_wrapper(issue):
 def _deadline(issue, phase, start):
     if issue.kind != 'online':
         return None  # een event heeft geen vaste datums
+    # Polijstronde P4: met een planning in momenten het geplande einde van
+    # de fase, zolang dat na het begin ligt (anders de doorlooptijd).
+    planned = issue.plan().get(phase) if issue.starts_at is not None else None
+    if planned is not None and planned[1] > start:
+        return planned[1]
     days = issue.days(phase)
     return start + timedelta(days=days) if days else None
 

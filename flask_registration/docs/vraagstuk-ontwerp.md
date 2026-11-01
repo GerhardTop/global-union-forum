@@ -48,7 +48,11 @@ Alle voorstellen bij het vraagstuk. Per voorstel: status (op de stemlijst / verz
 De stelling, de status, de toelichting, de bijstel-historie (versies), en de sectie "waarop dit voorstel zich baseert" met de gekoppelde feiten en hun richting-labels plus een "feit koppelen"-knop (iedereen mag koppelen, ook tegenfeiten). De stemming (voor, tegen, onthouding) met de drempel per voorstel en de tussenstand als die aanstaat, en, als dat bij het vraagstuk aanstaat, de melding dat de initiatiefnemer aan het einde op basis van alle voorstellen en de discussie een samenvattend voorstel kan doen, waarover opnieuw wordt gestemd. De discussie gefilterd op dit voorstel. Mobiel: de stemming prominent bovenaan.
 
 ### Vraagstuk starten: /gesprekken/nieuw
-De vraag, het eerste bericht, de keuze online of event (met datum, en locatie bij event), de planning per fase (feiten 21, bijstellen 5, stemmen 7 dagen), en de stemregels (drempel per voorstel 50 procent, steundrempel 5, tussenstand aan/uit, samenvattend voorstel met nieuwe stemming aan/uit).
+De vraag, de toelichting, de keuze online of event, en de stemregels in de gewone, vlakke lay-out (drempel per voorstel 50 procent, steundrempel 5 (0 mag: dan staat een voorstel meteen op de stemlijst), tussenstand aan/uit, "Afsluiten met een samenvattend voorstel" aan/uit). Optioneel al feiten (een of meer, met "nog een feit toevoegen").
+- Online: de planning per fase als startdatum met een tijd: feiten en discussie beginnen (standaard 00:00), bijstellen begint, stemmen begint, stemmen sluit (de volgende standaard 24:00, het einde van die dag). Standaard 21, 5 en 7 dagen vanaf vandaag. De tijden zijn Nederlandse tijd en worden in UTC opgeslagen (issues.starts_at, adjust_starts_at, vote_starts_at, vote_ends_at); days_* volgen eruit. Vóór het begin is het platform dicht voor bijdragen.
+- Event: naam van het event, optionele toelichting, standaard één dag met een van-tot-tijd, een knop "Dag toevoegen" voor meer dagen (tabel issue_event_days), een uitgevinkt vakje "Online bijdragen open tussen de eerste en laatste dag", en "Locatie". De tijden zijn wanneer het platform open is (berichten, feiten, voorstellen, steun en stemmen); de initiatiefnemer verzet de fasen zelf in de cockpit.
+- Het ingevulde formulier blijft bewaard in de browser (localStorage), met een waarschuwing bij wegklikken met niet-opgeslagen invoer; na het versturen gaat het weg.
+- Vraagstukken van vóór deze planning (zonder momenten of eventdagen) houden de oude planning in dagen en zijn altijd open.
 
 ### Event of online
 Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (met datum en locatie), met een eigen label en kleur.
@@ -87,4 +91,4 @@ Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (
 - De fase-engine en de tik blijven ongewijzigd tot stap 6/7.
 
 ## Standaardwaarden (instelbaar in beheer)
-Feiten en discussie 21 dagen of 5 dagen stilte; bijstellen 5 dagen, maximaal één keer; stemmen 7 dagen; vervolg open. Steundrempel 5; drempel per voorstel 50 procent voor. Stemrecht na 3 keurmerken; moderator meer dan 10 over minstens 3 onderwerpen; senior meer dan 100 handelingen.
+Feiten en discussie 21 dagen of 5 dagen stilte; bijstellen 5 dagen; stemmen 7 dagen; vervolg open. Steundrempel 5 (0 mag); drempel per voorstel 50 procent voor. Stemrecht na 3 keurmerken; moderator meer dan 10 over minstens 3 onderwerpen; senior meer dan 100 handelingen.

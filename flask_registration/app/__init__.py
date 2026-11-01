@@ -308,6 +308,12 @@ _POLISH_COLUMNS = {
     'quality_awards': (('fact_mark', 'BOOLEAN NULL'), ('fact_has_source', 'BOOLEAN NULL'),
                        ('fact_link_findable', 'BOOLEAN NULL'), ('fact_has_location', 'BOOLEAN NULL'),
                        ('fact_on_topic', 'BOOLEAN NULL'), ('fact_is_new', 'BOOLEAN NULL')),
+    # P4: de planning als momenten en de eventgegevens (issue_event_days en,
+    # P3, issue_follows maakt db.create_all() aan).
+    'issues': (('starts_at', 'TIMESTAMP NULL'), ('adjust_starts_at', 'TIMESTAMP NULL'),
+               ('vote_starts_at', 'TIMESTAMP NULL'), ('vote_ends_at', 'TIMESTAMP NULL'),
+               ('event_name', 'VARCHAR(200) NULL'), ('event_note', 'TEXT NULL'),
+               ('event_online_between', 'BOOLEAN NULL')),
 }
 
 

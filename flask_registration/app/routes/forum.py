@@ -549,6 +549,14 @@ def forum_thread(thread_id):
         _abort_if_thread_removed(thread)
         if not current_user.can_contribute():
             return _rules_first_redirect()
+        # Polijstronde P4: bij een vraagstuk alleen als het platform open is
+        # (online vanaf het geplande begin, event op de eventdagen).
+        if thread.proposal is None:
+            from app import facts, issues
+            issue = facts.issue_for_thread(thread.id)
+            if issue is not None and not issues.is_open_now(issue):
+                flash(gettext('The platform is not open for contributions to this issue right now.'), 'error')
+                return redirect(url_for('issues.show', issue_id=issue.id))
         # CSRF, zelfde aanpak als /feedback: leeg FlaskForm, 400 bij een
         # ontbrekend of ongeldig token. Geen honeypot: reageren vereist login.
         if not reply_form.validate_on_submit():

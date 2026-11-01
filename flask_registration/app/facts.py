@@ -40,6 +40,9 @@ def issue_phase_open(issue, now=None):
     vóór de deadline. Alleen lezen; de fase-engine verandert hier niets."""
     if issue is None or issue.is_closed or issue.phase != 'feiten':
         return False
+    from app import issues
+    if not issues.is_open_now(issue, now):  # polijstronde P4: het platform is dicht
+        return False
     return issue.phase_deadline is None or (now or datetime.utcnow()) < issue.phase_deadline
 
 

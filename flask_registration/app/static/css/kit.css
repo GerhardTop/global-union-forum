@@ -3697,3 +3697,32 @@ body {
 @media (max-width: 480px) {
   .gu-cockpit .gu-phasebar__step:not(.is-current) .gu-proposal-steps__title { font-size: 0.6875rem; }
 }
+
+/* ── Polijstronde P4: startformulier (planning, eventdagen, feiten) ─────── */
+.gu-schedule { border: 0; padding: 0; margin: 0 0 20px; min-width: 0; }
+.gu-schedule[hidden] { display: none; }
+.gu-schedule legend { font-weight: 600; margin-bottom: 8px; color: var(--gu-fg-1); }
+.gu-schedule__row { display: grid; grid-template-columns: minmax(0, 1fr) 160px 110px; gap: 4px 10px; align-items: center; margin-bottom: 10px; }
+.gu-schedule__row label { color: var(--gu-fg-2); }
+.gu-schedule__default { grid-column: 3; font-size: 0.75rem; color: var(--gu-fg-3); margin-top: -4px; }
+.gu-schedule__row .gu-join__formError { grid-column: 1 / -1; margin: 0; }
+.gu-newissue__label { display: block; font-weight: 500; color: var(--gu-fg-1); margin-bottom: 4px; }
+.gu-newissue__h2 { font-size: 1.125rem; font-weight: 600; margin: 28px 0 12px; color: var(--gu-fg-1); }
+.gu-newissue__restored { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 10px 12px; border-radius: 8px; background: var(--gu-bg-soft); }
+.gu-newissue__restored[hidden] { display: none; }
+.gu-newissue__facts { display: grid; gap: 14px; margin-bottom: 10px; }
+.gu-newissue__fact { padding: 14px; border: 1px solid var(--gu-border); border-radius: 10px; }
+.gu-eventdays { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 8px; }
+.gu-eventdays__row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+.gu-eventdays__row label { display: grid; gap: 2px; font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-eventdays__row input[type="date"] { min-width: 150px; }
+.gu-eventdays__row input[type="time"] { width: 110px; }
+.gu-cockpit__closednote { margin: 8px 0 0; padding: 8px 12px; border-radius: 8px; background: var(--gu-bg-soft); font-size: 0.875rem; color: var(--gu-fg-1); }
+.gu-cockpit__event { margin-top: 10px; }
+.gu-cockpit__eventname { font-weight: 600; margin: 0 0 4px; }
+.gu-cockpit__eventdays { margin: 6px 0; padding-left: 18px; }
+@media (max-width: 640px) {
+  .gu-schedule__row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .gu-schedule__row label { grid-column: 1 / -1; }
+  .gu-schedule__default { grid-column: 2; }
+}

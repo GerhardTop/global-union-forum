@@ -1,11 +1,14 @@
 {#
-  Partial: issues/_kind.html (herontwerp stap 1 en 2)
+  Partial: issues/_kind.html (herontwerp stap 1 en 2, polijstronde P4)
   Het label online of event, met de datum. Online: wanneer het stemmen
-  sluit; event: datum en plaats. Context: issue.
+  sluit; event: de naam, de eerste dag (Nederlandse tijd) en de plaats. Een
+  event van vóór P4 heeft alleen event_date (zoals ingevoerd). Context: issue.
 #}
 <span class="gu-issue-kind gu-issue-kind--{{ issue.kind }}">
   {%- if issue.kind == 'event' -%}
-    {{ _('Event') }}{% if issue.event_date %} · {{ issue.event_date | datetimeformat('d MMM y HH:mm') }}{% if issue.event_location %}, {{ issue.event_location }}{% endif %}{% elif issue.event_location %} · {{ issue.event_location }}{% endif %}
+    {%- set days = issue.event_days if issue.id else [] -%}
+    {%- set when = (days[0].starts_at | local) if days else issue.event_date -%}
+    {{ _('Event') }}{% if issue.event_name %} · {{ issue.event_name }}{% endif %}{% if when %} · {{ when | datetimeformat('d MMM y HH:mm') }}{% if days | length > 1 %} ({{ _('%(num)s days', num=days | length) }}){% endif %}{% endif %}{% if issue.event_location %}{{ ', ' if when else ' · ' }}{{ issue.event_location }}{% endif %}
   {%- else -%}
     {{ _('Online') }}{% if issue.voting_deadline %} · {{ _('voting closes %(date)s', date=issue.voting_deadline | dateformat('d MMM y')) }}{% endif %}
   {%- endif -%}

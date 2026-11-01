@@ -65,7 +65,8 @@ def _is_contributor(user):
 
 
 def _open(issue):
-    return not issue.is_closed and issue.phase in OPEN_PHASES
+    from app import issues
+    return not issue.is_closed and issue.phase in OPEN_PHASES and issues.is_open_now(issue)
 
 
 # ── Voorstel doen ────────────────────────────────────────────────────────
@@ -244,7 +245,8 @@ def voting_open(proposal, count=None, now=None):
         return issue.phase == 'vervolg' and (now or datetime.utcnow()) < final_voting_end(proposal)
     if count is None:
         count = support_counts([proposal.id]).get(proposal.id, 0)
-    return issue.phase == 'stemmen' and on_list(proposal, count)
+    from app import issues
+    return issue.phase == 'stemmen' and on_list(proposal, count) and issues.is_open_now(issue, now)
 
 
 def voting_over(proposal, now=None):

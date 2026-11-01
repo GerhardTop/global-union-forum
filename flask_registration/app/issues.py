@@ -21,14 +21,15 @@ De fase-automatiek (de tik) draait in deze stap nog op het voorstel; de
 fasevelden van een vraagstuk worden hier gezet en getoond, niet bijgewerkt.
 """
 import math
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 from app import db
 from app.models import ISSUE_KINDS, Issue, Post, Proposal, Thread
 
 # Grenzen voor het startformulier.
 DAYS_MIN, DAYS_MAX = 1, 365
-SUPPORT_MIN, SUPPORT_MAX = 1, 1000
+SUPPORT_MIN, SUPPORT_MAX = 0, 1000  # P4: 0 = meteen op de stemlijst
 THRESHOLD_MIN, THRESHOLD_MAX = 50, 99
 TITLE_MAX, LOCATION_MAX = 300, 200
 DAY_FIELDS = (('days_facts', 21), ('days_adjust', 5), ('days_vote', 7))
@@ -142,11 +143,43 @@ def delete_wrappers(issue_ids):
     empty = issue_ids - still_used
     if empty:
         from app import issue_lifecycle
+        from app.models import IssueEventDay
         issue_lifecycle.delete_follows(issue_ids=empty)  # polijstronde P3
+        IssueEventDay.query.filter(IssueEventDay.issue_id.in_(empty)).delete(synchronize_session=False)
         Issue.query.filter(Issue.id.in_(empty)).delete(synchronize_session=False)
 
 
 # ── Een nieuw vraagstuk ──────────────────────────────────────────────────
+# Polijstronde P4: de tijden in het formulier zijn Nederlandse tijd
+# (LOCAL_TZ); opgeslagen wordt UTC, zoals de rest van de app (utcnow).
+# Online: per fase een begindatum met een tijd; feiten en discussie
+# standaard om 00:00, de volgende fasen standaard om 24:00 (het einde van
+# die dag). Event: een naam, een toelichting, één of meer dagen met een
+# van-tot-tijd en de keuze of online bijdragen tussen de eerste en de
+# laatste dag openstaan; de initiatiefnemer verzet de fasen zelf.
+
+LOCAL_TZ = ZoneInfo('Europe/Amsterdam')
+EVENT_DAYS_MAX = 14
+NEW_FACTS_MAX = 10
+NAME_MAX = 200
+# (veld, standaardtijd) per moment van de online planning.
+SCHEDULE_FIELDS = (('starts_at', '00:00'), ('adjust_starts_at', '24:00'), ('vote_starts_at', '24:00'),
+                   ('vote_ends_at', '24:00'))
+
+
+def to_utc(local):
+    """Een naïeve Nederlandse tijd naar een naïeve UTC-tijd."""
+    return local.replace(tzinfo=LOCAL_TZ).astimezone(timezone.utc).replace(tzinfo=None)
+
+
+def to_local(moment):
+    """Een naïeve UTC-tijd naar een naïeve Nederlandse tijd (voor de weergave)."""
+    if moment is None:
+        return None
+    if not isinstance(moment, datetime):
+        return moment
+    return moment.replace(tzinfo=timezone.utc).astimezone(LOCAL_TZ).replace(tzinfo=None)
+
 
 def _int(raw, low, high, default):
     raw = (raw or '').strip()
@@ -155,6 +188,56 @@ def _int(raw, low, high, default):
     if not raw.isdigit() or not low <= int(raw) <= high:
         return None
     return int(raw)
+
+
+def _moment(day, time, default_time):
+    """Een datum (JJJJ-MM-DD) en een tijd (UU:MM, leeg is de standaard; 24:00
+    is het einde van de dag) als Nederlandse tijd, of None als ongeldig."""
+    try:
+        day = date.fromisoformat((day or '').strip())
+    except ValueError:
+        return None
+    time = (time or '').strip() or default_time
+    if time == '24:00':
+        return datetime.combine(day, datetime.min.time()) + timedelta(days=1)
+    try:
+        return datetime.combine(day, datetime.strptime(time, '%H:%M').time())
+    except ValueError:
+        return None
+
+
+def default_schedule(today=None):
+    """De standaardplanning voor het formulier: {veld: (datum, tijd)}, met de
+    standaard doorlooptijden (21, 5 en 7 dagen) vanaf vandaag 00:00."""
+    today = today or to_local(datetime.utcnow()).date()
+    days = dict(DAY_FIELDS)
+    adjust = today + timedelta(days=days['days_facts'] - 1)
+    vote = adjust + timedelta(days=days['days_adjust'])
+    end = vote + timedelta(days=days['days_vote'])
+    return {'starts_at': (today.isoformat(), '00:00'), 'adjust_starts_at': (adjust.isoformat(), ''),
+            'vote_starts_at': (vote.isoformat(), ''), 'vote_ends_at': (end.isoformat(), '')}
+
+
+def _days_between(start, end):
+    return max(DAYS_MIN, min(DAYS_MAX, math.ceil((end - start).total_seconds() / 86400)))
+
+
+def parse_event_days(form, errors):
+    """De dagen van een event: [(begin, eind)] in UTC, gesorteerd."""
+    days = []
+    dates, starts, ends = form.getlist('event_day'), form.getlist('event_from'), form.getlist('event_to')
+    for i, raw in enumerate(dates[:EVENT_DAYS_MAX]):
+        if not (raw or '').strip():
+            continue
+        begin = _moment(raw, starts[i] if i < len(starts) else '', '09:00')
+        end = _moment(raw, ends[i] if i < len(ends) else '', '17:00')
+        if begin is None or end is None or end <= begin:
+            errors['event_days'] = 'invalid'
+            continue
+        days.append((to_utc(begin), to_utc(end)))
+    if not days and 'event_days' not in errors:
+        errors['event_days'] = 'missing'
+    return sorted(days)
 
 
 def parse_form(form):
@@ -172,26 +255,44 @@ def parse_form(form):
     values['kind'] = kind
 
     values['event_location'] = (form.get('event_location') or '').strip()[:LOCATION_MAX] or None
-    values['event_date'] = None
-    values['voting_deadline'] = None
+    values['event_date'] = values['voting_deadline'] = None
+    values['event_name'] = values['event_note'] = None
+    values['event_online_between'] = None
+    values['event_days'] = []
+    for name, _default in SCHEDULE_FIELDS:
+        values[name] = None
+    days = dict(DAY_FIELDS)
     if kind == 'event':
-        try:
-            values['event_date'] = datetime.strptime(form.get('event_date') or '', '%Y-%m-%dT%H:%M')
-        except ValueError:
-            errors['event_date'] = 'invalid'
-        raw_deadline = (form.get('voting_deadline') or '').strip()
-        if raw_deadline:
-            try:
-                values['voting_deadline'] = date.fromisoformat(raw_deadline)
-            except ValueError:
-                errors['voting_deadline'] = 'invalid'
-    else:
+        values['event_name'] = (form.get('event_name') or '').strip()[:NAME_MAX] or None
+        if not values['event_name']:
+            errors['event_name'] = 'invalid'
+        values['event_note'] = (form.get('event_note') or '').strip() or None
+        values['event_online_between'] = form.get('event_online_between') == '1'
+        values['event_days'] = parse_event_days(form, errors)
+        if values['event_days']:
+            values['event_date'] = values['event_days'][0][0]
+    elif kind == 'online':
         values['event_location'] = None
-
-    for name, default in DAY_FIELDS:
-        values[name] = _int(form.get(name), DAYS_MIN, DAYS_MAX, default)
-        if values[name] is None:
-            errors[name] = 'invalid'
+        moments = []
+        for name, default_time in SCHEDULE_FIELDS:
+            local = _moment(form.get(f'{name}_date'), form.get(f'{name}_time'), default_time)
+            if local is None:
+                errors[name] = 'invalid'
+            moments.append(local)
+        if 'starts_at' not in errors:
+            # Elke fase begint na de vorige; het stemmen sluit na zijn begin.
+            for (name, _t), prev, cur in zip(SCHEDULE_FIELDS[1:], moments, moments[1:]):
+                if prev is not None and cur is not None and cur <= prev:
+                    errors[name] = 'order'
+        if not errors.keys() & {n for n, _t in SCHEDULE_FIELDS}:
+            utc = [to_utc(m) for m in moments]
+            if utc[-1] <= datetime.utcnow():
+                errors['vote_ends_at'] = 'past'
+            for (name, _t), moment in zip(SCHEDULE_FIELDS, utc):
+                values[name] = moment
+            days = {'days_facts': _days_between(utc[0], utc[1]), 'days_adjust': _days_between(utc[1], utc[2]),
+                    'days_vote': _days_between(utc[2], utc[3])}
+    values.update(days)
     values['support_threshold'] = _int(form.get('support_threshold'), SUPPORT_MIN, SUPPORT_MAX, 5)
     if values['support_threshold'] is None:
         errors['support_threshold'] = 'invalid'
@@ -204,18 +305,45 @@ def parse_form(form):
 
 
 def create(values, user, lang=None, now=None):
-    """Een nieuw vraagstuk in de feitenfase. Online: de stemdeadline volgt
-    uit de planning. Commit niet zelf."""
+    """Een nieuw vraagstuk in de feitenfase. Online: met een planning in
+    momenten begint de feitenfase op het geplande begin en loopt tot het
+    begin van het bijstellen; zonder (tests, oude aanroepen) vanaf nu met de
+    dagen. Het stemmen sluit aan het eind van de planning. Commit niet zelf."""
+    from app.models import IssueEventDay
     now = now or datetime.utcnow()
     values = {**dict(DAY_FIELDS), **values}  # de planning is nodig vóór de flush
-    issue = Issue(created_by_id=user.id, created_at=now, lang=lang, phase='feiten', phase_started_at=now,
-                  **values)
-    issue.phase_deadline = now + timedelta(days=issue.days_facts)
-    if issue.kind == 'online':
-        issue.voting_deadline = issue.plan()['stemmen'][1].date()
+    event_days = values.pop('event_days', None) or []
+    issue = Issue(created_by_id=user.id, created_at=now, lang=lang, phase='feiten', **values)
+    if issue.kind == 'online' and issue.starts_at is not None:
+        issue.phase_started_at = issue.starts_at
+        issue.phase_deadline = issue.adjust_starts_at
+        issue.voting_deadline = to_local(issue.vote_ends_at - timedelta(seconds=1)).date()
+    else:
+        issue.phase_started_at = now
+        issue.phase_deadline = now + timedelta(days=issue.days_facts) if issue.kind == 'online' else None
+        if issue.kind == 'online':
+            issue.voting_deadline = issue.plan()['stemmen'][1].date()
     db.session.add(issue)
+    for begin, end in event_days:
+        issue.event_days.append(IssueEventDay(starts_at=begin, ends_at=end))
     _open_thread(issue, user)
     return issue
+
+
+def is_open_now(issue, now=None):
+    """Polijstronde P4: is het platform nu open voor bijdragen bij dit
+    vraagstuk? Online: vanaf het geplande begin. Event: tijdens een dag van
+    het event, en tussen de eerste en de laatste dag als dat aanstaat.
+    Zonder planning of dagen (vraagstukken van vóór P4) altijd."""
+    now = now or datetime.utcnow()
+    if issue.kind == 'online':
+        return issue.starts_at is None or now >= issue.starts_at
+    days = list(issue.event_days) if issue.id is not None else []
+    if not days:
+        return True
+    if issue.event_online_between and days[0].starts_at <= now <= days[-1].ends_at:
+        return True
+    return any(day.starts_at <= now <= day.ends_at for day in days)
 
 
 def opening_post(issue):

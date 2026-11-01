@@ -709,6 +709,18 @@ class Issue(db.Model):
     # initiatiefnemer of een moderator, met het moment van de laatste wijziging.
     followup_text          = db.Column(db.Text, nullable=True)
     followup_at            = db.Column(db.DateTime, nullable=True)
+    # Polijstronde P4: de planning als momenten (UTC). Online: het begin van
+    # elke fase en het einde van het stemmen; NULL bij vraagstukken van
+    # vóór P4 (dan geldt de planning in dagen vanaf de aanmaak). Event: een
+    # naam, een toelichting, de dagen (IssueEventDay) en of online bijdragen
+    # tussen de eerste en de laatste dag openstaan.
+    starts_at              = db.Column(db.DateTime, nullable=True)
+    adjust_starts_at       = db.Column(db.DateTime, nullable=True)
+    vote_starts_at         = db.Column(db.DateTime, nullable=True)
+    vote_ends_at           = db.Column(db.DateTime, nullable=True)
+    event_name             = db.Column(db.String(200), nullable=True)
+    event_note             = db.Column(db.Text, nullable=True)
+    event_online_between   = db.Column(db.Boolean, nullable=True)
 
     created_by = db.relationship('User', foreign_keys=[created_by_id])
     # Met de backref zet ook een ORM-delete van het gesprek thread_id op NULL
@@ -720,8 +732,13 @@ class Issue(db.Model):
                 'stemmen': self.days_vote}.get(phase)
 
     def plan(self):
-        """De geplande (begin, eind) per fase met een doorlooptijd, gerekend
+        """De geplande (begin, eind) per fase met een doorlooptijd. Met een
+        planning in momenten (polijstronde P4) die momenten; anders gerekend
         vanaf de aanmaak: elke fase begint waar de vorige eindigt."""
+        if self.starts_at and self.adjust_starts_at and self.vote_starts_at and self.vote_ends_at:
+            return {'feiten': (self.starts_at, self.adjust_starts_at),
+                    'bijstellen': (self.adjust_starts_at, self.vote_starts_at),
+                    'stemmen': (self.vote_starts_at, self.vote_ends_at)}
         windows, moment = {}, self.created_at or datetime.utcnow()
         for phase in PROPOSAL_TIMED_PHASES:
             end = moment + timedelta(days=self.days(phase) or 0)
@@ -732,6 +749,20 @@ class Issue(db.Model):
     @property
     def phase_index(self):
         return PROPOSAL_PHASES.index(self.phase) if self.phase in PROPOSAL_PHASES else 0
+
+
+class IssueEventDay(db.Model):
+    """Polijstronde P4: een dag van een event, met de tijden (UTC) waarop het
+    platform voor bijdragen open is. Standaard één dag."""
+    __tablename__ = "issue_event_days"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    issue_id   = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=False, index=True)
+    starts_at  = db.Column(db.DateTime, nullable=False)
+    ends_at    = db.Column(db.DateTime, nullable=False)
+
+    issue = db.relationship('Issue', backref=db.backref('event_days', lazy=True, order_by='IssueEventDay.starts_at',
+                                                        cascade='all, delete-orphan'))
 
 
 class IssueFollow(db.Model):

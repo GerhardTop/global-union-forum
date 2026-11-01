@@ -1,8 +1,19 @@
 {% extends "base.html" %}
 {% block title %}{{ _('New issue') }} · Global Union{% endblock %}
 
+{#
+  Het startformulier van een vraagstuk (herontwerp stap 1, polijstronde P4).
+  Online: per fase een startdatum en een tijd (feiten en discussie om 00:00,
+  de volgende fasen om 24:00). Event: naam, toelichting, één of meer dagen
+  met een van-tot-tijd, locatie, en of online bijdragen tussen de eerste en
+  laatste dag openstaan. De tijden gaan over wanneer het platform open is.
+  Feiten kunnen al bij het aanmaken. Het formulier wordt in de browser
+  bewaard (localStorage) en waarschuwt bij wegklikken met niet-opgeslagen
+  invoer. Zonder JavaScript werkt alles, met één eventdag en één feit.
+#}
 {% block content_outer %}{% block content %}
 {% from 'issues/_crumbs.html' import crumbs with context %}
+{% from 'forum/_fact_fields.html' import fact_fields with context %}
 <main class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
@@ -17,8 +28,11 @@
     {% set errs = errors or {} %}
     {# Bij een eerste bezoek staan beide stemregel-vinkjes aan; na een fout de ingevulde stand. #}
     {% set fresh = not fd %}
-    <form class="gu-forum__newform" method="POST" action="{{ url_for('issues.new') }}" novalidate>
+    <form class="gu-forum__newform gu-newissue" id="newIssueForm" method="POST" action="{{ url_for('issues.new') }}"
+          data-draft-key="guf-new-issue-{{ current_user.id }}" data-fresh="{{ '1' if fresh else '0' }}" novalidate>
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <p class="gu-composer__hint gu-newissue__restored" id="draftRestored" hidden>{{ _('We restored what you filled in earlier.') }}
+        <button type="button" class="gu-post__action gu-post__action--ghost" id="draftClear">{{ _('Start empty') }}</button></p>
 
       <div class="gu-forum__newfield">
         <label for="title">{{ _('The question') }}</label>
@@ -29,10 +43,10 @@
       </div>
 
       <div class="gu-forum__newfield">
-        <label for="intro">{{ _('First post') }}</label>
+        <label for="intro">{{ _('Introduction') }}</label>
         <textarea name="intro" id="intro" class="gu-composer__input" required rows="6"
                   placeholder="{{ _('Explain the question. Give context and why it matters.') }}">{{ fd.get('intro', '') }}</textarea>
-        {% if errs.get('intro') %}<p class="gu-join__formError">{{ _('Write a first post.') }}</p>{% endif %}
+        {% if errs.get('intro') %}<p class="gu-join__formError">{{ _('Write an introduction.') }}</p>{% endif %}
       </div>
 
       <fieldset class="gu-forum__newfield gu-newtype">
@@ -43,81 +57,121 @@
         </label>
         <label class="gu-newtype__option">
           <input type="radio" name="kind" value="event"{% if fd.get('kind') == 'event' %} checked{% endif %}>
-          <span><strong>{{ _('Event') }}</strong><span class="gu-composer__hint">{{ _('Linked to a meeting at a date and place.') }}</span></span>
+          <span><strong>{{ _('Event') }}</strong><span class="gu-composer__hint">{{ _('Linked to a meeting. You move the phases on yourself in the cockpit.') }}</span></span>
         </label>
         {% if errs.get('kind') %}<p class="gu-join__formError">{{ _('Choose online or event.') }}</p>{% endif %}
       </fieldset>
 
-      <fieldset class="gu-forum__newfield gu-durations" id="eventFields">
-        <legend>{{ _('Event') }}</legend>
-        <div class="gu-durations__row">
-          <label for="event_date">{{ _('Date and time') }}</label>
-          <input type="datetime-local" id="event_date" name="event_date"
-                 class="gu-input{% if errs.get('event_date') %} gu-input--error{% endif %}" value="{{ fd.get('event_date', '') }}">
-          {% if errs.get('event_date') %}<p class="gu-join__formError">{{ _('Enter the date and time of the event.') }}</p>{% endif %}
-        </div>
-        <div class="gu-durations__row">
-          <label for="event_location">{{ _('Location') }}</label>
-          <input type="text" id="event_location" name="event_location" maxlength="200" class="gu-input"
-                 value="{{ fd.get('event_location', '') }}">
-        </div>
-        <div class="gu-durations__row">
-          <label for="voting_deadline">{{ _('Voting deadline') }}</label>
-          <input type="date" id="voting_deadline" name="voting_deadline"
-                 class="gu-input{% if errs.get('voting_deadline') %} gu-input--error{% endif %}" value="{{ fd.get('voting_deadline', '') }}">
-          <span class="gu-composer__hint">{{ _('Optional. For an online issue the deadline follows from the schedule.') }}</span>
-          {% if errs.get('voting_deadline') %}<p class="gu-join__formError">{{ _('Enter a valid date.') }}</p>{% endif %}
-        </div>
-      </fieldset>
-
-      <fieldset class="gu-forum__newfield gu-durations">
+      {# Online: per fase een startdatum en een tijd. #}
+      <fieldset class="gu-forum__newfield gu-schedule" id="onlineFields">
         <legend>{{ _('Schedule per phase') }}</legend>
-        {% set phase_fields = [('days_facts', _('Facts and discussion')), ('days_adjust', _('Revise the proposal')), ('days_vote', _('Voting'))] %}
-        {% for name, label in phase_fields %}
-        <div class="gu-durations__row">
-          <label for="{{ name }}">{{ label }}</label>
-          <input type="number" min="1" max="365" step="1" inputmode="numeric" id="{{ name }}" name="{{ name }}"
-                 class="gu-input{% if errs.get(name) %} gu-input--error{% endif %}"
-                 value="{{ fd.get(name) or defaults[name] }}">
-          <span class="gu-composer__hint">{{ _('days') }}</span>
-          {% if errs.get(name) %}<p class="gu-join__formError">{{ _('Enter a whole number from 1 to 365.') }}</p>{% endif %}
+        <p class="gu-composer__hint">{{ _('The times say when the platform is open, in Dutch time. An empty time is 00:00 for the first phase and 24:00 (the end of that day) for the next ones.') }}</p>
+        {% set schedule_labels = {'starts_at': _('Facts and discussion start'), 'adjust_starts_at': _('Revising starts'),
+                                  'vote_starts_at': _('Voting starts'), 'vote_ends_at': _('Voting closes')} %}
+        {% for name, default_time in schedule_fields %}
+        {% set err = errs.get(name) %}
+        <div class="gu-schedule__row">
+          <label for="{{ name }}_date">{{ schedule_labels[name] }}</label>
+          <input type="date" id="{{ name }}_date" name="{{ name }}_date" class="gu-input{% if err %} gu-input--error{% endif %}"
+                 value="{{ fd.get(name ~ '_date') or schedule[name][0] }}">
+          <input type="time" id="{{ name }}_time" name="{{ name }}_time" class="gu-input" aria-label="{{ schedule_labels[name] }}: {{ _('time') }}"
+                 value="{{ fd.get(name ~ '_time') if fd else schedule[name][1] }}" placeholder="{{ default_time }}">
+          <span class="gu-schedule__default">{{ _('empty is %(time)s', time=default_time) }}</span>
+          {% if err == 'order' %}<p class="gu-join__formError">{{ _('This moment has to come after the previous one.') }}</p>
+          {% elif err == 'past' %}<p class="gu-join__formError">{{ _('Voting has to close in the future.') }}</p>
+          {% elif err %}<p class="gu-join__formError">{{ _('Enter a valid date and time.') }}</p>{% endif %}
         </div>
         {% endfor %}
       </fieldset>
 
-      <fieldset class="gu-forum__newfield">
-        <legend>{{ _('Voting rules') }}</legend>
-        <div class="gu-forum__newfield gu-threshold">
-          <label for="support_threshold">{{ _('Support needed for a proposal') }}</label>
-          <div class="gu-threshold__row">
-            <input type="number" min="1" max="1000" step="1" inputmode="numeric" id="support_threshold" name="support_threshold"
-                   class="gu-input{% if errs.get('support_threshold') %} gu-input--error{% endif %}"
-                   value="{{ fd.get('support_threshold') or 5 }}">
-            <span>{{ _('supporters') }}</span>
-          </div>
-          <span class="gu-composer__hint">{{ _('A proposal goes to the vote once it has this many supporters.') }}</span>
-          {% if errs.get('support_threshold') %}<p class="gu-join__formError">{{ _('Enter a whole number from 1 to 1000.') }}</p>{% endif %}
+      {# Event: naam, toelichting, dagen met een van-tot-tijd, locatie. #}
+      <fieldset class="gu-forum__newfield gu-schedule" id="eventFields">
+        <legend>{{ _('Event') }}</legend>
+        <div class="gu-forum__newfield">
+          <label for="event_name">{{ _('Name of the event') }}</label>
+          <input type="text" id="event_name" name="event_name" maxlength="200" class="gu-input{% if errs.get('event_name') %} gu-input--error{% endif %}"
+                 value="{{ fd.get('event_name', '') }}">
+          {% if errs.get('event_name') %}<p class="gu-join__formError">{{ _('Give the event a name.') }}</p>{% endif %}
         </div>
-        <div class="gu-forum__newfield gu-threshold">
-          <label for="proposal_threshold_pct">{{ _('Threshold for adoption') }}</label>
-          <div class="gu-threshold__row">
-            <span>{{ _('more than') }}</span>
-            <input type="number" min="50" max="99" step="1" inputmode="numeric" id="proposal_threshold_pct" name="proposal_threshold_pct"
-                   class="gu-input{% if errs.get('proposal_threshold_pct') %} gu-input--error{% endif %}"
-                   value="{{ fd.get('proposal_threshold_pct') or 50 }}">
-            <span>{{ _('percent in favour') }}</span>
-          </div>
-          {% if errs.get('proposal_threshold_pct') %}<p class="gu-join__formError">{{ _('Choose a threshold from 50 to 99 percent.') }}</p>{% endif %}
+        <div class="gu-forum__newfield">
+          <label for="event_note">{{ _('Explanation') }} <span class="gu-join__badge">{{ _('optional') }}</span></label>
+          <textarea id="event_note" name="event_note" rows="3" class="gu-composer__input">{{ fd.get('event_note', '') }}</textarea>
+        </div>
+        <div class="gu-forum__newfield">
+          <span class="gu-newissue__label">{{ _('Days') }}</span>
+          <p class="gu-composer__hint">{{ _('Per day the times the platform is open, in Dutch time.') }}</p>
+          {% set day_dates = fd.get('event_day') or [''] %}
+          <ol class="gu-eventdays" id="eventDays">
+            {% for d in day_dates %}
+            <li class="gu-eventdays__row">
+              <label><span>{{ _('Date') }}</span><input type="date" name="event_day" class="gu-input" value="{{ d }}"></label>
+              <label><span>{{ _('from') }}</span><input type="time" name="event_from" class="gu-input" value="{{ (fd.get('event_from') or [])[loop.index0] if fd.get('event_from') else '09:00' }}"></label>
+              <label><span>{{ _('to') }}</span><input type="time" name="event_to" class="gu-input" value="{{ (fd.get('event_to') or [])[loop.index0] if fd.get('event_to') else '17:00' }}"></label>
+              <button type="button" class="gu-iconbtn gu-eventdays__remove" title="{{ _('Remove this day') }}" aria-label="{{ _('Remove this day') }}" hidden>&times;</button>
+            </li>
+            {% endfor %}
+          </ol>
+          <button type="button" class="gu-btn gu-btn--ghost gu-btn--sm" id="addEventDay" hidden data-max="{{ event_days_max }}"><span aria-hidden="true">+</span> {{ _('Add a day') }}</button>
+          {% if errs.get('event_days') == 'missing' %}<p class="gu-join__formError">{{ _('Enter at least one day.') }}</p>
+          {% elif errs.get('event_days') %}<p class="gu-join__formError">{{ _('Each day needs a date, and the end time after the start time.') }}</p>{% endif %}
         </div>
         <label class="gu-join__check">
-          <input type="checkbox" name="show_interim" value="1"{% if fresh or fd.get('show_interim') == '1' %} checked{% endif %}>
-          <span>{{ _('Show the interim result during voting') }}</span>
+          <input type="checkbox" name="event_online_between" value="1"{% if fd.get('event_online_between') == '1' %} checked{% endif %}>
+          <span>{{ _('Online contributions open between the first and the last day') }}</span>
         </label>
-        <label class="gu-join__check">
-          <input type="checkbox" name="final_vote" value="1"{% if fresh or fd.get('final_vote') == '1' %} checked{% endif %}>
-          <span>{{ _('End with a summary proposal') }}</span>
-        </label>
+        <div class="gu-forum__newfield">
+          <label for="event_location">{{ _('Location') }}</label>
+          <input type="text" id="event_location" name="event_location" maxlength="200" class="gu-input"
+                 value="{{ fd.get('event_location', '') }}">
+        </div>
       </fieldset>
+
+      {# Stemregels: in de gewone, vlakke lay-out. #}
+      <h2 class="gu-newissue__h2">{{ _('Voting rules') }}</h2>
+      <div class="gu-forum__newfield gu-threshold">
+        <label for="support_threshold">{{ _('Support needed for a proposal') }}</label>
+        <div class="gu-threshold__row">
+          <input type="number" min="0" max="1000" step="1" inputmode="numeric" id="support_threshold" name="support_threshold"
+                 class="gu-input{% if errs.get('support_threshold') %} gu-input--error{% endif %}"
+                 value="{{ fd.get('support_threshold') if fd.get('support_threshold') not in (none, '') else 5 }}">
+          <span>{{ _('supporters') }}</span>
+        </div>
+        <span class="gu-composer__hint">{{ _('A proposal goes to the vote once it has this many supporters. With 0 it goes to the vote straight away.') }}</span>
+        {% if errs.get('support_threshold') %}<p class="gu-join__formError">{{ _('Enter a whole number from 0 to 1000.') }}</p>{% endif %}
+      </div>
+      <div class="gu-forum__newfield gu-threshold">
+        <label for="proposal_threshold_pct">{{ _('Threshold for adoption') }}</label>
+        <div class="gu-threshold__row">
+          <span>{{ _('more than') }}</span>
+          <input type="number" min="50" max="99" step="1" inputmode="numeric" id="proposal_threshold_pct" name="proposal_threshold_pct"
+                 class="gu-input{% if errs.get('proposal_threshold_pct') %} gu-input--error{% endif %}"
+                 value="{{ fd.get('proposal_threshold_pct') or 50 }}">
+          <span>{{ _('percent in favour') }}</span>
+        </div>
+        {% if errs.get('proposal_threshold_pct') %}<p class="gu-join__formError">{{ _('Choose a threshold from 50 to 99 percent.') }}</p>{% endif %}
+      </div>
+      <label class="gu-join__check">
+        <input type="checkbox" name="show_interim" value="1"{% if fresh or fd.get('show_interim') == '1' %} checked{% endif %}>
+        <span>{{ _('Show the interim result during voting') }}</span>
+      </label>
+      <label class="gu-join__check">
+        <input type="checkbox" name="final_vote" value="1"{% if fresh or fd.get('final_vote') == '1' %} checked{% endif %}>
+        <span>{{ _('End with a summary proposal') }}</span>
+      </label>
+
+      {# Feiten al bij het aanmaken (optioneel). #}
+      <h2 class="gu-newissue__h2">{{ _('Facts, research and media') }} <span class="gu-join__badge">{{ _('optional') }}</span></h2>
+      <p class="gu-composer__hint">{{ _('You can already add facts that the discussion can build on.') }}</p>
+      {% set fact_rows = fd.get('facts') or [{}] %}
+      {% set fact_errs = errs.get('facts') or {} %}
+      <div class="gu-newissue__facts" id="newFacts" data-max="{{ new_facts_max }}">
+        {% for row in fact_rows %}
+        <div class="gu-fact-form gu-newissue__fact" data-index="{{ loop.index0 }}">
+          {{ fact_fields('fact-' ~ loop.index0, row, fact_errs.get(loop.index0 | string, {}), 'fact_' ~ loop.index0 ~ '_') }}
+        </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="gu-btn gu-btn--ghost gu-btn--sm" id="addFact" hidden><span aria-hidden="true">+</span> {{ _('Add another fact') }}</button>
 
       <div class="gu-forum__newactions">
         <a href="{{ url_for('issues.index') }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>
@@ -133,16 +187,119 @@
 
 <script nonce="{{ csp_nonce() }}">
   (function () {
-    // De eventvelden alleen bij een event. Zonder JavaScript staat alles in beeld.
+    var form = document.getElementById('newIssueForm');
+    // Online- of eventvelden. Zonder JavaScript staat alles in beeld.
+    var onlineFields = document.getElementById('onlineFields');
     var eventFields = document.getElementById('eventFields');
     function sync() {
-      var kind = document.querySelector('input[name="kind"]:checked');
-      eventFields.hidden = !(kind && kind.value === 'event');
+      var kind = form.querySelector('input[name="kind"]:checked');
+      var isEvent = kind && kind.value === 'event';
+      eventFields.hidden = !isEvent;
+      onlineFields.hidden = isEvent;
     }
-    document.querySelectorAll('input[name="kind"]').forEach(function (r) {
-      r.addEventListener('change', sync);
+    form.querySelectorAll('input[name="kind"]').forEach(function (r) { r.addEventListener('change', sync); });
+
+    // Eventdagen: "Dag toevoegen" kopieert de laatste rij (de dag erna).
+    var days = document.getElementById('eventDays');
+    var addDay = document.getElementById('addEventDay');
+    function dayRows() { return days.querySelectorAll('.gu-eventdays__row'); }
+    function syncDays() {
+      var rows = dayRows();
+      rows.forEach(function (row) { row.querySelector('.gu-eventdays__remove').hidden = rows.length < 2; });
+      addDay.hidden = rows.length >= Number(addDay.dataset.max);
+    }
+    function addDayRow() {
+      var rows = dayRows(), last = rows[rows.length - 1], row = last.cloneNode(true);
+      var date = last.querySelector('input[name="event_day"]').value;
+      if (date) {
+        var next = new Date(date + 'T12:00:00');
+        next.setDate(next.getDate() + 1);
+        row.querySelector('input[name="event_day"]').value = next.toISOString().slice(0, 10);
+      }
+      days.appendChild(row);
+      syncDays();
+      return row;
+    }
+    addDay.addEventListener('click', function () { addDayRow().querySelector('input').focus(); dirty = true; });
+    days.addEventListener('click', function (e) {
+      var btn = e.target.closest('.gu-eventdays__remove');
+      if (btn && dayRows().length > 1) { btn.closest('li').remove(); syncDays(); dirty = true; }
+    });
+
+    // Feiten: "Nog een feit" voegt een lege rij toe met nieuwe namen.
+    var facts = document.getElementById('newFacts');
+    var addFact = document.getElementById('addFact');
+    function factRows() { return facts.querySelectorAll('.gu-newissue__fact'); }
+    function addFactRow() {
+      var rows = factRows(), last = rows[rows.length - 1], i = rows.length, row = last.cloneNode(true);
+      row.dataset.index = i;
+      row.querySelectorAll('[name], [id], [for]').forEach(function (el) {
+        ['name', 'id', 'for'].forEach(function (attr) {
+          var v = el.getAttribute(attr);
+          if (v) el.setAttribute(attr, v.replace(/fact([_-])\d+/, 'fact$1' + i));
+        });
+        if (el.matches('textarea, input[type="text"]')) el.value = '';
+        if (el.matches('input[type="radio"]')) el.checked = el.value === 'feit';
+        el.classList.remove('gu-input--error');
+      });
+      row.querySelectorAll('.gu-join__formError').forEach(function (el) { el.remove(); });
+      facts.appendChild(row);
+      addFact.hidden = factRows().length >= Number(facts.dataset.max);
+      return row;
+    }
+    addFact.hidden = factRows().length >= Number(facts.dataset.max);
+    addFact.addEventListener('click', function () { addFactRow().querySelector('textarea').focus(); dirty = true; });
+
+    // Het ingevulde formulier bewaren in de browser, zodat je terugkomt waar
+    // je was; weg na het versturen. Na een serverfout geldt de serverstand.
+    var key = form.dataset.draftKey, dirty = false, submitting = false;
+    function save() {
+      var data = {fields: [], days: dayRows().length, facts: factRows().length};
+      new FormData(form).forEach(function (value, name) {
+        if (name !== 'csrf_token') data.fields.push([name, value]);
+      });
+      try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
+    }
+    function restore() {
+      var data;
+      try { data = JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { data = null; }
+      if (!data || !data.fields || !data.fields.length) return false;
+      while (dayRows().length < Math.min(data.days || 1, Number(addDay.dataset.max))) addDayRow();
+      while (factRows().length < Math.min(data.facts || 1, Number(facts.dataset.max))) addFactRow();
+      form.querySelectorAll('input[type="checkbox"]').forEach(function (el) { el.checked = false; });
+      var seen = {};
+      data.fields.forEach(function (pair) {
+        var name = pair[0], value = pair[1], els = form.querySelectorAll('[name="' + name + '"]');
+        var n = seen[name] = (seen[name] || 0);
+        if (!els.length) return;
+        if (els[0].type === 'radio' || els[0].type === 'checkbox') {
+          els.forEach(function (el) { if (el.value === value) el.checked = true; });
+        } else if (els[n]) {
+          els[n].value = value;
+        }
+        seen[name] = n + 1;
+      });
+      return true;
+    }
+    if (form.dataset.fresh === '1' && restore()) {
+      document.getElementById('draftRestored').hidden = false;
+    }
+    document.getElementById('draftClear').addEventListener('click', function () {
+      try { localStorage.removeItem(key); } catch (e) {}
+      dirty = false;
+      location.reload();
+    });
+    form.addEventListener('input', function () { dirty = true; save(); });
+    form.addEventListener('change', function () { dirty = true; save(); });
+    form.addEventListener('submit', function () {
+      submitting = true;
+      try { localStorage.removeItem(key); } catch (e) {}
+    });
+    window.addEventListener('beforeunload', function (e) {
+      if (dirty && !submitting) { e.preventDefault(); e.returnValue = ''; }
     });
     sync();
+    syncDays();
   })();
 </script>
 {% endblock %}

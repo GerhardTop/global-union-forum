@@ -2032,3 +2032,113 @@ msgstr "Nieuw voorstel"
 
 msgid "done"
 msgstr "afgerond"
+
+# Polijstronde P4: startformulier
+
+msgid "We restored what you filled in earlier."
+msgstr "We hebben teruggezet wat je eerder had ingevuld."
+
+msgid "Start empty"
+msgstr "Leeg beginnen"
+
+msgid "Introduction"
+msgstr "Toelichting"
+
+msgid "Write an introduction."
+msgstr "Schrijf een toelichting."
+
+msgid "Linked to a meeting. You move the phases on yourself in the cockpit."
+msgstr "Gekoppeld aan een bijeenkomst. Je zet de fasen zelf door in de cockpit."
+
+msgid "The times say when the platform is open, in Dutch time. An empty time is 00:00 for the first phase and 24:00 (the end of that day) for the next ones."
+msgstr "De tijden zeggen wanneer het platform open is, in Nederlandse tijd. Een lege tijd is 00:00 voor de eerste fase en 24:00 (het einde van die dag) voor de volgende."
+
+msgid "Facts and discussion start"
+msgstr "Feiten en discussie beginnen"
+
+msgid "Revising starts"
+msgstr "Bijstellen begint"
+
+msgid "Voting starts"
+msgstr "Stemmen begint"
+
+msgid "Voting closes"
+msgstr "Stemmen sluit"
+
+msgid "time"
+msgstr "tijd"
+
+msgid "empty is %(time)s"
+msgstr "leeg is %(time)s"
+
+msgid "This moment has to come after the previous one."
+msgstr "Dit moment moet na het vorige komen."
+
+msgid "Voting has to close in the future."
+msgstr "Het stemmen moet in de toekomst sluiten."
+
+msgid "Enter a valid date and time."
+msgstr "Vul een geldige datum en tijd in."
+
+msgid "Name of the event"
+msgstr "Naam van het event"
+
+msgid "Give the event a name."
+msgstr "Geef het event een naam."
+
+msgid "Days"
+msgstr "Dagen"
+
+msgid "Per day the times the platform is open, in Dutch time."
+msgstr "Per dag de tijden dat het platform open is, in Nederlandse tijd."
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "from"
+msgstr "van"
+
+msgid "to"
+msgstr "tot"
+
+msgid "Remove this day"
+msgstr "Deze dag weghalen"
+
+msgid "Add a day"
+msgstr "Dag toevoegen"
+
+msgid "Enter at least one day."
+msgstr "Vul minstens één dag in."
+
+msgid "Each day needs a date, and the end time after the start time."
+msgstr "Elke dag heeft een datum nodig, en de eindtijd na de begintijd."
+
+msgid "Online contributions open between the first and the last day"
+msgstr "Online bijdragen open tussen de eerste en laatste dag"
+
+msgid "A proposal goes to the vote once it has this many supporters. With 0 it goes to the vote straight away."
+msgstr "Een voorstel gaat naar de stemming zodra het zoveel steunbetuigingen heeft. Bij 0 gaat het meteen naar de stemming."
+
+msgid "Enter a whole number from 0 to 1000."
+msgstr "Vul een geheel getal van 0 tot en met 1000 in."
+
+msgid "You can already add facts that the discussion can build on."
+msgstr "Je kunt al feiten toevoegen waarop de discussie kan voortbouwen."
+
+msgid "Add another fact"
+msgstr "Nog een feit toevoegen"
+
+msgid "%(num)s days"
+msgstr "%(num)s dagen"
+
+msgid "Online contributions are open between the first and the last day."
+msgstr "Online bijdragen staan open tussen de eerste en de laatste dag."
+
+msgid "The platform opens for contributions on %(date)s."
+msgstr "Het platform gaat open voor bijdragen op %(date)s."
+
+msgid "The platform is not open for contributions right now. See the days of the event in the introduction."
+msgstr "Het platform is nu niet open voor bijdragen. Zie de dagen van het event in de toelichting."
+
+msgid "The platform is not open for contributions to this issue right now."
+msgstr "Het platform is nu niet open voor bijdragen aan dit vraagstuk."

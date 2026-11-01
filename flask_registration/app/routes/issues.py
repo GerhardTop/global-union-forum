@@ -49,9 +49,34 @@ def _inject_phase_labels():
             'ip_status': ip.status,
             'ip_can_support': lambda p, n, supported: ip.can_support(p, current_user, n, supported)}
 
-_FORM_FIELDS = ('title', 'intro', 'kind', 'event_date', 'event_location', 'voting_deadline',
-                'days_facts', 'days_adjust', 'days_vote', 'support_threshold', 'proposal_threshold_pct',
-                'show_interim', 'final_vote')
+@issues_bp.app_template_filter('local')
+def _local_time(moment):
+    """Polijstronde P4: een UTC-moment in Nederlandse tijd voor de weergave."""
+    return issues.to_local(moment)
+
+
+_FORM_FIELDS = ('title', 'intro', 'kind', 'event_name', 'event_note', 'event_location', 'event_online_between',
+                'support_threshold', 'proposal_threshold_pct', 'show_interim', 'final_vote') + tuple(
+                f'{name}_{part}' for name, _t in issues.SCHEDULE_FIELDS for part in ('date', 'time'))
+_FORM_LISTS = ('event_day', 'event_from', 'event_to')
+_NEW_FACT_KEYS = ('text', 'direction', 'source', 'type')
+
+
+def _new_issue_facts(form):
+    """Polijstronde P4: de feiten die bij het aanmaken al zijn ingevuld
+    (rijen fact_<i>_...). Geeft (feiten, fouten per rij, ingevulde rijen)."""
+    facts, errors, rows = [], {}, []
+    for i in range(issues.NEW_FACTS_MAX):
+        prefix = f'fact_{i}_'
+        if not any((form.get(prefix + k) or '').strip() for k in ('text', 'source')):
+            continue
+        data, row_errors = _fact_form(prefix)
+        rows.append(data)
+        if row_errors:
+            errors[str(len(rows) - 1)] = row_errors  # sessie-JSON: tekst als sleutel
+        else:
+            facts.append(data)
+    return facts, errors, rows
 
 
 @issues_bp.route('/gesprekken')
@@ -71,21 +96,29 @@ def new():
     if request.method == 'POST':
         _require_csrf()
         values, errors = issues.parse_form(request.form)
+        new_facts, fact_errors, fact_rows = _new_issue_facts(request.form)
+        if fact_errors:
+            errors['facts'] = fact_errors
         if errors:
             # PRG: fouten en ingevulde waarden een GET lang bewaren.
             data = {k: request.form.get(k, '') for k in _FORM_FIELDS}
+            data.update({k: request.form.getlist(k) for k in _FORM_LISTS})
+            data['facts'] = fact_rows
             _stash_form_state('issue_new', errors, data)
             return redirect(url_for('issues.new'), code=303)
         issue = issues.create(values, current_user, lang=session.get('lang', 'nl'))
+        db.session.flush()
+        made = [_new_fact(issue.thread, data) for data in new_facts]
         db.session.commit()
         op = issues.opening_post(issue)
-        if op is not None:
-            from app import quality
-            quality.schedule_judgement(op.id)
+        from app import quality
+        for post in ([op] if op is not None else []) + made:
+            quality.schedule_judgement(post.id)
         return redirect(url_for('issues.show', issue_id=issue.id))
     errors, data = _pop_form_state('issue_new')
     return render_template('issues/new.html', errors=errors, form_data=data,
-                           defaults=dict(issues.DAY_FIELDS))
+                           schedule=issues.default_schedule(), schedule_fields=issues.SCHEDULE_FIELDS,
+                           new_facts_max=issues.NEW_FACTS_MAX, event_days_max=issues.EVENT_DAYS_MAX)
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>')
@@ -111,7 +144,7 @@ def show(issue_id):
                            can_edit_followup=lifecycle.can_edit_followup(issue, current_user),
                            silence_end=lifecycle.silence_end(issue) if issue.kind == 'online' else None,
                            following=lifecycle.is_following(issue, current_user),
-                           can_add_fact=_can_add_fact(issue),
+                           can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue),
                            return_to=issue.id, **discussion)
 
 
@@ -224,7 +257,7 @@ def proposal_new(issue_id):
     return render_template('issues/proposal_new.html', issue=issue, errors=errors, form_data=data,
                            can_propose=ip.can_propose(issue, current_user),
                            issue_facts=ip.visible_issue_facts(issue, current_user),
-                           can_add_fact=_can_add_fact(issue),
+                           can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue),
                            fact_marks=fact_signals.marked_ids(f.id for f in ip.visible_issue_facts(issue, current_user)))
 
 
@@ -244,7 +277,7 @@ def proposal(issue_id, proposal_id):
                            links=links, can_link=ip.can_link(proposal, current_user),
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
                            candidates=[f for f in ip.visible_issue_facts(issue, current_user) if f.id not in linked_ids],
-                           can_add_fact=_can_add_fact(issue), vote=_vote_context(proposal, count),
+                           can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue), vote=_vote_context(proposal, count),
                            fact_marks=fact_signals.marked_ids(f.id for f in ip.visible_issue_facts(issue, current_user)))
 
 

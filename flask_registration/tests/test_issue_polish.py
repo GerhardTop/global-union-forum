@@ -11,6 +11,9 @@ Dekt per onderdeel:
   sorteren met het merk eerst.
 - P3: de fase-indicator met iconen, de uitklapbare toelichting, volgen (ook
   in de meldingen), vergroten, de "+"-knoppen en "Posten".
+- P4: het startformulier (planning in momenten, eventdagen, steundrempel 0,
+  feiten bij het aanmaken, de bewaarde invoer), en dat bijdragen alleen
+  kunnen als het platform open is.
 
 Gedeelde conftest-app (CSRF uit).
 """
@@ -58,6 +61,8 @@ def make_user(db):
         _delete_thread(db.session.get(Thread, tid))
     IssueFollow.query.filter(IssueFollow.user_id.in_(made)).delete(synchronize_session=False)
     if issue_ids:
+        from app.models import IssueEventDay
+        IssueEventDay.query.filter(IssueEventDay.issue_id.in_(issue_ids)).delete(synchronize_session=False)
         IssueFollow.query.filter(IssueFollow.issue_id.in_(issue_ids)).delete(synchronize_session=False)
         Issue.query.filter(Issue.id.in_(issue_ids)).delete(synchronize_session=False)
     db.session.commit()
@@ -315,3 +320,100 @@ def test_deleting_a_user_removes_follows(app, db, make_user):
     quality.detach_user(fan.id)
     db.session.commit()
     assert IssueFollow.query.filter_by(issue_id=issue.id).count() == 0
+
+
+# ── P4: het startformulier ───────────────────────────────────────────────
+
+def _schedule(**over):
+    data = {f'{name}_{part}': value for name, (day, time) in issues.default_schedule().items()
+            for part, value in (('date', day), ('time', time))}
+    data.update(over)
+    return data
+
+
+def test_start_form_layout(app, db, make_user):
+    user = make_user()
+    page = _get(app, '/gesprekken/nieuw', user)
+    assert 'Toelichting' in page and 'eerste bericht' not in page.lower()
+    for text in ('Feiten en discussie beginnen', 'Stemmen sluit', 'leeg is 24:00', 'Naam van het event', 'Dag toevoegen',
+                 'Online bijdragen open tussen de eerste en laatste dag', 'Locatie', 'Afsluiten met een samenvattend voorstel',
+                 'name="fact_0_text"', 'data-draft-key', 'beforeunload', 'min="0"'):
+        assert text in page, text
+    # De stemregels staan vlak in het formulier, niet in een eigen kader.
+    assert '<legend>Stemregels</legend>' not in page and 'gu-newissue__h2">Stemregels' in page
+
+
+def test_default_schedule_times():
+    sched = issues.default_schedule(datetime(2027, 3, 1).date())
+    assert sched['starts_at'] == ('2027-03-01', '00:00')
+    assert sched['adjust_starts_at'] == ('2027-03-21', '')       # 21 dagen: tot en met 21 maart 24:00
+    assert sched['vote_starts_at'] == ('2027-03-26', '') and sched['vote_ends_at'] == ('2027-04-02', '')
+
+
+def test_support_threshold_zero_puts_a_proposal_on_the_list(app, db, make_user):
+    host, anna = make_user(), make_user()
+    r = _req(_client(app, host), 'POST', '/gesprekken/nieuw', data={
+        'title': 'Nul steun', 'intro': 'Uitleg.', 'kind': 'online', 'support_threshold': '0', **_schedule()})
+    assert r.status_code == 302
+    issue = Issue.query.filter_by(created_by_id=host.id).one()
+    assert issue.support_threshold == 0
+    proposal = ip.create(issue, anna, 'Meteen op de lijst.')
+    db.session.commit()
+    assert ip.on_list(proposal, 0) and ip.status(proposal, 0)[0] == 'stemlijst'
+
+
+def test_facts_can_be_added_when_starting(app, db, make_user):
+    host = make_user()
+    r = _req(_client(app, host), 'POST', '/gesprekken/nieuw', data={
+        'title': 'Met feiten', 'intro': 'Uitleg.', 'kind': 'online', **_schedule(),
+        'fact_0_text': 'Eerste feit.', 'fact_0_direction': 'voor', 'fact_0_source': 'https://a.example',
+        'fact_1_text': 'Tweede feit.', 'fact_1_direction': 'tegen', 'fact_1_source': 'https://b.example',
+        'fact_1_type': 'media'})
+    assert r.status_code == 302
+    issue = Issue.query.filter_by(created_by_id=host.id).one()
+    found = Post.query.filter_by(thread_id=issue.thread_id, kind='feit').order_by(Post.id).all()
+    assert [(f.body, f.fact_direction, f.fact_type) for f in found] == [
+        ('Eerste feit.', 'voor', 'feit'), ('Tweede feit.', 'tegen', 'media')]
+    # Een half ingevuld feit houdt het vraagstuk tegen, met de invoer bewaard.
+    r = _req(_client(app, host), 'POST', '/gesprekken/nieuw', data={
+        'title': 'Half feit', 'intro': 'Uitleg.', 'kind': 'online', **_schedule(), 'fact_0_text': 'Zonder bron.'})
+    assert r.status_code == 303 and Issue.query.filter_by(title='Half feit').count() == 0
+
+
+def test_event_platform_is_open_only_on_the_days(app, db, make_user):
+    from app.models import IssueEventDay
+    host, anna = make_user(), make_user()
+    issue = issues.create({'title': 'Eventvraag', 'intro': 'Uitleg.', 'kind': 'event', 'event_name': 'Avond'}, host)
+    db.session.flush()
+    now = datetime.utcnow()
+    issue.event_days.append(IssueEventDay(starts_at=now + timedelta(days=1), ends_at=now + timedelta(days=1, hours=3)))
+    issue.event_days.append(IssueEventDay(starts_at=now + timedelta(days=3), ends_at=now + timedelta(days=3, hours=3)))
+    db.session.commit()
+    assert not issues.is_open_now(issue)
+    assert issues.is_open_now(issue, now + timedelta(days=1, hours=1))
+    assert not issues.is_open_now(issue, now + timedelta(days=2))
+    issue.event_online_between = True
+    db.session.commit()
+    assert issues.is_open_now(issue, now + timedelta(days=2))
+    issue.event_online_between = False
+    db.session.commit()
+    # Dicht: geen bericht, geen feit, geen voorstel; de cockpit zegt het.
+    r = _req(_client(app, anna), 'POST', f'/forum/{issue.thread_id}', data={'body': 'Te vroeg.'})
+    assert r.status_code == 302 and Post.query.filter_by(body='Te vroeg.').count() == 0
+    assert not ip.can_propose(issue, anna)
+    r = _req(_client(app, anna), 'POST', f'/forum/{issue.thread_id}/feiten',
+             data={'text': 'Te vroeg feit.', 'direction': 'voor', 'source': 'https://x.example'})
+    assert r.status_code == 403
+    assert 'Het platform is nu niet open voor bijdragen' in _get(app, f'/vraagstuk/{issue.id}', anna)
+
+
+def test_online_times_are_shown_in_dutch_time(app, db, make_user):
+    host = make_user()
+    r = _req(_client(app, host), 'POST', '/gesprekken/nieuw', data={
+        'title': 'Tijden', 'intro': 'Uitleg.', 'kind': 'online', **_schedule(
+            starts_at_date='2027-01-04', adjust_starts_at_date='2027-01-13', vote_starts_at_date='2027-01-16',
+            vote_ends_at_date='2027-01-20')})
+    issue = Issue.query.filter_by(created_by_id=host.id).one()
+    page = _get(app, f'/vraagstuk/{issue.id}', host)
+    assert '4 jan. 2027 00:00' in page or '4 jan 2027 00:00' in page
+    assert r.status_code == 302

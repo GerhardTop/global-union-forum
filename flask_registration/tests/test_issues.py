@@ -139,45 +139,70 @@ def test_deleting_the_thread_removes_its_wrapper_issue(db, make_user):
     assert db.session.get(Issue, issue_id) is None
 
 
+def _schedule_form(**over):
+    """De online planning van het startformulier (polijstronde P4): de
+    standaardplanning vanaf vandaag, met eventueel andere waarden."""
+    data = {f'{name}_{part}': value for name, (day, time) in issues.default_schedule().items()
+            for part, value in (('date', day), ('time', time))}
+    data.update(over)
+    return data
+
+
 def test_new_issue_online(app, db, make_user):
+    # Polijstronde P4: per fase een startdatum en een tijd (Nederlandse tijd).
     user = make_user()
     r = _req(_client(app, user), 'POST', '/gesprekken/nieuw', data={
         'title': 'Hoe verdelen we de ruimte?', 'intro': 'Context.', 'kind': 'online',
-        'days_facts': '10', 'days_adjust': '3', 'days_vote': '4',
+        'starts_at_date': '2027-01-04', 'starts_at_time': '',
+        'adjust_starts_at_date': '2027-01-13', 'adjust_starts_at_time': '',
+        'vote_starts_at_date': '2027-01-16', 'vote_starts_at_time': '24:00',
+        'vote_ends_at_date': '2027-01-20', 'vote_ends_at_time': '',
         'support_threshold': '8', 'proposal_threshold_pct': '66', 'final_vote': '1'})
     assert r.status_code == 302
     issue = Issue.query.filter_by(created_by_id=user.id).one()
     assert r.headers['Location'].endswith(f'/vraagstuk/{issue.id}')
     assert (issue.kind, issue.phase, issue.lang) == ('online', 'feiten', 'nl')
+    # Wintertijd: 00:00 in Nederland is 23:00 UTC de dag ervoor.
+    assert issue.starts_at == datetime(2027, 1, 3, 23, 0) == issue.phase_started_at
+    assert issue.adjust_starts_at == datetime(2027, 1, 13, 23, 0) == issue.phase_deadline
+    assert issue.vote_ends_at == datetime(2027, 1, 20, 23, 0)
     assert (issue.days_facts, issue.days_adjust, issue.days_vote) == (10, 3, 4)
     assert (issue.support_threshold, issue.proposal_threshold_pct) == (8, 66)
     assert issue.show_interim is False and issue.final_vote is True
-    assert issue.phase_deadline - issue.phase_started_at == timedelta(days=10)
-    assert issue.voting_deadline == (issue.created_at + timedelta(days=17)).date()
+    assert issue.voting_deadline == date(2027, 1, 20)
     assert issue.event_date is None and issue.event_location is None
+    assert issues.is_open_now(issue) is False  # het begin ligt in de toekomst
 
 
 def test_new_issue_event(app, db, make_user):
+    # Polijstronde P4: naam, toelichting, dagen met een van-tot-tijd, locatie.
     user = make_user()
     r = _req(_client(app, user), 'POST', '/gesprekken/nieuw', data={
         'title': 'Bijeenkomst over de haven', 'intro': 'Kom langs.', 'kind': 'event',
-        'event_date': '2026-12-01T19:30', 'event_location': 'Buurthuis', 'voting_deadline': '2026-12-08'})
+        'event_name': 'Havenavond', 'event_note': 'Met koffie.', 'event_location': 'Buurthuis',
+        'event_day': ['2026-12-02', '2026-12-01'], 'event_from': ['10:00', '19:30'], 'event_to': ['12:00', '22:00'],
+        'event_online_between': '1'})
     assert r.status_code == 302
     issue = Issue.query.filter_by(created_by_id=user.id).one()
-    assert issue.kind == 'event'
-    assert issue.event_date == datetime(2026, 12, 1, 19, 30)
-    assert issue.event_location == 'Buurthuis'
-    assert issue.voting_deadline == date(2026, 12, 8)
+    assert (issue.kind, issue.event_name, issue.event_note) == ('event', 'Havenavond', 'Met koffie.')
+    assert issue.event_location == 'Buurthuis' and issue.event_online_between is True
+    assert [(d.starts_at, d.ends_at) for d in issue.event_days] == [
+        (datetime(2026, 12, 1, 18, 30), datetime(2026, 12, 1, 21, 0)),
+        (datetime(2026, 12, 2, 9, 0), datetime(2026, 12, 2, 11, 0))]
+    assert issue.event_date == datetime(2026, 12, 1, 18, 30) and issue.phase_deadline is None
     assert (issue.days_facts, issue.support_threshold, issue.proposal_threshold_pct) == (21, 5, 50)
 
 
 @pytest.mark.parametrize('extra', [
-    {'kind': 'event'},                                   # geen datum bij een event
-    {'kind': 'online', 'days_facts': '0'},
-    {'kind': 'online', 'proposal_threshold_pct': '40'},
-    {'kind': 'online', 'support_threshold': 'veel'},
+    {'kind': 'event', 'event_name': 'Avond'},            # geen dag bij een event
+    {'kind': 'event', 'event_day': '2026-12-01'},        # geen naam
+    {'kind': 'event', 'event_name': 'Avond', 'event_day': '2026-12-01', 'event_from': '20:00', 'event_to': '19:00'},
+    {'kind': 'online', **_schedule_form(starts_at_date='onzin')},
+    {'kind': 'online', **_schedule_form(vote_starts_at_date='2020-01-01')},   # vóór het bijstellen
+    {'kind': 'online', **_schedule_form(proposal_threshold_pct='40')},
+    {'kind': 'online', **_schedule_form(support_threshold='veel')},
     {'kind': 'iets'},
-    {'kind': 'online', 'title': ''},
+    {'kind': 'online', **_schedule_form(title='')},
 ])
 def test_new_issue_rejects_invalid_input(app, db, make_user, extra):
     user = make_user()
@@ -277,7 +302,7 @@ def test_backfill_gives_a_threadless_issue_its_own_thread(db, make_user):
 def test_new_issue_gets_its_own_thread(app, db, make_user):
     user = make_user()
     _req(_client(app, user), 'POST', '/gesprekken/nieuw', data={
-        'title': 'Een eigen gesprek', 'intro': 'Het eerste bericht.', 'kind': 'online'})
+        'title': 'Een eigen gesprek', 'intro': 'Het eerste bericht.', 'kind': 'online', **_schedule_form()})
     issue = Issue.query.filter_by(created_by_id=user.id).one()
     op = issues.opening_post(issue)
     assert op is not None and op.body == 'Het eerste bericht.' and op.is_op

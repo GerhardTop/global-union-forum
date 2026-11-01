@@ -29,7 +29,7 @@
     </span>
     <span class="gu-proposal-steps__title">{{ title }}{% if state == 'current' %}<span class="gu-sr-only"> ({{ _('current phase') }})</span>{% elif state == 'done' %}<span class="gu-sr-only"> ({{ _('done') }})</span>{% endif %}</span>
     {% if state == 'current' and issue.phase_deadline %}
-    <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=issue.phase_deadline | datetimeformat('d MMM y HH:mm')) }}</span>
+    <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=issue.phase_deadline | local | datetimeformat('d MMM y HH:mm')) }}</span>
     {% if remaining %}
     {% set n, unit = remaining %}
     <span class="gu-proposal-steps__left">
@@ -40,7 +40,7 @@
     </span>
     {% endif %}
     {% elif issue.kind == 'online' and key in plan %}
-    <span class="gu-proposal-steps__when">{{ _('%(start)s to %(end)s', start=plan[key][0] | dateformat('d MMM'), end=plan[key][1] | dateformat('d MMM y')) }}</span>
+    <span class="gu-proposal-steps__when">{{ _('%(start)s to %(end)s', start=plan[key][0] | local | datetimeformat('d MMM HH:mm'), end=plan[key][1] | local | datetimeformat('d MMM y HH:mm')) }}</span>
     {% elif days and issue.kind == 'online' %}
     <span class="gu-proposal-steps__text">{{ days }} {{ _('day') if days == 1 else _('days') }}</span>
     {% endif %}
