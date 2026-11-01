@@ -18,6 +18,9 @@ Dekt per onderdeel:
   steunregel alleen bij een drempel van minstens 1), meerdere bijstellingen
   met de versie-tijdlijn, reacties gekoppeld aan een versie, het merk bij
   gekoppelde feiten en de fase-chip.
+- P6: de fase samenvatten tussen stemmen en vervolg (alleen met final_vote),
+  de tik erdoorheen, de stemming over het samenvattende voorstel in die
+  fase, de vervolgfase als nazorg en de migratie van een lopende stemming.
 
 Gedeelde conftest-app (CSRF uit).
 """
@@ -162,7 +165,7 @@ def test_breadcrumb_names_the_issue(app, db, make_user):
 def test_summary_proposal_wording(app, db, make_user):
     host = make_user()
     issue = _issue(db, host)
-    issue.phase = 'vervolg'
+    issue.phase = 'samenvatten'
     db.session.commit()
     nl = _get(app, f'/vraagstuk/{issue.id}', host)
     assert 'Samenvattend voorstel' in nl and 'ltiem' not in nl
@@ -269,7 +272,7 @@ def test_cockpit_head_intro_phases_and_plus_buttons(app, db, make_user):
     issue = _issue(db, host, 'Hoe maken we de wijk groener?')
     body = _get(app, f'/vraagstuk/{issue.id}', host)
     assert 'id="toelichting"' in body and 'Lees de toelichting' in body and 'Toelichting.' in body
-    assert body.count('gu-phasebar__icon') == 4 and 'aria-current="step"' in body
+    assert body.count('gu-phasebar__icon') == 5 and 'aria-current="step"' in body  # P6: met samenvatten
     assert 'Volgen' in body and 'gu-cockpit__follow' in body
     head = body.split('id="panel-proposals"')[1].split('</h2>')[1].split('</div>')[0]
     assert 'class="gu-iconbtn"' in head and 'title="Nieuw voorstel"' in head
@@ -521,3 +524,74 @@ def test_linked_facts_show_the_mark(app, db, make_user):
     page = _get(app, f'/vraagstuk/{issue.id}/voorstel/{proposal.id}')
     basis = page.split('id="basis"')[1].split('</section>')[0]
     assert 'Gekoppeld feit.' in basis and 'gu-factmark' in basis
+
+
+# ── P6: het fasemodel ────────────────────────────────────────────────────
+
+def test_phases_four_or_five(db, make_user):
+    host = make_user()
+    with_summary, without = _issue(db, host, final_vote=True), _issue(db, host, final_vote=False)
+    assert with_summary.phases == ('feiten', 'bijstellen', 'stemmen', 'samenvatten', 'vervolg')
+    assert without.phases == ('feiten', 'bijstellen', 'stemmen', 'vervolg')
+    with_summary.phase = without.phase = 'stemmen'
+    assert lifecycle.next_phase(with_summary) == 'samenvatten' and lifecycle.next_phase(without) == 'vervolg'
+
+
+def test_tick_runs_through_the_summary_phase(db, make_user):
+    host = make_user()
+    start = datetime.utcnow() - timedelta(days=30)
+    issue = issues.create({'title': 'Vijf fasen', 'intro': 'x', 'kind': 'online', 'days_facts': 2, 'days_adjust': 2,
+                           'days_vote': 2, 'final_vote': True}, host, now=start)
+    db.session.commit()
+    lifecycle.advance_due(start + timedelta(days=6, hours=1))
+    db.session.refresh(issue)
+    # Na het stemmen: de opsteltijd (days_adjust) voor het samenvattende voorstel.
+    assert issue.phase == 'samenvatten' and issue.phase_started_at == start + timedelta(days=6)
+    assert issue.phase_deadline == start + timedelta(days=8)
+    # Een samenvattend voorstel verlengt de fase tot het einde van de stemming erover.
+    final = ip.create_final(issue, host, 'Samen.')
+    db.session.flush()
+    final.created_at = start + timedelta(days=7)
+    lifecycle.summary_made(issue, final)
+    db.session.commit()
+    assert issue.phase_deadline == ip.final_voting_end(final) == start + timedelta(days=9)
+    assert ip.voting_open(final, now=start + timedelta(days=8)) and not ip.voting_over(final, now=start + timedelta(days=8))
+    lifecycle.advance_due(start + timedelta(days=9, minutes=1))
+    db.session.refresh(issue)
+    assert issue.phase == 'vervolg' and ip.voting_over(final)
+    assert lifecycle.advance(issue, start + timedelta(days=40)) is False  # uit het vervolg niet verder
+    assert issue.phase == 'vervolg'
+
+
+def test_summary_phase_without_a_summary_proposal_ends_after_the_drafting_time(db, make_user):
+    host = make_user()
+    issue = _issue(db, host)
+    lifecycle.set_phase(issue, 'samenvatten', datetime.utcnow() - timedelta(days=issue.days_adjust, minutes=5))
+    db.session.commit()
+    assert lifecycle.advance_due() >= 1
+    db.session.refresh(issue)
+    assert issue.phase == 'vervolg'
+
+
+def test_follow_up_is_aftercare(app, db, make_user):
+    host = make_user()
+    issue = _issue(db, host)
+    lifecycle.set_phase(issue, 'vervolg', datetime.utcnow())
+    db.session.commit()
+    page = _get(app, f'/vraagstuk/{issue.id}', host)
+    assert 'De nazorg na het beraad: lobby, media, uitvoering.' in page
+    assert 'Samenvattend voorstel doen' not in page  # het samenvattende voorstel hoort niet meer bij het vervolg
+    assert not ip.can_make_final(issue, host)
+
+
+def test_running_summary_vote_moves_to_its_own_phase(db, make_user):
+    host = make_user()
+    issue = _issue(db, host)
+    issue.phase = 'vervolg'  # zoals vóór P6: het samenvattende voorstel in de vervolgfase
+    final = ip.create_final(issue, host, 'Lopend.')
+    db.session.commit()
+    assert lifecycle.migrate_summary_phase() == 1
+    db.session.refresh(issue)
+    assert issue.phase == 'samenvatten' and issue.phase_deadline == ip.final_voting_end(final)
+    assert ip.voting_open(final)
+    assert lifecycle.migrate_summary_phase() == 0  # idempotent

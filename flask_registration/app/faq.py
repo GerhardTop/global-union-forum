@@ -63,7 +63,9 @@ FAQ = {
             ('Hoe verloopt een vraagstuk, van discussie tot stemming?',
              'Iemand start een vraagstuk met een vraag of probleem. In de eerste fase breng je feiten in en '
              'bespreek je het samen. Daar komen voorstellen uit voort. Daarna kan de inbrenger een voorstel '
-             'bijstellen. Vervolgens wordt er gestemd. Tot slot volgt de vervolgfase: wat gebeurt ermee.'),
+             'bijstellen. Vervolgens wordt er gestemd. Als de initiatiefnemer dat koos, volgt een samenvattend '
+             'voorstel met een nieuwe stemming. Tot slot volgt de vervolgfase: wat gebeurt ermee, zoals lobby, '
+             'media of uitvoering.'),
             ('Wat zijn feiten, onderzoek en media en hoe tellen ze mee?',
              'Feiten en onderzoek zijn onderbouwde bijdragen met een bron; media zijn nieuwsberichten, podcasts '
              'of video\'s. Elk feit heeft een richting: pleit voor, pleit tegen of neutraal. Een feit krijgt een '
@@ -160,7 +162,8 @@ FAQ = {
             ('How does an issue go, from discussion to vote?',
              'Someone starts an issue with a question or problem. In the first phase you bring in facts and '
              'discuss it together. Proposals come out of that. After that, the proposer can revise a proposal. '
-             'Then there is a vote. Finally there is the follow-up phase: what happens with it.'),
+             'Then there is a vote. If the initiator chose so, a summary proposal follows, with a new vote. Finally '
+             'there is the follow-up phase: what happens with it, such as lobbying, media or implementation.'),
             ('What are facts, research and media, and how do they count?',
              'Facts and research are well-founded contributions with a source; media are news items, podcasts '
              'or videos. Each fact has a direction: argues for, argues against or neutral. A fact gets a green '

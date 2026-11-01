@@ -698,7 +698,8 @@ class Issue(db.Model):
     proposal_threshold_pct = db.Column(db.Integer, nullable=False, default=50)
     show_interim           = db.Column(db.Boolean, nullable=False, default=True)
     final_vote             = db.Column(db.Boolean, nullable=False, default=True)
-    # Fase: dezelfde waarden als bij het voorstel (PROPOSAL_PHASES).
+    # Fase: de waarden van ISSUE_PHASES (polijstronde P6: met 'samenvatten'
+    # tussen stemmen en vervolg als final_vote aanstaat; zie phases).
     phase                  = db.Column(db.String(12), nullable=False, default='feiten')
     phase_started_at       = db.Column(db.DateTime, nullable=True)
     phase_deadline         = db.Column(db.DateTime, nullable=True)
@@ -751,8 +752,14 @@ class Issue(db.Model):
         return windows
 
     @property
+    def phases(self):
+        """De fasen van dit vraagstuk: vier, of vijf met het samenvattende
+        voorstel als eigen fase (polijstronde P6)."""
+        return ISSUE_PHASES if self.final_vote else PROPOSAL_PHASES
+
+    @property
     def phase_index(self):
-        return PROPOSAL_PHASES.index(self.phase) if self.phase in PROPOSAL_PHASES else 0
+        return self.phases.index(self.phase) if self.phase in self.phases else 0
 
 
 class IssueEventDay(db.Model):
@@ -895,6 +902,9 @@ class IssueProposalFact(db.Model):
 # heeft geen Proposal. Vier fasen; in stap 1 staat elk voorstel in de eerste.
 PROPOSAL_KINDS = ('publiek', 'event')
 PROPOSAL_PHASES = ('feiten', 'bijstellen', 'stemmen', 'vervolg')
+# Polijstronde P6: een vraagstuk met final_vote heeft een eigen fase voor het
+# samenvattende voorstel (opstellen en de nieuwe stemming) vóór het vervolg.
+ISSUE_PHASES = ('feiten', 'bijstellen', 'stemmen', 'samenvatten', 'vervolg')
 # Fasen met een doorlooptijd (bij een publiek voorstel).
 PROPOSAL_TIMED_PHASES = ('feiten', 'bijstellen', 'stemmen')
 

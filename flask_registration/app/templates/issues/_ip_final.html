@@ -9,6 +9,11 @@
   <a class="gu-ip-finalbox__statement" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=final.id) }}" lang="{{ final.lang or lang }}">{{ final.statement }}</a>
   {% with proposal=final, count=0 %}{% include 'issues/_ip_status.html' %}{% endwith %}
 </div>
+{% elif issue.phase == 'samenvatten' and not can_make_final and not issue.is_closed %}
+<div class="gu-ip-finalbox gu-ip-finalbox--todo">
+  <p class="gu-eyebrow">{{ _('Summary proposal') }}</p>
+  <p class="gu-composer__hint">{{ _('The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again.') }}</p>
+</div>
 {% elif can_make_final %}
 <div class="gu-ip-finalbox gu-ip-finalbox--todo">
   <p class="gu-eyebrow">{{ _('Summary proposal') }}</p>

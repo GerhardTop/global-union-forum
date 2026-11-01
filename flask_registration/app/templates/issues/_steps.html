@@ -1,17 +1,21 @@
 {#
   Partial: issues/_steps.html (herontwerp stap 1 en 2, polijstronde P3)
-  De fase-indicator van een vraagstuk: per fase een icoon, de huidige
+  De fase-indicator van een vraagstuk (P6: vier fasen, vijf met het
+  samenvattende voorstel als final_vote aanstaat): per fase een icoon, de huidige
   gemarkeerd, de voorbije afgevinkt. Online: de geplande datums per fase;
   event: zonder datums (de initiatiefnemer verzet de fasen zelf). Bij de
   huidige fase de deadline en de resterende tijd als die bekend zijn.
   Context: issue, remaining (optioneel, uit issues.remaining).
 #}
-{% set steps = [
-  ('feiten', _('Facts and discussion'), issue.days_facts),
-  ('bijstellen', _('Revise the proposal'), issue.days_adjust),
-  ('stemmen', _('Voting'), issue.days_vote),
-  ('vervolg', _('Follow-up'), None),
-] %}
+{% set all_steps = {
+  'feiten': (_('Facts and discussion'), issue.days_facts),
+  'bijstellen': (_('Revise the proposal'), issue.days_adjust),
+  'stemmen': (_('Voting'), issue.days_vote),
+  'samenvatten': (_('Summary proposal'), None),
+  'vervolg': (_('Follow-up'), None),
+} %}
+{% set steps = [] %}
+{% for key in issue.phases %}{% set _unused = steps.append((key, all_steps[key][0], all_steps[key][1])) %}{% endfor %}
 {% set plan = issue.plan() %}
 {% set icons = {
   'feiten': '<circle cx="10.5" cy="10.5" r="5.5"/><path d="M15 15l4.5 4.5"/>',

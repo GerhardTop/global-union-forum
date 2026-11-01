@@ -1,7 +1,12 @@
 """
 Herontwerp, bouwstap 7: de levenscyclus van een vraagstuk.
 
-Fasen: feiten, bijstellen, stemmen, vervolg (PROPOSAL_PHASES).
+Fasen: feiten, bijstellen, stemmen, vervolg; polijstronde P6: met
+'samenvatten' tussen stemmen en vervolg als final_vote aanstaat (Issue.phases).
+In die fase stelt de initiatiefnemer het samenvattende voorstel op (binnen
+days_adjust dagen) en loopt de nieuwe stemming erover (days_vote dagen vanaf
+het aanmaken). Daarna, of zonder samenvattend voorstel na de opsteltijd, gaat
+het vraagstuk naar het vervolg: de nazorg.
 
 - Online: de uurtaak (digest.tick, POST /intern/tik) zet een vraagstuk naar
   de volgende fase zodra de deadline van de huidige fase is verstreken. Bij
@@ -41,7 +46,12 @@ from app.models import (AppSetting, Issue, IssueFollow, IssueProposal, IssueProp
 SILENCE_KEY = 'issue_facts_silence_days'
 DEFAULT_SILENCE_DAYS = 5
 SILENCE_MIN, SILENCE_MAX = 1, 365
-NEXT_PHASE = {'feiten': 'bijstellen', 'bijstellen': 'stemmen', 'stemmen': 'vervolg'}
+def next_phase(issue):
+    """De fase na de huidige, of None (vervolg, of een onbekende fase)."""
+    phases = issue.phases
+    if issue.phase not in phases or issue.phase == phases[-1]:
+        return None
+    return phases[phases.index(issue.phase) + 1]
 CLOSING_SOON = timedelta(hours=24)
 
 
@@ -71,6 +81,10 @@ def is_wrapper(issue):
 def _deadline(issue, phase, start):
     if issue.kind != 'online':
         return None  # een event heeft geen vaste datums
+    if phase == 'samenvatten':
+        # Opsteltijd voor het samenvattende voorstel; zodra het er is, loopt
+        # de fase tot het einde van de stemming erover (zie summary_made).
+        return start + timedelta(days=issue.days_adjust or 5)
     # Polijstronde P4: met een planning in momenten het geplande einde van
     # de fase, zolang dat na het begin ligt (anders de doorlooptijd).
     planned = issue.plan().get(phase) if issue.starts_at is not None else None
@@ -109,7 +123,7 @@ def silence_end(issue):
 def due(issue, now=None):
     """(volgende fase, begin) als een online vraagstuk nu moet doorschuiven, anders None."""
     now = now or datetime.utcnow()
-    if issue.kind != 'online' or issue.is_closed or issue.phase not in NEXT_PHASE or is_wrapper(issue):
+    if issue.kind != 'online' or issue.is_closed or next_phase(issue) is None or is_wrapper(issue):
         return None
     candidates = []
     if issue.phase_deadline is not None and now >= issue.phase_deadline:
@@ -119,7 +133,7 @@ def due(issue, now=None):
         candidates.append(quiet)
     if not candidates:
         return None
-    return NEXT_PHASE[issue.phase], min(candidates)
+    return next_phase(issue), min(candidates)
 
 
 def advance(issue, now=None):
@@ -127,7 +141,7 @@ def advance(issue, now=None):
     Geeft True als de fase veranderde. Commit niet zelf."""
     now = now or datetime.utcnow()
     moved = False
-    for _guard in range(len(NEXT_PHASE)):
+    for _guard in range(len(issue.phases)):
         step = due(issue, now)
         if step is None:
             break
@@ -169,12 +183,37 @@ def _is_host(issue, user):
 
 def can_step(issue, user):
     return (_is_host(issue, user) and not is_wrapper(issue) and not issue.is_closed
-            and issue.phase in NEXT_PHASE)
+            and next_phase(issue) is not None)
 
 
 def step_forward(issue, now=None):
     """Naar de volgende fase (event, of een online fase vroegtijdig afsluiten)."""
-    set_phase(issue, NEXT_PHASE[issue.phase], now or datetime.utcnow())
+    set_phase(issue, next_phase(issue), now or datetime.utcnow())
+
+
+def summary_made(issue, proposal):
+    """Polijstronde P6: het samenvattende voorstel is gedaan; online loopt de
+    fase nu tot het einde van de stemming erover. Commit niet zelf."""
+    from app import issue_proposals as ip
+    if issue.kind == 'online' and issue.phase == 'samenvatten':
+        issue.phase_deadline = ip.final_voting_end(proposal)
+
+
+def migrate_summary_phase():
+    """Idempotent, bij de start: een vraagstuk dat vóór P6 in de vervolgfase
+    een samenvattend voorstel kreeg waarvan de stemming nog loopt, gaat naar
+    de fase samenvatten (zodat die stemming open blijft)."""
+    from app import issue_proposals as ip
+    now, moved = datetime.utcnow(), 0
+    for issue in Issue.query.filter(Issue.phase == 'vervolg', Issue.is_closed.is_(False)).all():
+        final = ip.final_proposal(issue) if issue.final_vote else None
+        if final is not None and now < ip.final_voting_end(final):
+            issue.phase = 'samenvatten'
+            issue.phase_deadline = ip.final_voting_end(final) if issue.kind == 'online' else None
+            moved += 1
+    if moved:
+        db.session.commit()
+    return moved
 
 
 def can_edit_followup(issue, user):
@@ -278,13 +317,18 @@ def changes(issue, since, now=None):
             out.append({'type': 'issue_bijstellen'})
         elif issue.phase == 'stemmen':
             out.append({'type': 'stemmen_open', 'until': _iso(issue.phase_deadline)})
-        elif issue.phase == 'vervolg':
+        elif issue.phase == 'samenvatten' or (issue.phase == 'vervolg' and not issue.final_vote):
+            # De uitslag van de voorstellen: bij het einde van het stemmen.
             results = []
             for proposal, count in ip.listing(issue, order='stemlijst'):
                 if ip.on_list(proposal, count):
                     res = ip.result(proposal)
                     results.append({'statement': proposal.statement, 'adopted': res['adopted'], 'pct': res['pct_for']})
             out.append({'type': 'issue_uitslag', 'results': results})
+            if issue.phase == 'samenvatten':
+                out.append({'type': 'issue_samenvatten'})
+        elif issue.phase == 'vervolg':
+            out.append({'type': 'issue_vervolg'})  # na het samenvattende voorstel: de nazorg
     if (issue.phase == 'stemmen' and not issue.is_closed and issue.phase_deadline
             and now < issue.phase_deadline <= now + CLOSING_SOON):
         out.append({'type': 'sluit_binnenkort', 'until': _iso(issue.phase_deadline)})

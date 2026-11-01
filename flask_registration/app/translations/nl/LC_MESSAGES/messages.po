@@ -2198,3 +2198,20 @@ msgstr "Posten"
 
 msgid "About proposal"
 msgstr "Bij voorstel"
+
+# Polijstronde P6: fase samenvattend voorstel
+
+msgid "The initiator now makes the summary proposal, which is voted on again"
+msgstr "De initiatiefnemer doet nu het samenvattende voorstel, waarover opnieuw wordt gestemd"
+
+msgid "The deliberation has ended. The issue is in the follow-up phase"
+msgstr "Het beraad is afgerond. Het vraagstuk is in de vervolgfase"
+
+msgid "The follow-up after the deliberation: lobbying, media, implementation. Kept up to date by the initiator and the moderators."
+msgstr "De nazorg na het beraad: lobby, media, uitvoering. Bijgehouden door de initiatiefnemer en de moderators."
+
+msgid "For example: who takes the outcome further, through lobbying, the media or implementation, and when."
+msgstr "Bijvoorbeeld: wie de uitkomst verder brengt, via lobby, media of uitvoering, en wanneer."
+
+msgid "The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again."
+msgstr "De initiatiefnemer maakt nu op basis van alle voorstellen en de discussie een samenvattend voorstel. Daarna stemmen de deelnemers er opnieuw over."

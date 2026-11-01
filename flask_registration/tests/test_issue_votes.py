@@ -219,9 +219,10 @@ def test_interim_tally(app, db, make_user, interim):
 
 # ── Het samenvattende voorstel ─────────────────────────────────────────────────
 
-def test_final_proposal_by_initiator_in_follow_up(app, db, make_user):
+def test_final_proposal_by_initiator_in_summary_phase(app, db, make_user):
+    # Polijstronde P6: het samenvattende voorstel heeft een eigen fase (samenvatten).
     author, other, voter = make_user(), make_user(), make_user('voter')
-    issue, listed, _u = _setup(db, author, [other], phase='vervolg')
+    issue, listed, _u = _setup(db, author, [other], phase='samenvatten')
     url = f'/vraagstuk/{issue.id}/samenvattend-voorstel'
     data = {'statement': 'Het plein wordt autovrij, met de markt op zaterdag.', 'explanation': 'Samengevoegd.',
             'title': 'Hoe richten we het plein in?', 'intro': 'Aangescherpte vraag.'}
@@ -241,7 +242,7 @@ def test_final_proposal_by_initiator_in_follow_up(app, db, make_user):
     assert _req(_client(app, author), 'POST', url, data=data).status_code == 403  # maar één
     assert final not in [p for p, _n in ip.listing(issue)]  # niet tussen de gewone voorstellen
 
-    # Stemmen over het samenvattende voorstel: zonder steunronde, in de vervolgfase.
+    # Stemmen over het samenvattende voorstel: zonder steunronde, in de fase samenvatten.
     assert _vote(app, voter, issue, final, 'voor').status_code == 302
     page = _req(_client(app), 'GET', _detail(issue, final)).get_data(as_text=True)
     assert 'Eindstemming' in page and 'Samenvattend voorstel' in page and 'Stemmen open tot' in page
@@ -261,8 +262,11 @@ def test_final_proposal_rules(app, db, make_user):
     author, other = make_user(), make_user()
     issue, _l, _u = _setup(db, author, [other], phase='stemmen')
     url = f'/vraagstuk/{issue.id}/samenvattend-voorstel'
-    assert _req(_client(app, author), 'GET', url).status_code == 403  # nog niet in de vervolgfase
-    issue.phase, issue.final_vote = 'vervolg', False
+    assert _req(_client(app, author), 'GET', url).status_code == 403  # nog niet in de fase samenvatten
+    issue.phase = 'vervolg'
+    db.session.commit()
+    assert _req(_client(app, author), 'GET', url).status_code == 403  # P6: niet meer in het vervolg
+    issue.phase, issue.final_vote = 'samenvatten', False
     db.session.commit()
     assert _req(_client(app, author), 'GET', url).status_code == 403  # staat uit bij dit vraagstuk
     issue.final_vote = True

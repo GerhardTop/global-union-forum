@@ -3754,3 +3754,10 @@ body {
 .gu-ipreactions__form .gu-btn { justify-self: start; }
 .gu-post__proposalref { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 6px; font-size: 0.8125rem; color: var(--gu-fg-3); }
 .gu-post__proposalref a { color: var(--gu-globe-deep); }
+/* Polijstronde P6: vijf fasen moeten ook op een smal scherm passen. */
+.gu-phasebar .gu-proposal-steps__title { overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto; }
+@media (max-width: 480px) {
+  .gu-cockpit .gu-phasebar { gap: 3px; }
+  .gu-cockpit .gu-phasebar__step { padding: 6px 5px; }
+  .gu-cockpit .gu-phasebar__step .gu-proposal-steps__title { font-size: 0.6875rem; }
+}

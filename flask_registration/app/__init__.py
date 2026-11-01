@@ -156,6 +156,10 @@ def _migrate_columns():
     # Na alle kolommigraties: de backfill gebruikt de ORM op Proposal en Thread.
     from app import issues
     issues.backfill()
+    # Polijstronde P6: een lopende stemming over een samenvattend voorstel
+    # uit de vervolgfase naar de eigen fase samenvatten (idempotent).
+    from app import issue_lifecycle
+    issue_lifecycle.migrate_summary_phase()
 
 
 def _migrate_roles(existing):

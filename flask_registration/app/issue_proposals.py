@@ -33,7 +33,8 @@ Stap 6, stemmen en uitslag:
   uitslag. De tussenstand is zichtbaar tijdens het stemmen als show_interim
   aanstaat, anders pas na afloop.
 - Het samenvattende voorstel (als final_vote aanstaat): een IssueProposal met
-  is_final, gemaakt door de initiatiefnemer in de vervolgfase, één per
+  is_final, gemaakt door de initiatiefnemer in de eigen fase samenvatten
+  (polijstronde P6; daarvoor in de vervolgfase), één per
   vraagstuk, zonder steunronde. De stemming erover loopt days_vote dagen
   vanaf het aanmaken, met dezelfde stemregels en drempel. Daarbij kan de
   initiatiefnemer de vraag en de toelichting van het vraagstuk aanpassen.
@@ -49,7 +50,7 @@ from sqlalchemy import func, or_
 from app import db
 from types import SimpleNamespace
 
-from app.models import (FACT_KIND, PROPOSAL_PHASES, VOTE_CHOICES, IssueProposal, IssueProposalFact,
+from app.models import (FACT_KIND, VOTE_CHOICES, IssueProposal, IssueProposalFact,
                         IssueProposalSupport, IssueProposalVersion, IssueProposalVote, Post)
 
 STATEMENT_MAX = 300
@@ -289,8 +290,9 @@ def unlink(row):
 
 # ── Stemmen en uitslag (stap 6) ──────────────────────────────────────────
 
-def _phase_index(phase):
-    return PROPOSAL_PHASES.index(phase) if phase in PROPOSAL_PHASES else 0
+def _phase_index(issue, phase):
+    """De plaats van een fase in de fasen van dit vraagstuk (P6: vier of vijf)."""
+    return issue.phases.index(phase) if phase in issue.phases else 0
 
 
 def final_voting_end(proposal):
@@ -303,7 +305,8 @@ def voting_open(proposal, count=None, now=None):
     if issue.is_closed:
         return False
     if proposal.is_final:
-        return issue.phase == 'vervolg' and (now or datetime.utcnow()) < final_voting_end(proposal)
+        # Polijstronde P6: de stemming over het samenvattende voorstel hoort bij de fase samenvatten.
+        return issue.phase == 'samenvatten' and (now or datetime.utcnow()) < final_voting_end(proposal)
     if count is None:
         count = support_counts([proposal.id]).get(proposal.id, 0)
     from app import issues
@@ -314,9 +317,11 @@ def voting_over(proposal, now=None):
     """Is de stemming voorbij (dan staat de uitslag vast)?"""
     issue = proposal.issue
     if proposal.is_final:
-        return issue.is_closed or (now or datetime.utcnow()) >= final_voting_end(proposal)
-    stemmen = _phase_index('stemmen')
-    return _phase_index(issue.phase) > stemmen or (issue.is_closed and _phase_index(issue.phase) == stemmen)
+        return (issue.is_closed or issue.phase == 'vervolg'
+                or (now or datetime.utcnow()) >= final_voting_end(proposal))
+    stemmen = _phase_index(issue, 'stemmen')
+    here = _phase_index(issue, issue.phase)
+    return here > stemmen or (issue.is_closed and here == stemmen)
 
 
 def can_vote(proposal, user, count=None):
@@ -375,7 +380,7 @@ def final_proposal(issue):
 
 def can_make_final(issue, user):
     return (getattr(user, 'is_authenticated', False) and bool(issue.final_vote) and not issue.is_closed
-            and issue.phase == 'vervolg' and issue.created_by_id == user.id and final_proposal(issue) is None)
+            and issue.phase == 'samenvatten' and issue.created_by_id == user.id and final_proposal(issue) is None)
 
 
 def create_final(issue, user, statement, explanation=None, lang=None, title=None, intro=None):

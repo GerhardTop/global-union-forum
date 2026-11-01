@@ -2201,3 +2201,20 @@ msgstr "Post"
 
 msgid "About proposal"
 msgstr "About proposal"
+
+# Polijstronde P6: fase samenvattend voorstel
+
+msgid "The initiator now makes the summary proposal, which is voted on again"
+msgstr "The initiator now makes the summary proposal, which is voted on again"
+
+msgid "The deliberation has ended. The issue is in the follow-up phase"
+msgstr "The deliberation has ended. The issue is in the follow-up phase"
+
+msgid "The follow-up after the deliberation: lobbying, media, implementation. Kept up to date by the initiator and the moderators."
+msgstr "The follow-up after the deliberation: lobbying, media, implementation. Kept up to date by the initiator and the moderators."
+
+msgid "For example: who takes the outcome further, through lobbying, the media or implementation, and when."
+msgstr "For example: who takes the outcome further, through lobbying, the media or implementation, and when."
+
+msgid "The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again."
+msgstr "The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again."

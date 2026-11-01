@@ -29,6 +29,8 @@
           {%- else -%}{{ _('Round %(n)s: rejected with %(pct)s%% in favour', n=c.number, pct=c.pct | decimalformat('0.#')) }}{%- endif -%}
         {%- elif c.type == 'issue_bijstellen' -%}{{ _('The revision phase has started: proposers can refine their proposals') }}
         {%- elif c.type == 'issue_heropend' -%}{{ _('The issue has been reopened for discussion') }}
+        {%- elif c.type == 'issue_samenvatten' -%}{{ _('The initiator now makes the summary proposal, which is voted on again') }}
+        {%- elif c.type == 'issue_vervolg' -%}{{ _('The deliberation has ended. The issue is in the follow-up phase') }}
         {%- elif c.type == 'issue_vervolgtekst' -%}{{ _('The initiator has described what happens next') }}
         {%- elif c.type == 'issue_uitslag' -%}{{ _('Voting has closed. The results:') }}
           {%- if c.results -%}

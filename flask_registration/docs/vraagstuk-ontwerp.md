@@ -5,7 +5,7 @@ Canoniek voor de bouw van het vraagstuk-model in Global Union Forum. Claude Code
 Naamgeving: nl "Vraagstuk", en "Issue". Het menu heet "Denk mee" (en "Have your say"); het oude losse forum staat niet meer in het hoofdmenu (volledig uitfaseren is stap 8). Het afsluitende voorstel van de initiatiefnemer heet "samenvattend voorstel" (en "summary proposal"). De feitenverzameling heet op de volledige pagina "Feiten, onderzoek en media" en in de krappe cockpit-kop "Feiten en achtergrond". App-tekst tweetalig nl/en, geen lange of korte streepjes. Ontwikkelaarstekst en commit-teksten in het Engels.
 
 ## Het model in het kort
-Een vraagstuk is een bak met één gedeelde discussie en één tijdlijn. Uit de discussie ontstaan voorstellen; die worden per stuk verfijnd en gestemd. Aan het einde kan de initiatiefnemer op basis van alle voorstellen en de discussie het vraagstuk aanpassen en een samenvattend voorstel doen, waarover de deelnemers opnieuw stemmen. Dat is optioneel per vraagstuk (de aan/uit-keuze bij het starten). Feiten en onderzoek staan gedeeld op vraagstuk-niveau en kunnen aan voorstellen gekoppeld worden.
+Een vraagstuk is een bak met één gedeelde discussie en één tijdlijn. Uit de discussie ontstaan voorstellen; die worden per stuk verfijnd en gestemd. Daarna kan de initiatiefnemer in een eigen fase op basis van alle voorstellen en de discussie het vraagstuk aanpassen en een samenvattend voorstel doen, waarover de deelnemers opnieuw stemmen. Dat is optioneel per vraagstuk (de aan/uit-keuze bij het starten). Het vervolg is de nazorg. Feiten en onderzoek staan gedeeld op vraagstuk-niveau en kunnen aan voorstellen gekoppeld worden.
 
 Een voorstel doen en steunen kan alleen in de feitenfase. Daarna ligt de stemlijst vast. In de bijstelfase stelt alleen de inbrenger bestaande voorstellen bij.
 
@@ -25,7 +25,7 @@ Alle vraagstukken, nieuwste eerst. Per vraagstuk de titel, het online- of event-
 Bovenaan de cockpit en alle onderliggende pagina's: "Denk mee" (naar het overzicht), dan de naam van het vraagstuk (naar de cockpit), dan eventueel de pagina zelf.
 
 ### Cockpit: /vraagstuk/<id>
-Boven de kolommen: het online/event-label met datum (online: "stemmen sluit <datum>"; event: "<datum>, <locatie>"), de titel (de vraag) met rechts de knop "Volgen", daaronder "Lees de toelichting" als uitklapbaar blok (bij het eerste bezoek open, daarna dicht; per browser onthouden), en de fase-indicator: per fase een icoon, de huidige gemarkeerd, de voorbije afgevinkt, met de data per fase als die er zijn en de resterende tijd.
+Boven de kolommen: het online/event-label met datum (online: "stemmen sluit <datum>"; event: "<naam> · <eerste dag>, <locatie>"), de titel (de vraag) met rechts de knop "Volgen", daaronder "Lees de toelichting" als uitklapbaar blok (bij het eerste bezoek open, daarna dicht; per browser onthouden), en de fase-indicator: per fase een icoon, de huidige gemarkeerd, de voorbije afgevinkt, met de data per fase als die er zijn en de resterende tijd.
 Desktop, drie kolommen:
 - Links: "Feiten en achtergrond" met de top-feiten (kwaliteit eerst) met richting, bron, media-label en kwaliteitsmerk, plus een link naar de volledige feitenpagina.
 - Midden (gedeelde discussie): de thread van het gesprek met de bestaande forumweergave (geneste reacties tot 4 diep, keurmerk, eens, handhaving). Feiten-posts staan hier niet. Onderaan de reactie-invoer; de knop heet "Posten".
@@ -65,21 +65,26 @@ De vraag, de toelichting, de keuze online of event, en de stemregels in de gewon
 Elke pagina toont bovenaan duidelijk of het online is (met datum) of een event (met datum en locatie), met een eigen label en kleur.
 
 ## Fasen en levenscyclus
-- Volgorde: feiten, bijstellen, stemmen, vervolg. Bij elke overgang krijgen phase, phase_started_at en phase_deadline een nieuwe waarde uit days_facts, days_adjust en days_vote. Uit de vervolgfase gaat niets automatisch verder.
+- Volgorde: feiten, bijstellen, stemmen, vervolg. Als "Afsluiten met een samenvattend voorstel" (final_vote) aanstaat, komt er een eigen fase "Samenvattend voorstel" (waarde 'samenvatten') tussen stemmen en vervolg: vier fasen standaard, vijf als het aanstaat (polijstronde P6, Issue.phases). De fase-indicator toont vier of vijf stappen.
+- Bij elke overgang krijgen phase, phase_started_at en phase_deadline een nieuwe waarde: uit de planning in momenten (polijstronde P4), anders uit days_facts, days_adjust en days_vote. Uit de vervolgfase gaat niets automatisch verder.
 - Online: de uurtaak (/intern/tik) zet een vraagstuk door zodra de deadline van de huidige fase verstreken is. Een overgang op de deadline begint op die deadline, zodat de planning blijft kloppen; een gemiste tik wordt ingehaald, zo nodig over meerdere fasen.
-- De feitenfase sluit na days_facts dagen, of eerder na 5 dagen zonder nieuw keurmerk in het vraagstuk (de stilte telt vanaf het begin van de feitenfase of het laatste keurmerk). De stilte-drempel is instelbaar in beheer.
+- De feitenfase sluit na days_facts dagen (of op het geplande begin van het bijstellen), of eerder na 5 dagen zonder nieuw keurmerk in het vraagstuk (de stilte telt vanaf het begin van de feitenfase of het laatste keurmerk). De stilte-drempel is instelbaar in beheer.
 - Events worden met de hand verzet: de initiatiefnemer of een moderator zet het vraagstuk naar de volgende fase, zonder datums. Bij online kan dezelfde actie een fase vroegtijdig afsluiten.
-- In de vervolgfase beschrijft de initiatiefnemer of een moderator wat er met het vraagstuk gebeurt (de vervolgtekst). Een afgerond of gesloten vraagstuk kan na een bevestiging opnieuw worden opengesteld: terug naar de feitenfase met een nieuwe planning. Voorstellen, steun en stemmen blijven bewaard.
-- Het samenvattende voorstel ontstaat in de vervolgfase (alleen de initiatiefnemer, als dat bij het vraagstuk aanstaat) en heeft een eigen stemperiode van days_vote dagen vanaf het aanmaken, met dezelfde drempel.
+- De fase samenvattend voorstel: de initiatiefnemer stelt het samenvattende voorstel op (online binnen days_adjust dagen) op basis van alle voorstellen en de discussie, en kan daarbij de vraag en de toelichting aanpassen. Zodra het er is, loopt de fase tot het einde van de stemming erover: days_vote dagen vanaf het aanmaken, met dezelfde drempel. Zonder samenvattend voorstel gaat het vraagstuk na de opsteltijd naar het vervolg. De uitslag van de gewone voorstellen wordt gemeld bij het begin van deze fase (zonder deze fase: bij het begin van het vervolg).
+- Het vervolg is puur de nazorg: wat er na het beraad gebeurt (lobby, media, uitvoering), bijgehouden door de initiatiefnemer en moderators in de vervolgtekst. Een afgerond of gesloten vraagstuk kan na een bevestiging opnieuw worden opengesteld: terug naar de feitenfase met een nieuwe planning. Voorstellen, steun en stemmen blijven bewaard.
+- Overgang naar P6: een vraagstuk dat vóór P6 in de vervolgfase een samenvattend voorstel kreeg waarvan de stemming nog loopt, gaat bij de start naar de fase samenvatten (idempotent).
 - De uitslag wordt live uit de stemmen berekend, niet vastgelegd. Bij het verwijderen van een account blijft een stem meetellen zonder naam, zodat een uitslag niet verandert.
 - Een vraagstuk dat een oud voorstel inpakt (uit de backfill van stap 1) volgt de fase van dat oude voorstel en heeft geen eigen automatiek, tot het oude model is uitgefaseerd.
-- Meldingen lopen via de bestaande dagelijkse samenvatting: de initiatiefnemer, wie heeft bijgedragen (berichten, feiten, voorstellen, steun, stemmen) en de volgers krijgen een melding bij een faseovergang, het openen van de stemming, de uitslag, het samenvattende voorstel, de vervolgtekst en het opnieuw openstellen.
+- Meldingen lopen via de bestaande dagelijkse samenvatting: de initiatiefnemer, wie heeft bijgedragen (berichten, feiten, voorstellen, steun, stemmen) en de volgers krijgen een melding bij een faseovergang, het openen van de stemming, de uitslag, het begin van de fase samenvattend voorstel, het samenvattende voorstel en zijn uitslag, het begin van het vervolg, de vervolgtekst en het opnieuw openstellen.
 
 ## Beslissingen (en waarom)
 - Eén cockpit per vraagstuk met één gedeelde discussie, niet een discussie per voorstel. Dat houdt de deliberatie bij elkaar (één burgerberaad, één tijdlijn).
 - Op feiten geen stemknoppen: een omlaag-knop zou een waar maar onwelgevallig feit wegdrukken. Kwaliteit loopt via het AI-kwaliteitsmerk op controleerbare punten (polijstronde P2; vervangt de eerdere "nuttig"-knop).
 - Iedereen mag feiten aan een voorstel koppelen, ook tegenfeiten, met labels zichtbaar, zodat het beeld eerlijk blijft. Koppelen, niet kopiëren.
 - Stemmen per voorstel (voor, tegen, onthouding). Optioneel per vraagstuk: aan het einde past de initiatiefnemer op basis van alle voorstellen en de discussie het vraagstuk aan en doet een samenvattend voorstel, waarover de deelnemers opnieuw stemmen.
+
+## Polijstronde (P1 tot en met P6)
+Bovenop stap 1 tot en met 7: P1 naamgeving, navigatie, overzicht, kruimelpad, termen en profiel; P2 het AI-kwaliteitsmerk op feiten en media; P3 de cockpit (fase-iconen, toelichting, volgen, vergroten, "+"); P4 het startformulier (planning in momenten, eventdagen, steundrempel 0, feiten bij het aanmaken, bewaarde invoer); P5 voorstel doen en voorstel-detail (versies, reacties per versie); P6 het fasemodel met de fase samenvattend voorstel. Elk onderdeel staat hierboven bij het scherm of de regel waar het hoort.
 
 ## Bouwstappen
 1. Datamodel en het vraagstuk als bak, plus navigatie. Af, lokaal gecommit (01fd408), getest op Postgres, nog niet gepusht.

@@ -137,8 +137,9 @@ def test_advances_on_the_deadline(db, make_user):
 
 
 def test_catches_up_several_phases_and_stops_at_follow_up(db, make_user):
+    # Zonder samenvattend voorstel: vier fasen, zoals vóór polijstronde P6.
     user = make_user()
-    issue = _issue(db, user, started_days_ago=20, days_facts=2, days_adjust=2, days_vote=2)
+    issue = _issue(db, user, started_days_ago=20, days_facts=2, days_adjust=2, days_vote=2, final_vote=False)
     lifecycle.advance_due()
     db.session.refresh(issue)
     assert issue.phase == 'vervolg' and issue.phase_deadline is None
@@ -244,8 +245,12 @@ def test_manual_next_phase(app, db, make_user):
     assert online.phase == 'bijstellen'
     assert online.phase_deadline - online.phase_started_at == timedelta(days=online.days_adjust)
 
+    # Polijstronde P6: met het samenvattende voorstel (standaard aan) via die fase.
     for _ in range(2):
         _req(_client(app, host), 'POST', url(event))
+    db.session.refresh(event)
+    assert event.phase == 'samenvatten'
+    _req(_client(app, host), 'POST', url(event))
     db.session.refresh(event)
     assert event.phase == 'vervolg'
     assert _req(_client(app, host), 'POST', url(event)).status_code == 403  # uit het vervolg niet verder
@@ -313,8 +318,11 @@ def test_participants_get_phase_changes_and_results(app, db, make_user, mails):
 
     # Uitslag: na het stemmen de resultaten per voorstel op de stemlijst.
     ip.cast_vote(proposal, voter, 'voor')
-    lifecycle.set_phase(issue, 'vervolg', datetime.utcnow() - timedelta(minutes=1))
+    # Polijstronde P6: de uitslag komt bij het einde van het stemmen (de fase samenvatten).
+    lifecycle.set_phase(issue, 'samenvatten', datetime.utcnow() - timedelta(minutes=1))
     db.session.commit()
+    types = [c['type'] for c in digest.build(voter)[0]['changes']]
+    assert 'issue_samenvatten' in types
     change = next(c for c in digest.build(voter)[0]['changes'] if c['type'] == 'issue_uitslag')
     assert change['results'] == [{'statement': 'Meer bomen op het plein.', 'adopted': True, 'pct': 100.0}]
 

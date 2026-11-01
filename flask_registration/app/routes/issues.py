@@ -45,7 +45,8 @@ FOLLOWUP_MAX = 5000
 @issues_bp.context_processor
 def _inject_phase_labels():
     return {'phase_labels': {'feiten': gettext('Facts and discussion'), 'bijstellen': gettext('Revise the proposal'),
-                             'stemmen': gettext('Voting'), 'vervolg': gettext('Follow-up')},
+                             'stemmen': gettext('Voting'), 'samenvatten': gettext('Summary proposal'),
+                             'vervolg': gettext('Follow-up')},
             'ip_status': ip.status,
             'ip_can_support': lambda p, n, supported: ip.can_support(p, current_user, n, supported)}
 
@@ -139,7 +140,7 @@ def show(issue_id):
                            proposal_total=ip.regular_query(issue).count(),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
-                           can_step=lifecycle.can_step(issue, current_user),
+                           can_step=lifecycle.can_step(issue, current_user), next_phase=lifecycle.next_phase(issue),
                            can_reopen=lifecycle.can_reopen(issue, current_user),
                            can_edit_followup=lifecycle.can_edit_followup(issue, current_user),
                            silence_end=lifecycle.silence_end(issue) if issue.kind == 'online' else None,
@@ -441,7 +442,7 @@ def proposal_vote(issue_id, proposal_id):
 @issues_bp.route('/vraagstuk/<int:issue_id>/samenvattend-voorstel', methods=['GET', 'POST'])
 @login_required
 def final_new(issue_id):
-    """De initiatiefnemer doet in de vervolgfase het samenvattende voorstel, op basis
+    """De initiatiefnemer doet in de fase samenvatten (P6) het samenvattende voorstel, op basis
     van alle voorstellen en de discussie, en kan daarbij de vraag en de
     toelichting van het vraagstuk aanpassen."""
     issue = _issue_or_404(issue_id)
@@ -462,6 +463,8 @@ def final_new(issue_id):
         proposal = ip.create_final(issue, current_user, statement, explanation, lang=session.get('lang', 'nl'),
                                    title=title if title != issue.title else None,
                                    intro=intro if intro != (issue.intro or '') else None)
+        db.session.flush()
+        lifecycle.summary_made(issue, proposal)  # P6: de fase loopt tot het einde van de stemming
         db.session.commit()
         return redirect(url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id))
     errors, data = _pop_form_state(form_key)
