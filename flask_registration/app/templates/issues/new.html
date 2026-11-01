@@ -2,14 +2,11 @@
 {% block title %}{{ _('New issue') }} · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
+{% from 'issues/_crumbs.html' import crumbs with context %}
 <main class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
-    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-      <a href="{{ url_for('issues.index') }}">{{ _('Conversations') }}</a>
-      <span aria-hidden="true">›</span>
-      <span>{{ _('New issue') }}</span>
-    </nav>
+    {{ crumbs(None, [(_('New issue'), None)]) }}
 
     <header class="gu-forum__threadhead">
       <p class="gu-eyebrow">{{ _('Issue') }}</p>
@@ -118,7 +115,7 @@
         </label>
         <label class="gu-join__check">
           <input type="checkbox" name="final_vote" value="1"{% if fresh or fd.get('final_vote') == '1' %} checked{% endif %}>
-          <span>{{ _('End with an ultimate proposal and a new vote') }}</span>
+          <span>{{ _('End with a summary proposal') }}</span>
         </label>
       </fieldset>
 

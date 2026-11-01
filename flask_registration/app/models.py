@@ -736,7 +736,7 @@ class IssueProposal(db.Model):
     original_statement   = db.Column(db.String(300), nullable=True)
     original_explanation = db.Column(db.Text, nullable=True)
     revised_at           = db.Column(db.DateTime, nullable=True)
-    # Stap 6: het ultieme voorstel van de initiatiefnemer (aan het einde, als
+    # Stap 6: het samenvattende voorstel van de initiatiefnemer (aan het einde, als
     # final_vote van het vraagstuk aanstaat). NULL telt als False.
     is_final             = db.Column(db.Boolean, nullable=True, default=False)
 

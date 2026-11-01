@@ -1,10 +1,10 @@
 """
-Herontwerp, bouwstap 6: stemmen per voorstel, de uitslag en het ultieme
+Herontwerp, bouwstap 6: stemmen per voorstel, de uitslag en het samenvattende
 voorstel (app/issue_proposals.py en de routes in app/routes/issues.py).
 
 Dekt: stemmen door stemgerechtigden, één stem die je kunt wijzigen, alleen
 in de stemfase en alleen op de stemlijst; de drempel en de uitslag
-(onthoudingen buiten de breuk); de tussenstand aan en uit; het ultieme
+(onthoudingen buiten de breuk); de tussenstand aan en uit; het samenvattende
 voorstel (alleen de initiatiefnemer, in de vervolgfase, als final_vote
 aanstaat, één keer) met zijn eigen stemming en het aanpassen van het
 vraagstuk; de weergave in het detail, de lijst en de cockpit; de tekst in
@@ -212,18 +212,18 @@ def test_interim_tally(app, db, make_user, interim):
         _drop(db, others)
 
 
-# ── Het ultieme voorstel ─────────────────────────────────────────────────
+# ── Het samenvattende voorstel ─────────────────────────────────────────────────
 
 def test_final_proposal_by_initiator_in_follow_up(app, db, make_user):
     author, other, voter = make_user(), make_user(), make_user('voter')
     issue, listed, _u = _setup(db, author, [other], phase='vervolg')
-    url = f'/vraagstuk/{issue.id}/ultiem-voorstel'
+    url = f'/vraagstuk/{issue.id}/samenvattend-voorstel'
     data = {'statement': 'Het plein wordt autovrij, met de markt op zaterdag.', 'explanation': 'Samengevoegd.',
             'title': 'Hoe richten we het plein in?', 'intro': 'Aangescherpte vraag.'}
 
     assert _req(_client(app, other), 'GET', url).status_code == 403  # alleen de initiatiefnemer
     cockpit = _req(_client(app, author), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
-    assert 'Ultiem voorstel doen' in cockpit
+    assert 'Samenvattend voorstel doen' in cockpit
     form = _req(_client(app, author), 'GET', url).get_data(as_text=True)
     assert 'De voorstellen en hun uitslag' in form and 'Maak het plein autovrij.' in form
 
@@ -236,10 +236,10 @@ def test_final_proposal_by_initiator_in_follow_up(app, db, make_user):
     assert _req(_client(app, author), 'POST', url, data=data).status_code == 403  # maar één
     assert final not in [p for p, _n in ip.listing(issue)]  # niet tussen de gewone voorstellen
 
-    # Stemmen over het ultieme voorstel: zonder steunronde, in de vervolgfase.
+    # Stemmen over het samenvattende voorstel: zonder steunronde, in de vervolgfase.
     assert _vote(app, voter, issue, final, 'voor').status_code == 302
     page = _req(_client(app), 'GET', _detail(issue, final)).get_data(as_text=True)
-    assert 'Eindstemming' in page and 'Ultiem voorstel' in page and 'Stemmen open tot' in page
+    assert 'Eindstemming' in page and 'Samenvattend voorstel' in page and 'Stemmen open tot' in page
     for path in (f'/vraagstuk/{issue.id}/voorstellen', f'/vraagstuk/{issue.id}'):
         body = _req(_client(app), 'GET', path).get_data(as_text=True)
         assert 'gu-ip-finalbox' in body and 'Het plein wordt autovrij, met de markt op zaterdag.' in body
@@ -255,7 +255,7 @@ def test_final_proposal_by_initiator_in_follow_up(app, db, make_user):
 def test_final_proposal_rules(app, db, make_user):
     author, other = make_user(), make_user()
     issue, _l, _u = _setup(db, author, [other], phase='stemmen')
-    url = f'/vraagstuk/{issue.id}/ultiem-voorstel'
+    url = f'/vraagstuk/{issue.id}/samenvattend-voorstel'
     assert _req(_client(app, author), 'GET', url).status_code == 403  # nog niet in de vervolgfase
     issue.phase, issue.final_vote = 'vervolg', False
     db.session.commit()
@@ -272,8 +272,8 @@ def test_start_form_text(app, db, make_user):
     user = make_user()
     nl = _req(_client(app, user), 'GET', '/gesprekken/nieuw').get_data(as_text=True)
     en = _req(_client(app, user, 'en'), 'GET', '/gesprekken/nieuw').get_data(as_text=True)
-    assert 'Afsluiten met een ultiem voorstel en een nieuwe stemming' in nl and 'name="final_vote"' in nl
-    assert 'End with an ultimate proposal and a new vote' in en
+    assert 'Afsluiten met een samenvattend voorstel' in nl and 'name="final_vote"' in nl
+    assert 'End with a summary proposal' in en
 
 
 def test_deleting_a_voter_keeps_the_vote_anonymously(app, db, make_user):

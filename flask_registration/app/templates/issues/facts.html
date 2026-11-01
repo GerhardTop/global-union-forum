@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Facts and research') }} · {{ issue.title }} · Global Union{% endblock %}
+{% block title %}{{ _('Facts, research and media') }} · {{ issue.title }} · Global Union{% endblock %}
 
 {#
   Feiten en onderzoek van een vraagstuk (herontwerp stap 3). Filter op
@@ -8,22 +8,17 @@
   feitenfase. Standaard de bovenste tien, met "toon meer".
 #}
 {% block content_outer %}{% block content %}
+{% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'forum/_fact_fields.html' import fact_fields with context %}
 {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
 <main class="gu-forum gu-factspage" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
-    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-      <a href="{{ url_for('issues.index') }}">{{ _('Conversations') }}</a>
-      <span aria-hidden="true">›</span>
-      <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('Issue') }}</a>
-      <span aria-hidden="true">›</span>
-      <span>{{ _('Facts and research') }}</span>
-    </nav>
+    {{ crumbs(issue, [(_('Facts, research and media'), None)]) }}
 
     <header class="gu-forum__threadhead">
       <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
-      <h1 class="gu-forum__title">{{ _('Facts and research') }}</h1>
+      <h1 class="gu-forum__title">{{ _('Facts, research and media') }}</h1>
       <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
     </header>
 
@@ -45,7 +40,7 @@
         <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm" id="sortSubmit">{{ _('Apply') }}</button>
       </form>
       {% if phase_open and current_user.is_authenticated and current_user.can_contribute() %}
-      <a href="#toevoegen" class="gu-btn gu-btn--primary gu-btn--sm gu-factspage__add">+ {{ _('Add a fact or research') }}</a>
+      <a href="#toevoegen" class="gu-btn gu-btn--primary gu-btn--sm gu-factspage__add">+ {{ _('Add a fact, research or media') }}</a>
       {% endif %}
     </div>
 
@@ -113,7 +108,7 @@
       <form method="POST" action="{{ url_for('forum.fact_add', thread_id=thread.id) }}" class="gu-fact-form gu-fact-form--new" novalidate>
         {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
         <input type="hidden" name="return_to" value="{{ issue.id }}">
-        <p class="gu-fact-form__title">{{ _('Add a fact or research') }}</p>
+        <p class="gu-fact-form__title">{{ _('Add a fact, research or media') }}</p>
         {% set fe = fact_errors or {} %}
         {% set new_errs = {'text': fe.get('text'), 'direction': fe.get('direction'), 'source': fe.get('source')} %}
         {% set new_data = (fact_data or {}) if (fe.get('text') or fe.get('direction') or fe.get('source')) else {} %}

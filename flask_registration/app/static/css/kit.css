@@ -3614,3 +3614,23 @@ body {
 .gu-cockpit__manageform { display: grid; gap: 8px; margin: 0; }
 .gu-cockpit__manageform .gu-btn { justify-self: start; }
 .gu-cockpit__manageform p { margin: 0; }
+
+/* ── Polijstronde P1: kruimelpad en het overzicht "Denk mee" ─────────────── */
+.gu-issue-crumbs { flex-wrap: wrap; row-gap: 4px; min-width: 0; }
+.gu-issue-crumbs__issue {
+  max-width: min(42ch, 60vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gu-issuelist__filter { margin: 4px 0 20px; }
+.gu-issuelist__meta { flex-wrap: wrap; column-gap: 14px; row-gap: 4px; align-items: center; }
+.gu-issuelist__phase {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--gu-bg-soft);
+  color: var(--gu-fg-2);
+  font-weight: 600;
+}
+.gu-issuelist__phase.is-closed { color: var(--gu-fg-3); }

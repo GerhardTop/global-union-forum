@@ -76,6 +76,6 @@
 
   <p class="gu-composer__hint gu-ipdetail__threshold">{{ _('Adopted with more than %(pct)s%% in favour of the valid votes (for plus against). Abstentions count for turnout, not for the result.', pct=issue.proposal_threshold_pct) }}</p>
   {% if issue.final_vote and not proposal.is_final %}
-  <p class="gu-composer__hint">{{ _('At the end, the initiator can make an ultimate proposal based on all proposals and the discussion, which is voted on again.') }}</p>
+  <p class="gu-composer__hint">{{ _('At the end, the initiator can make a summary proposal based on all proposals and the discussion, which is voted on again.') }}</p>
   {% endif %}
 </section>

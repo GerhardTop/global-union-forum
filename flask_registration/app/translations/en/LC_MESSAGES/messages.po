@@ -1391,8 +1391,8 @@ msgstr "Enter a whole number from 1 to 1000."
 msgid "Show the interim result during voting"
 msgstr "Show the interim result during voting"
 
-msgid "End with an ultimate proposal and a new vote"
-msgstr "End with an ultimate proposal and a new vote"
+msgid "End with a summary proposal"
+msgstr "End with a summary proposal"
 
 msgid "Cancel"
 msgstr "Cancel"
@@ -1737,20 +1737,20 @@ msgstr "The fact goes into the shared list of this issue and is linked to your p
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Choose at least one fact that is not linked yet."
 
-# Herontwerp stap 6: stemmen, uitslag en het ultieme voorstel
+# Herontwerp stap 6: stemmen, uitslag en het samenvattende voorstel
 
-msgid "Ultimate proposal"
-msgstr "Ultimate proposal"
+msgid "Summary proposal"
+msgstr "Summary proposal"
 
-msgid "As the initiator, you can now make an ultimate proposal based on all proposals and the discussion."
-msgstr "As the initiator, you can now make an ultimate proposal based on all proposals and the discussion."
+msgid "As the initiator, you can now make a summary proposal based on all proposals and the discussion."
+msgstr "As the initiator, you can now make a summary proposal based on all proposals and the discussion."
 
-msgid "Make the ultimate proposal"
-msgstr "Make the ultimate proposal"
+msgid "Make the summary proposal"
+msgstr "Make the summary proposal"
 
 #, python-format
-msgid "Based on all proposals and the discussion, you make one ultimate proposal. The participants vote on it again, for %(days)s days, with the same threshold."
-msgstr "Based on all proposals and the discussion, you make one ultimate proposal. The participants vote on it again, for %(days)s days, with the same threshold."
+msgid "Based on all proposals and the discussion, you make one summary proposal. The participants vote on it again, for %(days)s days, with the same threshold."
+msgstr "Based on all proposals and the discussion, you make one summary proposal. The participants vote on it again, for %(days)s days, with the same threshold."
 
 msgid "The proposals and their results"
 msgstr "The proposals and their results"
@@ -1758,8 +1758,8 @@ msgstr "The proposals and their results"
 msgid "Adjust the issue (optional)"
 msgstr "Adjust the issue (optional)"
 
-msgid "Submit the ultimate proposal"
-msgstr "Submit the ultimate proposal"
+msgid "Submit the summary proposal"
+msgstr "Submit the summary proposal"
 
 msgid "Rejected, no valid votes"
 msgstr "Rejected, no valid votes"
@@ -1794,8 +1794,8 @@ msgstr "You may vote after %(n)s quality contributions: contributions that recei
 msgid "Adopted with more than %(pct)s%% in favour of the valid votes (for plus against). Abstentions count for turnout, not for the result."
 msgstr "Adopted with more than %(pct)s%% in favour of the valid votes (for plus against). Abstentions count for turnout, not for the result."
 
-msgid "At the end, the initiator can make an ultimate proposal based on all proposals and the discussion, which is voted on again."
-msgstr "At the end, the initiator can make an ultimate proposal based on all proposals and the discussion, which is voted on again."
+msgid "At the end, the initiator can make a summary proposal based on all proposals and the discussion, which is voted on again."
+msgstr "At the end, the initiator can make a summary proposal based on all proposals and the discussion, which is voted on again."
 
 msgid "Not on the voting list"
 msgstr "Not on the voting list"
@@ -1887,20 +1887,20 @@ msgid "no proposals were on the voting list."
 msgstr "no proposals were on the voting list."
 
 #, python-format
-msgid "Ultimate proposal \"%(statement)s\": voting open until %(date)s"
-msgstr "Ultimate proposal \"%(statement)s\": voting open until %(date)s"
+msgid "Summary proposal \"%(statement)s\": voting open until %(date)s"
+msgstr "Summary proposal \"%(statement)s\": voting open until %(date)s"
 
 #, python-format
-msgid "Ultimate proposal \"%(statement)s\": rejected, no valid votes"
-msgstr "Ultimate proposal \"%(statement)s\": rejected, no valid votes"
+msgid "Summary proposal \"%(statement)s\": rejected, no valid votes"
+msgstr "Summary proposal \"%(statement)s\": rejected, no valid votes"
 
 #, python-format
-msgid "Ultimate proposal \"%(statement)s\": adopted with %(pct)s%% in favour"
-msgstr "Ultimate proposal \"%(statement)s\": adopted with %(pct)s%% in favour"
+msgid "Summary proposal \"%(statement)s\": adopted with %(pct)s%% in favour"
+msgstr "Summary proposal \"%(statement)s\": adopted with %(pct)s%% in favour"
 
 #, python-format
-msgid "Ultimate proposal \"%(statement)s\": rejected with %(pct)s%% in favour"
-msgstr "Ultimate proposal \"%(statement)s\": rejected with %(pct)s%% in favour"
+msgid "Summary proposal \"%(statement)s\": rejected with %(pct)s%% in favour"
+msgstr "Summary proposal \"%(statement)s\": rejected with %(pct)s%% in favour"
 
 msgid "Issues: silence in the facts phase"
 msgstr "Issues: silence in the facts phase"
@@ -1913,3 +1913,55 @@ msgstr "Days without a new quality mark"
 
 msgid "Saved."
 msgstr "Saved."
+
+# Polijstronde P1: Denk mee, overzicht, kruimelpad, termen
+
+msgid "Have your say"
+msgstr "Have your say"
+
+msgid "Breadcrumb"
+msgstr "Breadcrumb"
+
+msgid "Facts, research and media"
+msgstr "Facts, research and media"
+
+msgid "Facts and background"
+msgstr "Facts and background"
+
+msgid "All facts, research and media"
+msgstr "All facts, research and media"
+
+msgid "Add a fact, research or media"
+msgstr "Add a fact, research or media"
+
+msgid "Filter issues"
+msgstr "Filter issues"
+
+msgid "Ongoing"
+msgstr "Ongoing"
+
+msgid "Finished"
+msgstr "Finished"
+
+msgid "1 proposal"
+msgstr "1 proposal"
+
+msgid "%(num)s proposals"
+msgstr "%(num)s proposals"
+
+msgid "1 participant"
+msgstr "1 participant"
+
+msgid "%(num)s participants"
+msgstr "%(num)s participants"
+
+msgid "No issues match this filter."
+msgstr "No issues match this filter."
+
+# Polijstronde P1: profiel
+
+msgid "Your LinkedIn profile."
+msgstr "Your LinkedIn profile."
+
+msgid "Update your password."
+msgstr "Update your password."

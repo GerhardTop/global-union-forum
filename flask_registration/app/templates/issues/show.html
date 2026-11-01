@@ -9,15 +9,12 @@
   Zonder JavaScript staat alles onder elkaar in beeld.
 #}
 {% block content_outer %}{% block content %}
+{% from 'issues/_crumbs.html' import crumbs with context %}
 {% if has_discussion %}<template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>{% endif %}
 <main class="gu-forum gu-cockpit" lang="{{ lang }}" id="cockpit">
   <div class="gu-cockpit__inner">
 
-    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-      <a href="{{ url_for('issues.index') }}">{{ _('Conversations') }}</a>
-      <span aria-hidden="true">›</span>
-      <span>{{ _('Issue') }}</span>
-    </nav>
+    {{ crumbs(issue) }}
 
     <header class="gu-cockpit__head">
       <p class="gu-eyebrow">{% include 'issues/_kind.html' %}
@@ -47,11 +44,11 @@
       <div class="gu-cockpit__tabs" role="tablist" aria-label="{{ _('Issue') }}" hidden>
         <button type="button" role="tab" class="gu-cockpit__tab" id="tab-discussion" aria-controls="panel-discussion" data-tab="discussion" aria-selected="true">{{ _('Discussion') }}</button>
         <button type="button" role="tab" class="gu-cockpit__tab" id="tab-proposals" aria-controls="panel-proposals" data-tab="proposals" aria-selected="false" tabindex="-1">{{ _('Proposals') }}</button>
-        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-facts" aria-controls="panel-facts" data-tab="facts" aria-selected="false" tabindex="-1">{{ _('Facts and research') }}</button>
+        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-facts" aria-controls="panel-facts" data-tab="facts" aria-selected="false" tabindex="-1">{{ _('Facts and background') }}</button>
       </div>
 
       <section class="gu-cockpit__panel gu-cockpit__facts" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
-        <h2 class="gu-cockpit__title" id="factsTitle">{{ _('Facts and research') }}{% if fact_total %} <span class="gu-facts__count">({{ fact_total }})</span>{% endif %}</h2>
+        <h2 class="gu-cockpit__title" id="factsTitle">{{ _('Facts and background') }}{% if fact_total %} <span class="gu-facts__count">({{ fact_total }})</span>{% endif %}</h2>
         {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
         {% if top_facts %}
         <ol class="gu-cockpit__factlist">
@@ -76,7 +73,7 @@
         {% endif %}
         {# Stap 3: de bovenste drie volgens kwaliteit eerst; alles op de feitenpagina. #}
         {% if has_discussion %}
-        <a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts and research') }} <span class="gu-arrow" aria-hidden="true"></span></a>
+        <a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts, research and media') }} <span class="gu-arrow" aria-hidden="true"></span></a>
         {% endif %}
       </section>
 
@@ -91,7 +88,7 @@
 
       <section class="gu-cockpit__panel gu-cockpit__proposals" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
         <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}{% if proposal_total %} <span class="gu-facts__count">({{ proposal_total }})</span>{% endif %}</h2>
-        {# Stap 6: het ultieme voorstel bovenaan. #}
+        {# Stap 6: het samenvattende voorstel bovenaan. #}
         {% include 'issues/_ip_final.html' %}
         {# Stap 4: de voorstellen onder dit vraagstuk, stemlijst eerst, met hun status. #}
         {% if proposal_rows %}

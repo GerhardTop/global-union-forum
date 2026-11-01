@@ -249,3 +249,33 @@ def voting_right(user):
     needed = status.get_thresholds()['voter_min']
     return {'status': user.effective_status, 'can_vote': user.can_vote(), 'count': count, 'needed': needed,
             'pct': 100 if user.can_vote() else min(100, round(100 * count / needed)) if needed else 100}
+
+
+# ── Het overzicht achter "Denk mee" (polijstronde P1) ────────────────────
+
+OVERVIEW_FILTERS = ('alle', 'online', 'event', 'lopend', 'afgerond')
+
+
+def is_finished(issue):
+    """Afgerond: gesloten, of in de vervolgfase (het beraad is voorbij)."""
+    return bool(issue.is_closed) or issue.phase == 'vervolg'
+
+
+def overview(which='alle'):
+    """[(vraagstuk, aantal voorstellen, aantal deelnemers)], nieuwste eerst."""
+    from app import issue_lifecycle
+    from app.models import IssueProposal
+    query = Issue.query
+    if which in ISSUE_KINDS:
+        query = query.filter(Issue.kind == which)
+    found = query.order_by(Issue.created_at.desc(), Issue.id.desc()).all()
+    if which == 'lopend':
+        found = [i for i in found if not is_finished(i)]
+    elif which == 'afgerond':
+        found = [i for i in found if is_finished(i)]
+    counts = {}
+    if found:
+        counts = dict(db.session.query(IssueProposal.issue_id, db.func.count(IssueProposal.id))
+                      .filter(IssueProposal.issue_id.in_([i.id for i in found]))
+                      .group_by(IssueProposal.issue_id).all())
+    return [(i, counts.get(i.id, 0) + len(i.proposals), len(issue_lifecycle.participants(i))) for i in found]

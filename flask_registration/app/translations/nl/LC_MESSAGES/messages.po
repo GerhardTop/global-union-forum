@@ -1388,8 +1388,8 @@ msgstr "Vul een geheel getal van 1 tot en met 1000 in."
 msgid "Show the interim result during voting"
 msgstr "Tussenstand tonen tijdens het stemmen"
 
-msgid "End with an ultimate proposal and a new vote"
-msgstr "Afsluiten met een ultiem voorstel en een nieuwe stemming"
+msgid "End with a summary proposal"
+msgstr "Afsluiten met een samenvattend voorstel"
 
 msgid "Cancel"
 msgstr "Annuleer"
@@ -1734,20 +1734,20 @@ msgstr "Het feit komt in de gedeelde lijst van dit vraagstuk en wordt aan je voo
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Kies minstens één feit dat nog niet gekoppeld is."
 
-# Herontwerp stap 6: stemmen, uitslag en het ultieme voorstel
+# Herontwerp stap 6: stemmen, uitslag en het samenvattende voorstel
 
-msgid "Ultimate proposal"
-msgstr "Ultiem voorstel"
+msgid "Summary proposal"
+msgstr "Samenvattend voorstel"
 
-msgid "As the initiator, you can now make an ultimate proposal based on all proposals and the discussion."
-msgstr "Als initiatiefnemer kun je nu op basis van alle voorstellen en de discussie een ultiem voorstel doen."
+msgid "As the initiator, you can now make a summary proposal based on all proposals and the discussion."
+msgstr "Als initiatiefnemer kun je nu op basis van alle voorstellen en de discussie een samenvattend voorstel doen."
 
-msgid "Make the ultimate proposal"
-msgstr "Ultiem voorstel doen"
+msgid "Make the summary proposal"
+msgstr "Samenvattend voorstel doen"
 
 #, python-format
-msgid "Based on all proposals and the discussion, you make one ultimate proposal. The participants vote on it again, for %(days)s days, with the same threshold."
-msgstr "Op basis van alle voorstellen en de discussie doe je één ultiem voorstel. De deelnemers stemmen er opnieuw over, %(days)s dagen lang, met dezelfde drempel."
+msgid "Based on all proposals and the discussion, you make one summary proposal. The participants vote on it again, for %(days)s days, with the same threshold."
+msgstr "Op basis van alle voorstellen en de discussie doe je één samenvattend voorstel. De deelnemers stemmen er opnieuw over, %(days)s dagen lang, met dezelfde drempel."
 
 msgid "The proposals and their results"
 msgstr "De voorstellen en hun uitslag"
@@ -1755,8 +1755,8 @@ msgstr "De voorstellen en hun uitslag"
 msgid "Adjust the issue (optional)"
 msgstr "Het vraagstuk aanpassen (optioneel)"
 
-msgid "Submit the ultimate proposal"
-msgstr "Ultiem voorstel indienen"
+msgid "Submit the summary proposal"
+msgstr "Samenvattend voorstel indienen"
 
 msgid "Rejected, no valid votes"
 msgstr "Verworpen, geen geldige stemmen"
@@ -1791,8 +1791,8 @@ msgstr "Je mag meestemmen na %(n)s kwaliteitsbijdragen: bijdragen die het keurme
 msgid "Adopted with more than %(pct)s%% in favour of the valid votes (for plus against). Abstentions count for turnout, not for the result."
 msgstr "Aangenomen bij meer dan %(pct)s%% voor van de geldige stemmen (voor plus tegen). Onthoudingen tellen mee voor de opkomst, niet voor de uitslag."
 
-msgid "At the end, the initiator can make an ultimate proposal based on all proposals and the discussion, which is voted on again."
-msgstr "Aan het einde kan de initiatiefnemer op basis van alle voorstellen en de discussie een ultiem voorstel doen, waarover opnieuw wordt gestemd."
+msgid "At the end, the initiator can make a summary proposal based on all proposals and the discussion, which is voted on again."
+msgstr "Aan het einde kan de initiatiefnemer op basis van alle voorstellen en de discussie een samenvattend voorstel doen, waarover opnieuw wordt gestemd."
 
 msgid "Not on the voting list"
 msgstr "Niet op de stemlijst"
@@ -1884,20 +1884,20 @@ msgid "no proposals were on the voting list."
 msgstr "er stonden geen voorstellen op de stemlijst."
 
 #, python-format
-msgid "Ultimate proposal \"%(statement)s\": voting open until %(date)s"
-msgstr "Ultiem voorstel \"%(statement)s\": stemmen open tot %(date)s"
+msgid "Summary proposal \"%(statement)s\": voting open until %(date)s"
+msgstr "Samenvattend voorstel \"%(statement)s\": stemmen open tot %(date)s"
 
 #, python-format
-msgid "Ultimate proposal \"%(statement)s\": rejected, no valid votes"
-msgstr "Ultiem voorstel \"%(statement)s\": verworpen, geen geldige stemmen"
+msgid "Summary proposal \"%(statement)s\": rejected, no valid votes"
+msgstr "Samenvattend voorstel \"%(statement)s\": verworpen, geen geldige stemmen"
 
 #, python-format
-msgid "Ultimate proposal \"%(statement)s\": adopted with %(pct)s%% in favour"
-msgstr "Ultiem voorstel \"%(statement)s\": aangenomen met %(pct)s%% voor"
+msgid "Summary proposal \"%(statement)s\": adopted with %(pct)s%% in favour"
+msgstr "Samenvattend voorstel \"%(statement)s\": aangenomen met %(pct)s%% voor"
 
 #, python-format
-msgid "Ultimate proposal \"%(statement)s\": rejected with %(pct)s%% in favour"
-msgstr "Ultiem voorstel \"%(statement)s\": verworpen met %(pct)s%% voor"
+msgid "Summary proposal \"%(statement)s\": rejected with %(pct)s%% in favour"
+msgstr "Samenvattend voorstel \"%(statement)s\": verworpen met %(pct)s%% voor"
 
 msgid "Issues: silence in the facts phase"
 msgstr "Vraagstukken: stilte in de feitenfase"
@@ -1910,3 +1910,55 @@ msgstr "Dagen zonder nieuw keurmerk"
 
 msgid "Saved."
 msgstr "Opgeslagen."
+
+# Polijstronde P1: Denk mee, overzicht, kruimelpad, termen
+
+msgid "Have your say"
+msgstr "Denk mee"
+
+msgid "Breadcrumb"
+msgstr "Kruimelpad"
+
+msgid "Facts, research and media"
+msgstr "Feiten, onderzoek en media"
+
+msgid "Facts and background"
+msgstr "Feiten en achtergrond"
+
+msgid "All facts, research and media"
+msgstr "Alle feiten, onderzoek en media"
+
+msgid "Add a fact, research or media"
+msgstr "Feit, onderzoek of media toevoegen"
+
+msgid "Filter issues"
+msgstr "Vraagstukken filteren"
+
+msgid "Ongoing"
+msgstr "Lopend"
+
+msgid "Finished"
+msgstr "Afgerond"
+
+msgid "1 proposal"
+msgstr "1 voorstel"
+
+msgid "%(num)s proposals"
+msgstr "%(num)s voorstellen"
+
+msgid "1 participant"
+msgstr "1 deelnemer"
+
+msgid "%(num)s participants"
+msgstr "%(num)s deelnemers"
+
+msgid "No issues match this filter."
+msgstr "Geen vraagstukken bij dit filter."
+
+# Polijstronde P1: profiel
+
+msgid "Your LinkedIn profile."
+msgstr "Je LinkedIn-profiel."
+
+msgid "Update your password."
+msgstr "Werk je wachtwoord bij."

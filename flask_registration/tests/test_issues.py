@@ -6,7 +6,7 @@ Dekt: de backfill pakt een bestaand voorstel in een eigen vraagstuk en is
 idempotent; een nieuw voorstel via het oude startformulier krijgt meteen een
 vraagstuk; het verwijderen van het gesprek ruimt dat vraagstuk op; het
 startformulier maakt een vraagstuk (online en event) en weigert ongeldige
-invoer; de lijst, de vraagstukpagina en het menu-item Gesprekken.
+invoer; de lijst, de vraagstukpagina en het menu-item Denk mee (polijstronde P1).
 
 Gedeelde conftest-app (CSRF uit).
 """
@@ -47,6 +47,7 @@ def make_user(db):
         quality.detach_user(uid)
         db.session.delete(db.session.get(User, uid))
     db.session.commit()
+    db.session.expunge_all()  # SQLite hergebruikt id's; geen achtergebleven objecten
 
 
 def _client(app, user=None, lang='nl'):
@@ -208,7 +209,7 @@ def test_list_and_issue_page(app, db, make_user):
     page = _req(_client(app, lang='nl'), 'GET', '/gesprekken').get_data(as_text=True)
     assert 'Wat doen we met het plein?' in page
     assert 'Stadhuis' in page and 'Event' in page
-    assert 'Fase: Feiten en discussie' in page
+    assert 'Feiten en discussie' in page
 
     show = _req(_client(app, lang='en'), 'GET', f'/vraagstuk/{issue.id}')
     assert show.status_code == 200
@@ -222,11 +223,13 @@ def test_issue_page_404(app):
     assert _req(_client(app), 'GET', '/vraagstuk/999999').status_code == 404
 
 
-def test_nav_item_is_conversations(app):
+def test_nav_item_is_have_your_say(app):
+    # Polijstronde P1: "Denk mee" in het menu; het oude forum staat er niet meer in.
     nl = _req(_client(app, lang='nl'), 'GET', '/gesprekken').get_data(as_text=True)
     en = _req(_client(app, lang='en'), 'GET', '/gesprekken').get_data(as_text=True)
-    assert '>Gesprekken</a>' in nl and '>Forum</a>' not in nl
-    assert '>Conversations</a>' in en
+    nav = nl.split('id="siteNav"')[1].split('</nav>')[0]
+    assert '>Denk mee</a>' in nav and 'Gesprekken' not in nav and '/forum' not in nav
+    assert '>Have your say</a>' in en
 
 
 # ── Stap 2: de cockpit ───────────────────────────────────────────────────
@@ -295,10 +298,10 @@ def test_cockpit_shows_context_facts_discussion_and_proposals(app, db, make_user
     # Feiten links: de bovenste drie volgens kwaliteit eerst (alle vier met een
     # link als bron, niemand vond iets nuttig: de nieuwste), met richting, bron
     # en de nuttig-teller, en de link naar de feitenpagina (stap 3).
-    assert 'Feiten en onderzoek' in body and '(4)' in body
+    assert 'Feiten en achtergrond' in body and '(4)' in body
     assert 'Feit nummer 3' in body and 'Feit nummer 1' in body and 'Feit nummer 0' not in body
     assert 'Pleit voor' in body and 'Pleit tegen' in body and 'https://example.org/1' in body
-    assert f'/vraagstuk/{proposal.issue_id}/feiten' in body and 'Alle feiten en onderzoek' in body
+    assert f'/vraagstuk/{proposal.issue_id}/feiten' in body and 'Alle feiten, onderzoek en media' in body
     assert 'Nuttig' in body
     # Discussie in het midden: de bestaande boom met de reactie-invoer, zonder de feiten.
     discussion = body.split('id="panel-discussion"')[1].split('id="panel-proposals"')[0]
@@ -317,7 +320,7 @@ def test_cockpit_in_english(app, db, make_user):
     issues.backfill()
     db.session.refresh(proposal)
     body = _req(_client(app, user, 'en'), 'GET', f'/vraagstuk/{proposal.issue_id}').get_data(as_text=True)
-    for text in ('What this is about', 'Facts and research', 'Discussion', 'Your right to vote',
+    for text in ('What this is about', 'Facts and background', 'Discussion', 'Your right to vote',
                  'Make a new proposal', 'voting closes'):
         assert text in body
     assert 'hours left' in body  # feitenfase van één dag, net begonnen

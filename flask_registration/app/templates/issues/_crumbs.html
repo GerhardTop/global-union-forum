@@ -1,0 +1,21 @@
+{#
+  Macro: issues/_crumbs.html (polijstronde P1)
+  Het kruimelpad van de vraagstuk-pagina's: "Denk mee" naar het overzicht,
+  dan de naam van het vraagstuk naar de cockpit, dan eventueel de pagina.
+  Gebruik: {% from 'issues/_crumbs.html' import crumbs with context %}
+           {{ crumbs(issue, [(_('Proposals'), url), (_('New'), None)]) }}
+#}
+{% macro crumbs(issue=None, trail=()) %}
+<nav class="gu-forum__crumbs gu-issue-crumbs" aria-label="{{ _('Breadcrumb') }}">
+  <a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a>
+  {% if issue %}
+  <span aria-hidden="true">›</span>
+  {% if trail %}<a href="{{ url_for('issues.show', issue_id=issue.id) }}" class="gu-issue-crumbs__issue" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
+  {% else %}<span class="gu-issue-crumbs__issue" aria-current="page" lang="{{ issue.lang or lang }}">{{ issue.title }}</span>{% endif %}
+  {% endif %}
+  {% for label, url in trail %}
+  <span aria-hidden="true">›</span>
+  {% if url %}<a href="{{ url }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}
+  {% endfor %}
+</nav>
+{% endmacro %}

@@ -7,16 +7,11 @@
   eerst), steunen en een nieuw voorstel doen. Zonder JavaScript te gebruiken.
 #}
 {% block content_outer %}{% block content %}
+{% from 'issues/_crumbs.html' import crumbs with context %}
 <main class="gu-forum gu-ippage" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
-    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-      <a href="{{ url_for('issues.index') }}">{{ _('Conversations') }}</a>
-      <span aria-hidden="true">›</span>
-      <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('Issue') }}</a>
-      <span aria-hidden="true">›</span>
-      <span>{{ _('Proposals') }}</span>
-    </nav>
+    {{ crumbs(issue, [(_('Proposals'), None)]) }}
 
     <header class="gu-forum__threadhead">
       <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>

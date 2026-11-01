@@ -124,7 +124,7 @@
       <input type="hidden" name="action" value="linkedin">
       <div class="gu-join__field">
         <label for="linkedin_url">
-          {{ _('LinkedIn profile URL') }}
+          {{ _('LinkedIn profile URL') }} <span class="gu-join__badge">{{ _('optional') }}</span>
         </label>
         <input id="linkedin_url" name="linkedin_url" type="url"
                class="gu-input{% if linkedin_error %} gu-input--error{% endif %}"
@@ -314,9 +314,10 @@
           .then(function (r) { return r.json(); })
           .then(function (data) {
             if (data.ok) {
+              // LinkedIn is optioneel: een leeg veld wist het profiel.
               link.href        = data.linkedin_url;
               link.textContent = data.linkedin_url;
-              display.style.display = '';
+              display.style.display = data.linkedin_url ? '' : 'none';
               errorMsg.style.display  = 'none';
               successMsg.style.display = '';
               input.classList.remove('gu-input--error');

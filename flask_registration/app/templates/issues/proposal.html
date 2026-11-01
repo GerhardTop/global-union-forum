@@ -9,20 +9,15 @@
   de stemming straks bovenaan.
 #}
 {% block content_outer %}{% block content %}
+{% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'issues/_ip_fields.html' import ip_fields with context %}
 <main class="gu-forum gu-ipdetail" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
-    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-      <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('Issue') }}</a>
-      <span aria-hidden="true">›</span>
-      <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals') }}</a>
-      <span aria-hidden="true">›</span>
-      <span>{{ _('Proposal') }}</span>
-    </nav>
+    {{ crumbs(issue, [(_('Proposals'), url_for('issues.proposals', issue_id=issue.id)), (_('Proposal'), None)]) }}
 
     <header class="gu-forum__threadhead">
-      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}{% if proposal.is_final %} · <span class="gu-ip-final">{{ _('Ultimate proposal') }}</span>{% endif %}</p>
+      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}{% if proposal.is_final %} · <span class="gu-ip-final">{{ _('Summary proposal') }}</span>{% endif %}</p>
       <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
       <h1 class="gu-forum__title gu-ipdetail__statement" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</h1>
       <div class="gu-ipdetail__meta">
@@ -103,7 +98,7 @@
         {% endif %}
       </details>
       {% endif %}
-      <a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts and research') }} <span class="gu-arrow" aria-hidden="true"></span></a>
+      <a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts, research and media') }} <span class="gu-arrow" aria-hidden="true"></span></a>
     </section>
 
     <section class="gu-ipdetail__section" aria-labelledby="historyTitle">

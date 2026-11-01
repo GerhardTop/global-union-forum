@@ -38,11 +38,11 @@
             {%- endfor -%}
           </ul>
           {%- else %} {{ _('no proposals were on the voting list.') }}{%- endif -%}
-        {%- elif c.type == 'ultiem_open' -%}{{ _('Ultimate proposal "%(statement)s": voting open until %(date)s', statement=c.statement, date=until | datetimeformat('d MMMM y HH:mm')) }}
+        {%- elif c.type == 'ultiem_open' -%}{{ _('Summary proposal "%(statement)s": voting open until %(date)s', statement=c.statement, date=until | datetimeformat('d MMMM y HH:mm')) }}
         {%- elif c.type == 'ultiem_uitslag' -%}
-          {%- if c.pct is none -%}{{ _('Ultimate proposal "%(statement)s": rejected, no valid votes', statement=c.statement) }}
-          {%- elif c.adopted -%}{{ _('Ultimate proposal "%(statement)s": adopted with %(pct)s%% in favour', statement=c.statement, pct=c.pct | decimalformat('0.#')) }}
-          {%- else -%}{{ _('Ultimate proposal "%(statement)s": rejected with %(pct)s%% in favour', statement=c.statement, pct=c.pct | decimalformat('0.#')) }}{%- endif -%}
+          {%- if c.pct is none -%}{{ _('Summary proposal "%(statement)s": rejected, no valid votes', statement=c.statement) }}
+          {%- elif c.adopted -%}{{ _('Summary proposal "%(statement)s": adopted with %(pct)s%% in favour', statement=c.statement, pct=c.pct | decimalformat('0.#')) }}
+          {%- else -%}{{ _('Summary proposal "%(statement)s": rejected with %(pct)s%% in favour', statement=c.statement, pct=c.pct | decimalformat('0.#')) }}{%- endif -%}
         {%- elif c.type == 'uitslag' -%}
           {%- if c.pct is none -%}{{ _('Result: rejected, no valid votes') }}
           {%- elif c.result == 'aangenomen' -%}{{ _('Result: adopted with %(pct)s%% in favour', pct=c.pct | decimalformat('0.#')) }}

@@ -31,7 +31,7 @@ Stap 6, stemmen en uitslag:
   proposal_threshold_pct; onthoudingen tellen mee in de opkomst, niet in de
   uitslag. De tussenstand is zichtbaar tijdens het stemmen als show_interim
   aanstaat, anders pas na afloop.
-- Het ultieme voorstel (als final_vote aanstaat): een IssueProposal met
+- Het samenvattende voorstel (als final_vote aanstaat): een IssueProposal met
   is_final, gemaakt door de initiatiefnemer in de vervolgfase, één per
   vraagstuk, zonder steunronde. De stemming erover loopt days_vote dagen
   vanaf het aanmaken, met dezelfde stemregels en drempel. Daarbij kan de
@@ -115,7 +115,7 @@ def my_supports(proposal_ids, user):
 
 
 def on_list(proposal, count):
-    """Op de stemlijst: genoeg steun. Het ultieme voorstel staat er altijd op."""
+    """Op de stemlijst: genoeg steun. Het samenvattende voorstel staat er altijd op."""
     return bool(proposal.is_final) or count >= proposal.issue.support_threshold
 
 
@@ -123,7 +123,7 @@ def status(proposal, count):
     """(sleutel, info) voor het statuslabel; de template maakt er tekst van.
     Gewoon voorstel: 'steun' (aantal, drempel) in de feitenfase, daarna
     'niet_op_lijst' (aantal, drempel) of 'stemlijst'; na het stemmen de
-    uitslag 'aangenomen' of 'verworpen' (met de uitslag). Ultiem voorstel:
+    uitslag 'aangenomen' of 'verworpen' (met de uitslag). Samenvattend voorstel:
     'ultiem_stemmen' (einddatum) tijdens de stemming, daarna de uitslag."""
     if on_list(proposal, count):
         if voting_over(proposal):
@@ -304,7 +304,7 @@ def show_tally(proposal, count=None):
     return voting_over(proposal) or (bool(proposal.issue.show_interim) and voting_open(proposal, count))
 
 
-# ── Het ultieme voorstel (stap 6) ────────────────────────────────────────
+# ── Het samenvattende voorstel (stap 6) ────────────────────────────────────────
 
 def final_proposal(issue):
     return IssueProposal.query.filter_by(issue_id=issue.id, is_final=True).first()
@@ -316,7 +316,7 @@ def can_make_final(issue, user):
 
 
 def create_final(issue, user, statement, explanation=None, lang=None, title=None, intro=None):
-    """Het ultieme voorstel; eventueel met een aangepaste vraag en toelichting
+    """Het samenvattende voorstel; eventueel met een aangepaste vraag en toelichting
     van het vraagstuk. Commit niet zelf."""
     if title:
         issue.title = title
@@ -336,7 +336,7 @@ def create_final(issue, user, statement, explanation=None, lang=None, title=None
 # ── Lijst ────────────────────────────────────────────────────────────────
 
 def regular_query(issue):
-    """De gewone voorstellen van een vraagstuk (zonder het ultieme)."""
+    """De gewone voorstellen van een vraagstuk (zonder het samenvattende)."""
     return IssueProposal.query.filter(IssueProposal.issue_id == issue.id,
                                       or_(IssueProposal.is_final.is_(None), IssueProposal.is_final.is_(False)))
 

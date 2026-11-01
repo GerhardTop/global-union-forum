@@ -1,31 +1,26 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Make the ultimate proposal') }} · Global Union{% endblock %}
+{% block title %}{{ _('Make the summary proposal') }} · Global Union{% endblock %}
 
 {#
-  Het ultieme voorstel (herontwerp stap 6): de initiatiefnemer doet in de
+  Het samenvattende voorstel (herontwerp stap 6): de initiatiefnemer doet in de
   vervolgfase, op basis van alle voorstellen en de discussie, één ultiem
   voorstel waarover de deelnemers opnieuw stemmen. Daarbij kan de vraag en
   de toelichting van het vraagstuk worden aangepast.
 #}
 {% block content_outer %}{% block content %}
+{% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'issues/_ip_fields.html' import ip_fields with context %}
 {% set fd = form_data or {} %}
 {% set errs = errors or {} %}
 <main class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
-    <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-      <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('Issue') }}</a>
-      <span aria-hidden="true">›</span>
-      <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals') }}</a>
-      <span aria-hidden="true">›</span>
-      <span>{{ _('Ultimate proposal') }}</span>
-    </nav>
+    {{ crumbs(issue, [(_('Proposals'), url_for('issues.proposals', issue_id=issue.id)), (_('Summary proposal'), None)]) }}
 
     <header class="gu-forum__threadhead">
       <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
-      <h1 class="gu-forum__title">{{ _('Make the ultimate proposal') }}</h1>
-      <p class="gu-composer__hint">{{ _('Based on all proposals and the discussion, you make one ultimate proposal. The participants vote on it again, for %(days)s days, with the same threshold.', days=issue.days_vote) }}</p>
+      <h1 class="gu-forum__title">{{ _('Make the summary proposal') }}</h1>
+      <p class="gu-composer__hint">{{ _('Based on all proposals and the discussion, you make one summary proposal. The participants vote on it again, for %(days)s days, with the same threshold.', days=issue.days_vote) }}</p>
     </header>
 
     {% if rows %}
@@ -59,7 +54,7 @@
       {{ ip_fields('final', fd, errs) }}
       <div class="gu-forum__newactions">
         <a href="{{ url_for('issues.show', issue_id=issue.id) }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>
-        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">{{ _('Submit the ultimate proposal') }} <span class="gu-arrow"></span></button>
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">{{ _('Submit the summary proposal') }} <span class="gu-arrow"></span></button>
       </div>
     </form>
 

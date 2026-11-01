@@ -225,7 +225,7 @@ def test_add_fact_from_facts_page_on_issue_without_proposal(app, db, make_user):
     author, reader = make_user(), make_user()
     issue = _issue(db, author)
     page = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
-    assert 'Feit of onderzoek toevoegen' in page and f'name="return_to" value="{issue.id}"' in page
+    assert 'Feit, onderzoek of media toevoegen' in page and f'name="return_to" value="{issue.id}"' in page
     r = _req(_client(app, reader), 'POST', f'/forum/{issue.thread_id}/feiten',
              data={'text': 'Nieuw onderzoek', 'direction': 'voor', 'source': 'https://onderzoek.example',
                    'return_to': str(issue.id)})
@@ -255,7 +255,7 @@ def test_facts_page_in_english(app, db, make_user):
     issue = _issue(db, author)
     _fact(db, issue, author, 'A fact', 'tegen')
     page = _req(_client(app, lang='en'), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
-    for text in ('Facts and research', 'Argues against', 'Quality first', 'Most useful', 'Useful'):
+    for text in ('Facts, research and media', 'Argues against', 'Quality first', 'Most useful', 'Useful'):
         assert text in page
 
 

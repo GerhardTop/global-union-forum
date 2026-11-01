@@ -70,7 +70,7 @@ FAQ = {
             ('Hoe ontstaan voorstellen en hoe wordt erover gestemd?',
              'Voorstellen komen voort uit de discussie. Een voorstel komt op de stemlijst zodra genoeg mensen het '
              'steunen. Er wordt per voorstel gestemd met voor, tegen of onthouding. Op basis van alle voorstellen '
-             'en de discussie kan de initiatiefnemer het vraagstuk aanpassen en een ultiem voorstel doen. '
+             'en de discussie kan de initiatiefnemer het vraagstuk aanpassen en een samenvattend voorstel doen. '
              'Daarover kunnen de deelnemers dan opnieuw stemmen.'),
             ('Wat is het kwaliteitskeurmerk?',
              'Een medaille die automatisch wordt toegekend aan een bijdrage die de discussie verder brengt. Dat '
@@ -165,7 +165,7 @@ FAQ = {
             ('How do proposals come about, and how is the vote held?',
              'Proposals come out of the discussion. A proposal goes on the voting list as soon as enough people '
              'support it. Each proposal is voted on with for, against or abstain. Based on all proposals and the '
-             'discussion, the initiator can adjust the issue and make an ultimate proposal. The participants can '
+             'discussion, the initiator can adjust the issue and make a summary proposal. The participants can '
              'then vote on that again.'),
             ('What is the quality mark?',
              'A medal that is given automatically to a contribution that moves the discussion forward. That can '

@@ -1,7 +1,7 @@
 """
 Herontwerp, bouwstap 1: de vraagstukken (Issue).
 
-/gesprekken          lijst met vraagstukken
+/gesprekken          het overzicht achter "Denk mee" (polijstronde P1: filters)
 /gesprekken/nieuw    startformulier voor een vraagstuk
 /vraagstuk/<id>      de cockpit (stap 2): context en feiten links, de gedeelde
                      discussie in het midden, voorstellen en stemrecht rechts
@@ -12,8 +12,8 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
                      voorstellen onder het vraagstuk (stap 4): doen, steunen,
                      bijstellen, de lijst en het detail; stap 5 feiten
                      koppelen; stap 6 stemmen (/voorstel/<pid>/stemmen)
-/vraagstuk/<id>/ultiem-voorstel
-                     het ultieme voorstel van de initiatiefnemer (stap 6)
+/vraagstuk/<id>/samenvattend-voorstel
+                     het samenvattende voorstel van de initiatiefnemer (stap 6)
 /vraagstuk/<id>/volgende-fase, /vervolg, /heropenen
                      de levenscyclus met de hand (stap 7): een fase verder,
                      de vervolgtekst, opnieuw openstellen
@@ -54,8 +54,11 @@ _FORM_FIELDS = ('title', 'intro', 'kind', 'event_date', 'event_location', 'votin
 
 @issues_bp.route('/gesprekken')
 def index():
-    open_issues = Issue.query.filter_by(is_closed=False).order_by(Issue.created_at.desc(), Issue.id.desc()).all()
-    return render_template('issues/index.html', issues=open_issues)
+    """Het overzicht achter "Denk mee": alle vraagstukken met hun fase en
+    aantallen, te filteren op soort (online, event) en op lopend of afgerond."""
+    which = request.args.get('filter')
+    which = which if which in issues.OVERVIEW_FILTERS else 'alle'
+    return render_template('issues/index.html', rows=issues.overview(which), which=which)
 
 
 @issues_bp.route('/gesprekken/nieuw', methods=['GET', 'POST'])
@@ -361,7 +364,7 @@ def proposal_unlink(issue_id, proposal_id, link_id):
     return redirect(_basis_url(issue, proposal))
 
 
-# ── Stap 6: stemmen en het ultieme voorstel ──────────────────────────────
+# ── Stap 6: stemmen en het samenvattende voorstel ──────────────────────────────
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/stemmen', methods=['POST'])
 @login_required
@@ -381,10 +384,10 @@ def proposal_vote(issue_id, proposal_id):
     return redirect(url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) + '#stemming')
 
 
-@issues_bp.route('/vraagstuk/<int:issue_id>/ultiem-voorstel', methods=['GET', 'POST'])
+@issues_bp.route('/vraagstuk/<int:issue_id>/samenvattend-voorstel', methods=['GET', 'POST'])
 @login_required
 def final_new(issue_id):
-    """De initiatiefnemer doet in de vervolgfase het ultieme voorstel, op basis
+    """De initiatiefnemer doet in de vervolgfase het samenvattende voorstel, op basis
     van alle voorstellen en de discussie, en kan daarbij de vraag en de
     toelichting van het vraagstuk aanpassen."""
     issue = _issue_or_404(issue_id)

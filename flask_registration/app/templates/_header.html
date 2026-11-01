@@ -8,7 +8,7 @@
 
   <nav class="gu-header__nav" id="siteNav" aria-label="Navigatie">
     <a href="{{ url_for('issues.index') }}"
-       {% if request.endpoint and request.endpoint.startswith(('issues.', 'forum.')) %}class="is-active"{% endif %}>{{ _('Conversations') }}</a>
+       {% if request.endpoint and request.endpoint.startswith('issues.') %}class="is-active"{% endif %}>{{ _('Have your say') }}</a>
     <a href="{{ url_for('main.manifest') }}"
        {% if request.endpoint == 'main.manifest' %}class="is-active"{% endif %}>Manifest</a>
     <a href="{{ url_for('main.faq') }}"

@@ -1,18 +1,18 @@
 {#
   Partial: issues/_ip_final.html (herontwerp stap 6)
-  Het ultieme voorstel prominent, met zijn status of uitslag, of voor de
+  Het samenvattende voorstel prominent, met zijn status of uitslag, of voor de
   initiatiefnemer de knop om het te doen. Context: issue, final, can_make_final.
 #}
 {% if final %}
 <div class="gu-ip-finalbox">
-  <p class="gu-eyebrow">{{ _('Ultimate proposal') }}</p>
+  <p class="gu-eyebrow">{{ _('Summary proposal') }}</p>
   <a class="gu-ip-finalbox__statement" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=final.id) }}" lang="{{ final.lang or lang }}">{{ final.statement }}</a>
   {% with proposal=final, count=0 %}{% include 'issues/_ip_status.html' %}{% endwith %}
 </div>
 {% elif can_make_final %}
 <div class="gu-ip-finalbox gu-ip-finalbox--todo">
-  <p class="gu-eyebrow">{{ _('Ultimate proposal') }}</p>
-  <p class="gu-composer__hint">{{ _('As the initiator, you can now make an ultimate proposal based on all proposals and the discussion.') }}</p>
-  <a href="{{ url_for('issues.final_new', issue_id=issue.id) }}" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Make the ultimate proposal') }}</a>
+  <p class="gu-eyebrow">{{ _('Summary proposal') }}</p>
+  <p class="gu-composer__hint">{{ _('As the initiator, you can now make a summary proposal based on all proposals and the discussion.') }}</p>
+  <a href="{{ url_for('issues.final_new', issue_id=issue.id) }}" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Make the summary proposal') }}</a>
 </div>
 {% endif %}

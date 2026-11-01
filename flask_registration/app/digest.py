@@ -17,7 +17,7 @@ voorstellen; bij een event is iedereen live bij).
 Herontwerp stap 7: ook vraagstukken. Wie bij een vraagstuk betrokken is (de
 initiatiefnemer en wie heeft bijgedragen, zie issue_lifecycle.participants)
 krijgt in dezelfde samenvatting de faseovergangen, het openen van de
-stemming, de uitslag, het ultieme voorstel en de vervolgtekst. De tik zet
+stemming, de uitslag, het samenvattende voorstel en de vervolgtekst. De tik zet
 eerst de vraagstukken door (issue_lifecycle.advance_due).
 
 Alles hier is idempotent en veilig om elk uur te draaien (POST /intern/tik).
