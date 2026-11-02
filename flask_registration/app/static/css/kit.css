@@ -3853,3 +3853,105 @@ body {
 .gu-cockpit__fullpage { display: none; margin-top: 12px; font-size: 0.875rem; }
 .gu-cockpit--expanded [data-panel].is-expanded .gu-cockpit__fullpage { display: inline-block; }
 [data-more-list] > [hidden] { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Polijstronde P8: cockpit en startformulier dichter bij het ontwerp.
+   Witte kaarten op een zachte grijze achtergrond, een schone fasebalk met
+   iconen en verbindingslijnen, en het startformulier in gescheiden secties.
+   De fasebalk-regels gelden alleen voor .gu-phasebar (de cockpit); het
+   gedeelde .gu-proposal-steps grondpatroon blijft ongemoeid.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Cockpit: zachte paginakleur, de vraag in het donker ─────────────── */
+.gu-cockpit { background: #f1f4f7; }
+.gu-cockpit__inner { padding-top: 24px; padding-bottom: 48px; }
+.gu-cockpit__titlerow .gu-forum__title { color: var(--gu-fg-1); font-weight: 600; }
+
+/* ── Fasebalk: horizontale balk met iconen en verbindingslijnen ──────── */
+.gu-phasebar { display: flex; align-items: flex-start; gap: 0; grid-template-columns: none; padding: 0; }
+.gu-phasebar__step {
+  flex: 1 1 0; min-width: 0; display: flex; flex-direction: row; align-items: flex-start; gap: 10px;
+  padding: 0; background: none; border-top: 0; border-radius: 0; box-shadow: none;
+}
+.gu-phasebar__step.is-current, .gu-phasebar__step.is-done { background: none; box-shadow: none; }
+.gu-phasebar__step:not(:last-child)::after {
+  content: ""; flex: 1 1 auto; height: 2px; min-width: 14px; margin: 16px 12px 0;
+  background: var(--gu-border); border-radius: 2px; order: 9; align-self: flex-start;
+}
+.gu-phasebar__step.is-done:not(:last-child)::after { background: var(--gu-globe-deep); }
+.gu-phasebar__label { display: flex; flex-direction: column; gap: 1px; min-width: 0; margin-top: 1px; }
+.gu-phasebar__icon {
+  flex: none; width: 34px; height: 34px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--gu-fg-3); background: var(--gu-paper); border: 1.5px solid var(--gu-border);
+}
+.gu-phasebar__step.is-done .gu-phasebar__icon { color: #fff; background: var(--gu-globe-deep); border-color: var(--gu-globe-deep); }
+.gu-phasebar__step.is-current .gu-phasebar__icon { color: #fff; background: var(--gu-globe); border-color: var(--gu-globe); box-shadow: 0 0 0 4px rgba(58,176,240,.15); }
+.gu-phasebar__step .gu-proposal-steps__title { font-size: 0.8125rem; font-weight: 500; color: var(--gu-fg-3); line-height: 1.3; }
+.gu-phasebar__step.is-current .gu-proposal-steps__title,
+.gu-phasebar__step.is-done .gu-proposal-steps__title { color: var(--gu-fg-1); font-weight: 600; }
+.gu-phasebar__step .gu-proposal-steps__when,
+.gu-phasebar__step .gu-proposal-steps__text,
+.gu-phasebar__step .gu-proposal-steps__left { font-size: 0.6875rem; color: var(--gu-fg-3); line-height: 1.3; }
+.gu-phasebar__step.is-current .gu-proposal-steps__left { color: var(--gu-globe-deep); font-weight: 600; }
+
+/* Smal scherm: de fasebalk als verticale stepper, iconen links, tekst rechts. */
+@media (max-width: 760px) {
+  .gu-cockpit .gu-phasebar { flex-direction: column; align-items: stretch; }
+  .gu-cockpit .gu-phasebar__step { flex: none; gap: 12px; padding: 0 0 16px; position: relative; }
+  .gu-cockpit .gu-phasebar__step .gu-proposal-steps__title { font-size: 0.875rem; }
+  .gu-cockpit .gu-phasebar__step:not(.is-current) .gu-proposal-steps__when,
+  .gu-cockpit .gu-phasebar__step:not(.is-current) .gu-proposal-steps__text { display: block; }
+  .gu-cockpit .gu-phasebar__step:not(:last-child)::after {
+    content: ""; position: absolute; left: 16px; top: 38px; bottom: -2px;
+    width: 2px; height: auto; min-width: 0; margin: 0; align-self: auto; background: var(--gu-border);
+  }
+  .gu-cockpit .gu-phasebar__step.is-done:not(:last-child)::after { background: var(--gu-globe-deep); }
+}
+
+/* ── De drie blokken: één witte kaart, dun lijntje tussen kop en inhoud ─ */
+.gu-cockpit__panel {
+  min-width: 0; display: flex; flex-direction: column;
+  background: var(--gu-paper); border: 1px solid var(--gu-border);
+  border-radius: var(--gu-radius-lg); overflow: hidden;
+}
+.gu-cockpit__panelhead {
+  display: flex; align-items: center; gap: 6px; margin: 0;
+  padding: 12px 16px; border-bottom: 1px solid var(--gu-n-100); min-height: 0;
+}
+.gu-cockpit__title {
+  margin: 0; flex: 1; min-width: 0;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gu-globe-deep);
+}
+.gu-cockpit__title .gu-facts__count { color: var(--gu-fg-3); font-weight: 500; letter-spacing: 0; }
+.gu-cockpit__box { padding: 12px 16px; border: 0; border-radius: 0; background: transparent; }
+.gu-cockpit__discussion > .gu-thread { padding: 14px 16px; }
+.gu-cockpit__discussion > .gu-composer { margin: 0; padding: 12px 16px; border-top: 1px solid var(--gu-n-100); }
+.gu-cockpit__discussion > .gu-composer .gu-composer__input { min-height: 72px; }
+
+/* ── Startformulier: secties als witte kaarten op grijs ──────────────── */
+.gu-forum--soft { background: #f1f4f7; }
+.gu-forum--soft .gu-forum__inner { padding-top: 24px; padding-bottom: 48px; }
+.gu-forum--soft .gu-forum__threadhead .gu-forum__title { color: var(--gu-fg-1); font-weight: 600; }
+.gu-newissue__section {
+  background: var(--gu-paper); border: 1px solid var(--gu-border);
+  border-radius: var(--gu-radius-lg); padding: 20px 22px; margin: 0 0 16px;
+}
+.gu-newissue__section[hidden] { display: none; }
+.gu-newissue__sectionhead {
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gu-globe-deep); margin: 0 0 16px;
+}
+.gu-newissue__sectionhead .gu-join__badge { text-transform: none; letter-spacing: 0; }
+.gu-newissue__section > .gu-forum__newfield:last-child,
+.gu-newissue__section > .gu-join__check:last-child,
+.gu-newissue__section > .gu-threshold:last-child { margin-bottom: 0; }
+.gu-newissue__section .gu-newtype { margin: 0 0 16px; }
+.gu-newissue__section .gu-newtype legend { margin-bottom: 8px; }
+.gu-newtype__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gu-newtype__grid .gu-newtype__option { margin: 0; height: 100%; }
+@media (max-width: 559px) { .gu-newtype__grid { grid-template-columns: 1fr; } }
+.gu-newissue__section .gu-schedule { margin: 0; }
+.gu-newissue__section .gu-schedule__row:last-child { margin-bottom: 0; }
+/* De standaardtijd stond per rij; dat is weg. Leeg is 00:00 (eerste) of 24:00. */
+.gu-schedule__default { display: none; }

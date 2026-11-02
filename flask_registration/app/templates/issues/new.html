@@ -14,7 +14,7 @@
 {% block content_outer %}{% block content %}
 {% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'forum/_fact_fields.html' import fact_fields with context %}
-<main class="gu-forum" lang="{{ lang }}">
+<main class="gu-forum gu-forum--soft" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     {{ crumbs(None, [(_('New issue'), None)]) }}
@@ -34,38 +34,45 @@
       <p class="gu-composer__hint gu-newissue__restored" id="draftRestored" hidden>{{ _('We restored what you filled in earlier.') }}
         <button type="button" class="gu-post__action gu-post__action--ghost" id="draftClear">{{ _('Start empty') }}</button></p>
 
-      <div class="gu-forum__newfield">
-        <label for="title">{{ _('The question') }}</label>
-        <input type="text" name="title" id="title" required maxlength="300" autocomplete="off"
-               class="gu-input{% if errs.get('title') %} gu-input--error{% endif %}"
-               value="{{ fd.get('title', '') }}" placeholder="{{ _('Phrase the question this issue is about') }}">
-        {% if errs.get('title') %}<p class="gu-join__formError">{{ _('Enter a question of at most 300 characters.') }}</p>{% endif %}
+      <div class="gu-newissue__section">
+        <p class="gu-newissue__sectionhead">{% if lang == 'nl' %}Het vraagstuk{% else %}The issue{% endif %}</p>
+
+        <fieldset class="gu-forum__newfield gu-newtype">
+          <legend>{{ _('Online or event') }}</legend>
+          <div class="gu-newtype__grid">
+          <label class="gu-newtype__option">
+            <input type="radio" name="kind" value="online"{% if fd.get('kind', 'online') != 'event' %} checked{% endif %}>
+            <span><strong>{{ _('Online') }}</strong><span class="gu-composer__hint">{{ _('Fully online, with a fixed schedule per phase.') }}</span></span>
+          </label>
+          <label class="gu-newtype__option">
+            <input type="radio" name="kind" value="event"{% if fd.get('kind') == 'event' %} checked{% endif %}>
+            <span><strong>{{ _('Event') }}</strong><span class="gu-composer__hint">{{ _('Linked to a meeting. You move the phases on yourself in the cockpit.') }}</span></span>
+          </label>
+          </div>
+          {% if errs.get('kind') %}<p class="gu-join__formError">{{ _('Choose online or event.') }}</p>{% endif %}
+        </fieldset>
+
+        <div class="gu-forum__newfield">
+          <label for="title">{{ _('The question') }}</label>
+          <input type="text" name="title" id="title" required maxlength="300" autocomplete="off"
+                 class="gu-input{% if errs.get('title') %} gu-input--error{% endif %}"
+                 value="{{ fd.get('title', '') }}" placeholder="{{ _('Phrase the question this issue is about') }}">
+          {% if errs.get('title') %}<p class="gu-join__formError">{{ _('Enter a question of at most 300 characters.') }}</p>{% endif %}
+        </div>
+
+        <div class="gu-forum__newfield">
+          <label for="intro">{{ _('Introduction') }}</label>
+          <textarea name="intro" id="intro" class="gu-composer__input" required rows="6"
+                    placeholder="{{ _('Explain the question. Give context and why it matters.') }}">{{ fd.get('intro', '') }}</textarea>
+          {% if errs.get('intro') %}<p class="gu-join__formError">{{ _('Write an introduction.') }}</p>{% endif %}
+        </div>
       </div>
 
-      <div class="gu-forum__newfield">
-        <label for="intro">{{ _('Introduction') }}</label>
-        <textarea name="intro" id="intro" class="gu-composer__input" required rows="6"
-                  placeholder="{{ _('Explain the question. Give context and why it matters.') }}">{{ fd.get('intro', '') }}</textarea>
-        {% if errs.get('intro') %}<p class="gu-join__formError">{{ _('Write an introduction.') }}</p>{% endif %}
-      </div>
-
-      <fieldset class="gu-forum__newfield gu-newtype">
-        <legend>{{ _('Online or event') }}</legend>
-        <label class="gu-newtype__option">
-          <input type="radio" name="kind" value="online"{% if fd.get('kind', 'online') != 'event' %} checked{% endif %}>
-          <span><strong>{{ _('Online') }}</strong><span class="gu-composer__hint">{{ _('Fully online, with a fixed schedule per phase.') }}</span></span>
-        </label>
-        <label class="gu-newtype__option">
-          <input type="radio" name="kind" value="event"{% if fd.get('kind') == 'event' %} checked{% endif %}>
-          <span><strong>{{ _('Event') }}</strong><span class="gu-composer__hint">{{ _('Linked to a meeting. You move the phases on yourself in the cockpit.') }}</span></span>
-        </label>
-        {% if errs.get('kind') %}<p class="gu-join__formError">{{ _('Choose online or event.') }}</p>{% endif %}
-      </fieldset>
-
-      {# Online: per fase een startdatum en een tijd. #}
-      <fieldset class="gu-forum__newfield gu-schedule" id="onlineFields">
-        <legend>{{ _('Schedule per phase') }}</legend>
-        <p class="gu-composer__hint">{{ _('The times say when the platform is open, in Dutch time. An empty time is 00:00 for the first phase and 24:00 (the end of that day) for the next ones.') }}</p>
+      {# Online: per fase een startdatum en een tijd. Een lege tijd is 00:00
+         voor de eerste fase en 24:00 (het einde van die dag) voor de volgende. #}
+      <div class="gu-newissue__section" id="onlineFields">
+        <p class="gu-newissue__sectionhead">{{ _('Schedule per phase') }}</p>
+        <fieldset class="gu-schedule">
         {% set schedule_labels = {'starts_at': _('Facts and discussion start'), 'adjust_starts_at': _('Revising starts'),
                                   'vote_starts_at': _('Voting starts'), 'vote_ends_at': _('Voting closes')} %}
         {% for name, default_time in schedule_fields %}
@@ -76,17 +83,17 @@
                  value="{{ fd.get(name ~ '_date') or schedule[name][0] }}">
           <input type="time" id="{{ name }}_time" name="{{ name }}_time" class="gu-input" aria-label="{{ schedule_labels[name] }}: {{ _('time') }}"
                  value="{{ fd.get(name ~ '_time') if fd else schedule[name][1] }}" placeholder="{{ default_time }}">
-          <span class="gu-schedule__default">{{ _('empty is %(time)s', time=default_time) }}</span>
           {% if err == 'order' %}<p class="gu-join__formError">{{ _('This moment has to come after the previous one.') }}</p>
           {% elif err == 'past' %}<p class="gu-join__formError">{{ _('Voting has to close in the future.') }}</p>
           {% elif err %}<p class="gu-join__formError">{{ _('Enter a valid date and time.') }}</p>{% endif %}
         </div>
         {% endfor %}
-      </fieldset>
+        </fieldset>
+      </div>
 
       {# Event: naam, toelichting, dagen met een van-tot-tijd, locatie. #}
-      <fieldset class="gu-forum__newfield gu-schedule" id="eventFields">
-        <legend>{{ _('Event') }}</legend>
+      <div class="gu-newissue__section gu-schedule" id="eventFields">
+        <p class="gu-newissue__sectionhead">{{ _('Event') }}</p>
         <div class="gu-forum__newfield">
           <label for="event_name">{{ _('Name of the event') }}</label>
           <input type="text" id="event_name" name="event_name" maxlength="200" class="gu-input{% if errs.get('event_name') %} gu-input--error{% endif %}"
@@ -124,10 +131,11 @@
           <input type="text" id="event_location" name="event_location" maxlength="200" class="gu-input"
                  value="{{ fd.get('event_location', '') }}">
         </div>
-      </fieldset>
+      </div>
 
-      {# Stemregels: in de gewone, vlakke lay-out. #}
-      <h2 class="gu-newissue__h2">{{ _('Voting rules') }}</h2>
+      {# Stemregels in een eigen sectie. #}
+      <div class="gu-newissue__section">
+        <p class="gu-newissue__sectionhead">{{ _('Voting rules') }}</p>
       <div class="gu-forum__newfield gu-threshold">
         <label for="support_threshold">{{ _('Support needed for a proposal') }}</label>
         <div class="gu-threshold__row">
@@ -159,9 +167,12 @@
         <span>{{ _('End with a summary proposal') }}</span>
       </label>
 
-      {# Feiten al bij het aanmaken (optioneel). #}
-      <h2 class="gu-newissue__h2">{{ _('Facts, research and media') }} <span class="gu-join__badge">{{ _('optional') }}</span></h2>
-      <p class="gu-composer__hint">{{ _('You can already add facts that the discussion can build on.') }}</p>
+      </div>
+
+      {# Feiten al bij het aanmaken (optioneel), in een eigen sectie. #}
+      <div class="gu-newissue__section">
+        <p class="gu-newissue__sectionhead">{{ _('Facts, research and media') }} <span class="gu-join__badge">{{ _('optional') }}</span></p>
+        <p class="gu-composer__hint">{{ _('You can already add facts that the discussion can build on.') }}</p>
       {% set fact_rows = fd.get('facts') or [{}] %}
       {% set fact_errs = errs.get('facts') or {} %}
       <div class="gu-newissue__facts" id="newFacts" data-max="{{ new_facts_max }}">
@@ -172,6 +183,7 @@
         {% endfor %}
       </div>
       <button type="button" class="gu-btn gu-btn--ghost gu-btn--sm" id="addFact" hidden><span aria-hidden="true">+</span> {{ _('Add another fact') }}</button>
+      </div>
 
       <div class="gu-forum__newactions">
         <a href="{{ url_for('issues.index') }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>

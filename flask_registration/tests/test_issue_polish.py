@@ -353,12 +353,14 @@ def test_start_form_layout(app, db, make_user):
     user = make_user()
     page = _get(app, '/gesprekken/nieuw', user)
     assert 'Toelichting' in page and 'eerste bericht' not in page.lower()
-    for text in ('Feiten en discussie beginnen', 'Stemmen sluit', 'leeg is 24:00', 'Naam van het event', 'Dag toevoegen',
+    for text in ('Feiten en discussie beginnen', 'Stemmen sluit', 'placeholder="24:00"', 'Naam van het event', 'Dag toevoegen',
                  'Online bijdragen open tussen de eerste en laatste dag', 'Locatie', 'Afsluiten met een samenvattend voorstel',
                  'name="fact_0_text"', 'data-draft-key', 'beforeunload', 'min="0"'):
         assert text in page, text
-    # De stemregels staan vlak in het formulier, niet in een eigen kader.
-    assert '<legend>Stemregels</legend>' not in page and 'gu-newissue__h2">Stemregels' in page
+    # P8: het formulier in secties met een kop (geen apart legend-kader voor de stemregels).
+    for head in ('Het vraagstuk', 'Planning per fase', 'Stemregels', 'Feiten, onderzoek en media'):
+        assert f'gu-newissue__sectionhead">{head}' in page, head
+    assert '<legend>Stemregels</legend>' not in page and 'leeg is 24:00' not in page
 
 
 def test_default_schedule_times():

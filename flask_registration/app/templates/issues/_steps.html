@@ -31,6 +31,7 @@
     <span class="gu-phasebar__icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false">{{ icons[key] | safe }}</svg>
     </span>
+    <span class="gu-phasebar__label">
     <span class="gu-proposal-steps__title">{{ title }}{% if state == 'current' %}<span class="gu-sr-only"> ({{ _('current phase') }})</span>{% elif state == 'done' %}<span class="gu-sr-only"> ({{ _('done') }})</span>{% endif %}</span>
     {% if state == 'current' and issue.phase_deadline %}
     <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=issue.phase_deadline | local | datetimeformat('d MMM y HH:mm')) }}</span>
@@ -48,6 +49,7 @@
     {% elif days and issue.kind == 'online' %}
     <span class="gu-proposal-steps__text">{{ days }} {{ _('day') if days == 1 else _('days') }}</span>
     {% endif %}
+    </span>
   </li>
   {% endfor %}
 </ol>
