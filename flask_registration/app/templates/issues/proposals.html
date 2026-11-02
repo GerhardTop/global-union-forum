@@ -7,19 +7,18 @@
   eerst), steunen en een nieuw voorstel doen. Zonder JavaScript te gebruiken.
 #}
 {% block content_outer %}{% block content %}
-{% from 'issues/_crumbs.html' import crumbs with context %}
 <main class="gu-forum gu-ippage" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
-    {{ crumbs(issue, [(_('Proposals'), None)]) }}
-
+    {# Zoals de cockpit: geen kruimelpad en geen online/event-regel; de vraag linkt terug. #}
     <header class="gu-forum__threadhead">
-      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
       <h1 class="gu-forum__title">{{ _('Proposals') }}</h1>
       <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
     </header>
 
     <div class="gu-factspage__bar">
+      {# Sorteren en filteren pas bij meer dan 5 voorstellen (geteld vóór het filter). #}
+      {% if total > 5 %}
       <nav class="gu-factspage__filter" aria-label="{{ _('Filter proposals') }}">
         {# Na de feitenfase verzamelt niets meer steun: dan heet dat filter "niet op de stemlijst". #}
         {% set rest_label = _('Collecting support') if issue.phase == 'feiten' and not issue.is_closed else _('Not on the voting list') %}
@@ -38,9 +37,14 @@
         </select>
         <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm" id="sortSubmit">{{ _('Apply') }}</button>
       </form>
-      {% if can_propose %}
-      <a href="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" class="gu-btn gu-btn--primary gu-btn--sm gu-factspage__add">+ {{ _('Make a new proposal') }}</a>
       {% endif %}
+      <div class="gu-factspage__tools">
+        {% if can_propose %}
+        <a href="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" class="gu-btn gu-btn--primary gu-btn--sm gu-factspage__add">+ {{ _('Make a new proposal') }}</a>
+        {% endif %}
+        {# Het verklein-icoon terug naar de cockpit, zoals op de feitenpagina. #}
+        <a href="{{ url_for('issues.show', issue_id=issue.id) }}#panel-proposals" class="gu-iconbtn" title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ _('back to the cockpit') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></a>
+      </div>
     </div>
 
     {% include 'issues/_ip_final.html' %}

@@ -9,21 +9,20 @@
   "toon meer".
 #}
 {% block content_outer %}{% block content %}
-{% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'forum/_fact_fields.html' import fact_fields with context %}
 {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
 <main class="gu-forum gu-factspage" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
-    {{ crumbs(issue, [(_('Facts, research and media'), None)]) }}
-
+    {# Zoals de cockpit: geen kruimelpad en geen online/event-regel; de vraag linkt terug. #}
     <header class="gu-forum__threadhead">
-      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
       <h1 class="gu-forum__title">{{ _('Facts, research and media') }}</h1>
       <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
     </header>
 
     <div class="gu-factspage__bar">
+      {# Sorteren en filteren pas bij meer dan 5 feiten. #}
+      {% if total > 5 %}
       <nav class="gu-factspage__filter" aria-label="{{ _('Filter on direction') }}">
         {% for key, label in [(None, _('All')), ('voor', _('Argues for')), ('tegen', _('Argues against')), ('neutraal', _('Neutral'))] %}
         <a href="{{ url_for('issues.facts', issue_id=issue.id, richting=key, sorteer=order) }}"
@@ -39,6 +38,7 @@
         </select>
         <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm" id="sortSubmit">{{ _('Apply') }}</button>
       </form>
+      {% endif %}
       <div class="gu-factspage__tools">
         {% if phase_open and current_user.is_authenticated and current_user.can_contribute() %}
         <a href="#toevoegen" class="gu-btn gu-btn--primary gu-btn--sm gu-factspage__add">+ {{ _('Add a fact, research or media') }}</a>

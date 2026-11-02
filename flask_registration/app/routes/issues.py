@@ -211,6 +211,7 @@ def proposals(issue_id):
     order = order if order in ip.ORDERS else ip.DEFAULT_ORDER
     rows = ip.listing(issue, which, order)
     return render_template('issues/proposals.html', issue=issue, rows=rows, which=which, order=order,
+                           total=ip.regular_query(issue).count(),  # vóór het filter: sorteren en filteren pas bij > 5
                            my_supports=ip.my_supports([p.id for p, _n in rows], current_user),
                            can_propose=ip.can_propose(issue, current_user),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user))

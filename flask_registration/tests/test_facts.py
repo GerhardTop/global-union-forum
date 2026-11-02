@@ -229,7 +229,8 @@ def test_no_new_facts_after_the_facts_phase(app, db, make_user):
 def test_facts_page_in_english(app, db, make_user):
     author = make_user()
     issue = _issue(db, author)
-    _fact(db, issue, author, 'A fact', 'tegen')
+    for i in range(6):  # sorteren en filteren pas bij meer dan 5 feiten
+        _fact(db, issue, author, f'A fact {i}', 'tegen')
     page = _req(_client(app, lang='en'), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
     for text in ('Facts, research and media', 'Argues against', 'Quality first', 'Newest'):
         assert text in page

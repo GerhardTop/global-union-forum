@@ -158,11 +158,12 @@ def test_breadcrumb_names_the_issue(app, db, make_user):
     issue = _issue(db, host, 'Wat doen we met het plein?')
     proposal = ip.create(issue, host, 'Bomen planten.')
     db.session.commit()
-    # P7: de cockpit zelf heeft geen kruimelpad meer; de onderliggende pagina's wel.
-    assert 'gu-issue-crumbs' not in _get(app, f'/vraagstuk/{issue.id}')
-    for path in (f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen',
-                 f'/vraagstuk/{issue.id}/voorstel/{proposal.id}'):
-        crumbs = _get(app, path).split('gu-forum__crumbs gu-issue-crumbs')[1].split('</nav>')[0]
+    # P7: de cockpit heeft geen kruimelpad meer, en de feiten- en voorstellenpagina
+    # (de volledige weergave) ook niet; het voorstel-detail en de formulieren wel.
+    for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen'):
+        assert 'gu-issue-crumbs' not in _get(app, path)
+    for path in (f'/vraagstuk/{issue.id}/voorstel/{proposal.id}', f'/vraagstuk/{issue.id}/voorstellen/nieuw'):
+        crumbs = _get(app, path, host).split('gu-forum__crumbs gu-issue-crumbs')[1].split('</nav>')[0]
         assert '>Denk mee</a>' in crumbs and f'href="/vraagstuk/{issue.id}"' in crumbs
     assert 'Feiten, onderzoek en media' in _get(app, f'/vraagstuk/{issue.id}/feiten')
 
@@ -734,3 +735,48 @@ def test_view_as_participant_hides_moderator_notes(app, db, make_user):
     assert 'gu-conduct--fold' in _req(c, 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
     # Alleen voor moderators.
     assert _req(_client(app, anna), 'POST', '/weergave/deelnemer').status_code == 403
+
+
+# ── Opmaak: de volledige pagina's en de FAQ ──────────────────────────────
+
+def test_full_pages_match_the_cockpit(app, db, make_user):
+    host = make_user()
+    issue = _issue(db, host, 'Waar komt de markt?')
+    for path, anchor in ((f'/vraagstuk/{issue.id}/feiten', '#panel-facts'),
+                         (f'/vraagstuk/{issue.id}/voorstellen', '#panel-proposals')):
+        page = _get(app, path, host)
+        head = page.split('gu-forum__threadhead')[1].split('</header>')[0]
+        assert 'gu-issue-crumbs' not in page and 'gu-issue-kind' not in head
+        assert f'href="/vraagstuk/{issue.id}">Waar komt de markt?</a>' in head
+        assert f'/vraagstuk/{issue.id}{anchor}' in page and 'Verkleinen' in page
+
+
+def test_sort_and_filter_only_with_more_than_five(app, db, make_user):
+    host, anna = make_user(), make_user()
+    issue = _issue(db, host)
+    for i in range(5):
+        _fact(db, issue, anna, f'Feit {i}')
+        ip.create(issue, anna, f'Voorstel {i}')
+    db.session.commit()
+    for path in (f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen'):
+        page = _get(app, path)
+        assert 'gu-factspage__sort' not in page and 'gu-factspage__filter' not in page
+    _fact(db, issue, anna, 'Feit 5')
+    ip.create(issue, anna, 'Voorstel 5')
+    db.session.commit()
+    for path in (f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen'):
+        page = _get(app, path)
+        assert 'gu-factspage__sort' in page and 'gu-factspage__filter' in page
+    # Bij de voorstellen telt het aantal vóór het filter: ook een leeg filter houdt de knoppen.
+    page = _get(app, f'/vraagstuk/{issue.id}/voorstellen?filter=stemlijst')
+    assert 'gu-factspage__filter' in page
+
+
+def test_faq_has_no_semicolons_and_uses_the_collection_name():
+    from app import faq
+    answers = {lang: [str(a) for _title, items in faq.FAQ[lang] for _q, a in items] for lang in ('nl', 'en')}
+    for lang, texts in answers.items():
+        questions = [str(q) for _title, items in faq.FAQ[lang] for q, _a in items]
+        assert not any(';' in t for t in texts + questions), lang
+    assert any(t.startswith('Feiten, onderzoek en media zijn onderbouwde bijdragen met een bron.') for t in answers['nl'])
+    assert any(t.startswith('Facts, research and media are well-founded contributions with a source.') for t in answers['en'])

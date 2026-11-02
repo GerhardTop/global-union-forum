@@ -300,6 +300,9 @@ def test_deleting_a_voter_keeps_the_vote_anonymously(app, db, make_user):
 def test_filter_label_after_the_facts_phase(app, db, make_user):
     author, supporter = make_user(), make_user()
     issue, _l, _u = _setup(db, author, [supporter], phase='feiten')
+    for i in range(5):  # de filterknoppen staan er pas bij meer dan 5 voorstellen
+        ip.create(issue, supporter, f'Extra voorstel {i}.')
+    db.session.commit()
     page = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
     assert '>Verzamelt steun</a>' in page
     issue.phase = 'stemmen'
