@@ -3955,3 +3955,67 @@ body {
 .gu-newissue__section .gu-schedule__row:last-child { margin-bottom: 0; }
 /* De standaardtijd stond per rij; dat is weg. Leeg is 00:00 (eerste) of 24:00. */
 .gu-schedule__default { display: none; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Polijstronde P9: de volle pagina's dichter bij het ontwerp.
+   Zachte grijze pagina met witte kaarten en rustige koppen, zoals de
+   cockpit. Het voorstel-detail krijgt een tweekolomsopzet met de stemming
+   rechts, maar alleen als daar iets relevants in staat; anders volle breedte.
+   De regels zijn per pagina gescopet, zodat .gu-fact en .gu-ipdetail__section
+   binnen de cockpit en elders onaangeroerd blijven.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Koppen in het donker op de zachte pagina's. */
+.gu-forum--soft .gu-forum__title { color: var(--gu-fg-1); font-weight: 600; }
+
+/* ── Feitenpagina: feiten als witte kaarten, richting als pil bovenaan ── */
+.gu-factspage.gu-forum--soft .gu-fact {
+  flex-direction: column; gap: 7px;
+  background: var(--gu-paper); border: 1px solid var(--gu-border);
+  border-radius: 12px; padding: 14px 16px;
+}
+.gu-factspage.gu-forum--soft .gu-fact > .gu-fact__dir { min-width: 0; align-self: flex-start; justify-content: flex-start; margin: 0; }
+.gu-factspage.gu-forum--soft .gu-fact--moved { background: none; border: 0; padding: 4px 0; }
+
+/* ── Voorstellenpagina: voorstellen als witte kaarten ─────────────────── */
+.gu-ippage.gu-forum--soft .gu-iplist__item {
+  background: var(--gu-paper); border: 1px solid var(--gu-border);
+  border-radius: 12px; padding: 16px 18px;
+}
+
+/* ── Overzicht Denk mee: vraagstukken als witte kaarten ───────────────── */
+.gu-forum--soft .gu-issuelist { display: flex; flex-direction: column; gap: 12px; }
+.gu-forum--soft .gu-issuelist .gu-threadlist__row { border-bottom: 0; }
+.gu-forum--soft .gu-issuelist .gu-threadlist__link {
+  background: var(--gu-paper); border: 1px solid var(--gu-border);
+  border-radius: 14px; padding: 16px 18px;
+}
+.gu-forum--soft .gu-issuelist .gu-threadlist__link:hover {
+  background: var(--gu-paper); border-color: var(--gu-globe);
+  box-shadow: 0 4px 14px rgba(15,25,35,.07);
+}
+
+/* ── Voorstel-detail: zachte pagina, witte kaarten, tweekoloms ────────── */
+.gu-ipdetail.gu-forum--soft { background: #f1f4f7; }
+.gu-ipdetail.gu-forum--soft .gu-forum__inner { padding-top: 24px; padding-bottom: 48px; }
+
+/* Secties als witte kaarten met een lijntje onder de kop. */
+.gu-ipdetail .gu-ipdetail__section {
+  margin: 0; padding: 16px 18px;
+  background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 14px;
+}
+.gu-ipdetail .gu-ipdetail__section > .gu-cockpit__title {
+  margin: -16px -18px 14px; padding: 12px 18px;
+  border-bottom: 1px solid var(--gu-n-100);
+}
+.gu-ipdetail .gu-ipdetail__vote { border-style: solid; }
+
+/* De tweekolomsopzet: inhoud links, stemming rechts. */
+.gu-ipdetail__cols { display: flex; flex-direction: column; gap: 16px; }
+.gu-ipdetail__main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.gu-ipdetail__side { display: flex; flex-direction: column; gap: 16px; }
+@media (min-width: 880px) {
+  .gu-ipdetail__cols:not(.is-single) { flex-direction: row; align-items: flex-start; }
+  .gu-ipdetail__cols:not(.is-single) .gu-ipdetail__main { order: 1; flex: 1 1 auto; }
+  .gu-ipdetail__cols:not(.is-single) .gu-ipdetail__side { order: 2; flex: 0 0 320px; position: sticky; top: 16px; }
+}

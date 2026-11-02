@@ -11,7 +11,7 @@
 {% block content_outer %}{% block content %}
 {% from 'forum/_fact_fields.html' import fact_fields with context %}
 {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
-<main class="gu-forum gu-factspage" lang="{{ lang }}">
+<main class="gu-forum gu-factspage gu-forum--soft" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     {# Zoals de cockpit: geen kruimelpad en geen online/event-regel; de vraag linkt terug. #}

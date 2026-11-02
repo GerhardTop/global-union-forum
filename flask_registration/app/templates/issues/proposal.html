@@ -12,7 +12,7 @@
 {% block content_outer %}{% block content %}
 {% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'issues/_ip_fields.html' import ip_fields with context %}
-<main class="gu-forum gu-ipdetail" lang="{{ lang }}">
+<main class="gu-forum gu-ipdetail gu-forum--soft" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     {{ crumbs(issue, [(_('Proposals'), url_for('issues.proposals', issue_id=issue.id)), (_('Proposal'), None)]) }}
@@ -31,8 +31,20 @@
       {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
     </header>
 
-    {# Stap 6: de stemming, bovenaan (op mobiel prominent). #}
-    {% include 'issues/_ip_vote.html' %}
+    {# P9: tweekolomsopzet. De rechterkolom (stemming, tussenstand en het
+       samenvattend-voorstel-kaartje) verschijnt alleen als er iets relevants
+       in staat: de stemming is open of de uitslag is er. Anders valt de
+       inhoud terug naar volle breedte. Op mobiel staat de stemming bovenaan
+       door de bronvolgorde (de kolom komt eerst). #}
+    {% set show_aside = vote.on_list and (vote.open or vote.over) %}
+    <div class="gu-ipdetail__cols{% if not show_aside %} is-single{% endif %}">
+    {% if show_aside %}
+    <aside class="gu-ipdetail__side">
+      {% include 'issues/_ip_vote.html' %}
+    </aside>
+    {% endif %}
+    <div class="gu-ipdetail__main">
+    {% if not show_aside %}{% include 'issues/_ip_vote.html' %}{% endif %}
 
     <section class="gu-ipdetail__section" aria-labelledby="explTitle">
       <h2 class="gu-cockpit__title" id="explTitle">{{ _('Explanation') }}</h2>
@@ -185,6 +197,8 @@
       </form>
       {% endif %}
     </section>
+    </div>
+    </div>
 
     <p class="gu-ipdetail__back"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('To the discussion of this issue') }} <span class="gu-arrow" aria-hidden="true"></span></a></p>
 
