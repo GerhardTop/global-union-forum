@@ -75,8 +75,15 @@ def fake_ai(monkeypatch, app):
 def _fresh_rate_limits(app):
     # De gedeelde conftest-app houdt de limiter aan; de per-IP-limiet op
     # reageren (100/uur) telt over de hele testsessie. Hier niet relevant.
+    # Zoals in test_forum_conduct.py: de limiter kan nog wijzen naar de
+    # database van een eigen testapp van een eerder bestand, die inmiddels is
+    # opgeruimd ("no such table: rate_limit_counters"); dan valt er niets te resetten.
+    from sqlalchemy.exc import OperationalError
     from app import limiter
-    limiter.reset()
+    try:
+        limiter.reset()
+    except (AssertionError, OperationalError):
+        pass
     yield
 
 
