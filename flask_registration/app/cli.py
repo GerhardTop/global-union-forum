@@ -28,6 +28,15 @@ from sqlalchemy import false, func, or_
 def register_cli(app):
     app.cli.add_command(reset_content)
     app.cli.add_command(proposals_tick)
+    app.cli.add_command(seed_demo_issues)
+
+
+@click.command('seed-demo-issues')
+@click.option('--force', is_flag=True, help='Eerst de bestaande demo-vraagstukken weg, dan opnieuw maken.')
+def seed_demo_issues(force):
+    """Maak demo-vraagstukken met voorstellen, feiten, discussie, steun en stemmen."""
+    from app.demo_seed import seed_demo_issues as run
+    click.echo(run(force=force))
 
 
 @click.command('voorstellen-tick')
