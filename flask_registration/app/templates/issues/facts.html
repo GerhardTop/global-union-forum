@@ -20,6 +20,11 @@
       <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
     </header>
 
+    {# Zelfde fasebalk als in de cockpit, zodat je ook hier ziet waar je bent. #}
+    <section class="gu-issuephase" aria-label="{{ _('Phases of the issue') }}">
+      {% include 'issues/_steps.html' %}
+    </section>
+
     <div class="gu-factspage__bar">
       {# Sorteren en filteren pas bij meer dan 5 feiten. #}
       {% if total > 5 %}

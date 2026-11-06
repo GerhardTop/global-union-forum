@@ -16,6 +16,11 @@
       <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
     </header>
 
+    {# Zelfde fasebalk als in de cockpit, zodat je ook hier ziet waar je bent. #}
+    <section class="gu-issuephase" aria-label="{{ _('Phases of the issue') }}">
+      {% include 'issues/_steps.html' %}
+    </section>
+
     <div class="gu-factspage__bar">
       {# Sorteren en filteren pas bij meer dan 5 voorstellen (geteld vóór het filter). #}
       {% if total > 5 %}
@@ -50,6 +55,8 @@
     {% include 'issues/_ip_final.html' %}
 
     <p class="gu-composer__hint">{{ _('A proposal goes to the voting list once it has %(n)s supporters.', n=issue.support_threshold) }}</p>
+    {# Korte uitleg wanneer je nu geen voorstel kunt doen (en dus geen plus ziet). #}
+    {% include 'issues/_propose_hint.html' %}
 
     {% if rows %}
     <ul class="gu-iplist">

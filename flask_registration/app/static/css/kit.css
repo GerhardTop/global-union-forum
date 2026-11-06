@@ -4019,3 +4019,18 @@ body {
   .gu-ipdetail__cols:not(.is-single) .gu-ipdetail__main { order: 1; flex: 1 1 auto; }
   .gu-ipdetail__cols:not(.is-single) .gu-ipdetail__side { order: 2; flex: 0 0 320px; position: sticky; top: 16px; }
 }
+
+/* ── P10: de fasebalk ook boven de losse feiten- en voorstellenpagina's ── */
+.gu-issuephase { margin: 2px 0 22px; }
+@media (max-width: 760px) {
+  .gu-issuephase .gu-phasebar { flex-direction: column; align-items: stretch; }
+  .gu-issuephase .gu-phasebar__step { flex: none; gap: 12px; padding: 0 0 16px; position: relative; }
+  .gu-issuephase .gu-phasebar__step .gu-proposal-steps__title { font-size: 0.875rem; }
+  .gu-issuephase .gu-phasebar__step:not(.is-current) .gu-proposal-steps__when,
+  .gu-issuephase .gu-phasebar__step:not(.is-current) .gu-proposal-steps__text { display: block; }
+  .gu-issuephase .gu-phasebar__step:not(:last-child)::after {
+    content: ""; position: absolute; left: 16px; top: 38px; bottom: -2px;
+    width: 2px; height: auto; min-width: 0; margin: 0; align-self: auto; background: var(--gu-border);
+  }
+  .gu-issuephase .gu-phasebar__step.is-done:not(:last-child)::after { background: var(--gu-globe-deep); }
+}

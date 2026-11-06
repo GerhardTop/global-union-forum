@@ -69,10 +69,12 @@
     <div class="gu-cockpit__grid">
 
 
+      {# Smalle weergave: tabs in dezelfde volgorde als de kolommen breed:
+         eerst Feiten en achtergrond, dan Discussie, dan Voorstellen. #}
       <div class="gu-cockpit__tabs" role="tablist" aria-label="{{ _('Issue') }}" hidden>
-        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-discussion" aria-controls="panel-discussion" data-tab="discussion" aria-selected="true">{{ _('Discussion') }}</button>
+        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-facts" aria-controls="panel-facts" data-tab="facts" aria-selected="true">{{ _('Facts and background') }}</button>
+        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-discussion" aria-controls="panel-discussion" data-tab="discussion" aria-selected="false" tabindex="-1">{{ _('Discussion') }}</button>
         <button type="button" role="tab" class="gu-cockpit__tab" id="tab-proposals" aria-controls="panel-proposals" data-tab="proposals" aria-selected="false" tabindex="-1">{{ _('Proposals') }}</button>
-        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-facts" aria-controls="panel-facts" data-tab="facts" aria-selected="false" tabindex="-1">{{ _('Facts and background') }}</button>
       </div>
 
       <section class="gu-cockpit__panel gu-cockpit__facts" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
@@ -166,6 +168,8 @@
         {% if not proposal_rows and not issue.proposals %}
         <p class="gu-composer__hint">{{ _('No proposals yet.') }}</p>
         {% endif %}
+        {# Korte uitleg wanneer je nu geen voorstel kunt doen (en dus geen plus ziet). #}
+        {% include 'issues/_propose_hint.html' %}
         {% if proposal_rows | length > proposals_shown %}
         <button type="button" class="gu-disclosure gu-showmore" data-more title="{{ _('Show more') }}" aria-label="{{ _('Show more') }}: {{ _('Proposals') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
         <noscript><a class="gu-cockpit__more" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Show more') }}</a></noscript>
@@ -320,7 +324,7 @@
     // Een link naar een bericht of feit opent de tab waar het staat.
     var target = location.hash && document.getElementById(location.hash.slice(1));
     var panel = target && target.closest('[data-panel]');
-    show(panel ? panel.dataset.panel : 'discussion');
+    show(panel ? panel.dataset.panel : 'facts');
   })();
 </script>
 {% endblock %}

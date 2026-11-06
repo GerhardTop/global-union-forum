@@ -1,0 +1,22 @@
+{#
+  Korte uitleg waarom je nu geen voorstel kunt doen, met zo nodig een link.
+  Alleen tonen als can_propose onwaar is. Tekst tweetalig, zodat het klopt
+  zonder vertaalbestand. Context: can_propose, issue, current_user.
+#}
+{% if not can_propose %}
+<p class="gu-composer__hint gu-propose-hint">
+  {%- if not current_user.is_authenticated -%}
+    <a href="{{ url_for('auth.login', next=request.path) }}">{% if lang == 'nl' %}Log in{% else %}Log in{% endif %}</a>
+    {% if lang == 'nl' %}om een voorstel te doen.{% else %}to make a proposal.{% endif %}
+  {%- elif not current_user.can_contribute() -%}
+    <a href="{{ url_for('main.spelregels', next=request.path) }}">{% if lang == 'nl' %}Accepteer de gedragsregels{% else %}Accept the conduct rules{% endif %}</a>
+    {% if lang == 'nl' %}om een voorstel te doen.{% else %}to make a proposal.{% endif %}
+  {%- elif issue.is_closed or issue.phase != 'feiten' -%}
+    {% if lang == 'nl' %}Nieuwe voorstellen kunnen alleen in de fase Feiten en discussie.{% else %}New proposals can only be added in the facts and discussion phase.{% endif %}
+  {%- elif issue.kind == 'event' -%}
+    {% if lang == 'nl' %}Een voorstel doen kan tijdens de dagen van het event.{% else %}You can make a proposal during the days of the event.{% endif %}
+  {%- else -%}
+    {% if lang == 'nl' %}Een voorstel doen kan zodra het vraagstuk open is.{% else %}You can make a proposal once the issue is open.{% endif %}
+  {%- endif -%}
+</p>
+{% endif %}
