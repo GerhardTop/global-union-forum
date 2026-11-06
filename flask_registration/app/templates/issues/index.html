@@ -31,12 +31,14 @@
       </div>
     </div>
 
+    {% if which != 'alle' or rows|length >= 7 %}
     <nav class="gu-factspage__filter gu-issuelist__filter" aria-label="{{ _('Filter issues') }}">
       {% for key, label in [('alle', _('All')), ('online', _('Online')), ('event', _('Event')), ('lopend', _('Ongoing')), ('afgerond', _('Finished'))] %}
       <a href="{{ url_for('issues.index', filter=None if key == 'alle' else key) }}"
          class="gu-factspage__chip{% if which == key %} is-active{% endif %}"{% if which == key %} aria-current="true"{% endif %}>{{ label }}</a>
       {% endfor %}
     </nav>
+    {% endif %}
 
     {% if rows %}
     <ul class="gu-threadlist gu-issuelist">
