@@ -238,7 +238,7 @@ def seed_demo_issues(force=False):
         ('sarah', 3, 'De bundeling van eenheden maakt dit betaalbaar. Goede stap.'),
         ('fatima', 2, 'Twintigduizend is veel. Begin kleiner en bouw op.'),
         ('marcus', 3, 'De koppeling met de NAVO-planning neemt mijn grootste bezwaar weg.'),
-        ('jan', 1, 'De eerste versie was nog te vaag; de huidige is concreet genoeg.'),
+        ('jan', 1, 'De eerste versie was nog te vaag. De huidige is concreet genoeg.'),
         ('sarah', 3, 'Eens. Snelheid is juist het punt waar we nu tekortschieten.'),
     ]
     for i, (key, ver, text) in enumerate(reacts_1):
@@ -259,7 +259,7 @@ def seed_demo_issues(force=False):
 
     _proposal(db, issue_a, people, 'marcus', versions=[
         ('Houd defensie volledig bij de NAVO, investeer alleen nationaal bij.',
-         'Geen nieuwe Europese structuur; versterk de nationale bijdragen binnen de NAVO.',
+         'Geen nieuwe Europese structuur. Versterk de nationale bijdragen binnen de NAVO.',
          now - timedelta(days=9)),
     ])
     made.append(issue_a.title)
@@ -317,7 +317,7 @@ def seed_demo_issues(force=False):
           body='Een eerlijke verdeling is alleen houdbaar met duidelijke afspraken en controle.')
     pc1 = _proposal(db, issue_c, people, 'sarah', versions=[
         ('Richt een gezamenlijk opvangfonds op met een eerlijke verdeelsleutel.',
-         'Lidstaten dragen naar draagkracht bij; opvang en integratie worden samen bekostigd.',
+         'Lidstaten dragen naar draagkracht bij. Opvang en integratie worden samen bekostigd.',
          now - timedelta(days=37)),
     ])
     _support(db, pc1, people, ['jan', 'fatima', 'marcus'])

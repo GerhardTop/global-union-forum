@@ -38,7 +38,7 @@ _FACTS = [
      'Dat is de kern van het probleem.'),
     ('jan', 'voor', 'https://www.oecd.org/tax/beps/', None,
      'Meer dan 140 landen hebben een wereldwijd minimumtarief van 15 procent voor grote '
-     'bedrijven onderschreven. De afspraak bestaat dus al; het gaat nu om de uitvoering.'),
+     'bedrijven onderschreven. De afspraak bestaat dus al. Het gaat nu om de uitvoering.'),
     ('marcus', 'neutraal', 'https://taxfoundation.org/', None,
      'Dat minimumtarief van 15 procent ligt onder het gemiddelde vennootschapstarief in de EU. '
      'Critici noemen het daarom een bodem, geen eindpunt.'),
@@ -158,7 +158,7 @@ def seed_demo_voorbeeld(force=False):
                      'bijdraagt, dat begrijpt iedereen meteen. Zo moeten we het ook uitleggen.'))
     _post(db, thread, people['marcus'], now - timedelta(days=5, hours=-5), parent=d3,
           body=('Eens met de uitleg, maar pas op voor te mooie voorbeelden. Niet elk laagbelast bedrijf '
-                'ontwijkt; soms is het gewoon beleid van een land.'))
+                'ontwijkt. Soms is het gewoon beleid van een land.'))
 
     db.session.commit()
     return ('Voorbeeld aangemaakt: 1 vraagstuk met %d feiten, 1 voorstel (3 versies) en een lange '
