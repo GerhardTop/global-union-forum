@@ -42,6 +42,7 @@ def _people():
     out = {}
     for key, (first, last, username, role, badge, age) in SPECS.items():
         user = _get_or_create_demo_user(first, last, DEMO_USER_EMAILS[key], username)
+        user.digest_email = False  # geen e-mailsamenvattingen naar de demo-accounts
         out[key] = (user, role, badge, age)
     return out
 
