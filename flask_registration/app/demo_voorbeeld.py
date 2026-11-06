@@ -173,15 +173,20 @@ def _remove(db):
         return
     thread_id = issue.thread_id
     prop_ids = [p.id for p in IssueProposal.query.filter_by(issue_id=issue.id)]
+    post_ids = [p.id for p in Post.query.filter_by(thread_id=thread_id)] if thread_id else []
+    # Zelfde foreign-key-volgorde als reset-content: eerst alles wat naar de
+    # berichten verwijst, dan de berichten, en pas daarna de voorstellen.
+    if post_ids:
+        from app import quality
+        from app.models import PostLike
+        quality.delete_for_posts(post_ids)
+        PostLike.query.filter(PostLike.post_id.in_(post_ids)).delete(synchronize_session=False)
+        Post.query.filter(Post.parent_id.in_(post_ids)).update({Post.parent_id: None}, synchronize_session=False)
+        Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
     if prop_ids:
         for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion):
             model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
         IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
-    if thread_id:
-        post_ids = [p.id for p in Post.query.filter_by(thread_id=thread_id)]
-        if post_ids:
-            QualityAward.query.filter(QualityAward.post_id.in_(post_ids)).delete(synchronize_session=False)
-            Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
     issue.thread_id = None
     db.session.flush()
     Issue.query.filter_by(id=issue.id).delete(synchronize_session=False)

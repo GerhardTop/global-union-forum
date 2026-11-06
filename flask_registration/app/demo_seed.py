@@ -341,17 +341,25 @@ def _remove_demo(db):
     issues = Issue.query.filter(Issue.title.in_(titles)).all()
     if not issues:
         return
+    issue_ids = [i.id for i in issues]
     thread_ids = [i.thread_id for i in issues if i.thread_id]
-    prop_ids = [p.id for p in IssueProposal.query.filter(IssueProposal.issue_id.in_([i.id for i in issues]))]
+    prop_ids = [p.id for p in IssueProposal.query.filter(IssueProposal.issue_id.in_(issue_ids))]
+    post_ids = [p.id for p in Post.query.filter(Post.thread_id.in_(thread_ids))] if thread_ids else []
+    # Volgorde volgens de foreign keys, net als reset-content: eerst alles wat
+    # naar de berichten verwijst (merk, moderatie, feitstemmen en de koppeling
+    # van feiten aan voorstellen) via de bestaande helper, dan de likes, dan de
+    # self-referentie los en de berichten weg, en pas daarna de voorstellen.
+    if post_ids:
+        from app import quality
+        from app.models import PostLike
+        quality.delete_for_posts(post_ids)
+        PostLike.query.filter(PostLike.post_id.in_(post_ids)).delete(synchronize_session=False)
+        Post.query.filter(Post.parent_id.in_(post_ids)).update({Post.parent_id: None}, synchronize_session=False)
+        Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
     if prop_ids:
         for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion):
             model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
         IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
-    if thread_ids:
-        post_ids = [p.id for p in Post.query.filter(Post.thread_id.in_(thread_ids))]
-        if post_ids:
-            QualityAward.query.filter(QualityAward.post_id.in_(post_ids)).delete(synchronize_session=False)
-            Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
     for issue in issues:
         issue.thread_id = None
     db.session.flush()
