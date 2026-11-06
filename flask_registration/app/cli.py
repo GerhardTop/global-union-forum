@@ -29,6 +29,7 @@ def register_cli(app):
     app.cli.add_command(reset_content)
     app.cli.add_command(proposals_tick)
     app.cli.add_command(seed_demo_issues)
+    app.cli.add_command(seed_demo_voorbeeld)
 
 
 @click.command('seed-demo-issues')
@@ -36,6 +37,14 @@ def register_cli(app):
 def seed_demo_issues(force):
     """Maak demo-vraagstukken met voorstellen, feiten, discussie, steun en stemmen."""
     from app.demo_seed import seed_demo_issues as run
+    click.echo(run(force=force))
+
+
+@click.command('seed-demo-voorbeeld')
+@click.option('--force', is_flag=True, help='Eerst het bestaande voorbeeld weg, dan opnieuw maken.')
+def seed_demo_voorbeeld(force):
+    """Maak een uitgebreid voorbeeld-vraagstuk (VOORBEELD) voor een test met echte gebruikers."""
+    from app.demo_voorbeeld import seed_demo_voorbeeld as run
     click.echo(run(force=force))
 
 
