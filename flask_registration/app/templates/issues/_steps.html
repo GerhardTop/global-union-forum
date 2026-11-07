@@ -34,17 +34,15 @@
     </span>
     <span class="gu-phasebar__label">
     <span class="gu-proposal-steps__title">{{ title }}{% if state == 'current' %}<span class="gu-sr-only"> ({{ _('current phase') }})</span>{% elif state == 'done' %}<span class="gu-sr-only"> ({{ _('done') }})</span>{% endif %}</span>
-    {% if state == 'current' and issue.phase_deadline %}
+    {% if state == 'current' %}
+    {# Compact: meer dan 1 dag toont alleen "nog X dagen"; de laatste dag de datum (en tijd als die niet op einde-dag staat). #}
+    {% if remaining and remaining[1] == 'over' %}
+    <span class="gu-proposal-steps__left">{{ _('Deadline passed') }}</span>
+    {% elif remaining and remaining[1] == 'days' and remaining[0] > 1 %}
+    <span class="gu-proposal-steps__left">{{ _('%(num)s days left', num=remaining[0]) }}</span>
+    {% elif issue.phase_deadline %}
     {% set dl = issue.phase_deadline | local %}
     <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=(dl | datetimeformat('d MMM y HH:mm')) if (dl.hour or dl.minute) else (dl | end_day | datetimeformat('d MMM y'))) }}</span>
-    {% if remaining %}
-    {% set n, unit = remaining %}
-    <span class="gu-proposal-steps__left">
-      {%- if unit == 'over' -%}{{ _('Deadline passed') }}
-      {%- elif unit == 'days' -%}{{ _('1 day left') if n == 1 else _('%(num)s days left', num=n) }}
-      {%- elif unit == 'hours' -%}{{ _('1 hour left') if n == 1 else _('%(num)s hours left', num=n) }}
-      {%- else -%}{{ _('1 minute left') if n == 1 else _('%(num)s minutes left', num=n) }}{%- endif -%}
-    </span>
     {% endif %}
     {% elif issue.kind == 'online' and key in plan %}
     <span class="gu-proposal-steps__when">{{ _('%(start)s to %(end)s', start=plan[key][0] | local | datetimeformat('d MMM'), end=plan[key][1] | local | end_day | datetimeformat('d MMM y')) }}</span>
@@ -55,3 +53,23 @@
   </li>
   {% endfor %}
 </ol>
+<button type="button" class="gu-phasebar__toggle" aria-expanded="false" hidden>
+  <span class="gu-phasebar__toggle-label">{% if lang == 'nl' %}Alle fasen{% else %}All phases{% endif %}</span>
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>
+</button>
+<script nonce="{{ csp_nonce() }}">
+(function () {
+  // Smal scherm: de fasebalk ingeklapt tot de huidige fase, met "Alle fasen"
+  // om de hele lijn te tonen. Zonder JavaScript staat alles gewoon open.
+  var s = document.currentScript, btn = s.previousElementSibling, bar = btn && btn.previousElementSibling;
+  if (!btn || !bar || !bar.classList.contains('gu-phasebar')) return;
+  var more = btn.querySelector('.gu-phasebar__toggle-label').textContent;
+  var less = {% if lang == 'nl' %}'Minder'{% else %}'Less'{% endif %};
+  bar.classList.add('is-collapsed'); btn.hidden = false;
+  btn.addEventListener('click', function () {
+    var open = !bar.classList.toggle('is-collapsed');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.querySelector('.gu-phasebar__toggle-label').textContent = open ? less : more;
+  });
+})();
+</script>

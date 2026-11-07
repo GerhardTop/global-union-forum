@@ -350,7 +350,7 @@ def test_cockpit_in_english(app, db, make_user):
     for text in ('Show or hide the introduction', 'Facts and background', 'Discussion', 'Your right to vote',
                  'New proposal'):
         assert text in body
-    assert 'hours left' in body  # feitenfase van één dag, net begonnen
+    assert 'until ' in body and 'hours left' not in body  # laatste dag: de datum, geen uren
 
 
 def test_cockpit_anonymous(app, db, make_user):

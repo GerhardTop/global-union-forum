@@ -3444,12 +3444,6 @@ body {
 @media (max-width: 1023px) {
   /* Tabs: alleen de panelen van de gekozen tab in beeld. */
   .gu-cockpit--tabs [data-panel]:not(.is-shown) { display: none; }
-  .gu-cockpit .gu-proposal-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
-  .gu-cockpit .gu-proposal-steps__step { padding: 8px; }
-  .gu-cockpit .gu-proposal-steps__title { font-size: 0.75rem; line-height: 1.3; }
-  .gu-cockpit .gu-proposal-steps__step:not(.is-current) .gu-proposal-steps__text,
-  .gu-cockpit .gu-proposal-steps__step:not(.is-current) .gu-proposal-steps__when,
-  .gu-cockpit .gu-proposal-steps__step.is-current .gu-proposal-steps__text { display: none; }
 }
 @media (max-width: 768px) {
   .gu-cockpit__inner { padding: 0 16px; }
@@ -3680,22 +3674,7 @@ body {
 .gu-cockpit--expanded [data-panel]:not(.is-expanded) { display: none !important; }
 .gu-cockpit--expanded [data-panel].is-expanded { display: block; max-width: 960px; margin: 0 auto 20px; }
 .gu-cockpit--expanded .gu-cockpit__expand { display: none; }
-/* De fase-indicator: per fase een icoon. */
-.gu-phasebar { grid-template-columns: repeat(var(--steps, 4), minmax(0, 1fr)); }
-.gu-phasebar__icon {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 30px; height: 30px; border-radius: 50%;
-  color: var(--gu-fg-3); background: var(--gu-paper); border: 1.5px solid var(--gu-border);
-}
-.gu-phasebar__step.is-done .gu-phasebar__icon { color: #fff; background: var(--gu-globe-deep); border-color: var(--gu-globe-deep); }
-.gu-phasebar__step.is-current .gu-phasebar__icon { color: #fff; background: var(--gu-globe); border-color: var(--gu-globe); }
-@media (max-width: 1023px) {
-  .gu-cockpit .gu-phasebar { grid-template-columns: repeat(var(--steps, 4), minmax(0, 1fr)); }
-  .gu-phasebar__icon { width: 26px; height: 26px; }
-}
-@media (max-width: 480px) {
-  .gu-cockpit .gu-phasebar__step:not(.is-current) .gu-proposal-steps__title { font-size: 0.6875rem; }
-}
+/* De fase-indicator (stepper) staat verderop in dit bestand. */
 
 /* ── Polijstronde P4: startformulier (planning, eventdagen, feiten) ─────── */
 .gu-schedule { border: 0; padding: 0; margin: 0 0 20px; min-width: 0; }
@@ -3755,11 +3734,6 @@ body {
 .gu-post__proposalref a { color: var(--gu-globe-deep); }
 /* Polijstronde P6: vijf fasen moeten ook op een smal scherm passen. */
 .gu-phasebar .gu-proposal-steps__title { overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto; }
-@media (max-width: 480px) {
-  .gu-cockpit .gu-phasebar { gap: 3px; }
-  .gu-cockpit .gu-phasebar__step { padding: 6px 5px; }
-  .gu-cockpit .gu-phasebar__step .gu-proposal-steps__title { font-size: 0.6875rem; }
-}
 
 /* ── Polijststap P7: rustiger cockpit, één stijl voor in- en uitklappen ─── */
 .gu-cockpit__panelhead { min-height: 30px; }
@@ -3868,46 +3842,56 @@ body {
 .gu-cockpit__inner { padding-top: 5px; padding-bottom: 48px; }
 .gu-cockpit__titlerow .gu-forum__title { color: var(--gu-fg-1); font-weight: 600; }
 
-/* ── Fasebalk: horizontale balk met iconen en verbindingslijnen ──────── */
+/* ── Fasebalk: stepper met iconen boven en labels eronder ─────────────── */
 .gu-phasebar { display: flex; align-items: flex-start; gap: 0; grid-template-columns: none; padding: 0; }
 .gu-phasebar__step {
-  flex: 1 1 0; min-width: 0; display: flex; flex-direction: row; align-items: flex-start; gap: 10px;
-  padding: 0; background: none; border-top: 0; border-radius: 0; box-shadow: none;
+  flex: 1 1 0; min-width: 0; position: relative;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 7px;
+  padding: 0 6px; background: none; border: 0; border-radius: 0; box-shadow: none;
 }
 .gu-phasebar__step.is-current, .gu-phasebar__step.is-done { background: none; box-shadow: none; }
 .gu-phasebar__step:not(:last-child)::after {
-  content: ""; flex: 1 1 auto; height: 2px; min-width: 14px; margin: 16px 12px 0;
-  background: var(--gu-border); border-radius: 2px; order: 9; align-self: flex-start;
+  content: ""; position: absolute; top: 17px; left: calc(50% + 23px); right: calc(-50% + 23px);
+  height: 2px; background: var(--gu-border); border-radius: 2px;
 }
 .gu-phasebar__step.is-done:not(:last-child)::after { background: var(--gu-globe-deep); }
-.gu-phasebar__label { display: flex; flex-direction: column; gap: 1px; min-width: 0; margin-top: 1px; }
 .gu-phasebar__icon {
-  flex: none; width: 34px; height: 34px; border-radius: 50%;
+  flex: none; width: 34px; height: 34px; border-radius: 50%; position: relative; z-index: 1;
   display: inline-flex; align-items: center; justify-content: center;
   color: var(--gu-fg-3); background: var(--gu-paper); border: 1.5px solid var(--gu-border);
 }
 .gu-phasebar__step.is-done .gu-phasebar__icon { color: #fff; background: var(--gu-globe-deep); border-color: var(--gu-globe-deep); }
 .gu-phasebar__step.is-current .gu-phasebar__icon { color: #fff; background: var(--gu-globe); border-color: var(--gu-globe); box-shadow: 0 0 0 4px rgba(58,176,240,.15); }
-.gu-phasebar__step .gu-proposal-steps__title { font-size: 0.8125rem; font-weight: 500; color: var(--gu-fg-3); line-height: 1.3; }
+.gu-phasebar__label { display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; }
+.gu-phasebar__step .gu-proposal-steps__title { font-size: 0.8125rem; font-weight: 500; color: var(--gu-fg-3); line-height: 1.25; }
 .gu-phasebar__step.is-current .gu-proposal-steps__title,
 .gu-phasebar__step.is-done .gu-proposal-steps__title { color: var(--gu-fg-1); font-weight: 600; }
 .gu-phasebar__step .gu-proposal-steps__when,
 .gu-phasebar__step .gu-proposal-steps__text,
-.gu-phasebar__step .gu-proposal-steps__left { font-size: 0.6875rem; color: var(--gu-fg-3); line-height: 1.3; }
+.gu-phasebar__step .gu-proposal-steps__left { font-size: 0.6875rem; color: var(--gu-fg-3); line-height: 1.25; }
 .gu-phasebar__step.is-current .gu-proposal-steps__left { color: var(--gu-globe-deep); font-weight: 600; }
+/* De uitklapper "Alle fasen" verschijnt alleen op een smal scherm (via JS). */
+.gu-phasebar__toggle { display: none; }
 
-/* Smal scherm: de fasebalk als verticale stepper, iconen links, tekst rechts. */
+/* Smal scherm: verticale stepper; standaard ingeklapt tot de huidige fase. */
 @media (max-width: 760px) {
-  .gu-cockpit .gu-phasebar { flex-direction: column; align-items: stretch; }
-  .gu-cockpit .gu-phasebar__step { flex: none; gap: 12px; padding: 0 0 16px; position: relative; }
-  .gu-cockpit .gu-phasebar__step .gu-proposal-steps__title { font-size: 0.875rem; }
-  .gu-cockpit .gu-phasebar__step:not(.is-current) .gu-proposal-steps__when,
-  .gu-cockpit .gu-phasebar__step:not(.is-current) .gu-proposal-steps__text { display: block; }
-  .gu-cockpit .gu-phasebar__step:not(:last-child)::after {
-    content: ""; position: absolute; left: 16px; top: 38px; bottom: -2px;
-    width: 2px; height: auto; min-width: 0; margin: 0; align-self: auto; background: var(--gu-border);
+  .gu-phasebar { flex-direction: column; align-items: stretch; }
+  .gu-phasebar__step { flex: none; flex-direction: row; align-items: center; text-align: left; gap: 12px; padding: 0 0 16px; }
+  .gu-phasebar__label { align-items: flex-start; text-align: left; }
+  .gu-phasebar__step .gu-proposal-steps__title { font-size: 0.875rem; }
+  .gu-phasebar__step:not(:last-child)::after {
+    top: 34px; left: 16px; right: auto; bottom: -2px; width: 2px; height: auto;
   }
-  .gu-cockpit .gu-phasebar__step.is-done:not(:last-child)::after { background: var(--gu-globe-deep); }
+  .gu-phasebar.is-collapsed .gu-phasebar__step:not(.is-current) { display: none; }
+  .gu-phasebar.is-collapsed .gu-phasebar__step.is-current { padding-bottom: 0; }
+  .gu-phasebar.is-collapsed .gu-phasebar__step.is-current::after { display: none; }
+  .gu-phasebar__toggle {
+    display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 0 46px;
+    padding: 0; border: 0; background: none; cursor: pointer; font: inherit;
+    font-size: 0.8125rem; color: var(--gu-globe-deep);
+  }
+  .gu-phasebar__toggle svg { transition: transform 0.15s; }
+  .gu-phasebar__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 }
 
 /* ── De drie blokken: één witte kaart, dun lijntje tussen kop en inhoud ─ */
@@ -4024,18 +4008,6 @@ body {
 
 /* ── P10: de fasebalk ook boven de losse feiten- en voorstellenpagina's ── */
 .gu-issuephase { margin: 2px 0 22px; }
-@media (max-width: 760px) {
-  .gu-issuephase .gu-phasebar { flex-direction: column; align-items: stretch; }
-  .gu-issuephase .gu-phasebar__step { flex: none; gap: 12px; padding: 0 0 16px; position: relative; }
-  .gu-issuephase .gu-phasebar__step .gu-proposal-steps__title { font-size: 0.875rem; }
-  .gu-issuephase .gu-phasebar__step:not(.is-current) .gu-proposal-steps__when,
-  .gu-issuephase .gu-phasebar__step:not(.is-current) .gu-proposal-steps__text { display: block; }
-  .gu-issuephase .gu-phasebar__step:not(:last-child)::after {
-    content: ""; position: absolute; left: 16px; top: 38px; bottom: -2px;
-    width: 2px; height: auto; min-width: 0; margin: 0; align-self: auto; background: var(--gu-border);
-  }
-  .gu-issuephase .gu-phasebar__step.is-done:not(:last-child)::after { background: var(--gu-globe-deep); }
-}
 
 /* Compacte lijstweergave: met titel alleen de kern, anders de tekst op een paar regels; bron achter "meer". */
 .gu-fact__title { margin: 0; font-weight: 400; font-size: 0.9375rem; color: var(--gu-fg-1); line-height: 1.4; }
