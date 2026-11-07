@@ -49,7 +49,7 @@ def _people():
 
 def _post(db, thread, who, created_at, *, body=None, source_lang='nl', is_op=False,
           parent=None, kind=None, fact_direction=None, fact_source=None, fact_type=None,
-          issue_proposal_id=None, proposal_version=None):
+          fact_title=None, issue_proposal_id=None, proposal_version=None):
     from app.models import Post
     user, role, badge, age = who
     post = Post(
@@ -59,7 +59,7 @@ def _post(db, thread, who, created_at, *, body=None, source_lang='nl', is_op=Fal
         author_username=user.username, author_role=role,
         author_badge_nl=badge, author_badge_en=badge, author_age=age,
         body=body, source_lang=source_lang, is_op=is_op, is_demo=True, vote_count=0,
-        kind=kind, fact_direction=fact_direction, fact_source=fact_source, fact_type=fact_type,
+        kind=kind, fact_direction=fact_direction, fact_source=fact_source, fact_type=fact_type, fact_title=fact_title,
         issue_proposal_id=issue_proposal_id, proposal_version=proposal_version,
         created_at=created_at,
     )
@@ -191,19 +191,19 @@ def seed_demo_issues(force=False):
 
     f1 = _post(db, thread_a, people['sarah'], now - timedelta(days=19), kind='feit', fact_direction='voor',
                fact_source='https://www.sipri.org/databases/milex',
-               body='De Europese defensiebegrotingen samen zijn groter dan die van Rusland.')
+               fact_title='EU-defensiebudget samen groter dan dat van Rusland', body='De Europese defensiebegrotingen samen zijn groter dan die van Rusland.')
     f2 = _post(db, thread_a, people['marcus'], now - timedelta(days=18), kind='feit', fact_direction='tegen',
                fact_source='https://www.rand.org/pubs/research_reports.html',
-               body='Twee commandostructuren naast elkaar kosten tijd bij een crisis.')
+               fact_title='Dubbele commandostructuur kost tijd bij een crisis', body='Twee commandostructuren naast elkaar kosten tijd bij een crisis.')
     f3 = _post(db, thread_a, people['jan'], now - timedelta(days=18), kind='feit', fact_direction='neutraal',
                fact_source='NAVO-factsheet (geen directe link)',
-               body='De NATO Response Force kan binnen vijf dagen worden ingezet.')
+               fact_title='NATO Response Force inzetbaar binnen vijf dagen', body='De NATO Response Force kan binnen vijf dagen worden ingezet.')
     f4 = _post(db, thread_a, people['fatima'], now - timedelta(days=17), kind='feit', fact_direction='voor',
                fact_type='media', fact_source='https://nos.nl/artikel/europese-defensie',
-               body='Reportage over gezamenlijke inkoop en de prijsdaling per eenheid.')
+               fact_title='Reportage: gezamenlijke inkoop drukt de prijs per eenheid', body='Reportage over gezamenlijke inkoop en de prijsdaling per eenheid.')
     f5 = _post(db, thread_a, people['marcus'], now - timedelta(days=16), kind='feit', fact_direction='tegen',
                fact_source='https://www.politico.eu/',
-               body='Niet alle lidstaten willen bevoegdheden aan Brussel overdragen.')
+               fact_title='Niet alle lidstaten willen bevoegdheden afstaan aan Brussel', body='Niet alle lidstaten willen bevoegdheden aan Brussel overdragen.')
     for fact in (f1, f2, f4, f5):
         _fact_mark(db, fact)
 
@@ -275,10 +275,10 @@ def seed_demo_issues(force=False):
         schedule=sch_b, deadline=sch_b[1])
     _post(db, thread_b, people['sarah'], now - timedelta(days=3), kind='feit', fact_direction='voor',
           fact_source='https://www.scp.nl/',
-          body='De opkomst onder jongeren bij gemeenteraadsverkiezingen ligt ver onder het gemiddelde.')
+          fact_title='Opkomst jongeren bij gemeenteraad ver onder gemiddelde', body='De opkomst onder jongeren bij gemeenteraadsverkiezingen ligt ver onder het gemiddelde.')
     fb2 = _post(db, thread_b, people['marcus'], now - timedelta(days=3), kind='feit', fact_direction='neutraal',
                 fact_source='https://www.prodemos.nl/',
-                body='Enkele gemeenten experimenteren met jongerenraden met een eigen budget.')
+                fact_title='Gemeenten experimenteren met jongerenraden met eigen budget', body='Enkele gemeenten experimenteren met jongerenraden met een eigen budget.')
     _fact_mark(db, fb2)
     _post(db, thread_b, people['jan'], now - timedelta(days=2),
           body='Begin bij de scholen. Zonder uitleg over wat de raad doet, blijft het abstract.')
@@ -311,7 +311,7 @@ def seed_demo_issues(force=False):
                   'aangenomen. De initiatiefnemers werken het samen met experts verder uit.'))
     fc1 = _post(db, thread_c, people['fatima'], now - timedelta(days=39), kind='feit', fact_direction='voor',
                 fact_source='https://www.unhcr.org/',
-                body='Een klein aantal lidstaten vangt nu het grootste deel van de aanvragen op.')
+                fact_title='Enkele lidstaten vangen grootste deel van de aanvragen op', body='Een klein aantal lidstaten vangt nu het grootste deel van de aanvragen op.')
     _fact_mark(db, fc1)
     _post(db, thread_c, people['marcus'], now - timedelta(days=38),
           body='Een eerlijke verdeling is alleen houdbaar met duidelijke afspraken en controle.')

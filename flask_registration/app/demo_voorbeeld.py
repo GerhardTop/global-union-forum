@@ -66,6 +66,20 @@ _FACTS = [
 ]
 _FACTS_MARKED = {0, 1, 2, 3, 4, 5, 7, 9}   # feit op index 6 en 8 krijgen geen merk
 
+# Korte kern per feit (zelfde volgorde als _FACTS), maximaal 80 tekens.
+_TITLES = [
+    'OESO: 100-240 mld dollar misgelopen door winstverschuiving',
+    'Meer dan 140 landen onderschreven minimumtarief van 15 procent',
+    'Minimumtarief van 15 procent ligt onder het EU-gemiddelde',
+    'IMF: kleine landen vrezen verlies van lage-tarief-voordeel',
+    'Reportage: techbedrijf sluist winst via drie landen weg',
+    'Enkele doorsluislanden vangen het grootste deel van de winst op',
+    'Rapportageplicht raakt vooral kleinere bedrijven, zegt het bedrijfsleven',
+    'EU verplicht sinds 2024 openbare rapportage per land',
+    'OESO: uitvoering hangt af van capaciteit belastingdiensten',
+    'EU Tax Observatory: minimumtarief kan tientallen miljarden opleveren',
+]
+
 
 def seed_demo_voorbeeld(force=False):
     from app import db
@@ -91,7 +105,8 @@ def seed_demo_voorbeeld(force=False):
     facts = []
     for i, (who, direction, source, ftype, body) in enumerate(_FACTS):
         f = _post(db, thread, people[who], now - timedelta(days=9, hours=i),
-                  kind='feit', fact_direction=direction, fact_source=source, fact_type=ftype, body=body)
+                  kind='feit', fact_direction=direction, fact_source=source, fact_type=ftype,
+                  fact_title=_TITLES[i], body=body)
         if i in _FACTS_MARKED:
             _fact_mark(db, f)
         facts.append(f)
