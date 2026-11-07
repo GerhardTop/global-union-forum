@@ -325,8 +325,8 @@ def test_cockpit_shows_context_facts_discussion_and_proposals(app, db, make_user
     # en de link naar de feitenpagina (stap 3; P2: geen nuttig-teller meer).
     assert 'Feiten en achtergrond' in body and '(4)' in body
     assert 'Feit nummer 3' in body and 'Feit nummer 1' in body
-    # P3: de vierde staat er alleen voor de grote weergave (verborgen in de kolom).
-    assert 'gu-cockpit__extra' in body.split('Feit nummer 0')[0].rsplit('<li', 1)[1]
+    # Tien zichtbaar in de kolom: met vier feiten staan ze er allemaal meteen.
+    assert 'gu-cockpit__extra' not in body.split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
     assert 'Pleit voor' in body and 'Pleit tegen' in body and 'https://example.org/1' in body
     assert f'/vraagstuk/{proposal.issue_id}/feiten' in body and 'Feitenpagina met filters en sorteren' in body
     assert 'Nuttig' not in body

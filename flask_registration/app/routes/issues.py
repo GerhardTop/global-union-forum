@@ -36,7 +36,7 @@ from app.utils import _pop_form_state, _stash_form_state, safe_next
 issues_bp = Blueprint("issues", __name__)
 
 # Zoveel feiten in de linkerkolom; de rest via "Alle feiten en onderzoek".
-FACTS_SHOWN = 3
+FACTS_SHOWN = 10
 # Zoveel voorstellen in de rechterkolom; de rest via de voorstellenpagina.
 COCKPIT_PROPOSALS = 5
 FOLLOWUP_MAX = 5000

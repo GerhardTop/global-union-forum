@@ -292,7 +292,7 @@ def test_cockpit_head_intro_phases_and_plus_buttons(app, db, make_user):
 def test_cockpit_renders_extra_rows_for_the_large_view(app, db, make_user):
     host, anna = make_user(), make_user()
     issue = _issue(db, host)
-    for i in range(5):
+    for i in range(12):
         _fact(db, issue, anna, f'Feit {i}')
     for i in range(7):
         ip.create(issue, anna, f'Voorstel {i}')
@@ -627,12 +627,12 @@ def test_cockpit_is_calmer(app, db, make_user):
 def test_show_more_only_when_there_is_more(app, db, make_user):
     host, anna = make_user(), make_user()
     issue = _issue(db, host)
-    for i in range(3):
+    for i in range(10):
         _fact(db, issue, anna, f'Feit {i}')
     body = _get(app, f'/vraagstuk/{issue.id}')
     facts = body.split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
     assert 'data-more ' not in facts and 'data-more-list' in facts
-    _fact(db, issue, anna, 'Feit 3')
+    _fact(db, issue, anna, 'Feit 10')
     facts = _get(app, f'/vraagstuk/{issue.id}').split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
     assert 'gu-showmore' in facts and 'Toon meer' in facts
 
