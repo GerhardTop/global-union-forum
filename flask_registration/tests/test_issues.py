@@ -234,7 +234,7 @@ def test_list_and_issue_page(app, db, make_user):
     page = _req(_client(app, lang='nl'), 'GET', '/gesprekken').get_data(as_text=True)
     assert 'Wat doen we met het plein?' in page
     assert 'Stadhuis' in page and 'Event' in page
-    assert 'Feiten en discussie' in page
+    assert 'Voorstellen maken' in page
 
     show = _req(_client(app, lang='en'), 'GET', f'/vraagstuk/{issue.id}')
     assert show.status_code == 200

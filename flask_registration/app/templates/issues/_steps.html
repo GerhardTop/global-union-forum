@@ -7,15 +7,18 @@
   huidige fase de deadline en de resterende tijd als die bekend zijn.
   Context: issue, remaining (optioneel, uit issues.remaining).
 #}
+{% set n_props = issue.issue_proposals | rejectattr('is_final') | list | length %}
 {% set all_steps = {
-  'feiten': (_('Facts and discussion'), issue.days_facts),
-  'bijstellen': (_('Revise the proposal'), issue.days_adjust),
-  'stemmen': (_('Voting'), issue.days_vote),
-  'samenvatten': (_('Summary proposal'), None),
-  'vervolg': (_('Follow-up'), None),
+  'feiten': (('Voorstellen maken' if lang == 'nl' else 'Making proposals'), issue.days_facts,
+             ('feiten, achtergrond, discussie en voorstellen' if lang == 'nl' else 'facts, background, discussion and proposals')),
+  'bijstellen': ((('Voorstel aanpassen' if n_props == 1 else 'Voorstellen aanpassen') if lang == 'nl' else ('Adjust the proposal' if n_props == 1 else 'Adjust the proposals')), issue.days_adjust,
+                 ('verwerk de reacties' if lang == 'nl' else 'process the feedback')),
+  'stemmen': (_('Voting'), issue.days_vote, ('kies tussen de voorstellen' if lang == 'nl' else 'choose between the proposals')),
+  'samenvatten': (_('Summary proposal'), None, ('de uitkomst in één voorstel' if lang == 'nl' else 'the outcome in one proposal')),
+  'vervolg': (_('Follow-up'), None, ('wat er daarna gebeurt' if lang == 'nl' else 'what happens next')),
 } %}
 {% set steps = [] %}
-{% for key in issue.phases %}{% set _unused = steps.append((key, all_steps[key][0], all_steps[key][1])) %}{% endfor %}
+{% for key in issue.phases %}{% set _unused = steps.append((key, all_steps[key][0], all_steps[key][1], all_steps[key][2])) %}{% endfor %}
 {% set plan = issue.plan() %}
 {% set icons = {
   'feiten': '<circle cx="10.5" cy="10.5" r="5.5"/><path d="M15 15l4.5 4.5"/>',
@@ -25,7 +28,7 @@
   'vervolg': '<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
 } %}
 <ol class="gu-proposal-steps gu-phasebar" aria-label="{{ _('Phases of the issue') }}" style="--steps: {{ steps | length }}">
-  {% for key, title, days in steps %}
+  {% for key, title, days, sub in steps %}
   {% set state = 'current' if loop.index0 == issue.phase_index else ('done' if loop.index0 < issue.phase_index else 'todo') %}
   <li class="gu-proposal-steps__step gu-phasebar__step is-{{ state }}"{% if state == 'current' %} aria-current="step"{% endif %}>
     <span class="gu-phasebar__icon" aria-hidden="true">
@@ -33,6 +36,7 @@
     </span>
     <span class="gu-phasebar__label">
     <span class="gu-proposal-steps__title">{{ title }}{% if state == 'current' %}<span class="gu-sr-only"> ({{ _('current phase') }})</span>{% elif state == 'done' %}<span class="gu-sr-only"> ({{ _('done') }})</span>{% endif %}</span>
+    {% if state == 'current' %}<span class="gu-proposal-steps__sub">{{ sub }}</span>{% endif %}
     {% if state == 'current' and issue.phase_deadline %}
     <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=issue.phase_deadline | local | datetimeformat('d MMM y HH:mm')) }}</span>
     {% if remaining %}

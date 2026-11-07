@@ -142,7 +142,7 @@ def test_overview_filters_and_counts(app, db, make_user):
 
     page = _get(app, '/gesprekken')
     row = page.split('Online vraag')[1].split('</li>')[0]
-    assert '2 voorstellen' in row and '2 deelnemers' in row and 'Feiten en discussie' in row
+    assert '2 voorstellen' in row and '2 deelnemers' in row and 'Voorstellen maken' in row
     assert 'Buurthuis' in page and 'Nieuw vraagstuk' not in page  # niet ingelogd: geen knop
     assert 'Event vraag' not in _get(app, '/gesprekken?filter=online')
     assert 'Online vraag' not in _get(app, '/gesprekken?filter=event')
@@ -480,7 +480,7 @@ def test_versions_timeline_and_reactions_per_version(app, db, make_user):
     assert Post.query.filter_by(body='Reactie op versie drie.').one().proposal_version == 3
 
     page = _get(app, detail, anna)
-    assert 'Fase: Voorstel bijstellen' in page and 'Versie 3' in page
+    assert 'Fase: Voorstellen aanpassen' in page and 'Versie 3' in page
     timeline = page.split('id="versies"')[1].split('id="reacties"')[0]
     assert timeline.index('Versie 3') < timeline.index('Versie 2') < timeline.index('Versie 1')
     assert 'Toelichting gewijzigd.' in timeline and 'Stelling gewijzigd.' in timeline

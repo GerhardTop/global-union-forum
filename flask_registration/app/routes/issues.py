@@ -21,7 +21,7 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
                      volgen aan of uit (polijstronde P3)
 """
 from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, session, url_for
-from flask_babel import gettext
+from flask_babel import get_locale, gettext
 from flask_login import current_user, login_required
 
 from app import conduct, db, issues, limiter
@@ -44,9 +44,12 @@ FOLLOWUP_MAX = 5000
 
 @issues_bp.context_processor
 def _inject_phase_labels():
-    return {'phase_labels': {'feiten': gettext('Facts and discussion'), 'bijstellen': gettext('Revise the proposal'),
-                             'stemmen': gettext('Voting'), 'samenvatten': gettext('Summary proposal'),
-                             'vervolg': gettext('Follow-up')},
+    nl = str(get_locale()) == 'nl'
+    return {'phase_labels': {'feiten': 'Voorstellen maken' if nl else 'Making proposals',
+                             'bijstellen': 'Voorstellen aanpassen' if nl else 'Adjust the proposals',
+                             'stemmen': 'Stemmen' if nl else 'Voting',
+                             'samenvatten': 'Samenvattend voorstel' if nl else 'Summary proposal',
+                             'vervolg': 'Vervolg' if nl else 'Follow-up'},
             'ip_status': ip.status,
             'ip_can_support': lambda p, n, supported: ip.can_support(p, current_user, n, supported)}
 
