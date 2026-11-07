@@ -281,7 +281,8 @@
     // kleine schakelaar "meer/minder"; alleen tonen als de tekst echt langer is.
     function clampFacts() {
       root.querySelectorAll('.gu-cockpit__facts .gu-fact').forEach(function (fact) {
-        if (fact.hidden || fact.dataset.clampReady) return;
+        if (fact.dataset.clampReady) return;
+        if (fact.hidden || !fact.offsetParent) return;
         var text = fact.querySelector('.gu-fact__text');
         var btn = fact.querySelector('[data-fact-more]');
         if (!text || !btn) return;
