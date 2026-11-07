@@ -31,6 +31,7 @@
         </form>
         {% endif %}
       </div>
+      {% if issue.created_by %}<p class="gu-cockpit__by">{{ issue.created_by.public_name }}</p>{% endif %}
       {# P7: alleen een klein pijltje vóór de tekst om in en uit te klappen (zonder JavaScript staat alles open). #}
       <div class="gu-cockpit__about" id="toelichting" data-issue="{{ issue.id }}">
         <button type="button" class="gu-disclosure gu-cockpit__abouttoggle" aria-expanded="true" aria-controls="aboutBody"
@@ -93,8 +94,8 @@
           <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if loop.index > facts_shown %} gu-cockpit__extra{% endif %}{% if fact.fact_title %} gu-fact--titled{% endif %}">
             <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
             <div class="gu-fact__main">
-              {% include 'issues/_fact_badges.html' %}
               {% if fact.fact_title %}<p class="gu-fact__title" lang="{{ fact.source_lang }}">{{ fact.fact_title }}</p>{% endif %}
+              {% include 'issues/_fact_badges.html' %}
               <div class="gu-fact__detail">
                 <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
                 {% if fact.fact_source %}

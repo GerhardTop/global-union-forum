@@ -1793,7 +1793,7 @@ body {
 .gu-fact { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 8px; background: var(--gu-bg-soft); }
 .gu-fact--moved { background: none; padding: 4px 0; }
 .gu-fact__main { flex: 1; min-width: 0; }
-.gu-fact__text { margin: 0; color: var(--gu-fg-1); line-height: 1.55; overflow-wrap: anywhere; }
+.gu-fact__text { margin: 0; font-size: 0.9375rem; color: var(--gu-fg-1); line-height: 1.55; overflow-wrap: anywhere; }
 .gu-fact__source { margin: 6px 0 0; font-size: 0.8125rem; color: var(--gu-fg-3); overflow-wrap: anywhere; }
 .gu-fact__source a { color: var(--gu-globe-deep); }
 .gu-fact__dir { flex-shrink: 0; display: inline-flex; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
@@ -3633,9 +3633,10 @@ body {
 }
 .gu-factmark {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
-  width: 20px; height: 20px; border-radius: 50%;
-  color: #fff; background: var(--gu-success, #2e8540); cursor: help;
+  width: 16px; height: 16px; border-radius: 50%;
+  color: #11633d; background: #e3f3ea; cursor: help;
 }
+.gu-factmark > svg { width: 11px; height: 11px; }
 .gu-factmark:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
 .gu-factmark__tip {
   position: absolute; z-index: 20; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
@@ -3864,7 +3865,7 @@ body {
 
 /* ── Cockpit: zachte paginakleur, de vraag in het donker ─────────────── */
 .gu-cockpit { background: #f1f4f7; }
-.gu-cockpit__inner { padding-top: 10px; padding-bottom: 48px; }
+.gu-cockpit__inner { padding-top: 5px; padding-bottom: 48px; }
 .gu-cockpit__titlerow .gu-forum__title { color: var(--gu-fg-1); font-weight: 600; }
 
 /* ── Fasebalk: horizontale balk met iconen en verbindingslijnen ──────── */
@@ -4037,7 +4038,7 @@ body {
 }
 
 /* Compacte lijstweergave: met titel alleen de kern, anders de tekst op een paar regels; bron achter "meer". */
-.gu-fact__title { margin: 0; font-weight: 600; color: var(--gu-fg-1); line-height: 1.4; }
+.gu-fact__title { margin: 0; font-weight: 400; font-size: 0.9375rem; color: var(--gu-fg-1); line-height: 1.4; }
 .gu-fact__detail { display: grid; gap: 6px; }
 .gu-fact--titled.is-clamped .gu-fact__detail { display: none; }
 .gu-fact:not(.gu-fact--titled).is-clamped .gu-fact__text {
@@ -4057,3 +4058,4 @@ body {
 }
 .gu-backlink:hover { color: var(--gu-globe-deep); }
 .gu-backlink svg { flex: none; }
+.gu-cockpit__by { margin: 0 0 16px; font-size: 0.8125rem; color: var(--gu-fg-3); }
