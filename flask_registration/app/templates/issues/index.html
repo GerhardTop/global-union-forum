@@ -47,6 +47,7 @@
         <a class="gu-threadlist__link" href="{{ url_for('issues.show', issue_id=issue.id) }}">
           <span class="gu-threadlist__eyebrow">{% include 'issues/_kind.html' %}</span>
           <span class="gu-threadlist__title" lang="{{ issue.lang or lang }}">{{ issue.title }}</span>
+          {% if issue.created_by %}<span class="gu-issuelist__by">{% if lang == 'nl' %}ingebracht door{% else %}submitted by{% endif %} {{ issue.created_by.public_name }}</span>{% endif %}
           <span class="gu-threadlist__meta gu-issuelist__meta">
             <span class="gu-issuelist__phase{% if issue.is_closed %} is-closed{% endif %}">
               {%- if issue.is_closed -%}{{ _('Closed') }}{%- else -%}{{ phase_labels.get(issue.phase, issue.phase) }}{%- endif -%}

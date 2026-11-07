@@ -3864,7 +3864,7 @@ body {
 
 /* ── Cockpit: zachte paginakleur, de vraag in het donker ─────────────── */
 .gu-cockpit { background: #f1f4f7; }
-.gu-cockpit__inner { padding-top: 24px; padding-bottom: 48px; }
+.gu-cockpit__inner { padding-top: 10px; padding-bottom: 48px; }
 .gu-cockpit__titlerow .gu-forum__title { color: var(--gu-fg-1); font-weight: 600; }
 
 /* ── Fasebalk: horizontale balk met iconen en verbindingslijnen ──────── */
@@ -3931,7 +3931,7 @@ body {
 
 /* ── Startformulier: secties als witte kaarten op grijs ──────────────── */
 .gu-forum--soft { background: #f1f4f7; }
-.gu-forum--soft .gu-forum__inner { padding-top: 24px; padding-bottom: 48px; }
+.gu-forum--soft .gu-forum__inner { padding-top: 10px; padding-bottom: 48px; }
 .gu-forum--soft .gu-forum__threadhead .gu-forum__title { color: var(--gu-fg-1); font-weight: 600; }
 .gu-newissue__section {
   background: var(--gu-paper); border: 1px solid var(--gu-border);
@@ -3984,7 +3984,8 @@ body {
 }
 
 /* ── Overzicht Denk mee: vraagstukken als witte kaarten ───────────────── */
-.gu-forum--soft .gu-issuelist { display: flex; flex-direction: column; gap: 12px; }
+.gu-forum--soft .gu-issuelist { display: flex; flex-direction: column; gap: 12px; border-top: 0; margin-top: 0; }
+.gu-issuelist__by { font-size: 0.8125rem; color: var(--gu-fg-3); margin-top: 2px; }
 .gu-forum--soft .gu-issuelist .gu-threadlist__row { border-bottom: 0; }
 .gu-forum--soft .gu-issuelist .gu-threadlist__link {
   background: var(--gu-paper); border: 1px solid var(--gu-border);
@@ -3997,7 +3998,7 @@ body {
 
 /* ── Voorstel-detail: zachte pagina, witte kaarten, tweekoloms ────────── */
 .gu-ipdetail.gu-forum--soft { background: #f1f4f7; }
-.gu-ipdetail.gu-forum--soft .gu-forum__inner { padding-top: 24px; padding-bottom: 48px; }
+.gu-ipdetail.gu-forum--soft .gu-forum__inner { padding-top: 10px; padding-bottom: 48px; }
 
 /* Secties als witte kaarten met een lijntje onder de kop. */
 .gu-ipdetail .gu-ipdetail__section {
