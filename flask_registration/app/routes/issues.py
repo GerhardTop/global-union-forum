@@ -240,7 +240,7 @@ def proposal_new(issue_id):
             if fact_errors:
                 errors['fact'] = fact_errors
         if errors:
-            keep = ('statement', 'explanation', 'fact_text', 'fact_direction', 'fact_source')
+            keep = ('statement', 'explanation', 'fact_title', 'fact_text', 'fact_direction', 'fact_source')
             data = {k: request.form.get(k, '') for k in keep}
             data['fact_ids'] = fact_ids
             _stash_form_state(form_key, errors, data)

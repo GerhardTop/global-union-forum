@@ -36,7 +36,7 @@
         <details class="gu-newproposal__newfact"{% if fact_errs or fd.get('fact_text') or fd.get('fact_source') %} open{% endif %}>
           <summary>{{ _('Add a new fact') }}</summary>
           {% from 'forum/_fact_fields.html' import fact_fields with context %}
-          {{ fact_fields('new-fact', {'text': fd.get('fact_text', ''), 'direction': fd.get('fact_direction', ''), 'source': fd.get('fact_source', '')}, fact_errs, 'fact_') }}
+          {{ fact_fields('new-fact', {'title': fd.get('fact_title', ''), 'text': fd.get('fact_text', ''), 'direction': fd.get('fact_direction', ''), 'source': fd.get('fact_source', '')}, fact_errs, 'fact_') }}
           <p class="gu-composer__hint">{{ _('The fact goes into the shared list of this issue and is linked to your proposal.') }}</p>
         </details>
         {% endif %}

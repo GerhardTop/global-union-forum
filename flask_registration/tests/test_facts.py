@@ -203,7 +203,7 @@ def test_add_fact_from_facts_page_on_issue_without_proposal(app, db, make_user):
     page = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
     assert 'Feit, onderzoek of media toevoegen' in page and f'name="return_to" value="{issue.id}"' in page
     r = _req(_client(app, reader), 'POST', f'/forum/{issue.thread_id}/feiten',
-             data={'text': 'Nieuw onderzoek', 'direction': 'voor', 'source': 'https://onderzoek.example',
+             data={'title': 'Nieuw onderzoek', 'text': 'Nieuw onderzoek', 'direction': 'voor', 'source': 'https://onderzoek.example',
                    'return_to': str(issue.id)})
     fact = Post.query.filter_by(body='Nieuw onderzoek').one()
     assert fact.kind == FACT_KIND and fact.thread_id == issue.thread_id

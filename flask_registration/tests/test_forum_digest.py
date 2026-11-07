@@ -121,7 +121,7 @@ class TestFollowing:
         _reply_as(app, bram, t, 'Reactie van Bram.')
         assert _follow_row(t.proposal, bram).active is True
         _req(_client(app, carla), 'POST', f'/forum/{t.id}/feiten',
-             data={'text': 'Een feit.', 'direction': 'neutraal', 'source': 'CBS'})
+             data={'title': 'Een feit', 'text': 'Een feit.', 'direction': 'neutraal', 'source': 'CBS'})
         assert _follow_row(t.proposal, carla).active is True
         p = t.proposal
         p.phase = 'stemmen'

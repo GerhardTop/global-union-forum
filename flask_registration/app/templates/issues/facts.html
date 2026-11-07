@@ -84,7 +84,7 @@
           {% endif %}
           {% if is_own and phase_open and not c_removed %}
           {% set edit_errs = (fact_errors or {}).get('edit-' ~ fact.id, {}) %}
-          {% set edit_data = (fact_data or {}).get('edit-' ~ fact.id) or {'text': fact.body, 'direction': fact.fact_direction, 'source': fact.fact_source, 'type': fact.fact_type} %}
+          {% set edit_data = (fact_data or {}).get('edit-' ~ fact.id) or {'title': fact.fact_title, 'text': fact.body, 'direction': fact.fact_direction, 'source': fact.fact_source, 'type': fact.fact_type} %}
           <div class="gu-fact__own">
             <details class="gu-fact__edit"{% if edit_errs %} open{% endif %}>
               <summary>{{ _('Edit') }}</summary>
@@ -126,8 +126,8 @@
         <input type="hidden" name="return_to" value="{{ issue.id }}">
         <p class="gu-fact-form__title">{{ _('Add a fact, research or media') }}</p>
         {% set fe = fact_errors or {} %}
-        {% set new_errs = {'text': fe.get('text'), 'direction': fe.get('direction'), 'source': fe.get('source')} %}
-        {% set new_data = (fact_data or {}) if (fe.get('text') or fe.get('direction') or fe.get('source')) else {} %}
+        {% set new_errs = {'title': fe.get('title'), 'text': fe.get('text'), 'direction': fe.get('direction'), 'source': fe.get('source')} %}
+        {% set new_data = (fact_data or {}) if (fe.get('title') or fe.get('text') or fe.get('direction') or fe.get('source')) else {} %}
         {{ fact_fields('new-fact', new_data, new_errs) }}
         <button type="submit" class="gu-btn gu-btn--primary">{{ _('Add a fact') }} <span class="gu-arrow"></span></button>
       </form>

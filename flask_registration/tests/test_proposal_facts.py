@@ -207,7 +207,7 @@ def test_new_fact_from_detail_is_added_and_linked(app, db, make_user):
     author, other = make_user(), make_user()
     issue, proposal = _setup(db, author)
     r = _req(_client(app, other), 'POST', _base(issue, proposal) + '/feit',
-             data={'text': 'Nieuw onderzoek naar luchtkwaliteit.', 'direction': 'neutraal',
+             data={'title': 'Luchtkwaliteit', 'text': 'Nieuw onderzoek naar luchtkwaliteit.', 'direction': 'neutraal',
                    'source': 'https://rivm.example'})
     assert r.status_code == 302
     fact = Post.query.filter_by(body='Nieuw onderzoek naar luchtkwaliteit.').one()
@@ -253,7 +253,7 @@ def test_link_when_making_a_proposal(app, db, make_user):
     r = _req(_client(app, other), 'POST', f'/vraagstuk/{issue.id}/voorstellen/nieuw', data={
         'statement': 'Een nieuw voorstel met feiten.', 'explanation': '',
         'fact_ids': [str(fact.id), str(foreign.id)],
-        'fact_text': 'Een nieuw feit erbij.', 'fact_direction': 'voor', 'fact_source': 'https://nieuw.example'})
+        'fact_title': 'Nieuw feit', 'fact_text': 'Een nieuw feit erbij.', 'fact_direction': 'voor', 'fact_source': 'https://nieuw.example'})
     proposal = IssueProposal.query.filter_by(statement='Een nieuw voorstel met feiten.').one()
     assert r.headers['Location'].endswith(_base(issue, proposal))
     new_fact = Post.query.filter_by(body='Een nieuw feit erbij.').one()

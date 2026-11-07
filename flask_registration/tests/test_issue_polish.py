@@ -201,7 +201,7 @@ FACT_OK = dict(fact_has_source=True, fact_link_findable=True, fact_has_location=
 
 def _add_fact(app, user, issue, text, source='https://cbs.example/rapport#tabel-3', kind='feit'):
     return _req(_client(app, user), 'POST', f'/forum/{issue.thread_id}/feiten',
-                data={'text': text, 'direction': 'voor', 'source': source, 'type': kind,
+                data={'title': 'Korte kern', 'text': text, 'direction': 'voor', 'source': source, 'type': kind,
                       'return_to': str(issue.id)})
 
 
@@ -265,7 +265,7 @@ def test_media_type_and_label(app, db, make_user):
     assert 'gu-fact__media' in page.split(f'id="post-{media.id}"')[1].split('</li>')[0]
     assert 'Media: nieuws, podcast, video' in page  # het soort in het formulier
     _req(_client(app, anna), 'POST', f'/forum/feit/{media.id}/bewerken',
-         data={'text': 'Een podcast over het plein.', 'direction': 'voor', 'source': 'https://x.example',
+         data={'title': 'Podcast', 'text': 'Een podcast over het plein.', 'direction': 'voor', 'source': 'https://x.example',
                'type': 'feit', 'return_to': str(issue.id)})
     db.session.refresh(media)
     assert media.fact_type == 'feit'
@@ -386,8 +386,8 @@ def test_facts_can_be_added_when_starting(app, db, make_user):
     host = make_user()
     r = _req(_client(app, host), 'POST', '/gesprekken/nieuw', data={
         'title': 'Met feiten', 'intro': 'Uitleg.', 'kind': 'online', **_schedule(),
-        'fact_0_text': 'Eerste feit.', 'fact_0_direction': 'voor', 'fact_0_source': 'https://a.example',
-        'fact_1_text': 'Tweede feit.', 'fact_1_direction': 'tegen', 'fact_1_source': 'https://b.example',
+        'fact_0_title': 'Eerste kern', 'fact_0_text': 'Eerste feit.', 'fact_0_direction': 'voor', 'fact_0_source': 'https://a.example',
+        'fact_1_title': 'Tweede kern', 'fact_1_text': 'Tweede feit.', 'fact_1_direction': 'tegen', 'fact_1_source': 'https://b.example',
         'fact_1_type': 'media'})
     assert r.status_code == 302
     issue = Issue.query.filter_by(created_by_id=host.id).one()

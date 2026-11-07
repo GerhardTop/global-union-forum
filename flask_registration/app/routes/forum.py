@@ -1575,13 +1575,15 @@ def conduct_objection_decide(objection_id):
 # handhaving van de gedragsregels; het kwaliteitskeurmerk geldt niet.
 
 _FACT_MAX = 1000
+_FACT_TITLE_MAX = 80
 
 
 def _fact_form(prefix=''):
     """(waarden, fouten) uit het feitformulier. Met prefix (bijvoorbeeld
     'fact_') voor een feitblok binnen een ander formulier (stap 5)."""
     form = request.form
-    data = {'text': (form.get(f'{prefix}text') or '').strip(),
+    data = {'title': (form.get(f'{prefix}title') or '').strip(),
+            'text': (form.get(f'{prefix}text') or '').strip(),
             'direction': form.get(f'{prefix}direction') or '',
             'source': (form.get(f'{prefix}source') or '').strip(),
             # Polijstronde P2: feit of onderzoek, of media; standaard een feit.
@@ -1593,6 +1595,8 @@ def _fact_form(prefix=''):
         errors['direction'] = True
     if not data['source'] or len(data['source']) > 500:
         errors['source'] = True
+    if not data['title'] or len(data['title']) > _FACT_TITLE_MAX:
+        errors['title'] = True
     return data, errors
 
 
@@ -1655,7 +1659,7 @@ def _new_fact(thread, data):
     fact = Post(thread_id=thread.id, user_id=current_user.id, author_username=current_user.username,
                 author_name='', author_role='member', body=data['text'], source_lang=session.get('lang', 'nl'),
                 kind=FACT_KIND, fact_direction=data['direction'], fact_source=data['source'],
-                fact_type=data.get('type') or 'feit')
+                fact_type=data.get('type') or 'feit', fact_title=data.get('title'))
     db.session.add(fact)
     if thread.proposal is not None:
         from app import digest
@@ -1690,6 +1694,7 @@ def fact_edit(post_id):
         _stash_form_state(f'feit-{fact.thread_id}', {f'edit-{fact.id}': errors}, {f'edit-{fact.id}': data})
         return redirect(_fact_back(fact.thread, f'#post-{fact.id}'), code=303)
     fact.fact_direction, fact.fact_source, fact.fact_type = data['direction'], data['source'], data['type']
+    fact.fact_title, fact.fact_title_en = data['title'], None
     _apply_edit(fact, data['text'])
     return redirect(_fact_back(fact.thread, f'#post-{fact.id}'))
 

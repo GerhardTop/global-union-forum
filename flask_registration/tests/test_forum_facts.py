@@ -35,9 +35,9 @@ def proposal_thread(db, make_thread, make_user):
 
 
 def _add(app, user, thread, text='Het minimumloon steeg in 2024 met 3 procent.', direction='voor',
-         source='https://example.org/cbs-2024'):
+         source='https://example.org/cbs-2024', title='Minimumloon omhoog in 2024'):
     return _req(_client(app, user), 'POST', f'/forum/{thread.id}/feiten',
-                data={'text': text, 'direction': direction, 'source': source})
+                data={'title': title, 'text': text, 'direction': direction, 'source': source})
 
 
 def _fact(text):
@@ -88,11 +88,12 @@ class TestAddFact:
         ('source', '', 'Geef een bron.'),
         ('direction', 'misschien', 'Kies een richting.'),
         ('text', '', 'Beschrijf het feit (maximaal 1000 tekens).'),
+        ('title', '', 'Geef een korte titel (maximaal 80 tekens).'),
     ])
     def test_validation(self, app, db, make_user, proposal_thread, fake_ai, field, value, message):
         t = proposal_thread()
         anna = make_user()
-        data = {'text': 'Een feit.', 'direction': 'voor', 'source': 'Bron', field: value}
+        data = {'title': 'Een korte kern', 'text': 'Een feit.', 'direction': 'voor', 'source': 'Bron', field: value}
         client = _client(app, anna)
         resp = _req(client, 'POST', f'/forum/{t.id}/feiten', data=data)
         assert resp.status_code == 303 and Post.query.filter_by(thread_id=t.id, kind='feit').count() == 0
@@ -148,7 +149,7 @@ class TestOwnFact:
                     data={'text': 'Van een ander.', 'direction': 'tegen', 'source': 'x'}).status_code == 403
         assert _req(_client(app, make_user('moderator')), 'POST', f'/forum/feit/{fact.id}/verwijderen').status_code == 403
         resp = _req(_client(app, anna), 'POST', f'/forum/feit/{fact.id}/bewerken',
-                    data={'text': 'Bijgewerkt feit.', 'direction': 'tegen', 'source': 'https://example.org/nieuw'})
+                    data={'title': 'Bijgewerkt', 'text': 'Bijgewerkt feit.', 'direction': 'tegen', 'source': 'https://example.org/nieuw'})
         assert resp.status_code == 302
         db.session.expire_all()
         fact = db.session.get(Post, fact.id)

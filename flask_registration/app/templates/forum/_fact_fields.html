@@ -8,6 +8,12 @@
 {# name_prefix (stap 5): voor een feitblok binnen een ander formulier, bijvoorbeeld 'fact_'. #}
 {% macro fact_fields(prefix, data, errs, name_prefix='') %}
   <div class="gu-fact-form__field">
+    <label for="{{ prefix }}-title">{% if lang == 'nl' %}Titel (de kern){% else %}Title (the core){% endif %}</label>
+    <input type="text" class="gu-input{% if errs.get('title') %} gu-input--error{% endif %}" id="{{ prefix }}-title" name="{{ name_prefix }}title" maxlength="80" required value="{{ data.get('title', '') }}">
+    <span class="gu-composer__hint">{% if lang == 'nl' %}Een korte kopregel, maximaal 80 tekens{% else %}A short headline, at most 80 characters{% endif %}</span>
+    {% if errs.get('title') %}<p class="gu-join__formError">{% if lang == 'nl' %}Geef een korte titel (maximaal 80 tekens).{% else %}Give a short title (at most 80 characters).{% endif %}</p>{% endif %}
+  </div>
+  <div class="gu-fact-form__field">
     <label for="{{ prefix }}-text">{{ _('The fact') }}</label>
     <textarea class="gu-composer__input{% if errs.get('text') %} gu-input--error{% endif %}" id="{{ prefix }}-text" name="{{ name_prefix }}text" rows="3" maxlength="1000" required>{{ data.get('text', '') }}</textarea>
     {% if errs.get('text') %}<p class="gu-join__formError">{{ _('Describe the fact (at most 1000 characters).') }}</p>{% endif %}
