@@ -20,6 +20,8 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
 /vraagstuk/<id>/volgen
                      volgen aan of uit (polijstronde P3)
 """
+from datetime import timedelta
+
 from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_babel import get_locale, gettext
 from flask_login import current_user, login_required
@@ -57,6 +59,15 @@ def _inject_phase_labels():
 def _local_time(moment):
     """Polijstronde P4: een UTC-moment in Nederlandse tijd voor de weergave."""
     return issues.to_local(moment)
+
+
+@issues_bp.app_template_filter('end_day')
+def _end_day(local):
+    """Een einde om 00:00 (ingevoerd als 24:00) hoort bij de dag ervoor; zo
+    toont een datum zonder tijd de laatste dag van de fase."""
+    if local is not None and not (local.hour or local.minute):
+        return local - timedelta(minutes=1)
+    return local
 
 
 _FORM_FIELDS = ('title', 'intro', 'kind', 'event_name', 'event_note', 'event_location', 'event_online_between',

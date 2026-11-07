@@ -1729,7 +1729,6 @@ body {
 .gu-proposal-steps__title { font-weight: 600; color: var(--gu-fg-1); font-size: 0.9375rem; }
 .gu-proposal-steps__text { font-size: 0.8125rem; color: var(--gu-fg-2); line-height: 1.45; }
 .gu-proposal-steps__when { font-size: 0.75rem; color: var(--gu-fg-3); }
-.gu-proposal-steps__sub { font-size: 0.75rem; color: var(--gu-fg-3); line-height: 1.45; }
 @media (max-width: 768px) {
   .gu-proposal-steps { grid-template-columns: 1fr; }
   .gu-durations__row { grid-template-columns: minmax(0, 1fr) 80px 96px; }
