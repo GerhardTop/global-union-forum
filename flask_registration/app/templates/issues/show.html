@@ -90,18 +90,21 @@
         {% if top_facts %}
         <ol class="gu-cockpit__factlist" data-more-list data-step="{{ facts_shown }}">
           {% for fact in top_facts %}
-          <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if loop.index > facts_shown %} gu-cockpit__extra{% endif %}">
+          <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if loop.index > facts_shown %} gu-cockpit__extra{% endif %}{% if fact.fact_title %} gu-fact--titled{% endif %}">
             <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
             <div class="gu-fact__main">
               {% include 'issues/_fact_badges.html' %}
-              <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+              {% if fact.fact_title %}<p class="gu-fact__title" lang="{{ fact.source_lang }}">{{ fact.fact_title }}</p>{% endif %}
+              <div class="gu-fact__detail">
+                <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+                {% if fact.fact_source %}
+                <p class="gu-fact__source">{{ _('Source') }}:
+                  {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
+                  {% else %}{{ fact.fact_source }}{% endif %}
+                </p>
+                {% endif %}
+              </div>
               <button type="button" class="gu-fact__more" data-fact-more aria-expanded="false" hidden><span data-more-on>{% if lang == 'nl' %}meer{% else %}more{% endif %}</span><span data-more-off hidden>{% if lang == 'nl' %}minder{% else %}less{% endif %}</span></button>
-              {% if fact.fact_source %}
-              <p class="gu-fact__source">{{ _('Source') }}:
-                {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
-                {% else %}{{ fact.fact_source }}{% endif %}
-              </p>
-              {% endif %}
             </div>
           </li>
           {% endfor %}
@@ -282,19 +285,21 @@
     function clampFacts() {
       root.querySelectorAll('.gu-cockpit__facts .gu-fact').forEach(function (fact) {
         if (fact.dataset.clampReady) return;
-        if (fact.hidden || !fact.offsetParent) return;
+        var titled = fact.classList.contains('gu-fact--titled');
+        if (!titled && (fact.hidden || !fact.offsetParent)) return;  // meten vereist zichtbaarheid
         var text = fact.querySelector('.gu-fact__text');
         var btn = fact.querySelector('[data-fact-more]');
         if (!text || !btn) return;
         fact.classList.add('is-clamped');
-        if (text.scrollHeight - text.clientHeight > 2) {
+        var source = fact.querySelector('.gu-fact__source');
+        var reveal = titled || (text.scrollHeight - text.clientHeight > 2) || !!source;
+        if (reveal) {
           btn.hidden = false;
           btn.addEventListener('click', function () {
-            var open = fact.classList.toggle('is-textopen');
-            fact.classList.toggle('is-clamped', !open);
-            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-            btn.querySelector('[data-more-on]').hidden = open;
-            btn.querySelector('[data-more-off]').hidden = !open;
+            var collapsed = fact.classList.toggle('is-clamped');
+            btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            btn.querySelector('[data-more-on]').hidden = !collapsed;
+            btn.querySelector('[data-more-off]').hidden = collapsed;
           });
         } else {
           fact.classList.remove('is-clamped');

@@ -245,6 +245,10 @@ class Post(db.Model):
     # Polijstronde P2: het soort feit (FACT_TYPES); NULL telt als 'feit'.
     # 'media' is nieuws, een podcast, een video en dergelijke.
     fact_type      = db.Column(db.String(10), nullable=True)
+    # Een korte, handgeschreven kern (max 80 tekens) als kopregel in de lijst;
+    # fact_title_en is de vertaalcache, net als body/body_en.
+    fact_title     = db.Column(db.String(100), nullable=True)
+    fact_title_en  = db.Column(db.String(100), nullable=True)
     author         = db.relationship('User', foreign_keys=[user_id], lazy='joined')
     # Geneste reacties: parent_id wijst naar het bericht waarop gereageerd
     # wordt (NULL = bericht op het hoogste niveau). De threadpagina bouwt de

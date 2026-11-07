@@ -312,7 +312,9 @@ _POLISH_COLUMNS = {
               # P5: een reactie bij een voorstel, met de versie (de tabel
               # issue_proposal_versions maakt db.create_all() aan).
               ('issue_proposal_id', 'INTEGER NULL REFERENCES issue_proposals(id)'),
-              ('proposal_version', 'INTEGER NULL')),
+              ('proposal_version', 'INTEGER NULL'),
+              # Titel: een korte kern als kopregel, met Engelse vertaalcache.
+              ('fact_title', 'VARCHAR(100) NULL'), ('fact_title_en', 'VARCHAR(100) NULL')),
     'quality_awards': (('fact_mark', 'BOOLEAN NULL'), ('fact_has_source', 'BOOLEAN NULL'),
                        ('fact_link_findable', 'BOOLEAN NULL'), ('fact_has_location', 'BOOLEAN NULL'),
                        ('fact_on_topic', 'BOOLEAN NULL'), ('fact_is_new', 'BOOLEAN NULL')),

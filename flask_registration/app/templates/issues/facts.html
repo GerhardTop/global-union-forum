@@ -62,16 +62,19 @@
       {% set case = conduct_cases.get(fact.id) %}
       {% set c_removed = case is not none and case.removes_from_thread %}
       {% set is_own = current_user.is_authenticated and fact.user_id == current_user.id %}
-      <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if c_removed %} gu-post--removed{% endif %}" id="post-{{ fact.id }}">
+      <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if c_removed %} gu-post--removed{% endif %}{% if fact.fact_title %} gu-fact--titled{% endif %}" id="post-{{ fact.id }}">
         <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
         <div class="gu-fact__main">
           {% include 'issues/_fact_badges.html' %}
-          <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+          {% if fact.fact_title %}<p class="gu-fact__title" lang="{{ fact.source_lang }}">{{ fact.fact_title }}</p>{% endif %}
+          <div class="gu-fact__detail">
+            <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+            <p class="gu-fact__source">{{ _('Source') }}:
+              {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
+              {% else %}{{ fact.fact_source }}{% endif %}
+            </p>
+          </div>
           <button type="button" class="gu-fact__more" data-fact-more aria-expanded="false" hidden><span data-more-on>{% if lang == 'nl' %}meer{% else %}more{% endif %}</span><span data-more-off hidden>{% if lang == 'nl' %}minder{% else %}less{% endif %}</span></button>
-          <p class="gu-fact__source">{{ _('Source') }}:
-            {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
-            {% else %}{{ fact.fact_source }}{% endif %}
-          </p>
           {% include 'forum/_fact_signals.html' %}
           <div class="gu-conduct-slot" id="conduct-{{ fact.id }}">
             {%- if c_removed or (case is not none and case.action == 'twijfel' and mod_view) %}{% with post=fact %}{% include 'forum/_conduct_notice.html' %}{% endwith %}{% endif -%}
@@ -151,20 +154,23 @@
       button.style.display = 'none';  // .gu-btn zet display, dus hidden alleen werkt niet
       select.addEventListener('change', function () { select.form.submit(); });
     }
-    // Lange feiten inkorten tot een paar regels, met per feit "meer/minder".
+    // Compacte weergave: met titel alleen de kern, anders de tekst op een paar
+    // regels; de bron (en bij een titel de hele tekst) achter "meer".
     document.querySelectorAll('.gu-factspage .gu-fact').forEach(function (fact) {
       var text = fact.querySelector('.gu-fact__text');
       var btn = fact.querySelector('[data-fact-more]');
       if (!text || !btn) return;
+      var titled = fact.classList.contains('gu-fact--titled');
       fact.classList.add('is-clamped');
-      if (text.scrollHeight - text.clientHeight > 2) {
+      var source = fact.querySelector('.gu-fact__source');
+      var reveal = titled || (text.scrollHeight - text.clientHeight > 2) || !!source;
+      if (reveal) {
         btn.hidden = false;
         btn.addEventListener('click', function () {
-          var open = fact.classList.toggle('is-textopen');
-          fact.classList.toggle('is-clamped', !open);
-          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-          btn.querySelector('[data-more-on]').hidden = open;
-          btn.querySelector('[data-more-off]').hidden = !open;
+          var collapsed = fact.classList.toggle('is-clamped');
+          btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+          btn.querySelector('[data-more-on]').hidden = !collapsed;
+          btn.querySelector('[data-more-off]').hidden = collapsed;
         });
       } else {
         fact.classList.remove('is-clamped');
