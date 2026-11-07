@@ -16,6 +16,7 @@
 
     {# Zoals de cockpit: geen kruimelpad en geen online/event-regel; de vraag linkt terug. #}
     <header class="gu-forum__threadhead">
+      <a class="gu-backlink" href="{{ url_for('issues.index') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6"/></svg>{{ _('Issues') }}</a>
       <h1 class="gu-forum__title">{{ _('Facts, research and media') }}</h1>
       <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
     </header>
@@ -66,6 +67,7 @@
         <div class="gu-fact__main">
           {% include 'issues/_fact_badges.html' %}
           <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+          <button type="button" class="gu-fact__more" data-fact-more aria-expanded="false" hidden><span data-more-on>{% if lang == 'nl' %}meer{% else %}more{% endif %}</span><span data-more-off hidden>{% if lang == 'nl' %}minder{% else %}less{% endif %}</span></button>
           <p class="gu-fact__source">{{ _('Source') }}:
             {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
             {% else %}{{ fact.fact_source }}{% endif %}
@@ -149,6 +151,25 @@
       button.style.display = 'none';  // .gu-btn zet display, dus hidden alleen werkt niet
       select.addEventListener('change', function () { select.form.submit(); });
     }
+    // Lange feiten inkorten tot een paar regels, met per feit "meer/minder".
+    document.querySelectorAll('.gu-factspage .gu-fact').forEach(function (fact) {
+      var text = fact.querySelector('.gu-fact__text');
+      var btn = fact.querySelector('[data-fact-more]');
+      if (!text || !btn) return;
+      fact.classList.add('is-clamped');
+      if (text.scrollHeight - text.clientHeight > 2) {
+        btn.hidden = false;
+        btn.addEventListener('click', function () {
+          var open = fact.classList.toggle('is-textopen');
+          fact.classList.toggle('is-clamped', !open);
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          btn.querySelector('[data-more-on]').hidden = open;
+          btn.querySelector('[data-more-off]').hidden = !open;
+        });
+      } else {
+        fact.classList.remove('is-clamped');
+      }
+    });
   })();
 </script>
 {% endblock %}

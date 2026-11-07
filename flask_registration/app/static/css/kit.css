@@ -4035,3 +4035,21 @@ body {
   }
   .gu-issuephase .gu-phasebar__step.is-done:not(:last-child)::after { background: var(--gu-globe-deep); }
 }
+
+/* Lange feiten in de lijst: ingekort tot een paar regels, met "meer/minder". */
+.gu-fact.is-clamped .gu-fact__text {
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.gu-fact__more {
+  display: inline-block; margin: 2px 0 0; padding: 0; border: 0; background: none;
+  cursor: pointer; font: inherit; font-size: 0.8125rem; color: var(--gu-globe-deep);
+}
+.gu-fact__more[hidden] { display: none; }
+.gu-fact__more:hover { text-decoration: underline; }
+/* Teruglink naar het vraagstukken-overzicht, boven de titel. */
+.gu-backlink {
+  display: inline-flex; align-items: center; gap: 6px; margin: 0 0 10px;
+  font-size: 0.875rem; color: var(--gu-fg-3); text-decoration: none;
+}
+.gu-backlink:hover { color: var(--gu-globe-deep); }
+.gu-backlink svg { flex: none; }

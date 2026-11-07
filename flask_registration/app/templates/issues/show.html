@@ -16,8 +16,9 @@
 <main class="gu-forum gu-cockpit" lang="{{ lang }}" id="cockpit">
   <div class="gu-cockpit__inner">
 
-    {# P7: geen kruimelpad en geen detailregel; terug via het menu "Denk mee". #}
+    {# Teruglink naar het overzicht boven de titel; geen volledig kruimelpad. #}
     <header class="gu-cockpit__head">
+      <a class="gu-backlink" href="{{ url_for('issues.index') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6"/></svg>{{ _('Issues') }}</a>
       <div class="gu-cockpit__titlerow">
         <h1 class="gu-forum__title" lang="{{ issue.lang or lang }}">{{ issue.title }}{% if issue.is_closed %} <span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}</h1>
         {% if current_user.is_authenticated %}
@@ -94,6 +95,7 @@
             <div class="gu-fact__main">
               {% include 'issues/_fact_badges.html' %}
               <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+              <button type="button" class="gu-fact__more" data-fact-more aria-expanded="false" hidden><span data-more-on>{% if lang == 'nl' %}meer{% else %}more{% endif %}</span><span data-more-off hidden>{% if lang == 'nl' %}minder{% else %}less{% endif %}</span></button>
               {% if fact.fact_source %}
               <p class="gu-fact__source">{{ _('Source') }}:
                 {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
@@ -223,6 +225,7 @@
       root.querySelectorAll('[data-panel]').forEach(function (panel) {
         panel.classList.toggle('is-shown', panel.dataset.panel === name);
       });
+      clampFacts();
     }
     tabs.forEach(function (tab, i) {
       tab.addEventListener('click', function () { show(tab.dataset.tab); });
@@ -274,6 +277,30 @@
     // "Toon meer": in de kolom een handvol, in de grote weergave ongeveer 15;
     // het pijltje laadt er steeds een stap bij en verdwijnt als er niets meer is.
     var BIG = 15;
+    // Lange feiten in de lijst inkorten tot een paar regels, met per feit een
+    // kleine schakelaar "meer/minder"; alleen tonen als de tekst echt langer is.
+    function clampFacts() {
+      root.querySelectorAll('.gu-cockpit__facts .gu-fact').forEach(function (fact) {
+        if (fact.hidden || fact.dataset.clampReady) return;
+        var text = fact.querySelector('.gu-fact__text');
+        var btn = fact.querySelector('[data-fact-more]');
+        if (!text || !btn) return;
+        fact.classList.add('is-clamped');
+        if (text.scrollHeight - text.clientHeight > 2) {
+          btn.hidden = false;
+          btn.addEventListener('click', function () {
+            var open = fact.classList.toggle('is-textopen');
+            fact.classList.toggle('is-clamped', !open);
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            btn.querySelector('[data-more-on]').hidden = open;
+            btn.querySelector('[data-more-off]').hidden = !open;
+          });
+        } else {
+          fact.classList.remove('is-clamped');
+        }
+        fact.dataset.clampReady = '1';
+      });
+    }
     var lists = Array.prototype.slice.call(root.querySelectorAll('[data-more-list]'));
     function showList(list, n) {
       var items = list.children, more = list.parentNode.querySelector('[data-more]');
@@ -290,13 +317,14 @@
       showList(list, baseCount(list));
       var more = list.parentNode.querySelector('[data-more]');
       if (more) more.addEventListener('click', function () {
-        var step = list.closest('.is-expanded') ? BIG : 5;
+        var step = list.closest('.is-expanded') ? BIG : 10;
         showList(list, Number(list.dataset.shown) + step);
+        clampFacts();
       });
     });
     // Vergroten: één paneel groot onder de fase-indicator, de rest weg; het
     // verklein-icoon naast de plus (of Escape) gaat terug.
-    function resetLists() { lists.forEach(function (list) { showList(list, baseCount(list)); }); }
+    function resetLists() { lists.forEach(function (list) { showList(list, baseCount(list)); }); clampFacts(); }
     function collapse() {
       var was = root.querySelector('[data-panel].is-expanded [data-expand]');
       root.classList.remove('gu-cockpit--expanded');
