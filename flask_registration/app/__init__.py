@@ -834,7 +834,9 @@ def create_app():
         """Inject babel utilities and current language into templates."""
         return dict(
             _=gettext,
-            lang=session.get('lang', 'nl'),
+            # Dezelfde taal als gettext kiest (sessie, anders Accept-Language),
+            # zodat losse NL/EN-teksten in templates niet botsen met de chrome.
+            lang=get_locale(),
             LANGUAGES={'en': 'English', 'nl': 'Nederlands'}
         )
 
