@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 from app.demo_seed import (_people, _post, _fact_mark, _issue, _proposal,
                            _support, _link_fact)
 
-_TITLE = ('VOORBEELD: Hoe maken we wereldwijde belastingafspraken voor '
+_TITLE = ('Hoe maken we wereldwijde belastingafspraken voor '
           'multinationals eerlijk en afdwingbaar?')
 
 _INTRO = (
