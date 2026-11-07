@@ -1,6 +1,6 @@
 """Een uitgebreid voorbeeld-vraagstuk voor een test met echte gebruikers.
 
-Eén vraagstuk met een titel die met VOORBEELD begint, een ruime toelichting,
+Eén vraagstuk met een ruime toelichting,
 ongeveer tien feiten met een bron en een korte duiding, één rijk uitgewerkt
 voorstel met meerdere versies en reacties, en een lange discussie tot vier
 lagen diep met per deelnemer een eigen schrijfstijl. De inhoud staat in het
@@ -85,7 +85,7 @@ def seed_demo_voorbeeld(force=False):
     from app import db
     from app.models import Issue
 
-    if Issue.query.filter_by(title=_TITLE).first() is not None:
+    if Issue.query.filter(Issue.title.in_([_TITLE, 'VOORBEELD: ' + _TITLE])).first() is not None:
         if not force:
             return 'Voorbeeld stond er al; niets gedaan (gebruik --force om opnieuw te maken).'
         _remove(db)
@@ -181,11 +181,16 @@ def seed_demo_voorbeeld(force=False):
 
 
 def _remove(db):
+    from app.models import Issue
+    # Ook de oude titel ("VOORBEELD: ...") opruimen, zodat het hernoemen geen
+    # tweede vraagstuk achterlaat, en meteen eventuele dubbelen.
+    for issue in Issue.query.filter(Issue.title.in_([_TITLE, 'VOORBEELD: ' + _TITLE])).all():
+        _remove_issue(db, issue)
+
+
+def _remove_issue(db, issue):
     from app.models import (Issue, IssueProposal, IssueProposalVersion, IssueProposalSupport,
                             IssueProposalVote, IssueProposalFact, Post, Thread, QualityAward)
-    issue = Issue.query.filter_by(title=_TITLE).first()
-    if issue is None:
-        return
     thread_id = issue.thread_id
     prop_ids = [p.id for p in IssueProposal.query.filter_by(issue_id=issue.id)]
     post_ids = [p.id for p in Post.query.filter_by(thread_id=thread_id)] if thread_id else []
@@ -202,6 +207,11 @@ def _remove(db):
         for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion):
             model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
         IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
+    # Volgers en eventdagen verwijzen ook naar het vraagstuk.
+    from app import issue_lifecycle
+    from app.models import IssueEventDay
+    issue_lifecycle.delete_follows(issue_ids=[issue.id])
+    IssueEventDay.query.filter_by(issue_id=issue.id).delete(synchronize_session=False)
     issue.thread_id = None
     db.session.flush()
     Issue.query.filter_by(id=issue.id).delete(synchronize_session=False)

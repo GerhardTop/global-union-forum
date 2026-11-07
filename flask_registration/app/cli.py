@@ -43,7 +43,7 @@ def seed_demo_issues(force):
 @click.command('seed-demo-voorbeeld')
 @click.option('--force', is_flag=True, help='Eerst het bestaande voorbeeld weg, dan opnieuw maken.')
 def seed_demo_voorbeeld(force):
-    """Maak een uitgebreid voorbeeld-vraagstuk (VOORBEELD) voor een test met echte gebruikers."""
+    """Maak een uitgebreid voorbeeld-vraagstuk voor een test met echte gebruikers."""
     from app.demo_voorbeeld import seed_demo_voorbeeld as run
     click.echo(run(force=force))
 

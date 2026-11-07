@@ -360,6 +360,11 @@ def _remove_demo(db):
         for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion):
             model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
         IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
+    # Volgers en eventdagen verwijzen ook naar de vraagstukken.
+    from app import issue_lifecycle
+    from app.models import IssueEventDay
+    issue_lifecycle.delete_follows(issue_ids=issue_ids)
+    IssueEventDay.query.filter(IssueEventDay.issue_id.in_(issue_ids)).delete(synchronize_session=False)
     for issue in issues:
         issue.thread_id = None
     db.session.flush()
