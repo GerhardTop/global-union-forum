@@ -359,7 +359,7 @@ def test_cockpit_anonymous(app, db, make_user):
     issues.backfill()
     db.session.refresh(proposal)
     body = _req(_client(app), 'GET', f'/vraagstuk/{proposal.issue_id}').get_data(as_text=True)
-    assert 'om je stemrecht te zien.' in body
+    assert '>Log in</a> om je stemrecht te zien.' in body
     assert 'id="composer"' not in body and 'Nieuw voorstel doen' not in body
 
 

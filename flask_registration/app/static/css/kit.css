@@ -3424,7 +3424,7 @@ body {
 .gu-cockpit__proposallist { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 10px; }
 .gu-cockpit__proposal { display: flex; flex-direction: column; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid var(--gu-border); }
 .gu-cockpit__proposal:last-child { border-bottom: 0; padding-bottom: 0; }
-.gu-cockpit__proposal a { font-weight: 600; color: var(--gu-fg-1); text-decoration: none; overflow-wrap: anywhere; }
+.gu-cockpit__proposal a { font-weight: 400; color: var(--gu-fg-1); text-decoration: none; overflow-wrap: anywhere; }
 .gu-cockpit__proposal a:hover { color: var(--gu-globe-deep); }
 .gu-cockpit__newproposal { width: 100%; justify-content: center; }
 .gu-cockpit__rightsline { margin: 8px 0; font-size: 0.875rem; color: var(--gu-fg-2); }
