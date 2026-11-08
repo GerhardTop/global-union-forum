@@ -38,7 +38,7 @@ msgid "Participate"
 msgstr "Participate"
 
 msgid "Join the thinking"
-msgstr "Join the thinking"
+msgstr "Have your say"
 
 msgid "Amsterdam, The Netherlands"
 msgstr "Amsterdam, The Netherlands"
