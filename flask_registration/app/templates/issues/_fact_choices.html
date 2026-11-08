@@ -14,7 +14,7 @@
         <input type="checkbox" name="fact_ids" value="{{ fact.id }}"{% if fact.id in chosen %} checked{% endif %}>
         <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ choice_labels.get(fact.fact_direction, '') }}</span>
         <span class="gu-factchoices__text" lang="{{ fact.source_lang }}">{{ fact.body | truncate(180) }}</span>
-        {% include 'issues/_fact_badges.html' %}
+        {% with hide_report=true %}{% include 'issues/_fact_badges.html' %}{% endwith %}
       </label>
     </li>
     {% endfor %}

@@ -139,6 +139,7 @@
       <button type="button" class="gu-post__action gu-stance__btn gu-stance__btn--{{ s }}{% if mine == s %} is-mine{% endif %}"
               data-stance="{{ s }}" aria-pressed="{{ 'true' if mine == s else 'false' }}"
               {% if not can_stance %}disabled{% endif %}>
+        {% if s == 'eens' %}<svg class="gu-act-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11v9H4v-9z"/><path d="M7 11l4-7a2 2 0 0 1 2 1v4h5a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 16.8 20H7"/></svg>{% else %}<svg class="gu-act-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 13V4h3v9z"/><path d="M17 13l-4 7a2 2 0 0 1-2-1v-4H6a2 2 0 0 1-2-2.3l1.2-6A2 2 0 0 1 7.2 4H17"/></svg>{% endif %}
         <span class="gu-stance__label">{{ label }}</span>
         <span class="gu-stance__count">{{ counts[s] }}</span>
       </button>
@@ -181,7 +182,7 @@
     {% if current_user.can_contribute() and not thread.is_closed and not is_own and not c_removed %}
     <button class="gu-post__action gu-post__reply-btn"
             data-target="reply-form-{{ post.id }}">
-      {% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
+      <svg class="gu-act-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/></svg>{% if lang == 'nl' %}Reageer{% else %}Reply{% endif %}
     </button>
     {% endif %}
 
@@ -222,7 +223,7 @@
       <span class="gu-post__action gu-post__action--ghost" aria-disabled="true">{% if lang == 'nl' %}Gemeld{% else %}Reported{% endif %}</span>
       {% else %}
       <details class="gu-post__report">
-        <summary class="gu-post__action gu-post__action--ghost">{% if lang == 'nl' %}Melden{% else %}Report{% endif %}</summary>
+        <summary class="gu-post__action gu-post__action--ghost"><svg class="gu-act-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4a1 1 0 0 1 1-1h11l-2 4 2 4H6"/><path d="M5 21v-5"/></svg>{% if lang == 'nl' %}Melden{% else %}Report{% endif %}</summary>
         <form method="POST" action="{{ url_for('forum.forum_report_post', post_id=post.id) }}" class="gu-report">
           {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
           <input type="hidden" name="next" value="{{ return_path or request.path }}#post-{{ post.id }}">

@@ -103,3 +103,18 @@ def test_report_button_shows_for_others_not_self(app, db):
     assert 'Melden' in seen_by_other
     seen_by_author = _req(_client(app, author), 'GET', f'/forum/{t.id}').get_data(as_text=True)
     assert 'Melden' not in seen_by_author
+
+
+def test_report_a_fact(app, db):
+    from app.models import FACT_KIND
+    author, reporter = _user(db), _user(db)
+    t, op = _thread_with_post(db, author)
+    fact = Post(thread_id=t.id, user_id=author.id, author_name='', author_username=author.username,
+                body='Een feit.', source_lang='nl', kind=FACT_KIND, fact_direction='voor',
+                fact_source='https://example.org/bron')
+    db.session.add(fact)
+    db.session.commit()
+    r = _req(_client(app, reporter), 'POST', f'/forum/bijdrage/{fact.id}/melden',
+             data={'reason': 'de bron klopt niet'})
+    assert r.status_code == 302
+    assert PostReport.query.filter_by(post_id=fact.id).count() == 1

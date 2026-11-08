@@ -2611,6 +2611,19 @@ body {
 .gu-report__lbl { font-size: 0.8125rem; color: var(--gu-fg-2); }
 .gu-report__ta { font: inherit; font-size: 0.875rem; line-height: 1.45; border: 1px solid var(--gu-border); border-radius: 8px; padding: 8px 10px; resize: vertical; color: var(--gu-fg-1); background: var(--gu-paper, #fff); }
 .gu-report__send { align-self: flex-start; }
+.gu-post__action { display: inline-flex; align-items: center; gap: 6px; border-color: transparent; }
+.gu-act-ico { width: 15px; height: 15px; flex: 0 0 auto; stroke: currentColor; stroke-width: 1.9; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.gu-stance__btn { border-color: transparent; }
+.gu-stance__btn--eens.is-mine, .gu-stance__btn--oneens.is-mine { border-color: transparent; }
+.gu-factreport { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; padding: 0; border: 0; background: none; color: var(--gu-fg-3); cursor: pointer; }
+.gu-factreport > svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.gu-factreport:hover { color: var(--gu-fg-2); }
+.gu-factreport.is-done { cursor: default; }
+.gu-factreport.is-done > svg { fill: currentColor; stroke: none; }
+.gu-factreport-wrap { display: inline-flex; position: relative; }
+.gu-factreport-wrap > summary { list-style: none; cursor: pointer; }
+.gu-factreport-wrap > summary::-webkit-details-marker { display: none; }
+.gu-report--fact { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; right: auto; width: 300px; max-width: calc(100vw - 48px); margin-top: 0; background: var(--gu-paper, #fff); border: 1px solid var(--gu-border); border-radius: 10px; box-shadow: 0 8px 24px rgba(15,25,35,.12); padding: 12px; }
 .gu-post__action--ghost {
   border-color: transparent;
   color: var(--gu-fg-3);
