@@ -63,10 +63,12 @@
       {% set c_removed = case is not none and case.removes_from_thread %}
       {% set is_own = current_user.is_authenticated and fact.user_id == current_user.id %}
       <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if c_removed %} gu-post--removed{% endif %}{% if fact.fact_title %} gu-fact--titled{% endif %}" id="post-{{ fact.id }}">
-        <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
+        <div class="gu-fact__topline">
+          <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
+          {% include 'issues/_fact_badges.html' %}
+        </div>
         <div class="gu-fact__main">
           {% if fact.fact_title %}<p class="gu-fact__title" lang="{{ fact.source_lang }}">{{ fact.fact_title }}</p>{% endif %}
-          {% include 'issues/_fact_badges.html' %}
           <div class="gu-fact__detail">
             <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
             <p class="gu-fact__source">{{ _('Source') }}:

@@ -3619,23 +3619,24 @@ body {
 .gu-issuelist__phase.is-closed { color: var(--gu-fg-3); }
 
 /* ── Polijstronde P2: het kwaliteitsmerk en het media-label bij een feit ─── */
-.gu-fact__badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 4px; }
+.gu-fact__badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.gu-fact__topline { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .gu-fact__media {
   font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
   padding: 1px 7px; border-radius: 999px;
   color: var(--gu-fg-2); background: var(--gu-bg-soft); border: 1px solid var(--gu-border, rgba(0,0,0,0.12));
 }
 .gu-factmark {
-  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  display: inline-flex; align-items: center; justify-content: center;
   width: 16px; height: 16px; border-radius: 50%;
   color: #11633d; background: #e3f3ea; cursor: help;
 }
 .gu-factmark > svg { width: 11px; height: 11px; }
 .gu-factmark:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
 .gu-factmark__tip {
-  position: absolute; z-index: 20; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+  position: absolute; z-index: 20; left: 0; right: auto; top: calc(100% + 6px); transform: none;
   display: none; flex-direction: column; gap: 4px;
-  width: max-content; max-width: min(280px, 80vw);
+  width: 280px; max-width: calc(100vw - 64px);
   padding: 10px 12px; border-radius: 8px;
   font-size: 0.8125rem; font-weight: 400; line-height: 1.4; text-align: left; cursor: default;
   color: var(--gu-fg-1); background: var(--gu-bg, #fff);
@@ -3645,9 +3646,7 @@ body {
 .gu-factmark__list { display: flex; flex-direction: column; gap: 2px; padding-left: 2px; }
 .gu-factmark__list > span::before { content: "\2713\00a0"; color: var(--gu-success, #2e8540); font-weight: 700; }
 .gu-factmark__note { color: var(--gu-fg-3); font-size: 0.75rem; }
-@media (max-width: 640px) {
-  .gu-factmark__tip { left: 0; transform: none; }
-}
+/* De tooltip opent onder-links, dus hij valt niet buiten de smalle feitkolom. */
 
 /* ── Polijstronde P3: cockpit (kop, toelichting, volgen, vergroten, +) ──── */
 .gu-cockpit__titlerow { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }

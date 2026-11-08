@@ -840,6 +840,18 @@ def create_app():
             LANGUAGES={'en': 'English', 'nl': 'Nederlands'}
         )
 
+    @app.context_processor
+    def inject_asset_version():
+        """Versie-parameter op statische bestanden, zodat een CSS-wijziging na
+        een deploy meteen bij terugkerende bezoekers aankomt (cache-bust)."""
+        def static_v(filename):
+            try:
+                mtime = int(os.path.getmtime(os.path.join(app.static_folder, filename)))
+            except OSError:
+                mtime = 0
+            return url_for('static', filename=filename, v=mtime)
+        return {'static_v': static_v}
+
     with app.app_context():
         db.create_all()
         _migrate_columns()
