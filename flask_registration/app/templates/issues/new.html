@@ -164,7 +164,7 @@
         <span>{{ _('Show the interim result during voting') }}</span>
       </label>
       <label class="gu-join__check">
-        <input type="checkbox" name="final_vote" value="1"{% if fresh or fd.get('final_vote') == '1' %} checked{% endif %}>
+        <input type="checkbox" name="final_vote" value="1"{% if fd.get('final_vote') == '1' %} checked{% endif %}>
         <span>{{ _('End with a summary proposal') }}</span>
       </label>
 
