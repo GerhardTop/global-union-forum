@@ -212,9 +212,19 @@ def _remove_issue(db, issue):
     from app.models import IssueEventDay
     issue_lifecycle.delete_follows(issue_ids=[issue.id])
     IssueEventDay.query.filter_by(issue_id=issue.id).delete(synchronize_session=False)
+    # Een vraagstuk uit de backfill deelt zijn gesprek met een oud voorstel:
+    # dat voorstel (met stemmen en rondes) gaat mee weg. Een oud voorstel met
+    # een eigen gesprek wordt alleen losgekoppeld.
+    from app import proposals
+    from app.models import Proposal
+    Proposal.query.filter(Proposal.issue_id == issue.id, Proposal.thread_id != thread_id) \
+        .update({Proposal.issue_id: None}, synchronize_session=False)
+    issue_id = issue.id
     issue.thread_id = None
     db.session.flush()
-    Issue.query.filter_by(id=issue.id).delete(synchronize_session=False)
+    if thread_id:
+        proposals.delete_for_threads([thread_id])
+    Issue.query.filter_by(id=issue_id).delete(synchronize_session=False)
     if thread_id:
         Thread.query.filter_by(id=thread_id).delete(synchronize_session=False)
     db.session.commit()

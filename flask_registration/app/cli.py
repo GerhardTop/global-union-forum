@@ -4,6 +4,8 @@ Beheer-commando's voor de flask CLI.
     flask --app run reset-content              # dry-run: toont alleen wat er zou gebeuren
     flask --app run reset-content --list-users # idem, plus de te verwijderen accounts
     flask --app run reset-content --execute    # verwijdert echt (vraagt om bevestiging)
+    flask --app run remove-issue TEST          # dry-run: toont vraagstukken waarvan de titel met TEST begint
+    flask --app run remove-issue TEST --execute  # verwijdert ze echt (vraagt om bevestiging)
 
 reset-content verwijdert alle gebruikers en alle content, behalve:
   * adminaccounts: is_admin in de database, plus het account met ADMIN_EMAIL
@@ -30,6 +32,7 @@ def register_cli(app):
     app.cli.add_command(proposals_tick)
     app.cli.add_command(seed_demo_issues)
     app.cli.add_command(seed_demo_voorbeeld)
+    app.cli.add_command(remove_issue)
 
 
 @click.command('seed-demo-issues')
@@ -46,6 +49,40 @@ def seed_demo_voorbeeld(force):
     """Maak een uitgebreid voorbeeld-vraagstuk voor een test met echte gebruikers."""
     from app.demo_voorbeeld import seed_demo_voorbeeld as run
     click.echo(run(force=force))
+
+
+@click.command('remove-issue')
+@click.argument('prefix')
+@click.option('--execute', is_flag=True, help='Echt verwijderen. Zonder deze vlag: alleen tonen wat er zou verdwijnen.')
+@click.option('--yes', is_flag=True, help='Sla de bevestigingsvraag over (alleen met --execute).')
+def remove_issue(prefix, execute, yes):
+    """Verwijder vraagstukken waarvan de titel met PREFIX begint, met alles eraan."""
+    from app import db
+    from app.models import Issue, IssueProposal, Post
+    from app.demo_voorbeeld import _remove_issue
+
+    prefix = prefix.strip()
+    if len(prefix) < 3:
+        raise click.ClickException('Geef minstens 3 tekens van de titel op.')
+    found = (Issue.query.filter(Issue.title.startswith(prefix, autoescape=True))
+             .order_by(Issue.id).all())
+    if not found:
+        click.echo(f'Geen vraagstuk gevonden waarvan de titel met "{prefix}" begint.')
+        return
+    click.echo(f'Database: {db.engine.url.render_as_string(hide_password=True)}')
+    for issue in found:
+        posts = Post.query.filter_by(thread_id=issue.thread_id).count() if issue.thread_id else 0
+        proposals = IssueProposal.query.filter_by(issue_id=issue.id).count() + len(issue.proposals)
+        click.echo(f'  #{issue.id:<5} {str(issue.kind):<7} "{issue.title}"  ({posts} berichten, {proposals} voorstellen)')
+    if not execute:
+        click.echo('\nDry-run: er is niets verwijderd. Voeg --execute toe om deze te verwijderen.')
+        return
+    if not yes and not click.confirm(f'\n{len(found)} vraagstuk(ken) met alles eraan definitief verwijderen?'):
+        click.echo('Afgebroken, niets verwijderd.')
+        return
+    for issue in found:
+        _remove_issue(db, issue)
+    click.echo(f'{len(found)} vraagstuk(ken) verwijderd.')
 
 
 @click.command('voorstellen-tick')
