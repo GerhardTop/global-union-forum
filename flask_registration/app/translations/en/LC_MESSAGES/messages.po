@@ -2270,3 +2270,9 @@ msgstr "Facts page with filters and sorting"
 
 msgid "Proposals page with filters and sorting"
 msgstr "Proposals page with filters and sorting"
+
+msgid "Give a reason for your report."
+msgstr "Give a reason for your report."
+
+msgid "Thanks, your report has been sent to a moderator."
+msgstr "Thanks, your report has been sent to a moderator."

@@ -2603,6 +2603,14 @@ body {
   color: var(--gu-fg-1);
 }
 .gu-post__action:disabled { opacity: 0.5; cursor: default; }
+.gu-post__report { display: inline-flex; flex-direction: column; }
+.gu-post__report[open] { flex-basis: 100%; }
+.gu-post__report > summary { list-style: none; cursor: pointer; }
+.gu-post__report > summary::-webkit-details-marker { display: none; }
+.gu-report { margin-top: 8px; display: flex; flex-direction: column; gap: 7px; max-width: 420px; }
+.gu-report__lbl { font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-report__ta { font: inherit; font-size: 0.875rem; line-height: 1.45; border: 1px solid var(--gu-border); border-radius: 8px; padding: 8px 10px; resize: vertical; color: var(--gu-fg-1); background: var(--gu-paper, #fff); }
+.gu-report__send { align-self: flex-start; }
 .gu-post__action--ghost {
   border-color: transparent;
   color: var(--gu-fg-3);

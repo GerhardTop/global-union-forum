@@ -12,6 +12,7 @@ from app.forms import ForumActionForm, ForumReplyForm
 from app.models import (FACT_DIRECTIONS, FACT_KIND, FACT_TYPES, STANCES, QUALITY_CRITERIA, User, Thread, Post,
                         PostLike, QualityAward, QualityReport, time_ago)
 from app import conduct, quality
+from app.models import PostReport
 from app.utils import _pop_form_state, _stash_form_state, safe_next
 
 forum_bp = Blueprint("forum", __name__)
@@ -839,6 +840,12 @@ def _thread_context(thread, branch_root_id=None):
             QualityReport.reporter_id == current_user.id,
             QualityReport.award_id.in_([a.id for a in quality_awards.values()]),
             QualityReport.decision.is_(None)).all()}
+    my_reported_ids = set()
+    if current_user.is_authenticated and every_id:
+        my_reported_ids = {r.post_id for r in PostReport.query.filter(
+            PostReport.reporter_id == current_user.id,
+            PostReport.post_id.in_(every_id),
+            PostReport.decision.is_(None)).all()}
     my_stances = {}
     if current_user.is_authenticated and all_ids:
         my_stances = {
@@ -890,6 +897,7 @@ def _thread_context(thread, branch_root_id=None):
         my_stances=my_stances,
         quality_awards=quality_awards,
         my_quality_reports=my_quality_reports,
+        my_reported_ids=my_reported_ids,
         auto_translate=_auto_translate(),
     )
 
@@ -1386,6 +1394,29 @@ def forum_quality_status(post_id):
                                     return_path=url_for('forum.forum_thread', thread_id=post.thread_id)),
         }
     return jsonify(result)
+
+
+@forum_bp.route('/forum/bijdrage/<int:post_id>/melden', methods=['POST'])
+@login_required
+@limiter.limit("10 per hour", key_func=lambda: f"forum-report-user-{current_user.get_id()}")
+def forum_report_post(post_id):
+    """Meld een bijdrage of feit aan een moderator, met een verplichte reden.
+    Niet op een eigen bijdrage, één open melding per persoon."""
+    _require_csrf()
+    post = Post.query.get_or_404(post_id)
+    if post.user_id == current_user.id or conduct.is_removed_for(post, current_user):
+        abort(403)
+    nxt = safe_next(request.form.get('next'), url_for('forum.forum_thread', thread_id=post.thread_id))
+    reason = (request.form.get('reason') or '').strip()
+    if not reason:
+        flash(gettext('Give a reason for your report.'), 'error')
+        return redirect(nxt)
+    already = PostReport.query.filter_by(post_id=post.id, reporter_id=current_user.id, decision=None).first()
+    if already is None:
+        db.session.add(PostReport(post_id=post.id, reporter_id=current_user.id, reason=reason[:500]))
+        db.session.commit()
+        flash(gettext('Thanks, your report has been sent to a moderator.'), 'success')
+    return redirect(nxt)
 
 
 @forum_bp.route('/forum/kwaliteit/<int:post_id>/melden', methods=['POST'])
