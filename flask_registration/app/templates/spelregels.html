@@ -23,7 +23,7 @@
 
     {% if not current_user.is_authenticated %}
       <p>{{ _('When you sign up, you agree to the conduct rules.') }}</p>
-      <a class="gu-btn gu-btn--primary" href="{{ url_for('social.aanmelden') }}">{{ _('Join the conversation') }} <span class="gu-arrow"></span></a>
+      <a class="gu-btn gu-btn--primary" href="{{ url_for('social.aanmelden') }}">{{ _('Join the thinking') }} <span class="gu-arrow"></span></a>
     {% elif current_user.rules_accepted_at %}
       <p class="gu-rules__accepted">
         {{ _('You accepted the conduct rules on %(date)s.', date=current_user.rules_accepted_at.strftime('%d-%m-%Y' if lang == 'nl' else '%d %B %Y')) }}
