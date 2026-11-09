@@ -234,7 +234,8 @@ class TestConduct:
         fact = _fact('Feit naast het onderwerp.')
         mod = make_user('moderator')
         block = _facts_block(_get(app, mod, f'/forum/{t.id}').get_data(as_text=True))
-        assert f'/forum/handhaving/{fact.id}/verplaatsen' in block
+        # Fase 2c: geen paneel meer in het gesprek, de route blijft (voor het overzicht).
+        assert f'/forum/handhaving/{fact.id}/verplaatsen' not in block
         assert _req(_client(app, mod), 'POST', f'/forum/handhaving/{fact.id}/verplaatsen',
                     data={'rule': 'onderwerp', 'note': 'Gaat niet over de stelling.'}).status_code == 302
         assert ConductCase.query.filter_by(post_id=fact.id).one().action == 'verplaatst'

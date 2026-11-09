@@ -193,7 +193,7 @@ def facts(issue_id):
     listed = fact_signals.listing(visible, direction, order)
     my_reported_ids = _reported_fact_ids([f.id for f in visible])
     ids = [f.id for f in listed]
-    is_mod = conduct.mod_view(current_user)  # P7: niet als de moderator als deelnemer kijkt
+    is_mod = conduct.mod_view(current_user)
     return render_template(
         'issues/facts.html', issue=issue, thread=thread, facts=listed[:shown], listed_count=len(listed),
         total=len(visible), shown=shown, direction=direction, order=order,

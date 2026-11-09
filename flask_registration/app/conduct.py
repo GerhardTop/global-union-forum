@@ -28,20 +28,11 @@ from app.models import (CONDUCT_RULES, REMOVING_ACTIONS, ConductCase, ConductObj
 AI_RULES = {'respect': 'respect', 'on_topic': 'onderwerp'}
 
 
-PARTICIPANT_VIEW_KEY = 'participant_view'
-
-
-def participant_view():
-    """Polijststap P7: een moderator bekijkt de pagina's als deelnemer (een
-    sessievlag); dan zijn alle moderator-aantekeningen verborgen."""
-    from flask import has_request_context, session
-    return has_request_context() and bool(session.get(PARTICIPANT_VIEW_KEY))
-
-
 def mod_view(user):
-    """Ziet deze gebruiker nu de moderator-aantekeningen? Een moderator,
-    tenzij die de pagina's als deelnemer bekijkt."""
-    return getattr(user, 'is_authenticated', False) and user.can_moderate() and not participant_view()
+    """Is deze gebruiker een ingelogde moderator? Voor de werkbalk van een
+    gesprek, de link naar gesloten gesprekken en de betwiste feiten. Het
+    beoordelen van bijdragen loopt via het moderator-overzicht (fase 2c)."""
+    return getattr(user, 'is_authenticated', False) and user.can_moderate()
 
 
 def rule_short(rule):
@@ -65,11 +56,12 @@ def rule_label(rule):
 # ── Zichtbaarheid ────────────────────────────────────────────────────────
 
 def is_privileged(post, user):
-    """De auteur en moderators zien een verplaatste of verborgen bijdrage nog
-    (een moderator niet als die als deelnemer kijkt, polijststap P7)."""
+    """Alleen de auteur ziet een verplaatste of verborgen bijdrage nog. Een
+    moderator ziet het gesprek zoals een deelnemer (fase 2c) en beoordeelt
+    via het moderator-overzicht."""
     if not getattr(user, 'is_authenticated', False):
         return False
-    return post.user_id == user.id or mod_view(user)
+    return post.user_id == user.id
 
 
 def removed_for(post, case, user):
@@ -95,8 +87,6 @@ def removed_post_ids(user, thread_ids=None):
          .filter(ConductCase.action.in_(REMOVING_ACTIONS)))
     if thread_ids is not None:
         q = q.filter(Post.thread_id.in_(list(thread_ids)))
-    if getattr(user, 'is_authenticated', False) and user.can_moderate():
-        return set(), set()
     uid = user.id if getattr(user, 'is_authenticated', False) else None
     removed, hidden_threads = set(), set()
     for post_id, author_id, thread_id, is_op in q:

@@ -114,9 +114,9 @@
   {% if not is_deleted %}
 
   {# Vaste plek voor de handhavingsuitkomst, zodat de statuspoll hem kan vullen.
-     Alleen voor de auteur en moderators; een twijfelmarkering alleen voor moderators. #}
+     Alleen voor de auteur; moderators beoordelen via het moderator-overzicht. #}
   <div class="gu-conduct-slot" id="conduct-{{ post.id }}">
-    {%- if c_removed or (case is not none and case.action == 'twijfel' and mod_view) %}{% include 'forum/_conduct_notice.html' %}{% endif -%}
+    {%- if c_removed %}{% include 'forum/_conduct_notice.html' %}{% endif -%}
   </div>
 
   {# Vaste plek voor het oordeel, zodat de statuspoll hem kan vullen (punt 8). #}
@@ -124,7 +124,6 @@
 
   {% if mod_view and not is_own %}
   {% if not c_removed %}{% include 'forum/_quality_mod.html' %}{% endif %}
-  {% include 'forum/_conduct_mod.html' %}
   {% endif %}
 
   <footer class="gu-post__actions">

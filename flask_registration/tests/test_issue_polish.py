@@ -22,8 +22,9 @@ Dekt per onderdeel:
   met een pijltje, geen tekst over de vroege sluiting, volgen met een
   belletje, "toon meer" alleen als er meer is), stemrecht alleen zonder
   stemrecht, de statusladder in het profiel, "Fasen beheren" alleen voor de
-  initiatiefnemer (moderators via hun weergave), niet reageren op je eigen
-  bericht, "Bekijk als deelnemer" en de korte regelnaam bij een markering.
+  initiatiefnemer (moderators via hun weergave) en niet reageren op je eigen
+  bericht. ("Bekijk als deelnemer" en de markering bij moderators zijn in
+  fase 2c vervallen: moderators beoordelen via het moderator-overzicht.)
 - P6: de fase samenvatten tussen stemmen en vervolg (alleen met final_vote),
   de tik erdoorheen, de stemming over het samenvattende voorstel in die
   fase, de vervolgfase als nazorg en de migratie van een lopende stemming.
@@ -685,58 +686,6 @@ def test_no_reply_to_your_own_post(app, db, make_user):
     # Wel op andermans reactie.
     _req(_client(app, host), 'POST', f'/forum/{issue.thread_id}', data={'body': 'Op anna.', 'parent_id': own.id})
     assert Post.query.filter_by(body='Op anna.').one().parent_id == own.id
-
-
-def _doubtful_post(db, issue, author):
-    from app.models import ConductCase
-    post = Post(thread_id=issue.thread_id, user_id=author.id, author_name='', author_username=author.username,
-                body='Een twijfelachtige bijdrage.', source_lang='nl')
-    db.session.add(post)
-    db.session.flush()
-    db.session.add(ConductCase(post_id=post.id, action='twijfel', rule='respect', source='ai',
-                               explanation='Dit klinkt persoonlijk.', explanation_lang='nl'))
-    db.session.commit()
-    return post
-
-
-def test_marking_shows_a_short_rule_name_folded_for_moderators(app, db, make_user):
-    host, anna, mod = make_user(), make_user(), make_user('moderator')
-    issue = _issue(db, host)
-    post = _doubtful_post(db, issue, anna)
-    page = _get(app, f'/vraagstuk/{issue.id}', mod)
-    slot = page.split(f'id="conduct-{post.id}"')[1].split('gu-quality-slot')[0]
-    assert '<details class="gu-conduct gu-conduct--twijfel gu-conduct--fold">' in slot
-    head = slot.split('gu-conduct__head">')[1].split('</p>')[0]
-    visible = __import__('re').sub(r'<[^>]+>', '', head)  # de volledige naam staat alleen in de tooltip
-    assert visible == 'Gemarkeerd voor een moderator · Respect' and 'title="Over het idee, niet de persoon"' in head
-    assert 'Over het idee, niet de persoon' in slot and 'Dit klinkt persoonlijk.' in slot
-
-
-def test_view_as_participant_hides_moderator_notes(app, db, make_user):
-    from app.models import ConductCase
-    host, anna, mod = make_user(), make_user(), make_user('moderator')
-    issue = _issue(db, host)
-    post = _doubtful_post(db, issue, anna)
-    moved = Post(thread_id=issue.thread_id, user_id=anna.id, author_name='', author_username=anna.username,
-                 body='Een verplaatste bijdrage.', source_lang='nl')
-    db.session.add(moved)
-    db.session.flush()
-    db.session.add(ConductCase(post_id=moved.id, action='verplaatst', rule='respect', source='ai'))
-    db.session.commit()
-    c = _client(app, mod)
-    page = _req(c, 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
-    assert 'gu-conduct--fold' in page and 'Een verplaatste bijdrage.' in page and 'gu-conduct-mod' in page
-    assert 'Bekijk als deelnemer' in page and 'aria-checked="false"' in page
-    r = _req(c, 'POST', '/weergave/deelnemer', data={'next': f'/vraagstuk/{issue.id}'})
-    assert r.status_code == 302 and r.headers['Location'].endswith(f'/vraagstuk/{issue.id}')
-    page = _req(c, 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
-    assert 'gu-conduct' not in page.split('id="panel-discussion"')[1].split('id="composer"')[0].replace('gu-conduct-slot', '')
-    assert 'Een verplaatste bijdrage.' not in page and 'aria-checked="true"' in page
-    assert 'Een twijfelachtige bijdrage.' in page  # de bijdrage zelf blijft gewoon staan
-    _req(c, 'POST', '/weergave/deelnemer', data={'next': '/gesprekken'})
-    assert 'gu-conduct--fold' in _req(c, 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
-    # Alleen voor moderators.
-    assert _req(_client(app, anna), 'POST', '/weergave/deelnemer').status_code == 403
 
 
 # ── Opmaak: de volledige pagina's en de FAQ ──────────────────────────────

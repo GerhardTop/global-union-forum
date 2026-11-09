@@ -79,11 +79,8 @@
           <button type="button" class="gu-fact__more" data-fact-more aria-expanded="false" hidden><span data-more-on>{% if lang == 'nl' %}meer{% else %}more{% endif %}</span><span data-more-off hidden>{% if lang == 'nl' %}minder{% else %}less{% endif %}</span></button>
           {% include 'forum/_fact_signals.html' %}
           <div class="gu-conduct-slot" id="conduct-{{ fact.id }}">
-            {%- if c_removed or (case is not none and case.action == 'twijfel' and mod_view) %}{% with post=fact %}{% include 'forum/_conduct_notice.html' %}{% endwith %}{% endif -%}
+            {%- if c_removed %}{% with post=fact %}{% include 'forum/_conduct_notice.html' %}{% endwith %}{% endif -%}
           </div>
-          {% if mod_view and not is_own %}
-            {% with post=fact %}{% include 'forum/_conduct_mod.html' %}{% endwith %}
-          {% endif %}
           {% if is_own and phase_open and not c_removed %}
           {% set edit_errs = (fact_errors or {}).get('edit-' ~ fact.id, {}) %}
           {% set edit_data = (fact_data or {}).get('edit-' ~ fact.id) or {'title': fact.fact_title, 'text': fact.body, 'direction': fact.fact_direction, 'source': fact.fact_source, 'type': fact.fact_type} %}

@@ -228,9 +228,15 @@ class TestAiVerdict:
         assert 'Verplaatst naar de achtergrondpagina' in own and 'Gedragsregel: Over het idee, niet de persoon.' in own
         assert case.explanation in own and 'Bezwaar maken tegen dit besluit' in own
 
-        mod = _part(_get(app, make_user('moderator'), f'/forum/{thread.id}').get_data(as_text=True), post)
-        assert 'Jij bent gewoon dom.' in mod and 'Terugplaatsen in het gesprek' in mod
-        assert 'Bezwaar maken tegen dit besluit' not in mod
+        # Fase 2c: een moderator ziet het gesprek zoals een deelnemer; terugplaatsen
+        # gaat via het moderator-overzicht.
+        mod_page = _get(app, make_user('moderator'), f'/forum/{thread.id}').get_data(as_text=True)
+        mod = _part(mod_page, post)
+        assert 'Bijdrage verplaatst wegens de gedragsregels' in mod
+        assert f'href="/achtergrond#zaak-{case.id}"' in mod
+        assert 'Jij bent gewoon dom.' not in mod_page
+        assert 'Terugplaatsen in het gesprek' not in mod_page and 'gu-conduct-mod' not in mod_page
+        assert 'Bezwaar maken tegen dit besluit' not in mod_page
 
     def test_violation_without_clear_rule_becomes_doubt(self, app, db, make_user, thread, fake_ai):
         fake_ai['verdict'] = _verdict(conduct_verdict='violation', conduct_rule='none')
@@ -264,7 +270,7 @@ class TestAiVerdict:
         assert 'Een reactie eronder.' in html
         assert html.index(f'id="post-{spam.id}"') < html.index(f'id="post-{reply.id}"')
 
-    def test_doubt_stays_visible_and_is_flagged_for_moderators(self, app, db, make_user, thread, fake_ai):
+    def test_doubt_stays_visible_and_goes_to_the_dashboard(self, app, db, make_user, thread, fake_ai):
         fake_ai['verdict'] = _verdict(**DOUBT)
         anna = make_user()
         post = _reply(app, anna, thread, 'Iets over het weer.')
@@ -274,8 +280,9 @@ class TestAiVerdict:
             assert 'Iets over het weer.' in part
             assert 'Gemarkeerd voor een moderator' not in part and 'gu-post--removed' not in part
         mod = make_user('moderator')
+        # Fase 2c: ook een moderator ziet in het gesprek geen markering, alleen de bijdrage.
         part = _part(_get(app, mod, f'/forum/{thread.id}').get_data(as_text=True), post)
-        assert 'Gemarkeerd voor een moderator' in part and 'Mogelijke overtreding van de gedragsregel: Bij het onderwerp.' in part
+        assert 'Iets over het weer.' in part and 'Gemarkeerd voor een moderator' not in part
         dash = _get(app, mod, '/moderator').get_data(as_text=True)
         assert 'Gedragsregels: twijfelgevallen (1)' in dash and 'Iets over het weer.' in dash
         assert 'Iets over het weer.' not in _get(app, None, '/achtergrond').get_data(as_text=True)
@@ -353,7 +360,8 @@ class TestThreadView:
             assert _get(app, viewer, f'/forum/{t.id}').status_code == 404
             assert f'/forum/{t.id}"' not in _get(app, viewer, '/forum').get_data(as_text=True)
         assert _get(app, anna, f'/forum/{t.id}').status_code == 200
-        assert _get(app, make_user('moderator'), f'/forum/{t.id}').status_code == 200
+        # Fase 2c: een moderator ziet het gesprek zoals een deelnemer.
+        assert _get(app, make_user('moderator'), f'/forum/{t.id}').status_code == 404
         # Op de achtergrondpagina zonder link naar het (verborgen) gesprek.
         bg = _get(app, None, '/achtergrond').get_data(as_text=True)
         card = bg[bg.index(f'id="zaak-{op.conduct_case.id}"'):]
