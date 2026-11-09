@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, redirect, url_for, request, abort, jsonify, flash, session
-from flask_babel import gettext
+from flask_babel import gettext, get_locale
 from sqlalchemy import or_
 from flask_login import login_required, current_user
 
@@ -64,20 +64,6 @@ def moderator_dashboard():
         Post.created_at < end_of_day,
     ).count()
 
-    gerhard = User.query.filter_by(email='top.gerhard@gmail.com').first()
-    if gerhard:
-        replied_thread_ids = db.session.query(Post.thread_id).filter_by(
-            user_id=gerhard.id
-        ).distinct()
-        threads_no_gerhard = (
-            Thread.query.filter_by(is_closed=False)
-            .filter(~Thread.id.in_(replied_thread_ids.scalar_subquery()))
-            .order_by(Thread.created_at.desc())
-            .all()
-        )
-    else:
-        threads_no_gerhard = Thread.query.filter_by(is_closed=False).order_by(Thread.created_at.desc()).all()
-
     recent_posts = (
         Post.query
         .filter(Post.body != '[bericht verwijderd]')
@@ -111,8 +97,24 @@ def moderator_dashboard():
     from app import facts
     fact_disputes = [(row, facts.fact_url(row.fact)) for row in facts.open_disputes() if row.fact is not None]
 
+    # Fase 2: de meldknop-meldingen (bijdragen, feiten en voorstellen), gebundeld
+    # per item, plus kengetallen en recente vraagstukken waar de moderator aan werkte.
+    from app import reports
+    from app.models import Issue
+    meldingen = reports.open_meldingen()
+    handled_total, handled_mine = reports.handled_counts(current_user)
+    oldest_at = reports.oldest_open_at()
+
     return render_template(
         'moderator/dashboard.html',
+        meldingen=meldingen,
+        mod_counts={'meldingen': len(meldingen), 'bezwaren': len(open_conduct_objections),
+                    'ai': len(doubt_cases), 'zonder': len(unjudged_posts)},
+        handled_total=handled_total,
+        handled_mine=handled_mine,
+        oldest_wait=reports.wait_bucket(oldest_at),
+        open_issues=Issue.query.filter(Issue.is_closed.is_(False)).count(),
+        recent_issues=[(issue, reports.wait_bucket(dt)) for issue, dt in reports.recent_for(current_user)],
         open_reports=open_reports,
         unjudged_posts=unjudged_posts,
         doubt_cases=doubt_cases,
@@ -126,11 +128,60 @@ def moderator_dashboard():
                           'vervolg': gettext('Follow-up')},
         active_threads=active_threads,
         posts_today=posts_today,
-        threads_no_gerhard_count=len(threads_no_gerhard),
-        threads_no_gerhard=threads_no_gerhard,
         recent_posts=recent_posts,
         closed_threads=closed_threads,
     )
+
+
+@admin_bp.route('/moderator/melding/<kind>/<int:item_id>', methods=['GET', 'POST'])
+@login_required
+def melding_beoordelen(kind, item_id):
+    """Een gemeld item beoordelen: de bijdrage of het voorstel in context, de
+    redenen van de melders, en een besluit (niets doen, verplaatsen, verbergen).
+    Verplaatsen en verbergen gelden alleen voor een bijdrage of feit."""
+    if not current_user.can_moderate():
+        abort(403)
+    from app import conduct, reports
+    kind = 'post' if kind in ('bijdrage', 'post') else 'proposal'
+    melding = reports.find(kind, item_id)
+    if melding is None:
+        abort(404)
+
+    if request.method == 'POST':
+        from app.routes.forum import _require_csrf
+        _require_csrf()
+        if kind == 'post' and melding.item.user_id == current_user.id:
+            abort(403)
+        if kind == 'proposal' and melding.item.created_by_id == current_user.id:
+            abort(403)
+        action = request.form.get('action')
+        note = (request.form.get('note') or '').strip()
+        rule = request.form.get('rule')
+        lang = str(get_locale() or 'nl')
+        if action == 'verplaatsen' and kind == 'post':
+            conduct.move(melding.item, rule if rule in ('respect', 'onderwerp') else 'respect',
+                         note, lang, actor=current_user)
+            reports.resolve(melding, 'verplaatst', note, current_user)
+        elif action == 'verbergen' and kind == 'post':
+            conduct.hide(melding.item, note, lang, actor=current_user)
+            reports.resolve(melding, 'verborgen', note, current_user)
+        elif action == 'handhaven':
+            reports.resolve(melding, 'handhaven', note, current_user)
+        else:
+            flash(gettext('Choose what to do with this report.'), 'error')
+            return redirect(url_for('admin.melding_beoordelen', kind=kind, item_id=item_id))
+        db.session.commit()
+        flash(gettext('The report has been handled.'), 'success')
+        return redirect(url_for('admin.moderator_dashboard'))
+
+    if melding.kind == 'post':
+        from app.routes.forum import post_url
+        context_url = post_url(melding.item)
+    elif melding.issue is not None:
+        context_url = url_for('issues.proposal', issue_id=melding.issue.id, proposal_id=melding.item.id)
+    else:
+        context_url = '#'
+    return render_template('moderator/melding_beoordelen.html', m=melding, context_url=context_url)
 
 
 @admin_bp.route('/admin/gebruiker/<int:user_id>/rol', methods=['POST'])

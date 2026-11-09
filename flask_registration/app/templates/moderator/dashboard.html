@@ -1,6 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Moderator Dashboard · Global Union{% endblock %}
 
+{% macro melding_row(m) %}
+{% set soort = 'voorstel' if m.kind == 'proposal' else ('feit' if m.is_fact else 'bijdrage') %}
+<div class="gu-mrow">
+  <div class="gu-mrow__body">
+    <a class="gu-mrow__title" href="{% if m.kind == 'post' %}{{ post_url(m.item) }}{% elif m.issue %}{{ url_for('issues.proposal', issue_id=m.issue.id, proposal_id=m.id) }}{% else %}#{% endif %}">{{ m.snippet }}</a>
+    <div class="gu-mrow__tags">
+      {% if m.issue %}<a class="gu-pill" href="{{ url_for('issues.show', issue_id=m.issue.id) }}" lang="{{ m.issue.lang or lang }}">{{ m.issue.title }}</a>{% endif %}
+      <span class="gu-mrow__who">{% if lang == 'nl' %}{{ soort }} van {{ m.author_name or 'anonieme deelnemer' }}{% else %}{{ soort }} by {{ m.author_name or 'anonymous' }}{% endif %}</span>
+    </div>
+    <p class="gu-mrow__reason">{% if lang == 'nl' %}Reden{% else %}Reason{% endif %}: "{{ m.reports[0].reason }}"{% if m.count > 1 %} <a href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% if lang == 'nl' %}toon alle {{ m.count }}{% else %}show all {{ m.count }}{% endif %}</a>{% endif %}</p>
+  </div>
+  <span class="gu-pill gu-pill--count">{{ m.count }} {% if lang == 'nl' %}melding{{ '' if m.count == 1 else 'en' }}{% else %}report{{ '' if m.count == 1 else 's' }}{% endif %}</span>
+  {% if m.wait %}<span class="gu-pill gu-age gu-age--{{ m.wait.sev }}">{{ m.wait[lang] }}</span>{% endif %}
+  <a class="gu-btn gu-btn--primary gu-btn--sm" href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% if lang == 'nl' %}Beoordelen{% else %}Review{% endif %}</a>
+</div>
+{% endmacro %}
+
 {% block content_outer %}{% block content %}
 <div class="gu-admin" lang="{{ lang }}">
   <div class="gu-admin__inner">
@@ -11,24 +28,53 @@
       <p class="gu-admin__links"><a href="{{ url_for('admin.language_monitor') }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}Taal-monitor{% else %}Language monitor{% endif %}</a></p>
     </div>
 
-    {# ── Overzichtsstatistieken ─────────────────────────────────── #}
-    <section class="gu-admin__section">
-      <p class="gu-eyebrow gu-eyebrow--section">Overzicht</p>
-      <div class="gu-stat-grid gu-stat-grid--3">
-        <div class="gu-stat-card gu-stat-card--info">
-          <span class="gu-stat-card__num">{{ active_threads }}</span>
-          <span class="gu-stat-card__label">Actieve gesprekken</span>
+    {# ── Kengetallen (fase 2) ───────────────────────────────────── #}
+    <div class="gu-mod">
+    <div class="gu-mod__kpis">
+      <div class="gu-kpi"><span class="gu-kpi__num gu-kpi__num--accent">{{ mod_counts.meldingen }}</span><span class="gu-kpi__lbl">Meldingen</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num">{{ mod_counts.bezwaren }}</span><span class="gu-kpi__lbl">Bezwaren</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num">{{ mod_counts.ai }}</span><span class="gu-kpi__lbl">Door de AI</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num">{{ mod_counts.zonder }}</span><span class="gu-kpi__lbl">Zonder AI-oordeel</span></div>
+      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_total }}</span><span class="gu-kpi__lbl">Behandeld totaal</span></div>
+      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_mine }}</span><span class="gu-kpi__lbl">Behandeld door jou</span></div>
+    </div>
+
+    {# ── Meldingen (meldknop) plus rechterkolom ─────────────────── #}
+    <div class="gu-mod__cols">
+      <section class="gu-mod__main">
+        <div class="gu-mod__blockhead"><h2 style="margin:0;font-size:18px;font-weight:600">Meldingen</h2><span class="gu-pill">{% if lang == 'nl' %}door deelnemers{% else %}by participants{% endif %}</span></div>
+        <div class="gu-mod-bin">
+          {% for m in meldingen %}{{ melding_row(m) }}{% endfor %}
+          {% if not meldingen %}<p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>{% endif %}
         </div>
-        <div class="gu-stat-card">
-          <span class="gu-stat-card__num">{{ posts_today }}</span>
-          <span class="gu-stat-card__label">Berichten vandaag</span>
+      </section>
+      <aside class="gu-mod__side">
+        <div class="gu-mod__ministats">
+          <div class="gu-ministat">
+            <div class="gu-ministat__num{% if oldest_wait and oldest_wait.sev == 'hot' %} gu-ministat__num--hot{% endif %}">{% if oldest_wait %}{{ oldest_wait[lang] }}{% else %}&mdash;{% endif %}</div>
+            <div class="gu-ministat__lbl">{% if lang == 'nl' %}Oudste wachttijd{% else %}Longest wait{% endif %}</div>
+          </div>
+          <div class="gu-ministat">
+            <div class="gu-ministat__num">{{ open_issues }}</div>
+            <div class="gu-ministat__lbl">{% if lang == 'nl' %}Lopende vraagstukken{% else %}Open issues{% endif %}</div>
+          </div>
         </div>
-        <div class="gu-stat-card{% if threads_no_gerhard_count %} gu-stat-card--warn{% endif %}">
-          <span class="gu-stat-card__num">{{ threads_no_gerhard_count }}</span>
-          <span class="gu-stat-card__label">Threads zonder reactie van Gerhard Top</span>
-        </div>
-      </div>
-    </section>
+        <section class="gu-mod__block">
+          <div class="gu-mod__blockhead"><h2 style="margin:0;font-size:17px;font-weight:600">{% if lang == 'nl' %}Recente vraagstukken{% else %}Recent issues{% endif %}</h2><span class="gu-pill">{% if lang == 'nl' %}waar jij aan werkte{% else %}you worked on{% endif %}</span></div>
+          <div class="gu-mod-list">
+            {% for issue, w in recent_issues %}
+            <div class="gu-mod-list__item">
+              <a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
+              <div class="gu-mod-list__meta"><span class="gu-pill gu-pill--done">{% if lang == 'nl' %}beoordeeld{% else %}handled{% endif %}</span>{% if w %}<span>{% if lang == 'nl' %}jij besliste, {{ w[lang] }} geleden{% else %}you decided, {{ w[lang] }} ago{% endif %}</span>{% endif %}</div>
+            </div>
+            {% else %}
+            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Nog niets behandeld.{% else %}Nothing handled yet.{% endif %}</p>
+            {% endfor %}
+          </div>
+        </section>
+      </aside>
+    </div>
+    </div>
 
     {# ── Kwaliteit (forum fase C1) ─────────────────────────────── #}
     {% macro quality_item(post, qa) %}
@@ -287,27 +333,6 @@
       {% endif %}
     </section>
 
-    {# ── Aandacht nodig: threads zonder reactie Gerhard ─────────── #}
-    {% if threads_no_gerhard %}
-    <section class="gu-admin__section">
-      <p class="gu-eyebrow gu-eyebrow--section">Aandacht nodig</p>
-      <p class="gu-admin__section-desc">Actieve gesprekken zonder reactie van Gerhard Top.</p>
-      <ul class="gu-admin-list">
-        {% for thread in threads_no_gerhard %}
-        <li class="gu-admin-list__item">
-          <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}"
-             class="gu-admin-list__link">
-            <span class="gu-admin-list__eyebrow">{{ thread.eyebrow_nl }}</span>
-            <span class="gu-admin-list__title">
-              {{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} <em>{{ thread.title_accent_nl }}</em>{% endif %}{{ thread.title_suffix_nl }}
-            </span>
-          </a>
-          <span class="gu-admin-list__badge gu-admin-list__badge--warn">Geen reactie</span>
-        </li>
-        {% endfor %}
-      </ul>
-    </section>
-    {% endif %}
 
     {# ── Gesloten gesprekken ────────────────────────────────────── #}
     <section class="gu-admin__section">
