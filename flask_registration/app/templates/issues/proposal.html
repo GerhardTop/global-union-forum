@@ -163,6 +163,14 @@
         </form>
       </details>
       {% endif %}
+
+      {% if current_user.is_authenticated and current_user.is_admin %}
+      <details class="gu-proposal__revise" id="beheer-admin">
+        <summary>{% if lang == 'nl' %}Beheer (admin){% else %}Admin{% endif %}</summary>
+        <p class="gu-composer__hint">{% if lang == 'nl' %}Een voorstel verwijderen is onomkeerbaar. Het vraagstuk blijft staan.{% else %}Deleting a proposal is irreversible. The issue stays.{% endif %}</p>
+        <a class="gu-btn gu-btn--danger gu-btn--sm" href="{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}">{% if lang == 'nl' %}Voorstel verwijderen{% else %}Delete proposal{% endif %}</a>
+      </details>
+      {% endif %}
     </section>
 
     {# Polijstronde P5: de reacties bij dit voorstel, elk bij de versie waarop ze slaat. #}

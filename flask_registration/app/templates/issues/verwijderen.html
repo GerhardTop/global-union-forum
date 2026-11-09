@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'nl' %}Verwijderen{% else %}Delete{% endif %} · Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+{% set what = proposal.statement if target == 'proposal' else issue.title %}
+<div class="gu-mod" lang="{{ lang }}">
+  <div class="gu-mod__wrap gu-mod__wrap--narrow">
+
+    <div class="gu-mod__head">
+      <p class="gu-eyebrow"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{% if lang == 'nl' %}Terug naar het vraagstuk{% else %}Back to the issue{% endif %}</a></p>
+      <h1 class="gu-mod__title">{% if target == 'proposal' %}{% if lang == 'nl' %}Voorstel verwijderen{% else %}Delete proposal{% endif %}{% else %}{% if lang == 'nl' %}Vraagstuk verwijderen{% else %}Delete issue{% endif %}{% endif %}</h1>
+    </div>
+
+    <section class="gu-mod-card">
+      <p class="gu-mod-card__body" style="white-space:normal">
+        {% if target == 'proposal' %}
+          {% if lang == 'nl' %}Je staat op het punt dit voorstel definitief te verwijderen, met zijn versies, steun, stemmen en meldingen. Het vraagstuk zelf blijft staan.{% else %}You are about to permanently delete this proposal, with its versions, support, votes and reports. The issue itself stays.{% endif %}
+        {% else %}
+          {% if lang == 'nl' %}Je staat op het punt dit vraagstuk definitief te verwijderen: de hele discussie, alle voorstellen, feiten, stemmen en meldingen. Dit kan niet ongedaan worden gemaakt.{% else %}You are about to permanently delete this issue: the whole discussion, all proposals, facts, votes and reports. This cannot be undone.{% endif %}
+        {% endif %}
+      </p>
+      <p class="gu-mrow__reason" style="margin-top:12px"><strong lang="{{ (proposal.lang if target == 'proposal' else issue.lang) or lang }}">{{ what }}</strong></p>
+
+      <form method="POST" action="{% if target == 'proposal' %}{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}{% else %}{{ url_for('issues.delete_issue', issue_id=issue.id) }}{% endif %}" class="gu-mod-decide" style="margin-top:16px">
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        <label class="gu-mod-decide__field">
+          <span>{% if target == 'proposal' %}{% if lang == 'nl' %}Typ de stelling precies over om te bevestigen{% else %}Type the statement exactly to confirm{% endif %}{% else %}{% if lang == 'nl' %}Typ de titel precies over om te bevestigen{% else %}Type the title exactly to confirm{% endif %}{% endif %}</span>
+          <input type="text" name="confirm_title" class="gu-input" autocomplete="off" required>
+        </label>
+        <div class="gu-mod-decide__actions">
+          <button type="submit" class="gu-btn gu-btn--danger">{% if lang == 'nl' %}Definitief verwijderen{% else %}Delete permanently{% endif %}</button>
+          <a class="gu-btn" href="{{ url_for('issues.show', issue_id=issue.id) }}">{% if lang == 'nl' %}Annuleren{% else %}Cancel{% endif %}</a>
+        </div>
+      </form>
+    </section>
+
+  </div>
+</div>
+{% endblock %}{% endblock %}

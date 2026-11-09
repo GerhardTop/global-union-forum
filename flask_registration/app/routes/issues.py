@@ -614,3 +614,46 @@ def reopen(issue_id):
     db.session.commit()
     flash(gettext('The issue is open again for discussion.'), 'success')
     return redirect(back)
+
+
+# ── Verwijderen (fase 3): alleen een admin, met de titel overtypen ───────
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/verwijderen', methods=['GET', 'POST'])
+@login_required
+def delete_issue(issue_id):
+    """Een heel vraagstuk definitief verwijderen. Alleen een admin, achter een
+    bevestiging waarbij de titel wordt overgetypt."""
+    if not current_user.is_admin:
+        abort(403)
+    issue = _issue_or_404(issue_id)
+    if request.method == 'POST':
+        _require_csrf()
+        typed = (request.form.get('confirm_title') or '').strip()
+        if typed != (issue.title or '').strip():
+            flash(gettext('Type the exact title to confirm.'), 'error')
+            return redirect(url_for('issues.delete_issue', issue_id=issue.id), code=303)
+        issues.purge(issue)
+        flash(gettext('The issue has been deleted.'), 'success')
+        return redirect(url_for('issues.index'))
+    return render_template('issues/verwijderen.html', target='issue', issue=issue)
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/verwijderen', methods=['GET', 'POST'])
+@login_required
+def delete_proposal(issue_id, proposal_id):
+    """Een los voorstel definitief verwijderen. Alleen een admin, achter een
+    bevestiging waarbij de stelling wordt overgetypt."""
+    if not current_user.is_admin:
+        abort(403)
+    issue = _issue_or_404(issue_id)
+    proposal = _proposal_or_404(issue, proposal_id)
+    if request.method == 'POST':
+        _require_csrf()
+        typed = (request.form.get('confirm_title') or '').strip()
+        if typed != (proposal.statement or '').strip():
+            flash(gettext('Type the exact text to confirm.'), 'error')
+            return redirect(url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id), code=303)
+        issues.purge_proposal(proposal)
+        flash(gettext('The proposal has been deleted.'), 'success')
+        return redirect(url_for('issues.show', issue_id=issue.id))
+    return render_template('issues/verwijderen.html', target='proposal', issue=issue, proposal=proposal)

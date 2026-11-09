@@ -409,3 +409,67 @@ def overview(which='alle'):
                       .filter(IssueProposal.issue_id.in_([i.id for i in found]))
                       .group_by(IssueProposal.issue_id).all())
     return [(i, counts.get(i.id, 0) + len(i.proposals), len(issue_lifecycle.participants(i))) for i in found]
+
+
+# ── Verwijderen (fase 3) ─────────────────────────────────────────────────
+
+def purge(issue):
+    """Verwijder een heel vraagstuk definitief: de discussie (het gesprek en de
+    bijdragen, reacties op voorstellen inbegrepen), alle voorstellen met hun
+    versies, steun, stemmen, feitkoppelingen en meldingen, het oude voorstel dat
+    dit gesprek deelt, de volgers en de eventdagen. Onomkeerbaar. Commit zelf.
+
+    Dezelfde foreign-key-volgorde als de demo-reset (demo_voorbeeld._remove_issue
+    roept deze functie aan), zodat beide niet uit elkaar groeien."""
+    from app import quality, issue_lifecycle, proposals
+    from app.models import (IssueProposal, IssueProposalVersion, IssueProposalSupport,
+                            IssueProposalVote, IssueProposalFact, ProposalReport,
+                            PostLike, IssueEventDay, Proposal)
+    thread_id = issue.thread_id
+    prop_ids = [p.id for p in IssueProposal.query.filter_by(issue_id=issue.id)]
+    post_ids = [p.id for p in Post.query.filter_by(thread_id=thread_id)] if thread_id else []
+    # Eerst alles wat naar de berichten verwijst, dan de berichten, dan de voorstellen.
+    if post_ids:
+        quality.delete_for_posts(post_ids)  # merk, moderatie, feitsignalen, meldingen
+        PostLike.query.filter(PostLike.post_id.in_(post_ids)).delete(synchronize_session=False)
+        Post.query.filter(Post.parent_id.in_(post_ids)).update({Post.parent_id: None}, synchronize_session=False)
+        Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
+    if prop_ids:
+        for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
+            model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
+        IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
+    issue_lifecycle.delete_follows(issue_ids=[issue.id])
+    IssueEventDay.query.filter_by(issue_id=issue.id).delete(synchronize_session=False)
+    # Een oud voorstel met een eigen gesprek wordt alleen losgekoppeld; het oude
+    # voorstel dat dit gesprek deelt, gaat via delete_for_threads mee weg.
+    Proposal.query.filter(Proposal.issue_id == issue.id, Proposal.thread_id != thread_id) \
+        .update({Proposal.issue_id: None}, synchronize_session=False)
+    issue_id = issue.id
+    issue.thread_id = None
+    db.session.flush()
+    if thread_id:
+        proposals.delete_for_threads([thread_id])
+    Issue.query.filter_by(id=issue_id).delete(synchronize_session=False)
+    if thread_id:
+        Thread.query.filter_by(id=thread_id).delete(synchronize_session=False)
+    db.session.commit()
+
+
+def purge_proposal(proposal):
+    """Verwijder een los voorstel definitief: de reacties erop (bijdragen met
+    issue_proposal_id), zijn versies, steun, stemmen, feitkoppelingen en
+    meldingen. Het vraagstuk blijft staan. Commit zelf."""
+    from app import quality
+    from app.models import (IssueProposal, IssueProposalVersion, IssueProposalSupport,
+                            IssueProposalVote, IssueProposalFact, ProposalReport, PostLike)
+    pid = proposal.id
+    reply_ids = [p.id for p in Post.query.filter_by(issue_proposal_id=pid)]
+    if reply_ids:
+        quality.delete_for_posts(reply_ids)
+        PostLike.query.filter(PostLike.post_id.in_(reply_ids)).delete(synchronize_session=False)
+        Post.query.filter(Post.parent_id.in_(reply_ids)).update({Post.parent_id: None}, synchronize_session=False)
+        Post.query.filter(Post.id.in_(reply_ids)).delete(synchronize_session=False)
+    for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
+        model.query.filter(model.proposal_id == pid).delete(synchronize_session=False)
+    IssueProposal.query.filter(IssueProposal.id == pid).delete(synchronize_session=False)
+    db.session.commit()

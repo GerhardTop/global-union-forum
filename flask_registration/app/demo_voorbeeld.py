@@ -189,42 +189,7 @@ def _remove(db):
 
 
 def _remove_issue(db, issue):
-    from app.models import (Issue, IssueProposal, IssueProposalVersion, IssueProposalSupport,
-                            IssueProposalVote, IssueProposalFact, Post, Thread, QualityAward, ProposalReport)
-    thread_id = issue.thread_id
-    prop_ids = [p.id for p in IssueProposal.query.filter_by(issue_id=issue.id)]
-    post_ids = [p.id for p in Post.query.filter_by(thread_id=thread_id)] if thread_id else []
-    # Zelfde foreign-key-volgorde als reset-content: eerst alles wat naar de
-    # berichten verwijst, dan de berichten, en pas daarna de voorstellen.
-    if post_ids:
-        from app import quality
-        from app.models import PostLike
-        quality.delete_for_posts(post_ids)
-        PostLike.query.filter(PostLike.post_id.in_(post_ids)).delete(synchronize_session=False)
-        Post.query.filter(Post.parent_id.in_(post_ids)).update({Post.parent_id: None}, synchronize_session=False)
-        Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
-    if prop_ids:
-        for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
-            model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
-        IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
-    # Volgers en eventdagen verwijzen ook naar het vraagstuk.
-    from app import issue_lifecycle
-    from app.models import IssueEventDay
-    issue_lifecycle.delete_follows(issue_ids=[issue.id])
-    IssueEventDay.query.filter_by(issue_id=issue.id).delete(synchronize_session=False)
-    # Een vraagstuk uit de backfill deelt zijn gesprek met een oud voorstel:
-    # dat voorstel (met stemmen en rondes) gaat mee weg. Een oud voorstel met
-    # een eigen gesprek wordt alleen losgekoppeld.
-    from app import proposals
-    from app.models import Proposal
-    Proposal.query.filter(Proposal.issue_id == issue.id, Proposal.thread_id != thread_id) \
-        .update({Proposal.issue_id: None}, synchronize_session=False)
-    issue_id = issue.id
-    issue.thread_id = None
-    db.session.flush()
-    if thread_id:
-        proposals.delete_for_threads([thread_id])
-    Issue.query.filter_by(id=issue_id).delete(synchronize_session=False)
-    if thread_id:
-        Thread.query.filter_by(id=thread_id).delete(synchronize_session=False)
-    db.session.commit()
+    # Gezamenlijke functie, zodat de demo-reset en de beheerknop (verwijderen)
+    # dezelfde, op Postgres geteste, foreign-key-volgorde gebruiken.
+    from app import issues
+    issues.purge(issue)
