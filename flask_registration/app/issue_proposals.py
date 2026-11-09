@@ -441,6 +441,10 @@ def detach_user(user_id):
                                                                  synchronize_session=False)
     IssueProposalFact.query.filter_by(linked_by_id=user_id).update({IssueProposalFact.linked_by_id: None},
                                                                    synchronize_session=False)
+    from app.models import ProposalReport
+    ProposalReport.query.filter_by(reporter_id=user_id).delete(synchronize_session='evaluate')
+    ProposalReport.query.filter_by(decided_by_id=user_id).update({ProposalReport.decided_by_id: None},
+                                                                 synchronize_session=False)
 
 
 def delete_links_for_facts(fact_ids):

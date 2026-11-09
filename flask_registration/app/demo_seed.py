@@ -336,7 +336,7 @@ def _remove_demo(db):
     """Verwijder de demo-vraagstukken en hun content (voor --force). Laat de
     demo-accounts staan."""
     from app.models import (Issue, IssueProposal, IssueProposalVersion, IssueProposalSupport,
-                            IssueProposalVote, IssueProposalFact, Post, Thread, QualityAward)
+                            IssueProposalVote, IssueProposalFact, Post, Thread, QualityAward, ProposalReport)
     titles = [_SENTINEL_TITLE, _TITLE_B, _TITLE_C]
     issues = Issue.query.filter(Issue.title.in_(titles)).all()
     if not issues:
@@ -357,7 +357,7 @@ def _remove_demo(db):
         Post.query.filter(Post.parent_id.in_(post_ids)).update({Post.parent_id: None}, synchronize_session=False)
         Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
     if prop_ids:
-        for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion):
+        for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
             model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
         IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
     # Volgers en eventdagen verwijzen ook naar de vraagstukken.

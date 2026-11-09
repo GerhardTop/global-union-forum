@@ -516,6 +516,27 @@ class PostReport(db.Model):
     decided_by = db.relationship('User', foreign_keys=[decided_by_id])
 
 
+class ProposalReport(db.Model):
+    """Meldknop: een melding van een voorstel door een deelnemer, met een
+    verplichte reden, voor een moderator. Eén open melding per persoon per
+    voorstel; meerdere mensen kunnen hetzelfde voorstel melden."""
+    __tablename__ = "proposal_reports"
+
+    id            = db.Column(db.Integer, primary_key=True)
+    proposal_id   = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=False, index=True)
+    reporter_id   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    reason        = db.Column(db.String(500), nullable=False)
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
+    decision      = db.Column(db.String(12), nullable=True)
+    decision_note = db.Column(db.String(400), nullable=True)
+    decided_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    decided_at    = db.Column(db.DateTime, nullable=True)
+
+    proposal   = db.relationship('IssueProposal', foreign_keys=[proposal_id])
+    reporter   = db.relationship('User', foreign_keys=[reporter_id])
+    decided_by = db.relationship('User', foreign_keys=[decided_by_id])
+
+
 class QualityObjection(db.Model):
     """Bezwaar van de auteur tegen een kwaliteitsoordeel, met de reactie van
     de AI (verdedigt het oordeel of geeft toe) en het besluit van een

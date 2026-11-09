@@ -147,10 +147,12 @@ def show(issue_id):
     visible = [f for f in discussion.get('facts', ())
                if f.id not in discussion['hidden_ids'] and f.id not in discussion['moved_ids']]
     top = fact_signals.listing(visible, order='kwaliteit')  # kwaliteit eerst: merk, dan een link als bron
+    proposal_rows = ip.listing(issue, order='stemlijst')
+    my_reported_proposal_ids = _reported_proposal_ids([p.id for p, _c in proposal_rows])
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
-                           proposal_rows=ip.listing(issue, order='stemlijst'), proposals_shown=COCKPIT_PROPOSALS,
+                           proposal_rows=proposal_rows, proposals_shown=COCKPIT_PROPOSALS,
                            proposal_total=ip.regular_query(issue).count(),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
@@ -161,7 +163,8 @@ def show(issue_id):
                            can_edit_followup=lifecycle.can_edit_followup(issue, current_user),
                            following=lifecycle.is_following(issue, current_user),
                            can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue),
-                           return_to=issue.id, **discussion)
+                           return_to=issue.id,
+                           my_reported_proposal_ids=my_reported_proposal_ids, **discussion)
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/feiten')
@@ -188,6 +191,7 @@ def facts(issue_id):
     order = order if order in fact_signals.ORDERS else fact_signals.DEFAULT_ORDER
     shown = min(max(request.args.get('n', type=int) or fact_signals.PAGE_SIZE, fact_signals.PAGE_SIZE), 1000)
     listed = fact_signals.listing(visible, direction, order)
+    my_reported_ids = _reported_fact_ids([f.id for f in visible])
     ids = [f.id for f in listed]
     is_mod = conduct.mod_view(current_user)  # P7: niet als de moderator als deelnemer kijkt
     return render_template(
@@ -197,7 +201,8 @@ def facts(issue_id):
         conduct_cases=cases, fact_errors=fact_errors, fact_data=fact_data, return_to=issue.id,
         fact_marks=fact_signals.marked_ids(ids),
         fact_disputed=fact_signals.disputed_ids(ids) if is_mod else set(),
-        fact_my_disputed=fact_signals.my_disputed(ids, current_user))
+        fact_my_disputed=fact_signals.my_disputed(ids, current_user),
+        my_reported_ids=my_reported_ids)
 
 
 # ── Stap 4: voorstellen onder een vraagstuk ──────────────────────────────
@@ -216,6 +221,53 @@ def _proposal_or_404(issue, proposal_id):
     return proposal
 
 
+def _reported_fact_ids(fact_ids):
+    """Welke van deze feiten (posts) de huidige gebruiker open heeft gemeld."""
+    from app.models import PostReport
+    fact_ids = list(fact_ids)
+    if not current_user.is_authenticated or not fact_ids:
+        return set()
+    return {r.post_id for r in PostReport.query.filter(
+        PostReport.reporter_id == current_user.id,
+        PostReport.post_id.in_(fact_ids), PostReport.decision.is_(None))}
+
+
+def _reported_proposal_ids(proposal_ids):
+    """Welke van deze voorstellen de huidige gebruiker open heeft gemeld."""
+    from app.models import ProposalReport
+    proposal_ids = list(proposal_ids)
+    if not current_user.is_authenticated or not proposal_ids:
+        return set()
+    return {r.proposal_id for r in ProposalReport.query.filter(
+        ProposalReport.reporter_id == current_user.id,
+        ProposalReport.proposal_id.in_(proposal_ids), ProposalReport.decision.is_(None))}
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/melden', methods=['POST'])
+@login_required
+@limiter.limit("10 per hour", key_func=lambda: f"issue-report-user-{current_user.get_id()}")
+def report_proposal(issue_id, proposal_id):
+    """Meld een voorstel aan een moderator, met een verplichte reden.
+    Niet op een eigen voorstel, één open melding per persoon."""
+    from app.models import ProposalReport
+    _require_csrf()
+    issue = _issue_or_404(issue_id)
+    proposal = _proposal_or_404(issue, proposal_id)
+    if proposal.created_by_id == current_user.id:
+        abort(403)
+    nxt = safe_next(request.form.get('next'), url_for('issues.show', issue_id=issue.id))
+    reason = (request.form.get('reason') or '').strip()
+    if not reason:
+        flash(gettext('Give a reason for your report.'), 'error')
+        return redirect(nxt)
+    already = ProposalReport.query.filter_by(proposal_id=proposal.id, reporter_id=current_user.id, decision=None).first()
+    if already is None:
+        db.session.add(ProposalReport(proposal_id=proposal.id, reporter_id=current_user.id, reason=reason[:500]))
+        db.session.commit()
+        flash(gettext('Thanks, your report has been sent to a moderator.'), 'success')
+    return redirect(nxt)
+
+
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstellen')
 def proposals(issue_id):
     issue = _issue_or_404(issue_id)
@@ -224,9 +276,11 @@ def proposals(issue_id):
     order = request.args.get('sorteer')
     order = order if order in ip.ORDERS else ip.DEFAULT_ORDER
     rows = ip.listing(issue, which, order)
+    my_reported_proposal_ids = _reported_proposal_ids([p.id for p, _c in rows])
     return render_template('issues/proposals.html', issue=issue, rows=rows, which=which, order=order,
                            total=ip.regular_query(issue).count(),  # vóór het filter: sorteren en filteren pas bij > 5
                            my_supports=ip.my_supports([p.id for p, _n in rows], current_user),
+                           my_reported_proposal_ids=my_reported_proposal_ids,
                            can_propose=ip.can_propose(issue, current_user),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user))
 
@@ -288,16 +342,19 @@ def proposal(issue_id, proposal_id):
     errors, data = _pop_form_state(f'voorstel-{proposal.id}')
     links = ip.linked(proposal, current_user)
     linked_ids = {fact.id for _link, fact in links}
+    issue_facts = ip.visible_issue_facts(issue, current_user)
+    issue_fact_ids = [f.id for f in issue_facts]
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),
                            can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data,
                            links=links, can_link=ip.can_link(proposal, current_user),
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
-                           candidates=[f for f in ip.visible_issue_facts(issue, current_user) if f.id not in linked_ids],
+                           candidates=[f for f in issue_facts if f.id not in linked_ids],
                            can_add_fact=_can_add_fact(issue), vote=_vote_context(proposal, count),
                            timeline=ip.timeline(proposal), current_version=ip.current_version(proposal),
                            reactions=_visible_reactions(proposal), can_react=_can_react(issue),
-                           fact_marks=fact_signals.marked_ids(f.id for f in ip.visible_issue_facts(issue, current_user)))
+                           fact_marks=fact_signals.marked_ids(issue_fact_ids),
+                           my_reported_ids=_reported_fact_ids(issue_fact_ids))
 
 
 def _visible_reactions(proposal):
