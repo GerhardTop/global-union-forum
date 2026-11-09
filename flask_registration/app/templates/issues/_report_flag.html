@@ -1,7 +1,8 @@
 {#
   Partial: issues/_report_flag.html (meldknop)
   Een meldvlag met een verplicht redenveld, voor een voorstel. Dezelfde stijl
-  als de meldvlag bij een feit. Context: report_url, reported (bool).
+  als de meldvlag bij een feit. Context: report_url, reported (bool), report_id
+  (uniek id voor de label/veld-koppeling).
   forum_action_form is een globale context processor (CSRF).
 #}
 {% if reported %}
@@ -16,8 +17,8 @@
   <form method="POST" action="{{ report_url }}" class="gu-report gu-report--fact">
     {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
     <input type="hidden" name="next" value="{{ request.path }}">
-    <label class="gu-report__lbl">{% if lang == 'nl' %}Waarom meld je dit?{% else %}Why are you reporting this?{% endif %}</label>
-    <textarea name="reason" rows="2" required maxlength="500" class="gu-report__ta" placeholder="{% if lang == 'nl' %}Beschrijf kort wat er mis is.{% else %}Briefly describe what is wrong.{% endif %}"></textarea>
+    <label class="gu-report__lbl" for="report-reason-{{ report_id }}">{% if lang == 'nl' %}Waarom meld je dit?{% else %}Why are you reporting this?{% endif %}</label>
+    <textarea id="report-reason-{{ report_id }}" name="reason" rows="2" required maxlength="500" class="gu-report__ta" placeholder="{% if lang == 'nl' %}Beschrijf kort wat er mis is.{% else %}Briefly describe what is wrong.{% endif %}"></textarea>
     <button type="submit" class="gu-btn gu-btn--sm">{% if lang == 'nl' %}Melding versturen{% else %}Send report{% endif %}</button>
   </form>
 </details>

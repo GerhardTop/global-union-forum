@@ -190,7 +190,7 @@ def _remove(db):
 
 def _remove_issue(db, issue):
     from app.models import (Issue, IssueProposal, IssueProposalVersion, IssueProposalSupport,
-                            IssueProposalVote, IssueProposalFact, Post, Thread, QualityAward)
+                            IssueProposalVote, IssueProposalFact, Post, Thread, QualityAward, ProposalReport)
     thread_id = issue.thread_id
     prop_ids = [p.id for p in IssueProposal.query.filter_by(issue_id=issue.id)]
     post_ids = [p.id for p in Post.query.filter_by(thread_id=thread_id)] if thread_id else []
@@ -204,7 +204,7 @@ def _remove_issue(db, issue):
         Post.query.filter(Post.parent_id.in_(post_ids)).update({Post.parent_id: None}, synchronize_session=False)
         Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
     if prop_ids:
-        for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion):
+        for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
             model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
         IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
     # Volgers en eventdagen verwijzen ook naar het vraagstuk.

@@ -41,28 +41,6 @@ issues_bp = Blueprint("issues", __name__)
 FACTS_SHOWN = 10
 # Zoveel voorstellen in de rechterkolom; de rest via de voorstellenpagina.
 COCKPIT_PROPOSALS = 5
-
-
-def _reported_fact_ids(fact_ids):
-    """Welke van deze feiten (posts) de huidige gebruiker open heeft gemeld."""
-    from app.models import PostReport
-    fact_ids = list(fact_ids)
-    if not current_user.is_authenticated or not fact_ids:
-        return set()
-    return {r.post_id for r in PostReport.query.filter(
-        PostReport.reporter_id == current_user.id,
-        PostReport.post_id.in_(fact_ids), PostReport.decision.is_(None))}
-
-
-def _reported_proposal_ids(proposal_ids):
-    """Welke van deze voorstellen de huidige gebruiker open heeft gemeld."""
-    from app.models import ProposalReport
-    proposal_ids = list(proposal_ids)
-    if not current_user.is_authenticated or not proposal_ids:
-        return set()
-    return {r.proposal_id for r in ProposalReport.query.filter(
-        ProposalReport.reporter_id == current_user.id,
-        ProposalReport.proposal_id.in_(proposal_ids), ProposalReport.decision.is_(None))}
 FOLLOWUP_MAX = 5000
 
 
@@ -243,6 +221,28 @@ def _proposal_or_404(issue, proposal_id):
     return proposal
 
 
+def _reported_fact_ids(fact_ids):
+    """Welke van deze feiten (posts) de huidige gebruiker open heeft gemeld."""
+    from app.models import PostReport
+    fact_ids = list(fact_ids)
+    if not current_user.is_authenticated or not fact_ids:
+        return set()
+    return {r.post_id for r in PostReport.query.filter(
+        PostReport.reporter_id == current_user.id,
+        PostReport.post_id.in_(fact_ids), PostReport.decision.is_(None))}
+
+
+def _reported_proposal_ids(proposal_ids):
+    """Welke van deze voorstellen de huidige gebruiker open heeft gemeld."""
+    from app.models import ProposalReport
+    proposal_ids = list(proposal_ids)
+    if not current_user.is_authenticated or not proposal_ids:
+        return set()
+    return {r.proposal_id for r in ProposalReport.query.filter(
+        ProposalReport.reporter_id == current_user.id,
+        ProposalReport.proposal_id.in_(proposal_ids), ProposalReport.decision.is_(None))}
+
+
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/melden', methods=['POST'])
 @login_required
 @limiter.limit("10 per hour", key_func=lambda: f"issue-report-user-{current_user.get_id()}")
@@ -342,17 +342,19 @@ def proposal(issue_id, proposal_id):
     errors, data = _pop_form_state(f'voorstel-{proposal.id}')
     links = ip.linked(proposal, current_user)
     linked_ids = {fact.id for _link, fact in links}
+    issue_facts = ip.visible_issue_facts(issue, current_user)
+    issue_fact_ids = [f.id for f in issue_facts]
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),
                            can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data,
                            links=links, can_link=ip.can_link(proposal, current_user),
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
-                           candidates=[f for f in ip.visible_issue_facts(issue, current_user) if f.id not in linked_ids],
+                           candidates=[f for f in issue_facts if f.id not in linked_ids],
                            can_add_fact=_can_add_fact(issue), vote=_vote_context(proposal, count),
                            timeline=ip.timeline(proposal), current_version=ip.current_version(proposal),
                            reactions=_visible_reactions(proposal), can_react=_can_react(issue),
-                           fact_marks=fact_signals.marked_ids(f.id for f in ip.visible_issue_facts(issue, current_user)),
-                           my_reported_ids=_reported_fact_ids([f.id for f in ip.visible_issue_facts(issue, current_user)]))
+                           fact_marks=fact_signals.marked_ids(issue_fact_ids),
+                           my_reported_ids=_reported_fact_ids(issue_fact_ids))
 
 
 def _visible_reactions(proposal):

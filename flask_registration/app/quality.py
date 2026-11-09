@@ -373,6 +373,10 @@ def detach_user(user_id):
         {QualityReport.decided_by_id: None}, synchronize_session=False)
     QualityAward.query.filter_by(decided_by_id=user_id).update(
         {QualityAward.decided_by_id: None}, synchronize_session=False)
+    from app.models import PostReport
+    PostReport.query.filter_by(reporter_id=user_id).delete(synchronize_session=False)
+    PostReport.query.filter_by(decided_by_id=user_id).update(
+        {PostReport.decided_by_id: None}, synchronize_session=False)
 
 
 def reset_for_edit(post):
@@ -418,6 +422,8 @@ def delete_for_posts(post_ids):
         QualityObjection.query.filter(QualityObjection.award_id.in_(award_ids)).delete(synchronize_session='evaluate')
         QualityReport.query.filter(QualityReport.award_id.in_(award_ids)).delete(synchronize_session='evaluate')
         QualityAward.query.filter(QualityAward.id.in_(award_ids)).delete(synchronize_session='evaluate')
+    from app.models import PostReport
+    PostReport.query.filter(PostReport.post_id.in_(post_ids)).delete(synchronize_session='evaluate')
 
 
 # ── Democontent ──────────────────────────────────────────────────────────

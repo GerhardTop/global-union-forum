@@ -66,7 +66,7 @@
       <li class="gu-iplist__item" id="voorstel-{{ proposal.id }}">
         <div class="gu-iplist__head">
           {% include 'issues/_ip_status.html' %}
-          {% if current_user.is_authenticated and proposal.created_by_id and proposal.created_by_id != current_user.id %}{% with report_url=url_for('issues.report_proposal', issue_id=issue.id, proposal_id=proposal.id), reported=(proposal.id in (my_reported_proposal_ids or ())) %}{% include 'issues/_report_flag.html' %}{% endwith %}{% endif %}
+          {% if current_user.is_authenticated and proposal.created_by_id and proposal.created_by_id != current_user.id %}{% with report_url=url_for('issues.report_proposal', issue_id=issue.id, proposal_id=proposal.id), reported=(proposal.id in (my_reported_proposal_ids or ())), report_id='p' ~ proposal.id %}{% include 'issues/_report_flag.html' %}{% endwith %}{% endif %}
         </div>
         <a class="gu-iplist__statement" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</a>
         {% with can_support=ip_can_support(proposal, count, supported), next_url=request.full_path.rstrip('?') ~ '#voorstel-' ~ proposal.id %}
