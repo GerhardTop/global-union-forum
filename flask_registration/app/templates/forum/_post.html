@@ -122,10 +122,6 @@
   {# Vaste plek voor het oordeel, zodat de statuspoll hem kan vullen (punt 8). #}
   <div class="gu-quality-slot" id="quality-{{ post.id }}">{% include 'forum/_quality_block.html' %}</div>
 
-  {% if mod_view and not is_own %}
-  {% if not c_removed %}{% include 'forum/_quality_mod.html' %}{% endif %}
-  {% endif %}
-
   <footer class="gu-post__actions">
 
     {# Eens/oneens (forum fase B): tellingen voor iedereen zichtbaar; stemmen

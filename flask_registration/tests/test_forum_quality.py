@@ -391,8 +391,9 @@ class TestModeratorManual:
         post = _reply(app, mod, thread, 'Bijdrage van de moderator zelf.')
         assert _mod_decide(app, mod, post, 'afwijzen').status_code == 403  # eigen bijdrage
         assert _mod_decide(app, make_user(), post, 'afwijzen').status_code == 403  # geen moderator
+        # Fase 2c: geen kwaliteitspaneel meer in het gesprek, beoordelen gaat via het overzicht.
         controls = _req(_client(app, make_user('moderator')), 'GET', f'/forum/{thread.id}').get_data(as_text=True)
-        assert 'Keurmerk weghalen' in controls and 'Afwijzen' not in controls
+        assert 'Keurmerk weghalen' not in controls and 'Afwijzen' not in controls
 
 
 class TestNoObjectionFlow:
