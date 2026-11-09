@@ -191,11 +191,16 @@ def test_ai_removed_shows_and_can_restore(app, db):
     db.session.add(post)
     db.session.flush()
     case = ConductCase(post_id=post.id, action='verplaatst', rule='respect', source='ai',
-                       acted_by_id=None, explanation='Niet respectvol.')
+                       acted_by_id=None, explanation='Niet respectvol.', on_background=True)
     db.session.add(case)
     db.session.commit()
     page = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
     assert 'ai-verwijderd' in page and 'Door de AI verplaatst.' in page
+    # Fase 2c: een verplaatste bijdrage linkt naar de achtergrondpagina, niet
+    # naar de plek in het gesprek (daar staat ze niet meer).
+    section = page.split('id="ai-verwijderd"', 1)[1].split('<section', 1)[0]
+    assert f'/achtergrond#zaak-{case.id}' in section
+    assert f'#post-{post.id}"' not in section and 'In context bekijken' not in section
     r = _req(_client(app, mod), 'POST', f'/forum/handhaving/{post.id}/terugplaatsen', data={'note': ''})
     assert r.status_code in (302, 303)
     db.session.refresh(case)

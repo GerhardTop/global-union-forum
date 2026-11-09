@@ -137,7 +137,7 @@
           <div>
             <strong>{{ post.public_author_name() }}</strong>
             · {{ conduct_rule_label(case.rule) if case.rule else _('Conduct rules') }}
-            · <a href="{{ post_url(post) }}" class="gu-admin-table__threadlink">{{ _('View in context') }}</a>
+            {% if case.on_background %}· <a href="{{ url_for('forum.achtergrond') }}#zaak-{{ case.id }}" class="gu-admin-table__threadlink">{{ _('View on the background page') }}</a>{% endif %}
             · {{ post.time_ago[lang] }}
           </div>
           <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
@@ -170,7 +170,7 @@
             <strong>{{ post.public_author_name() }}</strong>
             · {{ conduct_rule_label(case.rule) }}
             · {% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %}
-            · <a href="{{ post_url(post) }}" class="gu-admin-table__threadlink">{{ _('View in context') }}</a>
+            {% if case.on_background %}· <a href="{{ url_for('forum.achtergrond') }}#zaak-{{ case.id }}" class="gu-admin-table__threadlink">{{ _('View on the background page') }}</a>{% endif %}
           </div>
           <p class="gu-quality-queue__excerpt">{{ (case.body_snapshot or post.body or '')[:220] }}{% if (case.body_snapshot or post.body or '')|length > 220 %}…{% endif %}</p>
           {% if case.explanation %}<p class="gu-quality__meta">{{ _('Why it was moved') }}: {{ case.explanation }}</p>{% endif %}
