@@ -48,6 +48,9 @@ def _phase_issues():
             for i in lifecycle.manageable_issues()]
 
 
+MOD_STREAMS = ('alle', 'meldingen', 'ai', 'bezwaren', 'zonder')
+
+
 @admin_bp.route('/moderator')
 @login_required
 def moderator_dashboard():
@@ -80,14 +83,20 @@ def moderator_dashboard():
     live = Post.body != '[bericht verwijderd]'
     open_reports = (QualityReport.query.filter(QualityReport.decision.is_(None))
                     .order_by(QualityReport.created_at).all())
+    # Fase 2c: een verplaatste of verborgen bijdrage hoort hier niet (geen
+    # publieke context meer, de link liep dood); die staat bij de gedragsregels.
+    from app.models import ConductCase, ConductObjection
+    removed = (db.session.query(ConductCase.id)
+               .filter(ConductCase.post_id == Post.id,
+                       ConductCase.action.in_(('verplaatst', 'verborgen')))
+               .exists())
     unjudged_posts = (Post.query.outerjoin(QualityAward, QualityAward.post_id == Post.id)
-                      .filter(QualityAward.id.is_(None), Post.is_demo.is_(False), live,
+                      .filter(QualityAward.id.is_(None), Post.is_demo.is_(False), live, ~removed,
                               or_(Post.kind.is_(None), Post.kind != 'feit'))  # feiten: geen keurmerk
                       .order_by(Post.created_at.desc()).limit(20).all())
 
     # Fase D: gedragsregels. Twijfelgevallen (blijven staan tot een moderator
     # oordeelt) en openstaande bezwaren tegen een verplaatsing of verberging.
-    from app.models import ConductCase, ConductObjection
     doubt_cases = (ConductCase.query.join(Post, ConductCase.post_id == Post.id)
                    .filter(ConductCase.action == 'twijfel', live)
                    .order_by(ConductCase.created_at).all())
@@ -111,11 +120,23 @@ def moderator_dashboard():
     handled_total, handled_mine = reports.handled_counts(current_user)
     oldest_at = reports.oldest_open_at()
 
+    # Fase 2c: één bak met tabbladen; ?stroom= filtert welke groepen je ziet.
+    stroom = request.args.get('stroom')
+    if stroom not in MOD_STREAMS:
+        stroom = 'alle'
+    stream_counts = {
+        'meldingen': len(meldingen) + len(open_reports) + len(fact_disputes),
+        'ai': len(doubt_cases) + len(ai_removed),
+        'bezwaren': len(open_conduct_objections),
+        'zonder': len(unjudged_posts),
+    }
+    stream_counts['alle'] = sum(stream_counts.values())
+
     return render_template(
         'moderator/dashboard.html',
         meldingen=meldingen,
-        mod_counts={'meldingen': len(meldingen), 'bezwaren': len(open_conduct_objections),
-                    'ai': len(doubt_cases), 'zonder': len(unjudged_posts)},
+        stroom=stroom,
+        stream_counts=stream_counts,
         handled_total=handled_total,
         handled_mine=handled_mine,
         oldest_wait=reports.wait_bucket(oldest_at),

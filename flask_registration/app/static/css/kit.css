@@ -4077,6 +4077,11 @@ body {
 .gu-kpi--done .gu-kpi__num { color:var(--mod-green); }
 
 .gu-mod__cols { display:grid; grid-template-columns:1fr 380px; gap:24px; align-items:start; }
+/* Fase 2c: de bak met tabbladen (?stroom=) in de hoofdkolom. */
+.gu-mod__main { min-width:0; }
+.gu-mod-tabs { margin-bottom:18px; }
+.gu-mod-tabs .gu-seg__btn { text-decoration:none; }
+.gu-mod__main > .gu-mod__block + .gu-admin__section { margin-top:28px; }
 .gu-mod-bin { background:var(--gu-paper,#fff); border:1px solid var(--mod-border); border-radius:14px; overflow:hidden; }
 .gu-mod-bin__head { padding:12px 16px; border-bottom:1px solid var(--mod-border); }
 .gu-mod-bin__sub { margin:0; padding:10px 16px 2px; font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--mod-n500); }

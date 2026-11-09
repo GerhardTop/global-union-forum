@@ -71,6 +71,56 @@ def test_dashboard_renders_each_stream(app, db):
     body = _req(c, 'GET', '/moderator').get_data(as_text=True)
     assert 'Meldingen' in body and 'ongepast' in body
 
+    # Fase 2c: één bak met tabbladen; ?stroom= filtert de groepen.
+    from app.models import ConductObjection
+    post = Post(thread_id=issue.thread_id, user_id=author.id, author_name='',
+                author_username=author.username, body='Verplaatst, met bezwaar.', source_lang='nl')
+    db.session.add(post)
+    db.session.flush()
+    case = ConductCase(post_id=post.id, action='verplaatst', rule='respect', source='moderator',
+                       acted_by_id=mod.id, on_background=True)
+    db.session.add(case)
+    db.session.flush()
+    db.session.add(ConductObjection(case_id=case.id, author_id=author.id, text='Ik ben het oneens.'))
+    db.session.commit()
+
+    objections = 'Gedragsregels: openstaande bezwaren'
+
+    def page(q):
+        return _req(c, 'GET', '/moderator' + q).get_data(as_text=True)
+
+    bezw = page('?stroom=bezwaren')
+    assert objections in bezw and 'Ik ben het oneens.' in bezw and 'ongepast' not in bezw
+    meld = page('?stroom=meldingen')
+    assert 'ongepast' in meld and objections not in meld
+    alle = page('?stroom=alle')
+    assert 'ongepast' in alle and objections in alle
+    assert page('?stroom=onzin') == alle  # onbekende stroom: alles
+
+    # De tabbladen tonen hun telling; het actieve tabblad is gemarkeerd.
+    assert 'aria-current="page">Bezwaren\n              <span class="gu-seg__c">1</span>' in bezw
+    assert '>Meldingen\n              <span class="gu-seg__c">1</span>' in alle
+    assert '>Alle\n              <span class="gu-seg__c">' in alle
+    # Buiten de bak blijft altijd zichtbaar.
+    assert 'id="vraagstukken"' in bezw and 'Recente berichten' in bezw and 'Behandeld totaal' in bezw
+
+
+def test_removed_post_not_in_without_judgement(app, db):
+    mod, author = _user(db, 'moderator'), _user(db)
+    issue, fact = _issue_with_fact(db, author)
+    kept = Post(thread_id=issue.thread_id, user_id=author.id, author_name='',
+                author_username=author.username, body='Gewone bijdrage zonder oordeel.', source_lang='nl')
+    moved = Post(thread_id=issue.thread_id, user_id=author.id, author_name='',
+                 author_username=author.username, body='Verplaatste bijdrage zonder oordeel.', source_lang='nl')
+    db.session.add_all([kept, moved])
+    db.session.flush()
+    db.session.add(ConductCase(post_id=moved.id, action='verplaatst', rule='respect', source='moderator',
+                               acted_by_id=mod.id, on_background=True))
+    db.session.commit()
+    page = _req(_client(app, mod), 'GET', '/moderator?stroom=zonder').get_data(as_text=True)
+    assert 'Gewone bijdrage zonder oordeel.' in page
+    assert 'Verplaatste bijdrage zonder oordeel.' not in page
+
 
 def test_dashboard_blocks_non_moderator(app, db):
     user = _user(db)
