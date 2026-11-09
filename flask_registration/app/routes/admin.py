@@ -91,6 +91,12 @@ def moderator_dashboard():
     doubt_cases = (ConductCase.query.join(Post, ConductCase.post_id == Post.id)
                    .filter(ConductCase.action == 'twijfel', live)
                    .order_by(ConductCase.created_at).all())
+    # Fase 2c: wat de AI zelf verplaatste of verborg (geen moderator), zodat
+    # een moderator dat vanaf het overzicht kan terugplaatsen.
+    ai_removed = (ConductCase.query.join(Post, ConductCase.post_id == Post.id)
+                  .filter(ConductCase.acted_by_id.is_(None),
+                          ConductCase.action.in_(('verplaatst', 'verborgen')), live)
+                  .order_by(ConductCase.created_at).all())
     open_conduct_objections = (ConductObjection.query.filter(ConductObjection.decision.is_(None))
                                .order_by(ConductObjection.created_at).all())
     # Herontwerp stap 3: betwiste feiten (het feit blijft staan tot een moderator oordeelt).
@@ -118,6 +124,7 @@ def moderator_dashboard():
         open_reports=open_reports,
         unjudged_posts=unjudged_posts,
         doubt_cases=doubt_cases,
+        ai_removed=ai_removed,
         open_conduct_objections=open_conduct_objections,
         fact_disputes=fact_disputes,
         fact_can_resolve=lambda row: facts.can_resolve(row, current_user),

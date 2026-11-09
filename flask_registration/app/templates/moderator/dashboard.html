@@ -127,6 +127,36 @@
       {% endif %}
     </section>
 
+    <section class="gu-admin__section" id="ai-verwijderd">
+      <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: removed by the AI') }} ({{ ai_removed|length }})</p>
+      {% if ai_removed %}
+      <ul class="gu-quality-queue">
+        {% for case in ai_removed %}
+        {% set post = case.post %}
+        <li class="gu-quality-queue__item">
+          <div>
+            <strong>{{ post.public_author_name() }}</strong>
+            · {{ conduct_rule_label(case.rule) if case.rule else _('Conduct rules') }}
+            · <a href="{{ post_url(post) }}" class="gu-admin-table__threadlink">{{ _('View in context') }}</a>
+            · {{ post.time_ago[lang] }}
+          </div>
+          <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
+          {% if case.explanation %}<p class="gu-quality__meta">{{ _('AI:') }} {{ case.explanation }}</p>{% endif %}
+          {% if current_user.id == post.user_id %}
+            <p class="gu-quality__meta">{{ _('Your own contribution: another moderator decides.') }}</p>
+          {% else %}
+            {% with conduct_open=true, conduct_next=url_for('admin.moderator_dashboard') ~ '#ai-verwijderd' %}
+            {% include 'forum/_conduct_mod.html' %}
+            {% endwith %}
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="gu-admin__empty">{{ _('No posts removed by the AI.') }}</p>
+      {% endif %}
+    </section>
+
     <section class="gu-admin__section" id="bezwaren">
       <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: open objections') }} ({{ open_conduct_objections|length }})</p>
       <p class="gu-quality__meta">{{ _('A senior moderator or the admin decides, not the moderator who took the decision.') }}</p>

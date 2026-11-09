@@ -2294,3 +2294,9 @@ msgstr "The issue has been deleted."
 
 msgid "The proposal has been deleted."
 msgstr "The proposal has been deleted."
+
+msgid "Conduct rules: removed by the AI"
+msgstr "Conduct rules: removed by the AI"
+
+msgid "No posts removed by the AI."
+msgstr "No posts removed by the AI."

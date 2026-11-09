@@ -181,3 +181,22 @@ def test_moderator_link_in_menu(app, db):
     for user, expect in ((admin, True), (mod, True), (plain, False)):
         h = _req(_client(app, user), 'GET', '/').get_data(as_text=True)
         assert ('>Moderator</a>' in h) is expect
+
+
+def test_ai_removed_shows_and_can_restore(app, db):
+    mod, author = _user(db, 'moderator'), _user(db)
+    issue, fact = _issue_with_fact(db, author)
+    post = Post(thread_id=issue.thread_id, user_id=author.id, author_name='',
+                author_username=author.username, body='Door de AI verplaatst.', source_lang='nl')
+    db.session.add(post)
+    db.session.flush()
+    case = ConductCase(post_id=post.id, action='verplaatst', rule='respect', source='ai',
+                       acted_by_id=None, explanation='Niet respectvol.')
+    db.session.add(case)
+    db.session.commit()
+    page = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
+    assert 'ai-verwijderd' in page and 'Door de AI verplaatst.' in page
+    r = _req(_client(app, mod), 'POST', f'/forum/handhaving/{post.id}/terugplaatsen', data={'note': ''})
+    assert r.status_code in (302, 303)
+    db.session.refresh(case)
+    assert case.action == 'teruggeplaatst'

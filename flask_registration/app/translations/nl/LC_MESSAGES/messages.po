@@ -2291,3 +2291,9 @@ msgstr "Het vraagstuk is verwijderd."
 
 msgid "The proposal has been deleted."
 msgstr "Het voorstel is verwijderd."
+
+msgid "Conduct rules: removed by the AI"
+msgstr "Gedragsregels: door de AI verwijderd"
+
+msgid "No posts removed by the AI."
+msgstr "Niets door de AI verwijderd."
