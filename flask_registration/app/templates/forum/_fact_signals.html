@@ -1,19 +1,15 @@
 {#
   Partial: forum/_fact_signals.html (herontwerp stap 3)
-  Bij een feit: voor moderators het label "betwist" bij een openstaand
-  bezwaar, en het betwisten met een reden. Werkt zonder JavaScript
+  Bij een feit: het betwisten met een reden. Werkt zonder JavaScript
   (formulier met next). Polijstronde P2: geen nuttig-knop meer; de kwaliteit
-  staat in het merk (issues/_fact_badges.html).
-  Context: fact, fact_disputed, fact_my_disputed, optioneel signal_next.
+  staat in het merk (issues/_fact_badges.html). Betwiste feiten behandelt een
+  moderator via het moderator-overzicht (#betwist), niet hier (fase 2c).
+  Context: fact, fact_my_disputed, optioneel signal_next.
 #}
 {% set back = signal_next or (request.path ~ '#post-' ~ fact.id) %}
 {% set is_own = current_user.is_authenticated and fact.user_id == current_user.id %}
 {% set can_signal = current_user.is_authenticated and current_user.can_contribute() and not is_own %}
 <div class="gu-fact__signals">
-  {% if fact.id in (fact_disputed or ()) %}
-  <span class="gu-fact__disputed">{{ _('Disputed') }}</span>
-  {% endif %}
-
   {% if can_signal %}
     {% if fact.id in (fact_my_disputed or ()) %}
     <span class="gu-composer__hint">{{ _('You disputed this fact') }}</span>

@@ -193,14 +193,12 @@ def facts(issue_id):
     listed = fact_signals.listing(visible, direction, order)
     my_reported_ids = _reported_fact_ids([f.id for f in visible])
     ids = [f.id for f in listed]
-    is_mod = conduct.mod_view(current_user)
     return render_template(
         'issues/facts.html', issue=issue, thread=thread, facts=listed[:shown], listed_count=len(listed),
         total=len(visible), shown=shown, direction=direction, order=order,
         phase_open=thread is not None and _fact_phase_open(thread),
         conduct_cases=cases, fact_errors=fact_errors, fact_data=fact_data, return_to=issue.id,
         fact_marks=fact_signals.marked_ids(ids),
-        fact_disputed=fact_signals.disputed_ids(ids) if is_mod else set(),
         fact_my_disputed=fact_signals.my_disputed(ids, current_user),
         my_reported_ids=my_reported_ids)
 

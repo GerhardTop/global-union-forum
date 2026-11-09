@@ -880,7 +880,6 @@ def _thread_context(thread, branch_root_id=None):
         fact_data=fact_data,
         fact_marks=fact_signals.marked_ids(fact_ids),  # polijstronde P2: het kwaliteitsmerk
         post_proposals=_post_proposals(all_posts),  # polijstronde P5: reacties bij een voorstel
-        fact_disputed=fact_signals.disputed_ids(fact_ids) if conduct.mod_view(current_user) else set(),
         fact_my_disputed=fact_signals.my_disputed(fact_ids, current_user),
         conduct_cases=conduct_cases,
         moved_ids=moved_ids,

@@ -125,13 +125,14 @@ def test_dispute_goes_to_moderators_and_fact_stays(app, db, make_user):
     _req(_client(app, reader), 'POST', f'/forum/feit/{fact.id}/betwisten', data={'reason': 'misleidend'})
     assert FactDispute.query.filter_by(fact_post_id=fact.id).count() == 1
 
-    # Het feit blijft voor iedereen staan; het label ziet alleen een moderator.
+    # Het feit blijft voor iedereen staan. Fase 2c: ook een moderator ziet geen
+    # label op de pagina, betwiste feiten staan in het moderator-overzicht.
     anon = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
     assert 'Een twijfelachtig feit' in anon and '>Betwist<' not in anon
     mine = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
     assert 'Je hebt dit feit betwist' in mine and '>Betwist<' not in mine
     as_mod = _req(_client(app, mod), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
-    assert '>Betwist<' in as_mod
+    assert 'Een twijfelachtig feit' in as_mod and '>Betwist<' not in as_mod
 
     dash = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
     assert 'Betwiste feiten (' in dash and 'Een twijfelachtig feit' in dash and 'De cijfers zijn van 2010.' in dash
