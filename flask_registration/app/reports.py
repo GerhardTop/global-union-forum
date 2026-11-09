@@ -129,11 +129,6 @@ def open_meldingen():
     return groups
 
 
-def meldingen_count():
-    """Aantal gemelde items dat nog open staat (het aantal te beoordelen)."""
-    return len(open_meldingen())
-
-
 def oldest_open_at():
     """Het tijdstip van de oudste open melding, of None."""
     oldest = db.session.query(db.func.min(PostReport.created_at)).filter(

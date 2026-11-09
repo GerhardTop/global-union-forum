@@ -2273,3 +2273,9 @@ msgstr "Geef een reden voor je melding."
 
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Bedankt, je melding is doorgegeven aan een moderator."
+
+msgid "Choose what to do with this report."
+msgstr "Kies wat je met deze melding doet."
+
+msgid "The report has been handled."
+msgstr "De melding is behandeld."

@@ -142,7 +142,12 @@ def melding_beoordelen(kind, item_id):
     if not current_user.can_moderate():
         abort(403)
     from app import conduct, reports
-    kind = 'post' if kind in ('bijdrage', 'post') else 'proposal'
+    if kind in ('bijdrage', 'feit', 'post'):
+        kind = 'post'
+    elif kind in ('voorstel', 'proposal'):
+        kind = 'proposal'
+    else:
+        abort(404)
     melding = reports.find(kind, item_id)
     if melding is None:
         abort(404)

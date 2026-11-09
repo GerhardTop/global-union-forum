@@ -147,3 +147,26 @@ def test_cannot_review_own_item(app, db):
 def test_unknown_melding_404(app, db):
     mod = _user(db, 'moderator')
     assert _req(_client(app, mod), 'GET', '/moderator/melding/bijdrage/999999').status_code == 404
+
+
+def test_unknown_kind_404(app, db):
+    mod = _user(db, 'moderator')
+    assert _req(_client(app, mod), 'GET', '/moderator/melding/iets/1').status_code == 404
+
+
+def test_beoordelen_form_posts_to_a_working_url(app, db):
+    """De knoppen bij een gemeld feit moeten werken: haal het formulier op, lees
+    de action eruit en post daarheen (niet via /bijdrage/ eromheen)."""
+    import re
+    mod, author, reporter = _user(db, 'moderator'), _user(db), _user(db)
+    issue, fact = _issue_with_fact(db, author)
+    _report_fact(db, fact, reporter)
+    c = _client(app, mod)
+    html = _req(c, 'GET', f'/moderator/melding/bijdrage/{fact.id}').get_data(as_text=True)
+    m = re.search(r'<form[^>]*action="([^"]+)"[^>]*class="gu-mod-decide"', html)
+    assert m, 'beslisformulier niet gevonden'
+    action = m.group(1)
+    assert '/melding/feit/' not in action
+    r = _req(c, 'POST', action, data={'action': 'handhaven'})
+    assert r.status_code == 302
+    assert PostReport.query.filter_by(post_id=fact.id, decision='handhaven').count() == 1

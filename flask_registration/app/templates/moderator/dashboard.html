@@ -3,12 +3,13 @@
 
 {% macro melding_row(m) %}
 {% set soort = 'voorstel' if m.kind == 'proposal' else ('feit' if m.is_fact else 'bijdrage') %}
+{% set soort_en = 'proposal' if m.kind == 'proposal' else ('fact' if m.is_fact else 'contribution') %}
 <div class="gu-mrow">
   <div class="gu-mrow__body">
     <a class="gu-mrow__title" href="{% if m.kind == 'post' %}{{ post_url(m.item) }}{% elif m.issue %}{{ url_for('issues.proposal', issue_id=m.issue.id, proposal_id=m.id) }}{% else %}#{% endif %}">{{ m.snippet }}</a>
     <div class="gu-mrow__tags">
       {% if m.issue %}<a class="gu-pill" href="{{ url_for('issues.show', issue_id=m.issue.id) }}" lang="{{ m.issue.lang or lang }}">{{ m.issue.title }}</a>{% endif %}
-      <span class="gu-mrow__who">{% if lang == 'nl' %}{{ soort }} van {{ m.author_name or 'anonieme deelnemer' }}{% else %}{{ soort }} by {{ m.author_name or 'anonymous' }}{% endif %}</span>
+      <span class="gu-mrow__who">{% if lang == 'nl' %}{{ soort }} van {{ m.author_name or 'anonieme deelnemer' }}{% else %}{{ soort_en }} by {{ m.author_name or 'anonymous' }}{% endif %}</span>
     </div>
     <p class="gu-mrow__reason">{% if lang == 'nl' %}Reden{% else %}Reason{% endif %}: "{{ m.reports[0].reason }}"{% if m.count > 1 %} <a href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% if lang == 'nl' %}toon alle {{ m.count }}{% else %}show all {{ m.count }}{% endif %}</a>{% endif %}</p>
   </div>
@@ -31,18 +32,18 @@
     {# ── Kengetallen (fase 2) ───────────────────────────────────── #}
     <div class="gu-mod">
     <div class="gu-mod__kpis">
-      <div class="gu-kpi"><span class="gu-kpi__num gu-kpi__num--accent">{{ mod_counts.meldingen }}</span><span class="gu-kpi__lbl">Meldingen</span></div>
-      <div class="gu-kpi"><span class="gu-kpi__num">{{ mod_counts.bezwaren }}</span><span class="gu-kpi__lbl">Bezwaren</span></div>
-      <div class="gu-kpi"><span class="gu-kpi__num">{{ mod_counts.ai }}</span><span class="gu-kpi__lbl">Door de AI</span></div>
-      <div class="gu-kpi"><span class="gu-kpi__num">{{ mod_counts.zonder }}</span><span class="gu-kpi__lbl">Zonder AI-oordeel</span></div>
-      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_total }}</span><span class="gu-kpi__lbl">Behandeld totaal</span></div>
-      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_mine }}</span><span class="gu-kpi__lbl">Behandeld door jou</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num gu-kpi__num--accent">{{ mod_counts.meldingen }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Meldingen{% else %}Reports{% endif %}</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num">{{ mod_counts.bezwaren }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Bezwaren{% else %}Objections{% endif %}</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num">{{ mod_counts.ai }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Door de AI{% else %}By the AI{% endif %}</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num">{{ mod_counts.zonder }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Zonder AI-oordeel{% else %}Without AI judgement{% endif %}</span></div>
+      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_total }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Behandeld totaal{% else %}Handled total{% endif %}</span></div>
+      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_mine }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Behandeld door jou{% else %}Handled by you{% endif %}</span></div>
     </div>
 
     {# ── Meldingen (meldknop) plus rechterkolom ─────────────────── #}
     <div class="gu-mod__cols">
       <section class="gu-mod__main">
-        <div class="gu-mod__blockhead"><h2 style="margin:0;font-size:18px;font-weight:600">Meldingen</h2><span class="gu-pill">{% if lang == 'nl' %}door deelnemers{% else %}by participants{% endif %}</span></div>
+        <div class="gu-mod__blockhead"><h2 style="margin:0;font-size:18px;font-weight:600">{% if lang == 'nl' %}Meldingen{% else %}Reports{% endif %}</h2><span class="gu-pill">{% if lang == 'nl' %}door deelnemers{% else %}by participants{% endif %}</span></div>
         <div class="gu-mod-bin">
           {% for m in meldingen %}{{ melding_row(m) }}{% endfor %}
           {% if not meldingen %}<p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>{% endif %}

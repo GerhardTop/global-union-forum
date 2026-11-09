@@ -2276,3 +2276,9 @@ msgstr "Give a reason for your report."
 
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Thanks, your report has been sent to a moderator."
+
+msgid "Choose what to do with this report."
+msgstr "Choose what to do with this report."
+
+msgid "The report has been handled."
+msgstr "The report has been handled."
