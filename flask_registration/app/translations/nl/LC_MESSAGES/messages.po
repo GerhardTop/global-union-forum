@@ -2279,3 +2279,15 @@ msgstr "Kies wat je met deze melding doet."
 
 msgid "The report has been handled."
 msgstr "De melding is behandeld."
+
+msgid "Type the exact title to confirm."
+msgstr "Typ de titel precies over om te bevestigen."
+
+msgid "Type the exact text to confirm."
+msgstr "Typ de tekst precies over om te bevestigen."
+
+msgid "The issue has been deleted."
+msgstr "Het vraagstuk is verwijderd."
+
+msgid "The proposal has been deleted."
+msgstr "Het voorstel is verwijderd."

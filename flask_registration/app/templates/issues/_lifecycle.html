@@ -56,3 +56,13 @@
   </div>
 </details>
 {% endif %}
+
+{% if current_user.is_authenticated and current_user.is_admin %}
+<details class="gu-cockpit__manage" id="beheer-admin">
+  <summary>{% if lang == 'nl' %}Beheer (admin){% else %}Admin{% endif %}</summary>
+  <div class="gu-cockpit__managebody">
+    <p class="gu-composer__hint">{% if lang == 'nl' %}Een vraagstuk verwijderen is onomkeerbaar: de hele discussie, voorstellen, feiten en meldingen gaan weg.{% else %}Deleting an issue is irreversible: the whole discussion, proposals, facts and reports are removed.{% endif %}</p>
+    <a class="gu-btn gu-btn--danger gu-btn--sm" href="{{ url_for('issues.delete_issue', issue_id=issue.id) }}">{% if lang == 'nl' %}Vraagstuk verwijderen{% else %}Delete issue{% endif %}</a>
+  </div>
+</details>
+{% endif %}

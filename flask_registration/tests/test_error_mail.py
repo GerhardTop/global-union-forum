@@ -62,7 +62,15 @@ class TestServerErrorHandlerIntegration:
             raise exc_cls("kaboom — gesimuleerde herhaaldelijke crash")
 
         if "test_boom" not in app.view_functions:
-            app.add_url_rule("/__test_boom__", "test_boom", _boom)
+            # De app is sessie-breed; als een eerdere test al een verzoek deed,
+            # blokkeert Flask add_url_rule. Zet de vlag even terug zodat deze
+            # testroute los van de testvolgorde geregistreerd kan worden.
+            was_handled = getattr(app, "_got_first_request", False)
+            app._got_first_request = False
+            try:
+                app.add_url_rule("/__test_boom__", "test_boom", _boom)
+            finally:
+                app._got_first_request = was_handled
 
     @pytest.fixture()
     def propagate_off(self, app):

@@ -409,3 +409,61 @@ def overview(which='alle'):
                       .filter(IssueProposal.issue_id.in_([i.id for i in found]))
                       .group_by(IssueProposal.issue_id).all())
     return [(i, counts.get(i.id, 0) + len(i.proposals), len(issue_lifecycle.participants(i))) for i in found]
+
+
+# ── Verwijderen (fase 3) ─────────────────────────────────────────────────
+
+def purge(issue):
+    """Verwijder een heel vraagstuk definitief: de discussie (het gesprek en de
+    bijdragen), alle voorstellen met hun versies, steun, stemmen, feitkoppelingen
+    en meldingen, de volgers en de eventdagen. Onomkeerbaar. Commit zelf."""
+    from app import quality, issue_lifecycle
+    from app.models import (IssueProposal, IssueProposalVersion, IssueProposalSupport,
+                            IssueProposalVote, IssueProposalFact, ProposalReport,
+                            PostLike, IssueEventDay)
+    thread_id = issue.thread_id
+    prop_ids = [p.id for p in IssueProposal.query.filter_by(issue_id=issue.id)]
+    post_ids = [p.id for p in Post.query.filter_by(thread_id=thread_id)] if thread_id else []
+    if post_ids:
+        quality.delete_for_posts(post_ids)  # merk, moderatie, feitsignalen, meldingen
+        PostLike.query.filter(PostLike.post_id.in_(post_ids)).delete(synchronize_session=False)
+        Post.query.filter(Post.parent_id.in_(post_ids)).update({Post.parent_id: None}, synchronize_session=False)
+        Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
+    if prop_ids:
+        for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
+            model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
+        IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
+    # Het oude Proposal-record van dit gesprek (uit de backfill) met zijn stemmen
+    # en rondes; proposals.thread_id is uniek, dus dit moet weg voor de thread.
+    if thread_id:
+        from app.models import Proposal, ProposalRound, ProposalVote, RoundVote
+        old_prop_ids = [p.id for p in Proposal.query.filter_by(thread_id=thread_id)]
+        if old_prop_ids:
+            ProposalVote.query.filter(ProposalVote.proposal_id.in_(old_prop_ids)).delete(synchronize_session=False)
+            round_ids = [r.id for r in ProposalRound.query.filter(ProposalRound.proposal_id.in_(old_prop_ids))]
+            if round_ids:
+                RoundVote.query.filter(RoundVote.round_id.in_(round_ids)).delete(synchronize_session=False)
+                ProposalRound.query.filter(ProposalRound.id.in_(round_ids)).delete(synchronize_session=False)
+            from app import digest
+            digest.delete_for_proposals(old_prop_ids)
+            Proposal.query.filter(Proposal.id.in_(old_prop_ids)).delete(synchronize_session=False)
+    issue_lifecycle.delete_follows(issue_ids=[issue.id])
+    IssueEventDay.query.filter(IssueEventDay.issue_id == issue.id).delete(synchronize_session=False)
+    issue.thread_id = None
+    db.session.flush()
+    Issue.query.filter(Issue.id == issue.id).delete(synchronize_session=False)
+    if thread_id:
+        Thread.query.filter(Thread.id == thread_id).delete(synchronize_session=False)
+    db.session.commit()
+
+
+def purge_proposal(proposal):
+    """Verwijder een los voorstel definitief: zijn versies, steun, stemmen,
+    feitkoppelingen en meldingen. Het vraagstuk blijft staan. Commit zelf."""
+    from app.models import (IssueProposal, IssueProposalVersion, IssueProposalSupport,
+                            IssueProposalVote, IssueProposalFact, ProposalReport)
+    pid = proposal.id
+    for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
+        model.query.filter(model.proposal_id == pid).delete(synchronize_session=False)
+    IssueProposal.query.filter(IssueProposal.id == pid).delete(synchronize_session=False)
+    db.session.commit()

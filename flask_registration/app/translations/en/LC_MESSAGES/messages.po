@@ -2282,3 +2282,15 @@ msgstr "Choose what to do with this report."
 
 msgid "The report has been handled."
 msgstr "The report has been handled."
+
+msgid "Type the exact title to confirm."
+msgstr "Type the exact title to confirm."
+
+msgid "Type the exact text to confirm."
+msgstr "Type the exact text to confirm."
+
+msgid "The issue has been deleted."
+msgstr "The issue has been deleted."
+
+msgid "The proposal has been deleted."
+msgstr "The proposal has been deleted."
