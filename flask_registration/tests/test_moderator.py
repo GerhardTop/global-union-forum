@@ -170,3 +170,14 @@ def test_beoordelen_form_posts_to_a_working_url(app, db):
     r = _req(c, 'POST', action, data={'action': 'handhaven'})
     assert r.status_code == 302
     assert PostReport.query.filter_by(post_id=fact.id, decision='handhaven').count() == 1
+
+
+def test_moderator_link_in_menu(app, db):
+    """De Moderator-link staat in het profielmenu voor elke moderator, ook voor
+    een admin (eerder verborgen voor admins)."""
+    admin = _user(db, 'moderator'); admin.is_admin = True; db.session.commit()
+    mod = _user(db, 'moderator')
+    plain = _user(db)
+    for user, expect in ((admin, True), (mod, True), (plain, False)):
+        h = _req(_client(app, user), 'GET', '/').get_data(as_text=True)
+        assert ('>Moderator</a>' in h) is expect
