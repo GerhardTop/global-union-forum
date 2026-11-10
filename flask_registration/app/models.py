@@ -1296,5 +1296,9 @@ class Notification(db.Model):
     # "issue:7:phase:stemmen:<start>"), so the hourly tick creates it once.
     # The instant events leave it NULL.
     event_key  = db.Column(db.String(80), nullable=True)
+    # Step 3b: shown in the app (NULL counts as true: the 3a rows were), and
+    # when the per-event email went out.
+    in_app     = db.Column(db.Boolean, nullable=True)
+    emailed_at = db.Column(db.DateTime, nullable=True)
 
     __table_args__ = (db.Index('ix_notifications_user_id_event_key', 'user_id', 'event_key'),)

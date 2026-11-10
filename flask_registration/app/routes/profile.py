@@ -210,8 +210,7 @@ def meldingen():
     if digests:
         with force_locale(digest.lang_for(current_user)):
             cards = Markup(render_template("forum/_digest_cards.html", digests=digests, existing_threads=existing))
-    if any(i['unread'] for i in items):
-        notifications.mark_all_read(current_user)
+    notifications.mark_all_read(current_user)  # also email-only rows (step 3b), so they never pile up
     if current_user.has_unread_digest:
         current_user.has_unread_digest = False
     db.session.commit()

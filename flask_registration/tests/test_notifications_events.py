@@ -165,3 +165,97 @@ def test_deleting_a_user_or_post_removes_their_notifications(app, db, make_user,
     quality.delete_for_posts([reply.id])
     db.session.commit()
     assert _rows(anna) == []
+
+
+# ── Step 3b: the per-event email, independent of the in-app switch ───────
+
+def _capture_mail(monkeypatch):
+    sent = []
+    import app.mail as mail
+    monkeypatch.setattr(mail, 'send_email', lambda to, subject, html: sent.append((to, subject, html)) or True)
+    return sent
+
+
+def _prefs(db, user, category, app_on, email_on, lang=None):
+    user.notif_prefs = json.dumps({category: {'app': app_on, 'email': email_on}})
+    if lang:
+        user.lang = lang
+    db.session.commit()
+
+
+def _reply_to(app, make_user, make_thread, anna):
+    bram = make_user()
+    t = make_thread(op_user=anna)
+    top = _reply(app, anna, t, f'Anna {anna.id}')
+    return _reply(app, bram, t, f'Bram op {anna.id}', parent=top)
+
+
+def test_default_reactie_is_in_app_without_email(app, db, make_user, make_thread, fake_ai, monkeypatch):
+    sent = _no_mail(monkeypatch)
+    anna = make_user()
+    _reply_to(app, make_user, make_thread, anna)
+    rows = _rows(anna, 'reactie')
+    assert len(rows) == 1 and rows[0].in_app is True and rows[0].emailed_at is None
+    assert sent == []
+
+
+def test_email_only_sends_mail_and_stays_out_of_the_app(app, db, make_user, make_thread, fake_ai, monkeypatch):
+    sent = _capture_mail(monkeypatch)
+    anna = make_user()
+    _prefs(db, anna, 'reactie', False, True, lang='en')
+    reply = _reply_to(app, make_user, make_thread, anna)
+    rows = _rows(anna)
+    assert len(rows) == 1 and rows[0].in_app is False and rows[0].emailed_at is not None
+    assert notifications.unread_count(anna) == 0 and notifications.recent_notifications(anna) == []
+    page = _req(_client(app, anna), 'GET', '/meldingen').get_data(as_text=True)
+    assert 'gu-inbox__item' not in page
+    assert 'data-unread-notifications' not in _req(_client(app, anna), 'GET', '/forum').get_data(as_text=True)
+    assert [(to, subject) for to, subject, _ in sent] == [(anna.email, 'A reply to your contribution')]
+    html = sent[0][2]
+    assert 'Someone replied to your contribution.' in html and f'#post-{reply.id}' in html
+    assert 'http://localhost/' in html and '/profiel/meldingen' in html
+
+
+def test_app_and_email_both_on(app, db, make_user, make_thread, fake_ai, monkeypatch):
+    sent = _capture_mail(monkeypatch)
+    anna = make_user()
+    _prefs(db, anna, 'reactie', True, True)                  # Dutch by default
+    _reply_to(app, make_user, make_thread, anna)
+    rows = _rows(anna)
+    assert len(rows) == 1 and rows[0].in_app is True and notifications.unread_count(anna) == 1
+    assert [(to, subject) for to, subject, _ in sent] == [(anna.email, 'Er is op je bijdrage gereageerd')]
+
+
+def test_both_off_means_nothing(app, db, make_user, make_thread, fake_ai, monkeypatch):
+    sent = _no_mail(monkeypatch)
+    anna = make_user()
+    _prefs(db, anna, 'reactie', False, False)
+    _reply_to(app, make_user, make_thread, anna)
+    assert _rows(anna) == [] and sent == []
+
+
+def test_no_email_for_an_unverified_address(app, db, make_user, make_thread, fake_ai, monkeypatch):
+    sent = _no_mail(monkeypatch)
+    anna = make_user()
+    _prefs(db, anna, 'reactie', True, True)
+    anna.verified = False
+    db.session.commit()
+    _reply_to(app, make_user, make_thread, anna)
+    assert len(_rows(anna)) == 1 and sent == []
+    # Without an address (a guard in notify(); the column is NOT NULL, so only in memory).
+    user = make_user()
+    _prefs(db, user, 'reactie', False, True)
+    user.email = ''
+    assert notifications.notify(user, 'reactie') is not None and sent == []
+    db.session.rollback()
+
+
+def test_moderation_email_goes_to_moderators_who_want_it(app, db, make_user, make_thread, fake_ai, monkeypatch):
+    sent = _capture_mail(monkeypatch)
+    author, reporter, mod = make_user(), make_user(), make_user('moderator')
+    _prefs(db, mod, 'melding', True, True)
+    t = make_thread(op_user=author)
+    post = _reply(app, author, t, 'Iets om per mail te melden')
+    _req(_client(app, reporter), 'POST', f'/forum/bijdrage/{post.id}/melden', data={'reason': 'Ongepast'})
+    assert (mod.email, 'Een nieuwe melding om te behandelen') in [(to, subject) for to, subject, _ in sent]
+    assert all(to != reporter.email for to, _, _ in sent)

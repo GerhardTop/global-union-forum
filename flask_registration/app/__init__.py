@@ -315,7 +315,9 @@ _POLISH_COLUMNS = {
               ('notif_prefs', 'TEXT NULL'), ('summary_frequency', 'VARCHAR(8) NULL')),
     # Notifications step 3a-2: the de-dup key of a tick-driven notification
     # (the table itself comes from db.create_all() in step 3a-1).
-    'notifications': (('event_key', 'VARCHAR(80) NULL'),),
+    # Step 3b: in_app (NULL = true) and emailed_at for the per-event email.
+    'notifications': (('event_key', 'VARCHAR(80) NULL'), ('in_app', 'BOOLEAN NULL'),
+                      ('emailed_at', 'TIMESTAMP NULL')),
     # P2: het soort feit (media) en het kwaliteitsmerk van een feit.
     'posts': (('fact_type', 'VARCHAR(10) NULL'),
               # P5: een reactie bij een voorstel, met de versie (de tabel

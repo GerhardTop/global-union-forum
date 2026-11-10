@@ -15,7 +15,12 @@ moderators), feit (your fact challenged or resolved) and betwist (a challenged
 fact, for senior moderators). In-app only: no email per event yet, and the
 tick-driven follow/issue events (voorstel, gevolgd, uitslag) come later.
 Rows hold references only; notification_line() builds the text and the link
-per language when rendering."""
+per language when rendering.
+
+Step 3a-2/3a-3 add the tick-driven events (gevolgd, uitslag, voorstel), made
+idempotent by event_key. Step 3b adds the per-event email: the in-app and
+email switches are independent; a row exists whenever either is on (in_app
+says whether it shows in the app), so event_key de-dups both channels."""
 import json
 from datetime import datetime, timedelta
 
@@ -113,6 +118,8 @@ MODERATION_CATEGORIES = frozenset(key for key, section, *_rest in CATEGORIES if 
 
 
 def _may_receive(user, category, actor_id):
+    """The gates that hold for both channels: not a deleted account, not your
+    own action, and a moderation category only for who may hold it now."""
     if user is None or getattr(user, 'is_deleted', False):
         return False
     if actor_id is not None and actor_id == user.id:
@@ -120,39 +127,52 @@ def _may_receive(user, category, actor_id):
     if category in MODERATION_CATEGORIES:
         if user.is_suspended or category not in allowed_categories(user):
             return False
-    return effective_prefs(user)[category]['app']
+    return True
+
+
+def _pending(match):
+    from app.models import Notification
+    return any(isinstance(o, Notification) and match(o) for o in db.session.new)
 
 
 def notify(user, category, *, thread_id=None, issue_id=None, post_id=None, actor_id=None, dispute_id=None,
            event_key=None):
-    """Add one Notification for user to the session when they want it in the
-    app, did not cause it themselves and (for a moderation category) may hold
-    it. With an event_key (the tick, step 3a-2) it is idempotent: nothing
-    happens when this user already has a row with that key. Returns the row
-    or None. Commit niet zelf: the caller's commit persists it."""
+    """One event for one user, on the channels they switched on (step 3b):
+    the in-app switch and the email switch are independent. Whenever either
+    is on, a Notification row is added (in_app says whether it shows in the
+    app); with the email switch on, a verified address gets the per-event
+    email right away. Not for your own action, and a moderation category
+    only for who may hold it. With an event_key (the tick) it is idempotent
+    across both channels: nothing happens when this user already has a row
+    with that key. Returns the row or None. Commit niet zelf: the caller's
+    commit persists it."""
     from app.models import Notification
     if category not in CATEGORY_KEYS or not _may_receive(user, category, actor_id):
+        return None
+    pref = effective_prefs(user)[category]
+    app_on, email_on = pref['app'], pref['email']
+    if not app_on and not email_on:
         return None
     if event_key is not None:
         # The tick is single-process: check-then-insert is enough.
         with db.session.no_autoflush:
             seen = Notification.query.filter_by(user_id=user.id, event_key=event_key).first()
-        pending = any(isinstance(o, Notification) and o.user_id == user.id and o.event_key == event_key
-                      for o in db.session.new)
-        if seen is not None or pending:
+        if seen is not None or _pending(lambda o: o.user_id == user.id and o.event_key == event_key):
             return None
     if category == 'melding' and post_id is not None:
         # Repeated reports on the same post don't stack up while one is unread.
         with db.session.no_autoflush:
             open_row = Notification.query.filter_by(user_id=user.id, category='melding', post_id=post_id,
                                                     read_at=None).first()
-        pending = any(isinstance(o, Notification) and o.user_id == user.id and o.category == 'melding'
-                      and o.post_id == post_id for o in db.session.new)
-        if open_row is not None or pending:
+        if open_row is not None or _pending(lambda o: o.user_id == user.id and o.category == 'melding'
+                                            and o.post_id == post_id):
             return None
     row = Notification(user_id=user.id, category=category, thread_id=thread_id, issue_id=issue_id,
-                       post_id=post_id, actor_id=actor_id, dispute_id=dispute_id, event_key=event_key)
+                       post_id=post_id, actor_id=actor_id, dispute_id=dispute_id, event_key=event_key,
+                       in_app=app_on)
     db.session.add(row)
+    if email_on and user.verified and user.email:
+        send_notification_email(user, row)
     return row
 
 
@@ -187,18 +207,20 @@ def unread_count(user):
     from app.models import Notification
     if not getattr(user, 'is_authenticated', False):
         return 0
-    return Notification.query.filter_by(user_id=user.id, read_at=None).count()
+    return (Notification.query.filter_by(user_id=user.id, read_at=None)
+            .filter(Notification.in_app.isnot(False)).count())
 
 
 def recent_notifications(user, limit=50):
     from app.models import Notification
-    return (Notification.query.filter_by(user_id=user.id)
+    return (Notification.query.filter_by(user_id=user.id).filter(Notification.in_app.isnot(False))
             .order_by(Notification.created_at.desc(), Notification.id.desc()).limit(limit).all())
 
 
 def mark_all_read(user, now=None):
     """Set read_at on this user's unread notifications. Commit niet zelf."""
     from app.models import Notification
+    # Email-only rows too: after a visit, a further report on the same post may notify again.
     return (Notification.query.filter_by(user_id=user.id, read_at=None)
             .update({Notification.read_at: now or datetime.utcnow()}, synchronize_session=False))
 
@@ -425,6 +447,52 @@ def _tick_line(n, lang):
                 else f'{noun[0].upper()}{noun[1:]} {t} moves on to the next phase: {label}.'), url
     return (f'{t[0].upper()}{t[1:]} is in een nieuwe fase: {label}.' if nl
             else f'{t[0].upper()}{t[1:]} has moved to a new phase: {label}.'), url
+
+
+# ── The per-event email (step 3b) ────────────────────────────────────────
+
+_SUBJECTS = {
+    'reactie': ('Er is op je bijdrage gereageerd', 'A reply to your contribution'),
+    'voorstel': ('Nieuws over je voorstel', 'News about your proposal'),
+    'gevolgd': ('Nieuws over een vraagstuk dat je volgt', 'News about an issue you follow'),
+    'uitslag': ('De uitslag van een vraagstuk dat je volgt', 'The outcome of an issue you follow'),
+    'feit': ('Nieuws over je feit', 'News about your fact'),
+    'melding': ('Een nieuwe melding om te behandelen', 'A new report to handle'),
+    'bezwaar': ('Een nieuw bezwaar tegen een beslissing', 'A new objection to a decision'),
+    'betwist': ('Een feit wordt betwist', 'A fact is being challenged'),
+}
+
+
+def email_for(user, n):
+    """(subject, html) of the per-event email, in the user's stored language
+    (users.lang, Dutch by default), like the summary."""
+    from flask import render_template, url_for
+    from flask_babel import force_locale
+    from app import digest
+    lang = digest.lang_for(user)
+    with force_locale(lang):
+        text, url = notification_line(n, lang)
+        base = url_for('main.index', _external=True).rstrip('/')
+        if url.startswith('/'):
+            url = base + url
+        nl, en = _SUBJECTS[n.category]
+        html = render_template('email/notification.html', lang=lang, text=text, url=url,
+                               settings_url=url_for('profile.notificaties', _external=True))
+    return (nl if lang == 'nl' else en), html
+
+
+def send_notification_email(user, n):
+    """Send it now; a failure is logged and never breaks the action that
+    caused the event. Sets emailed_at when the mail went out."""
+    from flask import current_app
+    from app.mail import send_email
+    try:
+        db.session.flush()  # the row and what it points at have ids for the link
+        subject, html = email_for(user, n)
+        if send_email(user.email, subject, html):
+            n.emailed_at = datetime.utcnow()
+    except Exception as exc:  # noqa: BLE001
+        current_app.logger.error('Meldingsmail aan gebruiker %s mislukt: %s', user.id, exc)
 
 # ── Opruimen ─────────────────────────────────────────────────────────────
 
