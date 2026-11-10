@@ -8,7 +8,7 @@ from app.models import (ConductCase, Post, PostReport, QualityAward, Suspension,
                         User, Warning)
 from app.users import moderation_history, user_stats
 from tests.test_delete_issue import _cleanup
-from tests.test_moderator import _issue_with_fact, _user
+from tests.test_moderator import _client, _issue_with_fact, _req, _user
 
 
 @pytest.fixture(autouse=True)
@@ -135,3 +135,89 @@ def test_deleting_a_user_removes_their_moderation_rows(app, db):
         assert Warning.query.filter_by(user_id=mod.id).one().by_id is None
     finally:
         _drop_moderation_rows(user, mod)
+
+
+# ── Step 2: the Gebruiker page and "Waarschuwing sturen" ────────────────
+
+def _kpi(page, key):
+    import re
+    m = re.search(r'data-kpi="%s"><span class="gu-kpi__num[^"]*">(\d+)<' % key, page)
+    return int(m.group(1))
+
+
+def test_gebruiker_page_is_moderator_only(app, db):
+    target, mod, plain = _user(db), _user(db, 'moderator'), _user(db)
+    r = _req(_client(app, mod), 'GET', f'/moderator/gebruiker/{target.id}')
+    assert r.status_code == 200
+    page = r.get_data(as_text=True)
+    assert f'@{target.username}' in page and 'Handhaving-historie' in page
+    assert 'Waarschuwing sturen' in page and 'Bericht aan de gebruiker' in page
+    assert 'Tijdelijk schorsen' not in page and 'Account verwijderen' not in page
+    assert _req(_client(app, plain), 'GET', f'/moderator/gebruiker/{target.id}').status_code == 403
+    assert _req(_client(app, plain), 'POST', f'/moderator/gebruiker/{target.id}/waarschuwing',
+                data={'message': 'x'}).status_code == 403
+    assert _req(_client(app, mod), 'GET', '/moderator/gebruiker/999999').status_code == 404
+
+
+def test_gebruiker_page_shows_figures_history_and_contributions(app, db):
+    author, other, mod = _user(db), _user(db), _user(db, 'moderator')
+    issue, fact = _issue_with_fact(db, author)
+    issue_id = issue.id
+    try:
+        good = _post(db, issue, author, 'Een goede bijdrage over het plein.')
+        moved = _post(db, issue, author, 'Een bijdrage die te ver gaat.')
+        theirs = _post(db, issue, other, 'Een bijdrage van een ander.')
+        db.session.add(QualityAward(post_id=good.id, criterion='K1', status='toegekend'))
+        db.session.add(ConductCase(post_id=moved.id, action='verplaatst', rule='respect', source='moderator',
+                                   explanation='Persoonlijke aanval.', body_snapshot=moved.body,
+                                   on_background=True, acted_at=datetime.utcnow(), acted_by_id=mod.id))
+        db.session.add(PostReport(post_id=moved.id, reporter_id=other.id, reason='aanval', decision='verplaatst'))
+        db.session.add(PostReport(post_id=theirs.id, reporter_id=author.id, reason='spam'))
+        db.session.add(Warning(user_id=author.id, by_id=other.id, message='Blijf op de inhoud.'))
+        db.session.commit()
+        stats = user_stats(author)
+
+        page = _req(_client(app, mod), 'GET', f'/moderator/gebruiker/{author.id}').get_data(as_text=True)
+        assert _kpi(page, 'bijdragen') == stats['bijdragen']
+        assert _kpi(page, 'feiten') == 1 and _kpi(page, 'keurmerken') == 1
+        assert _kpi(page, 'ontvangen') == 1 and '(1 gegrond)' in page
+        assert _kpi(page, 'gedaan') == 1
+        assert '1 waarschuwing<' in page and '0 schorsingen<' in page
+
+        hist = page[page.index('id="historie"'):page.index('id="bijdragen"')]
+        assert 'Bijdrage verplaatst naar achtergrond' in hist and 'door jou' in hist
+        assert 'Persoonlijke aanval.' in hist and issue.title in hist
+        assert 'Waarschuwing gestuurd' in hist and 'Blijf op de inhoud.' in hist and f'@{other.username}' in hist
+
+        contrib = page[page.index('id="bijdragen"'):page.index('id="waarschuwing"')]
+        assert 'data-status="verplaatst"' in contrib and '#zaak-' in contrib
+        assert 'data-status="keurmerk"' in contrib and 'data-status="feit"' in contrib
+        assert 'Feit: ' in contrib and 'gu-pill--ctx' in contrib
+    finally:
+        _drop_moderation_rows(author, other)
+        _cleanup(issue_id)
+
+
+def test_sending_a_warning_adds_it_to_the_history(app, db):
+    target, mod = _user(db), _user(db, 'moderator')
+    try:
+        c = _client(app, mod)
+        url = f'/moderator/gebruiker/{target.id}/waarschuwing'
+        r = _req(c, 'POST', url, data={'message': '   '})
+        assert r.status_code == 302 and Warning.query.filter_by(user_id=target.id).count() == 0
+
+        r = _req(c, 'POST', url, data={'message': 'Blijf op de inhoud, niet op de persoon.'})
+        assert r.status_code == 302 and r.headers['Location'].endswith(f'/moderator/gebruiker/{target.id}')
+        w = Warning.query.filter_by(user_id=target.id).one()
+        assert w.by_id == mod.id and w.message == 'Blijf op de inhoud, niet op de persoon.'
+
+        page = _req(c, 'GET', f'/moderator/gebruiker/{target.id}').get_data(as_text=True)
+        hist = page[page.index('id="historie"'):page.index('id="bijdragen"')]
+        assert 'Waarschuwing gestuurd' in hist and 'Blijf op de inhoud, niet op de persoon.' in hist
+        assert 'door jou' in hist and '1 waarschuwing<' in page
+
+        # A moderator cannot warn themselves.
+        assert _req(c, 'POST', f'/moderator/gebruiker/{mod.id}/waarschuwing',
+                    data={'message': 'x'}).status_code == 403
+    finally:
+        _drop_moderation_rows(target, mod)

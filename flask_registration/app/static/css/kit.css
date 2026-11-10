@@ -4285,3 +4285,68 @@ body {
   .gu-mrow__line .gu-mrow__title { white-space:normal; flex-basis:100%; }
   .gu-pill--ctx { max-width:100%; }
 }
+
+/* ── User moderation dossier (docs/design/gebruiker.html) ─────────────── */
+.gu-user__crumbs { padding-top:22px; margin-bottom:16px; }
+.gu-user__id { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; padding:20px 24px; margin-bottom:18px; box-shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05); }
+.gu-user__who { display:flex; align-items:center; gap:16px; min-width:0; }
+.gu-user__avatar { flex:0 0 auto; width:52px; height:52px; border-radius:50%; background:var(--mod-n100); color:var(--mod-n600); font-size:18px; font-weight:600; display:flex; align-items:center; justify-content:center; }
+.gu-user__name { margin:0; font-size:22px; font-weight:600; letter-spacing:-.01em; overflow-wrap:anywhere; }
+.gu-user__pills { display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap; }
+.gu-user__check { fill:none; stroke:var(--mod-green); stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }
+.gu-user__counters { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.gu-user__pill--warn { background:#fff8ee; border-color:#f0d9b0; color:#8a5a12; }
+.gu-user__pill--ok { background:#f3f8f4; border-color:#d6e8dc; color:#108a4e; }
+.gu-user__flag { display:inline-block; flex:0 0 auto; width:9px; height:12px; border-radius:2px; }
+.gu-user__flag--warn { background:#e09400; }
+.gu-user__flag--susp { background:#d8232a; }
+.gu-user__kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:24px; }
+.gu-user__kpis .gu-kpi { border-radius:14px; box-shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05); }
+.gu-user__kpis .gu-kpi__num { font-size:24px; }
+.gu-user__num--green { color:var(--mod-green); }
+.gu-user__dim { color:#a7b1bd; }
+.gu-user__main, .gu-user__side { display:flex; flex-direction:column; gap:26px; min-width:0; }
+.gu-user__side { gap:14px; }
+.gu-user__h2 { margin:0 0 12px; font-size:16px; font-weight:600; }
+.gu-user__side .gu-user__h2 { margin-bottom:-2px; }
+.gu-user .gu-mod-list { border-radius:14px; box-shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05); }
+.gu-user__log, .gu-user__brow { display:flex; align-items:flex-start; gap:11px; padding:13px 16px; }
+.gu-user__brow { gap:12px; }
+.gu-user__log + .gu-user__log, .gu-user__brow + .gu-user__brow { border-top:1px solid var(--mod-n100); }
+.gu-user__dot { flex:0 0 auto; width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+.gu-user__dot svg { fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }
+.gu-user__dot--verplaatst { background:#fdeceb; color:#d8232a; }
+.gu-user__dot--waarschuwing { background:#fff8ee; color:#e09400; }
+.gu-user__dot--verborgen { background:var(--mod-n100); color:var(--mod-n500); }
+.gu-user__dot--schorsing { background:#fef3ec; color:#c6641a; }
+.gu-user__logbody, .gu-user__browbody { flex:1; min-width:0; }
+.gu-user__logtitle { font-size:13.5px; font-weight:500; }
+.gu-user__logmeta { font-size:12.5px; color:var(--mod-n500); margin-top:3px; overflow-wrap:anywhere; }
+.gu-user__browtitle { font-size:13.5px; font-weight:500; color:var(--mod-ink); overflow-wrap:anywhere; }
+a.gu-user__browtitle { text-decoration:none; }
+a.gu-user__browtitle:hover { color:var(--mod-accent); }
+.gu-user__browmeta { display:flex; align-items:center; gap:8px; margin-top:6px; flex-wrap:wrap; font-size:12px; color:var(--mod-n500); }
+.gu-user__status--keurmerk { background:#eef7f1; border-color:#c5e4d0; color:#108a4e; }
+.gu-user__status--verplaatst, .gu-user__status--verborgen { background:#fdeceb; border-color:#f3c9c6; color:#a3282c; }
+.gu-user__status--gemeld { background:#fff3e0; border-color:#f0d9b0; color:#8a5a12; }
+.gu-user__empty { margin:0; padding:16px; font-size:13px; color:var(--mod-n500); }
+.gu-user__note { margin:0 2px; font-size:12.5px; color:var(--mod-n500); line-height:1.5; }
+.gu-user__measure { margin-bottom:0; box-shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05); }
+.gu-user__measurehead { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.gu-user__measurehead h3 { margin:0; font-size:14px; font-weight:600; }
+.gu-user__measurehead .gu-user__flag { width:11px; height:15px; }
+.gu-user__measuretext { margin:0; font-size:12.5px; color:var(--mod-n600); line-height:1.5; }
+.gu-user__lbl { display:block; font-size:12px; color:var(--mod-n600); margin:11px 0 6px; }
+.gu-user__ta { display:block; width:100%; box-sizing:border-box; font-family:inherit; font-size:13px; line-height:1.5; border:1px solid var(--mod-border); border-radius:9px; padding:9px 11px; resize:vertical; color:var(--mod-ink); }
+.gu-user__act { display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:10px; font-family:inherit; font-size:14px; font-weight:500; padding:11px 14px; border-radius:9px; border:1px solid var(--mod-border); background:#fff; color:var(--mod-ink); cursor:pointer; line-height:1.1; }
+.gu-user__act--warn { border-color:#f0d9b0; background:#fff8ee; color:#8a5a12; }
+.gu-user__act--warn:hover { background:#fdf0da; }
+@media (max-width:900px) {
+  .gu-user__kpis { grid-template-columns:repeat(3,1fr); }
+}
+@media (max-width:560px) {
+  .gu-user__id { padding:16px; }
+  .gu-user__kpis { grid-template-columns:repeat(2,1fr); gap:10px; }
+  .gu-user__log, .gu-user__brow { padding:12px; }
+  .gu-user__brow { flex-wrap:wrap; }
+}

@@ -78,3 +78,52 @@ def moderation_history(user):
     items.sort(key=lambda i: i.at or datetime.min, reverse=True)
     return items
 
+
+
+@dataclass
+class Contribution:
+    """One of the user's posts or facts for the dossier list. status is the
+    most telling of verplaatst / verborgen / gemeld / keurmerk / feit, or None."""
+    post: object
+    issue: object
+    status: str = None
+
+
+def recent_contributions(user, limit=20):
+    """The user's posts and facts, newest first, with their issue and a status.
+    Three queries: the posts, the awarded ones and the ones with open reports
+    (conduct_case comes along per post through its backref)."""
+    from app.models import PostReport
+    posts = (Post.query.filter(Post.user_id == user.id)
+             .order_by(Post.created_at.desc(), Post.id.desc()).limit(limit).all())
+    ids = [p.id for p in posts]
+    awarded, reported = set(), set()
+    if ids:
+        awarded = {pid for (pid,) in QualityAward.query.with_entities(QualityAward.post_id)
+                   .filter(QualityAward.post_id.in_(ids), QualityAward.status == 'toegekend')}
+        reported = {pid for (pid,) in PostReport.query.with_entities(PostReport.post_id)
+                    .filter(PostReport.post_id.in_(ids), PostReport.decision.is_(None))}
+    items = []
+    for p in posts:
+        case = p.conduct_case
+        if case is not None and case.action in REMOVING_ACTIONS:
+            status = case.action
+        elif p.id in reported:
+            status = 'gemeld'
+        elif p.id in awarded:
+            status = 'keurmerk'
+        elif p.is_fact:
+            status = 'feit'
+        else:
+            status = None
+        items.append(Contribution(post=p, issue=_issue_of(p), status=status))
+    return items
+
+
+def initials(user):
+    """Two letters for the avatar, from the username (jan_hofman -> JH)."""
+    import re
+    parts = [p for p in re.split(r'[_.\-\s]+', user.username or '') if p]
+    if len(parts) >= 2:
+        return (parts[0][0] + parts[1][0]).upper()
+    return (user.username or '?')[:2].upper()

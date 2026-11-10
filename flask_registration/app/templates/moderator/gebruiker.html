@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}@{{ user.username }} · Moderator · Global Union{% endblock %}
+
+{#
+  User moderation dossier, built to docs/design/gebruiker.html: identity,
+  five figures, enforcement history, recent contributions, and the measures.
+  Step 2 builds only "Waarschuwing sturen"; suspending and deleting follow.
+#}
+
+{% macro ctx_pill(issue=None, thread=None) -%}
+{%- if issue -%}
+<a class="gu-pill gu-pill--ctx" href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}"><span class="gu-arrow" aria-hidden="true"></span>{{ issue.title }}</a>
+{%- elif thread -%}
+<a class="gu-pill gu-pill--ctx" href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}"><span class="gu-arrow" aria-hidden="true"></span>{{ thread.title(lang)|select|join(' ') }}</a>
+{%- endif -%}
+{%- endmacro %}
+
+{% macro plural(n, nl_one, nl_many, en_one, en_many) -%}
+{{ n }} {% if lang == 'nl' %}{{ nl_one if n == 1 else nl_many }}{% else %}{{ en_one if n == 1 else en_many }}{% endif %}
+{%- endmacro %}
+
+{% block content_outer %}{% block content %}
+{% set h_icons = {
+  'verplaatst': '<path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/>',
+  'verborgen': '<path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.4 5.2A9 9 0 0 1 21 12a9.3 9.3 0 0 1-2.1 2.9M6.2 6.2A9.3 9.3 0 0 0 3 12a9 9 0 0 0 10 6.5"/>',
+  'waarschuwing': '<path d="M10.3 4.3L2.5 18a1.5 1.5 0 0 0 1.3 2.2h16.4A1.5 1.5 0 0 0 21.5 18L13.7 4.3a1.6 1.6 0 0 0-2.8 0z"/><path d="M12 9v4M12 17h.01"/>',
+  'schorsing': '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+} %}
+{% set h_titles = {
+  'verplaatst': ('Bijdrage verplaatst naar achtergrond', 'Contribution moved to the background'),
+  'verborgen': ('Bijdrage verborgen', 'Contribution hidden'),
+  'waarschuwing': ('Waarschuwing gestuurd', 'Warning sent'),
+  'schorsing': ('Geschorst', 'Suspended'),
+} %}
+{% set s_labels = {
+  'keurmerk': ('keurmerk', 'quality mark'), 'feit': ('feit', 'fact'), 'gemeld': ('gemeld', 'reported'),
+  'verplaatst': ('verplaatst', 'moved'), 'verborgen': ('verborgen', 'hidden'),
+} %}
+{% set is_self = user.id == current_user.id %}
+<div class="gu-mod gu-user" lang="{{ lang }}">
+  <div class="gu-mod__wrap">
+
+    <nav class="gu-modrev__crumbs gu-user__crumbs" aria-label="{% if lang == 'nl' %}Kruimelpad{% else %}Breadcrumb{% endif %}">
+      <a href="{{ url_for('admin.moderator_dashboard') }}"><span class="gu-modrev__chev" aria-hidden="true">&lsaquo;</span> Moderator</a>
+      <span class="gu-modrev__sep">/</span>
+      <span>{% if lang == 'nl' %}Gebruiker{% else %}User{% endif %}</span>
+    </nav>
+
+    {# ── Identity ─────────────────────────────────────────────── #}
+    <section class="gu-mod-card gu-user__id">
+      <div class="gu-user__who">
+        <span class="gu-user__avatar" aria-hidden="true">{{ initials }}</span>
+        <div>
+          <h1 class="gu-user__name">@{{ user.username }}</h1>
+          <div class="gu-user__pills">
+            <span class="gu-pill">{{ status_labels[user.effective_status][lang] }}</span>
+            {% if member_since %}<span class="gu-pill">{% if lang == 'nl' %}Lid sinds{% else %}Member since{% endif %} {{ member_since[lang] }}</span>{% endif %}
+            {% if user.verified %}<span class="gu-pill"><svg class="gu-user__check" viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M5 12l5 5 9-11"/></svg>{% if lang == 'nl' %}Geverifieerd{% else %}Verified{% endif %}</span>{% endif %}
+            {% if user.is_suspended %}<span class="gu-pill gu-user__pill--warn">{% if lang == 'nl' %}Geschorst tot{% else %}Suspended until{% endif %} {{ (user.suspended_until|local).strftime('%d-%m-%Y') }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="gu-user__counters">
+        <span class="gu-pill gu-user__pill--warn" data-counter="waarschuwingen"><span class="gu-user__flag gu-user__flag--warn" aria-hidden="true"></span>{{ plural(stats.waarschuwingen, 'waarschuwing', 'waarschuwingen', 'warning', 'warnings') }}</span>
+        <span class="gu-pill gu-user__pill--ok" data-counter="schorsingen"><span class="gu-user__flag gu-user__flag--susp" aria-hidden="true"></span>{{ plural(stats.schorsingen, 'schorsing', 'schorsingen', 'suspension', 'suspensions') }}</span>
+      </div>
+    </section>
+
+    {# ── Figures ──────────────────────────────────────────────── #}
+    <div class="gu-user__kpis">
+      <div class="gu-kpi" data-kpi="bijdragen"><span class="gu-kpi__num">{{ stats.bijdragen }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Bijdragen{% else %}Contributions{% endif %}</span></div>
+      <div class="gu-kpi" data-kpi="feiten"><span class="gu-kpi__num">{{ stats.feiten }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Feiten{% else %}Facts{% endif %}</span></div>
+      <div class="gu-kpi" data-kpi="keurmerken"><span class="gu-kpi__num gu-user__num--green">{{ stats.keurmerken }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Keurmerken{% else %}Quality marks{% endif %}</span></div>
+      <div class="gu-kpi" data-kpi="ontvangen"><span class="gu-kpi__num">{{ stats.meldingen_ontvangen }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Meldingen ontvangen{% else %}Reports received{% endif %}{% if stats.gegrond %} <span class="gu-user__dim">({{ stats.gegrond }} {% if lang == 'nl' %}gegrond{% else %}upheld{% endif %})</span>{% endif %}</span></div>
+      <div class="gu-kpi" data-kpi="gedaan"><span class="gu-kpi__num">{{ stats.meldingen_gedaan }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Meldingen gedaan{% else %}Reports made{% endif %}</span></div>
+    </div>
+
+    <div class="gu-mod__cols">
+      <div class="gu-user__main">
+
+        {# ── Enforcement history ──────────────────────────────── #}
+        <section class="gu-user__block" id="historie">
+          <h2 class="gu-user__h2">{% if lang == 'nl' %}Handhaving-historie{% else %}Enforcement history{% endif %}</h2>
+          <div class="gu-mod-list">
+            {% for h in history %}
+            {% set desc = (h.description or '')|replace('\n', ' ') %}
+            <div class="gu-user__log" data-kind="{{ h.kind }}">
+              <span class="gu-user__dot gu-user__dot--{{ h.kind }}" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17">{{ h_icons[h.kind]|safe }}</svg></span>
+              <div class="gu-user__logbody">
+                <div class="gu-user__logtitle">{{ h_titles[h.kind][0 if lang == 'nl' else 1] }}{% if h.until %} {% if lang == 'nl' %}tot{% else %}until{% endif %} {{ (h.until|local).strftime('%d-%m-%Y') }}{% endif %}</div>
+                <div class="gu-user__logmeta">
+                  {%- if desc %}"{{ desc[:160] }}{{ '…' if desc|length > 160 }}" · {% endif -%}
+                  {%- if h.issue %}In "<a href="{{ url_for('issues.show', issue_id=h.issue.id) }}" lang="{{ h.issue.lang or lang }}">{{ h.issue.title }}</a>" · {% endif -%}
+                  {{ time_ago(h.at)[lang] }} ·
+                  {% if h.by_ai %}{% if lang == 'nl' %}door de AI{% else %}by the AI{% endif %}
+                  {%- elif h.actor and h.actor.id == current_user.id %}{% if lang == 'nl' %}door jou{% else %}by you{% endif %}
+                  {%- elif h.actor %}{% if lang == 'nl' %}door{% else %}by{% endif %} @{{ h.actor.username }}
+                  {%- else %}{% if lang == 'nl' %}door een verwijderd account{% else %}by a deleted account{% endif %}{% endif %}
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <p class="gu-user__empty">{% if lang == 'nl' %}Nog geen maatregelen. Er is niets verplaatst of verborgen en er zijn geen waarschuwingen of schorsingen.{% else %}No measures yet. Nothing was moved or hidden and there are no warnings or suspensions.{% endif %}</p>
+            {% endfor %}
+          </div>
+        </section>
+
+        {# ── Contributions ────────────────────────────────────── #}
+        <section class="gu-user__block" id="bijdragen">
+          <h2 class="gu-user__h2">{% if lang == 'nl' %}Bijdragen van deze gebruiker{% else %}Contributions by this user{% endif %}</h2>
+          <div class="gu-mod-list">
+            {% for c, href in contributions %}
+            {% set p = c.post %}
+            {% set case = p.conduct_case %}
+            {% set text = ((case.body_snapshot if case and case.body_snapshot and c.status in ('verplaatst', 'verborgen') else None) or (p.fact_title if p.is_fact and p.fact_title else p.body) or '')|replace('\n', ' ') %}
+            {% set text = text[:120] ~ ('…' if text|length > 120 else '') %}
+            {% set label = ((('Feit: ' if lang == 'nl' else 'Fact: ') if p.is_fact else '') ~ '"' ~ text ~ '"') %}
+            <div class="gu-user__brow" data-status="{{ c.status or '' }}">
+              <div class="gu-user__browbody">
+                {% if href %}<a class="gu-user__browtitle" href="{{ href }}" lang="{{ p.source_lang or lang }}">{{ label }}</a>{% else %}<span class="gu-user__browtitle" lang="{{ p.source_lang or lang }}">{{ label }}</span>{% endif %}
+                <div class="gu-user__browmeta">
+                  {{ ctx_pill(c.issue, p.thread if not c.issue else None) }}
+                  <span>{{ p.time_ago[lang] }}</span>
+                </div>
+              </div>
+              {% if c.status %}<span class="gu-pill gu-user__status gu-user__status--{{ c.status }}">{{ s_labels[c.status][0 if lang == 'nl' else 1] }}</span>{% endif %}
+            </div>
+            {% else %}
+            <p class="gu-user__empty">{% if lang == 'nl' %}Deze gebruiker heeft nog niets bijgedragen.{% else %}This user has not contributed anything yet.{% endif %}</p>
+            {% endfor %}
+          </div>
+        </section>
+
+        <p class="gu-user__note">{% if lang == 'nl' %}De bedoeling is opbouwend: begin bij bijsturen met een waarschuwing. Schorsen en verwijderen zijn zware stappen voor wie ondanks waarschuwingen doorgaat.{% else %}The aim is constructive: start by steering with a warning. Suspending and deleting are heavy steps for those who carry on despite warnings.{% endif %}</p>
+      </div>
+
+      {# ── Measures ─────────────────────────────────────────────── #}
+      <aside class="gu-user__side" aria-labelledby="maatregelTitle">
+        <h2 class="gu-user__h2" id="maatregelTitle">{% if lang == 'nl' %}Maatregel{% else %}Measure{% endif %}</h2>
+
+        <section class="gu-mod-card gu-user__measure" id="waarschuwing">
+          <div class="gu-user__measurehead">
+            <span class="gu-user__flag gu-user__flag--warn" aria-hidden="true"></span>
+            <h3>{% if lang == 'nl' %}Waarschuwing sturen{% else %}Send a warning{% endif %}</h3>
+          </div>
+          <p class="gu-user__measuretext">{% if lang == 'nl' %}De lichtste, opbouwende stap. De gebruiker krijgt je bericht en het komt in de historie.{% else %}The lightest, constructive step. The user gets your message and it goes into the history.{% endif %}</p>
+          {% if is_self %}
+          <p class="gu-user__measuretext gu-user__dim">{% if lang == 'nl' %}Je kunt jezelf geen waarschuwing sturen.{% else %}You cannot send yourself a warning.{% endif %}</p>
+          {% else %}
+          <form method="POST" action="{{ url_for('admin.gebruiker_waarschuwing', user_id=user.id) }}">
+            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+            <label class="gu-user__lbl" for="warnMessage">{% if lang == 'nl' %}Bericht aan de gebruiker{% else %}Message to the user{% endif %}</label>
+            <textarea class="gu-user__ta" id="warnMessage" name="message" rows="2" maxlength="2000" required
+                      placeholder="{% if lang == 'nl' %}Blijf op de inhoud, niet op de persoon.{% else %}Stick to the substance, not the person.{% endif %}"></textarea>
+            <button type="submit" class="gu-user__act gu-user__act--warn">{% if lang == 'nl' %}Waarschuwing sturen{% else %}Send warning{% endif %}</button>
+          </form>
+          {% endif %}
+        </section>
+        {# Tijdelijk schorsen and Account verwijderen follow in later steps. #}
+      </aside>
+    </div>
+
+  </div>
+</div>
+{% endblock %}{% endblock %}

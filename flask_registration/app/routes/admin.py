@@ -158,6 +158,68 @@ def moderator_dashboard():
     )
 
 
+_MONTHS = {'nl': ('jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'),
+           'en': ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')}
+
+
+@admin_bp.route('/moderator/gebruiker/<int:user_id>')
+@login_required
+def gebruiker(user_id):
+    """User moderation (docs/design/gebruiker.html): the dossier of one user
+    (identity, figures, enforcement history, recent contributions) and the
+    measures. Step 2 builds only the warning; suspending and deleting follow."""
+    if not current_user.can_moderate():
+        abort(403)
+    user = db.session.get(User, user_id)
+    if user is None:
+        abort(404)
+    from app import facts, users
+    from app.models import time_ago
+    from app.routes.forum import post_url
+
+    def item_url(c):
+        case = c.post.conduct_case
+        if c.status in ('verplaatst', 'verborgen'):
+            return (url_for('forum.achtergrond') + f'#zaak-{case.id}') if case.on_background else None
+        return facts.fact_url(c.post) if c.post.is_fact else post_url(c.post)
+
+    contributions = [(c, item_url(c)) for c in users.recent_contributions(user)]
+    since = None
+    if user.created_at:
+        since = {k: f'{m[user.created_at.month - 1]} {user.created_at.year}' for k, m in _MONTHS.items()}
+    return render_template(
+        'moderator/gebruiker.html', user=user, stats=users.user_stats(user),
+        history=users.moderation_history(user), contributions=contributions,
+        initials=users.initials(user), member_since=since, time_ago=time_ago,
+    )
+
+
+@admin_bp.route('/moderator/gebruiker/<int:user_id>/waarschuwing', methods=['POST'])
+@login_required
+def gebruiker_waarschuwing(user_id):
+    """Send a warning: a Warning row that shows in the user's history."""
+    if not current_user.can_moderate():
+        abort(403)
+    from app.routes.forum import _require_csrf
+    _require_csrf()
+    user = db.session.get(User, user_id)
+    if user is None:
+        abort(404)
+    if user.id == current_user.id:
+        abort(403)
+    nl = str(get_locale() or 'nl') == 'nl'
+    message = (request.form.get('message') or '').strip()
+    if not message:
+        flash('Schrijf eerst een bericht aan de gebruiker.' if nl
+              else 'Write a message to the user first.', 'error')
+    else:
+        from app.models import Warning
+        db.session.add(Warning(user_id=user.id, by_id=current_user.id, message=message[:2000]))
+        db.session.commit()
+        flash('De waarschuwing is verstuurd.' if nl else 'The warning has been sent.', 'success')
+    return redirect(url_for('admin.gebruiker', user_id=user.id))
+
+
 @admin_bp.route('/moderator/melding/<kind>/<int:item_id>', methods=['GET', 'POST'])
 @login_required
 def melding_beoordelen(kind, item_id):
