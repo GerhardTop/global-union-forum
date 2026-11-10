@@ -303,6 +303,10 @@ def test_beoordelen_layout_follows_artboard(app, db):
                  author_username=author.username, body='Een gemelde reactie.', source_lang='nl')
     db.session.add(reply)
     db.session.commit()
+    below = Post(thread_id=issue.thread_id, user_id=reporter.id, author_name='', parent_id=reply.id,
+                 author_username=reporter.username, body='Een reactie eronder.', source_lang='nl')
+    db.session.add(below)
+    db.session.commit()
     _report_fact(db, reply, reporter, 'te fel')
     c = _client(app, mod)
     page = _req(c, 'GET', f'/moderator/melding/bijdrage/{reply.id}').get_data(as_text=True)
@@ -310,7 +314,16 @@ def test_beoordelen_layout_follows_artboard(app, db):
     assert 'Jij behandelt dit nu' in page and 'te fel' in page
     dim = page[page.index('gu-modrev__msg--dim'):page.index('gu-modrev__msg--reported')]
     assert 'Een feit.' in dim
-    assert 'Een gemelde reactie.' in page[page.index('gu-modrev__msg--reported'):]
+    reported = page[page.index('gu-modrev__msg--reported'):page.index('gu-modrev__msg--reply')]
+    assert 'Een gemelde reactie.' in reported
+    # De reactie eronder, gedimd.
+    below_html = page[page.index('gu-modrev__msg--dim gu-modrev__msg--reply'):page.index('gu-modrev__reports')]
+    assert 'Een reactie eronder.' in below_html
+    # Meldcijfers: de auteur ontving 1 melding, de melder deed er 1.
+    assert '0 meldingen gedaan · 1 ontvangen' in reported
+    reports_card = page[page.index('gu-modrev__reports'):]
+    assert '1 melding gedaan · 0 ontvangen' in reports_card
+    assert 'Toelichting (optioneel)' in page and 'ziet de auteur deze toelichting' in page
     for value in ('handhaven', 'verplaatsen', 'verbergen'):
         assert f'name="action" value="{value}"' in page
     assert 'name="rule"' in page and 'name="note"' in page and 'Tip:' in page

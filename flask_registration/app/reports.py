@@ -60,6 +60,27 @@ class Melding:
         return text if len(text) <= 120 else text[:117] + '...'
 
 
+UPHELD = ('verplaatst', 'verborgen')
+
+
+def user_activity(user):
+    """De meldcijfers bij een naam op het beoordeelscherm (fase 2c): hoeveel
+    meldingen iemand deed (made), hoeveel er op zijn eigen bijdragen en
+    voorstellen binnenkwamen (received) en hoeveel daarvan gegrond bleken
+    (upheld: verplaatst of verborgen). None voor een anonieme of verwijderde
+    gebruiker. Vijf eenvoudige telqueries."""
+    if user is None or getattr(user, 'id', None) is None:
+        return None
+    made = (PostReport.query.filter(PostReport.reporter_id == user.id).count()
+            + ProposalReport.query.filter(ProposalReport.reporter_id == user.id).count())
+    on_posts = PostReport.query.join(Post, PostReport.post_id == Post.id).filter(Post.user_id == user.id)
+    received_posts = on_posts.count()
+    upheld = on_posts.filter(PostReport.decision.in_(UPHELD)).count()
+    received_props = (ProposalReport.query.join(IssueProposal, ProposalReport.proposal_id == IssueProposal.id)
+                      .filter(IssueProposal.created_by_id == user.id).count())
+    return {'made': made, 'received': received_posts + received_props, 'upheld': upheld}
+
+
 def wait_bucket(dt):
     """Een wachttijd als label plus ernst (hot vanaf 5 dagen, warm vanaf 1 dag)."""
     if dt is None:

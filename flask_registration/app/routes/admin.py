@@ -211,8 +211,27 @@ def melding_beoordelen(kind, item_id):
         context_url = url_for('issues.proposal', issue_id=melding.issue.id, proposal_id=melding.item.id)
     else:
         context_url = '#'
+    # Fase 2c: het gesprek eromheen (de eerste zichtbare reactie eronder) en de
+    # meldcijfers bij de namen van de auteur en de melders.
+    reply = None
+    if melding.kind == 'post':
+        from app.models import ConductCase
+        removed = (db.session.query(ConductCase.id)
+                   .filter(ConductCase.post_id == Post.id,
+                           ConductCase.action.in_(('verplaatst', 'verborgen')))
+                   .exists())
+        reply = (Post.query.filter(Post.parent_id == melding.item.id,
+                                   Post.body != '[bericht verwijderd]', ~removed)
+                 .order_by(Post.created_at, Post.id).first())
+    author = melding.item.author if melding.kind == 'post' else melding.item.created_by
+    activity = {}
+    for user in [author] + [r.reporter for r in melding.reports]:
+        if user is not None and user.id not in activity:
+            activity[user.id] = reports.user_activity(user)
     return render_template('moderator/melding_beoordelen.html', m=melding, context_url=context_url,
-                           phase_labels=_phase_labels())
+                           phase_labels=_phase_labels(), reply=reply,
+                           author_activity=activity.get(author.id) if author is not None else None,
+                           activity=activity)
 
 
 @admin_bp.route('/admin/gebruiker/<int:user_id>/rol', methods=['POST'])

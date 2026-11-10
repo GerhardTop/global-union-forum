@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% block title %}{% if lang == 'nl' %}Melding beoordelen{% else %}Review report{% endif %} · Global Union{% endblock %}
 
+{% macro rep_line(a, full=False) -%}
+{%- if a -%}
+<div class="gu-modrev__rep">
+  {%- if lang == 'nl' -%}
+  {{ a.made }} melding{{ '' if a.made == 1 else 'en' }} gedaan · {{ a.received }} ontvangen{% if full and a.upheld %} (waarvan {{ a.upheld }} gegrond){% endif %}
+  {%- else -%}
+  {{ a.made }} report{{ '' if a.made == 1 else 's' }} made · {{ a.received }} received{% if full and a.upheld %} ({{ a.upheld }} upheld){% endif %}
+  {%- endif -%}
+</div>
+{%- endif -%}
+{%- endmacro %}
+
 {% block content_outer %}{% block content %}
 {# Fase 2c: volgt het artboard Beoordelen.dc.html (docs/design/README.md). #}
 {% set soort = 'voorstel' if m.kind == 'proposal' else ('feit' if m.is_fact else 'bijdrage') %}
@@ -58,8 +70,16 @@
               <strong>{{ m.author_name or ('anonieme deelnemer' if lang == 'nl' else 'anonymous') }}</strong>
               <span class="gu-pill gu-pill--count">{{ m.count }} {% if lang == 'nl' %}melding{{ '' if m.count == 1 else 'en' }}{% else %}report{{ '' if m.count == 1 else 's' }}{% endif %}</span>
             </div>
+            {{ rep_line(author_activity, full=True) }}
             <p class="gu-modrev__body">{{ body }}</p>
           </div>
+
+          {% if reply %}
+          <div class="gu-modrev__msg gu-modrev__msg--dim gu-modrev__msg--reply">
+            <div class="gu-modrev__who"><strong>{{ reply.public_author_name() }}</strong> <span class="gu-mod__dim">{% if lang == 'nl' %}reactie eronder{% else %}reply below{% endif %}</span></div>
+            <p class="gu-modrev__body">{{ reply.body }}</p>
+          </div>
+          {% endif %}
         </section>
 
         {# ── De meldingen bij deze bijdrage ─────────────────────── #}
@@ -73,6 +93,7 @@
             <div class="gu-mrow">
               <div class="gu-mrow__body">
                 <div class="gu-modrev__who"><strong>{{ r.reporter.public_name if r.reporter else '@deleted_user' }}</strong>{% if r.created_at %} <span class="gu-mod__dim">{{ r.created_at.strftime('%d-%m-%Y %H:%M') }}</span>{% endif %}</div>
+                {{ rep_line(activity.get(r.reporter.id) if r.reporter else None) }}
                 <p class="gu-mrow__reason">"{{ r.reason }}"</p>
               </div>
             </div>
@@ -117,7 +138,7 @@
             </label>
             {% endif %}
             <label class="gu-mod-decide__field">
-              <span>{% if lang == 'nl' %}Toelichting voor het logboek (optioneel){% else %}Note for the log (optional){% endif %}</span>
+              <span>{% if lang == 'nl' %}Toelichting (optioneel){% else %}Note (optional){% endif %}</span>
               <textarea name="note" rows="3" maxlength="400" class="gu-input"></textarea>
               {% if m.kind == 'post' %}<span class="gu-modrev__hint">{% if lang == 'nl' %}Bij verplaatsen of verbergen ziet de auteur deze toelichting; bij verplaatsen staat hij ook op de achtergrondpagina.{% else %}When moving or hiding, the author sees this note; when moving, it is also shown on the background page.{% endif %}</span>{% endif %}
             </label>

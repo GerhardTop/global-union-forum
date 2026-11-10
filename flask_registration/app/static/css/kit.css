@@ -4190,6 +4190,7 @@ body {
 .gu-modrev__msg--dim { opacity:.72; }
 .gu-modrev__msg--reported { background:#fdf6ee; border-left:3px solid #e09400; }
 .gu-modrev__who { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:13.5px; }
+.gu-modrev__rep { margin-top:3px; font-size:12px; color:var(--mod-n500); overflow-wrap:anywhere; }
 .gu-modrev__body { margin:8px 0 0; font-size:14.5px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; }
 .gu-modrev__reports .gu-mrow__reason { overflow-wrap:anywhere; }
 .gu-modrev__side .gu-mod-decide { padding:0 18px 18px; }
