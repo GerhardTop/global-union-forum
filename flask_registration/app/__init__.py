@@ -317,7 +317,10 @@ _POLISH_COLUMNS = {
     # (the table itself comes from db.create_all() in step 3a-1).
     # Step 3b: in_app (NULL = true) and emailed_at for the per-event email.
     'notifications': (('event_key', 'VARCHAR(80) NULL'), ('in_app', 'BOOLEAN NULL'),
-                      ('emailed_at', 'TIMESTAMP NULL')),
+                      ('emailed_at', 'TIMESTAMP NULL'),
+                      # Step 4: the warning or suspension a system notification is about.
+                      ('warning_id', 'INTEGER NULL REFERENCES user_warnings(id)'),
+                      ('suspension_id', 'INTEGER NULL REFERENCES user_suspensions(id)')),
     # P2: het soort feit (media) en het kwaliteitsmerk van een feit.
     'posts': (('fact_type', 'VARCHAR(10) NULL'),
               # P5: een reactie bij een voorstel, met de versie (de tabel

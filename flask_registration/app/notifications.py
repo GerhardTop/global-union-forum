@@ -240,6 +240,8 @@ def notification_line(n, lang):
     points at a dispute (dispute_id) is the resolved case."""
     from flask import url_for
     from app.models import Post
+    if n.category in SYSTEM_CATEGORIES:
+        return _system_line(n, lang)
     if n.event_key:
         return _tick_line(n, lang)
     key = 'feit_resolved' if n.category == 'feit' and n.dispute_id is not None else n.category
@@ -475,9 +477,11 @@ def email_for(user, n):
         base = url_for('main.index', _external=True).rstrip('/')
         if url.startswith('/'):
             url = base + url
-        nl, en = _SUBJECTS[n.category]
-        html = render_template('email/notification.html', lang=lang, text=text, url=url,
-                               settings_url=url_for('profile.notificaties', _external=True))
+        system = n.category in SYSTEM_CATEGORIES
+        nl, en = (_SYSTEM_SUBJECTS if system else _SUBJECTS)[n.category]
+        note = _SYSTEM_NOTES[n.category][0 if lang == 'nl' else 1] if system else None
+        html = render_template('email/notification.html', lang=lang, text=text, url=url, note=note,
+                               system=system, settings_url=url_for('profile.notificaties', _external=True))
     return (nl if lang == 'nl' else en), html
 
 
@@ -493,6 +497,68 @@ def send_notification_email(user, n):
             n.emailed_at = datetime.utcnow()
     except Exception as exc:  # noqa: BLE001
         current_app.logger.error('Meldingsmail aan gebruiker %s mislukt: %s', user.id, exc)
+
+
+# ── System notifications (step 4) ────────────────────────────────────────
+# A warning or a suspension always reaches the user, in the app and by email
+# (to a verified address). Not part of the settings matrix (CATEGORY_KEYS)
+# and not switchable: no preference gate, no actor skip, no event_key.
+
+SYSTEM_CATEGORIES = ('waarschuwing', 'schorsing')
+_SYSTEM_SUBJECTS = {
+    'waarschuwing': ('Je hebt een waarschuwing gekregen', 'You have received a warning'),
+    'schorsing': ('Je bent geschorst', 'You have been suspended'),
+}
+_SYSTEM_NOTES = {
+    'waarschuwing': ('Deze waarschuwing gaat over de spelregels van het forum.',
+                     'This warning is about the forum rules.'),
+    'schorsing': ('Tot dan kun je blijven lezen, maar niet bijdragen of stemmen.',
+                  'Until then you can still read, but not contribute or vote.'),
+}
+
+
+def notify_system(user, category, *, warning=None, suspension=None):
+    """Always: one in-app row (in_app True) and, for a verified address, the
+    email. Call it after the warning or suspension is committed; it commits
+    its own row first and then sends, so no mail goes out for an action that
+    rolled back. Returns the row."""
+    from app.models import Notification
+    if category not in SYSTEM_CATEGORIES:
+        raise ValueError(f'unknown system category: {category}')
+    row = Notification(user_id=user.id, category=category, in_app=True,
+                       warning_id=warning.id if warning is not None else None,
+                       suspension_id=suspension.id if suspension is not None else None)
+    db.session.add(row)
+    db.session.commit()
+    if user.verified and user.email:
+        send_notification_email(user, row)
+        db.session.commit()
+    return row
+
+
+def _local(moment):
+    from app.issues import to_local
+    return to_local(moment).strftime('%d-%m-%Y %H:%M') if moment else ''
+
+
+def _system_line(n, lang):
+    from flask import url_for
+    from app.models import Suspension, Warning
+    nl = lang == 'nl'
+    url = url_for('main.spelregels')
+    if n.category == 'waarschuwing':
+        w = db.session.get(Warning, n.warning_id) if n.warning_id else None
+        if w is None or not w.message:
+            return ('Een moderator heeft je een waarschuwing gestuurd.' if nl
+                    else 'A moderator has sent you a warning.'), url
+        return ((f'Een moderator heeft je een waarschuwing gestuurd: “{w.message}”' if nl
+                 else f'A moderator has sent you a warning: “{w.message}”'), url)
+    s = db.session.get(Suspension, n.suspension_id) if n.suspension_id else None
+    if s is None:
+        return ('Je bent geschorst.' if nl else 'You have been suspended.'), url
+    reason = f' Reden: {s.reason}' if nl else f' Reason: {s.reason}'
+    return ((f'Je bent geschorst tot {_local(s.until)}.' if nl else f'You are suspended until {_local(s.until)}.')
+            + (reason if s.reason else '')), url
 
 # ── Opruimen ─────────────────────────────────────────────────────────────
 

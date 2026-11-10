@@ -294,9 +294,13 @@ def gebruiker_waarschuwing(user_id):
         flash('Schrijf eerst een bericht aan de gebruiker.' if nl
               else 'Write a message to the user first.', 'error')
     else:
+        from app import notifications
         from app.models import Warning
-        db.session.add(Warning(user_id=user.id, by_id=current_user.id, message=message[:2000]))
+        warning = Warning(user_id=user.id, by_id=current_user.id, message=message[:2000])
+        db.session.add(warning)
         db.session.commit()
+        # Notifications step 4: always, in the app and by email, after the commit.
+        notifications.notify_system(user, 'waarschuwing', warning=warning)
         flash('De waarschuwing is verstuurd.' if nl else 'The warning has been sent.', 'success')
     return redirect(url_for('admin.gebruiker', user_id=user.id))
 
@@ -330,11 +334,15 @@ def gebruiker_schorsen(user_id):
         flash('Schrijf eerst de reden van de schorsing.' if nl
               else 'Write the reason for the suspension first.', 'error')
     else:
+        from app import notifications
         from app.models import Suspension
         until = datetime.utcnow() + timedelta(days=days)
-        db.session.add(Suspension(user_id=user.id, by_id=current_user.id, reason=reason[:2000], until=until))
+        suspension = Suspension(user_id=user.id, by_id=current_user.id, reason=reason[:2000], until=until)
+        db.session.add(suspension)
         user.suspended_until = until
         db.session.commit()
+        # Notifications step 4: always, in the app and by email, after the commit.
+        notifications.notify_system(user, 'schorsing', suspension=suspension)
         flash((f'@{user.username} is geschorst voor {days} dagen.' if nl
                else f'@{user.username} has been suspended for {days} days.'), 'success')
     return redirect(url_for('admin.gebruiker', user_id=user.id))

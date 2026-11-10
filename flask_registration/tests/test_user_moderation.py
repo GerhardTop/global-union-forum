@@ -28,6 +28,9 @@ def _post(db, issue, user, body):
 def _drop_moderation_rows(*users):
     from app import db
     ids = [u.id for u in users]
+    # Notifications step 4: the system notifications point at these rows; they go first.
+    from app.models import Notification
+    Notification.query.filter(Notification.user_id.in_(ids)).delete(synchronize_session=False)
     Warning.query.filter(Warning.user_id.in_(ids)).delete(synchronize_session=False)
     Suspension.query.filter(Suspension.user_id.in_(ids)).delete(synchronize_session=False)
     db.session.commit()

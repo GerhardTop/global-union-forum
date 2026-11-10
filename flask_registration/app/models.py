@@ -1300,5 +1300,9 @@ class Notification(db.Model):
     # when the per-event email went out.
     in_app     = db.Column(db.Boolean, nullable=True)
     emailed_at = db.Column(db.DateTime, nullable=True)
+    # Step 4: the system notifications point at the warning or suspension
+    # (the line shows its message, or its end date and reason).
+    warning_id    = db.Column(db.Integer, db.ForeignKey('user_warnings.id'), nullable=True)
+    suspension_id = db.Column(db.Integer, db.ForeignKey('user_suspensions.id'), nullable=True)
 
     __table_args__ = (db.Index('ix_notifications_user_id_event_key', 'user_id', 'event_key'),)

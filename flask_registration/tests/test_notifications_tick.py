@@ -20,7 +20,11 @@ from tests.test_issue_lifecycle import _issue, mails, make_user  # noqa: F401
 
 @pytest.fixture(autouse=True)
 def _in_request(app):
+    from flask import g
     with app.test_request_context():
+        # The shared app context can keep a detached current_user from an
+        # earlier test; the email templates' context processors would trip on it.
+        g.pop('_login_user', None)
         yield
 
 

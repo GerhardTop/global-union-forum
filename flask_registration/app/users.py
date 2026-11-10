@@ -177,6 +177,9 @@ def anonymise(user, actor, reason):
         {Post.author_name: '', Post.author_username: DELETED_HANDLE,
          Post.author_badge_nl: None, Post.author_badge_en: None}, synchronize_session=False)
     # Own warnings and suspensions go; those given as a moderator stay without a name.
+    # Their notifications point at them (step 4), so the notifications go first.
+    from app import notifications as _notifications
+    _notifications.delete_for_user(user.id)
     for model in (Warning, Suspension):
         model.query.filter_by(user_id=user.id).delete(synchronize_session=False)
         model.query.filter_by(by_id=user.id).update({model.by_id: None}, synchronize_session=False)

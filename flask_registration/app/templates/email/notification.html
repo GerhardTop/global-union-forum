@@ -1,8 +1,14 @@
-{# Notifications step 3b: one event per email, in the language of users.lang. Context: lang, text, url, settings_url. #}
+{# Notifications step 3b: one event per email, in the language of users.lang. Context: lang, text, url,
+   settings_url; step 4: note (an extra line) and system (a warning or suspension: always sent). #}
 {% set nl = lang == 'nl' %}
 <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#1d1f24;">
   <p style="margin:0 0 12px;font-weight:600;">Global Union Forum</p>
   <p style="margin:0 0 18px;">{{ text }}</p>
+  {% if note %}<p style="margin:0 0 18px;">{{ note }}</p>{% endif %}
   <p style="margin:0 0 18px;"><a href="{{ url }}" style="display:inline-block;padding:10px 18px;border-radius:8px;background:#1b74b8;color:#ffffff;text-decoration:none;font-weight:600;">{% if nl %}Bekijken{% else %}View{% endif %}</a></p>
+  {% if system %}
+  <p style="margin:16px 0 0;font-size:13px;color:#6b7080;">{% if nl %}Dit bericht gaat over je account en wordt altijd verstuurd.{% else %}This message is about your account and is always sent.{% endif %}</p>
+  {% else %}
   <p style="margin:16px 0 0;font-size:13px;color:#6b7080;">{% if nl %}Je krijgt deze e-mail omdat je hiervoor e-mail hebt aangezet. Je kunt dat per soort melding uitzetten:{% else %}You receive this email because you turned on email for this. You can turn it off per kind of notification:{% endif %} <a href="{{ settings_url }}">{{ settings_url }}</a></p>
+  {% endif %}
 </div>
