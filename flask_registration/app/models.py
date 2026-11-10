@@ -85,6 +85,12 @@ class User(UserMixin, db.Model):
     deleted_at          = db.Column(db.DateTime, nullable=True, default=None)
     deleted_by_id       = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     deleted_reason      = db.Column(db.Text, nullable=True)
+    # Notifications step 1 (docs/design/notificaties.html): per category
+    # {"app": bool, "email": bool} as JSON, merged over the defaults by
+    # app/notifications.effective_prefs; and the summary email frequency
+    # (off/daily/weekly). Separate from the existing daily digest.
+    notif_prefs         = db.Column(db.Text, nullable=True)
+    summary_frequency   = db.Column(db.String(8), nullable=True, default='weekly')
 
     def __repr__(self):
         return f"<User {self.email}>"

@@ -222,6 +222,7 @@
       <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Save') }}</button>
     </form>
     <p style="font-size: 13px; color: var(--gu-fg-3); margin: 8px 0 0;"><a href="{{ url_for('profile.meldingen') }}">{{ _('View your daily summaries') }}</a></p>
+    <p style="font-size: 13px; color: var(--gu-fg-3); margin: 8px 0 0;"><a href="{{ url_for('profile.notificaties') }}" id="notificatiesLink">{% if lang == 'nl' %}Meldingen{% else %}Notifications{% endif %}</a> &middot; {% if lang == 'nl' %}kies waarover je bericht krijgt, en waar{% else %}choose what you hear about, and where{% endif %}</p>
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 

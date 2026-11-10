@@ -164,6 +164,29 @@ def profiel_vertaalvoorkeur():
 
 # ── Fase E, stap 5b: de dagelijkse samenvatting ──────────────────────────
 
+@profile_bp.route("/profiel/meldingen", methods=["GET", "POST"])
+@login_required
+def notificaties():
+    """Notification settings (docs/design/notificaties.html): per category a
+    switch for in-app and for email, and the summary frequency. Saving only;
+    nothing sends notifications yet."""
+    from app import notifications
+    from app.routes.forum import _require_csrf
+    if request.method == "POST":
+        _require_csrf()
+        notifications.save_from_form(current_user, request.form)
+        db.session.commit()
+        flash("Bewaard" if session.get("lang", "nl") == "nl" else "Saved", "success")
+        return redirect(url_for("profile.notificaties"))
+    allowed = set(notifications.allowed_categories(current_user))
+    return render_template(
+        "notificaties.html",
+        categories=[c for c in notifications.CATEGORIES if c[0] in allowed],
+        prefs=notifications.effective_prefs(current_user),
+        frequency=notifications.summary_frequency(current_user),
+    )
+
+
 @profile_bp.route("/meldingen")
 @login_required
 def meldingen():

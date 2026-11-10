@@ -4395,3 +4395,59 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
   .gu-mod-bin__search { flex:1 1 100%; }
   .gu-mod-bin__search input { width:100%; }
 }
+
+/* ── Notification settings (docs/design/notificaties.html) ─────────────── */
+.gu-notif { --nt-ink:#141b22; --nt-accent:#1b74b8; --nt-border:var(--gu-border,#e4e9ef);
+  --nt-n50:#f5f7f9; --nt-n100:#eef1f5; --nt-n300:#d3dae2; --nt-n500:#6c7683; --nt-n600:#525c69; color:var(--nt-ink); }
+.gu-notif__wrap { max-width:860px; margin:0 auto; padding:30px 24px 64px; box-sizing:border-box; }
+.gu-notif__crumbs { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--nt-n500); margin-bottom:14px; }
+.gu-notif__crumbs a { color:var(--nt-n600); text-decoration:none; }
+.gu-notif__crumbs a:hover { color:var(--nt-accent); }
+.gu-notif__title { margin:7px 0 0; font-size:28px; font-weight:600; letter-spacing:-.02em; }
+.gu-notif__intro { margin:9px 0 0; font-size:14.5px; color:var(--nt-n600); max-width:70ch; line-height:1.5; }
+.gu-notif__form { margin:18px 0 0; }
+.gu-notif__card { background:#fff; border:1px solid var(--nt-border); border-radius:14px; box-shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05); }
+.gu-notif__matrix { overflow:hidden; }
+.gu-notif__head, .gu-notif__row { display:grid; grid-template-columns:1fr 120px 120px; align-items:center; gap:8px; }
+.gu-notif__head { padding:11px 20px; border-bottom:1px solid var(--nt-border); background:var(--nt-n50); font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--nt-n500); }
+.gu-notif__col { text-align:center; }
+.gu-notif__sect { font-size:13px; font-weight:600; color:var(--nt-n600); padding:16px 20px 2px; display:flex; align-items:center; gap:9px; }
+.gu-notif__sect--rule { border-top:1px solid var(--nt-n100); margin-top:4px; }
+.gu-notif__pill { display:inline-flex; align-items:center; font-size:12px; font-weight:500; padding:2px 9px; border-radius:999px; background:var(--nt-n100); color:var(--nt-n600); border:1px solid var(--nt-border); white-space:nowrap; }
+.gu-notif__row { padding:14px 20px; }
+.gu-notif__row + .gu-notif__row { border-top:1px solid var(--nt-n100); }
+.gu-notif__label { font-size:13.5px; font-weight:500; }
+.gu-notif__sub { font-size:12px; color:var(--nt-n500); margin-top:2px; }
+.gu-notif__cell { display:flex; justify-content:center; }
+/* The switch: a real checkbox, visually the artboard's .sw. */
+.gu-switch { position:relative; display:inline-flex; cursor:pointer; }
+.gu-switch input { position:absolute; opacity:0; width:38px; height:22px; margin:0; cursor:pointer; }
+.gu-switch__track { position:relative; width:38px; height:22px; border-radius:999px; background:var(--nt-n300); transition:background .15s; }
+.gu-switch__track::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(15,25,35,.25); transition:left .15s; }
+.gu-switch input:checked + .gu-switch__track { background:var(--nt-accent); }
+.gu-switch input:checked + .gu-switch__track::after { left:18px; }
+.gu-switch input:focus-visible + .gu-switch__track { outline:2px solid var(--nt-accent); outline-offset:2px; }
+.gu-notif__summary { margin-top:20px; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.gu-notif__summarytext { min-width:0; }
+.gu-notif__summarytitle { font-size:15px; font-weight:600; }
+.gu-notif__summarytext p { margin:5px 0 0; font-size:13px; color:var(--nt-n600); line-height:1.5; max-width:52ch; }
+/* The segmented control: a radio group, visually the artboard's .seg. */
+.gu-notif__seg { display:inline-flex; gap:4px; background:var(--nt-n100); border:1px solid var(--nt-border); border-radius:9px; padding:3px; margin:0; min-width:0; }
+.gu-notif__seg label { position:relative; display:inline-flex; cursor:pointer; }
+.gu-notif__seg input { position:absolute; opacity:0; width:1px; height:1px; }
+.gu-notif__seg span { font-size:13px; font-weight:500; padding:7px 15px; border-radius:7px; color:var(--nt-n600); }
+.gu-notif__seg input:checked + span { background:#fff; color:var(--nt-ink); box-shadow:0 1px 2px rgba(15,25,35,.1); }
+.gu-notif__seg input:focus-visible + span { outline:2px solid var(--nt-accent); outline-offset:1px; }
+.gu-notif__actions { display:flex; justify-content:flex-end; margin-top:18px; }
+.gu-notif__save { font-size:14px; padding:11px 18px; border-radius:9px; }
+@media (max-width:560px) {
+  .gu-notif__wrap { padding:22px 16px 48px; }
+  .gu-notif__head, .gu-notif__row { grid-template-columns:1fr 64px 64px; padding-left:14px; padding-right:14px; }
+  .gu-notif__head { letter-spacing:.06em; }
+  .gu-notif__sect { padding-left:14px; padding-right:14px; flex-wrap:wrap; }
+  .gu-notif__summary { padding:16px; }
+  .gu-notif__seg { width:100%; }
+  .gu-notif__seg label { flex:1 1 0; }
+  .gu-notif__seg span { flex:1; text-align:center; padding:7px 6px; }
+  .gu-notif__actions .gu-btn { width:100%; }
+}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{% if lang == 'nl' %}Meldingen instellen{% else %}Notification settings{% endif %} · Global Union{% endblock %}
+
+{#
+  Notification settings, built to docs/design/notificaties.html: a matrix with
+  per category a switch for in-app and for email, and the summary email
+  frequency (Uit/Dagelijks/Wekelijks). The switches are real checkboxes and
+  the frequency is a radio group, so the form works without JavaScript.
+  Context: categories (only those the user may set), prefs, frequency.
+#}
+{% block content_outer %}{% block content %}
+{% set nl = lang == 'nl' %}
+<div class="gu-notif" lang="{{ lang }}">
+  <div class="gu-notif__wrap">
+
+    <nav class="gu-notif__crumbs" aria-label="{% if nl %}Kruimelpad{% else %}Breadcrumb{% endif %}">
+      <a href="{{ url_for('profile.profile') }}">{% if nl %}Profiel{% else %}Profile{% endif %}</a>
+      <span aria-hidden="true">/</span>
+      <span>{% if nl %}Meldingen{% else %}Notifications{% endif %}</span>
+    </nav>
+    <p class="gu-eyebrow">{% if nl %}Instellingen{% else %}Settings{% endif %}</p>
+    <h1 class="gu-notif__title">{% if nl %}Meldingen{% else %}Notifications{% endif %}</h1>
+    <p class="gu-notif__intro">{% if nl %}Kies waarover je bericht krijgt, en waar. In de app zie je alles bij je meldingen. De belangrijkste dingen kun je ook per e-mail krijgen.{% else %}Choose what you hear about, and where. In the app you see everything under your notifications. The most important things you can also get by email.{% endif %}</p>
+
+    <form method="POST" action="{{ url_for('profile.notificaties') }}" class="gu-notif__form">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+
+      <div class="gu-notif__card gu-notif__matrix">
+        <div class="gu-notif__head" aria-hidden="true">
+          <span>{% if nl %}Waarover{% else %}About{% endif %}</span>
+          <span class="gu-notif__col">{% if nl %}In de app{% else %}In the app{% endif %}</span>
+          <span class="gu-notif__col">{% if nl %}E-mail{% else %}Email{% endif %}</span>
+        </div>
+
+        {% set section = namespace(current=None) %}
+        {% for key, sect, label_nl, label_en, sub_nl, sub_en, _senior in categories %}
+        {% if sect != section.current %}
+        {% set section.current = sect %}
+        <div class="gu-notif__sect{% if not loop.first %} gu-notif__sect--rule{% endif %}" id="sectie-{{ sect }}">
+          {% if sect == 'deelname' %}{% if nl %}Jouw deelname{% else %}Your participation{% endif %}
+          {% else %}{% if nl %}Moderatie{% else %}Moderation{% endif %} <span class="gu-notif__pill">{% if nl %}voor moderators{% else %}for moderators{% endif %}</span>{% endif %}
+        </div>
+        {% endif %}
+        {% set label = label_nl if nl else label_en %}
+        <div class="gu-notif__row" data-category="{{ key }}">
+          <div>
+            <div class="gu-notif__label" id="lbl-{{ key }}">{{ label }}</div>
+            {% if sub_nl %}<div class="gu-notif__sub">{{ sub_nl if nl else sub_en }}</div>{% endif %}
+          </div>
+          {% for channel, ch_nl, ch_en in (('app', 'In de app', 'In the app'), ('email', 'E-mail', 'Email')) %}
+          <div class="gu-notif__cell">
+            <label class="gu-switch">
+              <input type="checkbox" name="{{ key }}_{{ channel }}" value="1"{% if prefs[key][channel] %} checked{% endif %}>
+              <span class="gu-switch__track" aria-hidden="true"></span>
+              <span class="gu-sr-only">{{ label }}: {{ ch_nl if nl else ch_en }}</span>
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="gu-notif__card gu-notif__summary">
+        <div class="gu-notif__summarytext">
+          <div class="gu-notif__summarytitle" id="summaryTitle">{% if nl %}Samenvatting per e-mail{% else %}Summary by email{% endif %}</div>
+          <p>{% if nl %}Eén e-mail met een overzicht van de veranderingen die je volgt.{% else %}One email with an overview of the changes you follow.{% endif %}</p>
+        </div>
+        <fieldset class="gu-notif__seg" aria-labelledby="summaryTitle">
+          <legend class="gu-sr-only">{% if nl %}Hoe vaak{% else %}How often{% endif %}</legend>
+          {% for value, f_nl, f_en in (('off', 'Uit', 'Off'), ('daily', 'Dagelijks', 'Daily'), ('weekly', 'Wekelijks', 'Weekly')) %}
+          <label><input type="radio" name="summary_frequency" value="{{ value }}"{% if frequency == value %} checked{% endif %}><span>{{ f_nl if nl else f_en }}</span></label>
+          {% endfor %}
+        </fieldset>
+      </div>
+
+      <div class="gu-notif__actions">
+        <button type="submit" class="gu-btn gu-btn--primary gu-notif__save">{% if nl %}Bewaren{% else %}Save{% endif %}</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}{% endblock %}

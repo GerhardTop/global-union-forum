@@ -310,7 +310,9 @@ _POLISH_COLUMNS = {
     # User moderation step 1: suspension end and the anonymising fields (the
     # tables user_warnings and user_suspensions come from db.create_all()).
     'users': (('suspended_until', 'TIMESTAMP NULL'), ('deleted_at', 'TIMESTAMP NULL'),
-              ('deleted_by_id', 'INTEGER NULL REFERENCES users(id)'), ('deleted_reason', 'TEXT NULL')),
+              ('deleted_by_id', 'INTEGER NULL REFERENCES users(id)'), ('deleted_reason', 'TEXT NULL'),
+              # Notifications step 1: preferences and the summary frequency.
+              ('notif_prefs', 'TEXT NULL'), ('summary_frequency', 'VARCHAR(8) NULL')),
     # P2: het soort feit (media) en het kwaliteitsmerk van een feit.
     'posts': (('fact_type', 'VARCHAR(10) NULL'),
               # P5: een reactie bij een voorstel, met de versie (de tabel
