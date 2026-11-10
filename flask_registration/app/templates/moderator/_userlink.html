@@ -1,0 +1,12 @@
+{#
+  user_link(user_id, name): the author's name as a link to their moderation
+  dossier (/moderator/gebruiker/<id>), only for a moderator (mod_view) and only
+  for a registered user. Everyone else gets the plain name. Import with context.
+#}
+{% macro user_link(user_id, name) -%}
+{%- if mod_view and user_id -%}
+<a class="gu-userlink" href="{{ url_for('admin.gebruiker', user_id=user_id) }}">{{ name }}</a>
+{%- else -%}
+{{ name }}
+{%- endif -%}
+{%- endmacro %}

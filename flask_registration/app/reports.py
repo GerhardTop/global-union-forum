@@ -42,6 +42,11 @@ class Melding:
         return self.kind == 'post' and self.item.is_fact
 
     @property
+    def author_id(self):
+        """The author's user id (None for an anonymous or removed author)."""
+        return self.item.user_id if self.kind == 'post' else self.item.created_by_id
+
+    @property
     def author_name(self):
         if self.kind == 'post':
             return self.item.public_author_name()

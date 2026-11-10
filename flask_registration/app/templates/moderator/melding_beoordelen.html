@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'moderator/_userlink.html' import user_link with context %}
 {% block title %}{% if lang == 'nl' %}Melding beoordelen{% else %}Review report{% endif %} · Global Union{% endblock %}
 
 {% macro rep_line(a, full=False) -%}
@@ -60,14 +61,14 @@
 
           {% if parent %}
           <div class="gu-modrev__msg gu-modrev__msg--dim">
-            <div class="gu-modrev__who"><strong>{{ parent.public_author_name() }}</strong> <span class="gu-mod__dim">{% if lang == 'nl' %}bovenliggend bericht{% else %}parent message{% endif %}</span></div>
+            <div class="gu-modrev__who"><strong>{{ user_link(parent.user_id, parent.public_author_name()) }}</strong> <span class="gu-mod__dim">{% if lang == 'nl' %}bovenliggend bericht{% else %}parent message{% endif %}</span></div>
             <p class="gu-modrev__body">{{ parent.body }}</p>
           </div>
           {% endif %}
 
           <div class="gu-modrev__msg gu-modrev__msg--reported">
             <div class="gu-modrev__who">
-              <strong>{{ m.author_name or ('anonieme deelnemer' if lang == 'nl' else 'anonymous') }}</strong>
+              <strong>{{ user_link(m.author_id, m.author_name or ('anonieme deelnemer' if lang == 'nl' else 'anonymous')) }}</strong>
               <span class="gu-pill gu-pill--count">{{ m.count }} {% if lang == 'nl' %}melding{{ '' if m.count == 1 else 'en' }}{% else %}report{{ '' if m.count == 1 else 's' }}{% endif %}</span>
             </div>
             {{ rep_line(author_activity, full=True) }}
@@ -76,7 +77,7 @@
 
           {% if reply %}
           <div class="gu-modrev__msg gu-modrev__msg--dim gu-modrev__msg--reply">
-            <div class="gu-modrev__who"><strong>{{ reply.public_author_name() }}</strong> <span class="gu-mod__dim">{% if lang == 'nl' %}reactie eronder{% else %}reply below{% endif %}</span></div>
+            <div class="gu-modrev__who"><strong>{{ user_link(reply.user_id, reply.public_author_name()) }}</strong> <span class="gu-mod__dim">{% if lang == 'nl' %}reactie eronder{% else %}reply below{% endif %}</span></div>
             <p class="gu-modrev__body">{{ reply.body }}</p>
           </div>
           {% endif %}
@@ -92,7 +93,7 @@
             {% for r in m.reports %}
             <div class="gu-mrow">
               <div class="gu-mrow__body">
-                <div class="gu-modrev__who"><strong>{{ r.reporter.public_name if r.reporter else '@deleted_user' }}</strong>{% if r.created_at %} <span class="gu-mod__dim">{{ r.created_at.strftime('%d-%m-%Y %H:%M') }}</span>{% endif %}</div>
+                <div class="gu-modrev__who"><strong>{{ user_link(r.reporter_id, r.reporter.public_name if r.reporter else '@deleted_user') }}</strong>{% if r.created_at %} <span class="gu-mod__dim">{{ r.created_at.strftime('%d-%m-%Y %H:%M') }}</span>{% endif %}</div>
                 {{ rep_line(activity.get(r.reporter.id) if r.reporter else None) }}
                 <p class="gu-mrow__reason">"{{ r.reason }}"</p>
               </div>

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'moderator/_userlink.html' import user_link with context %}
 {% block title %}Moderator Dashboard · Global Union{% endblock %}
 
 {# ── Fase 2c: compacte rijen (mrow) volgens Main.dc.html (docs/design/README.md) ── #}
@@ -36,7 +37,7 @@
 <div class="gu-mrow">
   <div class="gu-mrow__body">
     <div class="gu-mrow__line">
-      <strong>{{ m.author_name or ('anonieme deelnemer' if lang == 'nl' else 'anonymous') }}</strong>
+      <strong>{{ user_link(m.author_id, m.author_name or ('anonieme deelnemer' if lang == 'nl' else 'anonymous')) }}</strong>
       <span class="gu-mrow__dot">·</span> {{ ctx_pill(m.issue) }}
       {{ excerpt(m.snippet, post_url(m.item) if m.kind == 'post' else (url_for('issues.proposal', issue_id=m.issue.id, proposal_id=m.id) if m.issue else None)) }}
     </div>
@@ -110,7 +111,7 @@
               {% set post = r.award.post %}
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
-                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
+                  <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
                   <p class="gu-mrow__reason">{{ r.award.criterion }} {{ quality_labels[r.award.criterion][lang] if r.award.criterion in quality_labels else '' }} · {% if lang == 'nl' %}Gemeld door{% else %}Reported by{% endif %} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
                   {% if current_user.id == post.user_id %}
                   <p class="gu-mrow__note">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beslist.{% else %}Your own contribution: another moderator decides.{% endif %}</p>
@@ -154,7 +155,7 @@
               {% set case = post.conduct_case %}
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
-                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, url) }}</div>
+                  <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, url) }}</div>
                   <p class="gu-mrow__reason">{{ reason_labels.get(row.reason, row.reason) }} · {{ _('by') }} {{ row.user.public_name if row.user else '@deleted_user' }}{% if row.note %} · {{ _('Explanation') }}: {{ row.note }}{% endif %}</p>
                   {% if not fact_can_resolve(row) %}
                   <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
@@ -199,7 +200,7 @@
               {% set post = case.post %}
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
-                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(case.body_snapshot or post.body, (url_for('forum.achtergrond') ~ '#zaak-' ~ case.id) if case.on_background else None) }}</div>
+                  <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(case.body_snapshot or post.body, (url_for('forum.achtergrond') ~ '#zaak-' ~ case.id) if case.on_background else None) }}</div>
                   <p class="gu-mrow__reason">{{ conduct_rule_label(case.rule) }} · {% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %}{% if case.explanation %} · {{ _('Why it was moved') }}: {{ case.explanation }}{% endif %}</p>
                   <p class="gu-mrow__reason">{{ _('Objection:') }} {{ o.text }}</p>
                   {% if not conduct_can_decide(case) %}
@@ -248,7 +249,7 @@
               {% set post = case.post %}
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
-                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
+                  <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
                   <p class="gu-mrow__reason">{{ conduct_rule_label(case.rule) if case.rule else _('Conduct rules') }}{% if case.explanation %} · {{ _('AI:') }} {{ case.explanation }}{% endif %}</p>
                   {% if current_user.id == post.user_id %}
                   <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
@@ -281,7 +282,7 @@
               {% set post = case.post %}
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
-                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, (url_for('forum.achtergrond') ~ '#zaak-' ~ case.id) if case.on_background else None) }}</div>
+                  <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, (url_for('forum.achtergrond') ~ '#zaak-' ~ case.id) if case.on_background else None) }}</div>
                   <p class="gu-mrow__reason">{{ conduct_rule_label(case.rule) if case.rule else _('Conduct rules') }}{% if case.explanation %} · {{ _('AI:') }} {{ case.explanation }}{% endif %}</p>
                   {% if current_user.id == post.user_id %}
                   <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
@@ -316,7 +317,7 @@
               {% for post in unjudged_posts %}
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
-                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
+                  <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
                   <p class="gu-mrow__reason">{% if lang == 'nl' %}Geen kwaliteitsoordeel{% else %}No quality judgement{% endif %}</p>
                   {% if current_user.id == post.user_id %}
                   <p class="gu-mrow__note">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beoordeelt deze.{% else %}Your own contribution: another moderator assesses it.{% endif %}</p>

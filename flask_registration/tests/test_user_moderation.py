@@ -414,3 +414,30 @@ def test_suspended_moderator_cannot_moderate_until_it_ends(app, db):
         assert _req(_client(app, senior), 'GET', f'/moderator/gebruiker/{target.id}/verwijderen').status_code == 200
     finally:
         _drop_moderation_rows(target)
+
+
+# ── Step 5: author names link to the dossier, for moderators ────────────
+
+def test_author_names_link_to_dossier_for_moderators_only(app, db):
+    author, reporter, mod, plain = _user(db), _user(db), _user(db, 'moderator'), _user(db)
+    issue, fact = _issue_with_fact(db, author)
+    issue_id, thread_id = issue.id, issue.thread_id
+    try:
+        post = _post(db, issue, author, 'Een bijdrage om te melden.')
+        db.session.add(PostReport(post_id=post.id, reporter_id=reporter.id, reason='ongepast'))
+        db.session.commit()
+        author_link = f'href="/moderator/gebruiker/{author.id}"'
+        reporter_link = f'href="/moderator/gebruiker/{reporter.id}"'
+
+        thread = _req(_client(app, mod), 'GET', f'/forum/{thread_id}').get_data(as_text=True)
+        assert author_link in thread and 'gu-userlink' in thread
+        thread = _req(_client(app, plain), 'GET', f'/forum/{thread_id}').get_data(as_text=True)
+        assert '/moderator/gebruiker/' not in thread and f'@{author.username}' in thread
+
+        review = _req(_client(app, mod), 'GET', f'/moderator/melding/bijdrage/{post.id}').get_data(as_text=True)
+        assert author_link in review and reporter_link in review
+
+        dash = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
+        assert author_link in dash
+    finally:
+        _cleanup(issue_id)

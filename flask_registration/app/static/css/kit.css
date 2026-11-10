@@ -4372,3 +4372,8 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-user__act--del:hover { background:#fcf1f1; }
 .gu-user__pill--del { background:#fcecec; border-color:#f0c9cb; color:#a3282c; }
 .gu-del__form textarea.gu-input { resize:vertical; font-family:inherit; }
+
+/* Author name as a link to the moderation dossier (moderators only): same
+   text and weight, it only becomes a link. */
+.gu-userlink { color:inherit; font-weight:inherit; text-decoration:none; }
+.gu-userlink:hover, .gu-userlink:focus-visible { color:var(--mod-accent, #1b74b8); text-decoration:underline; }

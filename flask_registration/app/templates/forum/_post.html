@@ -1,3 +1,4 @@
+{% from 'moderator/_userlink.html' import user_link with context %}
 {#
   Partial: forum/_post.html
   Context: post, level (1 = bovenkant), thread, reply_form, tree_children,
@@ -54,7 +55,7 @@
       <div class="gu-post__avatar">{{ post.public_author_initial() }}</div>
       <div class="gu-post__authormeta">
         <div class="gu-post__name">
-          {{ author_display }}
+          {{ user_link(post.user_id, author_display) }}
           {% if author_linkedin %}
           <a href="{{ author_linkedin }}" target="_blank" rel="noopener noreferrer"
              class="gu-post__linkedin" aria-label="{{ _('LinkedIn profile of %(name)s', name=author_display) }}">
