@@ -284,6 +284,17 @@ def _emit_issue(issue, since, now):
         emit('gevolgd', others, event_key=f'issue:{issue.id}:closing:{issue.phase_deadline.isoformat()}', **refs)
     if started and 'issue_uitslag' in types:
         emit('uitslag', _users(followers | {initiator}), event_key=f'issue:{issue.id}:result:{started}', **refs)
+    # Step 3a-3: the final vote on the summarizing proposal (de eindstemming),
+    # keyed on the same moments changes() detects them by.
+    if types & {'ultiem_open', 'ultiem_uitslag'}:
+        from app import issue_proposals
+        final = issue_proposals.final_proposal(issue)
+        if final is not None and 'ultiem_open' in types and final.created_at:
+            emit('gevolgd', others, event_key=f'issue:{issue.id}:ultiem_open:{final.created_at.isoformat()}', **refs)
+        if final is not None and 'ultiem_uitslag' in types:
+            end = issue_proposals.final_voting_end(final)
+            emit('uitslag', _users(followers | {initiator}),
+                 event_key=f'issue:{issue.id}:ultiem_result:{end.isoformat()}', **refs)
 
 
 def _emit_thresholds(since):
@@ -368,7 +379,8 @@ _PHASES = {'feiten': ('Feiten', 'Facts'), 'bijstellen': ('Bijstellen', 'Adjustin
 
 def _tick_line(n, lang):
     """(text, url) for a tick-driven notification; the event_key says which
-    event it was (phase, closing, result, threshold, round)."""
+    event it was (phase, closing, result, threshold, round, and since step
+    3a-3 the final vote: ultiem_open, ultiem_result)."""
     from flask import url_for
     from app.models import Issue, IssueProposal, Thread
     nl = lang == 'nl'
@@ -393,6 +405,10 @@ def _tick_line(n, lang):
         return ((f'Je voorstel bij {t} heeft genoeg steun en staat op de stemlijst.' if nl
                  else f'Your proposal on {t} has enough support and is on the voting list.'), url)
     kind = parts[2]
+    if kind == 'ultiem_open':
+        return (f'De eindstemming over {t} is begonnen.' if nl else f'The final vote on {t} has started.'), url
+    if kind == 'ultiem_result':
+        return (f'De eindstemming over {t} is afgerond.' if nl else f'The final vote on {t} has concluded.'), url
     if kind == 'closing':
         return (f'De stemming over {t} sluit binnen 24 uur.' if nl else f'Voting on {t} closes within 24 hours.'), url
     if kind == 'result' or (kind == 'round' and parts[-1] == 'result'):

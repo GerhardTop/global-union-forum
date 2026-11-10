@@ -147,3 +147,57 @@ def test_old_public_proposal_is_mirrored(app, db, make_user):
     db.session.commit()
     notifications.emit_tick(now + timedelta(minutes=1))
     assert len(_rows(fan, 'uitslag')) == 1 and len(_rows(host, 'uitslag')) == 1
+
+
+# ── Step 3a-3: the final vote on the summarizing proposal ────────────────
+
+def _final_vote_issue(db, make_user):
+    host, fan, no_follow_news, no_results = make_user(), make_user(), make_user(), make_user()
+    no_follow_news.notif_prefs = json.dumps({'gevolgd': {'app': False, 'email': False}})
+    no_results.notif_prefs = json.dumps({'uitslag': {'app': False, 'email': False}})
+    _summary_off(db, host, fan, no_follow_news, no_results)
+    issue = _issue(db, host)
+    _follow(db, issue, host, fan, no_follow_news, no_results)
+    # The summarize phase began long ago (outside the lookback): only the final vote is news.
+    lifecycle.set_phase(issue, 'samenvatten', datetime.utcnow() - timedelta(days=10))
+    db.session.commit()
+    return issue, host, fan, no_follow_news, no_results
+
+
+def test_final_vote_opens_once_for_followers_not_the_initiator(app, db, make_user, mails):
+    issue, host, fan, no_follow_news, no_results = _final_vote_issue(db, make_user)
+    final = ip.create_final(issue, host, 'Samen verder.')
+    db.session.commit()
+
+    digest.tick()
+    digest.tick()
+    rows = _rows(fan, 'gevolgd')
+    assert len(rows) == 1
+    assert rows[0].event_key == f'issue:{issue.id}:ultiem_open:{final.created_at.isoformat()}'
+    text, url = notifications.notification_line(rows[0], 'nl')
+    assert text == f'De eindstemming over ‘{issue.title}’ is begonnen.' and url.endswith(f'/vraagstuk/{issue.id}')
+    assert notifications.notification_line(rows[0], 'en')[0] == f'The final vote on ‘{issue.title}’ has started.'
+    assert _rows(host, 'gevolgd') == []           # the initiator: no 'gevolgd' for it
+    assert _rows(no_follow_news) == []            # 'gevolgd' switched off
+    assert len(_rows(no_results, 'gevolgd')) == 1
+    assert mails == []
+
+
+def test_final_vote_result_once_for_all_followers(app, db, make_user, mails):
+    issue, host, fan, no_follow_news, no_results = _final_vote_issue(db, make_user)
+    final = ip.create_final(issue, host, 'Samen verder.')
+    final.created_at = datetime.utcnow() - timedelta(days=issue.days_vote or 7, hours=1)  # the vote just ended
+    db.session.commit()
+    end = ip.final_voting_end(final)
+
+    digest.tick()
+    digest.tick(datetime.utcnow() + timedelta(hours=1))
+    for user in (host, fan, no_follow_news):
+        rows = _rows(user, 'uitslag')
+        assert len(rows) == 1 and rows[0].event_key == f'issue:{issue.id}:ultiem_result:{end.isoformat()}'
+    assert notifications.notification_line(_rows(fan, 'uitslag')[0], 'nl')[0] == \
+        f'De eindstemming over ‘{issue.title}’ is afgerond.'
+    assert notifications.notification_line(_rows(fan, 'uitslag')[0], 'en')[0] == \
+        f'The final vote on ‘{issue.title}’ has concluded.'
+    assert _rows(no_results, 'uitslag') == []     # 'uitslag' switched off
+    assert mails == []
