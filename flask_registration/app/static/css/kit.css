@@ -4107,9 +4107,28 @@ body {
 .gu-seg__btn.is-on .gu-seg__c { color:var(--mod-accent); }
 
 .gu-mrow { display:flex; align-items:flex-start; gap:12px; padding:14px 16px; }
+.gu-moddash .gu-mrow { flex-wrap:wrap; }
 .gu-mrow + .gu-mrow { border-top:1px solid var(--mod-n100); }
+.gu-mrow__line { display:flex; align-items:center; gap:7px; flex-wrap:wrap; font-size:14px; line-height:1.4; min-width:0; }
+.gu-mrow__line .gu-mrow__title { flex:1 1 200px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:400; }
+.gu-mrow__dot { color:var(--mod-n500); }
+.gu-mrow__side { display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex:0 0 auto; }
+.gu-mrow__note { margin:6px 0 0; font-size:12.5px; color:var(--mod-n500); font-style:italic; }
+.gu-mrow__more { flex:0 0 auto; }
+.gu-mrow__more > summary { list-style:none; cursor:pointer; }
+.gu-mrow__more > summary::-webkit-details-marker { display:none; }
+.gu-mrow__more[open] { flex-basis:100%; }
+.gu-mrow__more[open] > summary { margin-left:auto; width:max-content; }
+.gu-mrow__panel { margin-top:12px; padding:14px 16px; background:var(--mod-n50); border:1px solid var(--mod-border); border-radius:10px; }
+.gu-pill--ctx { max-width:260px; overflow:hidden; text-overflow:ellipsis; color:var(--mod-ink); }
+.gu-pill--ctx .gu-arrow { flex:0 0 auto; color:var(--mod-accent); width:10px; height:6px; }
+.gu-mod-group { margin:0 0 26px; }
+.gu-mod-group > .gu-eyebrow { margin:0 0 8px; }
+.gu-mod-group__intro { margin:0 0 10px; font-size:12.5px; color:var(--mod-n600); }
+.gu-mod-rows { border:1px solid var(--mod-border); border-radius:12px; overflow:hidden; background:var(--gu-paper,#fff); }
 .gu-mrow__body { flex:1; min-width:0; }
 .gu-mrow__title { display:block; font-size:14px; font-weight:500; color:var(--mod-ink); }
+.gu-moddash .gu-mrow__body { flex:1 1 320px; }
 .gu-mrow__tags { display:flex; align-items:center; gap:8px; margin-top:7px; flex-wrap:wrap; }
 .gu-mrow__who { font-size:12.5px; color:var(--mod-n500); }
 .gu-mrow__reason { margin:8px 0 0; font-size:12.5px; color:var(--mod-n600); }
@@ -4160,5 +4179,8 @@ body {
   .gu-mod__wrap { padding-left:16px; padding-right:16px; }
   .gu-mod__kpis { grid-template-columns:repeat(2,1fr); gap:10px; }
   .gu-mod-bin__streams { padding:14px 12px 2px; }
-  .gu-mrow { flex-wrap:wrap; }
+  .gu-moddash .gu-mrow { padding:12px; }
+  .gu-moddash .gu-mrow__body { flex-basis:100%; }
+  .gu-mrow__line .gu-mrow__title { white-space:normal; flex-basis:100%; }
+  .gu-pill--ctx { max-width:100%; }
 }

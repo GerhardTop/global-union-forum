@@ -1,41 +1,53 @@
 {% extends "base.html" %}
 {% block title %}Moderator Dashboard · Global Union{% endblock %}
 
+{# ── Fase 2c: compacte rijen (mrow) volgens Main.dc.html (docs/design/README.md) ── #}
+{% macro ctx_pill(issue=None, thread=None) -%}
+{%- if issue -%}
+<a class="gu-pill gu-pill--ctx" href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}"><span class="gu-arrow" aria-hidden="true"></span>{{ issue.title }}</a>
+{%- elif thread -%}
+<a class="gu-pill gu-pill--ctx" href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}"><span class="gu-arrow" aria-hidden="true"></span>{{ thread.title(lang)|select|join(' ') }}</a>
+{%- endif -%}
+{%- endmacro %}
+
+{% macro post_ctx(post) -%}
+{%- set th = post.thread if post else None -%}
+{{ ctx_pill(th.issues[0] if th and th.issues else None, th) }}
+{%- endmacro %}
+
+{% macro age_pill(dt) -%}
+{%- set w = wait_bucket(dt) -%}
+{%- if w %}<span class="gu-pill gu-age gu-age--{{ w.sev }}">{{ w[lang] }}</span>{% endif -%}
+{%- endmacro %}
+
+{% macro excerpt(text, href=None) -%}
+{%- set t = (text or '')|replace('\n', ' ') -%}
+{%- set t = t[:140] ~ ('…' if t|length > 140 else '') -%}
+{%- if href %}<a class="gu-mrow__title" href="{{ href }}">{{ t }}</a>{% else %}<span class="gu-mrow__title">{{ t }}</span>{% endif -%}
+{%- endmacro %}
+
+{% macro review_summary() -%}
+<summary class="gu-btn gu-btn--primary gu-btn--sm">{% if lang == 'nl' %}Beoordelen{% else %}Review{% endif %}</summary>
+{%- endmacro %}
+
 {% macro melding_row(m) %}
 {% set soort = 'voorstel' if m.kind == 'proposal' else ('feit' if m.is_fact else 'bijdrage') %}
 {% set soort_en = 'proposal' if m.kind == 'proposal' else ('fact' if m.is_fact else 'contribution') %}
 <div class="gu-mrow">
   <div class="gu-mrow__body">
-    <a class="gu-mrow__title" href="{% if m.kind == 'post' %}{{ post_url(m.item) }}{% elif m.issue %}{{ url_for('issues.proposal', issue_id=m.issue.id, proposal_id=m.id) }}{% else %}#{% endif %}">{{ m.snippet }}</a>
-    <div class="gu-mrow__tags">
-      {% if m.issue %}<a class="gu-pill" href="{{ url_for('issues.show', issue_id=m.issue.id) }}" lang="{{ m.issue.lang or lang }}">{{ m.issue.title }}</a>{% endif %}
-      <span class="gu-mrow__who">{% if lang == 'nl' %}{{ soort }} van {{ m.author_name or 'anonieme deelnemer' }}{% else %}{{ soort_en }} by {{ m.author_name or 'anonymous' }}{% endif %}</span>
+    <div class="gu-mrow__line">
+      <strong>{{ m.author_name or ('anonieme deelnemer' if lang == 'nl' else 'anonymous') }}</strong>
+      <span class="gu-mrow__dot">·</span> {{ ctx_pill(m.issue) }}
+      {{ excerpt(m.snippet, post_url(m.item) if m.kind == 'post' else (url_for('issues.proposal', issue_id=m.issue.id, proposal_id=m.id) if m.issue else None)) }}
     </div>
-    <p class="gu-mrow__reason">{% if lang == 'nl' %}Reden{% else %}Reason{% endif %}: "{{ m.reports[0].reason }}"{% if m.count > 1 %} <a href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% if lang == 'nl' %}toon alle {{ m.count }}{% else %}show all {{ m.count }}{% endif %}</a>{% endif %}</p>
+    <p class="gu-mrow__reason">{% if lang == 'nl' %}{{ soort|capitalize }} · reden{% else %}{{ soort_en|capitalize }} · reason{% endif %}: "{{ m.reports[0].reason }}"{% if m.count > 1 %} <a href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% if lang == 'nl' %}toon alle {{ m.count }}{% else %}show all {{ m.count }}{% endif %}</a>{% endif %}</p>
   </div>
-  <span class="gu-pill gu-pill--count">{{ m.count }} {% if lang == 'nl' %}melding{{ '' if m.count == 1 else 'en' }}{% else %}report{{ '' if m.count == 1 else 's' }}{% endif %}</span>
-  {% if m.wait %}<span class="gu-pill gu-age gu-age--{{ m.wait.sev }}">{{ m.wait[lang] }}</span>{% endif %}
-  <a class="gu-btn gu-btn--primary gu-btn--sm" href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% if lang == 'nl' %}Beoordelen{% else %}Review{% endif %}</a>
+  <div class="gu-mrow__side">
+    <span class="gu-pill gu-pill--count">{{ m.count }} {% if lang == 'nl' %}melding{{ '' if m.count == 1 else 'en' }}{% else %}report{{ '' if m.count == 1 else 's' }}{% endif %}</span>
+    {% if m.wait %}<span class="gu-pill gu-age gu-age--{{ m.wait.sev }}">{{ m.wait[lang] }}</span>{% endif %}
+    <a class="gu-btn gu-btn--primary gu-btn--sm" href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% if lang == 'nl' %}Beoordelen{% else %}Review{% endif %}</a>
+  </div>
 </div>
-{% endmacro %}
-
-{# ── Kwaliteit (forum fase C1) ─────────────────────────────── #}
-{% macro quality_item(post, qa) %}
-  <li class="gu-quality-queue__item">
-    <div>
-      <strong>{{ post.public_author_name() }}</strong>
-      · <a href="{{ post_url(post) }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}bekijk in gesprek{% else %}view in conversation{% endif %}</a>
-      · {{ post.time_ago[lang] }}
-    </div>
-    <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
-    {% if current_user.id == post.user_id %}
-      <p class="gu-quality__meta">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beoordeelt deze.{% else %}Your own contribution: another moderator assesses it.{% endif %}</p>
-    {% else %}
-      {% with quality_open=true, quality_next=url_for('admin.moderator_dashboard') %}
-      {% include 'forum/_quality_mod.html' %}
-      {% endwith %}
-    {% endif %}
-  </li>
 {% endmacro %}
 
 {% block content_outer %}{% block content %}
@@ -78,219 +90,258 @@
           <p class="gu-mod-bin__ctx">{{ stream_counts.meldingen }} {% if lang == 'nl' %}meldingen, door deelnemers{% else %}reports, by participants{% endif %}</p>
         </div>
         <div class="gu-mod-bin__streams">
-            {% if stroom in ('alle', 'meldingen') %}
-            <section class="gu-mod__block" id="meldingen">
-            <div class="gu-mod__blockhead"><h2 style="margin:0;font-size:18px;font-weight:600">{% if lang == 'nl' %}Meldingen{% else %}Reports{% endif %}</h2><span class="gu-pill">{% if lang == 'nl' %}door deelnemers{% else %}by participants{% endif %}</span></div>
-            <div class="gu-mod-bin">
+          {% if stroom in ('alle', 'meldingen') %}
+          <section class="gu-mod-group" id="meldingen">
+            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen, door deelnemers{% else %}Reports, by participants{% endif %} ({{ meldingen|length }})</p>
+            {% if meldingen %}
+            <div class="gu-mod-rows">
               {% for m in meldingen %}{{ melding_row(m) }}{% endfor %}
-              {% if not meldingen %}<p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>{% endif %}
             </div>
-            </section>
+            {% else %}
+            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>
             {% endif %}
-            {% if stroom in ('alle', 'meldingen') %}
-            <section class="gu-admin__section" id="kwaliteit">
-              <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen: geen kwaliteit{% else %}Reports: not quality{% endif %} ({{ open_reports|length }})</p>
-              {% if open_reports %}
-              <ul class="gu-quality-queue">
-                {% for r in open_reports %}
-                {% set post = r.award.post %}
-                <li class="gu-quality-queue__item">
-                  <div>
-                    <strong>{{ post.public_author_name() }}</strong> · {{ r.award.criterion }} {{ quality_labels[r.award.criterion][lang] if r.award.criterion in quality_labels else '' }}
-                    · <a href="{{ post_url(post) }}" class="gu-admin-table__threadlink">{% if lang == 'nl' %}bekijk in gesprek{% else %}view in conversation{% endif %}</a>
-                  </div>
-                  <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
-                  <p class="gu-quality__meta">{% if lang == 'nl' %}Gemeld door{% else %}Reported by{% endif %} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
-                  {% if current_user.id == post.user_id %}
-                    <p class="gu-quality__meta">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beslist.{% else %}Your own contribution: another moderator decides.{% endif %}</p>
-                  {% else %}
-                  <form method="POST" action="{{ url_for('forum.forum_quality_report_decide', report_id=r.id) }}" class="gu-quality-mod__form">
-                    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-                    <label class="gu-quality-mod__field">
-                      <span>{% if lang == 'nl' %}Toelichting (optioneel, alleen voor moderators){% else %}Note (optional, for moderators only){% endif %}</span>
-                      <input type="text" name="note" maxlength="400" class="gu-input">
-                    </label>
-                    <div class="gu-quality-mod__actions">
-                      <button type="submit" name="decision" value="handhaven" class="gu-btn gu-btn--primary gu-btn--sm">{% if lang == 'nl' %}Handhaven{% else %}Keep{% endif %}</button>
-                      <button type="submit" name="decision" value="intrekken" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Intrekken{% else %}Withdraw{% endif %}</button>
-                    </div>
-                  </form>
-                  {% endif %}
-                </li>
-                {% endfor %}
-              </ul>
-              {% else %}
-              <p class="gu-admin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>
-              {% endif %}
-            </section>
+          </section>
 
-            {% endif %}
-            {% if stroom in ('alle', 'meldingen') %}
-            <section class="gu-admin__section" id="betwist">
-              <p class="gu-eyebrow gu-eyebrow--section">{{ _('Disputed facts') }} ({{ fact_disputes|length }})</p>
-              <p class="gu-quality__meta">{{ _('The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled.') }}</p>
-              {% if fact_disputes %}
-              {% set reason_labels = {'geen_bron': _('No source'), 'klopt_niet': _('Not correct'), 'niet_relevant': _('Not relevant'), 'misleidend': _('Misleading')} %}
-              <ul class="gu-quality-queue">
-                {% for row, url in fact_disputes %}
-                {% set post = row.fact %}
-                {% set case = post.conduct_case %}
-                <li class="gu-quality-queue__item">
-                  <div>
-                    <strong>{{ reason_labels.get(row.reason, row.reason) }}</strong>
-                    · {{ _('by') }} {{ row.user.public_name if row.user else '@deleted_user' }}
-                    · <a href="{{ url }}" class="gu-admin-table__threadlink">{{ _('View in context') }}</a>
-                  </div>
-                  <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
-                  <p class="gu-quality__meta">{{ _('Source') }}: {{ post.fact_source }}</p>
-                  {% if row.note %}<p class="gu-quality-queue__excerpt">{{ _('Explanation') }}: {{ row.note }}</p>{% endif %}
-                  {% if fact_can_resolve(row) %}
-                  {% with conduct_next=url_for('admin.moderator_dashboard') ~ '#betwist' %}
-                  {% include 'forum/_conduct_mod.html' %}
-                  {% endwith %}
-                  <form method="POST" action="{{ url_for('forum.fact_dispute_resolve', dispute_id=row.id) }}" class="gu-quality-mod__form">
-                    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-                    <input type="hidden" name="next" value="{{ url_for('admin.moderator_dashboard') }}#betwist">
-                    <div class="gu-quality-mod__actions">
-                      <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Mark as handled') }}</button>
-                    </div>
-                  </form>
-                  {% else %}
-                  <p class="gu-quality__meta">{{ _('Your own contribution: another moderator decides.') }}</p>
-                  {% endif %}
-                </li>
-                {% endfor %}
-              </ul>
-              {% else %}
-              <p class="gu-admin__empty">{{ _('No disputed facts.') }}</p>
-              {% endif %}
-            </section>
-
-            {% endif %}
-            {% if stroom in ('alle', 'ai') %}
-            <section class="gu-admin__section" id="twijfel">
-              <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: doubtful cases') }} ({{ doubt_cases|length }})</p>
-              {% if doubt_cases %}
-              <ul class="gu-quality-queue">
-                {% for case in doubt_cases %}
-                {% set post = case.post %}
-                <li class="gu-quality-queue__item">
-                  <div>
-                    <strong>{{ post.public_author_name() }}</strong>
-                    · {{ conduct_rule_label(case.rule) if case.rule else _('Conduct rules') }}
-                    · <a href="{{ post_url(post) }}" class="gu-admin-table__threadlink">{{ _('View in context') }}</a>
-                    · {{ post.time_ago[lang] }}
-                  </div>
-                  <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
-                  {% if case.explanation %}<p class="gu-quality__meta">{{ _('AI:') }} {{ case.explanation }}</p>{% endif %}
+          <section class="gu-mod-group" id="kwaliteit">
+            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen: geen kwaliteit{% else %}Reports: not quality{% endif %} ({{ open_reports|length }})</p>
+            {% if open_reports %}
+            <div class="gu-mod-rows">
+              {% for r in open_reports %}
+              {% set post = r.award.post %}
+              <div class="gu-mrow">
+                <div class="gu-mrow__body">
+                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
+                  <p class="gu-mrow__reason">{{ r.award.criterion }} {{ quality_labels[r.award.criterion][lang] if r.award.criterion in quality_labels else '' }} · {% if lang == 'nl' %}Gemeld door{% else %}Reported by{% endif %} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
                   {% if current_user.id == post.user_id %}
-                    <p class="gu-quality__meta">{{ _('Your own contribution: another moderator decides.') }}</p>
-                  {% else %}
+                  <p class="gu-mrow__note">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beslist.{% else %}Your own contribution: another moderator decides.{% endif %}</p>
+                  {% endif %}
+                </div>
+                <div class="gu-mrow__side">{{ age_pill(r.created_at) }}</div>
+                {% if current_user.id != post.user_id %}
+                <details class="gu-mrow__more">
+                  {{ review_summary() }}
+                  <div class="gu-mrow__panel">
+                    <form method="POST" action="{{ url_for('forum.forum_quality_report_decide', report_id=r.id) }}" class="gu-quality-mod__form">
+                      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                      <label class="gu-quality-mod__field">
+                        <span>{% if lang == 'nl' %}Toelichting (optioneel, alleen voor moderators){% else %}Note (optional, for moderators only){% endif %}</span>
+                        <input type="text" name="note" maxlength="400" class="gu-input">
+                      </label>
+                      <div class="gu-quality-mod__actions">
+                        <button type="submit" name="decision" value="handhaven" class="gu-btn gu-btn--primary gu-btn--sm">{% if lang == 'nl' %}Handhaven{% else %}Keep{% endif %}</button>
+                        <button type="submit" name="decision" value="intrekken" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Intrekken{% else %}Withdraw{% endif %}</button>
+                      </div>
+                    </form>
+                  </div>
+                </details>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>
+            {% endif %}
+          </section>
+
+          <section class="gu-mod-group" id="betwist">
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Disputed facts') }} ({{ fact_disputes|length }})</p>
+            <p class="gu-mod-group__intro">{{ _('The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled.') }}</p>
+            {% if fact_disputes %}
+            {% set reason_labels = {'geen_bron': _('No source'), 'klopt_niet': _('Not correct'), 'niet_relevant': _('Not relevant'), 'misleidend': _('Misleading')} %}
+            <div class="gu-mod-rows">
+              {% for row, url in fact_disputes %}
+              {% set post = row.fact %}
+              {% set case = post.conduct_case %}
+              <div class="gu-mrow">
+                <div class="gu-mrow__body">
+                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, url) }}</div>
+                  <p class="gu-mrow__reason">{{ reason_labels.get(row.reason, row.reason) }} · {{ _('by') }} {{ row.user.public_name if row.user else '@deleted_user' }}{% if row.note %} · {{ _('Explanation') }}: {{ row.note }}{% endif %}</p>
+                  {% if not fact_can_resolve(row) %}
+                  <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
+                  {% endif %}
+                </div>
+                <div class="gu-mrow__side">{{ age_pill(row.created_at) }}</div>
+                {% if fact_can_resolve(row) %}
+                <details class="gu-mrow__more">
+                  {{ review_summary() }}
+                  <div class="gu-mrow__panel">
+                    <p class="gu-quality__meta">{{ _('Source') }}: {{ post.fact_source }}</p>
+                    {% with conduct_next=url_for('admin.moderator_dashboard') ~ '#betwist' %}
+                    {% include 'forum/_conduct_mod.html' %}
+                    {% endwith %}
+                    <form method="POST" action="{{ url_for('forum.fact_dispute_resolve', dispute_id=row.id) }}" class="gu-quality-mod__form">
+                      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                      <input type="hidden" name="next" value="{{ url_for('admin.moderator_dashboard') }}#betwist">
+                      <div class="gu-quality-mod__actions">
+                        <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Mark as handled') }}</button>
+                      </div>
+                    </form>
+                  </div>
+                </details>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="gu-mod-bin__empty">{{ _('No disputed facts.') }}</p>
+            {% endif %}
+          </section>
+          {% endif %}
+
+          {% if stroom in ('alle', 'bezwaren') %}
+          <section class="gu-mod-group" id="bezwaren">
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: open objections') }} ({{ open_conduct_objections|length }})</p>
+            <p class="gu-mod-group__intro">{{ _('A senior moderator or the admin decides, not the moderator who took the decision.') }}</p>
+            {% if open_conduct_objections %}
+            <div class="gu-mod-rows">
+              {% for o in open_conduct_objections %}
+              {% set case = o.case %}
+              {% set post = case.post %}
+              <div class="gu-mrow">
+                <div class="gu-mrow__body">
+                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(case.body_snapshot or post.body, (url_for('forum.achtergrond') ~ '#zaak-' ~ case.id) if case.on_background else None) }}</div>
+                  <p class="gu-mrow__reason">{{ conduct_rule_label(case.rule) }} · {% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %}{% if case.explanation %} · {{ _('Why it was moved') }}: {{ case.explanation }}{% endif %}</p>
+                  <p class="gu-mrow__reason">{{ _('Objection:') }} {{ o.text }}</p>
+                  {% if not conduct_can_decide(case) %}
+                  <p class="gu-mrow__note">
+                  {%- if current_user.id == post.user_id %}{{ _('Your own contribution: another moderator decides.') }}
+                  {%- elif case.acted_by_id == current_user.id %}{{ _('You took this decision: another senior moderator decides.') }}
+                  {%- else %}{{ _('A senior moderator or the admin decides.') }}{% endif -%}
+                  </p>
+                  {% endif %}
+                </div>
+                <div class="gu-mrow__side">{{ age_pill(o.created_at) }}</div>
+                {% if conduct_can_decide(case) %}
+                <details class="gu-mrow__more">
+                  {{ review_summary() }}
+                  <div class="gu-mrow__panel">
+                    <form method="POST" action="{{ url_for('forum.conduct_objection_decide', objection_id=o.id) }}" class="gu-quality-mod__form">
+                      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                      <input type="hidden" name="next" value="{{ url_for('admin.moderator_dashboard') }}#bezwaren">
+                      <label class="gu-quality-mod__field">
+                        <span>{{ _('Note (optional)') }}</span>
+                        <input type="text" name="note" maxlength="400" class="gu-input">
+                      </label>
+                      <div class="gu-quality-mod__actions">
+                        <button type="submit" name="decision" value="handhaven" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Keep the decision') }}</button>
+                        <button type="submit" name="decision" value="terugplaatsen" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Restore to the conversation') }}</button>
+                      </div>
+                    </form>
+                  </div>
+                </details>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="gu-mod-bin__empty">{{ _('No open objections.') }}</p>
+            {% endif %}
+          </section>
+          {% endif %}
+
+          {% if stroom in ('alle', 'ai') %}
+          <section class="gu-mod-group" id="twijfel">
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: doubtful cases') }} ({{ doubt_cases|length }})</p>
+            {% if doubt_cases %}
+            <div class="gu-mod-rows">
+              {% for case in doubt_cases %}
+              {% set post = case.post %}
+              <div class="gu-mrow">
+                <div class="gu-mrow__body">
+                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
+                  <p class="gu-mrow__reason">{{ conduct_rule_label(case.rule) if case.rule else _('Conduct rules') }}{% if case.explanation %} · {{ _('AI:') }} {{ case.explanation }}{% endif %}</p>
+                  {% if current_user.id == post.user_id %}
+                  <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
+                  {% endif %}
+                </div>
+                <div class="gu-mrow__side">{{ age_pill(case.created_at) }}</div>
+                {% if current_user.id != post.user_id %}
+                <details class="gu-mrow__more">
+                  {{ review_summary() }}
+                  <div class="gu-mrow__panel">
                     {% with conduct_open=true, conduct_next=url_for('admin.moderator_dashboard') ~ '#twijfel' %}
                     {% include 'forum/_conduct_mod.html' %}
                     {% endwith %}
-                  {% endif %}
-                </li>
-                {% endfor %}
-              </ul>
-              {% else %}
-              <p class="gu-admin__empty">{{ _('No doubtful cases.') }}</p>
-              {% endif %}
-            </section>
-
-            {% endif %}
-            {% if stroom in ('alle', 'ai') %}
-            <section class="gu-admin__section" id="ai-verwijderd">
-              <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: removed by the AI') }} ({{ ai_removed|length }})</p>
-              {% if ai_removed %}
-              <ul class="gu-quality-queue">
-                {% for case in ai_removed %}
-                {% set post = case.post %}
-                <li class="gu-quality-queue__item">
-                  <div>
-                    <strong>{{ post.public_author_name() }}</strong>
-                    · {{ conduct_rule_label(case.rule) if case.rule else _('Conduct rules') }}
-                    {% if case.on_background %}· <a href="{{ url_for('forum.achtergrond') }}#zaak-{{ case.id }}" class="gu-admin-table__threadlink">{{ _('View on the background page') }}</a>{% endif %}
-                    · {{ post.time_ago[lang] }}
                   </div>
-                  <p class="gu-quality-queue__excerpt">{{ (post.body or '')[:220] }}{% if (post.body or '')|length > 220 %}…{% endif %}</p>
-                  {% if case.explanation %}<p class="gu-quality__meta">{{ _('AI:') }} {{ case.explanation }}</p>{% endif %}
+                </details>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="gu-mod-bin__empty">{{ _('No doubtful cases.') }}</p>
+            {% endif %}
+          </section>
+
+          <section class="gu-mod-group" id="ai-verwijderd">
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: removed by the AI') }} ({{ ai_removed|length }})</p>
+            {% if ai_removed %}
+            <div class="gu-mod-rows">
+              {% for case in ai_removed %}
+              {% set post = case.post %}
+              <div class="gu-mrow">
+                <div class="gu-mrow__body">
+                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, (url_for('forum.achtergrond') ~ '#zaak-' ~ case.id) if case.on_background else None) }}</div>
+                  <p class="gu-mrow__reason">{{ conduct_rule_label(case.rule) if case.rule else _('Conduct rules') }}{% if case.explanation %} · {{ _('AI:') }} {{ case.explanation }}{% endif %}</p>
                   {% if current_user.id == post.user_id %}
-                    <p class="gu-quality__meta">{{ _('Your own contribution: another moderator decides.') }}</p>
-                  {% else %}
+                  <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
+                  {% endif %}
+                </div>
+                <div class="gu-mrow__side">{{ age_pill(case.created_at) }}</div>
+                {% if current_user.id != post.user_id %}
+                <details class="gu-mrow__more">
+                  {{ review_summary() }}
+                  <div class="gu-mrow__panel">
                     {% with conduct_open=true, conduct_next=url_for('admin.moderator_dashboard') ~ '#ai-verwijderd' %}
                     {% include 'forum/_conduct_mod.html' %}
                     {% endwith %}
-                  {% endif %}
-                </li>
-                {% endfor %}
-              </ul>
-              {% else %}
-              <p class="gu-admin__empty">{{ _('No posts removed by the AI.') }}</p>
-              {% endif %}
-            </section>
-
-            {% endif %}
-            {% if stroom in ('alle', 'bezwaren') %}
-            <section class="gu-admin__section" id="bezwaren">
-              <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: open objections') }} ({{ open_conduct_objections|length }})</p>
-              <p class="gu-quality__meta">{{ _('A senior moderator or the admin decides, not the moderator who took the decision.') }}</p>
-              {% if open_conduct_objections %}
-              <ul class="gu-quality-queue">
-                {% for o in open_conduct_objections %}
-                {% set case = o.case %}
-                {% set post = case.post %}
-                <li class="gu-quality-queue__item">
-                  <div>
-                    <strong>{{ post.public_author_name() }}</strong>
-                    · {{ conduct_rule_label(case.rule) }}
-                    · {% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %}
-                    {% if case.on_background %}· <a href="{{ url_for('forum.achtergrond') }}#zaak-{{ case.id }}" class="gu-admin-table__threadlink">{{ _('View on the background page') }}</a>{% endif %}
                   </div>
-                  <p class="gu-quality-queue__excerpt">{{ (case.body_snapshot or post.body or '')[:220] }}{% if (case.body_snapshot or post.body or '')|length > 220 %}…{% endif %}</p>
-                  {% if case.explanation %}<p class="gu-quality__meta">{{ _('Why it was moved') }}: {{ case.explanation }}</p>{% endif %}
-                  <p class="gu-quality-queue__excerpt">{{ _('Objection:') }} {{ o.text }}</p>
-                  {% if conduct_can_decide(case) %}
-                  <form method="POST" action="{{ url_for('forum.conduct_objection_decide', objection_id=o.id) }}" class="gu-quality-mod__form">
-                    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-                    <input type="hidden" name="next" value="{{ url_for('admin.moderator_dashboard') }}#bezwaren">
-                    <label class="gu-quality-mod__field">
-                      <span>{{ _('Note (optional)') }}</span>
-                      <input type="text" name="note" maxlength="400" class="gu-input">
-                    </label>
-                    <div class="gu-quality-mod__actions">
-                      <button type="submit" name="decision" value="handhaven" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Keep the decision') }}</button>
-                      <button type="submit" name="decision" value="terugplaatsen" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Restore to the conversation') }}</button>
-                    </div>
-                  </form>
-                  {% elif current_user.id == post.user_id %}
-                  <p class="gu-quality__meta">{{ _('Your own contribution: another moderator decides.') }}</p>
-                  {% elif case.acted_by_id == current_user.id %}
-                  <p class="gu-quality__meta">{{ _('You took this decision: another senior moderator decides.') }}</p>
-                  {% else %}
-                  <p class="gu-quality__meta">{{ _('A senior moderator or the admin decides.') }}</p>
+                </details>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="gu-mod-bin__empty">{{ _('No posts removed by the AI.') }}</p>
+            {% endif %}
+          </section>
+          {% endif %}
+
+          {% if stroom in ('alle', 'zonder') %}
+          <section class="gu-mod-group" id="zonder">
+            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Zonder oordeel{% else %}Without judgement{% endif %} ({{ unjudged_posts|length }})</p>
+            <p class="gu-mod-group__intro">{% if lang == 'nl' %}Recente bijdragen zonder (of nog zonder) oordeel, bijvoorbeeld omdat de AI niet beschikbaar was. Je kunt ze handmatig beoordelen.{% else %}Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually.{% endif %}</p>
+            {% if unjudged_posts %}
+            <div class="gu-mod-rows">
+              {% for post in unjudged_posts %}
+              <div class="gu-mrow">
+                <div class="gu-mrow__body">
+                  <div class="gu-mrow__line"><strong>{{ post.public_author_name() }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
+                  <p class="gu-mrow__reason">{% if lang == 'nl' %}Geen kwaliteitsoordeel{% else %}No quality judgement{% endif %}</p>
+                  {% if current_user.id == post.user_id %}
+                  <p class="gu-mrow__note">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beoordeelt deze.{% else %}Your own contribution: another moderator assesses it.{% endif %}</p>
                   {% endif %}
-                </li>
-                {% endfor %}
-              </ul>
-              {% else %}
-              <p class="gu-admin__empty">{{ _('No open objections.') }}</p>
-              {% endif %}
-            </section>
-
+                </div>
+                <div class="gu-mrow__side">{{ age_pill(post.created_at) }}</div>
+                {% if current_user.id != post.user_id %}
+                <details class="gu-mrow__more">
+                  {{ review_summary() }}
+                  <div class="gu-mrow__panel">
+                    {% set qa = None %}
+                    {% with quality_open=true, quality_next=url_for('admin.moderator_dashboard') %}
+                    {% include 'forum/_quality_mod.html' %}
+                    {% endwith %}
+                  </div>
+                </details>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen bijdragen zonder oordeel.{% else %}No contributions without a judgement.{% endif %}</p>
             {% endif %}
-            {% if stroom in ('alle', 'zonder') %}
-            <section class="gu-admin__section">
-              <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Zonder oordeel{% else %}Without judgement{% endif %} ({{ unjudged_posts|length }})</p>
-              <p class="gu-quality__meta">{% if lang == 'nl' %}Recente bijdragen zonder (of nog zonder) oordeel, bijvoorbeeld omdat de AI niet beschikbaar was. Je kunt ze handmatig beoordelen.{% else %}Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually.{% endif %}</p>
-              {% if unjudged_posts %}
-              <ul class="gu-quality-queue">
-                {% for post in unjudged_posts %}{{ quality_item(post, None) }}{% endfor %}
-              </ul>
-              {% endif %}
-            </section>
-
-            {% endif %}
+          </section>
+          {% endif %}
         </div>
       </section>
 

@@ -112,6 +112,12 @@ def test_dashboard_renders_each_stream(app, db):
     assert counts['Meldingen'] == 1 and counts['Bezwaren'] == 1
     assert counts['Alle'] == sum(n for l, n in counts.items() if l != 'Alle')
     assert 'aria-current="page">Bezwaren <span class="gu-seg__c">1</span>' in b
+    # De meldingen-rij linkt naar het beoordeelscherm. Bij het bezwaar nam deze
+    # moderator zelf het besluit: de rij toont de notitie, geen uitklap.
+    assert f'href="/moderator/melding/bijdrage/{fact.id}">Beoordelen</a>' in a
+    group = b[b.index('id="bezwaren"'):]
+    group = group[:group.index('</section>')]
+    assert 'class="gu-mrow__note"' in group and 'gu-mrow__more' not in group
     assert '1 meldingen, door deelnemers' in a
 
     # De schil (artboard Main.dc.html): titel, zes tegels boven de bak,
@@ -271,6 +277,10 @@ def test_ai_removed_shows_and_can_restore(app, db):
     section = page.split('id="ai-verwijderd"', 1)[1].split('<section', 1)[0]
     assert f'/achtergrond#zaak-{case.id}' in section
     assert f'#post-{post.id}"' not in section and 'In context bekijken' not in section
+    # Compacte rij: het formulier (terugplaatsen) zit in de uitklap "Beoordelen".
+    more = section[section.index('<details class="gu-mrow__more">'):]
+    assert f'/forum/handhaving/{post.id}/terugplaatsen' in more
+    assert '>Beoordelen</summary>' in section
     r = _req(_client(app, mod), 'POST', f'/forum/handhaving/{post.id}/terugplaatsen', data={'note': ''})
     assert r.status_code in (302, 303)
     db.session.refresh(case)
