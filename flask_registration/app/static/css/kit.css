@@ -4451,3 +4451,21 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
   .gu-notif__seg span { flex:1; text-align:center; padding:7px 6px; }
   .gu-notif__actions .gu-btn { width:100%; }
 }
+
+/* Notifications step 3a-1: the /meldingen list */
+.gu-inbox__list { list-style: none; margin: 20px 0 0; padding: 0; border: 1px solid var(--gu-border); border-radius: 12px; overflow: hidden; background: var(--gu-bg, #fff); }
+.gu-inbox__item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--gu-border); }
+.gu-inbox__item:first-child { border-top: 0; }
+.gu-inbox__item--unread { background: #f3f8fc; }
+.gu-inbox__dot { flex: none; width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: transparent; }
+.gu-inbox__item--unread .gu-inbox__dot { background: var(--gu-globe-deep, #1b74b8); }
+.gu-inbox__link { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; color: var(--gu-fg-1); text-decoration: none; }
+.gu-inbox__link:hover .gu-inbox__text { text-decoration: underline; }
+.gu-inbox__item--unread .gu-inbox__text { font-weight: 600; }
+.gu-inbox__when { font-size: 0.8125rem; color: var(--gu-fg-3); white-space: nowrap; }
+.gu-inbox__heading { margin: 32px 0 12px; font-size: 1rem; font-weight: 600; color: var(--gu-fg-2); }
+.gu-inbox__empty { margin-top: 20px; }
+@media (max-width: 560px) {
+  .gu-inbox__item { padding: 12px; }
+  .gu-inbox__link { flex-direction: column; }
+}

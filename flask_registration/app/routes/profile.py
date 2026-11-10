@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, abort
 from flask_login import login_required, current_user
-from flask_babel import gettext as _
+from flask_babel import gettext as _, get_locale
 
 from app import db, bcrypt
 from app.forms import ForumActionForm, LinkedInForm
@@ -190,19 +190,29 @@ def notificaties():
 @profile_bp.route("/meldingen")
 @login_required
 def meldingen():
-    """De dagelijkse samenvattingen van je gevolgde voorstellen (in het forum).
-    Openen markeert ze als gelezen. The summaries themselves are rendered in
-    the user's stored language (users.lang, Dutch by default), like the email."""
+    """Your notifications (step 3a-1), newest first, and below them the
+    summaries of the proposals you follow. Opening the page marks both as
+    read. The summaries themselves are rendered in the user's stored language
+    (users.lang, Dutch by default), like the email."""
     from flask_babel import force_locale
     from markupsafe import Markup
-    from app import digest
+    from app import digest, notifications
+    from app.models import time_ago
+    lang = 'nl' if str(get_locale() or 'nl') == 'nl' else 'en'
+    items = []
+    for n in notifications.recent_notifications(current_user):
+        text, url = notifications.notification_line(n, lang)
+        items.append({'category': n.category, 'text': text, 'url': url, 'unread': n.read_at is None,
+                      'when': time_ago(n.created_at), 'at': n.created_at})
     digests = digest.recent_for(current_user)
     existing = digest.thread_exists({i['thread_id'] for d in digests for i in d.items})
     cards = None
     if digests:
         with force_locale(digest.lang_for(current_user)):
             cards = Markup(render_template("forum/_digest_cards.html", digests=digests, existing_threads=existing))
+    if any(i['unread'] for i in items):
+        notifications.mark_all_read(current_user)
     if current_user.has_unread_digest:
         current_user.has_unread_digest = False
-        db.session.commit()
-    return render_template("meldingen.html", digest_cards=cards)
+    db.session.commit()
+    return render_template("meldingen.html", notification_items=items, digest_cards=cards)

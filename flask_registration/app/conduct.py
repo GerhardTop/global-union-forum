@@ -192,6 +192,10 @@ def can_decide_objection(case, user):
 def object_to(case, author, text):
     obj = ConductObjection(case_id=case.id, author_id=author.id, text=text)
     db.session.add(obj)
+    # Notifications step 3a-1: senior moderators decide objections.
+    from app import notifications
+    notifications.emit('bezwaar', notifications.senior_moderators(), post_id=case.post_id,
+                       thread_id=case.post.thread_id if case.post is not None else None, actor_id=author.id)
     return obj
 
 

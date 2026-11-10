@@ -181,6 +181,7 @@ def anonymise(user, actor, reason):
         model.query.filter_by(user_id=user.id).delete(synchronize_session=False)
         model.query.filter_by(by_id=user.id).update({model.by_id: None}, synchronize_session=False)
     # No more notifications for a deleted account.
-    from app import digest, issue_lifecycle
+    from app import digest, issue_lifecycle, notifications
     digest.delete_for_user(user.id)
+    notifications.delete_for_user(user.id)
     issue_lifecycle.delete_follows(user_id=user.id)

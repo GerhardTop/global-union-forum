@@ -355,8 +355,9 @@ def detach_user(user_id):
     RoundVote.query.filter_by(user_id=user_id).delete(synchronize_session='evaluate')
     ProposalRound.query.filter_by(opened_by_id=user_id).update({ProposalRound.opened_by_id: None},
                                                                 synchronize_session=False)
-    from app import digest
+    from app import digest, notifications
     digest.delete_for_user(user_id)  # gevolgde voorstellen en samenvattingen
+    notifications.delete_for_user(user_id)
     for column in (ConductCase.acted_by_id, ConductCase.confirmed_by_id, ConductCase.restored_by_id):
         ConductCase.query.filter(column == user_id).update({column: None}, synchronize_session=False)
     for column in (ConductObjection.author_id, ConductObjection.decided_by_id):
@@ -414,7 +415,8 @@ def delete_for_posts(post_ids):
     post_ids = list(post_ids)
     if not post_ids:
         return
-    from app import facts
+    from app import facts, notifications
+    notifications.delete_for_posts(post_ids)  # first: they may point at a dispute on these facts
     facts.delete_for_posts(post_ids)  # herontwerp stap 3: nuttig en bezwaren bij feiten
     from app.models import ConductCase, ConductObjection
     case_ids = [c.id for c in ConductCase.query.filter(ConductCase.post_id.in_(post_ids))

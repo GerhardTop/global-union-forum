@@ -838,6 +838,14 @@ def create_app():
     from app.utils import linkify
     app.jinja_env.filters['linkify'] = linkify
 
+    def unread_notifications():
+        """Notifications step 3a-1: one COUNT on the current user's unread
+        notifications, for the banner in base.html."""
+        from flask_login import current_user
+        from app import notifications
+        return notifications.unread_count(current_user)
+    app.jinja_env.globals['unread_notifications'] = unread_notifications
+
     @app.context_processor
     def inject_babel():
         """Inject babel utilities and current language into templates."""

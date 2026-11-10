@@ -1,5 +1,5 @@
 """Notifications step 1: the settings page (docs/design/notificaties.html)
-and the preferences model. No notifications are produced yet."""
+and the preferences model (events: tests/test_notifications_events.py)."""
 import json
 
 from app.models import User

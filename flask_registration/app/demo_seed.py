@@ -364,6 +364,8 @@ def _remove_demo(db):
     from app import issue_lifecycle
     from app.models import IssueEventDay
     issue_lifecycle.delete_follows(issue_ids=issue_ids)
+    from app import notifications
+    notifications.delete_for_issues(issue_ids)
     IssueEventDay.query.filter(IssueEventDay.issue_id.in_(issue_ids)).delete(synchronize_session=False)
     for issue in issues:
         issue.thread_id = None

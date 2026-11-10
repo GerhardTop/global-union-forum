@@ -667,6 +667,13 @@ def forum_thread(thread_id):
                 post.issue_proposal_id = linked.id
                 post.proposal_version = issue_proposals.current_version(linked)
             db.session.add(post)
+            # Notifications step 3a-1: the author of the post replied to hears
+            # about it (in the app). A top-level post notifies nobody.
+            if parent is not None and parent.user_id is not None and parent.user_id != current_user.id:
+                from app import notifications
+                db.session.flush()
+                notifications.notify(db.session.get(User, parent.user_id), 'reactie', thread_id=thread_id,
+                                     post_id=post.id, actor_id=current_user.id)
             db.session.commit()
             # Fase E, stap 5b: wie meedoet aan een publiek voorstel gaat het volgen.
             if thread.proposal is not None:
@@ -1464,6 +1471,9 @@ def forum_report_post(post_id):
     already = PostReport.query.filter_by(post_id=post.id, reporter_id=current_user.id, decision=None).first()
     if already is None:
         db.session.add(PostReport(post_id=post.id, reporter_id=current_user.id, reason=reason[:500]))
+        from app import notifications
+        notifications.emit('melding', notifications.moderators(), post_id=post.id, thread_id=post.thread_id,
+                           actor_id=current_user.id)
         db.session.commit()
         flash(gettext('Thanks, your report has been sent to a moderator.'), 'success')
     return redirect(nxt)

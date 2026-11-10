@@ -73,12 +73,16 @@
             </div>
             {% endif %}
 
-            {# Fase E, stap 5b: een nieuwe dagelijkse samenvatting (vlag op de gebruiker, geen query). #}
-            {% if current_user.is_authenticated and current_user.has_unread_digest and request.endpoint != 'profile.meldingen' %}
-            <div class="gu-promotion-banner gu-digest-banner" role="status">
-              <span>{{ _('You have a new daily summary.') }}</span>
+            {# Fase E, stap 5b: een nieuwe samenvatting (vlag op de gebruiker). Notifications
+               step 3a-1: plus the unread notifications, one COUNT for the logged-in user. #}
+            {% if current_user.is_authenticated and request.endpoint != 'profile.meldingen' %}
+            {% set unread_n = unread_notifications() %}
+            {% if unread_n or current_user.has_unread_digest %}
+            <div class="gu-promotion-banner gu-digest-banner" role="status" data-unread-notifications="{{ unread_n }}">
+              <span>{% if unread_n %}{% if lang == 'nl' %}Je hebt {{ unread_n }} nieuwe {{ 'melding' if unread_n == 1 else 'meldingen' }}.{% else %}You have {{ unread_n }} new notification{{ '' if unread_n == 1 else 's' }}.{% endif %}{% else %}{{ _('You have a new daily summary.') }}{% endif %}</span>
               <a href="{{ url_for('profile.meldingen') }}" class="gu-post__action gu-post__action--ghost">{{ _('View') }}</a>
             </div>
+            {% endif %}
             {% endif %}
 
             {# User moderation: while suspended, a standing notice on every page. #}

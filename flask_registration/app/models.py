@@ -1272,3 +1272,23 @@ class Digest(db.Model):
             return json.loads(self.items_json)
         except ValueError:
             return []
+
+
+class Notification(db.Model):
+    """One in-app notification for one user (notifications step 3a). Reference
+    only: the line and the link are built per category and language when
+    rendering (app/notifications.notification_line), never stored as text.
+    A 'feit' row with dispute_id set is the resolved case; without it, the
+    fact was challenged."""
+    __tablename__ = "notifications"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    category   = db.Column(db.String(16), nullable=False)
+    thread_id  = db.Column(db.Integer, db.ForeignKey('threads.id'), nullable=True)
+    issue_id   = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=True)
+    post_id    = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
+    actor_id   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    dispute_id = db.Column(db.Integer, db.ForeignKey('fact_disputes.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    read_at    = db.Column(db.DateTime, nullable=True)

@@ -73,6 +73,15 @@ def dispute(fact, user, reason, note=None):
     """Een nieuw bezwaar. Commit niet zelf."""
     row = FactDispute(fact_post_id=fact.id, user_id=user.id, reason=reason, note=note, status='open')
     db.session.add(row)
+    # Notifications step 3a-1: the fact's author hears it is challenged, senior
+    # moderators that there is a challenged fact. Never the disputer.
+    from app import notifications
+    from app.models import User
+    if fact.user_id is not None:
+        notifications.notify(db.session.get(User, fact.user_id), 'feit', post_id=fact.id,
+                             thread_id=fact.thread_id, actor_id=user.id)
+    notifications.emit('betwist', notifications.senior_moderators(), post_id=fact.id, thread_id=fact.thread_id,
+                       actor_id=user.id)
     return row
 
 
@@ -83,9 +92,17 @@ def can_resolve(row, user):
 
 
 def resolve(row, user, now=None):
+    """Commit niet zelf. The fact's author hears the dispute was resolved
+    (a 'feit' notification pointing at this dispute)."""
     row.status = 'resolved'
     row.resolved_by_id = user.id
     row.resolved_at = now or datetime.utcnow()
+    fact = row.fact
+    if fact is not None and fact.user_id is not None:
+        from app import notifications
+        from app.models import User
+        notifications.notify(db.session.get(User, fact.user_id), 'feit', post_id=fact.id,
+                             thread_id=fact.thread_id, actor_id=user.id, dispute_id=row.id)
 
 
 def disputed_ids(fact_ids):

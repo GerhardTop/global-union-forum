@@ -145,6 +145,8 @@ def delete_wrappers(issue_ids):
         from app import issue_lifecycle
         from app.models import IssueEventDay
         issue_lifecycle.delete_follows(issue_ids=empty)  # polijstronde P3
+        from app import notifications
+        notifications.delete_for_issues(empty)
         IssueEventDay.query.filter(IssueEventDay.issue_id.in_(empty)).delete(synchronize_session=False)
         Issue.query.filter(Issue.id.in_(empty)).delete(synchronize_session=False)
 
@@ -467,6 +469,8 @@ def purge(issue):
             model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
         IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
     issue_lifecycle.delete_follows(issue_ids=[issue.id])
+    from app import notifications
+    notifications.delete_for_issues([issue.id])
     IssueEventDay.query.filter_by(issue_id=issue.id).delete(synchronize_session=False)
     # Een oud voorstel met een eigen gesprek wordt alleen losgekoppeld; het oude
     # voorstel dat dit gesprek deelt, gaat via delete_for_threads mee weg.

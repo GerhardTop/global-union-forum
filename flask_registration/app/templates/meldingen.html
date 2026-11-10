@@ -1,20 +1,45 @@
 {% extends "base.html" %}
-{# Fase E, stap 5b: de dagelijkse samenvattingen van je gevolgde voorstellen. #}
-{% block title %}{{ _('Daily summaries') }} · Global Union{% endblock %}
+{#
+  Notifications step 3a-1: your notifications, newest first, with an unread
+  marker (the page marks them read on load), and below them the summaries of
+  the proposals you follow (Fase E, stap 5b). No artboard: forum style.
+  Context: notification_items (dicts: category, text, url, unread, when),
+  digest_cards (rendered Markup or None).
+#}
+{% block title %}{% if lang == 'nl' %}Meldingen{% else %}Notifications{% endif %} · Global Union{% endblock %}
 
 {% block content %}
-<div class="gu-profile" style="max-width: 720px;">
+{% set nl = lang == 'nl' %}
+<div class="gu-profile gu-inbox" style="max-width: 720px;">
   <div class="gu-profile__head">
     <p class="gu-eyebrow">Global Union Forum</p>
-    <h1 class="gu-profile__title">{{ _('Daily summaries') }}</h1>
-    <p class="gu-digest__intro">{{ _('At most one summary a day of the public proposals you follow.') }}
-      <a href="{{ url_for('profile.profile') }}#samenvatting">{{ _('Email settings') }}</a></p>
+    <h1 class="gu-profile__title">{% if nl %}Meldingen{% else %}Notifications{% endif %}</h1>
+    <p class="gu-digest__intro">{% if nl %}Wat er gebeurde rond jouw bijdragen{% if current_user.can_moderate() %} en de moderatie{% endif %}.{% else %}What happened around your contributions{% if current_user.can_moderate() %} and moderation{% endif %}.{% endif %}
+      <a href="{{ url_for('profile.notificaties') }}">{% if nl %}Instellingen{% else %}Settings{% endif %}</a></p>
   </div>
+
+  {% if notification_items %}
+  <ul class="gu-inbox__list" id="meldingenLijst">
+    {% for item in notification_items %}
+    <li class="gu-inbox__item{% if item.unread %} gu-inbox__item--unread{% endif %}" data-category="{{ item.category }}"{% if item.unread %} data-unread{% endif %}>
+      <span class="gu-inbox__dot" aria-hidden="true"></span>
+      <a class="gu-inbox__link" href="{{ item.url }}">
+        <span class="gu-inbox__text">{% if item.unread %}<span class="gu-sr-only">{% if nl %}Nieuw: {% else %}New: {% endif %}</span>{% endif %}{{ item.text }}</span>
+        <span class="gu-inbox__when">{{ item.when['nl' if nl else 'en'] }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
   {% if digest_cards %}
+  <h2 class="gu-inbox__heading" id="samenvattingen">{% if nl %}Samenvattingen{% else %}Summaries{% endif %}</h2>
   {{ digest_cards }}
-  {% else %}
-  <div class="gu-join__panel">
-    <p>{{ _('No summaries yet. Follow a public proposal to receive at most one summary a day.') }}</p>
+  {% endif %}
+
+  {% if not notification_items and not digest_cards %}
+  <div class="gu-join__panel gu-inbox__empty">
+    <p>{% if nl %}Nog geen meldingen. Je hoort het hier als iemand op je bijdrage reageert of je feit betwist, en hier staan ook de samenvattingen van wat je volgt.{% else %}No notifications yet. You hear here when someone replies to your contribution or challenges your fact, and the summaries of what you follow appear here too.{% endif %}</p>
   </div>
   {% endif %}
 </div>
