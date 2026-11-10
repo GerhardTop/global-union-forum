@@ -670,7 +670,8 @@ def delete_issue(issue_id):
         issues.purge(issue)
         flash(gettext('The issue has been deleted.'), 'success')
         return redirect(url_for('issues.index'))
-    return render_template('issues/verwijderen.html', target='issue', issue=issue)
+    return render_template('issues/verwijderen.html', target='issue', issue=issue,
+                           counts=issues.purge_counts(issue))
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/verwijderen', methods=['GET', 'POST'])
@@ -691,4 +692,5 @@ def delete_proposal(issue_id, proposal_id):
         issues.purge_proposal(proposal)
         flash(gettext('The proposal has been deleted.'), 'success')
         return redirect(url_for('issues.show', issue_id=issue.id))
-    return render_template('issues/verwijderen.html', target='proposal', issue=issue, proposal=proposal)
+    return render_template('issues/verwijderen.html', target='proposal', issue=issue, proposal=proposal,
+                           counts=issues.purge_proposal_counts(proposal))

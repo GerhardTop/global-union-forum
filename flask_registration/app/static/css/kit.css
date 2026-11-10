@@ -4240,6 +4240,33 @@ body {
 .gu-modrev__explain { margin:0; font-size:12.5px; line-height:1.5; color:var(--mod-n500); }
 .gu-modrev__tip { padding:14px 16px; background:#f7fbfe; border:1px solid #cfe6f7; border-radius:12px; font-size:13px; line-height:1.5; color:var(--mod-n600); }
 
+/* Verwijderen.dc.html: de rode bevestigingskaart (docs/design/README.md). */
+.gu-del__crumbs { padding-top:28px; }
+.gu-del__card { max-width:640px; margin:8px auto 0; box-sizing:border-box; background:#fff; border:1px solid #f0c9cb; border-radius:14px;
+  padding:26px 28px; box-shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(163,40,44,.07); }
+.gu-del__top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+.gu-del__chip { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; background:#fcecec; color:#a3282c; }
+.gu-del__admin { background:#fcecec; border-color:#f0c9cb; color:#a3282c; font-weight:600; }
+.gu-del__title { margin:0; font-size:24px; font-weight:600; letter-spacing:-.02em; line-height:1.2; }
+.gu-del__sub { margin:8px 0 0; font-size:14px; line-height:1.5; color:var(--mod-n600); overflow-wrap:anywhere; }
+.gu-del__eyebrow { margin:22px 0 8px; }
+.gu-del__list { list-style:none; margin:0; padding:0; border:1px solid var(--mod-border); border-radius:10px; overflow:hidden; }
+.gu-del__row { display:flex; align-items:center; gap:10px; padding:10px 14px; font-size:14px; color:var(--mod-ink); }
+.gu-del__row + .gu-del__row { border-top:1px solid var(--mod-n100); }
+.gu-del__row svg { flex:0 0 auto; color:var(--mod-n500); }
+.gu-del__warn { display:flex; gap:10px; align-items:flex-start; margin:18px 0 0; padding:12px 14px; background:#fcecec; border:1px solid #f0c9cb; border-radius:10px; color:#a3282c; }
+.gu-del__warn svg { flex:0 0 auto; margin-top:2px; }
+.gu-del__warn p { margin:0; font-size:13.5px; line-height:1.5; }
+.gu-del__form { margin:20px 0 0; display:flex; flex-direction:column; gap:8px; }
+.gu-del__field { font-size:13.5px; color:var(--mod-n600); overflow-wrap:anywhere; }
+.gu-del__field strong { color:var(--mod-ink); }
+.gu-del__form .gu-input { width:100%; box-sizing:border-box; }
+.gu-del__actions { display:flex; justify-content:flex-end; align-items:center; gap:10px; flex-wrap:wrap; margin-top:6px; }
+.gu-del__btn { background:#a3282c; border-color:#a3282c; color:#fff; }
+.gu-del__btn:hover { background:#8c2226; border-color:#8c2226; color:#fff; }
+.gu-del__btn:disabled { opacity:.45; cursor:not-allowed; }
+.gu-del__hint { margin:2px 0 0; font-size:12px; color:var(--mod-n500); text-align:right; }
+
 @media (max-width:900px) {
   .gu-mod__kpis { grid-template-columns:repeat(3,1fr); }
   .gu-mod__cols { grid-template-columns:1fr; }
@@ -4247,6 +4274,10 @@ body {
 }
 @media (max-width:560px) {
   .gu-mod__wrap { padding-left:16px; padding-right:16px; }
+  .gu-del__card { padding:20px 16px; }
+  .gu-del__actions { justify-content:stretch; }
+  .gu-del__actions > * { flex:1 1 auto; text-align:center; }
+  .gu-del__hint { text-align:left; }
   .gu-mod__kpis { grid-template-columns:repeat(2,1fr); gap:10px; }
   .gu-mod-bin__streams { padding:14px 12px 2px; }
   .gu-moddash .gu-mrow { padding:12px; }

@@ -151,3 +151,36 @@ def test_delete_link_only_for_admin(app, db):
     assert f'/vraagstuk/{issue.id}/verwijderen' in admin_page
     assert f'/vraagstuk/{issue.id}/verwijderen' not in author_page
     _cleanup(issue.id)
+
+
+def test_delete_screen_shows_counts_and_admin_pill(app, db):
+    """Verwijderen.dc.html: the screen shows what will be removed, the Admin
+    pill, the warning and the type-the-title form (server check unchanged)."""
+    import re
+    from app import issues
+    from app.models import IssueFollow
+    admin, author = _user(db, admin=True), _user(db)
+    issue, fact, prop = _issue_full(db, author)
+    issue_id = issue.id
+    try:
+        db.session.add(IssueFollow(issue_id=issue_id, user_id=author.id))
+        db.session.commit()
+        counts = dict(issues.purge_counts(issue))
+        assert counts['proposals'] >= 1 and counts['facts'] >= 1 and counts['followers'] == 1
+
+        c = _client(app, admin)
+        page = re.sub(r'\s+', ' ', _req(c, 'GET', f'/vraagstuk/{issue_id}/verwijderen').get_data(as_text=True))
+        assert 'Vraagstuk definitief verwijderen' in page and '>Admin</span>' in page
+        assert 'Wat er verdwijnt' in page and 'Dit kan niet ongedaan worden gemaakt.' in page
+        assert f'<b>{counts["proposals"]}</b> voorst' in page
+        assert f'<b>{counts["facts"]}</b> feit' in page
+        assert '<b>1</b> volger wordt ontkoppeld' in page
+        assert 'name="confirm_title"' in page and 'data-expected="Groener plein?"' in page
+        assert 'De knop wordt pas actief als de titel exact klopt.' in page
+
+        ppage = re.sub(r'\s+', ' ', _req(c, 'GET', f'/vraagstuk/{issue_id}/voorstel/{prop.id}/verwijderen')
+                       .get_data(as_text=True))
+        assert 'Voorstel definitief verwijderen' in ppage and '<b>1</b> melding' in ppage
+        assert 'data-count="facts"' not in ppage and 'data-count="followers"' not in ppage
+    finally:
+        _cleanup(issue_id)

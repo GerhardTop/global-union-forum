@@ -413,6 +413,34 @@ def overview(which='alle'):
 
 # ── Verwijderen (fase 3) ─────────────────────────────────────────────────
 
+def purge_counts(issue):
+    """What purge(issue) removes, for the delete screen (Verwijderen.dc.html):
+    [(key, count)] in display order. Read-only."""
+    from app.models import FACT_KIND, IssueFollow, IssueProposal, IssueProposalVersion
+    prop_ids = [pid for (pid,) in db.session.query(IssueProposal.id).filter(IssueProposal.issue_id == issue.id)]
+    versions = (IssueProposalVersion.query.filter(IssueProposalVersion.proposal_id.in_(prop_ids)).count()
+                if prop_ids else 0)
+    rows = [('proposals', len(prop_ids)), ('versions', versions)]
+    if issue.thread_id:
+        posts = Post.query.filter(Post.thread_id == issue.thread_id)
+        facts = posts.filter(Post.kind == FACT_KIND).count()
+        rows += [('messages', posts.count() - facts), ('facts', facts)]
+    rows.append(('followers', IssueFollow.query.filter(IssueFollow.issue_id == issue.id).count()))
+    return rows
+
+
+def purge_proposal_counts(proposal):
+    """What purge_proposal(proposal) removes, for the delete screen:
+    [(key, count)] in display order. Read-only."""
+    from app.models import IssueProposalSupport, IssueProposalVersion, IssueProposalVote, ProposalReport
+    pid = proposal.id
+    return [('versions', IssueProposalVersion.query.filter_by(proposal_id=pid).count()),
+            ('support', IssueProposalSupport.query.filter_by(proposal_id=pid).count()),
+            ('votes', IssueProposalVote.query.filter_by(proposal_id=pid).count()),
+            ('reactions', Post.query.filter_by(issue_proposal_id=pid).count()),
+            ('reports', ProposalReport.query.filter_by(proposal_id=pid).count())]
+
+
 def purge(issue):
     """Verwijder een heel vraagstuk definitief: de discussie (het gesprek en de
     bijdragen, reacties op voorstellen inbegrepen), alle voorstellen met hun

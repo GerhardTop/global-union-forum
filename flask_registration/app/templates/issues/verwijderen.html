@@ -1,39 +1,102 @@
 {% extends "base.html" %}
 {% block title %}{% if lang == 'nl' %}Verwijderen{% else %}Delete{% endif %} · Global Union{% endblock %}
 
+{#
+  Delete confirmation (Verwijderen.dc.html, docs/design/README.md): a red
+  card with what will be removed, a warning and the type-the-title check. The
+  server validates confirm_title; the inline script only keeps the button
+  disabled until the text matches (without JS the button stays usable).
+#}
 {% block content_outer %}{% block content %}
-{% set what = proposal.statement if target == 'proposal' else issue.title %}
-<div class="gu-mod" lang="{{ lang }}">
-  <div class="gu-mod__wrap gu-mod__wrap--narrow">
+{% set is_prop = target == 'proposal' %}
+{% set what = proposal.statement if is_prop else issue.title %}
+{% set what_lang = (proposal.lang if is_prop else issue.lang) or lang %}
+{% set labels = {
+  'proposals': ('voorstellen', 'proposals', 'voorstel', 'proposal'),
+  'versions': ('versies van voorstellen', 'proposal versions', 'versie van een voorstel', 'proposal version') if not is_prop else ('versies', 'versions', 'versie', 'version'),
+  'messages': ('berichten in de discussie', 'messages in the discussion', 'bericht in de discussie', 'message in the discussion'),
+  'facts': ('feiten', 'facts', 'feit', 'fact'),
+  'followers': ('volgers worden ontkoppeld', 'followers are detached', 'volger wordt ontkoppeld', 'follower is detached'),
+  'support': ('keer steun', 'supports', 'keer steun', 'support'),
+  'votes': ('stemmen', 'votes', 'stem', 'vote'),
+  'reactions': ('reacties op het voorstel', 'reactions to the proposal', 'reactie op het voorstel', 'reaction to the proposal'),
+  'reports': ('meldingen', 'reports', 'melding', 'report'),
+} %}
+{% set icons = {
+  'proposals': '<path d="M4 3h8v10H4z M6 6h4 M6 8.5h4" />',
+  'versions': '<path d="M5 2.5h7v9H5z M3 4.5v9h7" />',
+  'messages': '<path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z" />',
+  'facts': '<path d="M8 2.5v.5 M8 6v6 M5.5 13.5h5" /><circle cx="8" cy="4" r=".6" />',
+  'followers': '<path d="M4.5 7a3.5 3.5 0 0 1 7 0c0 3.5 1.5 4.5 1.5 4.5H3s1.5-1 1.5-4.5 M7 13.5h2" />',
+  'support': '<path d="M3 8.5l3.2 3L13 4.5" />',
+  'votes': '<path d="M3 3h10v10H3z M5.5 8l1.8 1.8L10.5 6" />',
+  'reactions': '<path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z" />',
+  'reports': '<path d="M4 13.5V2.5 M4 3h8l-1.5 3L12 9H4" />',
+} %}
+<div class="gu-mod gu-del" lang="{{ lang }}">
+  <div class="gu-mod__wrap">
 
-    <div class="gu-mod__head">
-      <p class="gu-eyebrow"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{% if lang == 'nl' %}Terug naar het vraagstuk{% else %}Back to the issue{% endif %}</a></p>
-      <h1 class="gu-mod__title">{% if target == 'proposal' %}{% if lang == 'nl' %}Voorstel verwijderen{% else %}Delete proposal{% endif %}{% else %}{% if lang == 'nl' %}Vraagstuk verwijderen{% else %}Delete issue{% endif %}{% endif %}</h1>
-    </div>
+    <nav class="gu-modrev__crumbs gu-del__crumbs" aria-label="{% if lang == 'nl' %}Kruimelpad{% else %}Breadcrumb{% endif %}">
+      <a href="{{ url_for('issues.index') }}"><span class="gu-modrev__chev" aria-hidden="true">&lsaquo;</span> {% if lang == 'nl' %}Vraagstukken{% else %}Issues{% endif %}</a>
+      <span class="gu-modrev__sep">/</span>
+      <a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
+      <span class="gu-modrev__sep">/</span>
+      <span>{% if lang == 'nl' %}Verwijderen{% else %}Delete{% endif %}</span>
+    </nav>
 
-    <section class="gu-mod-card">
-      <p class="gu-mod-card__body" style="white-space:normal">
-        {% if target == 'proposal' %}
-          {% if lang == 'nl' %}Je staat op het punt dit voorstel definitief te verwijderen, met zijn versies, steun, stemmen en meldingen. Het vraagstuk zelf blijft staan.{% else %}You are about to permanently delete this proposal, with its versions, support, votes and reports. The issue itself stays.{% endif %}
-        {% else %}
-          {% if lang == 'nl' %}Je staat op het punt dit vraagstuk definitief te verwijderen: de hele discussie, alle voorstellen, feiten, stemmen en meldingen. Dit kan niet ongedaan worden gemaakt.{% else %}You are about to permanently delete this issue: the whole discussion, all proposals, facts, votes and reports. This cannot be undone.{% endif %}
-        {% endif %}
-      </p>
-      <p class="gu-mrow__reason" style="margin-top:12px"><strong lang="{{ (proposal.lang if target == 'proposal' else issue.lang) or lang }}">{{ what }}</strong></p>
+    <section class="gu-del__card" aria-labelledby="delTitle">
+      <div class="gu-del__top">
+        <span class="gu-del__chip" aria-hidden="true"><svg viewBox="0 0 16 16" width="20" height="20"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.8 6.5v4.5M9.2 6.5v4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="gu-pill gu-del__admin">Admin</span>
+      </div>
+      <h1 class="gu-del__title" id="delTitle">{% if is_prop %}{% if lang == 'nl' %}Voorstel definitief verwijderen{% else %}Permanently delete proposal{% endif %}{% else %}{% if lang == 'nl' %}Vraagstuk definitief verwijderen{% else %}Permanently delete issue{% endif %}{% endif %}</h1>
+      <p class="gu-del__sub">{% if lang == 'nl' %}Je staat op het punt <strong lang="{{ what_lang }}">"{{ what }}"</strong> te verwijderen, met alles wat eraan hangt.{% else %}You are about to delete <strong lang="{{ what_lang }}">"{{ what }}"</strong>, with everything attached to it.{% endif %}{% if is_prop %} {% if lang == 'nl' %}Het vraagstuk zelf blijft staan.{% else %}The issue itself stays.{% endif %}{% endif %}</p>
 
-      <form method="POST" action="{% if target == 'proposal' %}{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}{% else %}{{ url_for('issues.delete_issue', issue_id=issue.id) }}{% endif %}" class="gu-mod-decide" style="margin-top:16px">
+      {% if counts %}
+      <p class="gu-eyebrow gu-del__eyebrow">{% if lang == 'nl' %}Wat er verdwijnt{% else %}What will be removed{% endif %}</p>
+      <ul class="gu-del__list">
+        {% for key, n in counts %}
+        {% set l = labels[key] %}
+        <li class="gu-del__row" data-count="{{ key }}">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">{{ icons[key] | safe }}</svg>
+          <span><b>{{ n }}</b> {% if lang == 'nl' %}{{ l[2] if n == 1 else l[0] }}{% else %}{{ l[3] if n == 1 else l[1] }}{% endif %}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      <div class="gu-del__warn" role="note">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l6.5 11.5h-13z M8 6.5v3.2 M8 11.6v.1"/></svg>
+        <p>{% if lang == 'nl' %}<strong>Dit kan niet ongedaan worden gemaakt.</strong> Wil je alleen één bijdrage of feit weghalen, gebruik dan verbergen of verplaatsen, dat is terug te draaien.{% else %}<strong>This cannot be undone.</strong> If you only want to remove one contribution or fact, use hide or move instead; that can be reversed.{% endif %}</p>
+      </div>
+
+      <form method="POST" action="{% if is_prop %}{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}{% else %}{{ url_for('issues.delete_issue', issue_id=issue.id) }}{% endif %}" class="gu-del__form" data-confirm-form>
         {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-        <label class="gu-mod-decide__field">
-          <span>{% if target == 'proposal' %}{% if lang == 'nl' %}Typ de stelling precies over om te bevestigen{% else %}Type the statement exactly to confirm{% endif %}{% else %}{% if lang == 'nl' %}Typ de titel precies over om te bevestigen{% else %}Type the title exactly to confirm{% endif %}{% endif %}</span>
-          <input type="text" name="confirm_title" class="gu-input" autocomplete="off" required>
+        <label class="gu-del__field" for="confirmTitle">
+          <span>{% if is_prop %}{% if lang == 'nl' %}Typ de stelling om te bevestigen:{% else %}Type the statement to confirm:{% endif %}{% else %}{% if lang == 'nl' %}Typ de titel om te bevestigen:{% else %}Type the title to confirm:{% endif %}{% endif %} <strong lang="{{ what_lang }}">{{ what }}</strong></span>
         </label>
-        <div class="gu-mod-decide__actions">
-          <button type="submit" class="gu-btn gu-btn--danger">{% if lang == 'nl' %}Definitief verwijderen{% else %}Delete permanently{% endif %}</button>
-          <a class="gu-btn" href="{{ url_for('issues.show', issue_id=issue.id) }}">{% if lang == 'nl' %}Annuleren{% else %}Cancel{% endif %}</a>
+        <input type="text" id="confirmTitle" name="confirm_title" class="gu-input" autocomplete="off" required
+               data-expected="{{ (what or '')|trim }}">
+        <div class="gu-del__actions">
+          <a class="gu-btn gu-btn--ghost" href="{% if is_prop %}{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}{% else %}{{ url_for('issues.show', issue_id=issue.id) }}{% endif %}">{% if lang == 'nl' %}Annuleren{% else %}Cancel{% endif %}</a>
+          <button type="submit" class="gu-btn gu-del__btn" data-confirm-button>{% if lang == 'nl' %}Definitief verwijderen{% else %}Delete permanently{% endif %}</button>
         </div>
+        <p class="gu-del__hint">{% if is_prop %}{% if lang == 'nl' %}De knop wordt pas actief als de stelling exact klopt.{% else %}The button only becomes active when the statement matches exactly.{% endif %}{% else %}{% if lang == 'nl' %}De knop wordt pas actief als de titel exact klopt.{% else %}The button only becomes active when the title matches exactly.{% endif %}{% endif %}</p>
       </form>
     </section>
 
   </div>
 </div>
+<script nonce="{{ csp_nonce() }}">
+(function () {
+  var form = document.querySelector('[data-confirm-form]');
+  if (!form) return;
+  var input = form.querySelector('input[name="confirm_title"]');
+  var button = form.querySelector('[data-confirm-button]');
+  var expected = input.getAttribute('data-expected');
+  function sync() { button.disabled = input.value.trim() !== expected; }
+  input.addEventListener('input', sync);
+  sync();
+})();
+</script>
 {% endblock %}{% endblock %}
