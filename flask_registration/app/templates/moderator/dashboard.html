@@ -31,6 +31,18 @@
 <summary class="gu-btn gu-btn--primary gu-btn--sm">{% if lang == 'nl' %}Beoordelen{% else %}Review{% endif %}</summary>
 {%- endmacro %}
 
+{% macro show_all_link(key) -%}
+{%- if not show_all and section_total[key] > 10 -%}
+<div class="gu-mod-bin__more">
+  <a href="{{ url_for('admin.moderator_dashboard', stroom=stroom, zoek=zoek or None, sorteer=sorteer if sorteer != 'wachtend' else None, alle=1) }}#{{ key }}">{% if lang == 'nl' %}Toon alle {{ section_total[key] }}{% else %}Show all {{ section_total[key] }}{% endif %}</a>
+</div>
+{%- endif -%}
+{%- endmacro %}
+
+{% macro empty(text) -%}
+<p class="gu-mod-bin__empty">{% if zoek %}{% if lang == 'nl' %}Niets in deze sectie voor "{{ zoek }}".{% else %}Nothing in this section for "{{ zoek }}".{% endif %}{% else %}{{ text }}{% endif %}</p>
+{%- endmacro %}
+
 {% macro melding_row(m) %}
 {% set soort = 'voorstel' if m.kind == 'proposal' else ('feit' if m.is_fact else 'bijdrage') %}
 {% set soort_en = 'proposal' if m.kind == 'proposal' else ('fact' if m.is_fact else 'contribution') %}
@@ -78,7 +90,7 @@
           <nav class="gu-mod-tabs" aria-label="{% if lang == 'nl' %}Moderatiestromen{% else %}Moderation streams{% endif %}">
             <div class="gu-seg">
               {% for key in ('alle', 'meldingen', 'bezwaren', 'ai', 'zonder') %}
-              <a href="{{ url_for('admin.moderator_dashboard', stroom=key) }}" class="gu-seg__btn{% if key == stroom %} is-on{% endif %}"{% if key == stroom %} aria-current="page"{% endif %}>
+              <a href="{{ url_for('admin.moderator_dashboard', stroom=key, zoek=zoek or None, sorteer=sorteer if sorteer != 'wachtend' else None) }}" class="gu-seg__btn{% if key == stroom %} is-on{% endif %}"{% if key == stroom %} aria-current="page"{% endif %}>
               {%- if key == 'alle' %}{% if lang == 'nl' %}Alle{% else %}All{% endif %}
               {%- elif key == 'meldingen' %}{% if lang == 'nl' %}Meldingen{% else %}Reports{% endif %}
               {%- elif key == 'bezwaren' %}{% if lang == 'nl' %}Bezwaren{% else %}Objections{% endif %}
@@ -88,23 +100,47 @@
               {% endfor %}
             </div>
           </nav>
-          <p class="gu-mod-bin__ctx">{{ stream_counts.meldingen }} {% if lang == 'nl' %}meldingen, door deelnemers{% else %}reports, by participants{% endif %}</p>
+          <div class="gu-mod-bin__bar">
+            <p class="gu-mod-bin__ctx">{{ stream_counts.meldingen }} {% if lang == 'nl' %}meldingen, door deelnemers{% else %}reports, by participants{% endif %}</p>
+            <form method="GET" action="{{ url_for('admin.moderator_dashboard') }}#bak" class="gu-mod-bin__tools" role="search" data-bin-tools>
+              <input type="hidden" name="stroom" value="{{ stroom }}">
+              {% if show_all %}<input type="hidden" name="alle" value="1">{% endif %}
+              <label class="gu-mod-bin__search">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <span class="gu-sr-only">{% if lang == 'nl' %}Zoek op vraagstuk{% else %}Search by issue{% endif %}</span>
+                <input type="search" name="zoek" value="{{ zoek }}" maxlength="100" placeholder="{% if lang == 'nl' %}Zoek op vraagstuk{% else %}Search by issue{% endif %}">
+              </label>
+              <label><span class="gu-sr-only">{% if lang == 'nl' %}Sorteer{% else %}Sort{% endif %}</span>
+                <select name="sorteer" class="gu-mod-bin__sel" data-autosubmit>
+                  {% for key, nl, en in (('wachtend', 'Langst wachtend', 'Longest waiting'), ('nieuwste', 'Nieuwste eerst', 'Newest first'), ('meldingen', 'Meeste meldingen', 'Most reports'), ('vraagstuk', 'Per vraagstuk', 'By issue')) %}
+                  <option value="{{ key }}"{% if key == sorteer %} selected{% endif %}>{{ nl if lang == 'nl' else en }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Toepassen{% else %}Apply{% endif %}</button>
+              {% if zoek %}<a class="gu-mod-bin__clear" href="{{ url_for('admin.moderator_dashboard', stroom=stroom, sorteer=sorteer if sorteer != 'wachtend' else None) }}#bak">{% if lang == 'nl' %}Wis zoekopdracht{% else %}Clear search{% endif %}</a>{% endif %}
+            </form>
+          </div>
         </div>
         <div class="gu-mod-bin__streams">
+          {% if zoek and not bin_matches %}
+          <p class="gu-mod-bin__nomatch" role="status">{% if lang == 'nl' %}Geen vraagstuk gevonden dat "{{ zoek }}" bevat in deze stroom.{% else %}No issue containing "{{ zoek }}" in this stream.{% endif %}</p>
+          {% endif %}
           {% if stroom in ('alle', 'meldingen') %}
           <section class="gu-mod-group" id="meldingen">
-            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen, door deelnemers{% else %}Reports, by participants{% endif %} ({{ meldingen|length }})</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen, door deelnemers{% else %}Reports, by participants{% endif %} ({{ section_total['meldingen'] }})</p>
             {% if meldingen %}
             <div class="gu-mod-rows">
               {% for m in meldingen %}{{ melding_row(m) }}{% endfor %}
             </div>
+            {{ show_all_link('meldingen') }}
             {% else %}
-            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>{% endif %}
             {% endif %}
           </section>
 
           <section class="gu-mod-group" id="kwaliteit">
-            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen: geen kwaliteit{% else %}Reports: not quality{% endif %} ({{ open_reports|length }})</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen: geen kwaliteit{% else %}Reports: not quality{% endif %} ({{ section_total['kwaliteit'] }})</p>
             {% if open_reports %}
             <div class="gu-mod-rows">
               {% for r in open_reports %}
@@ -139,13 +175,14 @@
               </div>
               {% endfor %}
             </div>
+            {{ show_all_link('kwaliteit') }}
             {% else %}
-            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>{% endif %}
             {% endif %}
           </section>
 
           <section class="gu-mod-group" id="betwist">
-            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Disputed facts') }} ({{ fact_disputes|length }})</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Disputed facts') }} ({{ section_total['betwist'] }})</p>
             <p class="gu-mod-group__intro">{{ _('The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled.') }}</p>
             {% if fact_disputes %}
             {% set reason_labels = {'geen_bron': _('No source'), 'klopt_niet': _('Not correct'), 'niet_relevant': _('Not relevant'), 'misleidend': _('Misleading')} %}
@@ -183,15 +220,16 @@
               </div>
               {% endfor %}
             </div>
+            {{ show_all_link('betwist') }}
             {% else %}
-            <p class="gu-mod-bin__empty">{{ _('No disputed facts.') }}</p>
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{{ _('No disputed facts.') }}</p>{% endif %}
             {% endif %}
           </section>
           {% endif %}
 
           {% if stroom in ('alle', 'bezwaren') %}
           <section class="gu-mod-group" id="bezwaren">
-            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: open objections') }} ({{ open_conduct_objections|length }})</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: open objections') }} ({{ section_total['bezwaren'] }})</p>
             <p class="gu-mod-group__intro">{{ _('A senior moderator or the admin decides, not the moderator who took the decision.') }}</p>
             {% if open_conduct_objections %}
             <div class="gu-mod-rows">
@@ -234,15 +272,16 @@
               </div>
               {% endfor %}
             </div>
+            {{ show_all_link('bezwaren') }}
             {% else %}
-            <p class="gu-mod-bin__empty">{{ _('No open objections.') }}</p>
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{{ _('No open objections.') }}</p>{% endif %}
             {% endif %}
           </section>
           {% endif %}
 
           {% if stroom in ('alle', 'ai') %}
           <section class="gu-mod-group" id="twijfel">
-            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: doubtful cases') }} ({{ doubt_cases|length }})</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: doubtful cases') }} ({{ section_total['twijfel'] }})</p>
             {% if doubt_cases %}
             <div class="gu-mod-rows">
               {% for case in doubt_cases %}
@@ -269,13 +308,14 @@
               </div>
               {% endfor %}
             </div>
+            {{ show_all_link('twijfel') }}
             {% else %}
-            <p class="gu-mod-bin__empty">{{ _('No doubtful cases.') }}</p>
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{{ _('No doubtful cases.') }}</p>{% endif %}
             {% endif %}
           </section>
 
           <section class="gu-mod-group" id="ai-verwijderd">
-            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: removed by the AI') }} ({{ ai_removed|length }})</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Conduct rules: removed by the AI') }} ({{ section_total['ai-verwijderd'] }})</p>
             {% if ai_removed %}
             <div class="gu-mod-rows">
               {% for case in ai_removed %}
@@ -302,15 +342,16 @@
               </div>
               {% endfor %}
             </div>
+            {{ show_all_link('ai-verwijderd') }}
             {% else %}
-            <p class="gu-mod-bin__empty">{{ _('No posts removed by the AI.') }}</p>
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{{ _('No posts removed by the AI.') }}</p>{% endif %}
             {% endif %}
           </section>
           {% endif %}
 
           {% if stroom in ('alle', 'zonder') %}
           <section class="gu-mod-group" id="zonder">
-            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Zonder oordeel{% else %}Without judgement{% endif %} ({{ unjudged_posts|length }})</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Zonder oordeel{% else %}Without judgement{% endif %} ({{ section_total['zonder'] }})</p>
             <p class="gu-mod-group__intro">{% if lang == 'nl' %}Recente bijdragen zonder (of nog zonder) oordeel, bijvoorbeeld omdat de AI niet beschikbaar was. Je kunt ze handmatig beoordelen.{% else %}Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually.{% endif %}</p>
             {% if unjudged_posts %}
             <div class="gu-mod-rows">
@@ -338,8 +379,9 @@
               </div>
               {% endfor %}
             </div>
+            {{ show_all_link('zonder') }}
             {% else %}
-            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen bijdragen zonder oordeel.{% else %}No contributions without a judgement.{% endif %}</p>
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen bijdragen zonder oordeel.{% else %}No contributions without a judgement.{% endif %}</p>{% endif %}
             {% endif %}
           </section>
           {% endif %}
@@ -441,4 +483,11 @@
 
   </div>
 </div>
+<script nonce="{{ csp_nonce() }}">
+(function () {
+  // Optional: apply the sort on change. The Toepassen button works without JS.
+  var sel = document.querySelector('[data-bin-tools] [data-autosubmit]');
+  if (sel) sel.addEventListener('change', function () { sel.form.submit(); });
+})();
+</script>
 {% endblock %}{% endblock %}

@@ -341,3 +341,104 @@ def test_beoordelen_layout_follows_artboard(app, db):
     for value, path in (('handhaven', f'/moderator/melding/bijdrage/{reply.id}'),
                         ('handhaven', f'/moderator/melding/voorstel/{prop.id}')):
         assert _req(c, 'POST', path, data={'action': value}).status_code == 302
+
+
+# ── Bin extras: search, sort, "Toon alle N" (docs/design/main.html) ─────
+
+def _bin_post(db, issue, author, body):
+    p = Post(thread_id=issue.thread_id, user_id=author.id, author_name=author.username,
+             author_username=author.username, body=body)
+    db.session.add(p)
+    db.session.commit()
+    return p
+
+
+def _tab_counts(page):
+    import re
+    nav = page[page.index('gu-mod-tabs'):]
+    nav = nav[:nav.index('</nav>')]
+    return re.findall(r'gu-seg__c">(\d+)<', nav)
+
+
+def _section(page, key):
+    start = page.index(f'id="{key}"')
+    end = page.find('<section class="gu-mod-group"', start + 1)
+    return page[start:end if end != -1 else len(page)]
+
+
+def test_bin_search_sort_and_show_all(app, db):
+    from tests.test_delete_issue import _cleanup
+    mod, author = _user(db, 'moderator'), _user(db)
+    tag = uuid.uuid4().hex[:8]
+    issue_a, fact_a = _issue_with_fact(db, author)
+    issue_b, _fact_b = _issue_with_fact(db, author)
+    issue_a.title, issue_b.title = f'Bakzoek {tag} plein', f'Bakzoek {tag} haven'
+    db.session.commit()
+    ids = (issue_a.id, issue_b.id)
+    try:
+        reporters = [_user(db) for _ in range(3)]
+        _report_fact(db, fact_a, reporters[0])                       # 1 report, oldest
+        hot = _bin_post(db, issue_b, author, f'Veel gemeld {tag}')
+        for r in reporters:                                           # 3 reports
+            db.session.add(PostReport(post_id=hot.id, reporter_id=r.id, reason='ongepast'))
+        many = [_bin_post(db, issue_a, author, f'Rij {tag} nummer {i}') for i in range(11)]
+        for p in many:
+            db.session.add(PostReport(post_id=p.id, reporter_id=reporters[0].id, reason='spam'))
+        db.session.commit()
+        c = _client(app, mod)
+
+        base = _req(c, 'GET', '/moderator?stroom=meldingen').get_data(as_text=True)
+        # Search narrows to one vraagstuk; the tab counts stay the totals.
+        page = _req(c, 'GET', f'/moderator?stroom=meldingen&zoek=bakzoek+{tag}+HAVEN').get_data(as_text=True)
+        meld = _section(page, 'meldingen')
+        assert f'Veel gemeld {tag}' in meld and f'Rij {tag}' not in meld
+        assert _tab_counts(page) == _tab_counts(base)
+        # The form keeps the tab and the search.
+        assert 'name="stroom" value="meldingen"' in page and f'value="bakzoek {tag} HAVEN"' in page
+        assert 'stroom=meldingen' in page.split('gu-mod-tabs')[1].split('</nav>')[0]
+
+        none = _req(c, 'GET', f'/moderator?stroom=meldingen&zoek=onbekend{tag}').get_data(as_text=True)
+        assert 'Geen vraagstuk gevonden' in none and f'onbekend{tag}' in none
+
+        # Most reports first.
+        page = _req(c, 'GET', f'/moderator?stroom=meldingen&zoek=bakzoek+{tag}&sorteer=meldingen').get_data(as_text=True)
+        meld = _section(page, 'meldingen')
+        assert meld.index(f'Veel gemeld {tag}') < meld.index(f'Rij {tag}')
+        assert '<option value="meldingen" selected>' in page
+
+        # 13 items in the section: 10 shown and a "Toon alle 13" link; ?alle=1 shows all.
+        assert meld.count('class="gu-mrow"') == 10
+        assert 'Toon alle 13' in meld and 'alle=1' in meld and 'stroom=meldingen' in meld
+        page = _req(c, 'GET', f'/moderator?stroom=meldingen&zoek=bakzoek+{tag}&sorteer=meldingen&alle=1').get_data(as_text=True)
+        meld = _section(page, 'meldingen')
+        assert meld.count('class="gu-mrow"') == 13 and 'Toon alle' not in meld
+        assert 'name="alle" value="1"' in page
+    finally:
+        for issue_id in ids:
+            _cleanup(issue_id)
+        db.session.expunge_all()  # purged rows must not linger in the identity map
+
+
+def test_bin_default_sort_is_longest_waiting(app, db):
+    from datetime import datetime, timedelta
+    from tests.test_delete_issue import _cleanup
+    mod, author, reporter = _user(db, 'moderator'), _user(db), _user(db)
+    tag = uuid.uuid4().hex[:8]
+    issue, _fact = _issue_with_fact(db, author)
+    issue.title = f'Wachttest {tag}'
+    db.session.commit()
+    try:
+        old = _bin_post(db, issue, author, f'Oud {tag}')
+        new = _bin_post(db, issue, author, f'Nieuw {tag}')
+        db.session.add(PostReport(post_id=new.id, reporter_id=reporter.id, reason='x'))
+        db.session.add(PostReport(post_id=old.id, reporter_id=reporter.id, reason='x',
+                                  created_at=datetime.utcnow() - timedelta(days=3)))
+        db.session.commit()
+        c = _client(app, mod)
+        meld = _section(_req(c, 'GET', f'/moderator?stroom=meldingen&zoek=wachttest+{tag}').get_data(as_text=True), 'meldingen')
+        assert meld.index(f'Oud {tag}') < meld.index(f'Nieuw {tag}')
+        meld = _section(_req(c, 'GET', f'/moderator?stroom=meldingen&zoek=wachttest+{tag}&sorteer=nieuwste').get_data(as_text=True), 'meldingen')
+        assert meld.index(f'Nieuw {tag}') < meld.index(f'Oud {tag}')
+    finally:
+        _cleanup(issue.id)
+        db.session.expunge_all()

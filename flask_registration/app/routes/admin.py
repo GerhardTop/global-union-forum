@@ -49,6 +49,51 @@ def _phase_issues():
 
 
 MOD_STREAMS = ('alle', 'meldingen', 'ai', 'bezwaren', 'zonder')
+# The bin extras (docs/design/main.html): sort keys, and rows per section.
+MOD_SORTS = ('wachtend', 'nieuwste', 'meldingen', 'vraagstuk')
+MOD_SECTION_LIMIT = 10
+
+
+def _post_issue(post):
+    thread = post.thread if post is not None else None
+    issues = getattr(thread, 'issues', None) or []
+    return issues[0] if issues else None
+
+
+def _context_title(issue, post=None):
+    """The vraagstuk title an item belongs to (the issue, else its old-style
+    thread, both languages), or '' when there is none."""
+    if issue is not None:
+        return issue.title or ''
+    thread = post.thread if post is not None else None
+    if thread is None:
+        return ''
+    return ' '.join(p for lang in ('nl', 'en') for p in thread.title(lang) if p)
+
+
+def _arrange(items, title_of, at_of, count_of=None, zoek='', sorteer='wachtend', show_all=False):
+    """Search, sort and limit one bin section. Returns (shown, total), where
+    total is the number after searching (before the limit). The default
+    'wachtend' is longest waiting first (oldest first)."""
+    rows = [(item, title_of(item) or '') for item in items]
+    if zoek:
+        needle = zoek.casefold()
+        rows = [(item, t) for item, t in rows if t and needle in t.casefold()]
+    oldest = datetime.min
+    if sorteer == 'wachtend':
+        rows.sort(key=lambda r: at_of(r[0]) or oldest)
+    elif sorteer == 'nieuwste':
+        rows.sort(key=lambda r: at_of(r[0]) or oldest, reverse=True)
+    elif sorteer == 'meldingen':
+        rows.sort(key=lambda r: at_of(r[0]) or oldest)
+        if count_of is not None:
+            rows.sort(key=lambda r: count_of(r[0]), reverse=True)
+    elif sorteer == 'vraagstuk':
+        rows.sort(key=lambda r: at_of(r[0]) or oldest)
+        rows.sort(key=lambda r: (not r[1], r[1].casefold()))
+    total = len(rows)
+    shown = [item for item, _t in rows]
+    return (shown if show_all else shown[:MOD_SECTION_LIMIT]), total
 
 
 def _phase_labels():
@@ -131,11 +176,47 @@ def moderator_dashboard():
     }
     stream_counts['alle'] = sum(stream_counts.values())
 
+    # The bin extras: ?zoek= (vraagstuk title), ?sorteer=, ?alle=1 (no limit).
+    # The tab counts above stay the real totals (the backlog).
+    zoek = (request.args.get('zoek') or '').strip()[:100]
+    sorteer = request.args.get('sorteer')
+    if sorteer not in MOD_SORTS:
+        sorteer = 'wachtend'
+    show_all = request.args.get('alle') == '1'
+
+    def arrange(items, post_of, at_of, count_of=None, issue_of=None):
+        issue_of = issue_of or (lambda item: _post_issue(post_of(item)))
+        return _arrange(items, lambda item: _context_title(issue_of(item), post_of(item)), at_of,
+                        count_of, zoek, sorteer, show_all)
+
+    section_total = {}
+    meldingen, section_total['meldingen'] = arrange(
+        meldingen, lambda m: m.item if m.kind == 'post' else None, lambda m: m.oldest_at,
+        count_of=lambda m: m.count, issue_of=lambda m: m.issue)
+    open_reports, section_total['kwaliteit'] = arrange(
+        open_reports, lambda r: r.award.post, lambda r: r.created_at)
+    fact_disputes, section_total['betwist'] = arrange(
+        fact_disputes, lambda fd: fd[0].fact, lambda fd: fd[0].created_at)
+    open_conduct_objections, section_total['bezwaren'] = arrange(
+        open_conduct_objections, lambda o: o.case.post, lambda o: o.created_at)
+    doubt_cases, section_total['twijfel'] = arrange(
+        doubt_cases, lambda c: c.post, lambda c: c.created_at)
+    ai_removed, section_total['ai-verwijderd'] = arrange(
+        ai_removed, lambda c: c.post, lambda c: c.created_at)
+    unjudged_posts, section_total['zonder'] = arrange(
+        unjudged_posts, lambda p: p, lambda p: p.created_at)
+    shown_groups = {'alle': section_total.keys(),
+                    'meldingen': ('meldingen', 'kwaliteit', 'betwist'), 'bezwaren': ('bezwaren',),
+                    'ai': ('twijfel', 'ai-verwijderd'), 'zonder': ('zonder',)}[stroom]
+    bin_matches = sum(section_total[k] for k in shown_groups)
+
     return render_template(
         'moderator/dashboard.html',
         meldingen=meldingen,
         stroom=stroom,
         stream_counts=stream_counts,
+        zoek=zoek, sorteer=sorteer, show_all=show_all,
+        section_total=section_total, bin_matches=bin_matches,
         handled_total=handled_total,
         handled_mine=handled_mine,
         oldest_wait=reports.wait_bucket(oldest_at),
