@@ -104,7 +104,9 @@ class User(UserMixin, db.Model):
     @property
     def is_senior_moderator(self):
         """Senior moderator or admin: decides objections (conduct.can_decide_objection)
-        and, later, gates suspending and deleting accounts."""
+        and gates suspending and deleting accounts. Not while suspended."""
+        if self.is_suspended:
+            return False
         return bool(self.is_admin) or self.role == 'senior_moderator'
 
     # ── Permissies (centrale helpers, gebruikt door routes en templates) ──
@@ -150,7 +152,10 @@ class User(UserMixin, db.Model):
     def can_moderate(self):
         """Draden sluiten/heropenen, andermans berichten bewerken/verwijderen.
         is_moderator telt ook mee als vangnet, zodat wie vóór fase A
-        moderator was dat altijd blijft (set_role houdt beide synchroon)."""
+        moderator was dat altijd blijft (set_role houdt beide synchroon).
+        Not while suspended (admins cannot be suspended)."""
+        if self.is_suspended:
+            return False
         return bool(self.is_admin) or bool(self.is_moderator) or self._rank() >= ROLES.index('moderator') + 1
 
     def can_manage_rules(self):

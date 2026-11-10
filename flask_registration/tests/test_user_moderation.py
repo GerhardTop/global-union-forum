@@ -391,3 +391,26 @@ def test_account_delete_anonymises_and_keeps_contributions(app, db):
     finally:
         _drop_moderation_rows(target, other)
         _cleanup(issue_id)
+
+
+def test_suspended_moderator_cannot_moderate_until_it_ends(app, db):
+    mod, senior, target = _user(db, 'moderator'), _user(db, 'senior_moderator'), _user(db)
+    try:
+        for user in (mod, senior):
+            user.suspended_until = datetime.utcnow() + timedelta(days=7)
+        db.session.commit()
+        assert not mod.can_moderate() and not senior.is_senior_moderator
+        assert _req(_client(app, mod), 'GET', '/moderator').status_code == 403
+        assert _req(_client(app, mod), 'GET', f'/moderator/gebruiker/{target.id}').status_code == 403
+        sc = _client(app, senior)
+        assert _req(sc, 'POST', f'/moderator/gebruiker/{target.id}/schorsen',
+                    data={'duur': '7', 'reason': 'x'}).status_code == 403
+        assert _req(sc, 'GET', f'/moderator/gebruiker/{target.id}/verwijderen').status_code == 403
+
+        for user in (mod, senior):
+            user.suspended_until = datetime.utcnow() - timedelta(minutes=1)
+        db.session.commit()
+        assert _req(_client(app, mod), 'GET', '/moderator').status_code == 200
+        assert _req(_client(app, senior), 'GET', f'/moderator/gebruiker/{target.id}/verwijderen').status_code == 200
+    finally:
+        _drop_moderation_rows(target)
