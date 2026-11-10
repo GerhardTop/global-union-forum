@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}@{{ user.username }} · Moderator · Global Union{% endblock %}
+{% block title %}{{ user.handle }} · Moderator · Global Union{% endblock %}
 
 {#
   User moderation dossier, built to docs/design/gebruiker.html: identity,
@@ -51,11 +51,12 @@
       <div class="gu-user__who">
         <span class="gu-user__avatar" aria-hidden="true">{{ initials }}</span>
         <div>
-          <h1 class="gu-user__name">@{{ user.username }}</h1>
+          <h1 class="gu-user__name">{{ user.handle }}</h1>
           <div class="gu-user__pills">
             <span class="gu-pill">{{ status_labels[user.effective_status][lang] }}</span>
             {% if member_since %}<span class="gu-pill">{% if lang == 'nl' %}Lid sinds{% else %}Member since{% endif %} {{ member_since[lang] }}</span>{% endif %}
             {% if user.verified %}<span class="gu-pill"><svg class="gu-user__check" viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M5 12l5 5 9-11"/></svg>{% if lang == 'nl' %}Geverifieerd{% else %}Verified{% endif %}</span>{% endif %}
+            {% if user.is_deleted %}<span class="gu-pill gu-user__pill--del">{% if lang == 'nl' %}Verwijderd op{% else %}Deleted on{% endif %} {{ (user.deleted_at|local).strftime('%d-%m-%Y') }}</span>{% endif %}
             {% if user.is_suspended %}<span class="gu-pill gu-user__pill--warn">{% if lang == 'nl' %}Geschorst tot{% else %}Suspended until{% endif %} {{ (user.suspended_until|local).strftime('%d-%m-%Y') }}</span>{% endif %}
           </div>
         </div>
@@ -94,7 +95,7 @@
                   {{ time_ago(h.at)[lang] }} ·
                   {% if h.by_ai %}{% if lang == 'nl' %}door de AI{% else %}by the AI{% endif %}
                   {%- elif h.actor and h.actor.id == current_user.id %}{% if lang == 'nl' %}door jou{% else %}by you{% endif %}
-                  {%- elif h.actor %}{% if lang == 'nl' %}door{% else %}by{% endif %} @{{ h.actor.username }}
+                  {%- elif h.actor %}{% if lang == 'nl' %}door{% else %}by{% endif %} {{ h.actor.handle }}
                   {%- else %}{% if lang == 'nl' %}door een verwijderd account{% else %}by a deleted account{% endif %}{% endif %}
                 </div>
               </div>
@@ -138,6 +139,9 @@
       <aside class="gu-user__side" aria-labelledby="maatregelTitle">
         <h2 class="gu-user__h2" id="maatregelTitle">{% if lang == 'nl' %}Maatregel{% else %}Measure{% endif %}</h2>
 
+        {% if user.is_deleted %}
+        <p class="gu-user__measuretext gu-user__dim">{% if lang == 'nl' %}Dit account is verwijderd{% else %}This account has been deleted{% endif %}{% if user.deleted_reason %}: "{{ user.deleted_reason }}"{% endif %}.</p>
+        {% else %}
         <section class="gu-mod-card gu-user__measure" id="waarschuwing">
           <div class="gu-user__measurehead">
             <span class="gu-user__flag gu-user__flag--warn" aria-hidden="true"></span>
@@ -182,7 +186,22 @@
           </form>
         </section>
         {% endif %}
-        {# Account verwijderen follows in a later step. #}
+        {% if current_user.is_senior_moderator and not is_self and not user.is_admin %}
+        <section class="gu-mod-card gu-user__measure gu-user__measure--del" id="verwijderen">
+          <div class="gu-user__measurehead">
+            <span class="gu-user__flag gu-user__flag--susp" aria-hidden="true"></span>
+            <h3>{% if lang == 'nl' %}Account verwijderen{% else %}Delete account{% endif %}</h3>
+          </div>
+          <p class="gu-user__measuretext">{% if lang == 'nl' %}De zwaarste stap, voor wie na waarschuwing en schorsing doorgaat. Opent een bevestigingsscherm. Alleen senior moderator of admin.{% else %}The heaviest step, for those who carry on after a warning and a suspension. Opens a confirmation screen. Senior moderator or admin only.{% endif %}</p>
+          <form method="GET" action="{{ url_for('admin.gebruiker_verwijderen', user_id=user.id) }}">
+            <label class="gu-user__lbl" for="deleteReason">{% if lang == 'nl' %}Reden (komt in de historie){% else %}Reason (goes into the history){% endif %}</label>
+            <textarea class="gu-user__ta" id="deleteReason" name="reden" rows="2" maxlength="2000"
+                      placeholder="{% if lang == 'nl' %}Bijvoorbeeld: structureel gedrag dat het gesprek onveilig maakt.{% else %}For example: persistent behaviour that makes the conversation unsafe.{% endif %}"></textarea>
+            <button type="submit" class="gu-user__act gu-user__act--del"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>{% if lang == 'nl' %}Account verwijderen{% else %}Delete account{% endif %}</button>
+          </form>
+        </section>
+        {% endif %}
+        {% endif %}
       </aside>
     </div>
 

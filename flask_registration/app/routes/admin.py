@@ -259,6 +259,47 @@ def gebruiker_schorsen(user_id):
     return redirect(url_for('admin.gebruiker', user_id=user.id))
 
 
+def _deletable_user_or_abort(user_id):
+    """The account a senior moderator or admin may delete: not your own, not an
+    admin, not one already deleted (403/404 otherwise)."""
+    if not current_user.is_senior_moderator:
+        abort(403)
+    user = db.session.get(User, user_id)
+    if user is None or user.is_deleted:
+        abort(404)
+    if user.id == current_user.id or user.is_admin:
+        abort(403)
+    return user
+
+
+@admin_bp.route('/moderator/gebruiker/<int:user_id>/verwijderen', methods=['GET', 'POST'])
+@login_required
+def gebruiker_verwijderen(user_id):
+    """Delete an account (docs/design/verwijderen.html, adapted): a confirmation
+    screen, then anonymise. The row stays so all contributions keep working."""
+    user = _deletable_user_or_abort(user_id)
+    from app import users
+    nl = str(get_locale() or 'nl') == 'nl'
+    reason = (request.values.get('reden') or '').strip()[:2000]
+    if request.method == 'POST':
+        from app.routes.forum import _require_csrf
+        _require_csrf()
+        typed = (request.form.get('confirm_username') or '').strip().lstrip('@')
+        if typed != user.username:
+            flash('De gebruikersnaam klopt niet. Er is niets verwijderd.' if nl
+                  else 'The username does not match. Nothing was deleted.', 'error')
+            return redirect(url_for('admin.gebruiker_verwijderen', user_id=user.id, reden=reason or None))
+        old = user.username
+        users.anonymise(user, current_user, reason or None)
+        db.session.commit()
+        flash((f'Het account @{old} is verwijderd. De bijdragen staan nu onder @verwijderd.' if nl
+               else f'The account @{old} has been deleted. Its contributions now show as @verwijderd.'),
+              'success')
+        return redirect(url_for('admin.moderator_dashboard'))
+    return render_template('moderator/gebruiker_verwijderen.html', user=user, reason=reason,
+                           effects=users.deletion_effects(user))
+
+
 @admin_bp.route('/moderator/melding/<kind>/<int:item_id>', methods=['GET', 'POST'])
 @login_required
 def melding_beoordelen(kind, item_id):

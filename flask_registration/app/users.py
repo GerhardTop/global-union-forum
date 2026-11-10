@@ -127,3 +127,60 @@ def initials(user):
     if len(parts) >= 2:
         return (parts[0][0] + parts[1][0]).upper()
     return (user.username or '?')[:2].upper()
+
+
+def deletion_effects(user):
+    """What deleting (anonymising) this account does, as (key, n) pairs for
+    the confirmation screen: posts and facts that stay without a name, own
+    warnings and suspensions that go, and those given as a moderator that stay
+    without a name. Rows with n == 0 are left out, except the posts."""
+    from app.models import Post
+    own_posts = Post.query.filter(Post.user_id == user.id)
+    rows = [
+        ('posts', own_posts.filter(or_(Post.kind.is_(None), Post.kind != FACT_KIND)).count()),
+        ('facts', own_posts.filter(Post.kind == FACT_KIND).count()),
+        ('warnings', Warning.query.filter_by(user_id=user.id).count()),
+        ('suspensions', Suspension.query.filter_by(user_id=user.id).count()),
+        ('given', Warning.query.filter_by(by_id=user.id).count()
+         + Suspension.query.filter_by(by_id=user.id).count()),
+    ]
+    return [(k, n) for k, n in rows if n or k == 'posts']
+
+
+def anonymise(user, actor, reason):
+    """Delete an account by anonymising it: the row stays, so every post, fact,
+    proposal, vote and report keeps working, but nothing personal remains and
+    login is impossible. Commit niet zelf."""
+    import secrets
+    from app import bcrypt, db
+    from app.models import DELETED_HANDLE, Post, User
+    handle = f'{DELETED_HANDLE}_{user.id}'
+    if User.query.filter(db.func.lower(User.username) == handle, User.id != user.id).first():
+        handle = f'{DELETED_HANDLE}_{user.id}_{secrets.token_hex(3)}'
+    user.deleted_at = datetime.utcnow()
+    user.deleted_by_id = actor.id
+    user.deleted_reason = reason
+    user.username = handle
+    user.email = f'{handle}@deleted.invalid'
+    # An unguessable hash: no password matches it (and login also checks is_deleted).
+    user.password_hash = bcrypt.generate_password_hash(secrets.token_urlsafe(32)).decode('utf-8')
+    user.verified = False
+    user.first_name = user.last_name = user.linkedin_url = user.google_id = None
+    user.show_real_name = False
+    user.digest_email = False
+    user.has_unread_digest = None
+    user.suspended_until = None
+    user.is_moderator = False
+    user.role = None
+    # The name snapshots on their posts (the fallback display) go too.
+    Post.query.filter(Post.user_id == user.id).update(
+        {Post.author_name: '', Post.author_username: DELETED_HANDLE,
+         Post.author_badge_nl: None, Post.author_badge_en: None}, synchronize_session=False)
+    # Own warnings and suspensions go; those given as a moderator stay without a name.
+    for model in (Warning, Suspension):
+        model.query.filter_by(user_id=user.id).delete(synchronize_session=False)
+        model.query.filter_by(by_id=user.id).update({model.by_id: None}, synchronize_session=False)
+    # No more notifications for a deleted account.
+    from app import digest, issue_lifecycle
+    digest.delete_for_user(user.id)
+    issue_lifecycle.delete_follows(user_id=user.id)

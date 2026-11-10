@@ -92,7 +92,7 @@ def login():
     unverified_email = None
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower().strip()).first()
-        if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
+        if user and not user.is_deleted and bcrypt.check_password_hash(user.password_hash, form.password.data):
             if not user.verified:
                 unverified_email = user.email
             else:

@@ -4365,3 +4365,10 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-user__act--susp:hover { background:#fcebe0; }
 .gu-suspended-banner { max-width:1360px; margin:12px auto 0; padding:10px 16px; box-sizing:border-box; border:1px solid #eec3a3; background:#fef3ec; color:#9a4a1a; border-radius:10px; font-size:13.5px; }
 .gu-forum__suspended { font-size:13px; color:#9a4a1a; }
+
+/* Account verwijderen card (docs/design/gebruiker.html). */
+.gu-user__measure--del { border-color:#f0d2d3; }
+.gu-user__act--del { border-color:#f0c9cb; background:#fff; color:#a3282c; }
+.gu-user__act--del:hover { background:#fcf1f1; }
+.gu-user__pill--del { background:#fcecec; border-color:#f0c9cb; color:#a3282c; }
+.gu-del__form textarea.gu-input { resize:vertical; font-family:inherit; }

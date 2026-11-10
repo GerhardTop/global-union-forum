@@ -296,3 +296,98 @@ def test_suspension_blocks_contributing_and_shows_in_dossier(app, db):
     finally:
         _drop_moderation_rows(target, senior)
         _cleanup(issue_id)
+
+
+# ── Step 4: Account verwijderen (anonymise) ─────────────────────────────
+
+def test_account_delete_is_senior_or_admin_only(app, db):
+    target, mod, senior = _user(db), _user(db, 'moderator'), _user(db, 'senior_moderator')
+    admin = _user(db)
+    admin.is_admin = True
+    db.session.commit()
+    url = f'/moderator/gebruiker/{target.id}/verwijderen'
+    page = _req(_client(app, mod), 'GET', f'/moderator/gebruiker/{target.id}').get_data(as_text=True)
+    assert 'id="verwijderen"' not in page
+    assert _req(_client(app, mod), 'GET', url).status_code == 403
+    assert _req(_client(app, mod), 'POST', url, data={'confirm_username': target.username}).status_code == 403
+
+    c = _client(app, senior)
+    page = _req(c, 'GET', f'/moderator/gebruiker/{target.id}').get_data(as_text=True)
+    card = page[page.index('id="verwijderen"'):]
+    assert 'Account verwijderen' in card and 'Reden (komt in de historie)' in card
+    assert 'Opent een bevestigingsscherm' in card
+    own = _req(c, 'GET', f'/moderator/gebruiker/{senior.id}').get_data(as_text=True)
+    assert 'id="verwijderen"' not in own
+    # Not yourself, not an admin.
+    assert _req(c, 'GET', f'/moderator/gebruiker/{senior.id}/verwijderen').status_code == 403
+    assert _req(c, 'POST', f'/moderator/gebruiker/{admin.id}/verwijderen',
+                data={'confirm_username': admin.username}).status_code == 403
+    # The admin may open the screen too.
+    r = _req(_client(app, admin), 'GET', url + '?reden=Structureel+onveilig')
+    assert r.status_code == 200
+    screen = r.get_data(as_text=True)
+    assert 'Account definitief verwijderen' in screen and '>Admin<' in screen
+    assert f'@{target.username}' in screen and 'Wat er gebeurt' in screen
+    assert 'Structureel onveilig</textarea>' in screen and 'data-confirm-button' in screen
+    assert db.session.get(User, target.id).deleted_at is None
+
+
+def test_account_delete_anonymises_and_keeps_contributions(app, db):
+    target, other, senior = _user(db), _user(db), _user(db, 'senior_moderator')
+    target.first_name, target.last_name, target.show_real_name = 'Jan', 'Hofman', True
+    db.session.commit()
+    issue, fact = _issue_with_fact(db, target)
+    issue_id, thread_id, user_id, old_name = issue.id, issue.thread_id, target.id, target.username
+    try:
+        post = _post(db, issue, target, 'Een bijdrage die moet blijven staan.')
+        post_id = post.id
+        db.session.add(Warning(user_id=target.id, by_id=senior.id, message='Eerder gewaarschuwd.'))
+        db.session.add(Warning(user_id=other.id, by_id=target.id, message='Door het account gegeven.'))
+        db.session.commit()
+        c = _client(app, senior)
+        url = f'/moderator/gebruiker/{user_id}/verwijderen'
+
+        screen = _req(c, 'GET', url).get_data(as_text=True)
+        assert 'data-effect="posts"' in screen and 'data-effect="facts"' in screen
+        assert 'data-effect="warnings"' in screen and 'data-effect="given"' in screen
+        assert 'data-effect="suspensions"' not in screen
+
+        # A wrong name deletes nothing.
+        r = _req(c, 'POST', url, data={'confirm_username': old_name + 'x', 'reden': 'Onveilig.'})
+        assert r.status_code == 302
+        assert db.session.get(User, user_id).deleted_at is None
+
+        r = _req(c, 'POST', url, data={'confirm_username': '@' + old_name, 'reden': 'Onveilig.'})
+        assert r.status_code == 302 and r.headers['Location'].endswith('/moderator')
+        db.session.expire_all()
+        user = db.session.get(User, user_id)
+        assert user.deleted_at is not None and user.deleted_by_id == senior.id
+        assert user.deleted_reason == 'Onveilig.' and user.is_deleted
+        assert old_name not in (user.username, user.email) and user.username.startswith('verwijderd_')
+        assert user.first_name is None and user.last_name is None and not user.verified
+        assert user.public_name == '@verwijderd' and user.handle == '@verwijderd'
+        # Own warnings went, the one given as a moderator stays without a name.
+        assert Warning.query.filter_by(user_id=user_id).count() == 0
+        assert Warning.query.filter_by(user_id=other.id).one().by_id is None
+
+        # Contributions stay and show as @verwijderd.
+        assert db.session.get(Post, post_id) is not None and db.session.get(Post, fact.id) is not None
+        page = _req(_client(app, other), 'GET', f'/forum/{thread_id}').get_data(as_text=True)
+        assert 'Een bijdrage die moet blijven staan.' in page and '@verwijderd' in page
+        assert old_name not in page and 'Hofman' not in page
+
+        # Login is impossible and an old session is gone.
+        from app.models import load_user
+        assert load_user(str(user_id)) is None
+        lc = app.test_client()
+        _req(lc, 'POST', '/login', data={'email': f'{old_name}@example.com', 'password': 'Sterk1!ww'})
+        with lc.session_transaction() as s:
+            assert '_user_id' not in s
+
+        dossier = _req(c, 'GET', f'/moderator/gebruiker/{user_id}').get_data(as_text=True)
+        assert '<h1 class="gu-user__name">@verwijderd</h1>' in dossier and 'Verwijderd op' in dossier
+        assert 'id="waarschuwing"' not in dossier
+        assert _req(c, 'GET', url).status_code == 404
+    finally:
+        _drop_moderation_rows(target, other)
+        _cleanup(issue_id)

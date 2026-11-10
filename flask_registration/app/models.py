@@ -26,6 +26,10 @@ def status_rank(status):
     return STATUS_LADDER.index(status) if status in STATUS_LADDER else 0
 
 
+# A deleted account is anonymised, not removed: it shows as @verwijderd.
+DELETED_HANDLE = 'verwijderd'
+
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
@@ -165,8 +169,16 @@ class User(UserMixin, db.Model):
 
     @property
     def public_name(self):
-        """Hoe deze gebruiker publiek verschijnt: echte naam of @pseudoniem."""
+        """Hoe deze gebruiker publiek verschijnt: echte naam of @pseudoniem.
+        A deleted (anonymised) account is '@verwijderd'."""
+        if self.is_deleted:
+            return '@' + DELETED_HANDLE
         return self.real_name if self.shows_real_name else '@' + self.username
+
+    @property
+    def handle(self):
+        """The @handle for moderator screens: '@verwijderd' for a deleted account."""
+        return '@' + (DELETED_HANDLE if self.is_deleted else self.username)
 
     def set_role(self, role):
         """Zet de contentrol en houd het oude is_moderator-vlag synchroon."""
@@ -209,7 +221,9 @@ login_manager.anonymous_user = AnonymousUser
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.get(User, int(user_id))
+    user = db.session.get(User, int(user_id))
+    # A deleted (anonymised) account has no session any more.
+    return None if user is None or user.is_deleted else user
 
 
 class Thread(db.Model):
