@@ -1,7 +1,12 @@
-"""Notifications, step 1: the categories, the per-user preferences and the
-summary frequency (docs/design/notificaties.html). Only the settings and
-saving them; nothing produces notifications yet, and the existing daily
-digest (app/digest.py, User.digest_email) is not touched."""
+"""Notifications: the categories, the per-user preferences and the summary
+frequency (docs/design/notificaties.html).
+
+Step 1 built the settings page and saving. Step 2 wires the summary frequency
+into the digest (app/digest.send_for): off sends nothing, daily at most once
+per local day, weekly at most once per rolling 7 days. The old on/off email
+toggle (User.digest_email) is no longer written; it only feeds the fallback in
+summary_frequency() for rows that never chose a frequency. The per-category
+switches are stored but nothing produces notifications from them yet."""
 import json
 
 SUMMARY_FREQUENCIES = ('off', 'daily', 'weekly')
@@ -53,8 +58,15 @@ def effective_prefs(user):
 
 
 def summary_frequency(user):
+    """The chosen frequency; for a row that never chose one (NULL), derived
+    from the old toggle without a backfill: digest_email False -> 'off',
+    otherwise the new default 'weekly'."""
     value = getattr(user, 'summary_frequency', None)
-    return value if value in SUMMARY_FREQUENCIES else DEFAULT_SUMMARY_FREQUENCY
+    if value in SUMMARY_FREQUENCIES:
+        return value
+    if getattr(user, 'digest_email', None) is False:
+        return 'off'
+    return DEFAULT_SUMMARY_FREQUENCY
 
 
 def allowed_categories(user):

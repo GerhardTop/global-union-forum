@@ -64,3 +64,63 @@ def test_saving_persists_prefs_and_ignores_unentitled_categories(app, db):
     db.session.expire_all()
     stored = json.loads(db.session.get(User, mod.id).notif_prefs)
     assert stored['melding'] == {'app': False, 'email': True} and 'bezwaar' not in stored
+
+
+# ── Step 2: the summary frequency drives the digest ─────────────────────
+
+def test_null_frequency_falls_back_to_old_toggle(app, db):
+    user = _user(db)
+    user.summary_frequency = None
+    user.digest_email = False
+    assert summary_frequency(user) == 'off'
+    user.digest_email = True
+    assert summary_frequency(user) == 'weekly'
+    user.digest_email = None
+    assert summary_frequency(user) == 'weekly'
+    user.summary_frequency = 'daily'
+    user.digest_email = False
+    assert summary_frequency(user) == 'daily'      # an explicit choice wins
+    db.session.rollback()
+
+
+def _digest_user(db, freq, monkeypatch, mails):
+    """A user for whom build() always has something, with email captured."""
+    from app import digest
+    import app.mail
+    user = _user(db)
+    user.summary_frequency = freq
+    user.last_digest_at = None
+    db.session.commit()
+    monkeypatch.setattr(digest, 'build', lambda u, now, participants=None: [{'thread_id': 0, 'changes': []}])
+    monkeypatch.setattr(app.mail, 'send_email', lambda to, subject, html: mails.append((to, subject)) or True)
+    return user
+
+
+def test_digest_off_daily_weekly(app, db, monkeypatch):
+    from datetime import datetime, timedelta
+    from app import digest
+    from app.models import Digest
+    mails = []
+    base = datetime(2026, 11, 10, 9, 0)
+    with app.test_request_context():
+        off = _digest_user(db, 'off', monkeypatch, mails)
+        assert digest.send_for(off, base) is None
+        assert Digest.query.filter_by(user_id=off.id).count() == 0 and not mails
+
+        daily = _digest_user(db, 'daily', monkeypatch, mails)
+        assert digest.send_for(daily, base) is not None
+        assert digest.send_for(daily, base + timedelta(hours=3)) is None        # same local day
+        assert digest.send_for(daily, base + timedelta(days=1)) is not None     # next day
+        assert Digest.query.filter_by(user_id=daily.id).count() == 2
+        assert [s for to, s in mails if to == daily.email] == ['Je dagelijkse samenvatting'] * 2
+
+        weekly = _digest_user(db, 'weekly', monkeypatch, mails)
+        assert digest.send_for(weekly, base) is not None
+        assert digest.send_for(weekly, base + timedelta(days=1)) is None
+        assert digest.send_for(weekly, base + timedelta(days=6, hours=23)) is None
+        assert digest.send_for(weekly, base + timedelta(days=7, minutes=1)) is not None
+        assert Digest.query.filter_by(user_id=weekly.id).count() == 2
+        assert [s for to, s in mails if to == weekly.email] == ['Je wekelijkse samenvatting'] * 2
+    for u in (off, daily, weekly):
+        Digest.query.filter_by(user_id=u.id).delete()
+    db.session.commit()

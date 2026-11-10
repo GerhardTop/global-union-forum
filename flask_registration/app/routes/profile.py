@@ -206,15 +206,3 @@ def meldingen():
         current_user.has_unread_digest = False
         db.session.commit()
     return render_template("meldingen.html", digest_cards=cards)
-
-
-@profile_bp.route("/profiel/samenvatting", methods=["POST"])
-@login_required
-def profiel_samenvatting():
-    """Zet de dagelijkse samenvatting per e-mail aan of uit; de samenvatting
-    in het forum blijft altijd."""
-    if not ForumActionForm().validate_on_submit():
-        abort(400)
-    current_user.digest_email = request.form.get("digest_email") == "1"
-    db.session.commit()
-    return redirect(safe_next(request.form.get('next'), url_for("profile.profile")) + '#samenvatting')

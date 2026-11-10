@@ -212,11 +212,11 @@ def lang_for(user):
     return user.lang if getattr(user, 'lang', None) in ('nl', 'en') else 'nl'
 
 
-def _email(items, lang):
+def _email(items, lang, freq='daily'):
     """Subject and body of the digest email, in one language."""
     from flask_babel import gettext
     with force_locale(lang):
-        subject = gettext('Your daily summary')
+        subject = gettext('Your weekly summary') if freq == 'weekly' else gettext('Your daily summary')
         html = render_template('email/digest.html', items=items, lang=lang,
                                base=url_for('main.index', _external=True).rstrip('/'),
                                profile_url=url_for('profile.profile', _external=True))
@@ -224,19 +224,26 @@ def _email(items, lang):
 
 
 def send_for(user, now=None, issue_participants=None):
-    """Maak en verstuur de samenvatting voor één gebruiker, hoogstens één keer
-    per kalenderdag. De dag wordt atomair geclaimd, zodat twee gelijktijdige
+    """Maak en verstuur de samenvatting voor één gebruiker volgens de gekozen
+    frequentie (notifications.summary_frequency): 'off' niets, 'daily'
+    hoogstens één keer per kalenderdag, 'weekly' hoogstens één keer per 7 dagen
+    (rollend). Het venster wordt atomair geclaimd, zodat twee gelijktijdige
     tikken nooit twee berichten opleveren. Geeft de Digest of None."""
+    from app import notifications
     from app.mail import send_email
     now = now or datetime.utcnow()
-    if user.last_digest_at and local_date(user.last_digest_at) == local_date(now):
+    freq = notifications.summary_frequency(user)
+    if freq == 'off':
+        return None
+    window_start = start_of_local_day_utc(now) if freq == 'daily' else now - timedelta(days=7)
+    if user.last_digest_at and user.last_digest_at >= window_start:
         return None
     items = build(user, now, issue_participants)
     if not items:
         return None
     claimed = (User.query.filter(User.id == user.id,
                                  or_(User.last_digest_at.is_(None),
-                                     User.last_digest_at < start_of_local_day_utc(now)))
+                                     User.last_digest_at < window_start))
                .update({User.last_digest_at: now, User.has_unread_digest: True}, synchronize_session=False))
     if not claimed:
         db.session.rollback()
@@ -245,9 +252,10 @@ def send_for(user, now=None, issue_participants=None):
     db.session.add(digest)
     db.session.commit()
     db.session.refresh(user)
-    if user.digest_email is not False and user.verified and user.email:
+    if user.verified and user.email:
+        # Choosing daily or weekly means "email me" ('off' returned above).
         # Subject and body in the user's stored language (Dutch by default).
-        subject, html = _email(items, lang_for(user))
+        subject, html = _email(items, lang_for(user), freq)
         if send_email(user.email, subject, html):
             digest.emailed_at = datetime.utcnow()
             db.session.commit()

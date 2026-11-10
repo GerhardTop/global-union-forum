@@ -184,6 +184,7 @@ class TestDigest:
         monkeypatch.setattr(mail_module, 'send_email', lambda *a, **k: True)
         host, t = finished_event()
         host.last_digest_at = datetime.utcnow() - timedelta(days=2)
+        host.summary_frequency = 'daily'  # notifications step 2: the daily cadence
         db.session.commit()
         _open(app, host, t)
         follow = ProposalFollow.query.filter_by(user_id=host.id).one()

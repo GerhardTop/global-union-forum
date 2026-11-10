@@ -1187,6 +1187,9 @@ msgstr "Nieuwe feiten: %(n)s"
 msgid "Your daily summary"
 msgstr "Je dagelijkse samenvatting"
 
+msgid "Your weekly summary"
+msgstr "Je wekelijkse samenvatting"
+
 msgid "What changed in the proposals you follow:"
 msgstr "Wat er veranderde in de voorstellen die je volgt:"
 

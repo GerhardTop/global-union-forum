@@ -211,16 +211,9 @@
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
-    {# Fase E, stap 5b: de dagelijkse samenvatting van gevolgde voorstellen. #}
-    <h3 id="samenvatting" style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">{{ _('Daily summary by email') }}</h3>
-    <form method="POST" action="{{ url_for('profile.profiel_samenvatting') }}" class="gu-digest-pref">
-      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-      <label class="gu-join__check">
-        <input type="checkbox" name="digest_email" value="1"{% if current_user.digest_email is not false %} checked{% endif %}>
-        <span>{{ _('Also send me the daily summary of the proposals I follow by email. The summary in the forum always stays.') }}</span>
-      </label>
-      <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Save') }}</button>
-    </form>
+    {# The summary of what you follow. How often (off/daily/weekly) is set on
+       /profiel/meldingen (notifications step 2); the old on/off toggle is gone. #}
+    <h3 id="samenvatting" style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">{% if lang == 'nl' %}Samenvatting per e-mail{% else %}Summary by email{% endif %}</h3>
     <p style="font-size: 13px; color: var(--gu-fg-3); margin: 8px 0 0;"><a href="{{ url_for('profile.meldingen') }}">{{ _('View your daily summaries') }}</a></p>
     <p style="font-size: 13px; color: var(--gu-fg-3); margin: 8px 0 0;"><a href="{{ url_for('profile.notificaties') }}" id="notificatiesLink">{% if lang == 'nl' %}Meldingen{% else %}Notifications{% endif %}</a> &middot; {% if lang == 'nl' %}kies waarover je bericht krijgt, en waar{% else %}choose what you hear about, and where{% endif %}</p>
 

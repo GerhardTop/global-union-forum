@@ -137,9 +137,12 @@ class TestFollowing:
 
 
 class TestDigest:
-    def _setup(self, db, make_user, make_proposal, minutes_ago=0, lang=None):
+    def _setup(self, db, make_user, make_proposal, minutes_ago=0, lang=None, freq='daily'):
         anna = make_user()
         anna.lang = lang
+        # Notifications step 2: these tests cover the daily cadence; a new
+        # account defaults to 'weekly', so choose daily explicitly.
+        anna.summary_frequency = freq
         t = make_proposal(started_minutes_ago=minutes_ago)
         digest.follow(t.proposal, anna)
         db.session.commit()
@@ -233,18 +236,16 @@ class TestDigest:
         page = _req(_client(app, anna), 'GET', '/meldingen').get_data(as_text=True)
         assert 'Uitslag: aangenomen met 66,7% voor' in page and 'Samenvatting van ' in page
 
-    def test_email_off_keeps_in_app_digest(self, app, db, make_user, make_proposal, mails):
-        anna, t = self._setup(db, make_user, make_proposal, minutes_ago=90)
-        assert _req(_client(app, anna), 'POST', '/profiel/samenvatting', data={}).status_code == 302
-        db.session.expire_all()
-        assert db.session.get(User, anna.id).digest_email is False
+    def test_frequency_off_sends_nothing(self, app, db, make_user, make_proposal, mails):
+        # Notifications step 2: 'off' means no summary at all (no Digest, no
+        # email). The old on/off toggle and its route are gone.
+        anna, t = self._setup(db, make_user, make_proposal, minutes_ago=90, freq='off')
         with app.test_request_context():
+            assert digest.send_for(db.session.get(User, anna.id)) is None
             digest.tick()
-        assert Digest.query.filter_by(user_id=anna.id).count() == 1
+        assert Digest.query.filter_by(user_id=anna.id).count() == 0
         assert not [m for m in mails if m['to'] == anna.email]
-        _req(_client(app, anna), 'POST', '/profiel/samenvatting', data={'digest_email': '1'})
-        db.session.expire_all()
-        assert db.session.get(User, anna.id).digest_email is True
+        assert _req(_client(app, anna), 'POST', '/profiel/samenvatting', data={}).status_code == 404
 
     def test_event_gives_no_digest(self, app, db, make_user, make_proposal, mails):
         anna = make_user()
