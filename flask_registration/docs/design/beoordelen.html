@@ -1,0 +1,185 @@
+<!doctype html>
+<!--
+  Design-referentie (artboard Beoordelen.dc.html). Statisch, alleen om naar
+  te kijken en naartoe te bouwen; geen app-code. Het beoordeelscherm van een
+  gemelde bijdrage: de bijdrage in context, de meldingen, en een beslissing.
+-->
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Melding beoordelen</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<style>
+body{margin:0}
+a{color:#1b74b8;text-decoration:none}
+a:hover{color:#0f5a93}
+.gu *{box-sizing:border-box}
+.gu{
+  --globe:#3ab0f0; --globe-deep:#1b74b8; --europe:#0077cc;
+  --ink:#141b22; --paper:#ffffff; --night:#0f1923;
+  --americas:#d8232a; --africa:#e09400; --oceania:#108a4e;
+  --n50:#f5f7f9; --n100:#eef1f5; --n200:#e4e9ef; --n300:#d3dae2; --n400:#a7b1bd;
+  --n500:#6c7683; --n600:#525c69; --n700:#3a434e;
+  --border:#e4e9ef;
+  --shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05);
+  font-family:'Inter',system-ui,sans-serif; color:var(--ink);
+  background:var(--n50); -webkit-font-smoothing:antialiased;
+}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--n500);margin:0}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px}
+.card{background:var(--paper);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:2px 9px;border-radius:999px;background:var(--n100);color:var(--n600);border:1px solid var(--border);white-space:nowrap}
+.ico{width:16px;height:16px;flex:0 0 auto;stroke:currentColor;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.arrow{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid currentColor}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;font-family:inherit;font-size:14px;font-weight:500;padding:11px 14px;border-radius:9px;border:1px solid var(--border);background:var(--paper);color:var(--ink);cursor:pointer;line-height:1.1}
+.btn:hover{background:var(--n50)}
+.btn--keep{border-color:#bfe3f8;background:#eef7fd;color:#15557f}
+.btn--keep:hover{background:#e3f1fb}
+.btn--move{border-color:#f0d9b0;color:#8a5a12}
+.btn--move:hover{background:#fff8ee}
+.btn--hide{border-color:#f0c9cb;color:#a3282c}
+.btn--hide:hover{background:#fcf1f1}
+.rep{font-size:11.5px;color:var(--n500)}
+.rep b{color:var(--n600);font-weight:600}
+</style>
+</head>
+<body>
+<div class="gu" style="min-height:100%;padding-bottom:64px">
+
+  <header style="background:var(--paper);border-bottom:1px solid var(--border)">
+    <div class="wrap" style="height:68px;display:flex;align-items:center;justify-content:space-between">
+      <a href="#" style="display:flex;align-items:center;gap:12px">
+        <span style="display:flex;gap:3px" aria-hidden="true">
+          <span style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid var(--europe)"></span>
+          <span style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid var(--africa)"></span>
+          <span style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid var(--americas)"></span>
+          <span style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid #e8c400"></span>
+          <span style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid var(--oceania)"></span>
+        </span>
+        <span style="font-size:17px;letter-spacing:.01em;color:var(--ink)"><strong style="font-weight:600">GLOBAL</strong> <span style="font-weight:300;color:var(--globe)">UNION</span></span>
+      </a>
+      <div style="display:flex;align-items:center;gap:22px">
+        <nav style="display:flex;gap:20px;font-size:14.5px;color:var(--n600)">
+          <a href="#">Vraagstukken</a><a href="#">Manifest</a><a href="#">FAQ</a><a href="#">Over ons</a>
+        </nav>
+        <span style="font-size:13px;color:var(--n500)"><strong style="color:var(--ink);font-weight:600">NL</strong> · EN</span>
+        <span class="pill" style="background:var(--globe);color:#fff;border-color:var(--globe);font-weight:600">GT</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Kop met kruimelpad -->
+  <div class="wrap" style="padding-top:24px;padding-bottom:18px">
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--n500);flex-wrap:wrap">
+      <a href="#" style="display:inline-flex;align-items:center;gap:6px;color:var(--n600)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Moderator</a>
+      <span aria-hidden="true">/</span>
+      <a href="#">Belasting multinationals</a>
+      <span aria-hidden="true">/</span>
+      <span>Gemelde bijdrage</span>
+    </div>
+    <p class="eyebrow" style="margin-top:16px">Melding beoordelen</p>
+    <h1 style="margin:7px 0 0;font-size:26px;font-weight:600;letter-spacing:-.02em">Bijdrage in <span style="font-weight:300;color:var(--globe-deep)">Belasting multinationals</span></h1>
+    <div style="display:flex;align-items:center;gap:9px;margin-top:11px;flex-wrap:wrap">
+      <span class="pill"><span class="arrow" style="color:var(--globe)" aria-hidden="true"></span>Online vraagstuk · fase Stemmen</span>
+      <span class="pill" style="background:#eef7f1;border-color:#c5e4d0;color:#108a4e"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>Jij behandelt dit nu</span>
+    </div>
+  </div>
+
+  <!-- Twee kolommen -->
+  <div class="wrap" style="display:grid;grid-template-columns:1fr 420px;gap:26px;align-items:start">
+
+    <!-- De bijdrage in context -->
+    <section>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <h2 style="margin:0;font-size:16px;font-weight:600">De bijdrage in het gesprek</h2>
+      </div>
+      <div class="card" style="overflow:hidden">
+
+        <div style="padding:11px 18px;background:var(--n50);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="arrow" style="color:var(--globe)" aria-hidden="true"></span>
+          <span style="font-size:12.5px;color:var(--n600)">Vraagstuk <a href="#" style="font-weight:600">Belasting multinationals</a> · discussie bij voorstel "Openbaar register per land"</span>
+        </div>
+
+        <div style="padding:14px 18px;border-bottom:1px solid var(--n100);opacity:.72">
+          <div style="font-size:12.5px;color:var(--n500);margin-bottom:5px">Sarah Chen · 3 dagen geleden</div>
+          <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--n700)">Het minimumtarief werkt alleen als grote economieën meedoen. De vraag is hoe we handhaving afdwingen zonder nieuwe bureaucratie.</p>
+        </div>
+
+        <div style="padding:16px 18px;background:#fdf6ee;border-left:3px solid var(--africa)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px">
+            <div>
+              <div style="font-size:13px;color:var(--n600)"><strong style="color:var(--ink);font-weight:600">Jan Hofman</strong> · 6 dagen geleden</div>
+              <div class="rep" style="margin-top:3px"><b>2</b> meldingen gedaan · <b>5</b> ontvangen <span style="color:var(--n400)">(waarvan 1 gegrond)</span></div>
+            </div>
+            <span class="pill" style="background:#fdeceb;border-color:#f3c9c6;color:#a3282c"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><path d="M4 21V5a2 2 0 0 1 2-2h10l-1.5 4L16 11H6"/><path d="M4 21v-6"/></svg>3 meldingen</span>
+          </div>
+          <p style="margin:0;font-size:14.5px;line-height:1.55;color:var(--ink)">Dit is gewoon propaganda, typisch weer zo'n naïef praatje van mensen die geen verstand van economie hebben. Wie dit gelooft is ronduit dom.</p>
+        </div>
+
+        <div style="padding:14px 18px;border-top:1px solid var(--n100);opacity:.72">
+          <div style="font-size:12.5px;color:var(--n500);margin-bottom:5px">anonieme deelnemer · 5 dagen geleden</div>
+          <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--n700)">Je kunt het oneens zijn zonder anderen dom te noemen.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin:26px 0 12px">
+        <h2 style="margin:0;font-size:16px;font-weight:600">Meldingen bij deze bijdrage</h2>
+        <span class="pill count" style="background:#eaf2fb;border-color:#c5dcf4;color:#1b5e9a;font-weight:600">3</span>
+      </div>
+      <div class="card" style="overflow:hidden">
+        <div style="padding:13px 18px;border-bottom:1px solid var(--n100)">
+          <div style="font-size:12.5px;color:var(--n500);margin-bottom:2px">door Fatima El Idrissi · 6 dagen geleden</div>
+          <div class="rep" style="margin-bottom:5px"><b>4</b> meldingen gedaan · <b>0</b> ontvangen</div>
+          <p style="margin:0;font-size:13.5px;line-height:1.5">Niet respectvol, speelt op de persoon in plaats van op het argument.</p>
+        </div>
+        <div style="padding:13px 18px;border-bottom:1px solid var(--n100)">
+          <div style="font-size:12.5px;color:var(--n500);margin-bottom:2px">door anonieme deelnemer · 5 dagen geleden</div>
+          <div class="rep" style="margin-bottom:5px"><b>1</b> melding gedaan · <b>2</b> ontvangen</div>
+          <p style="margin:0;font-size:13.5px;line-height:1.5">Scheldt anderen uit ("ronduit dom"), dat hoort hier niet.</p>
+        </div>
+        <div style="padding:13px 18px">
+          <div style="font-size:12.5px;color:var(--n500);margin-bottom:2px">door Pieter de Vries · 4 dagen geleden</div>
+          <div class="rep" style="margin-bottom:5px"><b>7</b> meldingen gedaan · <b>0</b> ontvangen</div>
+          <p style="margin:0;font-size:13.5px;line-height:1.5">Het woord "propaganda" plus de belediging maakt het gesprek onveilig.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Beslissing -->
+    <aside>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <h2 style="margin:0;font-size:16px;font-weight:600">Beslissing</h2>
+      </div>
+      <div class="card" style="padding:18px">
+        <p style="margin:0 0 14px;font-size:13px;line-height:1.5;color:var(--n600)">Kies wat er met de bijdrage gebeurt. De auteur krijgt bericht en kan bezwaar maken.</p>
+
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <button type="button" class="btn btn--keep">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-11"/></svg>Niets doen, bijdrage blijft staan
+          </button>
+          <button type="button" class="btn btn--move">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"/><path d="M15 15l4 2-4 2z"/></svg>Verplaatsen naar achtergrond
+          </button>
+          <button type="button" class="btn btn--hide">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.4 5.2A9 9 0 0 1 21 12a9.3 9.3 0 0 1-2.1 2.9M6.2 6.2A9.3 9.3 0 0 0 3 12a9 9 0 0 0 10 6.5"/></svg>Verbergen
+          </button>
+        </div>
+
+        <label style="display:block;margin-top:16px">
+          <span style="display:block;font-size:12.5px;color:var(--n600);margin-bottom:6px">Toelichting (optioneel)</span>
+          <textarea rows="3" placeholder="Bijvoorbeeld: herhaalde belediging na eerdere waarschuwing" style="width:100%;font-family:inherit;font-size:13px;line-height:1.5;border:1px solid var(--border);border-radius:9px;padding:9px 11px;resize:vertical;color:var(--ink)"></textarea>
+        </label>
+
+        <p style="margin:14px 0 0;font-size:12px;line-height:1.5;color:var(--n500)">Verplaatsen zet de bijdrage op de openbare achtergrondpagina met de reden erbij. Verbergen haalt hem helemaal uit het gesprek. Beide zijn terug te draaien.</p>
+      </div>
+
+      <div class="card" style="padding:14px 16px;margin-top:16px;background:#f7fbfe;border-color:#cfe6f7">
+        <p style="margin:0;font-size:12.5px;line-height:1.5;color:var(--n600)"><strong style="color:var(--ink);font-weight:600">Tip:</strong> veel meldingen betekent niet automatisch een overtreding. De cijfers bij een naam zijn context, geen oordeel, jij beslist.</p>
+      </div>
+    </aside>
+
+  </div>
+
+</div>
+</body>
+</html>

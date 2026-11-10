@@ -3,17 +3,19 @@
 Als er een afgerond design-artboard is, is dat leidend voor de vormgeving van dat scherm. Bouw het scherm naar het artboard; hergebruik niet standaard de bestaande markup. De forum-design-tokens staan hieronder (ze komen uit de .gu-stijl van de artboards), niet uit een generieke design-systeem-referentie.
 
 ## Moderatorschermen en hun artboard
-| Scherm | Route | Artboard |
+De artboards staan als statische referentie-HTML in deze map (`docs/design/`). Bouw elk scherm visueel conform het betreffende bestand.
+
+| Scherm | Route | Artboardbestand |
 |--------|-------|----------|
-| Moderator overzicht | /moderator | Main.dc.html |
-| Melding beoordelen | /moderator/melding/... | Beoordelen.dc.html |
-| Beheer-menu op het vraagstuk (ingang van verwijderen en archiveren) | /vraagstuk/<id> (cockpit, menu "Beheer") | Toegang.dc.html |
-| Verwijderen | /vraagstuk/<id>/verwijderen (verwijderbevestiging) | Verwijderen.dc.html |
-| Gebruiker (gepland) | (gebruikersmoderatie) | Gebruiker.dc.html |
+| Moderator overzicht | /moderator | docs/design/main.html |
+| Melding beoordelen | /moderator/melding/... | docs/design/beoordelen.html |
+| Beheer-menu op het vraagstuk (ingang van verwijderen en archiveren) | /vraagstuk/<id> (cockpit, menu "Beheer") | docs/design/toegang.html |
+| Verwijderen | /vraagstuk/<id>/verwijderen (verwijderbevestiging) | docs/design/verwijderen.html |
+| Gebruiker (gepland) | (gebruikersmoderatie) | docs/design/gebruiker.html |
 
-Toegang.dc.html is niet het rollenbeheer, maar de ingang van de verwijder-flow: het Beheer-menu op het vraagstuk (fasen beheren, archiveren, verwijderen). Gebruiker.dc.html (gebruikersmoderatie: waarschuwingen, schorsingen, account verwijderen) is een geplande functie en nog niet gebouwd.
+Toegang.html is niet het rollenbeheer, maar de ingang van de verwijder-flow: het Beheer-menu op het vraagstuk (fasen beheren, archiveren, verwijderen). Gebruiker.html (gebruikersmoderatie: waarschuwingen, schorsingen, account verwijderen) is een geplande functie en nog niet gebouwd.
 
-De artboards staan in het Design-artifact (claude.ai), niet in de repo. Vraag de actuele artboard-inhoud op bij de begeleidende Claude-sessie voordat je een van deze schermen bouwt of wijzigt.
+De bestanden zijn statisch, alleen om naar te kijken en naartoe te bouwen; ze zijn geen onderdeel van de app. De duur-knoppen in gebruiker.html staan op 7 en 30 dagen (de gekozen schorsingsduur).
 
 ## Design-tokens (uit de artboards)
 globe #3ab0f0 · globe-deep #1b74b8 · europe #0077cc · ink #141b22 · paper #ffffff · night #0f1923
