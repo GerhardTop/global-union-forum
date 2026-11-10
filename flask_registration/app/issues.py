@@ -395,7 +395,7 @@ def overview(which='alle'):
     """[(vraagstuk, aantal voorstellen, aantal deelnemers)], nieuwste eerst."""
     from app import issue_lifecycle
     from app.models import IssueProposal
-    query = Issue.query
+    query = Issue.query.filter(Issue.archived_at.is_(None))  # archived: not listed publicly
     if which in ISSUE_KINDS:
         query = query.filter(Issue.kind == which)
     found = query.order_by(Issue.created_at.desc(), Issue.id.desc()).all()

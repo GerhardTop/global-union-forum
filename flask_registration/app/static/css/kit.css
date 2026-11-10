@@ -3675,6 +3675,34 @@ body {
 .gu-cockpit__titlerow { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .gu-cockpit__titlerow .gu-forum__title { margin-bottom: 8px; flex: 1 1 20rem; min-width: 0; overflow-wrap: anywhere; }
 .gu-cockpit__followform { margin: 4px 0 0; }
+/* Toegang.dc.html: één Beheer-dropdown rechtsboven in de cockpitkop. */
+.gu-cockpit__actions { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+.gu-beheer { position: relative; margin: 4px 0 0; }
+.gu-beheer__toggle { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.gu-beheer__toggle::-webkit-details-marker { display: none; }
+.gu-beheer__caret { transition: transform .15s ease; }
+.gu-beheer[open] .gu-beheer__caret { transform: rotate(180deg); }
+.gu-beheer__menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 320px; max-width: calc(100vw - 32px);
+  background: var(--gu-paper, #fff); border: 1px solid var(--gu-border, #e4e9ef); border-radius: 12px; padding: 6px;
+  box-shadow: 0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05), 0 18px 40px -12px rgba(15,25,35,.18); }
+.gu-beheer__group + .gu-beheer__group { border-top: 1px solid #eef1f5; margin-top: 6px; padding-top: 6px; }
+.gu-beheer__label { margin: 4px 10px 4px; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #6c7683; }
+.gu-beheer__form { margin: 0; }
+.gu-beheer__form .gu-join__check { margin: 4px 10px 2px; font-size: 13px; }
+.gu-beheer__hint { margin: 2px 10px 4px; font-size: 12px; line-height: 1.45; color: #6c7683; }
+.gu-beheer__item { display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; padding: 8px 10px; border: 0; border-radius: 8px;
+  background: none; font: inherit; font-size: 13.5px; font-weight: 500; color: #141b22; text-align: left; text-decoration: none; cursor: pointer; }
+.gu-beheer__item:hover, .gu-beheer__item:focus-visible { background: #f5f7f9; color: #141b22; text-decoration: none; }
+.gu-beheer__item svg { flex: 0 0 auto; color: #525c69; }
+.gu-beheer__item--danger, .gu-beheer__item--danger svg { color: #a3282c; }
+.gu-beheer__item--danger:hover, .gu-beheer__item--danger:focus-visible { background: #fcecec; color: #a3282c; }
+.gu-archived { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; margin: 0 0 14px;
+  padding: 10px 14px; background: #fff3e0; border: 1px solid #f0d9b0; border-radius: 10px; color: #8a5a12; }
+.gu-archived__text { margin: 0; font-size: 13.5px; line-height: 1.45; }
+.gu-archived__form { margin: 0; }
+@media (max-width: 560px) {
+  .gu-beheer__menu { right: auto; left: 0; }
+}
 .gu-cockpit__about { margin: 0 0 16px; }
 .gu-cockpit__about > summary { cursor: pointer; font-size: 0.9375rem; font-weight: 600; color: var(--gu-globe-deep); width: max-content; max-width: 100%; }
 .gu-cockpit__about[open] > summary { margin-bottom: 8px; }

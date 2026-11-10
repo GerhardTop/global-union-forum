@@ -20,7 +20,7 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
 /vraagstuk/<id>/volgen
                      volgen aan of uit (polijstronde P3)
 """
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_babel import get_locale, gettext
@@ -612,6 +612,43 @@ def reopen(issue_id):
     db.session.commit()
     flash(gettext('The issue is open again for discussion.'), 'success')
     return redirect(back)
+
+
+# ── Archiving (delete flow step 1, Toegang.dc.html): admin only ───────
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/archiveren', methods=['POST'])
+@login_required
+def archive_issue(issue_id):
+    """Archive an issue: hidden from the public listings, closed for new
+    contributions, still reachable by its URL so an admin can restore it."""
+    if not current_user.is_admin:
+        abort(403)
+    issue = _issue_or_404(issue_id)
+    _require_csrf()
+    issue.archived_at = datetime.utcnow()
+    issue.is_closed = True
+    # The discussion checks the thread, not the issue: close it too, so no new
+    # replies come in. Reopening (lifecycle.reopen) opens both again.
+    if issue.thread is not None:
+        issue.thread.is_closed = True
+    db.session.commit()
+    flash(gettext('The issue has been archived.'), 'success')
+    return redirect(url_for('issues.show', issue_id=issue.id))
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/terug-uit-archief', methods=['POST'])
+@login_required
+def unarchive_issue(issue_id):
+    """Take an issue out of the archive. It stays closed; reopening is a
+    separate step (Heropenen)."""
+    if not current_user.is_admin:
+        abort(403)
+    issue = _issue_or_404(issue_id)
+    _require_csrf()
+    issue.archived_at = None
+    db.session.commit()
+    flash(gettext('The issue is back from the archive.'), 'success')
+    return redirect(url_for('issues.show', issue_id=issue.id))
 
 
 # ── Verwijderen (fase 3): alleen een admin, met de titel overtypen ───────

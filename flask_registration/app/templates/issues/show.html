@@ -21,6 +21,7 @@
       <a class="gu-backlink" href="{{ url_for('issues.index') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6"/></svg>{{ _('Issues') }}</a>
       <div class="gu-cockpit__titlerow">
         <h1 class="gu-forum__title" lang="{{ issue.lang or lang }}">{{ issue.title }}{% if issue.is_closed %} <span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}</h1>
+        <div class="gu-cockpit__actions">
         {% if current_user.is_authenticated %}
         <form method="POST" action="{{ url_for('issues.follow', issue_id=issue.id) }}" class="gu-cockpit__followform">
           {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
@@ -30,7 +31,21 @@
                   title="{{ _('Followers get the updates of this issue in their daily summary.') }}"><svg class="gu-cockpit__bell" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="gu-cockpit__followlabel">{{ _('Following') if following else _('Follow') }}</span></button>
         </form>
         {% endif %}
+        {% include 'issues/_beheer.html' %}
+        </div>
       </div>
+      {% if issue.is_archived %}
+      <div class="gu-archived" role="status">
+        <p class="gu-archived__text"><strong>{% if lang == 'nl' %}Gearchiveerd{% else %}Archived{% endif %}</strong>
+          · {% if lang == 'nl' %}Dit vraagstuk staat in het archief: het is gesloten en niet meer te vinden in de openbare lijsten.{% else %}This issue is archived: it is closed and no longer listed publicly.{% endif %}</p>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <form method="POST" action="{{ url_for('issues.unarchive_issue', issue_id=issue.id) }}" class="gu-archived__form">
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Terug uit archief{% else %}Restore from archive{% endif %}</button>
+        </form>
+        {% endif %}
+      </div>
+      {% endif %}
       {% if issue.created_by %}<p class="gu-cockpit__by">{{ issue.created_by.public_name }}</p>{% endif %}
       {# P7: alleen een klein pijltje vóór de tekst om in en uit te klappen (zonder JavaScript staat alles open). #}
       <div class="gu-cockpit__about" id="toelichting" data-issue="{{ issue.id }}">

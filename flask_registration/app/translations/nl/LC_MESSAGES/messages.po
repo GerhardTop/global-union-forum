@@ -2297,3 +2297,9 @@ msgstr "Gedragsregels: door de AI verwijderd"
 
 msgid "No posts removed by the AI."
 msgstr "Niets door de AI verwijderd."
+
+msgid "The issue has been archived."
+msgstr "Het vraagstuk is gearchiveerd."
+
+msgid "The issue is back from the archive."
+msgstr "Het vraagstuk is terug uit het archief."

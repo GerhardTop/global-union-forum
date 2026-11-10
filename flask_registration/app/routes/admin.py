@@ -140,7 +140,7 @@ def moderator_dashboard():
         handled_mine=handled_mine,
         oldest_wait=reports.wait_bucket(oldest_at),
         wait_bucket=reports.wait_bucket,  # fase 2c: leeftijd-pill per rij
-        open_issues=Issue.query.filter(Issue.is_closed.is_(False)).count(),
+        open_issues=Issue.query.filter(Issue.is_closed.is_(False), Issue.archived_at.is_(None)).count(),
         recent_issues=[(issue, reports.wait_bucket(dt)) for issue, dt in reports.recent_for(current_user)],
         open_reports=open_reports,
         unjudged_posts=unjudged_posts,

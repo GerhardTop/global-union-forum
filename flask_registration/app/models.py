@@ -772,6 +772,13 @@ class Issue(db.Model):
     event_name             = db.Column(db.String(200), nullable=True)
     event_note             = db.Column(db.Text, nullable=True)
     event_online_between   = db.Column(db.Boolean, nullable=True)
+    # Archived (Toegang.dc.html, delete flow step 1): hidden from the public
+    # listings, still reachable by its URL; archiving also closes the issue.
+    archived_at            = db.Column(db.DateTime, nullable=True)
+
+    @property
+    def is_archived(self):
+        return self.archived_at is not None
 
     created_by = db.relationship('User', foreign_keys=[created_by_id])
     # Met de backref zet ook een ORM-delete van het gesprek thread_id op NULL

@@ -1,0 +1,82 @@
+{#
+  Partial: issues/_beheer.html (Toegang.dc.html, delete flow step 1)
+  One "Beheer" dropdown top-right in the cockpit header. Items are shown only
+  to who may use them: the phase controls for the initiator (P7), archiving
+  and deleting for an admin. A <details> dropdown, so it works without JS.
+  Context: issue, can_step, next_phase, can_reopen, phase_labels.
+#}
+{% set is_admin = current_user.is_authenticated and current_user.is_admin %}
+{% if can_step or can_reopen or is_admin %}
+<details class="gu-beheer" id="beheer">
+  <summary class="gu-btn gu-btn--ghost gu-btn--sm gu-beheer__toggle">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    {% if lang == 'nl' %}Beheer{% else %}Manage{% endif %}
+    <svg class="gu-beheer__caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="gu-beheer__menu">
+
+    {% if can_step or can_reopen %}
+    <div class="gu-beheer__group">
+      <p class="gu-beheer__label">{{ _('Manage the phases') }}</p>
+      {% if can_step %}
+      <form method="POST" action="{{ url_for('issues.next_phase', issue_id=issue.id) }}" class="gu-beheer__form">
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        <p class="gu-beheer__hint">
+          {% if issue.kind == 'event' %}{{ _('At an event you move the phases on yourself.') }}
+          {% else %}{{ _('The phases move on automatically at the deadline. You can close the current phase early.') }}{% endif %}
+          {{ _('Next phase: %(phase)s.', phase=phase_labels.get(next_phase, next_phase)) }}
+        </p>
+        <button type="submit" class="gu-beheer__item">
+          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 8h10M9 4.5L12.5 8 9 11.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {{ _('To the next phase') }}
+        </button>
+      </form>
+      {% endif %}
+      {% if can_reopen %}
+      <form method="POST" action="{{ url_for('issues.reopen', issue_id=issue.id) }}" class="gu-beheer__form">
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        <p class="gu-beheer__hint">{{ _('Reopening takes the issue back to the facts phase with a new schedule. Proposals, support and votes are kept, and the results are no longer final.') }}</p>
+        <label class="gu-join__check">
+          <input type="checkbox" name="confirm" value="1" required>
+          <span>{{ _('Yes, reopen this issue for discussion') }}</span>
+        </label>
+        <button type="submit" class="gu-beheer__item">
+          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M3 8a5 5 0 1 0 1.5-3.5M3 2.5V5h2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {{ _('Reopen') }}
+        </button>
+      </form>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if is_admin %}
+    <div class="gu-beheer__group">
+      <p class="gu-beheer__label">{% if lang == 'nl' %}Admin{% else %}Admin{% endif %}</p>
+      {% if issue.is_archived %}
+      <form method="POST" action="{{ url_for('issues.unarchive_issue', issue_id=issue.id) }}" class="gu-beheer__form">
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        <button type="submit" class="gu-beheer__item">
+          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 5.5h12M3 5.5v7.5h10V5.5M2.5 3h11v2.5h-11zM8 11.5V7.5M6.2 9.2L8 7.5l1.8 1.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {% if lang == 'nl' %}Terug uit archief{% else %}Restore from archive{% endif %}
+        </button>
+      </form>
+      {% else %}
+      <form method="POST" action="{{ url_for('issues.archive_issue', issue_id=issue.id) }}" class="gu-beheer__form">
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        <p class="gu-beheer__hint">{% if lang == 'nl' %}Archiveren sluit het vraagstuk en haalt het uit de openbare lijsten. Via de link blijft het bereikbaar en je kunt het terughalen.{% else %}Archiving closes the issue and removes it from the public lists. It stays reachable by its link and you can restore it.{% endif %}</p>
+        <button type="submit" class="gu-beheer__item">
+          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 5.5h12M3 5.5v7.5h10V5.5M2.5 3h11v2.5h-11zM6.5 8.5h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {% if lang == 'nl' %}Archiveren{% else %}Archive{% endif %}
+        </button>
+      </form>
+      {% endif %}
+      <a class="gu-beheer__item gu-beheer__item--danger" href="{{ url_for('issues.delete_issue', issue_id=issue.id) }}">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.8 6.5v4.5M9.2 6.5v4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        {% if lang == 'nl' %}Vraagstuk verwijderen{% else %}Delete issue{% endif %}
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+</details>
+{% endif %}

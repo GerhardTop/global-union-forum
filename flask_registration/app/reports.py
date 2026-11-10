@@ -226,7 +226,7 @@ def recent_for(user, limit=4):
             pairs.append((issue, r.decided_at))
     pairs.sort(key=lambda t: t[1] or datetime.min, reverse=True)
     for issue, decided_at in pairs:
-        if issue.id in seen:
+        if issue.id in seen or issue.archived_at is not None:  # archived: not listed
             continue
         seen.add(issue.id)
         out.append((issue, decided_at))

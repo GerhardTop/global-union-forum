@@ -1,9 +1,9 @@
 {#
   Partial: issues/_lifecycle.html (herontwerp stap 7)
   Onder de fase-strip van de cockpit: in de vervolgfase de vervolgtekst (wat
-  er met het vraagstuk gebeurt), en voor de initiatiefnemer of een moderator
-  het beheer: een fase verder, de vervolgtekst schrijven, opnieuw openstellen.
-  Context: issue, can_step, can_reopen, can_edit_followup.
+  er met het vraagstuk gebeurt), met het schrijven ervan. De fase-knoppen en
+  het admin-beheer staan in het Beheer-menu (issues/_beheer.html).
+  Context: issue, can_edit_followup.
 #}
 {% if issue.phase == 'vervolg' and (issue.followup_text or can_edit_followup) %}
 <section class="gu-cockpit__followup" id="vervolg" aria-labelledby="followupTitle">
@@ -25,44 +25,4 @@
   </details>
   {% endif %}
 </section>
-{% endif %}
-
-{% if can_step or can_reopen %}
-<details class="gu-cockpit__manage" id="beheer">
-  <summary>{{ _('Manage the phases') }}</summary>
-  <div class="gu-cockpit__managebody">
-    {% if can_step %}
-    <form method="POST" action="{{ url_for('issues.next_phase', issue_id=issue.id) }}" class="gu-cockpit__manageform">
-      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-      <p class="gu-composer__hint">
-        {% if issue.kind == 'event' %}{{ _('At an event you move the phases on yourself.') }}
-        {% else %}{{ _('The phases move on automatically at the deadline. You can close the current phase early.') }}{% endif %}
-        {{ _('Next phase: %(phase)s.', phase=phase_labels.get(next_phase, next_phase)) }}
-      </p>
-      <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('To the next phase') }}</button>
-    </form>
-    {% endif %}
-    {% if can_reopen %}
-    <form method="POST" action="{{ url_for('issues.reopen', issue_id=issue.id) }}" class="gu-cockpit__manageform">
-      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-      <p class="gu-composer__hint">{{ _('Reopening takes the issue back to the facts phase with a new schedule. Proposals, support and votes are kept, and the results are no longer final.') }}</p>
-      <label class="gu-join__check">
-        <input type="checkbox" name="confirm" value="1" required>
-        <span>{{ _('Yes, reopen this issue for discussion') }}</span>
-      </label>
-      <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Reopen') }}</button>
-    </form>
-    {% endif %}
-  </div>
-</details>
-{% endif %}
-
-{% if current_user.is_authenticated and current_user.is_admin %}
-<details class="gu-cockpit__manage" id="beheer-admin">
-  <summary>{% if lang == 'nl' %}Beheer (admin){% else %}Admin{% endif %}</summary>
-  <div class="gu-cockpit__managebody">
-    <p class="gu-composer__hint">{% if lang == 'nl' %}Een vraagstuk verwijderen is onomkeerbaar: de hele discussie, voorstellen, feiten en meldingen gaan weg.{% else %}Deleting an issue is irreversible: the whole discussion, proposals, facts and reports are removed.{% endif %}</p>
-    <a class="gu-btn gu-btn--danger gu-btn--sm" href="{{ url_for('issues.delete_issue', issue_id=issue.id) }}">{% if lang == 'nl' %}Vraagstuk verwijderen{% else %}Delete issue{% endif %}</a>
-  </div>
-</details>
 {% endif %}

@@ -323,7 +323,10 @@ _POLISH_COLUMNS = {
     'issues': (('starts_at', 'TIMESTAMP NULL'), ('adjust_starts_at', 'TIMESTAMP NULL'),
                ('vote_starts_at', 'TIMESTAMP NULL'), ('vote_ends_at', 'TIMESTAMP NULL'),
                ('event_name', 'VARCHAR(200) NULL'), ('event_note', 'TEXT NULL'),
-               ('event_online_between', 'BOOLEAN NULL')),
+               ('event_online_between', 'BOOLEAN NULL'),
+               # Archiving (delete flow step 1). Production already has it
+               # (added by hand); this is a no-op there, but covers other DBs.
+               ('archived_at', 'TIMESTAMP NULL')),
 }
 
 

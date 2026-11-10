@@ -7,9 +7,11 @@ Als er een afgerond design-artboard is, is dat leidend voor de vormgeving van da
 |--------|-------|----------|
 | Moderator overzicht | /moderator | Main.dc.html |
 | Melding beoordelen | /moderator/melding/... | Beoordelen.dc.html |
-| Toegang/rollen | (rollenbeheer) | Toegang.dc.html |
-| Verwijderen | (verwijderbevestiging) | Verwijderen.dc.html |
-| Gebruiker | (gebruikersdetail) | Gebruiker.dc.html |
+| Beheer-menu op het vraagstuk (ingang van verwijderen en archiveren) | /vraagstuk/<id> (cockpit, menu "Beheer") | Toegang.dc.html |
+| Verwijderen | /vraagstuk/<id>/verwijderen (verwijderbevestiging) | Verwijderen.dc.html |
+| Gebruiker (gepland) | (gebruikersmoderatie) | Gebruiker.dc.html |
+
+Toegang.dc.html is niet het rollenbeheer, maar de ingang van de verwijder-flow: het Beheer-menu op het vraagstuk (fasen beheren, archiveren, verwijderen). Gebruiker.dc.html (gebruikersmoderatie: waarschuwingen, schorsingen, account verwijderen) is een geplande functie en nog niet gebouwd.
 
 De artboards staan in het Design-artifact (claude.ai), niet in de repo. Vraag de actuele artboard-inhoud op bij de begeleidende Claude-sessie voordat je een van deze schermen bouwt of wijzigt.
 

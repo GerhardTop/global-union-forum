@@ -190,7 +190,8 @@ def is_initiator(issue, user):
 def manageable_issues():
     """Voor de moderator-weergave: de vraagstukken met eigen fasen (geen
     ingepakt oud voorstel), nieuwste eerst."""
-    return [i for i in Issue.query.order_by(Issue.created_at.desc(), Issue.id.desc()).all() if not is_wrapper(i)]
+    return [i for i in Issue.query.filter(Issue.archived_at.is_(None))
+            .order_by(Issue.created_at.desc(), Issue.id.desc()).all() if not is_wrapper(i)]
 
 
 def can_step(issue, user):
