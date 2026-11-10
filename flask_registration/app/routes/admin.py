@@ -220,6 +220,45 @@ def gebruiker_waarschuwing(user_id):
     return redirect(url_for('admin.gebruiker', user_id=user.id))
 
 
+SUSPENSION_DAYS = (7, 30)
+
+
+@admin_bp.route('/moderator/gebruiker/<int:user_id>/schorsen', methods=['POST'])
+@login_required
+def gebruiker_schorsen(user_id):
+    """Suspend a user for 7 or 30 days (senior moderators and the admin). The
+    suspension lifts by itself when suspended_until passes."""
+    if not current_user.is_senior_moderator:
+        abort(403)
+    from app.routes.forum import _require_csrf
+    _require_csrf()
+    user = db.session.get(User, user_id)
+    if user is None:
+        abort(404)
+    if user.id == current_user.id or user.is_admin:
+        abort(403)
+    nl = str(get_locale() or 'nl') == 'nl'
+    try:
+        days = int(request.form.get('duur') or 0)
+    except ValueError:
+        days = 0
+    reason = (request.form.get('reason') or '').strip()
+    if days not in SUSPENSION_DAYS:
+        flash('Kies 7 of 30 dagen.' if nl else 'Choose 7 or 30 days.', 'error')
+    elif not reason:
+        flash('Schrijf eerst de reden van de schorsing.' if nl
+              else 'Write the reason for the suspension first.', 'error')
+    else:
+        from app.models import Suspension
+        until = datetime.utcnow() + timedelta(days=days)
+        db.session.add(Suspension(user_id=user.id, by_id=current_user.id, reason=reason[:2000], until=until))
+        user.suspended_until = until
+        db.session.commit()
+        flash((f'@{user.username} is geschorst voor {days} dagen.' if nl
+               else f'@{user.username} has been suspended for {days} days.'), 'success')
+    return redirect(url_for('admin.gebruiker', user_id=user.id))
+
+
 @admin_bp.route('/moderator/melding/<kind>/<int:item_id>', methods=['GET', 'POST'])
 @login_required
 def melding_beoordelen(kind, item_id):

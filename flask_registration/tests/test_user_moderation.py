@@ -221,3 +221,78 @@ def test_sending_a_warning_adds_it_to_the_history(app, db):
                     data={'message': 'x'}).status_code == 403
     finally:
         _drop_moderation_rows(target, mod)
+
+
+# ── Step 3: Tijdelijk schorsen ──────────────────────────────────────────
+
+def test_suspending_is_senior_only_and_not_yourself(app, db):
+    target, mod, senior = _user(db), _user(db, 'moderator'), _user(db, 'senior_moderator')
+    try:
+        url = f'/moderator/gebruiker/{target.id}/schorsen'
+        page = _req(_client(app, mod), 'GET', f'/moderator/gebruiker/{target.id}').get_data(as_text=True)
+        assert 'Waarschuwing sturen' in page and 'Tijdelijk schorsen' not in page
+        assert _req(_client(app, mod), 'POST', url, data={'duur': '7', 'reason': 'x'}).status_code == 403
+
+        c = _client(app, senior)
+        page = _req(c, 'GET', f'/moderator/gebruiker/{target.id}').get_data(as_text=True)
+        assert 'Tijdelijk schorsen' in page and 'Reden van de schorsing' in page
+        assert 'Schorsen voor 7 dagen' in page and 'value="30"' in page
+        assert 'Komt in de historie.' in page and 'krijgt je bericht' not in page
+        own = _req(c, 'GET', f'/moderator/gebruiker/{senior.id}').get_data(as_text=True)
+        assert 'id="schorsen"' not in own
+        assert _req(c, 'POST', f'/moderator/gebruiker/{senior.id}/schorsen',
+                    data={'duur': '7', 'reason': 'x'}).status_code == 403
+        # Only 7 or 30 days, and a reason is required.
+        _req(c, 'POST', url, data={'duur': '14', 'reason': 'x'})
+        _req(c, 'POST', url, data={'duur': '7', 'reason': '  '})
+        assert Suspension.query.filter_by(user_id=target.id).count() == 0
+        assert db.session.get(User, target.id).suspended_until is None
+    finally:
+        _drop_moderation_rows(target, senior)
+
+
+def test_suspension_blocks_contributing_and_shows_in_dossier(app, db):
+    target, senior = _user(db), _user(db, 'senior_moderator')
+    issue, _fact = _issue_with_fact(db, target)
+    issue_id, thread_id = issue.id, issue.thread_id
+    try:
+        c = _client(app, senior)
+        r = _req(c, 'POST', f'/moderator/gebruiker/{target.id}/schorsen',
+                 data={'duur': '30', 'reason': 'Herhaalde beledigingen.'})
+        assert r.status_code == 302
+        susp = Suspension.query.filter_by(user_id=target.id).one()
+        assert susp.by_id == senior.id and susp.reason == 'Herhaalde beledigingen.'
+        db.session.expire_all()
+        user = db.session.get(User, target.id)
+        assert user.suspended_until == susp.until and user.is_suspended
+        assert timedelta(days=29, hours=23) < susp.until - datetime.utcnow() <= timedelta(days=30)
+        assert not user.can_contribute() and not user.can_vote()
+
+        page = _req(c, 'GET', f'/moderator/gebruiker/{target.id}').get_data(as_text=True)
+        hist = page[page.index('id="historie"'):page.index('id="bijdragen"')]
+        assert 'Geschorst' in hist and 'Herhaalde beledigingen.' in hist and 'door jou' in hist
+        assert '1 schorsing<' in page and 'Geschorst tot' in page
+
+        # The suspended user cannot reply; the notice explains why.
+        tc = _client(app, target)
+        before = Post.query.filter_by(thread_id=thread_id).count()
+        r = _req(tc, 'POST', f'/forum/{thread_id}', data={'body': 'Toch nog even reageren.'})
+        assert r.status_code == 302
+        assert Post.query.filter_by(thread_id=thread_id).count() == before
+        landing = _req(tc, 'GET', r.headers['Location']).get_data(as_text=True)
+        assert 'Je bent geschorst tot' in landing
+        # The forms are gone; the page says why instead of pointing to the rules.
+        show = _req(tc, 'GET', f'/vraagstuk/{issue_id}').get_data(as_text=True)
+        assert 'Je bent geschorst en kunt nu niet bijdragen' in show
+        assert 'Accepteer de gedragsregels' not in show
+        # Other contribution routes refuse too.
+        r = _req(tc, 'POST', '/gesprekken/nieuw', data={'title': 'Nieuw'})
+        assert r.status_code == 302 and '/spelregels' not in r.headers['Location']
+
+        # Lifting is automatic once suspended_until has passed.
+        user.suspended_until = datetime.utcnow() - timedelta(minutes=1)
+        db.session.commit()
+        assert not user.is_suspended and user.can_contribute()
+    finally:
+        _drop_moderation_rows(target, senior)
+        _cleanup(issue_id)

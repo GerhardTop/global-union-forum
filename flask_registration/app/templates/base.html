@@ -81,6 +81,14 @@
             </div>
             {% endif %}
 
+            {# User moderation: while suspended, a standing notice on every page. #}
+            {% if current_user.is_authenticated and current_user.is_suspended %}
+            <div class="gu-suspended-banner" role="status">
+              {% if lang == 'nl' %}Je bent geschorst tot{% else %}You are suspended until{% endif %} <strong>{{ (current_user.suspended_until|local).strftime('%d-%m-%Y %H:%M') }}</strong>.
+              {% if lang == 'nl' %}Je kunt lezen, maar niet bijdragen of stemmen.{% else %}You can read, but not contribute or vote.{% endif %}
+            </div>
+            {% endif %}
+
             {# Fase C2: eenmalige melding bij een promotie naar stemmer of hoger. #}
             {% set promo = pending_promotion() if current_user.is_authenticated else None %}
             {% if promo %}

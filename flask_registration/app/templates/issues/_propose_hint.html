@@ -8,6 +8,8 @@
   {%- if not current_user.is_authenticated -%}
     <a href="{{ url_for('auth.login', next=request.path) }}">{% if lang == 'nl' %}Log in{% else %}Log in{% endif %}</a>
     {% if lang == 'nl' %}om een voorstel te doen.{% else %}to make a proposal.{% endif %}
+  {%- elif current_user.is_suspended -%}
+    {% if lang == 'nl' %}Je bent geschorst en kunt nu niet bijdragen{% else %}You are suspended and cannot contribute right now{% endif %}.
   {%- elif not current_user.can_contribute() -%}
     <a href="{{ url_for('main.spelregels', next=request.path) }}">{% if lang == 'nl' %}Accepteer de gedragsregels{% else %}Accept the conduct rules{% endif %}</a>
     {% if lang == 'nl' %}om een voorstel te doen.{% else %}to make a proposal.{% endif %}

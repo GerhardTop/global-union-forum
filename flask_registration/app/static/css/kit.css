@@ -4350,3 +4350,18 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
   .gu-user__log, .gu-user__brow { padding:12px; }
   .gu-user__brow { flex-wrap:wrap; }
 }
+
+/* Schorsen card (docs/design/gebruiker.html): duration chips as radios, so
+   it works without JavaScript; the script only updates the button label. */
+.gu-user__flag--orange { background:#c6641a; }
+.gu-user__durs { border:0; margin:0; padding:0; min-width:0; }
+.gu-user__durs .gu-user__lbl { padding:0; }
+.gu-user__dur { display:inline-flex; margin:0 7px 7px 0; cursor:pointer; }
+.gu-user__dur input { position:absolute; opacity:0; width:1px; height:1px; }
+.gu-user__dur span { font-size:12.5px; font-weight:500; padding:6px 12px; border-radius:999px; border:1px solid var(--mod-border); background:#fff; color:var(--mod-n600); }
+.gu-user__dur input:checked + span { background:var(--mod-ink); color:#fff; border-color:var(--mod-ink); }
+.gu-user__dur input:focus-visible + span { outline:2px solid var(--mod-accent); outline-offset:2px; }
+.gu-user__act--susp { border-color:#eec3a3; background:#fef3ec; color:#9a4a1a; }
+.gu-user__act--susp:hover { background:#fcebe0; }
+.gu-suspended-banner { max-width:1360px; margin:12px auto 0; padding:10px 16px; box-sizing:border-box; border:1px solid #eec3a3; background:#fef3ec; color:#9a4a1a; border-radius:10px; font-size:13.5px; }
+.gu-forum__suspended { font-size:13px; color:#9a4a1a; }

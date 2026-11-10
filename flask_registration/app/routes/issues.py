@@ -32,10 +32,11 @@ from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
 from app.models import FACT_DIRECTIONS, Issue, IssueProposal
 from app.routes.forum import (_abort_if_thread_removed, _fact_form, _fact_phase_open, _new_fact, _require_csrf,
-                              _rules_first_redirect, _thread_context)
+                              _rules_first_redirect, _thread_context, refuse_if_suspended)
 from app.utils import _pop_form_state, _stash_form_state, safe_next
 
 issues_bp = Blueprint("issues", __name__)
+issues_bp.before_request(refuse_if_suspended)
 
 # Zoveel feiten in de linkerkolom; de rest via "Alle feiten en onderzoek".
 FACTS_SHOWN = 10

@@ -73,7 +73,7 @@
 {# Ingelogd zonder akkoord op de gedragsregels (nieuwe registratie): eerst akkoord. #}
 <div class="gu-composer gu-composer--locked">
   <p>
-    <a href="{{ url_for('main.spelregels', next=request.path) }}">{{ _('Accept the conduct rules to join in') }}</a>.
+    {% if current_user.is_suspended %}{% if lang == 'nl' %}Je bent geschorst en kunt nu niet bijdragen{% else %}You are suspended and cannot contribute right now{% endif %}{% else %}<a href="{{ url_for('main.spelregels', next=request.path) }}">{{ _('Accept the conduct rules to join in') }}</a>{% endif %}.
   </p>
 </div>
 {% else %}

@@ -108,13 +108,18 @@ class User(UserMixin, db.Model):
         return ROLES.index(self.role) + 1 if self.role in ROLES else 0
 
     def can_contribute(self):
-        """Posten, reageren, een draad starten."""
+        """Posten, reageren, een draad starten. Not while suspended."""
+        if self.is_suspended:
+            return False
         return bool(self.is_admin) or (self.rules_accepted_at is not None and self._rank() >= 1)
 
     def can_vote(self):
         """Stemrecht: verdiend (status voter of hoger, fase C2) of handmatig
         toegekend (rol voter of hoger). Er is nog geen bindende stemfunctie;
-        dit recht wordt bewaard voor later en nu alleen als status getoond."""
+        dit recht wordt bewaard voor later en nu alleen als status getoond.
+        Not while suspended."""
+        if self.is_suspended:
+            return False
         return (bool(self.is_admin)
                 or status_rank(self.quality_status) >= status_rank('voter')
                 or (self.rules_accepted_at is not None and self._rank() >= 2))

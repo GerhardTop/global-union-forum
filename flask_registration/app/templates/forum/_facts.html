@@ -88,7 +88,7 @@
       <button type="submit" class="gu-btn gu-btn--primary">{{ _('Add a fact') }} <span class="gu-arrow"></span></button>
     </form>
     {% elif current_user.is_authenticated %}
-    <p class="gu-facts__note"><a href="{{ url_for('main.spelregels', next=request.path) }}">{{ _('Accept the conduct rules to join in') }}</a>.</p>
+    <p class="gu-facts__note">{% if current_user.is_suspended %}{% if lang == 'nl' %}Je bent geschorst en kunt nu niet bijdragen{% else %}You are suspended and cannot contribute right now{% endif %}{% else %}<a href="{{ url_for('main.spelregels', next=request.path) }}">{{ _('Accept the conduct rules to join in') }}</a>{% endif %}.</p>
     {% else %}
     <p class="gu-facts__note"><a href="{{ url_for('auth.login') }}">{{ _('Log in to add a fact.') }}</a></p>
     {% endif %}

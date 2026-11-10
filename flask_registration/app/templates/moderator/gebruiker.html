@@ -143,7 +143,7 @@
             <span class="gu-user__flag gu-user__flag--warn" aria-hidden="true"></span>
             <h3>{% if lang == 'nl' %}Waarschuwing sturen{% else %}Send a warning{% endif %}</h3>
           </div>
-          <p class="gu-user__measuretext">{% if lang == 'nl' %}De lichtste, opbouwende stap. De gebruiker krijgt je bericht en het komt in de historie.{% else %}The lightest, constructive step. The user gets your message and it goes into the history.{% endif %}</p>
+          <p class="gu-user__measuretext">{% if lang == 'nl' %}De lichtste, opbouwende stap. Komt in de historie.{% else %}The lightest, constructive step. Added to the history.{% endif %}</p>
           {% if is_self %}
           <p class="gu-user__measuretext gu-user__dim">{% if lang == 'nl' %}Je kunt jezelf geen waarschuwing sturen.{% else %}You cannot send yourself a warning.{% endif %}</p>
           {% else %}
@@ -156,10 +156,50 @@
           </form>
           {% endif %}
         </section>
-        {# Tijdelijk schorsen and Account verwijderen follow in later steps. #}
+        {% if current_user.is_senior_moderator and not is_self and not user.is_admin %}
+        <section class="gu-mod-card gu-user__measure" id="schorsen">
+          <div class="gu-user__measurehead">
+            <span class="gu-user__flag gu-user__flag--orange" aria-hidden="true"></span>
+            <h3>{% if lang == 'nl' %}Tijdelijk schorsen{% else %}Suspend temporarily{% endif %}</h3>
+          </div>
+          <p class="gu-user__measuretext">{% if lang == 'nl' %}De gebruiker kan een tijd niet bijdragen of stemmen, maar blijft lid.{% else %}The user cannot contribute or vote for a while, but stays a member.{% endif %}</p>
+          {% if user.is_suspended %}
+          <p class="gu-user__measuretext gu-user__dim">{% if lang == 'nl' %}Nu geschorst tot{% else %}Suspended now until{% endif %} {{ (user.suspended_until|local).strftime('%d-%m-%Y %H:%M') }}. {% if lang == 'nl' %}Een nieuwe schorsing telt vanaf nu.{% else %}A new suspension counts from now.{% endif %}</p>
+          {% endif %}
+          <form method="POST" action="{{ url_for('admin.gebruiker_schorsen', user_id=user.id) }}" data-suspend-form>
+            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+            <fieldset class="gu-user__durs">
+              <legend class="gu-user__lbl">{% if lang == 'nl' %}Duur{% else %}Duration{% endif %}</legend>
+              {% for d in (7, 30) %}
+              <label class="gu-user__dur"><input type="radio" name="duur" value="{{ d }}"{% if d == 7 %} checked{% endif %}><span>{{ d }} {% if lang == 'nl' %}dagen{% else %}days{% endif %}</span></label>
+              {% endfor %}
+            </fieldset>
+            <label class="gu-user__lbl" for="suspendReason">{% if lang == 'nl' %}Reden van de schorsing{% else %}Reason for the suspension{% endif %}</label>
+            <textarea class="gu-user__ta" id="suspendReason" name="reason" rows="2" maxlength="2000" required
+                      placeholder="{% if lang == 'nl' %}Bijvoorbeeld: herhaalde beledigingen na een eerdere waarschuwing.{% else %}For example: repeated insults after an earlier warning.{% endif %}"></textarea>
+            <button type="submit" class="gu-user__act gu-user__act--susp" data-suspend-button
+                    data-label-nl="Schorsen voor {n} dagen" data-label-en="Suspend for {n} days">{% if lang == 'nl' %}Schorsen voor 7 dagen{% else %}Suspend for 7 days{% endif %}</button>
+          </form>
+        </section>
+        {% endif %}
+        {# Account verwijderen follows in a later step. #}
       </aside>
     </div>
 
   </div>
 </div>
+<script nonce="{{ csp_nonce() }}">
+(function () {
+  var form = document.querySelector('[data-suspend-form]');
+  if (!form) return;
+  var button = form.querySelector('[data-suspend-button]');
+  var label = button.getAttribute('data-label-{{ 'nl' if lang == 'nl' else 'en' }}');
+  function sync() {
+    var picked = form.querySelector('input[name="duur"]:checked');
+    if (picked) button.textContent = label.replace('{n}', picked.value);
+  }
+  form.addEventListener('change', sync);
+  sync();
+})();
+</script>
 {% endblock %}{% endblock %}

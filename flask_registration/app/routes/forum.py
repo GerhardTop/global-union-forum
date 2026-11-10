@@ -3,7 +3,7 @@ from collections import deque
 from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify, abort, current_app, flash, g
-from flask_babel import gettext
+from flask_babel import gettext, get_locale
 from flask_login import login_required, current_user
 from sqlalchemy import func, or_
 
@@ -65,9 +65,61 @@ def _proposal_status(proposal):
     return proposals.status(proposal)
 
 
+def suspended_notice(user):
+    """'Je bent geschorst tot <datum>' (en: 'You are suspended until <date>')."""
+    from app import issues
+    until = issues.to_local(user.suspended_until).strftime('%d-%m-%Y %H:%M')
+    if str(get_locale() or 'nl') == 'nl':
+        return f'Je bent geschorst tot {until}. Je kunt lezen, maar niet bijdragen of stemmen.'
+    return f'You are suspended until {until}. You can read, but not contribute or vote.'
+
+
+# Contribution actions a suspended user may not take (POST). Reading,
+# following, reporting and objecting to a removal stay possible.
+SUSPENDED_BLOCKED = {
+    'forum.forum_thread', 'forum.forum_nieuw', 'forum.forum_post_bewerken', 'forum.forum_stance',
+    'forum.fact_add', 'forum.fact_edit', 'forum.fact_dispute', 'forum.proposal_revise',
+    'forum.proposal_vote', 'forum.proposal_open_round',
+    'issues.new', 'issues.proposal_new', 'issues.proposal_support', 'issues.proposal_revise',
+    'issues.proposal_link', 'issues.proposal_new_fact', 'issues.proposal_unlink',
+    'issues.proposal_vote', 'issues.final_new',
+}
+
+
+def refuse_if_suspended():
+    """before_request for the forum and issues blueprints: a suspended user's
+    contribution POST is refused with the notice (JSON 403 for the stance
+    button, otherwise a flash and a redirect back)."""
+    if (request.method != 'POST' or request.endpoint not in SUSPENDED_BLOCKED
+            or not current_user.is_authenticated or not current_user.is_suspended):
+        return None
+    notice = suspended_notice(current_user)
+    if request.endpoint == 'forum.forum_stance':
+        return jsonify({'error': 'suspended', 'message': notice}), 403
+    flash(notice, 'error')
+    return redirect(_suspended_back())
+
+
+def _suspended_back():
+    """Back to the page the user came from (same site only), else the issues.
+    Never the requested page itself, so a GET guard cannot loop."""
+    back = request.referrer or ''
+    if back.startswith(request.host_url):
+        back = '/' + back[len(request.host_url):]
+    back = safe_next(back, url_for('issues.index'))
+    return url_for('issues.index') if back.split('?')[0] == request.path else back
+
+
+forum_bp.before_request(refuse_if_suspended)
+
+
 def _rules_first_redirect():
     """Ingelogd maar (nog) geen akkoord op de gedragsregels: eerst naar de
-    spelregelpagina (daar staat de akkoordknop)."""
+    spelregelpagina (daar staat de akkoordknop). A suspended user gets the
+    suspension notice instead."""
+    if current_user.is_authenticated and current_user.is_suspended:
+        flash(suspended_notice(current_user), 'error')
+        return redirect(_suspended_back())
     flash(gettext('Accept the conduct rules first to take part.'), 'error')
     return redirect(url_for('main.spelregels', next=request.path))
 

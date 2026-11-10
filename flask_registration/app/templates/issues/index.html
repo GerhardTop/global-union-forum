@@ -22,6 +22,8 @@
         <a href="{{ url_for('issues.new') }}" class="gu-btn gu-btn--primary gu-forum__newbtn">
           <span aria-hidden="true">+</span> {{ _('New issue') }}
         </a>
+        {% elif current_user.is_suspended %}
+        <span class="gu-forum__suspended">{% if lang == 'nl' %}Je bent geschorst en kunt nu niet bijdragen{% else %}You are suspended and cannot contribute right now{% endif %}</span>
         {% else %}
         <a href="{{ url_for('main.spelregels', next=request.path) }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
           {{ _('Accept the conduct rules to join in') }}
