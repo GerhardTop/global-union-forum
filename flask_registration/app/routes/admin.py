@@ -67,14 +67,6 @@ def moderator_dashboard():
         Post.created_at < end_of_day,
     ).count()
 
-    recent_posts = (
-        Post.query
-        .filter(Post.body != '[bericht verwijderd]')
-        .order_by(Post.created_at.desc())
-        .limit(10)
-        .all()
-    )
-
     closed_threads = Thread.query.filter_by(is_closed=True).order_by(Thread.created_at.desc()).all()
 
     # Kwaliteit (alleen een beloning): open meldingen "geen kwaliteit" door
@@ -156,7 +148,6 @@ def moderator_dashboard():
                           'vervolg': gettext('Follow-up')},
         active_threads=active_threads,
         posts_today=posts_today,
-        recent_posts=recent_posts,
         closed_threads=closed_threads,
     )
 

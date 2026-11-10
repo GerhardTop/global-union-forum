@@ -4069,19 +4069,31 @@ body {
 .gu-mod__context { margin:8px 0 0; font-size:13.5px; color:var(--mod-n600); }
 
 .gu-mod__kpis { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:24px; }
-.gu-kpi { background:var(--gu-paper,#fff); border:1px solid var(--mod-border); border-radius:12px; padding:13px 15px; }
-.gu-kpi__num { display:block; font-size:24px; font-weight:600; letter-spacing:-.02em; line-height:1.05; }
+.gu-kpi { background:var(--gu-paper,#fff); border:1px solid var(--mod-border); border-radius:12px; padding:14px 16px; min-width:0; }
+.gu-kpi__num { display:block; font-size:25px; font-weight:600; letter-spacing:-.02em; line-height:1.05; }
 .gu-kpi__num--accent { color:var(--mod-accent); }
 .gu-kpi__lbl { display:block; font-size:12px; color:var(--mod-n600); margin-top:3px; }
 .gu-kpi--done { background:#f3f8f4; border-color:#d6e8dc; }
 .gu-kpi--done .gu-kpi__num { color:var(--mod-green); }
 
-.gu-mod__cols { display:grid; grid-template-columns:1fr 380px; gap:24px; align-items:start; }
-/* Fase 2c: de bak met tabbladen (?stroom=) in de hoofdkolom. */
+.gu-mod__cols { display:grid; grid-template-columns:1fr 400px; gap:26px; align-items:start; }
+/* Fase 2c: het overzicht naar het artboard Main.dc.html (docs/design/README.md). */
+.gu-moddash { padding-bottom:8px; }
+.gu-moddash .gu-mod__wrap { padding-bottom:48px; }
 .gu-mod__main { min-width:0; }
-.gu-mod-tabs { margin-bottom:18px; }
+.gu-mod-bin--card { box-shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05); }
+.gu-mod-bin__head { display:flex; flex-direction:column; gap:10px; }
+.gu-mod-bin__ctx { margin:0; font-size:13px; color:var(--mod-n500); }
+.gu-mod-bin__streams { padding:18px 16px 4px; }
+.gu-mod-bin__streams > .gu-mod__block,
+.gu-mod-bin__streams > .gu-admin__section { margin:0 0 28px; }
+.gu-mod-tabs { max-width:100%; }
 .gu-mod-tabs .gu-seg__btn { text-decoration:none; }
-.gu-mod__main > .gu-mod__block + .gu-admin__section { margin-top:28px; }
+.gu-ministat__num--americas { color:#d8232a; }
+.gu-mod__side { min-width:0; }
+.gu-mod__side .gu-mod-list__item > div > a { font-size:13.5px; font-weight:500; color:var(--mod-ink); }
+.gu-mod__side .gu-modissue__actions form { margin:0; }
+.gu-moddash > .gu-mod__wrap > .gu-admin__section { margin-top:40px; }
 .gu-mod-bin { background:var(--gu-paper,#fff); border:1px solid var(--mod-border); border-radius:14px; overflow:hidden; }
 .gu-mod-bin__head { padding:12px 16px; border-bottom:1px solid var(--mod-border); }
 .gu-mod-bin__sub { margin:0; padding:10px 16px 2px; font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--mod-n500); }
@@ -4143,4 +4155,10 @@ body {
 @media (max-width:900px) {
   .gu-mod__kpis { grid-template-columns:repeat(3,1fr); }
   .gu-mod__cols { grid-template-columns:1fr; }
+}
+@media (max-width:560px) {
+  .gu-mod__wrap { padding-left:16px; padding-right:16px; }
+  .gu-mod__kpis { grid-template-columns:repeat(2,1fr); gap:10px; }
+  .gu-mod-bin__streams { padding:14px 12px 2px; }
+  .gu-mrow { flex-wrap:wrap; }
 }

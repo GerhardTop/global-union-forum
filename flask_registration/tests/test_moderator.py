@@ -97,12 +97,32 @@ def test_dashboard_renders_each_stream(app, db):
     assert 'ongepast' in alle and objections in alle
     assert page('?stroom=onzin') == alle  # onbekende stroom: alles
 
-    # De tabbladen tonen hun telling; het actieve tabblad is gemarkeerd.
-    assert 'aria-current="page">Bezwaren\n              <span class="gu-seg__c">1</span>' in bezw
-    assert '>Meldingen\n              <span class="gu-seg__c">1</span>' in alle
-    assert '>Alle\n              <span class="gu-seg__c">' in alle
-    # Buiten de bak blijft altijd zichtbaar.
-    assert 'id="vraagstukken"' in bezw and 'Recente berichten' in bezw and 'Behandeld totaal' in bezw
+    # De tabbladen (artboard-volgorde) tonen hun telling; het actieve is gemarkeerd.
+    import re
+
+    def flat(html):
+        return re.sub(r'\s+', ' ', html)
+
+    b, a = flat(bezw), flat(alle)
+    start = a.index('class="gu-seg"')
+    tabs = a[start:a.index('</nav>', start)]
+    labels = re.findall(r'>\s?([^<>]+?) <span class="gu-seg__c">(\d+)</span>', tabs)
+    assert [l for l, _ in labels] == ['Alle', 'Meldingen', 'Bezwaren', 'Door de AI', 'Zonder AI-oordeel']
+    counts = {l: int(n) for l, n in labels}
+    assert counts['Meldingen'] == 1 and counts['Bezwaren'] == 1
+    assert counts['Alle'] == sum(n for l, n in counts.items() if l != 'Alle')
+    assert 'aria-current="page">Bezwaren <span class="gu-seg__c">1</span>' in b
+    assert '1 meldingen, door deelnemers' in a
+
+    # De schil (artboard Main.dc.html): titel, zes tegels boven de bak,
+    # rechts de wachttijd, vraagstukken en het fasebeheer; geen recente berichten.
+    assert '<h1 class="gu-mod__title">Moderator</h1>' in b and 'Taal-monitor' not in b
+    kpis = b[b.index('class="gu-mod__kpis"'):b.index('id="bak"')]
+    assert len(re.findall(r'class="gu-kpi( gu-kpi--done)?"', kpis)) == 6 and 'Behandeld totaal' in kpis and 'Behandeld door jou' in kpis
+    aside = b[b.index('<aside'):b.index('</aside>')]
+    for label in ('Oudste wachttijd', 'Lopende vraagstukken', 'Recente vraagstukken', 'Fasebeheer', 'id="vraagstukken"'):
+        assert label in aside
+    assert 'Behandeld' not in aside and 'Recente berichten' not in b
 
 
 def test_removed_post_not_in_without_judgement(app, db):
