@@ -12,6 +12,7 @@ De artboards staan als statische referentie-HTML in deze map (`docs/design/`). B
 | Beheer-menu op het vraagstuk (ingang van verwijderen en archiveren) | /vraagstuk/<id> (cockpit, menu "Beheer") | docs/design/toegang.html |
 | Verwijderen | /vraagstuk/<id>/verwijderen (verwijderbevestiging) | docs/design/verwijderen.html |
 | Gebruiker (gepland) | (gebruikersmoderatie) | docs/design/gebruiker.html |
+| Meldingen instellen | /profiel/meldingen | docs/design/notificaties.html |
 
 Toegang.html is niet het rollenbeheer, maar de ingang van de verwijder-flow: het Beheer-menu op het vraagstuk (fasen beheren, archiveren, verwijderen). Gebruiker.html (gebruikersmoderatie: waarschuwingen, schorsingen, account verwijderen) is een geplande functie en nog niet gebouwd.
 
