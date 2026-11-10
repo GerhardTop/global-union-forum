@@ -185,7 +185,7 @@ def confirm(case, actor, note=None):
 def can_decide_objection(case, user):
     """Bij voorkeur een senior moderator: senior moderators en de admin, niet
     de auteur en niet de moderator die het besluit nam."""
-    return (getattr(user, 'is_authenticated', False) and user.can_manage_rules()
+    return (getattr(user, 'is_authenticated', False) and user.is_senior_moderator
             and case.post.user_id != user.id and case.acted_by_id != user.id)
 
 

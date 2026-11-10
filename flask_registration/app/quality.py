@@ -377,6 +377,13 @@ def detach_user(user_id):
     PostReport.query.filter_by(reporter_id=user_id).delete(synchronize_session=False)
     PostReport.query.filter_by(decided_by_id=user_id).update(
         {PostReport.decided_by_id: None}, synchronize_session=False)
+    # User moderation: their own warnings and suspensions go, their name as
+    # the moderator who gave one is detached (the row stays).
+    from app.models import Suspension, User, Warning
+    for model in (Warning, Suspension):
+        model.query.filter_by(user_id=user_id).delete(synchronize_session=False)
+        model.query.filter_by(by_id=user_id).update({model.by_id: None}, synchronize_session=False)
+    User.query.filter_by(deleted_by_id=user_id).update({User.deleted_by_id: None}, synchronize_session=False)
 
 
 def reset_for_edit(post):

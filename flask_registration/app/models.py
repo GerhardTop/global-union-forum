@@ -74,9 +74,34 @@ class User(UserMixin, db.Model):
     # the daily digest. NULL means no preference yet (the digest falls back to
     # Dutch). Independent of auto_translate.
     lang                = db.Column(db.String(5), nullable=True, default=None)
+    # User moderation (Gebruiker.dc.html, step 1): a suspension ends at
+    # suspended_until (the history is in Suspension). deleted_* are for
+    # anonymising an account later; the row itself then stays.
+    suspended_until     = db.Column(db.DateTime, nullable=True, default=None)
+    deleted_at          = db.Column(db.DateTime, nullable=True, default=None)
+    deleted_by_id       = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    deleted_reason      = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return f"<User {self.email}>"
+
+    @property
+    def is_suspended(self):
+        """Suspended right now: suspended_until is set and still in the future."""
+        return self.suspended_until is not None and self.suspended_until > datetime.utcnow()
+
+    @property
+    def is_deleted(self):
+        """The account was deleted by moderation (anonymised, row kept)."""
+        return self.deleted_at is not None
+
+    is_anonymised = is_deleted
+
+    @property
+    def is_senior_moderator(self):
+        """Senior moderator or admin: decides objections (conduct.can_decide_objection)
+        and, later, gates suspending and deleting accounts."""
+        return bool(self.is_admin) or self.role == 'senior_moderator'
 
     # ── Permissies (centrale helpers, gebruikt door routes en templates) ──
     def _rank(self):
@@ -120,7 +145,7 @@ class User(UserMixin, db.Model):
         return bool(self.is_admin) or bool(self.is_moderator) or self._rank() >= ROLES.index('moderator') + 1
 
     def can_manage_rules(self):
-        return bool(self.is_admin) or self.role == 'senior_moderator'
+        return self.is_senior_moderator
 
     @property
     def real_name(self):
@@ -158,6 +183,8 @@ class AnonymousUser(AnonymousUserMixin):
     is_admin = False
     is_moderator = False
     role = None
+    is_senior_moderator = False
+    is_suspended = False
 
     def can_contribute(self):
         return False
@@ -714,6 +741,39 @@ class ConductObjection(db.Model):
         'objections', lazy=True, order_by='ConductObjection.created_at', cascade='all, delete-orphan'))
     author     = db.relationship('User', foreign_keys=[author_id])
     decided_by = db.relationship('User', foreign_keys=[decided_by_id])
+
+
+class Warning(db.Model):
+    """A moderator's warning to a user (user moderation, Gebruiker.dc.html).
+    by_id is None once the moderator's account is deleted."""
+    __tablename__ = "user_warnings"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    by_id      = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    message    = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', foreign_keys=[user_id],
+                           backref=db.backref('warnings', lazy=True, order_by='Warning.created_at'))
+    by   = db.relationship('User', foreign_keys=[by_id])
+
+
+class Suspension(db.Model):
+    """A suspension of a user until a moment (user moderation). The current
+    state is on User.suspended_until; these rows are the history."""
+    __tablename__ = "user_suspensions"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    by_id      = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    reason     = db.Column(db.Text, nullable=False)
+    until      = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', foreign_keys=[user_id],
+                           backref=db.backref('suspensions', lazy=True, order_by='Suspension.created_at'))
+    by   = db.relationship('User', foreign_keys=[by_id])
 
 
 # ── Herontwerp: het vraagstuk (Issue) ────────────────────────────────────
