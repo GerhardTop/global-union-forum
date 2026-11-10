@@ -1292,3 +1292,9 @@ class Notification(db.Model):
     dispute_id = db.Column(db.Integer, db.ForeignKey('fact_disputes.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     read_at    = db.Column(db.DateTime, nullable=True)
+    # Step 3a-2: a tick-driven notification carries a stable key (e.g.
+    # "issue:7:phase:stemmen:<start>"), so the hourly tick creates it once.
+    # The instant events leave it NULL.
+    event_key  = db.Column(db.String(80), nullable=True)
+
+    __table_args__ = (db.Index('ix_notifications_user_id_event_key', 'user_id', 'event_key'),)

@@ -79,7 +79,7 @@
             {% set unread_n = unread_notifications() %}
             {% if unread_n or current_user.has_unread_digest %}
             <div class="gu-promotion-banner gu-digest-banner" role="status" data-unread-notifications="{{ unread_n }}">
-              <span>{% if unread_n %}{% if lang == 'nl' %}Je hebt {{ unread_n }} nieuwe {{ 'melding' if unread_n == 1 else 'meldingen' }}.{% else %}You have {{ unread_n }} new notification{{ '' if unread_n == 1 else 's' }}.{% endif %}{% else %}{{ _('You have a new daily summary.') }}{% endif %}</span>
+              <span>{% if unread_n %}{% if lang == 'nl' %}Je hebt {{ unread_n }} nieuwe {{ 'melding' if unread_n == 1 else 'meldingen' }}.{% else %}You have {{ unread_n }} new notification{{ '' if unread_n == 1 else 's' }}.{% endif %}{% endif %}{% if unread_n and current_user.has_unread_digest %} {% endif %}{% if current_user.has_unread_digest %}{{ _('You have a new daily summary.') }}{% endif %}</span>
               <a href="{{ url_for('profile.meldingen') }}" class="gu-post__action gu-post__action--ghost">{{ _('View') }}</a>
             </div>
             {% endif %}

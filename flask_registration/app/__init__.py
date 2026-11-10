@@ -313,6 +313,9 @@ _POLISH_COLUMNS = {
               ('deleted_by_id', 'INTEGER NULL REFERENCES users(id)'), ('deleted_reason', 'TEXT NULL'),
               # Notifications step 1: preferences and the summary frequency.
               ('notif_prefs', 'TEXT NULL'), ('summary_frequency', 'VARCHAR(8) NULL')),
+    # Notifications step 3a-2: the de-dup key of a tick-driven notification
+    # (the table itself comes from db.create_all() in step 3a-1).
+    'notifications': (('event_key', 'VARCHAR(80) NULL'),),
     # P2: het soort feit (media) en het kwaliteitsmerk van een feit.
     'posts': (('fact_type', 'VARCHAR(10) NULL'),
               # P5: een reactie bij een voorstel, met de versie (de tabel
@@ -365,6 +368,7 @@ _INDEXES = (
     ('issues', 'created_by_id'),
     ('issues', 'thread_id'),
     ('posts', 'issue_proposal_id'),  # polijstronde P5
+    ('notifications', ('user_id', 'event_key')),  # notifications step 3a-2: the tick's de-dup lookup
 )
 
 
@@ -380,14 +384,15 @@ def _migrate_indexes():
     for table, column in _INDEXES:
         if table not in tables:
             continue
+        columns = column if isinstance(column, tuple) else (column,)  # a composite index is a tuple
         indexed = {tuple(ix['column_names']) for ix in insp.get_indexes(table)}
-        if (column,) not in indexed:
-            missing.append((table, column))
+        if columns not in indexed:
+            missing.append((table, columns))
     if not missing:
         return
     with db.engine.connect() as conn:
-        for table, column in missing:
-            conn.execute(text(f'CREATE INDEX ix_{table}_{column} ON {table} ({column})'))
+        for table, columns in missing:
+            conn.execute(text(f'CREATE INDEX ix_{table}_{"_".join(columns)} ON {table} ({", ".join(columns)})'))
         conn.commit()
 
 

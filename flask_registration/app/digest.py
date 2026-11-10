@@ -297,6 +297,10 @@ def tick(now=None):
     now = now or datetime.utcnow()
     moved = proposals.advance_due(now)
     issues_moved = issue_lifecycle.advance_due(now)
+    # Notifications step 3a-2: the in-app notifications, independent of the
+    # summary (also for users whose summary is off).
+    from app import notifications
+    notifications.emit_tick(now)
     sent = run_daily(now)
     return {'moved': moved, 'issues_moved': issues_moved, 'digests': sent}
 
