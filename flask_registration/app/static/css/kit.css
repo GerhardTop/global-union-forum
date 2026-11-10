@@ -4170,9 +4170,51 @@ body {
 .gu-mod-decide__actions { display:flex; gap:9px; flex-wrap:wrap; }
 .gu-mod__dim { color:var(--mod-n500); }
 
+/* Fase 2c: het beoordeelscherm naar het artboard Beoordelen.dc.html (docs/design/README.md). */
+.gu-modrev__crumbs { display:flex; align-items:center; gap:7px; flex-wrap:wrap; font-size:13px; color:var(--mod-n500); margin-bottom:14px; }
+.gu-modrev__crumbs a { color:var(--mod-n600); text-decoration:none; }
+.gu-modrev__crumbs a:hover { color:var(--mod-accent); text-decoration:underline; }
+.gu-modrev__chev { font-size:16px; line-height:1; }
+.gu-modrev__sep { color:var(--mod-border); }
+.gu-modrev__accent { color:var(--mod-accent); }
+.gu-modrev__pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.gu-modrev__cols { display:grid; grid-template-columns:minmax(0,1fr) 420px; gap:26px; align-items:start; }
+.gu-modrev__main, .gu-modrev__side { min-width:0; display:flex; flex-direction:column; gap:20px; }
+.gu-modrev__card { margin:0; padding:0; overflow:hidden; box-shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05); }
+.gu-modrev__cardhead { display:flex; align-items:center; gap:10px; padding:14px 18px; border-bottom:1px solid var(--mod-n100); }
+.gu-modrev__cardhead h2 { margin:0; font-size:16px; font-weight:600; }
+.gu-modrev__cardhead .gu-mod-card__link { margin-left:auto; }
+.gu-modrev__ctxbar { padding:10px 18px; background:var(--mod-n50); border-bottom:1px solid var(--mod-n100); font-size:13px; color:var(--mod-n600); }
+.gu-modrev__msg { padding:14px 18px; }
+.gu-modrev__msg + .gu-modrev__msg { border-top:1px solid var(--mod-n100); }
+.gu-modrev__msg--dim { opacity:.72; }
+.gu-modrev__msg--reported { background:#fdf6ee; border-left:3px solid #e09400; }
+.gu-modrev__who { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:13.5px; }
+.gu-modrev__body { margin:8px 0 0; font-size:14.5px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; }
+.gu-modrev__reports .gu-mrow__reason { overflow-wrap:anywhere; }
+.gu-modrev__side .gu-mod-decide { padding:0 18px 18px; }
+.gu-modrev__side .gu-mrow__note { padding:14px 18px; margin:0; }
+.gu-modrev__intro { margin:0; padding:14px 18px 12px; font-size:13.5px; color:var(--mod-n600); }
+.gu-modrev__choices { display:flex; flex-direction:column; gap:8px; }
+.gu-modrev__choice { display:flex; align-items:center; gap:10px; width:100%; text-align:left; font:inherit; font-size:13.5px; font-weight:500;
+  padding:10px 14px; border-radius:8px; border:1px solid var(--mod-border); background:#fff; color:var(--mod-ink); cursor:pointer; }
+.gu-modrev__choice svg { flex:0 0 auto; }
+.gu-modrev__choice--keep { background:#eaf2fb; border-color:#c5dcf4; color:#1b5e9a; }
+.gu-modrev__choice--keep:hover { background:#dcebf9; }
+.gu-modrev__choice--move { background:#fff3e0; border-color:#f0d9b0; color:#8a5a12; }
+.gu-modrev__choice--move:hover { background:#ffead0; }
+.gu-modrev__choice--hide { background:#fcecec; border-color:#f0c9cb; color:#a3282c; }
+.gu-modrev__choice--hide:hover { background:#f9dfe0; }
+.gu-modrev__side .gu-mod-decide .gu-input { width:100%; box-sizing:border-box; }
+.gu-modrev__side .gu-mod-decide .gu-input--sm { width:auto; max-width:100%; }
+.gu-modrev__hint { font-size:12px; color:var(--mod-n500); }
+.gu-modrev__explain { margin:0; font-size:12.5px; line-height:1.5; color:var(--mod-n500); }
+.gu-modrev__tip { padding:14px 16px; background:#f7fbfe; border:1px solid #cfe6f7; border-radius:12px; font-size:13px; line-height:1.5; color:var(--mod-n600); }
+
 @media (max-width:900px) {
   .gu-mod__kpis { grid-template-columns:repeat(3,1fr); }
   .gu-mod__cols { grid-template-columns:1fr; }
+  .gu-modrev__cols { grid-template-columns:minmax(0,1fr); }
 }
 @media (max-width:560px) {
   .gu-mod__wrap { padding-left:16px; padding-right:16px; }

@@ -2,80 +2,139 @@
 {% block title %}{% if lang == 'nl' %}Melding beoordelen{% else %}Review report{% endif %} · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
+{# Fase 2c: volgt het artboard Beoordelen.dc.html (docs/design/README.md). #}
 {% set soort = 'voorstel' if m.kind == 'proposal' else ('feit' if m.is_fact else 'bijdrage') %}
 {% set soort_en = 'proposal' if m.kind == 'proposal' else ('fact' if m.is_fact else 'contribution') %}
 {% set is_own = (m.kind == 'post' and m.item.user_id == current_user.id) or (m.kind == 'proposal' and m.item.created_by_id == current_user.id) %}
-<div class="gu-mod" lang="{{ lang }}">
-  <div class="gu-mod__wrap gu-mod__wrap--narrow">
+{% set body = m.item.body if m.kind == 'post' else m.item.statement %}
+{% set parent = m.item.parent if m.kind == 'post' else None %}
+<div class="gu-mod gu-modrev" lang="{{ lang }}">
+  <div class="gu-mod__wrap">
 
     <div class="gu-mod__head">
-      <p class="gu-eyebrow"><a href="{{ url_for('admin.moderator_dashboard') }}">{% if lang == 'nl' %}Moderator{% else %}Moderator{% endif %}</a> · {% if lang == 'nl' %}Melding beoordelen{% else %}Review report{% endif %}</p>
-      <h1 class="gu-mod__title">{% if lang == 'nl' %}Melding beoordelen{% else %}Review report{% endif %}</h1>
-      {% if m.issue %}<p class="gu-mod__context">{% if lang == 'nl' %}Bij het vraagstuk{% else %}On the issue{% endif %} <a href="{{ url_for('issues.show', issue_id=m.issue.id) }}" lang="{{ m.issue.lang or lang }}">{{ m.issue.title }}</a></p>{% endif %}
+      <nav class="gu-modrev__crumbs" aria-label="{% if lang == 'nl' %}Kruimelpad{% else %}Breadcrumb{% endif %}">
+        <a href="{{ url_for('admin.moderator_dashboard') }}"><span class="gu-modrev__chev" aria-hidden="true">&lsaquo;</span> Moderator</a>
+        {% if m.issue %}<span class="gu-modrev__sep">/</span> <a href="{{ url_for('issues.show', issue_id=m.issue.id) }}" lang="{{ m.issue.lang or lang }}">{{ m.issue.title }}</a>{% endif %}
+        <span class="gu-modrev__sep">/</span> <span>{% if lang == 'nl' %}Gemelde {{ soort }}{% else %}Reported {{ soort_en }}{% endif %}</span>
+      </nav>
+      <p class="gu-eyebrow">{% if lang == 'nl' %}Melding beoordelen{% else %}Review report{% endif %}</p>
+      <h1 class="gu-mod__title">
+        {%- if lang == 'nl' %}{{ soort|capitalize }}{% else %}{{ soort_en|capitalize }}{% endif %}
+        {%- if m.issue %} in <span class="gu-modrev__accent" lang="{{ m.issue.lang or lang }}">{{ m.issue.title }}</span>{% endif -%}
+      </h1>
+      <div class="gu-modrev__pills">
+        {% if m.issue %}
+        <span class="gu-pill">{% if m.issue.kind == 'event' %}{% if lang == 'nl' %}Evenement{% else %}Event{% endif %}{% else %}{% if lang == 'nl' %}Online vraagstuk{% else %}Online issue{% endif %}{% endif %} · {% if lang == 'nl' %}fase{% else %}phase{% endif %} {{ phase_labels.get(m.issue.phase, m.issue.phase) }}</span>
+        {% endif %}
+        {% if not is_own %}<span class="gu-pill gu-pill--done">{% if lang == 'nl' %}Jij behandelt dit nu{% else %}You are handling this{% endif %}</span>{% endif %}
+      </div>
     </div>
 
-    {# ── De gemelde bijdrage in context ─────────────────────── #}
-    <section class="gu-mod-card">
-      <div class="gu-mod-card__head">
-        <span class="gu-pill">{% if lang == 'nl' %}{{ soort }}{% else %}{{ soort_en }}{% endif %}</span>
-        <span class="gu-mod-card__who">{% if lang == 'nl' %}van {{ m.author_name or 'anonieme deelnemer' }}{% else %}by {{ m.author_name or 'anonymous' }}{% endif %}</span>
-        <a class="gu-mod-card__link" href="{{ context_url }}">{% if lang == 'nl' %}bekijk in context{% else %}view in context{% endif %}</a>
-      </div>
-      <p class="gu-mod-card__body">{% if m.kind == 'post' %}{{ m.item.body }}{% else %}{{ m.item.statement }}{% endif %}</p>
-    </section>
+    <div class="gu-modrev__cols">
+      <div class="gu-modrev__main">
 
-    {# ── De meldingen bij deze bijdrage ─────────────────────── #}
-    <section class="gu-mod__block">
-      <div class="gu-mod__blockhead">
-        <h2>{% if lang == 'nl' %}Meldingen bij deze bijdrage{% else %}Reports on this item{% endif %}</h2>
-        <span class="gu-pill gu-pill--count">{{ m.count }}</span>
-      </div>
-      <div class="gu-mod-list">
-        {% for r in m.reports %}
-        <div class="gu-mod-list__item">
-          <p class="gu-mrow__reason">"{{ r.reason }}"</p>
-          <div class="gu-mod-list__meta">
-            <span>{% if lang == 'nl' %}door{% else %}by{% endif %} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</span>
+        {# ── De bijdrage in het gesprek ─────────────────────────── #}
+        <section class="gu-mod-card gu-modrev__card">
+          <div class="gu-modrev__cardhead"><h2>{% if lang == 'nl' %}De {{ soort }} in het gesprek{% else %}The {{ soort_en }} in the conversation{% endif %}</h2>
+            <a class="gu-mod-card__link" href="{{ context_url }}">{% if lang == 'nl' %}bekijk in context{% else %}view in context{% endif %}</a></div>
+          {% if m.issue %}
+          <div class="gu-modrev__ctxbar">
+            {% if lang == 'nl' %}Vraagstuk{% else %}Issue{% endif %} <a href="{{ url_for('issues.show', issue_id=m.issue.id) }}" lang="{{ m.issue.lang or lang }}">{{ m.issue.title }}</a>
+            {% if m.kind == 'post' and m.item.issue_proposal_id %}
+            · <a href="{{ url_for('issues.proposal', issue_id=m.issue.id, proposal_id=m.item.issue_proposal_id) }}">{% if lang == 'nl' %}bij een voorstel{% else %}on a proposal{% endif %}</a>
+            {% endif %}
           </div>
-        </div>
-        {% endfor %}
-      </div>
-    </section>
-
-    {# ── Beslissing ─────────────────────────────────────────── #}
-    <section class="gu-mod-card">
-      <div class="gu-mod__blockhead"><h2>{% if lang == 'nl' %}Beslissing{% else %}Decision{% endif %}</h2></div>
-      {% if is_own %}
-      <p class="gu-mrow__note">{% if lang == 'nl' %}Dit is je eigen {{ soort }}: een andere moderator beslist.{% else %}This is your own item: another moderator decides.{% endif %}</p>
-      {% else %}
-      <form method="POST" action="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}" class="gu-mod-decide">
-        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-        <label class="gu-mod-decide__field">
-          <span>{% if lang == 'nl' %}Toelichting (zichtbaar voor de inbrenger bij verplaatsen of verbergen){% else %}Note (shown to the author when moving or hiding){% endif %}</span>
-          <textarea name="note" rows="2" maxlength="400" class="gu-input"></textarea>
-        </label>
-        {% if m.kind == 'post' %}
-        <label class="gu-mod-decide__field gu-mod-decide__field--inline">
-          <span>{% if lang == 'nl' %}Reden bij verplaatsen{% else %}Reason when moving{% endif %}</span>
-          <select name="rule" class="gu-input gu-input--sm">
-            <option value="respect">{% if lang == 'nl' %}Niet respectvol{% else %}Not respectful{% endif %}</option>
-            <option value="onderwerp">{% if lang == 'nl' %}Niet op het onderwerp{% else %}Off topic{% endif %}</option>
-          </select>
-        </label>
-        {% endif %}
-        <div class="gu-mod-decide__actions">
-          <button type="submit" name="action" value="handhaven" class="gu-btn gu-btn--primary">{% if lang == 'nl' %}Niets doen, laten staan{% else %}Do nothing, keep it{% endif %}</button>
-          {% if m.kind == 'post' %}
-          <button type="submit" name="action" value="verplaatsen" class="gu-btn">{% if lang == 'nl' %}Naar de achtergrond{% else %}Move to background{% endif %}</button>
-          <button type="submit" name="action" value="verbergen" class="gu-btn gu-btn--danger">{% if lang == 'nl' %}Verbergen{% else %}Hide{% endif %}</button>
           {% endif %}
+
+          {% if parent %}
+          <div class="gu-modrev__msg gu-modrev__msg--dim">
+            <div class="gu-modrev__who"><strong>{{ parent.public_author_name() }}</strong> <span class="gu-mod__dim">{% if lang == 'nl' %}bovenliggend bericht{% else %}parent message{% endif %}</span></div>
+            <p class="gu-modrev__body">{{ parent.body }}</p>
+          </div>
+          {% endif %}
+
+          <div class="gu-modrev__msg gu-modrev__msg--reported">
+            <div class="gu-modrev__who">
+              <strong>{{ m.author_name or ('anonieme deelnemer' if lang == 'nl' else 'anonymous') }}</strong>
+              <span class="gu-pill gu-pill--count">{{ m.count }} {% if lang == 'nl' %}melding{{ '' if m.count == 1 else 'en' }}{% else %}report{{ '' if m.count == 1 else 's' }}{% endif %}</span>
+            </div>
+            <p class="gu-modrev__body">{{ body }}</p>
+          </div>
+        </section>
+
+        {# ── De meldingen bij deze bijdrage ─────────────────────── #}
+        <section class="gu-mod-card gu-modrev__card">
+          <div class="gu-modrev__cardhead">
+            <h2>{% if lang == 'nl' %}Meldingen bij deze {{ soort }}{% else %}Reports on this {{ soort_en }}{% endif %}</h2>
+            <span class="gu-pill gu-pill--count">{{ m.count }}</span>
+          </div>
+          <div class="gu-modrev__reports">
+            {% for r in m.reports %}
+            <div class="gu-mrow">
+              <div class="gu-mrow__body">
+                <div class="gu-modrev__who"><strong>{{ r.reporter.public_name if r.reporter else '@deleted_user' }}</strong>{% if r.created_at %} <span class="gu-mod__dim">{{ r.created_at.strftime('%d-%m-%Y %H:%M') }}</span>{% endif %}</div>
+                <p class="gu-mrow__reason">"{{ r.reason }}"</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+      </div>
+
+      {# ── Beslissing ─────────────────────────────────────────── #}
+      <aside class="gu-modrev__side">
+        <section class="gu-mod-card gu-modrev__card">
+          <div class="gu-modrev__cardhead"><h2>{% if lang == 'nl' %}Beslissing{% else %}Decision{% endif %}</h2></div>
+          {% if is_own %}
+          <p class="gu-mrow__note">{% if lang == 'nl' %}Dit is je eigen {{ soort }}: een andere moderator beslist.{% else %}This is your own item: another moderator decides.{% endif %}</p>
+          {% else %}
+          <p class="gu-modrev__intro">{% if lang == 'nl' %}Kies wat er met de {{ soort }} gebeurt. De auteur krijgt bericht en kan bezwaar maken.{% else %}Choose what happens to the {{ soort_en }}. The author is notified and can object.{% endif %}</p>
+          <form method="POST" action="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}" class="gu-mod-decide">
+            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+            <div class="gu-modrev__choices">
+              <button type="submit" name="action" value="handhaven" class="gu-modrev__choice gu-modrev__choice--keep">
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                {% if lang == 'nl' %}Niets doen, {{ soort }} blijft staan{% else %}Do nothing, the {{ soort_en }} stays{% endif %}
+              </button>
+              {% if m.kind == 'post' %}
+              <button type="submit" name="action" value="verplaatsen" class="gu-modrev__choice gu-modrev__choice--move">
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2.5 8h10M9 4.5L12.5 8 9 11.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                {% if lang == 'nl' %}Verplaatsen naar achtergrond{% else %}Move to the background{% endif %}
+              </button>
+              <button type="submit" name="action" value="verbergen" class="gu-modrev__choice gu-modrev__choice--hide">
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M1.8 8s2.3-4.2 6.2-4.2S14.2 8 14.2 8s-2.3 4.2-6.2 4.2S1.8 8 1.8 8z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 13.5l11-11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                {% if lang == 'nl' %}Verbergen{% else %}Hide{% endif %}
+              </button>
+              {% endif %}
+            </div>
+            {% if m.kind == 'post' %}
+            <label class="gu-mod-decide__field">
+              <span>{% if lang == 'nl' %}Reden bij verplaatsen{% else %}Reason when moving{% endif %}</span>
+              <select name="rule" class="gu-input gu-input--sm">
+                <option value="respect">{% if lang == 'nl' %}Niet respectvol{% else %}Not respectful{% endif %}</option>
+                <option value="onderwerp">{% if lang == 'nl' %}Niet op het onderwerp{% else %}Off topic{% endif %}</option>
+              </select>
+            </label>
+            {% endif %}
+            <label class="gu-mod-decide__field">
+              <span>{% if lang == 'nl' %}Toelichting voor het logboek (optioneel){% else %}Note for the log (optional){% endif %}</span>
+              <textarea name="note" rows="3" maxlength="400" class="gu-input"></textarea>
+              {% if m.kind == 'post' %}<span class="gu-modrev__hint">{% if lang == 'nl' %}Bij verplaatsen of verbergen ziet de auteur deze toelichting; bij verplaatsen staat hij ook op de achtergrondpagina.{% else %}When moving or hiding, the author sees this note; when moving, it is also shown on the background page.{% endif %}</span>{% endif %}
+            </label>
+            {% if m.kind == 'proposal' %}
+            <p class="gu-mrow__note">{% if lang == 'nl' %}Een voorstel verplaats of verberg je niet los. Een heel voorstel verwijderen komt in een latere stap.{% else %}A proposal is not moved or hidden on its own. Deleting a whole proposal comes in a later step.{% endif %}</p>
+            {% else %}
+            <p class="gu-modrev__explain">{% if lang == 'nl' %}Verplaatsen zet de bijdrage op de openbare achtergrondpagina met de reden erbij. Verbergen haalt hem helemaal uit het gesprek. Beide zijn terug te draaien.{% else %}Moving puts the contribution on the public background page with the reason. Hiding removes it from the conversation entirely. Both can be undone.{% endif %}</p>
+            {% endif %}
+          </form>
+          {% endif %}
+        </section>
+
+        <div class="gu-modrev__tip">
+          <strong>Tip:</strong> {% if lang == 'nl' %}veel meldingen betekent niet automatisch een overtreding. De cijfers bij een naam zijn context, geen oordeel, jij beslist.{% else %}many reports do not automatically mean a violation. The numbers next to a name are context, not a verdict; you decide.{% endif %}
         </div>
-        {% if m.kind == 'proposal' %}
-        <p class="gu-mrow__note">{% if lang == 'nl' %}Een voorstel verplaats of verberg je niet los. Een heel voorstel verwijderen komt in een latere stap.{% else %}A proposal is not moved or hidden on its own. Deleting a whole proposal comes in a later step.{% endif %}</p>
-        {% endif %}
-      </form>
-      {% endif %}
-    </section>
+      </aside>
+    </div>
 
   </div>
 </div>

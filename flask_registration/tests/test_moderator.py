@@ -291,3 +291,40 @@ def test_ai_removed_shows_and_can_restore(app, db):
     assert r.status_code in (302, 303)
     db.session.refresh(case)
     assert case.action == 'teruggeplaatst'
+
+
+def test_beoordelen_layout_follows_artboard(app, db):
+    """Fase 2c: het beoordeelscherm volgt Beoordelen.dc.html: kruimelpad, H1
+    "<Soort> in <vraagstuk>", het bovenliggende bericht gedimd, de gemelde
+    bijdrage uitgelicht en de drie beslisknoppen (alleen bij een bijdrage)."""
+    mod, author, reporter = _user(db, 'moderator'), _user(db), _user(db)
+    issue, fact = _issue_with_fact(db, author)
+    reply = Post(thread_id=issue.thread_id, user_id=author.id, author_name='', parent_id=fact.id,
+                 author_username=author.username, body='Een gemelde reactie.', source_lang='nl')
+    db.session.add(reply)
+    db.session.commit()
+    _report_fact(db, reply, reporter, 'te fel')
+    c = _client(app, mod)
+    page = _req(c, 'GET', f'/moderator/melding/bijdrage/{reply.id}').get_data(as_text=True)
+    assert 'Gemelde bijdrage' in page and 'Bijdrage in <span class="gu-modrev__accent"' in page
+    assert 'Jij behandelt dit nu' in page and 'te fel' in page
+    dim = page[page.index('gu-modrev__msg--dim'):page.index('gu-modrev__msg--reported')]
+    assert 'Een feit.' in dim
+    assert 'Een gemelde reactie.' in page[page.index('gu-modrev__msg--reported'):]
+    for value in ('handhaven', 'verplaatsen', 'verbergen'):
+        assert f'name="action" value="{value}"' in page
+    assert 'name="rule"' in page and 'name="note"' in page and 'Tip:' in page
+
+    # Een voorstel: alleen "niets doen", met de uitleg dat het niet los gaat.
+    prop = _proposal(db, author, issue)
+    db.session.add(ProposalReport(proposal_id=prop.id, reporter_id=reporter.id, reason='spam'))
+    db.session.commit()
+    ppage = _req(c, 'GET', f'/moderator/melding/voorstel/{prop.id}').get_data(as_text=True)
+    assert 'Voorstel in <span class="gu-modrev__accent"' in ppage
+    assert 'value="handhaven"' in ppage and 'value="verplaatsen"' not in ppage and 'value="verbergen"' not in ppage
+    assert 'Een voorstel verplaats of verberg je niet los.' in ppage
+
+    # Opruimen: open meldingen tellen elders mee.
+    for value, path in (('handhaven', f'/moderator/melding/bijdrage/{reply.id}'),
+                        ('handhaven', f'/moderator/melding/voorstel/{prop.id}')):
+        assert _req(c, 'POST', path, data={'action': value}).status_code == 302

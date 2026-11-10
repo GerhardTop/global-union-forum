@@ -51,6 +51,13 @@ def _phase_issues():
 MOD_STREAMS = ('alle', 'meldingen', 'ai', 'bezwaren', 'zonder')
 
 
+def _phase_labels():
+    """De leesbare naam van elke vraagstukfase (overzicht en beoordeelscherm)."""
+    return {'feiten': gettext('Facts and discussion'), 'bijstellen': gettext('Revise the proposal'),
+            'stemmen': gettext('Voting'), 'samenvatten': gettext('Summary proposal'),
+            'vervolg': gettext('Follow-up')}
+
+
 @admin_bp.route('/moderator')
 @login_required
 def moderator_dashboard():
@@ -144,9 +151,7 @@ def moderator_dashboard():
         fact_can_resolve=lambda row: facts.can_resolve(row, current_user),
         # Polijststap P7: de fasen van vraagstukken beheren moderators hier.
         phase_issues=_phase_issues(),
-        phase_labels_all={'feiten': gettext('Facts and discussion'), 'bijstellen': gettext('Revise the proposal'),
-                          'stemmen': gettext('Voting'), 'samenvatten': gettext('Summary proposal'),
-                          'vervolg': gettext('Follow-up')},
+        phase_labels_all=_phase_labels(),
         active_threads=active_threads,
         posts_today=posts_today,
         closed_threads=closed_threads,
@@ -206,7 +211,8 @@ def melding_beoordelen(kind, item_id):
         context_url = url_for('issues.proposal', issue_id=melding.issue.id, proposal_id=melding.item.id)
     else:
         context_url = '#'
-    return render_template('moderator/melding_beoordelen.html', m=melding, context_url=context_url)
+    return render_template('moderator/melding_beoordelen.html', m=melding, context_url=context_url,
+                           phase_labels=_phase_labels())
 
 
 @admin_bp.route('/admin/gebruiker/<int:user_id>/rol', methods=['POST'])
