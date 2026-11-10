@@ -259,7 +259,7 @@
                 <details class="gu-mrow__more">
                   {{ review_summary() }}
                   <div class="gu-mrow__panel">
-                    {% with conduct_open=true, conduct_next=url_for('admin.moderator_dashboard') ~ '#twijfel' %}
+                    {% with conduct_next=url_for('admin.moderator_dashboard') ~ '#twijfel' %}
                     {% include 'forum/_conduct_mod.html' %}
                     {% endwith %}
                   </div>
@@ -292,7 +292,7 @@
                 <details class="gu-mrow__more">
                   {{ review_summary() }}
                   <div class="gu-mrow__panel">
-                    {% with conduct_open=true, conduct_next=url_for('admin.moderator_dashboard') ~ '#ai-verwijderd' %}
+                    {% with conduct_next=url_for('admin.moderator_dashboard') ~ '#ai-verwijderd' %}
                     {% include 'forum/_conduct_mod.html' %}
                     {% endwith %}
                   </div>
@@ -328,7 +328,7 @@
                   {{ review_summary() }}
                   <div class="gu-mrow__panel">
                     {% set qa = None %}
-                    {% with quality_open=true, quality_next=url_for('admin.moderator_dashboard') %}
+                    {% with quality_next=url_for('admin.moderator_dashboard') %}
                     {% include 'forum/_quality_mod.html' %}
                     {% endwith %}
                   </div>

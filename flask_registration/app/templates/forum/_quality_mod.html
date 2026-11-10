@@ -4,12 +4,11 @@
   weg (bijvoorbeeld als de AI geen oordeel gaf, of om K3 toe te kennen).
   Zonder keurmerk blijft de bijdrage gewoon zichtbaar.
   Context: post, qa (QualityAward of None), quality_labels, lang,
-           forum_action_form, optioneel quality_next (terugkeeradres) en
-           quality_open (details standaard open).
+           forum_action_form, optioneel quality_next (terugkeeradres).
+  Fase 2c: geen eigen uitklap meer; de rij in het moderator-overzicht klapt
+  het paneel al uit met "Beoordelen".
 #}
-{% set q_status = {'toegekend': _('Awarded'), 'afgewezen': _('Not awarded')} %}
-<details class="gu-quality-mod"{% if quality_open %} open{% endif %}>
-  <summary>{{ _('Assess quality') }}{% if qa %} · {{ q_status.get(qa.status, '') }}{% if qa.criterion %} {{ qa.criterion }}{% endif %}{% endif %}</summary>
+<div class="gu-quality-mod">
   <div class="gu-quality-mod__body">
     {% if qa and qa.source == 'ai' %}
     <p class="gu-quality__meta">
@@ -43,4 +42,4 @@
       </div>
     </form>
   </div>
-</details>
+</div>

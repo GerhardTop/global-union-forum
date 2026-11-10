@@ -3,11 +3,12 @@
   Moderatorpaneel bij een bijdrage (niet de eigen): verplaatsen naar de
   achtergrondpagina, verbergen als spam of misbruik, terugplaatsen, of een
   twijfelgeval vrijgeven.
-  Context: post, case (ConductCase of None), optioneel conduct_next en conduct_open.
+  Context: post, case (ConductCase of None), optioneel conduct_next.
+  Fase 2c: geen eigen uitklap meer; de rij in het moderator-overzicht klapt
+  het paneel al uit met "Beoordelen".
 #}
 {% set next_url = conduct_next or (request.path ~ '#post-' ~ post.id) %}
-<details class="gu-quality-mod gu-conduct-mod"{% if conduct_open %} open{% endif %}>
-  <summary>{{ _('Conduct rules') }}{% if case and case.removes_from_thread %} · {% if case.action == 'verplaatst' %}{{ conduct_rule_label(case.rule) }}{% else %}{{ conduct_rule_label(None) }}{% endif %}{% elif case and case.action == 'twijfel' %} · {{ _('Doubt') }}{% endif %}</summary>
+<div class="gu-quality-mod gu-conduct-mod">
   <div class="gu-quality-mod__body">
     {% if case and case.removes_from_thread %}
     <form method="POST" action="{{ url_for('forum.conduct_restore', post_id=post.id) }}" class="gu-quality-mod__form">
@@ -63,4 +64,4 @@
     </form>
     {% endif %}
   </div>
-</details>
+</div>

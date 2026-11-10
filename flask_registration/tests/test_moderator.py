@@ -81,7 +81,8 @@ def test_dashboard_renders_each_stream(app, db):
                        acted_by_id=mod.id, on_background=True)
     db.session.add(case)
     db.session.flush()
-    db.session.add(ConductObjection(case_id=case.id, author_id=author.id, text='Ik ben het oneens.'))
+    objection = ConductObjection(case_id=case.id, author_id=author.id, text='Ik ben het oneens.')
+    db.session.add(objection)
     db.session.commit()
 
     objections = 'Gedragsregels: openstaande bezwaren'
@@ -129,6 +130,11 @@ def test_dashboard_renders_each_stream(app, db):
     for label in ('Oudste wachttijd', 'Lopende vraagstukken', 'Recente vraagstukken', 'Fasebeheer', 'id="vraagstukken"'):
         assert label in aside
     assert 'Behandeld' not in aside and 'Recente berichten' not in b
+
+    # Opruimen: de testdatabase is gedeeld, en andere tests tellen de open
+    # bezwaren (test_forum_conduct verwacht er precies één).
+    objection.decision = 'handhaven'
+    db.session.commit()
 
 
 def test_removed_post_not_in_without_judgement(app, db):
