@@ -1,8 +1,9 @@
 """
 The proposal screen built to docs/design/voorstel.html: the context rail
-(facts and background / proposals, ten shown, the current one highlighted),
-the head row with "Voorstel aanpassen" for the proposer only, and the
-reactions grouped per version.
+(facts and background with "Bij dit voorstel" / "Alle" and fact linking, or
+proposals, ten shown, the current one highlighted; below it "Hoe werkt
+stemmen?"), the head row with "Voorstel aanpassen" for the proposer only,
+and the reactions grouped per version.
 """
 from datetime import datetime
 
@@ -36,8 +37,9 @@ def test_rail_lists_facts_and_proposals_with_totals(app, db, make_user):
     # The tab counts are the totals; both lists render in full (the script shows ten, then "Toon meer").
     assert 'Feiten en achtergrond <span class="gu-pv__cnt">12</span>' in rail
     assert 'Voorstellen <span class="gu-pv__cnt">11</span>' in rail
-    assert rail.count('Feit nummer') == 12 and rail.count('gu-pv__pitemtxt') == 11
-    assert rail.count('data-rail-more') == 2 and 'Toon meer' in rail
+    all_facts = rail.split('data-fact-panel="all"')[1].split('id="feiten-koppelen"')[0]
+    assert all_facts.count('Feit nummer') == 12 and rail.count('gu-pv__pitemtxt') == 11
+    assert rail.count('data-rail-more') == 2 and 'Toon meer' in rail  # all facts and proposals; none linked yet
     # The current proposal is highlighted; each item has its status and version.
     current_item = rail.split('is-current')[1].split('</a>')[0]
     assert 'Stelling 3.' in current_item and 'aria-current="page"' in current_item and 'v1' in current_item
@@ -93,9 +95,87 @@ def test_page_in_english_and_mobile_stacking_css(app, db, make_user):
     db.session.commit()
     page = _get(app, _detail(issue, proposal), host, 'en')
     for text in ('Back to the issue', 'Have your say', '<span aria-current="page">Proposal</span>',
-                 'Facts and background', 'All proposals', 'Current version', 'Reactions to version 1',
+                 'Facts and background', 'With this proposal', 'All proposals', 'Current version', 'Reactions to version 1',
                  '0 supporters', 'Write a reaction'):
         assert text in page
     css = _req(_client(app), 'GET', '/static/css/kit.css').get_data(as_text=True)
     phone = css.split('/* Phone: the rail stacks above the main column. */')[1]
     assert '.gu-pv__layout { grid-template-columns: minmax(0, 1fr)' in phone
+
+
+def _rail(page):
+    return page.split('class="gu-pv__rail"')[1].split('class="gu-pv__main"')[0]
+
+
+def _main(page):
+    return page.split('class="gu-pv__main"')[1].split('</main>')[0]
+
+
+def test_facts_sub_choice_with_this_proposal_and_all(app, db, make_user):
+    host = make_user()
+    issue = _issue(db, host)
+    linked = _fact(db, issue, host, 'Gekoppeld feit.')
+    _fact(db, issue, host, 'Los feit.')
+    proposal = ip.create(issue, host, 'Een stelling.')
+    db.session.commit()
+    ip.link_ids(proposal, [linked.id], host)
+    db.session.commit()
+    page = _get(app, _detail(issue, proposal), host)
+    rail = _rail(page)
+    # The choice with both counts, "Bij dit voorstel" first and pressed.
+    seg = rail.split('class="gu-pv__subseg"')[1].split('</div>')[0]
+    assert 'Bij dit voorstel <span class="gu-pv__c">1</span>' in seg and 'Alle <span class="gu-pv__c">2</span>' in seg
+    assert seg.index('data-fact-view="linked" aria-pressed="true"') < seg.index('data-fact-view="all" aria-pressed="false"')
+    # The facts tab is the default, as on the artboard.
+    assert 'data-rail-tab="facts" aria-selected="true"' in rail
+    mine = rail.split('data-fact-panel="linked"')[1].split('data-fact-panel="all"')[0]
+    assert 'Gekoppeld feit.' in mine and 'Los feit.' not in mine
+    everything = rail.split('data-fact-panel="all"')[1].split('id="feiten-koppelen"')[0]
+    assert 'Gekoppeld feit.' in everything and 'Los feit.' in everything
+    # The middle column has neither the facts block nor a vote card any more.
+    main = _main(page)
+    assert 'Gekoppeld feit.' not in main and 'id="stemming"' not in main and 'Waarop dit voorstel' not in main
+
+
+def test_link_and_unlink_from_the_rail(app, db, make_user):
+    host = make_user()
+    issue = _issue(db, host)
+    fact = _fact(db, issue, host, 'Te koppelen feit.')
+    proposal = ip.create(issue, host, 'Een stelling.')
+    db.session.commit()
+    rail = _rail(_get(app, _detail(issue, proposal), host))
+    assert 'Feiten koppelen' in rail
+    item = rail.split('data-fact-panel="all"')[1].split('Te koppelen feit.')[1].split('</li>')[0]
+    action = f'/vraagstuk/{issue.id}/voorstel/{proposal.id}/koppelen'
+    assert f'action="{action}"' in item and f'name="fact_ids" value="{fact.id}"' in item
+    # That button links the fact; it then shows as linked, with "Ontkoppelen".
+    r = _req(_client(app, host), 'POST', action, data={'fact_ids': str(fact.id)})
+    assert r.status_code == 302 and r.headers['Location'].endswith('#basis')
+    rail = _rail(_get(app, _detail(issue, proposal), host))
+    item = rail.split('data-fact-panel="all"')[1].split('Te koppelen feit.')[1].split('</li>')[0]
+    assert 'Gekoppeld' in item and 'Ontkoppelen' in item and 'name="fact_ids"' not in item
+    assert 'Te koppelen feit.' in rail.split('data-fact-panel="linked"')[1].split('data-fact-panel="all"')[0]
+    # Without the right to link: no link or unlink controls.
+    anon = _rail(_get(app, _detail(issue, proposal)))
+    assert 'Feiten koppelen' not in anon and 'Ontkoppelen' not in anon and 'name="fact_ids"' not in anon
+    assert 'Gekoppeld' in anon.split('data-fact-panel="all"')[1]
+
+
+def test_voting_rules_collapsed_in_the_rail(app, db, make_user):
+    host = make_user()
+    issue = _issue(db, host)
+    proposal = ip.create(issue, host, 'Een stelling.')
+    db.session.commit()
+    rules = _rail(_get(app, _detail(issue, proposal), host)).split('id="stemregels"')[1].split('</details>')[0]
+    assert rules.startswith('>')  # no "open": collapsed by default
+    assert 'Hoe werkt stemmen?' in rules and 'Alleen over voorstellen met genoeg steun wordt gestemd.' in rules
+    assert f'meer dan {issue.proposal_threshold_pct}% voor van de geldige stemmen' in rules
+    assert ('samenvattend voorstel' in rules) is bool(issue.final_vote)
+    assert 'niet op de stemlijst' not in rules.lower()
+    issue.final_vote = False
+    db.session.commit()
+    rules = _rail(_get(app, _detail(issue, proposal), host, 'en')).split('id="stemregels"')[1].split('</details>')[0]
+    assert 'How does voting work?' in rules and 'Only proposals with enough support are voted on.' in rules
+    assert 'summary proposal' not in rules
+    css = _req(_client(app), 'GET', '/static/css/kit.css').get_data(as_text=True)
+    assert '.gu-pv__subseg' in css and '.gu-pv__raildet' in css

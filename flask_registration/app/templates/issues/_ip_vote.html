@@ -2,7 +2,8 @@
   Partial: issues/_ip_vote.html (herontwerp stap 6)
   De stemming over een voorstel: stemmen (voor, tegen, onthouding) voor wie
   stemrecht heeft, de drempel, de tussenstand (alleen als die aanstaat) en
-  na afloop de uitslag. Op mobiel staat dit blok bovenaan het detail.
+  na afloop de uitslag. Het voorstelscherm toont dit blok alleen tijdens en
+  na het stemmen; de algemene stemregels staan daar in de linkerkolom.
   Context: proposal, issue, vote (zie _vote_context in routes/issues.py).
 #}
 {% set choice_labels = {'voor': _('For'), 'tegen': _('Against'), 'onthouding': _('Abstain')} %}
@@ -74,8 +75,4 @@
     <p class="gu-composer__hint">{{ _('Voting on proposals on the voting list opens in the voting phase.') }}</p>
   {% endif %}
 
-  <p class="gu-composer__hint gu-ipdetail__threshold">{{ _('Adopted with more than %(pct)s%% in favour of the valid votes (for plus against). Abstentions count for turnout, not for the result.', pct=issue.proposal_threshold_pct) }}</p>
-  {% if issue.final_vote and not proposal.is_final %}
-  <p class="gu-composer__hint">{{ _('At the end, the initiator can make a summary proposal based on all proposals and the discussion, which is voted on again.') }}</p>
-  {% endif %}
 </section>

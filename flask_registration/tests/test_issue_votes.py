@@ -133,7 +133,8 @@ def test_vote_rules(app, db, make_user):
     assert 'Je hebt nog geen stemrecht' in page and 'Je mag meestemmen na 3 kwaliteitsbijdragen' in page
     assert 'name="choice"' not in page
     page = _req(_client(app, voter), 'GET', _detail(issue, unlisted)).get_data(as_text=True)
-    assert 'Dit voorstel staat niet op de stemlijst' in page and 'name="choice"' not in page
+    # Not on the list: the status at the top says so; there is no vote card.
+    assert 'Niet op de stemlijst' in page and 'id="stemming"' not in page and 'name="choice"' not in page
     anon = _req(_client(app), 'GET', _detail(issue, listed)).get_data(as_text=True)
     assert 'Log in om te stemmen.' in anon
 
@@ -212,7 +213,8 @@ def test_interim_tally(app, db, make_user, interim):
         vote = page.split('id="stemming"')[1].split('</section>')[0]
         assert ('Tussenstand' in vote) is interim
         assert ('2 mensen hebben al gestemd.' in vote) is (not interim)
-        assert 'Aangenomen bij meer dan 50% voor van de geldige stemmen' in vote
+        # The threshold is in the issue's voting rules in the left rail.
+        assert 'Aangenomen bij meer dan 50% voor van de geldige stemmen' in page.split('id="stemregels"')[1]
     finally:
         _drop(db, others)
 

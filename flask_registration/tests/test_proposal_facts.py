@@ -125,10 +125,11 @@ def test_link_facts_including_against(app, db, make_user):
     assert Post.query.filter_by(thread_id=issue.thread_id, kind=FACT_KIND).count() == 2
 
     page = _req(_client(app), 'GET', _base(issue, proposal)).get_data(as_text=True)
-    basis = page.split('id="basis"')[1].split('</section>')[0]
+    # The linked facts sit in the left rail, under "Bij dit voorstel".
+    basis = page.split('id="basis"')[1].split('data-fact-panel="all"')[0]
     assert 'Pleit voor' in basis and 'Pleit tegen' in basis
     assert 'Minder fijnstof in de binnenstad.' in basis and 'Winkeliers verwachten minder omzet.' in basis
-    assert 'Gekoppeld door' in basis and '(2)' in basis
+    assert 'Gekoppeld door' in basis and 'Bij dit voorstel <span class="gu-pv__cnt">2</span>' in basis
 
 
 def test_same_fact_only_once_and_only_from_this_issue(app, db, make_user):
@@ -177,7 +178,7 @@ def test_link_phases(app, db, make_user, phase, closed, allowed):
     db.session.commit()
 
     page = _req(_client(app, other), 'GET', _base(issue, proposal)).get_data(as_text=True)
-    assert ('Feit koppelen' in page) is allowed and ('Ontkoppelen' in page) is allowed
+    assert ('Feiten koppelen' in page) is allowed and ('Ontkoppelen' in page) is allowed
     assert (_link(app, other, issue, proposal, fact.id).status_code == 302) is allowed
     r = _req(_client(app, other), 'POST', _base(issue, proposal) + f'/ontkoppelen/{row.id}')
     assert (r.status_code == 302) is allowed
@@ -193,7 +194,7 @@ def test_link_needs_contributor(app, db, make_user):
     db.session.commit()
     try:
         assert _link(app, newbie, issue, proposal, fact.id).status_code == 403
-        assert 'Feit koppelen' not in _req(_client(app, newbie), 'GET', _base(issue, proposal)).get_data(as_text=True)
+        assert 'Feiten koppelen' not in _req(_client(app, newbie), 'GET', _base(issue, proposal)).get_data(as_text=True)
         r = _link(app, None, issue, proposal, fact.id)
         assert r.status_code == 302 and '/login' in r.headers['Location']
     finally:
@@ -235,7 +236,7 @@ def test_new_fact_errors_and_phase(app, db, make_user):
              data={'text': 'Te laat', 'direction': 'voor', 'source': 'https://x.example'})
     assert r.status_code == 403
     page = _req(_client(app, author), 'GET', _base(issue, proposal)).get_data(as_text=True)
-    assert 'Feit koppelen' in page and 'Of voeg een nieuw feit toe' not in page
+    assert 'Feiten koppelen' in page and 'Of voeg een nieuw feit toe' not in page
 
 
 # ── Koppelen bij het aanmaken ────────────────────────────────────────────
@@ -285,9 +286,9 @@ def test_basis_section_in_english(app, db, make_user):
     fact = _fact(db, issue, author, 'Fewer cars, cleaner air.', 'neutraal')
     _link(app, author, issue, proposal, fact.id)
     page = _req(_client(app, author, 'en'), 'GET', _base(issue, proposal)).get_data(as_text=True)
-    basis = page.split('id="basis"')[1].split('</section>')[0]
-    for text in ('What this proposal is based on', 'Neutral', 'Fewer cars, cleaner air.', 'Linked by', 'Unlink',
-                 'Link a fact', 'Or add a new fact'):
+    basis = page.split('id="basis"')[1].split('id="stemregels"')[0]
+    for text in ('With this proposal', 'Neutral', 'Fewer cars, cleaner air.', 'Linked by', 'Unlink',
+                 'Link facts', 'Or add a new fact'):
         assert text in basis
 
 

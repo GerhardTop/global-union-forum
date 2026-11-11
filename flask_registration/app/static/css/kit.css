@@ -3557,20 +3557,6 @@ body {
 .gu-faq__answer a { color: var(--gu-globe-deep); }
 
 /* ── Herontwerp stap 5: feiten koppelen aan een voorstel ────────────────── */
-.gu-ipdetail__facts { margin: 0 0 12px; }
-.gu-ipdetail__factmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; font-size: 0.75rem; color: var(--gu-fg-3); }
-.gu-ipdetail__unlink { margin: 0; }
-.gu-ipdetail__link { margin: 4px 0 12px; }
-.gu-ipdetail__link > summary {
-  display: inline-flex; align-items: center; padding: 4px 12px; border: 1px solid var(--gu-border); border-radius: 999px;
-  cursor: pointer; font-size: 0.8125rem; font-weight: 500; color: var(--gu-fg-1); list-style: none; background: var(--gu-paper);
-}
-.gu-ipdetail__link > summary::-webkit-details-marker { display: none; }
-.gu-ipdetail__link > summary::before { content: '+'; margin-right: 6px; color: var(--gu-globe-deep); font-weight: 600; }
-.gu-ipdetail__link[open] > summary { margin-bottom: 8px; }
-.gu-ipdetail__linkform { display: grid; gap: 10px; margin-bottom: 16px; }
-.gu-ipdetail__linkform .gu-btn, .gu-ipdetail__newfact .gu-btn { justify-self: start; }
-.gu-ipdetail__newfact { padding-top: 12px; border-top: 1px solid var(--gu-border); }
 .gu-factchoices { border: 0; margin: 0; padding: 0; min-width: 0; }
 .gu-factchoices legend { font-size: 0.8125rem; font-weight: 600; color: var(--gu-fg-1); margin-bottom: 6px; }
 .gu-factchoices__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 320px; overflow-y: auto; }
@@ -3597,7 +3583,6 @@ body {
 .gu-ip-finalbox .gu-ip-status, .gu-ip-finalbox .gu-btn { justify-self: start; }
 .gu-ip-finalbox--todo { border-style: dashed; }
 .gu-ipdetail__vote.is-open { border-style: solid; border-color: var(--gu-globe); }
-.gu-ipdetail__threshold { margin-top: 10px; }
 .gu-final__issue { border: 1px solid var(--gu-border); border-radius: 12px; padding: 12px 16px; }
 
 /* ── Herontwerp stap 7: vervolg en het beheer van de fasen ─────────────── */
@@ -4450,7 +4435,7 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__phase { margin-top: 20px; }
 
 .gu-pv__layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; margin-top: 26px; align-items: start; }
-.gu-pv__rail { position: sticky; top: 20px; min-width: 0; }
+.gu-pv__rail { position: sticky; top: 20px; min-width: 0; max-height: calc(100vh - 40px); overflow-y: auto; }
 .gu-pv__railcard {
   padding: 14px 16px; background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 14px;
   box-shadow: 0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05);
@@ -4483,6 +4468,38 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gu-n-400); flex: none; }
 .gu-pv__showmore { display: block; margin: 10px 0 0; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; font-size: 0.78125rem; color: var(--gu-globe-deep); }
 .gu-pv__railmore { display: block; margin-top: 12px; font-size: 0.78125rem; font-weight: 500; color: var(--gu-globe-deep); text-decoration: none; }
+/* Facts: with this proposal / all (a segmented choice with JavaScript; without, both lists show with a heading). */
+.gu-pv__subseg { display: flex; gap: 4px; margin-bottom: 12px; padding: 3px; background: var(--gu-n-100); border: 1px solid var(--gu-border); border-radius: 8px; }
+.gu-pv__subseg button {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 6px 8px;
+  border: 0; border-radius: 6px; background: none; cursor: pointer; font: inherit; font-size: 0.75rem; font-weight: 500; color: var(--gu-n-600);
+}
+.gu-pv__subseg button[aria-pressed="true"] { background: var(--gu-paper); color: var(--gu-fg-1); box-shadow: 0 1px 2px rgba(15,25,35,.1); }
+.gu-pv__c { font-size: 0.65625rem; color: var(--gu-fg-3); }
+.gu-pv__subseg button[aria-pressed="true"] .gu-pv__c { color: var(--gu-globe-deep); }
+.gu-pv__subhead { margin: 0 0 8px; font-size: 0.75rem; font-weight: 600; color: var(--gu-fg-2); }
+.gu-pv--tabs .gu-pv__subhead { display: none; }
+.gu-pv__factview + .gu-pv__factview { margin-top: 16px; }
+.gu-pv--tabs .gu-pv__factview + .gu-pv__factview { margin-top: 0; }
+.gu-pv__factmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; font-size: 0.71875rem; color: var(--gu-fg-3); }
+.gu-pv__factmeta form { margin: 0; }
+.gu-pv__factbtn { padding: 0; border: 0; background: none; cursor: pointer; font: inherit; font-weight: 500; color: var(--gu-globe-deep); }
+.gu-pv__factbtn:hover { text-decoration: underline; }
+.gu-pv__linked { font-weight: 600; color: var(--gu-oceania, #2e7d5b); }
+.gu-pv__linkdet { margin-top: 12px; }
+.gu-pv__linkdet > summary { display: inline-block; list-style: none; cursor: pointer; font-size: 0.78125rem; font-weight: 500; color: var(--gu-globe-deep); }
+.gu-pv__linkdet > summary::-webkit-details-marker { display: none; }
+.gu-pv__linkdet[open] > summary { margin-bottom: 8px; }
+.gu-pv__linkform { display: grid; gap: 10px; margin-bottom: 14px; }
+.gu-pv__linkform .gu-btn, .gu-pv__newfact .gu-btn { justify-self: start; }
+.gu-pv__newfact { padding-top: 12px; border-top: 1px solid var(--gu-border); }
+/* "How does voting work?": minimal, collapsed by default. */
+.gu-pv__raildet { margin-top: 12px; background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 12px; overflow: hidden; }
+.gu-pv__raildet > summary { display: flex; align-items: center; gap: 8px; padding: 12px 15px; list-style: none; cursor: pointer; font-size: 0.8125rem; font-weight: 600; color: var(--gu-n-700); }
+.gu-pv__raildet > summary::-webkit-details-marker { display: none; }
+.gu-pv__raildetchev { margin-left: auto; color: var(--gu-n-400); transition: transform .15s; }
+.gu-pv__raildet[open] .gu-pv__raildetchev { transform: rotate(90deg); }
+.gu-pv__raildetbody { margin: 0; padding: 0 15px 13px; font-size: 0.78125rem; line-height: 1.55; color: var(--gu-n-600); }
 
 .gu-pv__main { min-width: 0; }
 .gu-pv__headrow { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
@@ -4523,7 +4540,6 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__n { font-size: 0.8125rem; font-weight: 500; color: var(--gu-fg-3); }
 .gu-pv__prose { margin-top: 8px; font-size: 0.90625rem; line-height: 1.6; color: var(--gu-n-700); white-space: pre-line; overflow-wrap: anywhere; }
 .gu-pv__section .gu-ipdetail__section { margin: 0; }
-.gu-pv .gu-pv__section.gu-ipdetail__section { margin-top: 16px; }
 
 .gu-pv__composer { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border: 1px solid var(--gu-border); border-radius: 10px; background: var(--gu-n-50); }
 .gu-pv__composer .gu-composer__input { min-height: 0; background: var(--gu-paper); }
@@ -4549,7 +4565,7 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 @media (max-width: 880px) {
   .gu-pv__inner { padding: 16px 16px 48px; }
   .gu-pv__layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-  .gu-pv__rail { position: static; }
+  .gu-pv__rail { position: static; max-height: none; overflow: visible; }
   .gu-pv__statement { font-size: 1.5rem; }
   .gu-pv__vrow { flex-wrap: wrap; gap: 4px 10px; }
   .gu-pv__vsum { flex-basis: 100%; order: 5; padding-left: 26px; }
