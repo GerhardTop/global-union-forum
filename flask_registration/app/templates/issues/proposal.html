@@ -2,214 +2,335 @@
 {% block title %}{{ proposal.statement }} · Global Union{% endblock %}
 
 {#
-  Voorstel-detail (herontwerp stap 4 tot en met 6, polijstronde P5): een
-  fase-chip, de stelling, de status, de inbrenger, de stemming (op mobiel
-  bovenaan), de toelichting, "waarop dit voorstel zich baseert" met het
-  kwaliteitsmerk bij de feiten, de versie-tijdlijn (bijstellen kan vaker in
-  de bijstelfase) en de reacties bij dit voorstel, elk met de versie waarop
-  ze slaat.
+  The proposal screen, built to docs/design/voorstel.html. Same shell as the
+  issue page: a back link and breadcrumb, the question, and the phase bar.
+  Then two columns: a context rail (facts and background / proposals, ten at
+  a time with "show more", the current proposal highlighted) and the main
+  column: status, author and support with "Adjust proposal" for the
+  proposer, the earlier versions collapsed on top (opening one shows its
+  text and the reactions made on it), then the current version in full with
+  its explanation, the vote, the linked facts and the reactions on it.
+  On a phone the rail stacks above the main column. Without JavaScript the
+  rail shows both lists and the versions open with <details>.
+  Context: see routes/issues.py proposal().
 #}
 {% block content_outer %}{% block content %}
-{% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'issues/_ip_fields.html' import ip_fields with context %}
-<main class="gu-forum gu-ipdetail gu-forum--soft" lang="{{ lang }}">
-  <div class="gu-forum__inner">
+{% set nl = lang == 'nl' %}
+{% set by_name = proposal.created_by.public_name if proposal.created_by else '@deleted_user' %}
+{% set current = versions[-1] %}
+{% set older = versions[:-1] %}
+<main class="gu-forum gu-forum--soft gu-ipdetail gu-pv" lang="{{ lang }}" id="voorstel">
+  <div class="gu-pv__inner">
 
-    {{ crumbs(issue, [(_('Proposals'), url_for('issues.proposals', issue_id=issue.id)), (_('Proposal'), None)]) }}
+    <nav class="gu-pv__crumbs" aria-label="{{ _('Breadcrumb') }}">
+      <a class="gu-pv__back" href="{{ url_for('issues.show', issue_id=issue.id) }}">&lsaquo; {% if nl %}Terug naar het vraagstuk{% else %}Back to the issue{% endif %}</a>
+      <span class="gu-pv__crumbsep" aria-hidden="true">|</span>
+      <a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a><span aria-hidden="true">/</span>
+      <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals') }}</a><span aria-hidden="true">/</span>
+      <span aria-current="page">{{ _('Proposal') }}</span>
+    </nav>
+    <p class="gu-eyebrow">{{ _('Proposal') }}{% if proposal.is_final %} · <span class="gu-ip-final">{{ _('Summary proposal') }}</span>{% endif %}</p>
+    <a class="gu-pv__question" href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
 
-    <header class="gu-forum__threadhead">
-      <p class="gu-eyebrow">{% include 'issues/_kind.html' %}{% if proposal.is_final %} · <span class="gu-ip-final">{{ _('Summary proposal') }}</span>{% endif %}</p>
-      <p class="gu-phasechip{% if issue.is_closed %} is-closed{% endif %}">{{ _('Phase') }}: {{ _('Closed') if issue.is_closed else phase_labels.get(issue.phase, issue.phase) }}</p>
-      <p class="gu-factspage__question"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ issue.title }}</a></p>
-      <h1 class="gu-forum__title gu-ipdetail__statement" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</h1>
-      <div class="gu-ipdetail__meta">
-        {% include 'issues/_ip_status.html' %}
-        <span class="gu-iplist__by">{{ _('by') }} {{ proposal.created_by.public_name if proposal.created_by else '@deleted_user' }}
-          · {{ proposal.created_at | datetimeformat('d MMM y') }}</span>
-        {% if current_version > 1 %}<span class="gu-versionchip">{{ _('Version %(n)s', n=current_version) }}</span>{% endif %}
-      </div>
-      {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
-    </header>
-
-    {# P9: tweekolomsopzet. De rechterkolom (stemming, tussenstand en het
-       samenvattend-voorstel-kaartje) verschijnt alleen als er iets relevants
-       in staat: de stemming is open of de uitslag is er. Anders valt de
-       inhoud terug naar volle breedte. Op mobiel staat de stemming bovenaan
-       door de bronvolgorde (de kolom komt eerst). #}
-    {% set show_aside = vote.on_list and (vote.open or vote.over) %}
-    <div class="gu-ipdetail__cols{% if not show_aside %} is-single{% endif %}">
-    {% if show_aside %}
-    <aside class="gu-ipdetail__side">
-      {% include 'issues/_ip_vote.html' %}
-    </aside>
-    {% endif %}
-    <div class="gu-ipdetail__main">
-    {% if not show_aside %}{% include 'issues/_ip_vote.html' %}{% endif %}
-
-    <section class="gu-ipdetail__section" aria-labelledby="explTitle">
-      <h2 class="gu-cockpit__title" id="explTitle">{{ _('Explanation') }}</h2>
-      {% if proposal.explanation %}
-      <div class="gu-cockpit__intro" lang="{{ proposal.lang or lang }}">{{ proposal.explanation | linkify }}</div>
-      {% else %}
-      <p class="gu-composer__hint">{{ _('No explanation.') }}</p>
-      {% endif %}
+    <section class="gu-pv__phase" aria-label="{{ _('Phases of the issue') }}">
+      {% include 'issues/_steps.html' %}
     </section>
 
-    {# Stap 5: de gekoppelde feiten, met hun richting zodat het beeld eerlijk blijft. #}
-    {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
-    {% set fact_errs = (errors or {}).get('fact', {}) %}
-    <section class="gu-ipdetail__section" id="basis" aria-labelledby="basisTitle">
-      <h2 class="gu-cockpit__title" id="basisTitle">{{ _('What this proposal is based on') }}{% if links %} <span class="gu-facts__count">({{ links|length }})</span>{% endif %}</h2>
-      {% if links %}
-      <ol class="gu-facts__list gu-ipdetail__facts">
-        {% for row, fact in links %}
-        <li class="gu-fact gu-fact--{{ fact.fact_direction }}" id="koppeling-{{ row.id }}">
-          <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
-          <div class="gu-fact__main">
-            {% include 'issues/_fact_badges.html' %}
-            <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
-            <p class="gu-fact__source">{{ _('Source') }}:
-              {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
-              {% else %}{{ fact.fact_source }}{% endif %}
-            </p>
-            <div class="gu-ipdetail__factmeta">
-              <span>{{ _('Linked by') }} {{ row.linked_by.public_name if row.linked_by else '@deleted_user' }}</span>
-              {% if can_unlink(row) %}
-              <form method="POST" action="{{ url_for('issues.proposal_unlink', issue_id=issue.id, proposal_id=proposal.id, link_id=row.id) }}" class="gu-ipdetail__unlink">
-                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-                <button type="submit" class="gu-post__action gu-post__action--ghost">{{ _('Unlink') }}</button>
-              </form>
-              {% endif %}
-            </div>
+    <div class="gu-pv__layout">
+
+      {# ── Context rail ─────────────────────────────────────────────── #}
+      <aside class="gu-pv__rail" aria-label="{% if nl %}Context{% else %}Context{% endif %}">
+        <div class="gu-pv__railcard">
+          <div class="gu-pv__railtabs" role="tablist" hidden>
+            <button type="button" role="tab" class="gu-pv__railtab" id="railtab-facts" aria-controls="rail-facts" data-rail-tab="facts" aria-selected="false" tabindex="-1">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-pv__cnt">{{ rail_facts | length }}</span></button>
+            <button type="button" role="tab" class="gu-pv__railtab" id="railtab-proposals" aria-controls="rail-proposals" data-rail-tab="proposals" aria-selected="true">{{ _('Proposals') }} <span class="gu-pv__cnt">{{ rail_proposals | length }}</span></button>
           </div>
-        </li>
+
+          <div class="gu-pv__railpanel" id="rail-facts" data-rail-panel="facts" role="tabpanel" aria-labelledby="railtab-facts">
+            <h2 class="gu-pv__railhead">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-pv__cnt">{{ rail_facts | length }}</span></h2>
+            {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
+            {% if rail_facts %}
+            <ol class="gu-cockpit__factlist gu-pv__facts" data-rail-list>
+              {% for fact in rail_facts %}
+              <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}">
+                {% include 'issues/_fact_card.html' %}
+              </li>
+              {% endfor %}
+            </ol>
+            {% if rail_facts | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
+            {% else %}
+            <p class="gu-composer__hint">{{ _('No facts yet.') }}</p>
+            {% endif %}
+            <a class="gu-pv__railmore" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts, research and media') }} &rsaquo;</a>
+          </div>
+
+          <div class="gu-pv__railpanel" id="rail-proposals" data-rail-panel="proposals" role="tabpanel" aria-labelledby="railtab-proposals">
+            <h2 class="gu-pv__railhead">{{ _('Proposals') }} <span class="gu-pv__cnt">{{ rail_proposals | length }}</span></h2>
+            <ul class="gu-pv__plist" data-rail-list>
+              {% for p, c in rail_proposals %}
+              <li>
+                <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=p.id) }}" class="gu-pv__pitem{% if p.id == proposal.id %} is-current{% endif %}"{% if p.id == proposal.id %} aria-current="page"{% endif %}>
+                  <span class="gu-pv__pitemtxt" lang="{{ p.lang or lang }}">{{ p.statement }}</span>
+                  <span class="gu-pv__pitemmeta">{% with proposal=p, count=c %}{% include 'issues/_ip_status.html' %}{% endwith %}<span class="gu-pv__dot" aria-hidden="true"></span><span title="{{ _('Version %(n)s', n=rail_versions[p.id]) }}">v{{ rail_versions[p.id] }}</span></span>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% if rail_proposals | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
+            <a class="gu-pv__railmore" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{% if nl %}Alle voorstellen{% else %}All proposals{% endif %} &rsaquo;</a>
+          </div>
+        </div>
+      </aside>
+
+      {# ── Main column ──────────────────────────────────────────────── #}
+      <div class="gu-pv__main">
+        <div class="gu-pv__headrow">
+          <div class="gu-pv__statusrow">
+            {% include 'issues/_ip_status.html' %}
+            <span>{% if nl %}door{% else %}by{% endif %} {{ by_name }}</span>
+            <span class="gu-pv__sep" aria-hidden="true">&middot;</span>
+            <span class="gu-pv__steun"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+              {%- if nl %}{{ count }} {{ 'steunbetuiging' if count == 1 else 'steunbetuigingen' }}{% else %}{{ count }} {{ 'supporter' if count == 1 else 'supporters' }}{% endif %}</span>
+            {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
+          </div>
+          {% if can_revise %}
+          <a class="gu-btn gu-btn--primary gu-btn--sm gu-pv__revisebtn" href="#bijstellen">{% if nl %}Voorstel aanpassen{% else %}Adjust proposal{% endif %}</a>
+          {% endif %}
+        </div>
+
+        {% if can_revise %}
+        {% set errs = (errors or {}).get('revise', {}) %}
+        <section class="gu-pv__revise{% if errs %} is-open{% endif %}" id="bijstellen" aria-labelledby="reviseTitle">
+          <h2 class="gu-pv__h" id="reviseTitle">{% if nl %}Voorstel aanpassen{% else %}Adjust proposal{% endif %}</h2>
+          <form method="POST" action="{{ url_for('issues.proposal_revise', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-forum__newform" novalidate>
+            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+            {{ ip_fields('revise', (form_data or {}).get('revise') or {'statement': proposal.statement, 'explanation': proposal.explanation or ''}, errs) }}
+            {% if errs.get('unchanged') %}<p class="gu-join__formError">{{ _('Change the statement or the explanation.') }}</p>{% endif %}
+            <p class="gu-composer__hint">{{ _('Each revision becomes a new version. Earlier versions stay visible.') }}</p>
+            <div class="gu-pv__reviseactions">
+              <button type="submit" class="gu-btn gu-btn--primary">{{ _('Save the revision') }}</button>
+              <a class="gu-btn gu-btn--ghost" href="#voorstel">{% if nl %}Annuleren{% else %}Cancel{% endif %}</a>
+            </div>
+          </form>
+        </section>
+        {% endif %}
+
+        {% macro reaction_list(posts) %}
+        {% set nl = lang == 'nl' %}
+        {% set colors = ('globe', 'africa', 'americas', 'oceania', 'europe') %}
+        {% for post in posts %}
+        {% set name = post.public_author_name() %}
+        {% set body = (post.body_nl if nl else post.body_en) if (post.body_nl and post.body_en) else post.body %}
+        <article class="gu-pv__cmt" id="post-{{ post.id }}">
+          <div class="gu-pv__cmthead">
+            <span class="gu-pv__av gu-pv__av--{{ colors[(post.user_id or 0) % 5] }}" aria-hidden="true">{{ ((name or '').lstrip('@') or '?')[:1] | upper }}</span>
+            <span class="gu-pv__cmtname">{{ name }}</span>
+            <span class="gu-pv__cmttime">{{ post.time_ago[lang] }}</span>
+          </div>
+          <div class="gu-pv__cmttxt" lang="{{ post.source_lang if not (post.body_nl and post.body_en) else lang }}">{{ body | linkify }}</div>
+          <div class="gu-pv__cmtactions">
+            <a href="{{ url_for('issues.show', issue_id=issue.id) }}#post-{{ post.id }}">{{ _('In the discussion') }}</a>
+          </div>
+        </article>
         {% endfor %}
-      </ol>
-      {% else %}
-      <p class="gu-composer__hint">{{ _('No facts linked yet.') }}</p>
-      {% endif %}
+        {% endmacro %}
 
-      {% if can_link %}
-      <details class="gu-ipdetail__link"{% if fact_errs %} open{% endif %}>
-        <summary>{{ _('Link a fact') }}</summary>
-        <p class="gu-composer__hint">{{ _('Anyone can link facts, also facts that argue against the proposal. The direction stays visible.') }}</p>
-        {% if candidates %}
-        <form method="POST" action="{{ url_for('issues.proposal_link', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-ipdetail__linkform">
-          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-          {% with choices=candidates, chosen=[] %}{% include 'issues/_fact_choices.html' %}{% endwith %}
-          <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Link') }}</button>
-        </form>
-        {% else %}
-        <p class="gu-composer__hint">{{ _('There are no other facts in this issue to link.') }}</p>
+        {# ── Earlier versions, collapsed, above the current one ──────── #}
+        {% if older %}
+        <section class="gu-pv__older" id="versies" aria-labelledby="olderTitle">
+          <h2 class="gu-pv__olderlbl" id="olderTitle">{% if nl %}Eerdere versies{% else %}Earlier versions{% endif %}</h2>
+          {% for row in older %}
+          {% set v = row.version %}
+          <details class="gu-pv__version" id="versie-{{ v.number }}">
+            <summary class="gu-pv__vrow">
+              <svg class="gu-pv__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"/></svg>
+              <span class="gu-pv__vn">{{ _('Version %(n)s', n=v.number) }}</span>
+              {% if v.created_at %}<span class="gu-pv__vdate">{{ v.created_at | local | datetimeformat('d MMM y') }}</span>{% endif %}
+              <span class="gu-pv__vsum" lang="{{ proposal.lang or lang }}">{{ v.statement }}</span>
+              <span class="gu-pv__vrc" title="{% if nl %}Reacties{% else %}Reactions{% endif %}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>{{ row.reactions | length }}<span class="gu-sr-only"> {% if nl %}reacties{% else %}reactions{% endif %}</span></span>
+            </summary>
+            <div class="gu-pv__vbody">
+              <p class="gu-pv__vstatement" lang="{{ proposal.lang or lang }}">{{ v.statement }}</p>
+              {% if v.explanation %}<div class="gu-pv__prose" lang="{{ proposal.lang or lang }}">{{ v.explanation | linkify }}</div>{% endif %}
+              <h3 class="gu-pv__h gu-pv__h--sub">{% if nl %}Reacties op versie {{ v.number }}{% else %}Reactions to version {{ v.number }}{% endif %} <span class="gu-pv__n">({{ row.reactions | length }})</span></h3>
+              {% if row.reactions %}{{ reaction_list(row.reactions) }}
+              {% else %}<p class="gu-composer__hint">{% if nl %}Geen reacties op deze versie.{% else %}No reactions to this version.{% endif %}</p>{% endif %}
+            </div>
+          </details>
+          {% endfor %}
+        </section>
         {% endif %}
-        {% if can_add_fact %}
-        <form method="POST" action="{{ url_for('issues.proposal_new_fact', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-fact-form gu-ipdetail__newfact" novalidate>
-          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-          <p class="gu-fact-form__title">{{ _('Or add a new fact') }}</p>
-          {% from 'forum/_fact_fields.html' import fact_fields with context %}
-          {{ fact_fields('basis-fact', (form_data or {}).get('fact') or {}, fact_errs) }}
-          <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Add and link') }}</button>
-        </form>
-        {% endif %}
-      </details>
-      {% endif %}
-      <a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts, research and media') }} <span class="gu-arrow" aria-hidden="true"></span></a>
-    </section>
 
-    <section class="gu-ipdetail__section" id="versies" aria-labelledby="historyTitle">
-      <h2 class="gu-cockpit__title" id="historyTitle">{{ _('Versions') }} <span class="gu-facts__count">({{ current_version }})</span></h2>
-      <ol class="gu-versionline">
-        {% for version, changed in timeline %}
-        <li class="gu-versionline__item{% if loop.first %} is-current{% endif %}">
-          <p class="gu-versionline__head">
-            <span class="gu-versionchip">{{ _('Version %(n)s', n=version.number) }}</span>
-            {% if loop.first %}<span class="gu-versionline__now">{{ _('current') }}</span>{% endif %}
-            <span class="gu-versionline__when">{{ version.created_at | local | datetimeformat('d MMM y HH:mm') }}</span>
-          </p>
-          {% if version.number == 1 %}
-          <p class="gu-versionline__what">{{ _('The original proposal.') }}</p>
-          {% elif changed.statement or changed.explanation %}
-          <p class="gu-versionline__what">
-            {%- if changed.statement and changed.explanation -%}{{ _('Statement and explanation changed.') }}
-            {%- elif changed.statement -%}{{ _('Statement changed.') }}
-            {%- else -%}{{ _('Explanation changed.') }}{%- endif -%}
-          </p>
+        {# ── The current version ────────────────────────────────────── #}
+        <p class="gu-pv__curhead"><span class="gu-pv__vcur">{% if nl %}Huidige versie{% else %}Current version{% endif %}</span> {{ _('Version %(n)s', n=current_version) }}{% if current.version.created_at %} &middot; {{ current.version.created_at | local | datetimeformat('d MMM y') }}{% endif %}</p>
+        <h1 class="gu-pv__statement" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</h1>
+
+        <section class="gu-pv__section" aria-labelledby="explTitle">
+          <h2 class="gu-pv__h" id="explTitle">{{ _('Explanation') }}</h2>
+          {% if proposal.explanation %}
+          <div class="gu-pv__prose" lang="{{ proposal.lang or lang }}">{{ proposal.explanation | linkify }}</div>
+          {% else %}
+          <p class="gu-composer__hint">{{ _('No explanation.') }}</p>
           {% endif %}
-          {% if changed.statement %}
-          <p class="gu-ipdetail__versiontext"><del lang="{{ proposal.lang or lang }}">{{ changed.previous.statement }}</del></p>
+        </section>
+
+        <div class="gu-pv__section">{% include 'issues/_ip_vote.html' %}</div>
+
+        {# Stap 5: de gekoppelde feiten, met hun richting zodat het beeld eerlijk blijft. #}
+        {% set fact_errs = (errors or {}).get('fact', {}) %}
+        <section class="gu-pv__section gu-ipdetail__section" id="basis" aria-labelledby="basisTitle">
+          <h2 class="gu-cockpit__title" id="basisTitle">{{ _('What this proposal is based on') }}{% if links %} <span class="gu-facts__count">({{ links|length }})</span>{% endif %}</h2>
+          {% if links %}
+          <ol class="gu-facts__list gu-ipdetail__facts">
+            {% for row, fact in links %}
+            <li class="gu-fact gu-fact--{{ fact.fact_direction }}" id="koppeling-{{ row.id }}">
+              <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
+              <div class="gu-fact__main">
+                {% include 'issues/_fact_badges.html' %}
+                <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+                <p class="gu-fact__source">{{ _('Source') }}:
+                  {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
+                  {% else %}{{ fact.fact_source }}{% endif %}
+                </p>
+                <div class="gu-ipdetail__factmeta">
+                  <span>{{ _('Linked by') }} {{ row.linked_by.public_name if row.linked_by else '@deleted_user' }}</span>
+                  {% if can_unlink(row) %}
+                  <form method="POST" action="{{ url_for('issues.proposal_unlink', issue_id=issue.id, proposal_id=proposal.id, link_id=row.id) }}" class="gu-ipdetail__unlink">
+                    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                    <button type="submit" class="gu-post__action gu-post__action--ghost">{{ _('Unlink') }}</button>
+                  </form>
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+            {% endfor %}
+          </ol>
+          {% else %}
+          <p class="gu-composer__hint">{{ _('No facts linked yet.') }}</p>
           {% endif %}
-          <p class="gu-ipdetail__versiontext" lang="{{ proposal.lang or lang }}">{{ version.statement }}</p>
-          {% if changed.explanation and version.explanation %}
-          <details class="gu-versionline__expl">
-            <summary>{{ _('Explanation in this version') }}</summary>
-            <div class="gu-ipdetail__versionexpl" lang="{{ proposal.lang or lang }}">{{ version.explanation | linkify }}</div>
+
+          {% if can_link %}
+          <details class="gu-ipdetail__link"{% if fact_errs %} open{% endif %}>
+            <summary>{{ _('Link a fact') }}</summary>
+            <p class="gu-composer__hint">{{ _('Anyone can link facts, also facts that argue against the proposal. The direction stays visible.') }}</p>
+            {% if candidates %}
+            <form method="POST" action="{{ url_for('issues.proposal_link', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-ipdetail__linkform">
+              {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+              {% with choices=candidates, chosen=[] %}{% include 'issues/_fact_choices.html' %}{% endwith %}
+              <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Link') }}</button>
+            </form>
+            {% else %}
+            <p class="gu-composer__hint">{{ _('There are no other facts in this issue to link.') }}</p>
+            {% endif %}
+            {% if can_add_fact %}
+            <form method="POST" action="{{ url_for('issues.proposal_new_fact', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-fact-form gu-ipdetail__newfact" novalidate>
+              {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+              <p class="gu-fact-form__title">{{ _('Or add a new fact') }}</p>
+              {% from 'forum/_fact_fields.html' import fact_fields with context %}
+              {{ fact_fields('basis-fact', (form_data or {}).get('fact') or {}, fact_errs) }}
+              <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Add and link') }}</button>
+            </form>
+            {% endif %}
           </details>
           {% endif %}
-        </li>
-        {% endfor %}
-      </ol>
-      {% if not proposal.is_final and current_version == 1 %}<p class="gu-composer__hint">{{ _('Not revised yet. The proposer can revise it during the revision phase.') }}</p>{% endif %}
+        </section>
 
-      {% if can_revise %}
-      {% set errs = (errors or {}).get('revise', {}) %}
-      <details class="gu-proposal__revise" id="bijstellen"{% if errs %} open{% endif %}>
-        <summary>{{ _('Revise the proposal') }}</summary>
-        <form method="POST" action="{{ url_for('issues.proposal_revise', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-forum__newform" novalidate>
-          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-          {{ ip_fields('revise', (form_data or {}).get('revise') or {'statement': proposal.statement, 'explanation': proposal.explanation or ''}, errs) }}
-          {% if errs.get('unchanged') %}<p class="gu-join__formError">{{ _('Change the statement or the explanation.') }}</p>{% endif %}
-          <p class="gu-composer__hint">{{ _('Each revision becomes a new version. Earlier versions stay visible.') }}</p>
-          <button type="submit" class="gu-btn gu-btn--primary">{{ _('Save the revision') }}</button>
-        </form>
-      </details>
-      {% endif %}
+        {# Reactions on the current version (earlier ones sit with their version above). #}
+        <section class="gu-pv__section" id="reacties" aria-labelledby="reactionsTitle">
+          <h2 class="gu-pv__h" id="reactionsTitle">{% if nl %}Reacties op versie {{ current_version }}{% else %}Reactions to version {{ current_version }}{% endif %} <span class="gu-pv__n">({{ current.reactions | length }})</span></h2>
+          {% if can_react %}
+          <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=issue.thread_id) }}" class="gu-pv__composer">
+            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+            <input type="hidden" name="issue_proposal_id" value="{{ proposal.id }}">
+            <input type="hidden" name="return_proposal" value="1">
+            <label for="reactionBody" class="gu-sr-only">{{ _('Your reaction to version %(n)s', n=current_version) }}</label>
+            <textarea name="body" id="reactionBody" rows="2" required class="gu-composer__input" placeholder="{% if nl %}Schrijf een reactie…{% else %}Write a reaction…{% endif %}"></textarea>
+            <div class="gu-pv__composerfoot">
+              <p class="gu-composer__hint">{{ _('Your reaction also appears in the shared discussion of the issue.') }}</p>
+              <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Post') }}</button>
+            </div>
+          </form>
+          {% endif %}
+          {% if current.reactions %}
+          <div class="gu-pv__cmts">{{ reaction_list(current.reactions) }}</div>
+          {% else %}
+          <p class="gu-composer__hint">{% if nl %}Nog geen reacties op deze versie.{% else %}No reactions to this version yet.{% endif %}</p>
+          {% endif %}
+        </section>
 
-      {% if current_user.is_authenticated and current_user.is_admin %}
-      <details class="gu-proposal__revise" id="beheer-admin">
-        <summary>{% if lang == 'nl' %}Beheer (admin){% else %}Admin{% endif %}</summary>
-        <p class="gu-composer__hint">{% if lang == 'nl' %}Een voorstel verwijderen is onomkeerbaar. Het vraagstuk blijft staan.{% else %}Deleting a proposal is irreversible. The issue stays.{% endif %}</p>
-        <a class="gu-btn gu-btn--danger gu-btn--sm" href="{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}">{% if lang == 'nl' %}Voorstel verwijderen{% else %}Delete proposal{% endif %}</a>
-      </details>
-      {% endif %}
-    </section>
-
-    {# Polijstronde P5: de reacties bij dit voorstel, elk bij de versie waarop ze slaat. #}
-    <section class="gu-ipdetail__section" id="reacties" aria-labelledby="reactionsTitle">
-      <h2 class="gu-cockpit__title" id="reactionsTitle">{{ _('Reactions to this proposal') }}{% if reactions %} <span class="gu-facts__count">({{ reactions | length }})</span>{% endif %}</h2>
-      {% if reactions %}
-      <ol class="gu-ipreactions">
-        {% for post in reactions %}
-        <li class="gu-ipreactions__item" id="post-{{ post.id }}">
-          <p class="gu-ipreactions__meta">
-            <strong>{{ post.public_author_name() }}</strong>
-            <span>{{ post.time_ago[lang] }}</span>
-            {% if post.proposal_version %}<span class="gu-versionchip{% if post.proposal_version < current_version %} is-old{% endif %}">{{ _('on version %(n)s', n=post.proposal_version) }}</span>{% endif %}
-          </p>
-          <div class="gu-ipreactions__body" lang="{{ post.source_lang }}">{{ post.body | linkify }}</div>
-          <a class="gu-ipreactions__link" href="{{ url_for('issues.show', issue_id=issue.id) }}#post-{{ post.id }}">{{ _('In the discussion') }}</a>
-        </li>
-        {% endfor %}
-      </ol>
-      {% else %}
-      <p class="gu-composer__hint">{{ _('No reactions to this proposal yet.') }}</p>
-      {% endif %}
-      {% if can_react %}
-      <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=issue.thread_id) }}" class="gu-forum__newform gu-ipreactions__form">
-        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-        <input type="hidden" name="issue_proposal_id" value="{{ proposal.id }}">
-        <input type="hidden" name="return_proposal" value="1">
-        <label for="reactionBody">{{ _('Your reaction to version %(n)s', n=current_version) }}</label>
-        <textarea name="body" id="reactionBody" rows="3" required class="gu-composer__input"></textarea>
-        <p class="gu-composer__hint">{{ _('Your reaction also appears in the shared discussion of the issue.') }}</p>
-        <button type="submit" class="gu-btn gu-btn--primary">{{ _('Post') }}</button>
-      </form>
-      {% endif %}
-    </section>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <details class="gu-proposal__revise" id="beheer-admin">
+          <summary>{% if nl %}Beheer (admin){% else %}Admin{% endif %}</summary>
+          <p class="gu-composer__hint">{% if nl %}Een voorstel verwijderen is onomkeerbaar. Het vraagstuk blijft staan.{% else %}Deleting a proposal is irreversible. The issue stays.{% endif %}</p>
+          <a class="gu-btn gu-btn--danger gu-btn--sm" href="{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}">{% if nl %}Voorstel verwijderen{% else %}Delete proposal{% endif %}</a>
+        </details>
+        {% endif %}
+      </div>
     </div>
-    </div>
-
-    <p class="gu-ipdetail__back"><a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ _('To the discussion of this issue') }} <span class="gu-arrow" aria-hidden="true"></span></a></p>
 
   </div>
 </main>
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var root = document.getElementById('voorstel');
+    // Rail tabs: one list at a time (without JavaScript both lists show).
+    var tablist = root.querySelector('.gu-pv__railtabs');
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('[data-rail-tab]'));
+    function show(name, focus) {
+      tabs.forEach(function (tab) {
+        var on = tab.dataset.railTab === name;
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        tab.tabIndex = on ? 0 : -1;
+        if (on && focus) tab.focus();
+      });
+      root.querySelectorAll('[data-rail-panel]').forEach(function (panel) {
+        panel.hidden = panel.dataset.railPanel !== name;
+      });
+    }
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('click', function () { show(tab.dataset.railTab); });
+      tab.addEventListener('keydown', function (e) {
+        var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        show(tabs[(i + step + tabs.length) % tabs.length].dataset.railTab, true);
+      });
+    });
+    tablist.hidden = false;
+    root.classList.add('gu-pv--tabs');
+    show('proposals');
+    // Ten per list, then "Show more" adds ten.
+    var STEP = {{ rail_shown }};
+    root.querySelectorAll('[data-rail-list]').forEach(function (list) {
+      var more = list.parentNode.querySelector('[data-rail-more]'), shown = STEP;
+      function apply() {
+        Array.prototype.forEach.call(list.children, function (li, i) { li.hidden = i >= shown; });
+        if (more) more.hidden = shown >= list.children.length;
+      }
+      apply();
+      if (more) more.addEventListener('click', function () { shown += STEP; apply(); });
+    });
+    // Revise panel: the button opens it in place.
+    var panel = document.getElementById('bijstellen');
+    function syncRevise() {
+      if (panel && location.hash === '#bijstellen') panel.classList.add('is-open');
+    }
+    root.querySelectorAll('a[href="#bijstellen"]').forEach(function (a) {
+      a.addEventListener('click', function () { panel.classList.add('is-open'); });
+    });
+    root.querySelectorAll('.gu-pv__revise a[href="#voorstel"]').forEach(function (a) {
+      a.addEventListener('click', function () { panel.classList.remove('is-open'); });
+    });
+    // A link to a reaction or a version opens the version it belongs to.
+    function openTarget() {
+      syncRevise();
+      var target = location.hash && document.getElementById(location.hash.slice(1));
+      var details = target && target.closest('details.gu-pv__version');
+      if (details) { details.open = true; target.scrollIntoView(); }
+    }
+    window.addEventListener('hashchange', openTarget);
+    openTarget();
+  })();
+</script>
 {% endblock %}{% endblock %}

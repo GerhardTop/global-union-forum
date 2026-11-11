@@ -163,9 +163,13 @@ def test_breadcrumb_names_the_issue(app, db, make_user):
     # (de volledige weergave) ook niet; het voorstel-detail en de formulieren wel.
     for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen'):
         assert 'gu-issue-crumbs' not in _get(app, path)
-    for path in (f'/vraagstuk/{issue.id}/voorstel/{proposal.id}', f'/vraagstuk/{issue.id}/voorstellen/nieuw'):
-        crumbs = _get(app, path, host).split('gu-forum__crumbs gu-issue-crumbs')[1].split('</nav>')[0]
-        assert '>Denk mee</a>' in crumbs and f'href="/vraagstuk/{issue.id}"' in crumbs
+    crumbs = _get(app, f'/vraagstuk/{issue.id}/voorstellen/nieuw', host).split('gu-forum__crumbs gu-issue-crumbs')[1].split('</nav>')[0]
+    assert '>Denk mee</a>' in crumbs and f'href="/vraagstuk/{issue.id}"' in crumbs
+    # Het voorstel (docs/design/voorstel.html): terug naar het vraagstuk, dan Denk mee / Voorstellen / Voorstel.
+    crumbs = _get(app, f'/vraagstuk/{issue.id}/voorstel/{proposal.id}', host).split('class="gu-pv__crumbs"')[1].split('</nav>')[0]
+    assert f'href="/vraagstuk/{issue.id}"' in crumbs and 'Terug naar het vraagstuk' in crumbs
+    assert '>Denk mee</a>' in crumbs and f'href="/vraagstuk/{issue.id}/voorstellen"' in crumbs
+    assert crumbs.rstrip().endswith('<span aria-current="page">Voorstel</span>')
     assert 'Feiten, onderzoek en media' in _get(app, f'/vraagstuk/{issue.id}/feiten')
 
 
@@ -481,13 +485,21 @@ def test_versions_timeline_and_reactions_per_version(app, db, make_user):
     assert Post.query.filter_by(body='Reactie op versie drie.').one().proposal_version == 3
 
     page = _get(app, detail, anna)
-    assert 'Fase: Voorstellen aanpassen' in page and 'Versie 3' in page
-    timeline = page.split('id="versies"')[1].split('id="reacties"')[0]
-    assert timeline.index('Versie 3') < timeline.index('Versie 2') < timeline.index('Versie 1')
-    assert 'Toelichting gewijzigd.' in timeline and 'Stelling gewijzigd.' in timeline
-    assert '>Eerste stelling.</del>' in timeline
+    phase = page.split('class="gu-pv__phase"')[1].split('</section>')[0]  # dezelfde fasebalk als de cockpit
+    current_step = phase.split('aria-current="step"')[1].split('</li>')[0]
+    assert 'gu-phasebar' in phase and 'Voorstel aanpassen' in current_step
+    # Eerdere versies ingeklapt bovenaan, oudste eerst, elk met de eigen tekst
+    # en de reacties die erbij horen; de huidige versie daaronder.
+    older = page.split('id="versies"')[1].split('class="gu-pv__curhead"')[0]
+    assert older.index('Versie 1') < older.index('Versie 2') and 'Versie 3' not in older
+    v1 = older.split('id="versie-1"')[1].split('</details>')[0]
+    v2 = older.split('id="versie-2"')[1].split('</details>')[0]
+    assert '>Eerste stelling.</p>' in v1 and 'Reactie op de eerste versie.' in v1 and f'id="post-{first.id}"' in v1
+    assert '>Tweede stelling.</p>' in v2 and 'Geen reacties op deze versie.' in v2
     reactions = page.split('id="reacties"')[1]
-    assert 'op versie 1' in reactions and 'op versie 3' in reactions and 'Jouw reactie op versie 3' in reactions
+    assert 'Reacties op versie 3' in reactions and 'Reactie op versie drie.' in reactions
+    assert 'Reactie op de eerste versie.' not in reactions and 'Jouw reactie op versie 3' in reactions
+    assert "gu-versionchip" not in page.split("id=\"voorstel\"")[1]  # gegroepeerd per versie: geen label per reactie
     # In de gedeelde discussie staat de reactie met het voorstel en de versie.
     cockpit = _get(app, f'/vraagstuk/{issue.id}', anna)
     assert 'Bij voorstel' in cockpit and 'op versie 1' in cockpit

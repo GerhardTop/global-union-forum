@@ -218,8 +218,11 @@ def test_revise_in_revision_phase_keeping_every_version(app, db, make_user):
     assert [v.statement for v in ip.versions(proposal)] == ['Meer bomen.', 'Meer bomen, ook op pleinen.', 'Nog eens.']
 
     page = _req(_client(app, other), 'GET', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}').get_data(as_text=True)
-    assert 'Versie 3' in page and 'Het oorspronkelijke voorstel.' in page and 'Stelling en toelichting gewijzigd.' in page
-    assert '>Meer bomen.</del>' in page and 'Bijstelling opslaan' not in page
+    # Eerdere versies ingeklapt boven de huidige, elk met de eigen tekst.
+    older = page.split('id="versies"')[1].split('class="gu-pv__curhead"')[0]
+    assert older.index('Versie 1') < older.index('Versie 2') and 'Versie 3' not in older
+    assert '>Meer bomen.</p>' in older and '>Meer bomen, ook op pleinen.</p>' in older and 'Aangescherpt.' in older
+    assert 'Huidige versie</span> Versie 3' in page and 'Bijstelling opslaan' not in page
 
 
 # ── Pagina's ─────────────────────────────────────────────────────────────
@@ -262,8 +265,10 @@ def test_detail_page_sections_in_english(app, db, make_user):
     proposal = IssueProposal.query.filter_by(issue_id=issue.id).one()
     page = _req(_client(app, lang='en'), 'GET', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}').get_data(as_text=True)
     for text in ('Plant more trees.', 'Shade and green.', 'Collecting support (0 of 2)', author.username,
-                 'What this proposal is based on', 'Vote', 'Versions', 'The original proposal.'):
+                 'What this proposal is based on', 'Vote', 'Current version', 'Reactions to version 1',
+                 'Back to the issue', 'Facts and background', 'All proposals'):
         assert text in page
+    assert 'Earlier versions' not in page  # only one version
 
 
 def test_cockpit_lists_proposals_with_status(app, db, make_user):

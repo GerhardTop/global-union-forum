@@ -3533,16 +3533,8 @@ body {
 .gu-iplist__statement:hover { color: var(--gu-globe-deep); }
 .gu-iplist__item .gu-ip-supportform, .gu-iplist__item .gu-ip-supported { justify-self: start; }
 .gu-ippage__legacy { margin-top: 32px; }
-.gu-ipdetail__statement { overflow-wrap: anywhere; }
-.gu-ipdetail__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 12px; }
 .gu-ipdetail__section { margin-top: 20px; padding: 16px 18px; border: 1px solid var(--gu-border); border-radius: 12px; }
 .gu-ipdetail__vote { border-style: dashed; }
-.gu-ipdetail__versions { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.gu-ipdetail__versionlabel { margin: 0; font-size: 0.75rem; color: var(--gu-fg-3); }
-.gu-ipdetail__versiontext { margin: 4px 0 0; color: var(--gu-fg-1); overflow-wrap: anywhere; }
-.gu-ipdetail__versiontext del { color: var(--gu-fg-3); }
-.gu-ipdetail__versionexpl { margin-top: 4px; font-size: 0.875rem; color: var(--gu-fg-3); white-space: pre-line; }
-.gu-ipdetail__back { margin-top: 24px; }
 .gu-cockpit__proposal .gu-ip-status { align-self: flex-start; }
 
 /* ── FAQ (/faq) ───────────────────────────────────────────────────────────
@@ -3763,23 +3755,6 @@ body {
 .gu-phasechip.is-closed { color: var(--gu-fg-3); background: var(--gu-bg-soft); }
 .gu-versionchip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; color: var(--gu-fg-2); background: var(--gu-bg-soft); border: 1px solid var(--gu-border); white-space: nowrap; }
 .gu-versionchip.is-old { color: var(--gu-fg-3); }
-.gu-versionline { list-style: none; margin: 0 0 12px; padding: 0 0 0 14px; border-left: 2px solid var(--gu-border); display: grid; gap: 14px; }
-.gu-versionline__item { position: relative; }
-.gu-versionline__item::before { content: ""; position: absolute; left: -21px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--gu-paper); border: 2px solid var(--gu-border-strong, var(--gu-border)); }
-.gu-versionline__item.is-current::before { background: var(--gu-globe); border-color: var(--gu-globe); }
-.gu-versionline__head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 4px; }
-.gu-versionline__now { font-size: 0.75rem; font-weight: 600; color: var(--gu-globe-deep); }
-.gu-versionline__when { font-size: 0.75rem; color: var(--gu-fg-3); }
-.gu-versionline__what { margin: 0 0 4px; font-size: 0.8125rem; color: var(--gu-fg-2); }
-.gu-versionline__expl summary { cursor: pointer; font-size: 0.8125rem; color: var(--gu-globe-deep); }
-.gu-ipreactions { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 12px; }
-.gu-ipreactions__item { padding: 12px 14px; border: 1px solid var(--gu-border); border-radius: 10px; }
-.gu-ipreactions__meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 6px; font-size: 0.8125rem; color: var(--gu-fg-3); }
-.gu-ipreactions__meta strong { color: var(--gu-fg-1); }
-.gu-ipreactions__body { white-space: pre-line; overflow-wrap: anywhere; }
-.gu-ipreactions__link { display: inline-block; margin-top: 6px; font-size: 0.8125rem; }
-.gu-ipreactions__form label { font-weight: 600; font-size: 0.875rem; color: var(--gu-fg-2); }
-.gu-ipreactions__form .gu-btn { justify-self: start; }
 .gu-post__proposalref { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 6px; font-size: 0.8125rem; color: var(--gu-fg-3); }
 .gu-post__proposalref a { color: var(--gu-globe-deep); }
 /* Polijstronde P6: vijf fasen moeten ook op een smal scherm passen. */
@@ -4046,15 +4021,6 @@ body {
 }
 .gu-ipdetail .gu-ipdetail__vote { border-style: solid; }
 
-/* De tweekolomsopzet: inhoud links, stemming rechts. */
-.gu-ipdetail__cols { display: flex; flex-direction: column; gap: 16px; }
-.gu-ipdetail__main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-.gu-ipdetail__side { display: flex; flex-direction: column; gap: 16px; }
-@media (min-width: 880px) {
-  .gu-ipdetail__cols:not(.is-single) { flex-direction: row; align-items: flex-start; }
-  .gu-ipdetail__cols:not(.is-single) .gu-ipdetail__main { order: 1; flex: 1 1 auto; }
-  .gu-ipdetail__cols:not(.is-single) .gu-ipdetail__side { order: 2; flex: 0 0 320px; position: sticky; top: 16px; }
-}
 
 /* ── P10: de fasebalk ook boven de losse feiten- en voorstellenpagina's ── */
 .gu-issuephase { margin: 2px 0 22px; }
@@ -4468,4 +4434,124 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 @media (max-width: 560px) {
   .gu-inbox__item { padding: 12px; }
   .gu-inbox__link { flex-direction: column; }
+}
+
+/* ── Proposal screen (docs/design/voorstel.html) ─────────────────────── */
+.gu-pv [hidden] { display: none !important; }
+.gu-pv__inner { max-width: 1200px; margin: 0 auto; padding: 22px 40px 64px; }
+.gu-pv__crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-pv__crumbs a { color: var(--gu-fg-2); text-decoration: none; }
+.gu-pv__crumbs a:hover { color: var(--gu-globe-deep); }
+.gu-pv__crumbs a.gu-pv__back { color: var(--gu-globe-deep); font-weight: 500; }
+.gu-pv__crumbsep { color: var(--gu-n-300); }
+.gu-pv .gu-eyebrow { margin: 0; }
+.gu-pv__question { display: block; max-width: 80ch; margin-top: 7px; font-size: 0.9375rem; color: var(--gu-fg-2); text-decoration: none; overflow-wrap: anywhere; }
+.gu-pv__question:hover { color: var(--gu-globe-deep); }
+.gu-pv__phase { margin-top: 20px; }
+
+.gu-pv__layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; margin-top: 26px; align-items: start; }
+.gu-pv__rail { position: sticky; top: 20px; min-width: 0; }
+.gu-pv__railcard {
+  padding: 14px 16px; background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05);
+}
+.gu-pv__railtabs { display: flex; gap: 18px; margin-bottom: 12px; border-bottom: 1px solid var(--gu-border); }
+.gu-pv__railtab {
+  display: inline-flex; align-items: center; gap: 6px; margin-bottom: -1px; padding: 0 0 9px;
+  border: 0; border-bottom: 2px solid transparent; background: none; cursor: pointer; white-space: nowrap;
+  font: inherit; font-size: 0.78125rem; font-weight: 500; color: var(--gu-fg-3);
+}
+.gu-pv__railtab[aria-selected="true"] { color: var(--gu-fg-1); font-weight: 600; border-bottom-color: var(--gu-globe-deep); }
+.gu-pv__cnt { font-size: 0.6875rem; font-weight: 500; color: var(--gu-fg-3); }
+.gu-pv__railtab[aria-selected="true"] .gu-pv__cnt { color: var(--gu-globe-deep); }
+/* With tabs (JavaScript) the panel headings are redundant; without, both lists show with a heading. */
+.gu-pv__railhead { margin: 0 0 10px; font-size: 0.8125rem; font-weight: 600; color: var(--gu-fg-1); }
+.gu-pv--tabs .gu-pv__railhead { display: none; }
+.gu-pv__railpanel + .gu-pv__railpanel { margin-top: 18px; }
+.gu-pv--tabs .gu-pv__railpanel + .gu-pv__railpanel { margin-top: 0; }
+.gu-pv__facts { margin: 0; }
+.gu-pv__plist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.gu-pv__pitem { display: block; padding: 11px 12px; border: 1px solid var(--gu-border); border-radius: 10px; background: var(--gu-paper); text-decoration: none; }
+.gu-pv__pitem:hover { border-color: var(--gu-globe); }
+.gu-pv__pitem.is-current { border-color: var(--gu-globe); background: #f4faff; box-shadow: inset 0 0 0 1px var(--gu-globe); }
+.gu-pv__pitemtxt {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  font-size: 0.8125rem; font-weight: 500; line-height: 1.35; color: var(--gu-fg-1); overflow-wrap: anywhere;
+}
+.gu-pv__pitemmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 7px; font-size: 0.71875rem; color: var(--gu-fg-3); }
+.gu-pv__pitemmeta .gu-ip-status { padding: 1px 8px; font-size: 0.6875rem; }
+.gu-pv__dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gu-n-400); flex: none; }
+.gu-pv__showmore { display: block; margin: 10px 0 0; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; font-size: 0.78125rem; color: var(--gu-globe-deep); }
+.gu-pv__railmore { display: block; margin-top: 12px; font-size: 0.78125rem; font-weight: 500; color: var(--gu-globe-deep); text-decoration: none; }
+
+.gu-pv__main { min-width: 0; }
+.gu-pv__headrow { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.gu-pv__statusrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-pv__statusrow .gu-ip-status { font-size: 0.75rem; padding: 3px 10px; }
+.gu-pv__statusrow .gu-ip-supportform { margin: 0; }
+.gu-pv__sep { color: var(--gu-n-300); }
+.gu-pv__steun { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--gu-oceania, #108a4e); }
+
+/* The revise form opens in place under the head row. */
+.gu-pv__revise { display: none; margin-top: 16px; padding: 16px 18px; background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 14px; }
+.gu-pv__revise.is-open, .gu-pv__revise:target { display: block; }
+.gu-pv__reviseactions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.gu-pv__older { margin-top: 22px; }
+.gu-pv__olderlbl { margin: 0 0 9px; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gu-fg-3); }
+.gu-pv__version { margin-bottom: 8px; background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 10px; }
+.gu-pv__vrow { display: flex; align-items: center; gap: 10px; padding: 12px 15px; cursor: pointer; list-style: none; }
+.gu-pv__vrow::-webkit-details-marker { display: none; }
+.gu-pv__vrow:hover { background: var(--gu-n-50); border-radius: 10px; }
+.gu-pv__chev { flex: none; color: var(--gu-n-400); transition: transform 0.15s; }
+.gu-pv__version[open] .gu-pv__chev { transform: rotate(90deg); }
+.gu-pv__vn { font-size: 0.84375rem; font-weight: 600; color: var(--gu-fg-1); white-space: nowrap; }
+.gu-pv__vdate { font-size: 0.75rem; color: var(--gu-fg-3); white-space: nowrap; }
+.gu-pv__vsum { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-pv__version[open] .gu-pv__vsum { visibility: hidden; }
+.gu-pv__vrc { display: inline-flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--gu-fg-3); white-space: nowrap; }
+.gu-pv__vbody { padding: 4px 15px 14px 41px; border-top: 1px solid var(--gu-n-100); }
+.gu-pv__vstatement { margin: 12px 0 0; font-size: 1.0625rem; font-weight: 600; line-height: 1.35; color: var(--gu-fg-1); overflow-wrap: anywhere; }
+
+.gu-pv__curhead { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 22px 0 0; font-size: 0.8125rem; color: var(--gu-fg-3); }
+.gu-pv__vcur { padding: 2px 10px; border: 1px solid #c5dcf4; border-radius: 999px; background: #eaf2fb; font-size: 0.6875rem; font-weight: 600; color: var(--gu-globe-deep); white-space: nowrap; }
+.gu-pv__statement { margin: 10px 0 0; font-size: 1.875rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; color: var(--gu-fg-1); overflow-wrap: anywhere; }
+
+.gu-pv__section { margin-top: 26px; }
+.gu-pv__h { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 0.9375rem; font-weight: 600; color: var(--gu-fg-1); }
+.gu-pv__h--sub { margin-top: 16px; font-size: 0.875rem; }
+.gu-pv__n { font-size: 0.8125rem; font-weight: 500; color: var(--gu-fg-3); }
+.gu-pv__prose { margin-top: 8px; font-size: 0.90625rem; line-height: 1.6; color: var(--gu-n-700); white-space: pre-line; overflow-wrap: anywhere; }
+.gu-pv__section .gu-ipdetail__section { margin: 0; }
+.gu-pv .gu-pv__section.gu-ipdetail__section { margin-top: 16px; }
+
+.gu-pv__composer { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border: 1px solid var(--gu-border); border-radius: 10px; background: var(--gu-n-50); }
+.gu-pv__composer .gu-composer__input { min-height: 0; background: var(--gu-paper); }
+.gu-pv__composerfoot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.gu-pv__composerfoot .gu-composer__hint { margin: 0; }
+.gu-pv__cmts { margin-top: 2px; }
+.gu-pv__cmt { padding: 16px 0; }
+.gu-pv__cmt + .gu-pv__cmt { border-top: 1px solid var(--gu-n-100); }
+.gu-pv__cmthead { display: flex; align-items: center; gap: 10px; }
+.gu-pv__av { flex: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8125rem; font-weight: 600; color: #fff; background: var(--gu-globe); }
+.gu-pv__av--africa { background: #e09400; }
+.gu-pv__av--americas { background: #d8232a; }
+.gu-pv__av--oceania { background: #108a4e; }
+.gu-pv__av--europe { background: #0077cc; }
+.gu-pv__cmtname { font-size: 0.875rem; font-weight: 600; color: var(--gu-fg-1); }
+.gu-pv__cmttime { font-size: 0.75rem; color: var(--gu-fg-3); }
+.gu-pv__cmttxt { margin: 9px 0 0; font-size: 0.875rem; line-height: 1.55; color: var(--gu-n-700); white-space: pre-line; overflow-wrap: anywhere; }
+.gu-pv__cmtactions { display: flex; align-items: center; gap: 18px; margin-top: 10px; font-size: 0.8125rem; }
+.gu-pv__cmtactions a { color: var(--gu-fg-2); }
+.gu-pv #beheer-admin { margin-top: 26px; }
+
+/* Phone: the rail stacks above the main column. */
+@media (max-width: 880px) {
+  .gu-pv__inner { padding: 16px 16px 48px; }
+  .gu-pv__layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .gu-pv__rail { position: static; }
+  .gu-pv__statement { font-size: 1.5rem; }
+  .gu-pv__vrow { flex-wrap: wrap; gap: 4px 10px; }
+  .gu-pv__vsum { flex-basis: 100%; order: 5; padding-left: 26px; }
+  .gu-pv__vbody { padding-left: 15px; }
 }

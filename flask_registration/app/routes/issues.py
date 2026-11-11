@@ -42,6 +42,8 @@ issues_bp.before_request(refuse_if_suspended)
 FACTS_SHOWN = 10
 # Zoveel voorstellen in de rechterkolom; de rest via de voorstellenpagina.
 COCKPIT_PROPOSALS = 5
+# Zoveel feiten en voorstellen in de linkerkolom van het voorstel; dan "Toon meer".
+RAIL_SHOWN = 10
 FOLLOWUP_MAX = 5000
 
 
@@ -333,6 +335,9 @@ def proposal_new(issue_id):
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>')
 def proposal(issue_id, proposal_id):
+    """The proposal screen (docs/design/voorstel.html): a context rail with the
+    issue's facts and proposals, then the proposal with its earlier versions
+    collapsed above the current one, and the reactions grouped per version."""
     issue = _issue_or_404(issue_id)
     proposal = _proposal_or_404(issue, proposal_id)
     count = ip.support_counts([proposal.id]).get(proposal.id, 0)
@@ -343,6 +348,12 @@ def proposal(issue_id, proposal_id):
     linked_ids = {fact.id for _link, fact in links}
     issue_facts = ip.visible_issue_facts(issue, current_user)
     issue_fact_ids = [f.id for f in issue_facts]
+    # The rail: the same proposals as the cockpit (voting list first), with
+    # the summary proposal on top when there is one.
+    rail_proposals = ip.listing(issue, order='stemlijst')
+    final = ip.final_proposal(issue)
+    if final is not None:
+        rail_proposals.insert(0, (final, ip.support_counts([final.id]).get(final.id, 0)))
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),
                            can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data,
@@ -350,10 +361,25 @@ def proposal(issue_id, proposal_id):
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
                            candidates=[f for f in issue_facts if f.id not in linked_ids],
                            can_add_fact=_can_add_fact(issue), vote=_vote_context(proposal, count),
-                           timeline=ip.timeline(proposal), current_version=ip.current_version(proposal),
-                           reactions=_visible_reactions(proposal), can_react=_can_react(issue),
+                           versions=_versions_with_reactions(proposal), current_version=ip.current_version(proposal),
+                           can_react=_can_react(issue), remaining=issues.remaining(issue),
+                           rail_facts=fact_signals.listing(issue_facts, order='kwaliteit'),
+                           rail_proposals=rail_proposals, rail_shown=RAIL_SHOWN,
+                           rail_versions={p.id: ip.current_version(p) for p, _c in rail_proposals},
                            fact_marks=fact_signals.marked_ids(issue_fact_ids),
                            my_reported_ids=_reported_fact_ids(issue_fact_ids))
+
+
+def _versions_with_reactions(proposal):
+    """[{'version', 'reactions'}] oldest first: each version with the visible
+    reactions made on it. A reaction without a version number (from before
+    versions were recorded) goes with the current version."""
+    rows = ip.versions(proposal)
+    by_number = {v.number: [] for v in rows}
+    newest = rows[-1].number if rows else 1
+    for post in _visible_reactions(proposal):
+        by_number.setdefault(post.proposal_version if post.proposal_version in by_number else newest, []).append(post)
+    return [{'version': v, 'reactions': by_number.get(v.number, [])} for v in rows]
 
 
 def _visible_reactions(proposal):

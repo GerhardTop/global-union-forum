@@ -182,19 +182,6 @@ def current_version(proposal):
     return len(versions(proposal))
 
 
-def timeline(proposal):
-    """[(versie, wat veranderde)] nieuwste eerst; per versie of de stelling
-    en de toelichting veranderden ten opzichte van de vorige."""
-    rows, out, previous = versions(proposal), [], None
-    for version in rows:
-        changed = {'statement': previous is not None and version.statement != previous.statement,
-                   'explanation': previous is not None and (version.explanation or '') != (previous.explanation or ''),
-                   'previous': previous}
-        out.append((version, changed))
-        previous = version
-    return list(reversed(out))
-
-
 def revise(proposal, statement, explanation, now=None):
     """Een nieuwe versie; alle eerdere blijven bewaard. Commit niet zelf."""
     now = now or datetime.utcnow()
