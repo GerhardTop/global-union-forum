@@ -105,15 +105,6 @@ def resolve(row, user, now=None):
                              thread_id=fact.thread_id, actor_id=user.id, dispute_id=row.id)
 
 
-def disputed_ids(fact_ids):
-    """Feiten met een openstaand bezwaar (het label voor moderators)."""
-    fact_ids = list(fact_ids)
-    if not fact_ids:
-        return set()
-    return {fid for (fid,) in db.session.query(FactDispute.fact_post_id)
-            .filter(FactDispute.fact_post_id.in_(fact_ids), FactDispute.status == 'open').distinct()}
-
-
 def my_disputed(fact_ids, user):
     fact_ids = list(fact_ids)
     if not fact_ids or not getattr(user, 'is_authenticated', False):

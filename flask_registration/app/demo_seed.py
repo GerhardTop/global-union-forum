@@ -195,7 +195,7 @@ def seed_demo_issues(force=False):
     f2 = _post(db, thread_a, people['marcus'], now - timedelta(days=18), kind='feit', fact_direction='tegen',
                fact_source='https://www.rand.org/pubs/research_reports.html',
                fact_title='Dubbele commandostructuur kost tijd bij een crisis', body='Twee commandostructuren naast elkaar kosten tijd bij een crisis.')
-    f3 = _post(db, thread_a, people['jan'], now - timedelta(days=18), kind='feit', fact_direction='neutraal',
+    _post(db, thread_a, people['jan'], now - timedelta(days=18), kind='feit', fact_direction='neutraal',
                fact_source='NAVO-factsheet (geen directe link)',
                fact_title='NATO Response Force inzetbaar binnen vijf dagen', body='De NATO Response Force kan binnen vijf dagen worden ingezet.')
     f4 = _post(db, thread_a, people['fatima'], now - timedelta(days=17), kind='feit', fact_direction='voor',
@@ -336,7 +336,7 @@ def _remove_demo(db):
     """Verwijder de demo-vraagstukken en hun content (voor --force). Laat de
     demo-accounts staan."""
     from app.models import (Issue, IssueProposal, IssueProposalVersion, IssueProposalSupport,
-                            IssueProposalVote, IssueProposalFact, Post, Thread, QualityAward, ProposalReport)
+                            IssueProposalVote, IssueProposalFact, Post, Thread, ProposalReport)
     titles = [_SENTINEL_TITLE, _TITLE_B, _TITLE_C]
     issues = Issue.query.filter(Issue.title.in_(titles)).all()
     if not issues:

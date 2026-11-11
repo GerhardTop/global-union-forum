@@ -623,21 +623,6 @@ class QualityObjection(db.Model):
     author     = db.relationship('User', foreign_keys=[author_id])
     decided_by = db.relationship('User', foreign_keys=[decided_by_id])
 
-    def ai_response(self, lang):
-        return (self.ai_response_nl if lang == 'nl' else self.ai_response_en) or \
-               self.ai_response_en or self.ai_response_nl or ''
-
-    @property
-    def text_lang(self):
-        """Taal waarin de AI reageerde: die van de bijdrage (zie quality.target_lang)."""
-        lang = self.award.post.source_lang
-        return lang if lang in ('nl', 'en') else 'en'
-
-    def original_response(self):
-        """De reactie zoals de AI hem schreef; de andere taal is alleen cache."""
-        lang = self.text_lang
-        return (self.ai_response_nl if lang == 'nl' else self.ai_response_en) or self.ai_response(lang)
-
 
 class AppSetting(db.Model):
     """Door de admin instelbare instellingen (sleutel, geheel getal), zoals de
@@ -1211,10 +1196,6 @@ class ProposalRound(_ResultMixin, db.Model):
     # voorstellen (statuslabel in het overzicht), zonder query per voorstel.
     proposal = db.relationship('Proposal', backref=db.backref(
         'rounds', lazy='selectin', order_by='ProposalRound.number', cascade='all, delete-orphan'))
-
-    @property
-    def is_open(self):
-        return self.closed_at is None
 
 
 class RoundVote(db.Model):

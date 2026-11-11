@@ -37,7 +37,7 @@ P3) wie het vraagstuk volgt (IssueFollow).
 """
 from datetime import datetime, timedelta
 
-from sqlalchemy import func, or_
+from sqlalchemy import func
 
 from app import db
 from app.models import (AppSetting, Issue, IssueFollow, IssueProposal, IssueProposalSupport, IssueProposalVote,
@@ -306,10 +306,6 @@ def delete_follows(issue_ids=None, user_id=None):
 def notifiable_issues():
     """Vraagstukken met eigen meldingen (de ingepakte volgen het oude voorstel)."""
     return [i for i in Issue.query.all() if not is_wrapper(i)]
-
-
-def issues_for_user(user_id):
-    return [i for i in notifiable_issues() if user_id in recipients(i)]
 
 
 def _iso(moment):

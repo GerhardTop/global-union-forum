@@ -260,11 +260,6 @@ def revise(proposal, statement, now=None):
 
 # ── Stemmen ──────────────────────────────────────────────────────────────
 
-def can_vote_now(proposal, user):
-    """Stemmen kan alleen in de stemfase en alleen met stemrecht."""
-    return proposal.phase == 'stemmen' and getattr(user, 'is_authenticated', False) and user.can_vote()
-
-
 def cast_vote(proposal, user, choice):
     """Breng een stem uit of wijzig hem (één rij per persoon per voorstel).
     Commit niet zelf."""
