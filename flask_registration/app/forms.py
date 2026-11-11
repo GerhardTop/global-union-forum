@@ -2,7 +2,6 @@ from flask_wtf import FlaskForm
 from flask_babel import gettext as _
 from wtforms import StringField, PasswordField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError
-from urllib.parse import urlparse
 
 from app.utils import _password_strong
 
@@ -63,26 +62,6 @@ class WachtwoordResetForm(FlaskForm):
     password_confirm = PasswordField(
         "password_confirm",
         validators=[DataRequired(message="val_required"), _validate_password_match("password")],
-    )
-    submit = SubmitField("submit")
-
-
-def _validate_linkedin_url(form, field):
-    parsed = urlparse(field.data or "")
-    if parsed.scheme != "https" or parsed.netloc not in (
-        "www.linkedin.com", "linkedin.com"
-    ):
-        raise ValidationError("val_linkedin_invalid")
-
-
-class LinkedInAanvullenForm(FlaskForm):
-    linkedin_url = StringField(
-        "linkedin_url",
-        validators=[
-            DataRequired(message="val_required"),
-            Length(max=255),
-            _validate_linkedin_url,
-        ],
     )
     submit = SubmitField("submit")
 

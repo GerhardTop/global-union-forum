@@ -5,8 +5,8 @@ pagina verscheen voor ingelogde gebruikers zonder linkedin_url — een
 verwarrend overblijfsel nu LinkedIn optioneel is.
 
 Dekt: de banner-CSS-klasse verschijnt nergens meer, in geen van beide talen,
-voor een ingelogde gebruiker zonder LinkedIn-URL. De onderliggende
-/profiel/linkedin-aanvullen-route blijft intact en los bereikbaar.
+voor een ingelogde gebruiker zonder LinkedIn-URL. De verweesde
+/profiel/linkedin-aanvullen-pagina is inmiddels ook verwijderd.
 """
 from app import bcrypt
 from app.models import User
@@ -57,10 +57,10 @@ class TestLinkedinBannerVerwijderd:
 
         assert "gu-linkedin-banner" not in html
 
-    def test_linkedin_aanvullen_route_blijft_los_bereikbaar(self, client, db):
-        """De banner is weg, maar de onderliggende pagina/route zelf niet."""
+    def test_linkedin_aanvullen_route_is_verwijderd(self, client, db):
+        """De verweesde aanvul-pagina bestaat niet meer."""
         _maak_ingelogde_client_zonder_linkedin(client, db, "geenlinkedin_route@example.com")
 
         response = client.get("/profiel/linkedin-aanvullen")
 
-        assert response.status_code == 200
+        assert response.status_code == 404

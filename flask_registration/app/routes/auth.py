@@ -3,7 +3,6 @@ import secrets
 from datetime import datetime, timezone
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, current_app, abort
-from urllib.parse import urlparse
 from flask_login import login_user, logout_user, login_required, current_user
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
@@ -11,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app import db, bcrypt, limiter, oauth
 from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
-                       LinkedInAanvullenForm, KiesGebruikersnaamForm, DeleteAccountForm,
+                       KiesGebruikersnaamForm, DeleteAccountForm,
                        VerifyResendForm)
 from app.mail import send_email
 from app.models import User, Post, PostLike
@@ -329,35 +328,6 @@ def auth_google_callback():
     session.permanent = True
     login_user(user)
     return redirect(url_for('auth.kies_gebruikersnaam'))
-
-
-@auth.route('/profiel/linkedin-aanvullen', methods=['GET', 'POST'])
-@login_required
-def linkedin_aanvullen():
-    if current_user.linkedin_url:
-        return redirect(url_for('main.index'))
-    lang = session.get('lang', 'nl')
-    form = LinkedInAanvullenForm()
-    if form.validate_on_submit():
-        linkedin_url = form.linkedin_url.data.strip()
-        parsed = urlparse(linkedin_url)
-        if parsed.scheme != 'https' or parsed.netloc not in ('www.linkedin.com', 'linkedin.com'):
-            _stash_form_state("linkedin_aanvullen", {"error": True})
-            return redirect(url_for('auth.linkedin_aanvullen'), code=303)
-        current_user.linkedin_url = linkedin_url
-        db.session.commit()
-        flash(
-            'Welkom bij Global Union Forum!' if lang == 'nl'
-            else 'Welcome to Global Union Forum!',
-            'success'
-        )
-        return redirect(url_for('main.index'))
-    elif form.is_submitted():
-        _stash_form_state("linkedin_aanvullen", {"error": True})
-        return redirect(url_for('auth.linkedin_aanvullen'), code=303)
-
-    errors, _unused = _pop_form_state("linkedin_aanvullen")
-    return render_template('linkedin_aanvullen.html', error=errors.get("error", False), form=form)
 
 
 @auth.route('/kies-gebruikersnaam', methods=['GET', 'POST'])
