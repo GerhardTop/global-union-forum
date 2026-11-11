@@ -213,8 +213,8 @@ def test_interim_tally(app, db, make_user, interim):
         vote = page.split('id="stemming"')[1].split('</section>')[0]
         assert ('Tussenstand' in vote) is interim
         assert ('2 mensen hebben al gestemd.' in vote) is (not interim)
-        # The threshold is in the issue's voting rules in the left rail.
-        assert 'Aangenomen bij meer dan 50% voor van de geldige stemmen' in page.split('id="stemregels"')[1]
+        # The rules belong to the issue: the proposal page only links to it.
+        assert 'Stemregels bij dit vraagstuk' in page and 'id="stemregels"' not in page
     finally:
         _drop(db, others)
 

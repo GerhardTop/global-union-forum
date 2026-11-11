@@ -1,8 +1,9 @@
 """
 The proposal screen built to docs/design/voorstel.html: the context rail
 (facts and background with "Bij dit voorstel" / "Alle" and fact linking, or
-proposals, ten shown, the current one highlighted; below it "Hoe werkt
-stemmen?"), the head row with "Voorstel aanpassen" for the proposer only,
+proposals, ten shown, the current one highlighted), the head row with a
+quiet link to the issue's voting rules and "Voorstel aanpassen" for the
+proposer only, pinned top right,
 and the reactions grouped per version.
 """
 from datetime import datetime
@@ -95,7 +96,7 @@ def test_page_in_english_and_mobile_stacking_css(app, db, make_user):
     db.session.commit()
     page = _get(app, _detail(issue, proposal), host, 'en')
     for text in ('Back to the issue', 'Have your say', '<span aria-current="page">Proposal</span>',
-                 'Facts and background', 'With this proposal', 'All proposals', 'Current version', 'Reactions to version 1',
+                 'Facts and background', 'With this proposal', 'Voting rules for this issue', 'All proposals', 'Current version', 'Reactions to version 1',
                  '0 supporters', 'Write a reaction'):
         assert text in page
     css = _req(_client(app), 'GET', '/static/css/kit.css').get_data(as_text=True)
@@ -161,21 +162,26 @@ def test_link_and_unlink_from_the_rail(app, db, make_user):
     assert 'Gekoppeld' in anon.split('data-fact-panel="all"')[1]
 
 
-def test_voting_rules_collapsed_in_the_rail(app, db, make_user):
+def test_voting_rules_link_grey_support_and_pinned_button(app, db, make_user):
     host = make_user()
     issue = _issue(db, host)
     proposal = ip.create(issue, host, 'Een stelling.')
+    issue.phase = 'bijstellen'
     db.session.commit()
-    rules = _rail(_get(app, _detail(issue, proposal), host)).split('id="stemregels"')[1].split('</details>')[0]
-    assert rules.startswith('>')  # no "open": collapsed by default
-    assert 'Hoe werkt stemmen?' in rules and 'Alleen over voorstellen met genoeg steun wordt gestemd.' in rules
-    assert f'meer dan {issue.proposal_threshold_pct}% voor van de geldige stemmen' in rules
-    assert ('samenvattend voorstel' in rules) is bool(issue.final_vote)
-    assert 'niet op de stemlijst' not in rules.lower()
-    issue.final_vote = False
-    db.session.commit()
-    rules = _rail(_get(app, _detail(issue, proposal), host, 'en')).split('id="stemregels"')[1].split('</details>')[0]
-    assert 'How does voting work?' in rules and 'Only proposals with enough support are voted on.' in rules
-    assert 'summary proposal' not in rules
+    page = _get(app, _detail(issue, proposal), host)
+    # No rules block in the rail any more; a quiet link right after the support count.
+    assert 'id="stemregels"' not in page and 'Hoe werkt stemmen?' not in page
+    meta = page.split('class="gu-pv__statusrow"')[1].split('gu-pv__revisebtn')[0]
+    assert meta.index('steunbetuigingen') < meta.index('class="gu-pv__ruleslink"')
+    assert f'class="gu-pv__ruleslink" href="/vraagstuk/{issue.id}">Stemregels bij dit vraagstuk</a>' in meta
+    en = _get(app, _detail(issue, proposal), host, 'en')
+    assert '>Voting rules for this issue</a>' in en
     css = _req(_client(app), 'GET', '/static/css/kit.css').get_data(as_text=True)
-    assert '.gu-pv__subseg' in css and '.gu-pv__raildet' in css
+    rule = lambda sel: css.split(sel + ' {')[1].split('}')[0]  # noqa: E731
+    # Support in the normal grey meta colour, not green.
+    assert 'color: var(--gu-fg-2)' in rule('.gu-pv__steun') and 'oceania' not in rule('.gu-pv__steun')
+    # The header row does not wrap; the meta takes the room and wraps inside; the button never shrinks.
+    assert 'flex-wrap: nowrap' in rule('.gu-pv__headrow')
+    assert 'flex: 1 1 auto' in rule('.gu-pv__statusrow') and 'flex-wrap: wrap' in rule('.gu-pv__statusrow')
+    assert 'flex: 0 0 auto' in rule('.gu-pv__revisebtn')
+    assert '.gu-pv__raildet' not in css

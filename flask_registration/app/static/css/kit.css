@@ -4493,21 +4493,18 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__linkform { display: grid; gap: 10px; margin-bottom: 14px; }
 .gu-pv__linkform .gu-btn, .gu-pv__newfact .gu-btn { justify-self: start; }
 .gu-pv__newfact { padding-top: 12px; border-top: 1px solid var(--gu-border); }
-/* "How does voting work?": minimal, collapsed by default. */
-.gu-pv__raildet { margin-top: 12px; background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 12px; overflow: hidden; }
-.gu-pv__raildet > summary { display: flex; align-items: center; gap: 8px; padding: 12px 15px; list-style: none; cursor: pointer; font-size: 0.8125rem; font-weight: 600; color: var(--gu-n-700); }
-.gu-pv__raildet > summary::-webkit-details-marker { display: none; }
-.gu-pv__raildetchev { margin-left: auto; color: var(--gu-n-400); transition: transform .15s; }
-.gu-pv__raildet[open] .gu-pv__raildetchev { transform: rotate(90deg); }
-.gu-pv__raildetbody { margin: 0; padding: 0 15px 13px; font-size: 0.78125rem; line-height: 1.55; color: var(--gu-n-600); }
 
 .gu-pv__main { min-width: 0; }
-.gu-pv__headrow { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.gu-pv__statusrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--gu-fg-2); }
+/* The button stays top right on the first line; the meta wraps on the left. */
+.gu-pv__headrow { display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.gu-pv__statusrow { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-pv__revisebtn { flex: 0 0 auto; white-space: nowrap; }
 .gu-pv__statusrow .gu-ip-status { font-size: 0.75rem; padding: 3px 10px; }
 .gu-pv__statusrow .gu-ip-supportform { margin: 0; }
 .gu-pv__sep { color: var(--gu-n-300); }
-.gu-pv__steun { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--gu-oceania, #108a4e); }
+.gu-pv__steun { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--gu-fg-2); }
+.gu-pv__ruleslink { font-size: 0.75rem; color: var(--gu-fg-3); text-decoration: underline; text-decoration-color: var(--gu-n-300); text-underline-offset: 2px; }
+.gu-pv__ruleslink:hover { color: var(--gu-fg-2); text-decoration-color: currentColor; }
 
 /* The revise form opens in place under the head row. */
 .gu-pv__revise { display: none; margin-top: 16px; padding: 16px 18px; background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 14px; }

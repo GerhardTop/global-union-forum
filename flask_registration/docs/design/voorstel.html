@@ -5,10 +5,11 @@
   aanpassen" (route /vraagstuk/<id>/voorstel/<pid>): dezelfde schil als de
   vraagstukpagina (kop, kruimelpad, fase-balk). Links een context-kolom met een
   schakelaar Feiten en achtergrond / Voorstellen. Binnen Feiten een keuze Bij
-  dit voorstel (N) / Alle (N), elk met telling, plus de actie Feiten koppelen;
-  daaronder een minimaal openklap-dingetje "Hoe werkt stemmen?" (de stemregels
-  horen bij het vraagstuk). Midden: proposal-info met de knop Voorstel
-  aanpassen (alleen de indiener), dan de eerdere versies ingeklapt bovenaan
+  dit voorstel (N) / Alle (N), elk met telling, plus de actie Feiten koppelen.
+  Midden: proposal-info (status, indiener, steun in grijs, en een stille link
+  "Stemregels bij dit vraagstuk": de regels horen bij het vraagstuk) met de
+  knop Voorstel aanpassen (alleen de indiener) altijd rechtsboven op de eerste
+  regel; lange meta loopt links door naar een tweede regel. Dan de eerdere versies ingeklapt bovenaan
   (openklappen toont de tekst van die versie plus de reacties die erbij horen),
   dan de huidige versie groot met Wat veranderde, de toelichting en de reacties
   op die versie. Geen feitenblok en geen stemming-blok in het midden.
@@ -92,18 +93,15 @@ a:hover{color:#0f5a93}
 .fitem--tegen .fitem__dir{color:var(--americas)}
 .fitem__txt{font-size:12.5px;line-height:1.4;color:var(--ink);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .fitem__src{font-size:11px;color:var(--n500);margin-top:4px}
-.raildet{margin-top:12px;background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.raildet>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:12px 15px;font-size:13px;font-weight:600;color:var(--n700)}
-.raildet>summary::-webkit-details-marker{display:none}
-.raildet__chev{margin-left:auto;color:var(--n400)}
-.raildet__body{padding:0 15px 13px;font-size:12.5px;line-height:1.55;color:var(--n600)}
 
 /* Midden */
-.headrow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.statusrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--n600)}
+.headrow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:nowrap}
+.headrow>.btn{flex:0 0 auto}
+.statusrow{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--n600)}
+.ruleslink{font-size:12px;color:var(--n500);text-decoration:underline;text-decoration-color:var(--n300);text-underline-offset:2px}
 .statusrow .sep{color:var(--n300)}
 .vchip{font-size:11.5px;font-weight:600;color:var(--n600);background:var(--n100);border:1px solid var(--border);border-radius:999px;padding:2px 9px}
-.steun{display:inline-flex;align-items:center;gap:5px;color:var(--oceania);font-weight:600}
+.steun{display:inline-flex;align-items:center;gap:5px;color:var(--n600);font-weight:600}
 
 /* Eerdere versies (ingeklapt, bovenaan) */
 .older{margin-top:22px}
@@ -214,10 +212,6 @@ a:hover{color:#0f5a93}
           </div>
           <a href="#" class="railmore">Feiten koppelen &rsaquo;</a>
         </div>
-        <details class="raildet">
-          <summary>Hoe werkt stemmen?<svg class="ico raildet__chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></summary>
-          <div class="raildet__body">Alleen over voorstellen met genoeg steun wordt gestemd. Aangenomen bij meer dan 60% voor van de geldige stemmen. Aan het eind kan de initiatiefnemer een samenvattend voorstel doen, waarover opnieuw wordt gestemd.</div>
-        </details>
       </aside>
 
       <!-- Midden -->
@@ -228,6 +222,7 @@ a:hover{color:#0f5a93}
             <span>door Sarah Chen (demo)</span>
             <span class="sep">&middot;</span>
             <span class="steun"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>5 steunbetuigingen</span>
+            <a href="#" class="ruleslink">Stemregels bij dit vraagstuk</a>
           </div>
           <button class="btn btn--primary btn--sm">Voorstel aanpassen</button>
         </div>

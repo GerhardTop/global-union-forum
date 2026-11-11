@@ -6,9 +6,9 @@
   issue page: a back link and breadcrumb, the question, and the phase bar.
   Then two columns. The context rail: facts and background (with this
   proposal / all, linking facts for whoever may) or proposals, ten at a time
-  with "show more", the current proposal highlighted; below it a collapsible
-  "How does voting work?" with the issue's voting rules. The main column:
-  status, author and support with "Adjust proposal" for the proposer, the
+  with "show more", the current proposal highlighted. The main column:
+  status, author, support and a quiet link to the issue's voting rules, with
+  "Adjust proposal" for the proposer pinned top right, the
   earlier versions collapsed on top (opening one shows its text and the
   reactions made on it), then the current version in full with its
   explanation, the vote while voting is open or over, and the reactions.
@@ -163,14 +163,6 @@
             <a class="gu-pv__railmore" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{% if nl %}Alle voorstellen{% else %}All proposals{% endif %} &rsaquo;</a>
           </div>
         </div>
-        {# The voting rules belong to the issue; the proposal's own standing is the status at the top. #}
-        <details class="gu-pv__raildet" id="stemregels">
-          <summary>{% if nl %}Hoe werkt stemmen?{% else %}How does voting work?{% endif %}<svg class="gu-pv__raildetchev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"/></svg></summary>
-          <p class="gu-pv__raildetbody">
-            {%- if nl %}Alleen over voorstellen met genoeg steun wordt gestemd. Aangenomen bij meer dan {{ issue.proposal_threshold_pct }}% voor van de geldige stemmen.{% if issue.final_vote %} Aan het eind kan de initiatiefnemer een samenvattend voorstel doen, waarover opnieuw wordt gestemd.{% endif %}
-            {%- else %}Only proposals with enough support are voted on. Adopted with more than {{ issue.proposal_threshold_pct }}% in favour of the valid votes.{% if issue.final_vote %} At the end, the initiator can make a summary proposal, which is voted on again.{% endif %}{% endif -%}
-          </p>
-        </details>
       </aside>
 
       {# ── Main column ──────────────────────────────────────────────── #}
@@ -182,6 +174,8 @@
             <span class="gu-pv__sep" aria-hidden="true">&middot;</span>
             <span class="gu-pv__steun"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
               {%- if nl %}{{ count }} {{ 'steunbetuiging' if count == 1 else 'steunbetuigingen' }}{% else %}{{ count }} {{ 'supporter' if count == 1 else 'supporters' }}{% endif %}</span>
+            {# The voting rules belong to the issue, so only a quiet link to it. #}
+            <a class="gu-pv__ruleslink" href="{{ url_for('issues.show', issue_id=issue.id) }}">{% if nl %}Stemregels bij dit vraagstuk{% else %}Voting rules for this issue{% endif %}</a>
             {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
           </div>
           {% if can_revise %}
