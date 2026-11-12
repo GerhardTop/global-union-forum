@@ -188,7 +188,9 @@
         </div>
       </section>
 
-      {# P7: alleen voor wie nog geen stemrecht heeft. #}
+      {# Right column under the proposals: your right to vote (P7: only for whoever
+         has none yet) and the issue's voting rules (linked from the proposal page). #}
+      <div class="gu-cockpit__side">
       {% if not (voting_right and voting_right.can_vote) %}
       <section class="gu-cockpit__panel gu-cockpit__rights" data-panel="proposals" aria-labelledby="rightsTitle">
         <div class="gu-cockpit__panelhead"><h2 class="gu-cockpit__title" id="rightsTitle">{{ _('Your right to vote') }}</h2></div>
@@ -209,6 +211,16 @@
         </div>
       </section>
       {% endif %}
+      <section class="gu-cockpit__panel gu-cockpit__rules" id="stemregels" data-panel="proposals" aria-labelledby="rulesTitle">
+        <div class="gu-cockpit__panelhead"><h2 class="gu-cockpit__title" id="rulesTitle">{% if lang == 'nl' %}Stemregels{% else %}Voting rules{% endif %}</h2></div>
+        <div class="gu-cockpit__box">
+          <p class="gu-cockpit__rulestext">
+            {%- if lang == 'nl' %}Alleen over voorstellen met genoeg steun wordt gestemd. Aangenomen bij meer dan {{ issue.proposal_threshold_pct }}% voor van de geldige stemmen.{% if issue.final_vote %} Aan het eind kan de initiatiefnemer een samenvattend voorstel doen, waarover opnieuw wordt gestemd.{% endif %}
+            {%- else %}Only proposals with enough support are voted on. Adopted with more than {{ issue.proposal_threshold_pct }}% in favour of the valid votes.{% if issue.final_vote %} At the end, the initiator can make a summary proposal, which is voted on again.{% endif %}{% endif -%}
+          </p>
+        </div>
+      </section>
+      </div>
 
     </div>
   </div>

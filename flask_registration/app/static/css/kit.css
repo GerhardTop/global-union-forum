@@ -3450,6 +3450,9 @@ body {
 .gu-cockpit__proposal a { font-weight: 400; color: var(--gu-fg-1); text-decoration: none; overflow-wrap: anywhere; }
 .gu-cockpit__proposal a:hover { color: var(--gu-globe-deep); }
 .gu-cockpit__newproposal { width: 100%; justify-content: center; }
+/* The right column under the proposals: right to vote and voting rules. */
+.gu-cockpit__side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.gu-cockpit__rulestext { margin: 0; font-size: 0.8125rem; line-height: 1.55; color: var(--gu-fg-2); }
 .gu-cockpit__rightsline { margin: 8px 0; font-size: 0.875rem; color: var(--gu-fg-2); }
 .gu-cockpit__progress { height: 6px; border-radius: 999px; background: var(--gu-bg-soft); overflow: hidden; margin-bottom: 8px; }
 .gu-cockpit__progress span { display: block; height: 100%; background: var(--gu-globe); }
@@ -3482,7 +3485,7 @@ body {
   .gu-cockpit__facts { grid-area: facts; }
   .gu-cockpit__discussion { grid-area: discussion; }
   .gu-cockpit__proposals { grid-area: proposals; }
-  .gu-cockpit__rights { grid-area: rights; }
+  .gu-cockpit__side { grid-area: rights; }
 }
 
 /* ── Herontwerp stap 3: nuttig en betwisten op een feit, de feitenpagina ── */
@@ -4502,6 +4505,7 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__statusrow .gu-ip-status { font-size: 0.75rem; padding: 3px 10px; }
 .gu-pv__statusrow .gu-ip-supportform { margin: 0; }
 .gu-pv__sep { color: var(--gu-n-300); }
+.gu-pv__metaitem { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .gu-pv__steun { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--gu-fg-2); }
 .gu-pv__ruleslink { font-size: 0.75rem; color: var(--gu-fg-3); text-decoration: underline; text-decoration-color: var(--gu-n-300); text-underline-offset: 2px; }
 .gu-pv__ruleslink:hover { color: var(--gu-fg-2); text-decoration-color: currentColor; }

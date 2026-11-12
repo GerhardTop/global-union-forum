@@ -171,11 +171,12 @@
           <div class="gu-pv__statusrow">
             {% include 'issues/_ip_status.html' %}
             <span>{% if nl %}door{% else %}by{% endif %} {{ by_name }}</span>
-            <span class="gu-pv__sep" aria-hidden="true">&middot;</span>
+            {# The separator is bound to the item after it, so a line break never strands it. #}
+            <span class="gu-pv__metaitem"><span class="gu-pv__sep" aria-hidden="true">&middot;</span>
             <span class="gu-pv__steun"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
-              {%- if nl %}{{ count }} {{ 'steunbetuiging' if count == 1 else 'steunbetuigingen' }}{% else %}{{ count }} {{ 'supporter' if count == 1 else 'supporters' }}{% endif %}</span>
+              {%- if nl %}{{ count }} {{ 'steunbetuiging' if count == 1 else 'steunbetuigingen' }}{% else %}{{ count }} {{ 'supporter' if count == 1 else 'supporters' }}{% endif %}</span></span>
             {# The voting rules belong to the issue, so only a quiet link to it. #}
-            <a class="gu-pv__ruleslink" href="{{ url_for('issues.show', issue_id=issue.id) }}">{% if nl %}Stemregels bij dit vraagstuk{% else %}Voting rules for this issue{% endif %}</a>
+            <a class="gu-pv__ruleslink" href="{{ url_for('issues.show', issue_id=issue.id) }}#stemregels">{% if nl %}Stemregels bij dit vraagstuk{% else %}Voting rules for this issue{% endif %}</a>
             {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
           </div>
           {% if can_revise %}

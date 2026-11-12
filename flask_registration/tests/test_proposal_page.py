@@ -173,7 +173,11 @@ def test_voting_rules_link_grey_support_and_pinned_button(app, db, make_user):
     assert 'id="stemregels"' not in page and 'Hoe werkt stemmen?' not in page
     meta = page.split('class="gu-pv__statusrow"')[1].split('gu-pv__revisebtn')[0]
     assert meta.index('steunbetuigingen') < meta.index('class="gu-pv__ruleslink"')
-    assert f'class="gu-pv__ruleslink" href="/vraagstuk/{issue.id}">Stemregels bij dit vraagstuk</a>' in meta
+    assert f'class="gu-pv__ruleslink" href="/vraagstuk/{issue.id}#stemregels">Stemregels bij dit vraagstuk</a>' in meta
+    # The separator travels with the support count, so a line break never strands it.
+    assert '<span class="gu-pv__metaitem"><span class="gu-pv__sep" aria-hidden="true">&middot;</span>' in meta
+    item = meta.split('gu-pv__metaitem')[1].split('</span></span>')[0]
+    assert 'steunbetuigingen' in item
     en = _get(app, _detail(issue, proposal), host, 'en')
     assert '>Voting rules for this issue</a>' in en
     css = _req(_client(app), 'GET', '/static/css/kit.css').get_data(as_text=True)
@@ -184,4 +188,24 @@ def test_voting_rules_link_grey_support_and_pinned_button(app, db, make_user):
     assert 'flex-wrap: nowrap' in rule('.gu-pv__headrow')
     assert 'flex: 1 1 auto' in rule('.gu-pv__statusrow') and 'flex-wrap: wrap' in rule('.gu-pv__statusrow')
     assert 'flex: 0 0 auto' in rule('.gu-pv__revisebtn')
+    assert 'white-space: nowrap' in rule('.gu-pv__metaitem')
     assert '.gu-pv__raildet' not in css
+
+
+def test_issue_page_has_the_voting_rules_block(app, db, make_user):
+    host, voter = make_user(), make_user('voter')
+    issue = _issue(db, host)
+    for viewer in (host, voter, None):  # also for whoever already has the right to vote
+        page = _get(app, f'/vraagstuk/{issue.id}', viewer)
+        block = page.split('id="stemregels"')[1].split('</section>')[0]
+        assert 'data-panel="proposals"' in block and '>Stemregels</h2>' in block
+        assert 'Alleen over voorstellen met genoeg steun wordt gestemd.' in block
+        assert f'Aangenomen bij meer dan {issue.proposal_threshold_pct}% voor van de geldige stemmen.' in block
+        assert ('samenvattend voorstel' in block) is bool(issue.final_vote)
+        assert 'Onthoudingen' not in page
+    issue.final_vote = False
+    db.session.commit()
+    block = _get(app, f'/vraagstuk/{issue.id}', host, 'en').split('id="stemregels"')[1].split('</section>')[0]
+    assert '>Voting rules</h2>' in block and 'Only proposals with enough support are voted on.' in block
+    assert f'more than {issue.proposal_threshold_pct}% in favour of the valid votes' in block
+    assert 'summary proposal' not in block and 'Abstentions' not in block
