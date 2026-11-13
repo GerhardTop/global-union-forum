@@ -13,8 +13,7 @@
   - Long facts clamped to a few lines with a per-fact more/less.
   - Disclosures ([data-disclosure] buttons with aria-controls), such as the
     collapsed voting rules card.
-  - A sort select with [data-autosubmit] submits on change (its
-    [data-autosubmit-button] hides).
+  - A sort select with [data-autosubmit] submits on change (no button).
 
   Usage: var cockpit = GU.cockpit(rootElement, {defaultTab: 'facts'});
   The root may carry data-expanded="<panel>" to open enlarged (for example
@@ -148,8 +147,6 @@
 
     // ── Sort on change ─────────────────────────────────────────────────
     root.querySelectorAll('select[data-autosubmit]').forEach(function (select) {
-      var button = select.form && select.form.querySelector('[data-autosubmit-button]');
-      if (button) button.hidden = true;
       select.addEventListener('change', function () { select.form.submit(); });
     });
 

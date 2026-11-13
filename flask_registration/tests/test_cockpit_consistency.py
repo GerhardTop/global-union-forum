@@ -151,6 +151,33 @@ def test_enlarged_proposals_filter_bar_above_ten_and_same_result_as_voorstellen(
         _cleanup(issue.id)
 
 
+def test_enlarged_defaults_to_voting_list_first_and_applies_without_a_button(app, db):
+    host = make_user_direct(db)
+    issue, proposals = _many(db, host, ip.FILTER_MIN + 1)
+    try:
+        statements = lambda html, cls: re.findall(rf'class="{cls}"[^>]*>([^<]+)<', html)  # noqa: E731
+        compact = [p.statement for p, _c in ip.listing(issue, order='stemlijst')]
+        for key, path in _pages(issue, proposals[0]).items():
+            # No sort chosen: the same order as the compact column, "Voting list first" selected.
+            for q in ('', '?vergroot=voorstellen'):
+                big = _bigbox(_get(app, path + q, host))
+                assert statements(big, 'gu-bigp__txt') == compact, (key, q)
+                assert '<option value="stemlijst" selected>' in big, (key, q)
+            # The filter links carry that order on.
+            assert re.search(r'href="[^"]*filter=steun[^"]*sorteer=stemlijst', big) or \
+                re.search(r'href="[^"]*sorteer=stemlijst[^"]*filter=steun', big), key
+            # Filter and sort apply at once: links and a select that submits on change, no button.
+            for lang in ('nl', 'en'):
+                big = _bigbox(_get(app, path, host, lang))
+                assert 'data-autosubmit' in big and '<button' not in big, (key, lang)
+                assert 'Toepassen' not in big and 'Apply' not in big, (key, lang)
+        # /voorstellen itself keeps its own default.
+        listed = statements(_get(app, f'/vraagstuk/{issue.id}/voorstellen', host), 'gu-iplist__statement')
+        assert listed == [p.statement for p, _c in ip.listing(issue, order=ip.DEFAULT_ORDER)]
+    finally:
+        _cleanup(issue.id)
+
+
 def test_enlarged_view_hides_the_compact_list_and_the_side_cards(app):
     css = _req(_client(app), 'GET', '/static/css/kit.css').get_data(as_text=True)
     assert '.gu-cockpit__bigbox { display: none; }' in css

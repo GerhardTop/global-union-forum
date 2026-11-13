@@ -6,7 +6,9 @@
   (all, on the voting list, collecting support) and a sort control. These use
   the same server logic as /voorstellen (ip.listing with ?filter= and
   ?sorteer=) and reload this page with ?vergroot=voorstellen, so it opens
-  enlarged again. No "show all" and no link to a separate page: all is here.
+  enlarged again. Both apply at once, without a button: the filter is a set of
+  links, the sort select submits on change. Without a choice the order is
+  "voting list first", as in the compact column. No "show all" and no link to a separate page: all is here.
   Shown only while the column is enlarged (CSS). Context: issue, big,
   reaction_counts, new_discussion; proposal (on the proposal page).
 -#}
@@ -30,7 +32,6 @@
         <option value="steun"{% if big.order == 'steun' %} selected{% endif %}>{{ _('Most support') }}</option>
         <option value="nieuwste"{% if big.order == 'nieuwste' %} selected{% endif %}>{{ _('Newest') }}</option>
       </select>
-      <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm" data-autosubmit-button>{{ _('Apply') }}</button>
     </form>
   </div>
   {% endif %}

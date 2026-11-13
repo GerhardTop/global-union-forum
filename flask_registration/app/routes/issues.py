@@ -792,11 +792,17 @@ def _local_next():
 ENLARGE_PANELS = {'feiten': 'facts', 'discussie': 'discussion', 'voorstel': 'proposal', 'voorstellen': 'proposals'}
 
 
+ENLARGED_DEFAULT_ORDER = 'stemlijst'
+
+
 def _enlarged_proposals(issue, versions):
     which = request.args.get('filter')
     which = which if which in ip.FILTERS else 'alle'
     order = request.args.get('sorteer')
-    order = order if order in ip.ORDERS else ip.DEFAULT_ORDER
+    # Without a choice the enlarged view keeps the order of the compact column
+    # (voting list first), so enlarging does not reshuffle; the options and
+    # their results are the same as /voorstellen.
+    order = order if order in ip.ORDERS else ENLARGED_DEFAULT_ORDER
     everything = ip.listing(issue)
     on_list = sum(1 for p, c in everything if ip.on_list(p, c))
     rows = ip.listing(issue, which, order)
