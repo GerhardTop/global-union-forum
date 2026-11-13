@@ -944,9 +944,17 @@ class IssueProposal(db.Model):
     # Stap 6: het samenvattende voorstel van de initiatiefnemer (aan het einde, als
     # final_vote van het vraagstuk aanstaat). NULL telt als False.
     is_final             = db.Column(db.Boolean, nullable=True, default=False)
+    # Delete rights step 1: soft-hidden by a moderator (app/issues.hide/unhide).
+    # Not yet filtered from the public listings; that is a later step.
+    hidden_at            = db.Column(db.DateTime, nullable=True)
+    hidden_by_id         = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
     issue      = db.relationship('Issue', backref=db.backref('issue_proposals', lazy=True))
     created_by = db.relationship('User', foreign_keys=[created_by_id])
+
+    @property
+    def is_hidden(self):
+        return self.hidden_at is not None
 
 
 class IssueProposalVersion(db.Model):
@@ -969,6 +977,24 @@ class IssueProposalVersion(db.Model):
     proposal = db.relationship('IssueProposal', backref=db.backref('version_rows', lazy=True,
                                                                    order_by='IssueProposalVersion.number',
                                                                    cascade='all, delete-orphan'))
+
+
+MODERATION_ACTIONS = ('hide', 'unhide', 'delete_proposal', 'delete_issue')
+
+
+class ModerationAction(db.Model):
+    """Delete rights step 1: audit log of hiding, unhiding and deleting issues
+    and proposals. target_id is no foreign key: the target may be gone, so a
+    short snapshot of its title or statement is kept."""
+    __tablename__ = "moderation_actions"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    actor_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    action      = db.Column(db.String(20), nullable=False)        # see MODERATION_ACTIONS
+    target_type = db.Column(db.String(20), nullable=False)        # 'issue' | 'proposal'
+    target_id   = db.Column(db.Integer, nullable=False, index=True)
+    snapshot    = db.Column(db.String(300), nullable=True)        # title or statement at the time
+    created_at  = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
 
 
 class IssueProposalRead(db.Model):

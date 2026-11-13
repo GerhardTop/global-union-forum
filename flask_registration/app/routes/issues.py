@@ -715,23 +715,26 @@ def unarchive_issue(issue_id):
     return redirect(url_for('issues.show', issue_id=issue.id))
 
 
-# ── Verwijderen (fase 3): alleen een admin, met de titel overtypen ───────
+# ── Deleting (phase 3, rights from delete-rights step 1): type the title ──
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/verwijderen', methods=['GET', 'POST'])
 @login_required
 def delete_issue(issue_id):
-    """Een heel vraagstuk definitief verwijderen. Alleen een admin, achter een
-    bevestiging waarbij de titel wordt overgetypt."""
-    if not current_user.is_admin:
-        abort(403)
+    """Delete a whole issue for good, for whoever issues.can_delete_issue
+    allows, behind a confirmation where the title is typed over."""
     issue = _issue_or_404(issue_id)
+    if not issues.can_delete_issue(current_user, issue):
+        abort(403)
     if request.method == 'POST':
         _require_csrf()
         typed = (request.form.get('confirm_title') or '').strip()
         if typed != (issue.title or '').strip():
             flash(gettext('Type the exact title to confirm.'), 'error')
             return redirect(url_for('issues.delete_issue', issue_id=issue.id), code=303)
+        target_id, title = issue.id, issue.title
         issues.purge(issue)
+        issues.log_action(current_user, 'delete_issue', 'issue', target_id, title)
+        db.session.commit()
         flash(gettext('The issue has been deleted.'), 'success')
         return redirect(url_for('issues.index'))
     return render_template('issues/verwijderen.html', target='issue', issue=issue,
@@ -741,20 +744,52 @@ def delete_issue(issue_id):
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/verwijderen', methods=['GET', 'POST'])
 @login_required
 def delete_proposal(issue_id, proposal_id):
-    """Een los voorstel definitief verwijderen. Alleen een admin, achter een
-    bevestiging waarbij de stelling wordt overgetypt."""
-    if not current_user.is_admin:
-        abort(403)
+    """Delete a single proposal for good (with its reactions), for whoever
+    issues.can_delete_proposal allows, behind a confirmation where the
+    statement is typed over."""
     issue = _issue_or_404(issue_id)
     proposal = _proposal_or_404(issue, proposal_id)
+    if not issues.can_delete_proposal(current_user, proposal):
+        abort(403)
     if request.method == 'POST':
         _require_csrf()
         typed = (request.form.get('confirm_title') or '').strip()
         if typed != (proposal.statement or '').strip():
             flash(gettext('Type the exact text to confirm.'), 'error')
             return redirect(url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id), code=303)
+        target_id, statement = proposal.id, proposal.statement
         issues.purge_proposal(proposal)
+        issues.log_action(current_user, 'delete_proposal', 'proposal', target_id, statement)
+        db.session.commit()
         flash(gettext('The proposal has been deleted.'), 'success')
         return redirect(url_for('issues.show', issue_id=issue.id))
     return render_template('issues/verwijderen.html', target='proposal', issue=issue, proposal=proposal,
                            counts=issues.purge_proposal_counts(proposal))
+
+
+def _hide_toggle(issue_id, proposal_id, hide):
+    issue = _issue_or_404(issue_id)
+    proposal = _proposal_or_404(issue, proposal_id)
+    if not issues.can_hide_proposal(current_user, proposal):
+        abort(403)
+    _require_csrf()
+    changed = issues.hide(proposal, current_user) if hide else issues.unhide(proposal, current_user)
+    if changed:
+        db.session.commit()
+        flash(gettext('The proposal is hidden.') if hide else gettext('The proposal is visible again.'), 'success')
+    return redirect(safe_next(request.form.get('next'),
+                              url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id)))
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/verbergen', methods=['POST'])
+@login_required
+def hide_proposal(issue_id, proposal_id):
+    """Soft-hide a proposal (delete-rights step 1; the manage screen uses it later)."""
+    return _hide_toggle(issue_id, proposal_id, hide=True)
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/zichtbaar', methods=['POST'])
+@login_required
+def unhide_proposal(issue_id, proposal_id):
+    """Make a hidden proposal visible again."""
+    return _hide_toggle(issue_id, proposal_id, hide=False)

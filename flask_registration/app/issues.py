@@ -413,6 +413,123 @@ def overview(which='alle'):
     return [(i, counts.get(i.id, 0) + len(i.proposals), len(issue_lifecycle.participants(i))) for i in found]
 
 
+# ── Delete rights (step 1): settings, permissions, hiding, audit log ─────
+# Admin can do everything. A senior moderator can hide and delete every
+# proposal, and delete issues of their own (any issue with the setting
+# below). A moderator can hide proposals of their own issue, delete them (with
+# the setting below) and delete their own issue. The author of a proposal can
+# delete it while nobody has reacted to it. Suspended users and anonymous
+# visitors can do none of this.
+
+DELETE_SETTINGS = {
+    'delete.senior_can_delete_issues': False,
+    'delete.moderator_can_delete_own_issue_proposals': True,
+}
+
+
+def delete_setting(key):
+    """A delete-rights setting as a bool (the default when it is not stored)."""
+    from app.models import AppSetting
+    row = db.session.get(AppSetting, key)
+    return DELETE_SETTINGS[key] if row is None else bool(row.value)
+
+
+def set_delete_setting(key, on, user_id=None):
+    """Store a delete-rights setting (AppSetting holds integers: 1 or 0). Does not commit."""
+    from app.models import AppSetting
+    if key not in DELETE_SETTINGS:
+        raise KeyError(key)
+    row = db.session.get(AppSetting, key)
+    if row is None:
+        db.session.add(AppSetting(key=key, value=int(bool(on)), updated_by_id=user_id))
+    else:
+        row.value, row.updated_by_id = int(bool(on)), user_id
+
+
+def _acting(user):
+    """A signed-in user who may act at all (not anonymous, not suspended)."""
+    return bool(getattr(user, 'is_authenticated', False)) and not getattr(user, 'is_suspended', False)
+
+
+def _is_senior(user):
+    return user.is_senior_moderator  # also admin; False while suspended
+
+
+def _is_moderator(user):
+    return user.can_moderate()  # moderator and up, also the legacy is_moderator flag
+
+
+def _owns_issue(user, issue):
+    return issue is not None and issue.created_by_id is not None and issue.created_by_id == user.id
+
+
+def can_delete_issue(user, issue):
+    if not _acting(user):
+        return False
+    if user.is_admin:
+        return True
+    if _is_senior(user):
+        return _owns_issue(user, issue) or delete_setting('delete.senior_can_delete_issues')
+    if _is_moderator(user):
+        return _owns_issue(user, issue)
+    return False
+
+
+def can_hide_proposal(user, proposal):
+    if not _acting(user):
+        return False
+    if user.is_admin or _is_senior(user):
+        return True
+    if _is_moderator(user):
+        return _owns_issue(user, proposal.issue)
+    return False
+
+
+def can_delete_proposal(user, proposal):
+    if not _acting(user):
+        return False
+    if user.is_admin or _is_senior(user):
+        return True
+    if (_is_moderator(user) and _owns_issue(user, proposal.issue)
+            and delete_setting('delete.moderator_can_delete_own_issue_proposals')):
+        return True
+    # The author, only while nobody has reacted (any reaction counts, also hidden ones).
+    if proposal.created_by_id is not None and proposal.created_by_id == user.id:
+        return Post.query.filter_by(issue_proposal_id=proposal.id).count() == 0
+    return False
+
+
+def log_action(actor, action, target_type, target_id, snapshot=None):
+    """Write one audit row (ModerationAction). Does not commit."""
+    from app.models import MODERATION_ACTIONS, ModerationAction
+    if action not in MODERATION_ACTIONS:
+        raise ValueError(action)
+    row = ModerationAction(actor_id=getattr(actor, 'id', None), action=action, target_type=target_type,
+                           target_id=target_id, snapshot=(snapshot or '')[:300] or None)
+    db.session.add(row)
+    return row
+
+
+def hide(proposal, user, now=None):
+    """Soft-hide a proposal and log it. Returns False when it was already hidden. Does not commit."""
+    if proposal.hidden_at is not None:
+        return False
+    proposal.hidden_at = now or datetime.utcnow()
+    proposal.hidden_by_id = getattr(user, 'id', None)
+    log_action(user, 'hide', 'proposal', proposal.id, proposal.statement)
+    return True
+
+
+def unhide(proposal, user):
+    """Make a hidden proposal visible again and log it. Returns False when it was not hidden. Does not commit."""
+    if proposal.hidden_at is None:
+        return False
+    proposal.hidden_at = None
+    proposal.hidden_by_id = None
+    log_action(user, 'unhide', 'proposal', proposal.id, proposal.statement)
+    return True
+
+
 # ── Verwijderen (fase 3) ─────────────────────────────────────────────────
 
 def purge_counts(issue):

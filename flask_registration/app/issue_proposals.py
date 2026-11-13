@@ -466,6 +466,12 @@ def detach_user(user_id):
     zijn voorstellen los (het voorstel blijft bij het vraagstuk)."""
     IssueProposalSupport.query.filter_by(user_id=user_id).delete(synchronize_session='evaluate')
     delete_reads(user_id=user_id)
+    # Delete rights: who hid a proposal, and the actor in the audit log, lose their name.
+    IssueProposal.query.filter_by(hidden_by_id=user_id).update({IssueProposal.hidden_by_id: None},
+                                                                synchronize_session=False)
+    from app.models import ModerationAction
+    ModerationAction.query.filter_by(actor_id=user_id).update({ModerationAction.actor_id: None},
+                                                               synchronize_session=False)
     # Stemmen blijven meetellen, zonder naam: de uitslag mag niet veranderen.
     IssueProposalVote.query.filter_by(user_id=user_id).update({IssueProposalVote.user_id: None},
                                                                synchronize_session=False)

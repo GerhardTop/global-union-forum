@@ -341,6 +341,10 @@ _POLISH_COLUMNS = {
                # Archiving (delete flow step 1). Production already has it
                # (added by hand); this is a no-op there, but covers other DBs.
                ('archived_at', 'TIMESTAMP NULL')),
+    # Delete rights step 1: a proposal can be soft-hidden (the table
+    # moderation_actions comes from db.create_all()).
+    'issue_proposals': (('hidden_at', 'TIMESTAMP NULL'),
+                        ('hidden_by_id', 'INTEGER NULL REFERENCES users(id)')),
 }
 
 
