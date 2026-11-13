@@ -4694,3 +4694,14 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-bigp__dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gu-n-400); flex: none; }
 .gu-bigp__chev { flex: none; margin-top: 3px; color: var(--gu-n-300); }
 .gu-bigp__empty { margin: 10px 4px 0; }
+
+/* Delete rights step 4: the admin rights page (moderator/rechten.html). */
+.gu-rights__form { max-width: 620px; margin-top: 16px; }
+.gu-rights__row { padding: 16px 0; border-top: 1px solid var(--gu-border); }
+.gu-rights__row:first-of-type { border-top: 0; }
+.gu-rights__label { align-items: flex-start; }
+.gu-rights__text { font-weight: 600; line-height: 1.4; padding-top: 2px; }
+.gu-rights__hint { margin: 6px 0 0 56px; font-size: 13px; line-height: 1.5; color: var(--gu-fg-2); }
+.gu-rights__form .gu-btn { margin-top: 12px; }
+.gu-toggle__input:focus-visible ~ .gu-toggle__track { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
+.gu-mgmt__rightslink { color: inherit; text-decoration: underline; }

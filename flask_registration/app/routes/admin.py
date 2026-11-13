@@ -300,6 +300,32 @@ def issue_manage(issue_id):
                            here=request.full_path.rstrip('?'), ago=time_ago)
 
 
+# Delete rights step 4: the two delete-rights switches, admin only.
+RIGHTS_SWITCHES = ('delete.senior_can_delete_issues', 'delete.moderator_can_delete_own_issue_proposals')
+
+
+@admin_bp.route('/moderator/rechten', methods=['GET', 'POST'])
+@login_required
+def rights_settings():
+    """Delete rights step 4: the admin turns the two delete-rights settings on
+    or off (AppSetting, see app.issues.DELETE_SETTINGS). A checkbox that is
+    not sent is off."""
+    from app import issues
+    if not current_user.is_admin:
+        abort(403)
+    form = AdminActionForm()
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            abort(400)
+        for key in RIGHTS_SWITCHES:
+            issues.set_delete_setting(key, request.form.get(key) == '1', user_id=current_user.id)
+        db.session.commit()
+        flash('Rechten opgeslagen.' if session.get('lang', 'nl') == 'nl' else 'Rights saved.', 'success')
+        return redirect(url_for('admin.rights_settings'))
+    return render_template('moderator/rechten.html', admin_action_form=form,
+                           settings={key: issues.delete_setting(key) for key in RIGHTS_SWITCHES})
+
+
 _MONTHS = {'nl': ('jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'),
            'en': ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')}
 

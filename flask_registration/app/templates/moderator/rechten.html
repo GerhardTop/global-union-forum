@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{#- Delete rights step 4: the admin sets the two delete-rights settings
+    (app.issues.DELETE_SETTINGS). Each is an on/off switch showing its stored
+    state; a switch that is off sends nothing, so it is saved as off. -#}
+{% set nl = lang == 'nl' %}
+{% block title %}{% if nl %}Rechten{% else %}Rights{% endif %} · Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+{% set nl = lang == 'nl' %}
+{% set switches = [
+  ('delete.senior_can_delete_issues',
+   ('Senior moderator mag ook vraagstukken verwijderen', 'Senior moderators may also delete issues'),
+   ('Standaard verwijdert een senior moderator alleen voorstellen; vraagstukken verwijderen blijft dan bij de admin.',
+    'By default a senior moderator only deletes proposals; deleting issues then stays with the admin.')),
+  ('delete.moderator_can_delete_own_issue_proposals',
+   ('Moderator mag voorstellen onder het eigen vraagstuk verwijderen', 'Moderators may delete proposals under their own issue'),
+   ('Staat dit uit, dan kan een moderator die voorstellen alleen verbergen, niet verwijderen.',
+    'When this is off, a moderator can only hide those proposals, not delete them.')),
+] %}
+<div class="gu-admin" lang="{{ lang }}">
+  <div class="gu-admin__inner">
+    <div class="gu-admin__head">
+      <p class="gu-eyebrow"><a href="{{ url_for('admin.moderator_dashboard') }}" class="gu-admin-table__threadlink">Moderator</a></p>
+      <h1 class="gu-admin__title">{% if nl %}Rechten{% else %}Rights{% endif %}</h1>
+    </div>
+
+    <section class="gu-admin__section gu-rights" aria-labelledby="rightsTitle">
+      <h2 class="gu-eyebrow gu-eyebrow--section" id="rightsTitle">{% if nl %}Verwijderen{% else %}Deleting{% endif %}</h2>
+      <p class="gu-quality__meta">{% if nl %}Een admin mag altijd alles. Deze instellingen gelden direct na het opslaan, voor alle vraagstukken.{% else %}An admin may always do everything. These settings apply as soon as you save, to all issues.{% endif %}</p>
+      <form method="POST" action="{{ url_for('admin.rights_settings') }}" class="gu-rights__form">
+        {{ admin_action_form.hidden_tag() }}
+        {% for key, label, hint in switches %}
+        {% set on = settings[key] %}
+        <div class="gu-rights__row">
+          <label class="gu-toggle-label gu-rights__label" for="sw-{{ loop.index }}">
+            <span class="gu-toggle">
+              <input type="checkbox" id="sw-{{ loop.index }}" name="{{ key }}" value="1" class="gu-toggle__input" role="switch"
+                     aria-describedby="sw-{{ loop.index }}-hint"{% if on %} checked{% endif %}>
+              <span class="gu-toggle__track"></span>
+              <span class="gu-toggle__thumb"></span>
+            </span>
+            <span class="gu-rights__text">{{ label[0] if nl else label[1] }}</span>
+          </label>
+          <p class="gu-rights__hint" id="sw-{{ loop.index }}-hint">{{ hint[0] if nl else hint[1] }}</p>
+        </div>
+        {% endfor %}
+        <button type="submit" class="gu-btn gu-btn--primary">{% if nl %}Opslaan{% else %}Save{% endif %} <span class="gu-arrow"></span></button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}{% endblock %}

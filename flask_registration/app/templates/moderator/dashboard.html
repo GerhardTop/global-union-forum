@@ -426,6 +426,7 @@
             {% endfor %}
           </div>
           {% if manage_more %}<a class="gu-mgmt-entry__all" href="{{ url_for('issues.index') }}">{% if lang == 'nl' %}Alle vraagstukken{% else %}All issues{% endif %} &rsaquo;</a>{% endif %}
+          {% if current_user.is_admin %}<a class="gu-mgmt-entry__all" href="{{ url_for('admin.rights_settings') }}">{% if lang == 'nl' %}Rechten instellen{% else %}Set the rights{% endif %} &rsaquo;</a>{% endif %}
           <div class="gu-mgmt-entry__callout">
             <span class="gu-mgmt-entry__num" aria-hidden="true">i</span>
             <p>{% if lang == 'nl' %}Klik bij een vraagstuk op <strong>Beheer</strong> om voorstellen te verbergen of te verwijderen en het vraagstuk te beheren. De vraagstuk-label bij een melding leidt naar dezelfde pagina.{% else %}Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page.{% endif %}</p>

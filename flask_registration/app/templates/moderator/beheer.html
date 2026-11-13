@@ -166,8 +166,10 @@
             <li class="is-locked">{{ icon('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>', 16, 'gu-mgmt__lock') }}<span>{{ locked[0] if nl else locked[1] }}</span></li>
             {% endif %}
           </ul>
-          {# "Rechten" (the rights page) is step 4 of this track; until then it is plain text, no link. #}
-          <p class="gu-mgmt__rightsnote">{% if nl %}Senior moderator mag alle voorstellen verwijderen. Admin mag alles. {% if rights.admin %}Jij stelt{% else %}Een admin stelt{% endif %} deze rechten in bij Rechten.{% else %}A senior moderator may delete all proposals. An admin may do everything. {% if rights.admin %}You set{% else %}An admin sets{% endif %} these rights under Rights.{% endif %}</p>
+          {# "Rechten": a link to the rights page for an admin; plain text for a moderator, who cannot change them. #}
+          {% set rights_word = ('Rechten' if nl else 'Rights') %}
+          {% if rights.admin %}{% set rights_word %}<a href="{{ url_for('admin.rights_settings') }}" class="gu-mgmt__rightslink">{{ 'Rechten' if nl else 'Rights' }}</a>{% endset %}{% endif %}
+          <p class="gu-mgmt__rightsnote">{% if nl %}Senior moderator mag alle voorstellen verwijderen. Admin mag alles. {% if rights.admin %}Jij stelt{% else %}Een admin stelt{% endif %} deze rechten in bij {{ rights_word }}.{% else %}A senior moderator may delete all proposals. An admin may do everything. {% if rights.admin %}You set{% else %}An admin sets{% endif %} these rights under {{ rights_word }}.{% endif %}</p>
         </section>
 
         {# ── Log ────────────────────────────────────────────────── #}
