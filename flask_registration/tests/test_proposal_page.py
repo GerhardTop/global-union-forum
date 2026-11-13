@@ -271,6 +271,7 @@ def test_reaction_counts_on_both_pages(app, db, make_user):
                             body=f'Reactie {i}.', source_lang='nl', issue_proposal_id=busy.id,
                             proposal_version=version, created_at=datetime.utcnow()))
     db.session.commit()
+    _get(app, _detail(issue, busy), host)  # opened after the reactions: calm grey (the marker is tested below)
     plist = _proposals_col(_get(app, _detail(issue, quiet), host))
     busy_item = plist.split('Druk besproken, versie 2.')[1].split('</a>')[0]
     quiet_item = plist.split('Stil voorstel.')[1].split('</a>')[0]
@@ -286,3 +287,76 @@ def test_reaction_counts_on_both_pages(app, db, make_user):
     # Calm grey for now (the "new discussion" marker is a later step).
     rule = _css(app).split('.gu-rcount {')[1].split('}')[0]
     assert 'var(--gu-fg-3)' in rule
+
+
+def _count_in(html, statement):
+    """The reaction-count span of the proposal with this statement in a proposals column."""
+    return html.split(statement)[1].split('class="gu-rcount', 1)[1].split('</span></')[0]
+
+
+def test_new_discussion_marker_like_unread_email(app, db, make_user):
+    from app.models import IssueProposalRead
+    host, anna, reader = make_user(), make_user(), make_user()
+    issue = _issue(db, host)
+    proposal = ip.create(issue, host, 'Gemarkeerd voorstel.')
+    other = ip.create(issue, host, 'Ander voorstel.')
+    db.session.commit()
+    db.session.add(Post(thread_id=issue.thread_id, user_id=anna.id, author_name='', author_username=anna.username,
+                        body='Eerste reactie.', source_lang='nl', issue_proposal_id=proposal.id,
+                        proposal_version=1, created_at=datetime(2026, 1, 1)))
+    db.session.commit()
+    show = lambda viewer, lang='nl': _get(app, f'/vraagstuk/{issue.id}', viewer, lang).split('id="panel-proposals"')[1].split('</section>')[0]  # noqa: E731
+
+    # Never opened, with a reaction: active (globe-deep, bold, the dot), on both pages.
+    count = _count_in(show(reader), 'Gemarkeerd voorstel.')
+    assert count.startswith(' gu-rcount--new"') and 'gu-rcount__dot' in count and '1 reactie' in count
+    rail = _proposals_col(_get(app, _detail(issue, other), reader))
+    assert 'gu-rcount--new' in _count_in(rail, 'Gemarkeerd voorstel.')
+    assert 'gu-rcount--new' not in _count_in(rail, 'Ander voorstel.')  # no reactions: never new
+    en = _count_in(show(reader, 'en'), 'Gemarkeerd voorstel.')
+    assert 'gu-rcount--new' in en and '1 reaction' in en
+    assert IssueProposalRead.query.filter_by(user_id=reader.id, issue_proposal_id=proposal.id).count() == 0
+
+    # Opening the proposal: grey, also in its own right rail on that very request.
+    page = _get(app, _detail(issue, proposal), reader)
+    own = _count_in(_proposals_col(page), 'Gemarkeerd voorstel.')
+    assert own.startswith('">') and '1 reactie' in own and 'gu-rcount__dot' not in own
+    assert 'gu-rcount--new' not in _count_in(show(reader), 'Gemarkeerd voorstel.')
+    row = IssueProposalRead.query.filter_by(user_id=reader.id, issue_proposal_id=proposal.id).one()
+    first_seen = row.last_seen_at
+    _get(app, _detail(issue, proposal), reader)  # opening again updates the one row
+    assert IssueProposalRead.query.filter_by(user_id=reader.id).count() == 2  # this one and "Ander voorstel."
+    db.session.refresh(row)
+    assert row.last_seen_at >= first_seen
+
+    # A reaction placed after that: active again.
+    _req(_client(app, anna), 'POST', f'/forum/{issue.thread_id}',
+         data={'body': 'Nieuwe reactie.', 'issue_proposal_id': proposal.id, 'return_proposal': '1'})
+    count = _count_in(show(reader), 'Gemarkeerd voorstel.')
+    assert 'gu-rcount--new' in count and '2 reacties' in count
+
+    # Anonymous: always grey, and nothing is written.
+    reads = IssueProposalRead.query.count()
+    assert 'gu-rcount--new' not in show(None)
+    assert 'gu-rcount--new' not in _get(app, _detail(issue, other), None)
+    assert IssueProposalRead.query.count() == reads
+
+    # The active style follows the artboard (.rnew / .nd) with the repo token.
+    css = _css(app)
+    new_rule = css.split('.gu-rcount--new {')[1].split('}')[0]
+    dot_rule = css.split('.gu-rcount__dot {')[1].split('}')[0]
+    assert 'color: var(--gu-globe-deep)' in new_rule and 'font-weight: 600' in new_rule
+    assert 'width: 7px; height: 7px' in dot_rule and 'background: var(--gu-globe-deep)' in dot_rule
+
+
+def test_reads_go_with_a_deleted_proposal(app, db, make_user):
+    from app import issues as issues_mod
+    from app.models import IssueProposalRead
+    host = make_user()
+    issue = _issue(db, host)
+    proposal = ip.create(issue, host, 'Weg ermee.')
+    db.session.commit()
+    _get(app, _detail(issue, proposal), host)
+    assert IssueProposalRead.query.filter_by(issue_proposal_id=proposal.id).count() == 1
+    issues_mod.purge_proposal(proposal)
+    assert IssueProposalRead.query.count() == 0

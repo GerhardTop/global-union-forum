@@ -359,6 +359,8 @@ def _remove_demo(db):
     if prop_ids:
         for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
             model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
+        from app import issue_proposals
+        issue_proposals.delete_reads(prop_ids)
         IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
     # Volgers en eventdagen verwijzen ook naar de vraagstukken.
     from app import issue_lifecycle

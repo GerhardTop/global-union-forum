@@ -213,6 +213,45 @@ def reactions_for(proposal_ids):
     return Post.query.filter(Post.issue_proposal_id.in_(list(proposal_ids))).all()
 
 
+# ── Gelezen (discussie stap 3) ───────────────────────────────────────────
+
+def mark_read(proposal, user, now=None):
+    """Onthoud dat deze gebruiker het voorstel nu opent (niets voor anonieme bezoekers). Commit niet."""
+    if not getattr(user, 'is_authenticated', False):
+        return
+    from app.models import IssueProposalRead
+    now = now or datetime.utcnow()
+    row = IssueProposalRead.query.filter_by(user_id=user.id, issue_proposal_id=proposal.id).first()
+    if row is None:
+        db.session.add(IssueProposalRead(user_id=user.id, issue_proposal_id=proposal.id, last_seen_at=now))
+    else:
+        row.last_seen_at = now
+
+
+def last_seen(proposal_ids, user):
+    """{proposal_id: last_seen_at} voor deze gebruiker ({} voor anonieme bezoekers)."""
+    proposal_ids = list(proposal_ids)
+    if not proposal_ids or not getattr(user, 'is_authenticated', False):
+        return {}
+    from app.models import IssueProposalRead
+    return {pid: at for pid, at in db.session.query(IssueProposalRead.issue_proposal_id, IssueProposalRead.last_seen_at)
+            .filter(IssueProposalRead.user_id == user.id, IssueProposalRead.issue_proposal_id.in_(proposal_ids))}
+
+
+def delete_reads(proposal_ids=None, user_id=None):
+    """Vóór het verwijderen van voorstellen of een gebruiker: de gelezen-stempels weg."""
+    from app.models import IssueProposalRead
+    q = IssueProposalRead.query
+    if proposal_ids is not None:
+        proposal_ids = list(proposal_ids)
+        if not proposal_ids:
+            return
+        q = q.filter(IssueProposalRead.issue_proposal_id.in_(proposal_ids))
+    if user_id is not None:
+        q = q.filter(IssueProposalRead.user_id == user_id)
+    q.delete(synchronize_session=False)
+
+
 def proposals_by_id(ids):
     ids = {i for i in ids if i is not None}
     return {p.id: p for p in IssueProposal.query.filter(IssueProposal.id.in_(ids))} if ids else {}
@@ -426,6 +465,7 @@ def detach_user(user_id):
     """Vóór het verwijderen van een gebruiker: zijn steun weg, zijn naam bij
     zijn voorstellen los (het voorstel blijft bij het vraagstuk)."""
     IssueProposalSupport.query.filter_by(user_id=user_id).delete(synchronize_session='evaluate')
+    delete_reads(user_id=user_id)
     # Stemmen blijven meetellen, zonder naam: de uitslag mag niet veranderen.
     IssueProposalVote.query.filter_by(user_id=user_id).update({IssueProposalVote.user_id: None},
                                                                synchronize_session=False)

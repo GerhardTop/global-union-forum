@@ -1,4 +1,11 @@
-{#- The total number of reactions on a proposal (all versions), calm grey.
-    Expects `n`. Used in the Voorstellen column of the issue page and the
-    proposal page. A "new discussion" marker comes in a later step. -#}
-<span class="gu-rcount">{{ n }} {% if lang == 'nl' %}{{ 'reactie' if n == 1 else 'reacties' }}{% else %}{{ 'reaction' if n == 1 else 'reactions' }}{% endif %}</span>
+{#- The total number of reactions on a proposal (all versions). Expects `n`;
+    `active` (default False) marks new discussion since this reader last
+    opened the proposal: globe-deep, bold, a small blue dot in front (like
+    unread email). Otherwise calm grey. Used in the Voorstellen column of the
+    issue page and the proposal page. -#}
+{%- set label %}{{ n }} {% if lang == 'nl' %}{{ 'reactie' if n == 1 else 'reacties' }}{% else %}{{ 'reaction' if n == 1 else 'reactions' }}{% endif %}{% endset -%}
+{%- if active is defined and active -%}
+<span class="gu-rcount gu-rcount--new"><span class="gu-rcount__dot" aria-hidden="true"></span>{{ label }}<span class="gu-sr-only">, {% if lang == 'nl' %}nieuw{% else %}new{% endif %}</span></span>
+{%- else -%}
+<span class="gu-rcount">{{ label }}</span>
+{%- endif -%}

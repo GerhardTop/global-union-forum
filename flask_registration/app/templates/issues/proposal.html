@@ -300,7 +300,7 @@
             <li>
               <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=p.id) }}" class="gu-pv__pitem{% if p.id == proposal.id %} is-current{% endif %}"{% if p.id == proposal.id %} aria-current="page"{% endif %}>
                 <span class="gu-pv__pitemtxt" lang="{{ p.lang or lang }}">{{ p.statement }}</span>
-                <span class="gu-pv__pitemmeta">{% with proposal=p, count=c %}{% include 'issues/_ip_status.html' %}{% endwith %}<span class="gu-pv__dot" aria-hidden="true"></span><span title="{{ _('Version %(n)s', n=rail_versions[p.id]) }}">v{{ rail_versions[p.id] }}</span><span class="gu-pv__dot" aria-hidden="true"></span>{% with n=reaction_counts.get(p.id, 0) %}{% include 'issues/_reaction_count.html' %}{% endwith %}</span>
+                <span class="gu-pv__pitemmeta">{% with proposal=p, count=c %}{% include 'issues/_ip_status.html' %}{% endwith %}<span class="gu-pv__dot" aria-hidden="true"></span><span title="{{ _('Version %(n)s', n=rail_versions[p.id]) }}">v{{ rail_versions[p.id] }}</span><span class="gu-pv__dot" aria-hidden="true"></span>{% with n=reaction_counts.get(p.id, 0), active=new_discussion.get(p.id, False) %}{% include 'issues/_reaction_count.html' %}{% endwith %}</span>
               </a>
             </li>
             {% endfor %}

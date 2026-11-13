@@ -3452,6 +3452,9 @@ body {
 .gu-cockpit__newproposal { width: 100%; justify-content: center; }
 /* Reaction count per proposal (issue page and proposal page): calm grey. */
 .gu-rcount { font-size: 0.71875rem; color: var(--gu-fg-3); white-space: nowrap; }
+/* New discussion since this reader last opened the proposal (docs/design/voorstel.html .rnew/.nd). */
+.gu-rcount--new { display: inline-flex; align-items: center; gap: 5px; color: var(--gu-globe-deep); font-weight: 600; }
+.gu-rcount__dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--gu-globe-deep); }
 /* The right column under the proposals: right to vote and voting rules. */
 .gu-cockpit__side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .gu-cockpit__rulestext { margin: 0; font-size: 0.8125rem; line-height: 1.55; color: var(--gu-fg-2); }

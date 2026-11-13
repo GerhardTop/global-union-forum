@@ -971,6 +971,19 @@ class IssueProposalVersion(db.Model):
                                                                    cascade='all, delete-orphan'))
 
 
+class IssueProposalRead(db.Model):
+    """Discussie stap 3: wanneer een gebruiker een voorstel voor het laatst
+    opende (UTC). Nieuwere reacties maken de reactieteller actief."""
+    __tablename__ = "issue_proposal_reads"
+
+    id                = db.Column(db.Integer, primary_key=True)
+    user_id           = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    issue_proposal_id = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=False, index=True)
+    last_seen_at      = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'issue_proposal_id', name='uq_issue_proposal_read'),)
+
+
 class IssueProposalSupport(db.Model):
     """Eén steunbetuiging per gebruiker per voorstel (niet het eigen voorstel)."""
     __tablename__ = "issue_proposal_supports"

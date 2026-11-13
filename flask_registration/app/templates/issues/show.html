@@ -155,7 +155,7 @@
             <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</a>
             <span class="gu-reportrow">
               {% include 'issues/_ip_status.html' %}
-              {% with n=reaction_counts.get(proposal.id, 0) %}{% include 'issues/_reaction_count.html' %}{% endwith %}
+              {% with n=reaction_counts.get(proposal.id, 0), active=new_discussion.get(proposal.id, False) %}{% include 'issues/_reaction_count.html' %}{% endwith %}
               {% if current_user.is_authenticated and proposal.created_by_id and proposal.created_by_id != current_user.id %}{% with report_url=url_for('issues.report_proposal', issue_id=issue.id, proposal_id=proposal.id), reported=(proposal.id in (my_reported_proposal_ids or ())), report_id='c' ~ proposal.id %}{% include 'issues/_report_flag.html' %}{% endwith %}{% endif %}
             </span>
           </li>

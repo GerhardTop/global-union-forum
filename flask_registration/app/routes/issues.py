@@ -152,11 +152,12 @@ def show(issue_id):
     top = fact_signals.listing(visible, order='kwaliteit')  # kwaliteit eerst: merk, dan een link als bron
     proposal_rows = ip.listing(issue, order='stemlijst')
     my_reported_proposal_ids = _reported_proposal_ids([p.id for p, _c in proposal_rows])
+    reaction_counts, new_discussion = _reaction_stats([p for p, _c in proposal_rows])
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
                            proposal_rows=proposal_rows, proposals_shown=COCKPIT_PROPOSALS,
-                           reaction_counts=_reaction_counts([p for p, _c in proposal_rows]),
+                           reaction_counts=reaction_counts, new_discussion=new_discussion,
                            proposal_total=ip.regular_query(issue).count(),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
@@ -357,6 +358,12 @@ def proposal(issue_id, proposal_id):
     final = ip.final_proposal(issue)
     if final is not None:
         rail_proposals.insert(0, (final, ip.support_counts([final.id]).get(final.id, 0)))
+    # Discussie stap 3: eerst het openen onthouden, dan de markeringen, zodat
+    # dit voorstel in de eigen kolom rechts grijs staat.
+    if current_user.is_authenticated:
+        ip.mark_read(proposal, current_user)
+        db.session.commit()
+    reaction_counts, new_discussion = _reaction_stats([p for p, _c in rail_proposals])
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),
                            can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data,
@@ -369,7 +376,7 @@ def proposal(issue_id, proposal_id):
                            rail_facts=fact_signals.listing(issue_facts, order='kwaliteit'),
                            rail_proposals=rail_proposals, rail_shown=RAIL_SHOWN,
                            rail_versions={p.id: ip.current_version(p) for p, _c in rail_proposals},
-                           reaction_counts=_reaction_counts([p for p, _c in rail_proposals]),
+                           reaction_counts=reaction_counts, new_discussion=new_discussion,
                            fact_marks=fact_signals.marked_ids(issue_fact_ids),
                            my_reported_ids=_reported_fact_ids(issue_fact_ids))
 
@@ -397,15 +404,27 @@ def _visible_reactions(proposal):
     return _visible_to_reader(ip.reactions(proposal))
 
 
-def _reaction_counts(proposals):
-    """{proposal_id: n}: per voorstel het totaal aantal reacties dat deze lezer
-    ziet, over alle versies (dezelfde telling als op de voorstelpagina)."""
+def _reaction_stats(proposals):
+    """({proposal_id: n}, {proposal_id: nieuw}) in één ronde over de reacties
+    die deze lezer ziet, over alle versies (dezelfde telling als op de
+    voorstelpagina). Nieuw (discussie stap 3): een zichtbare reactie van na
+    het laatste openen van het voorstel door deze lezer, of nooit geopend en er
+    is minstens één reactie. Een anonieme bezoeker: nooit nieuw."""
     ids = [p.id for p in proposals]
-    counts = dict.fromkeys(ids, 0)
+    counts, latest = dict.fromkeys(ids, 0), {}
     if ids:
         for post in _visible_to_reader(ip.reactions_for(ids)):
-            counts[post.issue_proposal_id] += 1
-    return counts
+            pid = post.issue_proposal_id
+            counts[pid] += 1
+            if post.created_at is not None and (pid not in latest or post.created_at > latest[pid]):
+                latest[pid] = post.created_at
+    new = dict.fromkeys(ids, False)
+    if current_user.is_authenticated:
+        seen = ip.last_seen(ids, current_user)
+        for pid in ids:
+            if counts[pid]:
+                new[pid] = pid not in seen or (pid in latest and latest[pid] > seen[pid])
+    return counts, new
 
 
 def _can_react(issue):
