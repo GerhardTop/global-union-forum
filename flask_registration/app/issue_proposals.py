@@ -208,6 +208,11 @@ def reactions(proposal):
             .order_by(Post.created_at, Post.id).all())
 
 
+def reactions_for(proposal_ids):
+    """Alle reacties bij deze voorstellen in één query (voor de tellers in de lijsten)."""
+    return Post.query.filter(Post.issue_proposal_id.in_(list(proposal_ids))).all()
+
+
 def proposals_by_id(ids):
     ids = {i for i in ids if i is not None}
     return {p.id: p for p in IssueProposal.query.filter(IssueProposal.id.in_(ids))} if ids else {}

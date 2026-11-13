@@ -156,6 +156,7 @@ def show(issue_id):
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
                            proposal_rows=proposal_rows, proposals_shown=COCKPIT_PROPOSALS,
+                           reaction_counts=_reaction_counts([p for p, _c in proposal_rows]),
                            proposal_total=ip.regular_query(issue).count(),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
@@ -335,9 +336,11 @@ def proposal_new(issue_id):
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>')
 def proposal(issue_id, proposal_id):
-    """The proposal screen (docs/design/voorstel.html): a context rail with the
-    issue's facts and proposals, then the proposal with its earlier versions
-    collapsed above the current one, and the reactions grouped per version."""
+    """The proposal screen (docs/design/voorstel.html), in the same three-column
+    frame as the issue page: facts on the left, the proposal with its earlier
+    versions collapsed above the current one and the reactions grouped per
+    version in the middle, the issue's proposals with their reaction counts on
+    the right."""
     issue = _issue_or_404(issue_id)
     proposal = _proposal_or_404(issue, proposal_id)
     count = ip.support_counts([proposal.id]).get(proposal.id, 0)
@@ -366,6 +369,7 @@ def proposal(issue_id, proposal_id):
                            rail_facts=fact_signals.listing(issue_facts, order='kwaliteit'),
                            rail_proposals=rail_proposals, rail_shown=RAIL_SHOWN,
                            rail_versions={p.id: ip.current_version(p) for p, _c in rail_proposals},
+                           reaction_counts=_reaction_counts([p for p, _c in rail_proposals]),
                            fact_marks=fact_signals.marked_ids(issue_fact_ids),
                            my_reported_ids=_reported_fact_ids(issue_fact_ids))
 
@@ -382,12 +386,26 @@ def _versions_with_reactions(proposal):
     return [{'version': v, 'reactions': by_number.get(v.number, [])} for v in rows]
 
 
+def _visible_to_reader(posts):
+    """De berichten die deze lezer ziet (verplaatst of verborgen is weg, zoals in de discussie)."""
+    cases = conduct.cases_for([p.id for p in posts])
+    return [p for p in posts if p.id not in cases or not conduct.removed_for(p, cases[p.id], current_user)]
+
+
 def _visible_reactions(proposal):
-    """Polijstronde P5: de reacties bij dit voorstel die deze lezer ziet
-    (verplaatst of verborgen is weg, zoals in de discussie)."""
-    rows = ip.reactions(proposal)
-    cases = conduct.cases_for([p.id for p in rows])
-    return [p for p in rows if p.id not in cases or not conduct.removed_for(p, cases[p.id], current_user)]
+    """Polijstronde P5: de reacties bij dit voorstel die deze lezer ziet."""
+    return _visible_to_reader(ip.reactions(proposal))
+
+
+def _reaction_counts(proposals):
+    """{proposal_id: n}: per voorstel het totaal aantal reacties dat deze lezer
+    ziet, over alle versies (dezelfde telling als op de voorstelpagina)."""
+    ids = [p.id for p in proposals]
+    counts = dict.fromkeys(ids, 0)
+    if ids:
+        for post in _visible_to_reader(ip.reactions_for(ids)):
+            counts[post.issue_proposal_id] += 1
+    return counts
 
 
 def _can_react(issue):

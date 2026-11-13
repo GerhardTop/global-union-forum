@@ -3450,6 +3450,8 @@ body {
 .gu-cockpit__proposal a { font-weight: 400; color: var(--gu-fg-1); text-decoration: none; overflow-wrap: anywhere; }
 .gu-cockpit__proposal a:hover { color: var(--gu-globe-deep); }
 .gu-cockpit__newproposal { width: 100%; justify-content: center; }
+/* Reaction count per proposal (issue page and proposal page): calm grey. */
+.gu-rcount { font-size: 0.71875rem; color: var(--gu-fg-3); white-space: nowrap; }
 /* The right column under the proposals: right to vote and voting rules. */
 .gu-cockpit__side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .gu-cockpit__rulestext { margin: 0; font-size: 0.8125rem; line-height: 1.55; color: var(--gu-fg-2); }
@@ -3483,7 +3485,7 @@ body {
   }
   .gu-cockpit__tabs { display: none !important; }
   .gu-cockpit__facts { grid-area: facts; }
-  .gu-cockpit__discussion { grid-area: discussion; }
+  .gu-cockpit__discussion, .gu-cockpit__main { grid-area: discussion; }
   .gu-cockpit__proposals { grid-area: proposals; }
   .gu-cockpit__side { grid-area: rights; }
 }
@@ -4426,7 +4428,9 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 
 /* ── Proposal screen (docs/design/voorstel.html) ─────────────────────── */
 .gu-pv [hidden] { display: none !important; }
-.gu-pv__inner { max-width: 1200px; margin: 0 auto; padding: 22px 40px 64px; }
+/* The page sits in the issue page's cockpit frame (.gu-cockpit__inner and
+   .gu-cockpit__grid: 1280px, 280px / wide / 280px, gap 20px). */
+.gu-pv__head { margin-bottom: 24px; }
 .gu-pv__crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.8125rem; color: var(--gu-fg-3); }
 .gu-pv__crumbs a { color: var(--gu-fg-2); text-decoration: none; }
 .gu-pv__crumbs a:hover { color: var(--gu-globe-deep); }
@@ -4437,26 +4441,7 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__question:hover { color: var(--gu-globe-deep); }
 .gu-pv__phase { margin-top: 20px; }
 
-.gu-pv__layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; margin-top: 26px; align-items: start; }
-.gu-pv__rail { position: sticky; top: 20px; min-width: 0; max-height: calc(100vh - 40px); overflow-y: auto; }
-.gu-pv__railcard {
-  padding: 14px 16px; background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 14px;
-  box-shadow: 0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05);
-}
-.gu-pv__railtabs { display: flex; gap: 18px; margin-bottom: 12px; border-bottom: 1px solid var(--gu-border); }
-.gu-pv__railtab {
-  display: inline-flex; align-items: center; gap: 6px; margin-bottom: -1px; padding: 0 0 9px;
-  border: 0; border-bottom: 2px solid transparent; background: none; cursor: pointer; white-space: nowrap;
-  font: inherit; font-size: 0.78125rem; font-weight: 500; color: var(--gu-fg-3);
-}
-.gu-pv__railtab[aria-selected="true"] { color: var(--gu-fg-1); font-weight: 600; border-bottom-color: var(--gu-globe-deep); }
 .gu-pv__cnt { font-size: 0.6875rem; font-weight: 500; color: var(--gu-fg-3); }
-.gu-pv__railtab[aria-selected="true"] .gu-pv__cnt { color: var(--gu-globe-deep); }
-/* With tabs (JavaScript) the panel headings are redundant; without, both lists show with a heading. */
-.gu-pv__railhead { margin: 0 0 10px; font-size: 0.8125rem; font-weight: 600; color: var(--gu-fg-1); }
-.gu-pv--tabs .gu-pv__railhead { display: none; }
-.gu-pv__railpanel + .gu-pv__railpanel { margin-top: 18px; }
-.gu-pv--tabs .gu-pv__railpanel + .gu-pv__railpanel { margin-top: 0; }
 .gu-pv__facts { margin: 0; }
 .gu-pv__plist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .gu-pv__pitem { display: block; padding: 11px 12px; border: 1px solid var(--gu-border); border-radius: 10px; background: var(--gu-paper); text-decoration: none; }
@@ -4499,8 +4484,10 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 
 .gu-pv__main { min-width: 0; }
 /* The button stays top right on the first line; the meta wraps on the left. */
-.gu-pv__headrow { display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.gu-pv__statusrow { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--gu-fg-2); }
+.gu-pv__body { padding: 16px 20px 20px; }
+/* "Adjust proposal" (proposer only) on its own row, top right; the meta below. */
+.gu-pv__top { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+.gu-pv__statusrow { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--gu-fg-2); }
 .gu-pv__revisebtn { flex: 0 0 auto; white-space: nowrap; }
 .gu-pv__statusrow .gu-ip-status { font-size: 0.75rem; padding: 3px 10px; }
 .gu-pv__statusrow .gu-ip-supportform { margin: 0; }
@@ -4533,9 +4520,10 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 
 .gu-pv__curhead { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 22px 0 0; font-size: 0.8125rem; color: var(--gu-fg-3); }
 .gu-pv__vcur { padding: 2px 10px; border: 1px solid #c5dcf4; border-radius: 999px; background: #eaf2fb; font-size: 0.6875rem; font-weight: 600; color: var(--gu-globe-deep); white-space: nowrap; }
-.gu-pv__statement { margin: 10px 0 0; font-size: 1.875rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; color: var(--gu-fg-1); overflow-wrap: anywhere; }
+.gu-pv__statement { margin: 9px 0 0; font-size: 1.25rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; color: var(--gu-fg-1); overflow-wrap: anywhere; }
 
 .gu-pv__section { margin-top: 26px; }
+.gu-pv__disc { padding-top: 16px; border-top: 1px solid var(--gu-n-100); }
 .gu-pv__h { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 0.9375rem; font-weight: 600; color: var(--gu-fg-1); }
 .gu-pv__h--sub { margin-top: 16px; font-size: 0.875rem; }
 .gu-pv__n { font-size: 0.8125rem; font-weight: 500; color: var(--gu-fg-3); }
@@ -4562,12 +4550,10 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__cmtactions a { color: var(--gu-fg-2); }
 .gu-pv #beheer-admin { margin-top: 26px; }
 
-/* Phone: the rail stacks above the main column. */
+/* Phone: the cockpit's tabs and stacking (see .gu-cockpit__grid); only the
+   version rows need a narrow layout. */
 @media (max-width: 880px) {
-  .gu-pv__inner { padding: 16px 16px 48px; }
-  .gu-pv__layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-  .gu-pv__rail { position: static; max-height: none; overflow: visible; }
-  .gu-pv__statement { font-size: 1.5rem; }
+  .gu-pv__body { padding: 14px 16px 18px; }
   .gu-pv__vrow { flex-wrap: wrap; gap: 4px 10px; }
   .gu-pv__vsum { flex-basis: 100%; order: 5; padding-left: 26px; }
   .gu-pv__vbody { padding-left: 15px; }

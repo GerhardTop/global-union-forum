@@ -3,17 +3,18 @@
 
 {#
   The proposal screen, built to docs/design/voorstel.html. Same shell as the
-  issue page: a back link and breadcrumb, the question, and the phase bar.
-  Then two columns. The context rail: facts and background (with this
-  proposal / all, linking facts for whoever may) or proposals, ten at a time
-  with "show more", the current proposal highlighted. The main column:
-  status, author, support and a quiet link to the issue's voting rules, with
-  "Adjust proposal" for the proposer pinned top right, the
-  earlier versions collapsed on top (opening one shows its text and the
-  reactions made on it), then the current version in full with its
+  issue page (a back link and breadcrumb, the question, the phase bar) and the
+  same three-column cockpit frame with the same widths (.gu-cockpit__grid:
+  280px / wide / 280px). Left: facts and background, with this proposal / all
+  and linking facts for whoever may. Middle: the proposal: status, author,
+  support and a quiet link to the issue's voting rules, "Adjust proposal" for
+  the proposer top right, the earlier versions collapsed (opening one shows its
+  text and the reactions made on it), then the current version with its
   explanation, the vote while voting is open or over, and the reactions.
-  On a phone the rail stacks above the main column. Without JavaScript the
-  rail shows all lists and the versions open with <details>.
+  Right: the issue's proposals, ten at a time with "show more", the current one
+  highlighted, each with its status, version and reaction count. On a phone
+  the cockpit's tabs, with the proposal open first. Without JavaScript the
+  columns stack and the versions open with <details>.
   Context: see routes/issues.py proposal().
 #}
 {% block content_outer %}{% block content %}
@@ -22,166 +23,158 @@
 {% set by_name = proposal.created_by.public_name if proposal.created_by else '@deleted_user' %}
 {% set current = versions[-1] %}
 {% set older = versions[:-1] %}
-<main class="gu-forum gu-forum--soft gu-ipdetail gu-pv" lang="{{ lang }}" id="voorstel">
-  <div class="gu-pv__inner">
+{% set expand_icon %}<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>{% endset %}
+<main class="gu-forum gu-cockpit gu-ipdetail gu-pv" lang="{{ lang }}" id="voorstel">
+  <div class="gu-cockpit__inner">
 
-    <nav class="gu-pv__crumbs" aria-label="{{ _('Breadcrumb') }}">
-      <a class="gu-pv__back" href="{{ url_for('issues.show', issue_id=issue.id) }}">&lsaquo; {% if nl %}Terug naar het vraagstuk{% else %}Back to the issue{% endif %}</a>
-      <span class="gu-pv__crumbsep" aria-hidden="true">|</span>
-      <a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a><span aria-hidden="true">/</span>
-      <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals') }}</a><span aria-hidden="true">/</span>
-      <span aria-current="page">{{ _('Proposal') }}</span>
-    </nav>
-    <p class="gu-eyebrow">{{ _('Proposal') }}{% if proposal.is_final %} · <span class="gu-ip-final">{{ _('Summary proposal') }}</span>{% endif %}</p>
-    <a class="gu-pv__question" href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
+    <header class="gu-pv__head">
+      <nav class="gu-pv__crumbs" aria-label="{{ _('Breadcrumb') }}">
+        <a class="gu-pv__back" href="{{ url_for('issues.show', issue_id=issue.id) }}">&lsaquo; {% if nl %}Terug naar het vraagstuk{% else %}Back to the issue{% endif %}</a>
+        <span class="gu-pv__crumbsep" aria-hidden="true">|</span>
+        <a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a><span aria-hidden="true">/</span>
+        <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals') }}</a><span aria-hidden="true">/</span>
+        <span aria-current="page">{{ _('Proposal') }}</span>
+      </nav>
+      <p class="gu-eyebrow">{{ _('Proposal') }}{% if proposal.is_final %} · <span class="gu-ip-final">{{ _('Summary proposal') }}</span>{% endif %}</p>
+      <a class="gu-pv__question" href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
 
-    <section class="gu-pv__phase" aria-label="{{ _('Phases of the issue') }}">
-      {% include 'issues/_steps.html' %}
-    </section>
+      <section class="gu-pv__phase" aria-label="{{ _('Phases of the issue') }}">
+        {% include 'issues/_steps.html' %}
+      </section>
+    </header>
 
-    <div class="gu-pv__layout">
+    <div class="gu-cockpit__grid">
 
-      {# ── Context rail ─────────────────────────────────────────────── #}
-      <aside class="gu-pv__rail" aria-label="{% if nl %}Context{% else %}Context{% endif %}">
-        <div class="gu-pv__railcard">
-          <div class="gu-pv__railtabs" role="tablist" hidden>
-            <button type="button" role="tab" class="gu-pv__railtab" id="railtab-facts" aria-controls="rail-facts" data-rail-tab="facts" aria-selected="true">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-pv__cnt">{{ rail_facts | length }}</span></button>
-            <button type="button" role="tab" class="gu-pv__railtab" id="railtab-proposals" aria-controls="rail-proposals" data-rail-tab="proposals" aria-selected="false" tabindex="-1">{{ _('Proposals') }} <span class="gu-pv__cnt">{{ rail_proposals | length }}</span></button>
+      {# Phone: the cockpit's tabs, in the order of the columns; the proposal first. #}
+      <div class="gu-cockpit__tabs" role="tablist" aria-label="{{ _('Proposal') }}" hidden>
+        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-facts" aria-controls="panel-facts" data-tab="facts" aria-selected="false" tabindex="-1">{{ _('Facts and background') }}</button>
+        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-proposal" aria-controls="panel-proposal" data-tab="proposal" aria-selected="true">{{ _('Proposal') }}</button>
+        <button type="button" role="tab" class="gu-cockpit__tab" id="tab-proposals" aria-controls="panel-proposals" data-tab="proposals" aria-selected="false" tabindex="-1">{{ _('Proposals') }}</button>
+      </div>
+
+      {# ── Left: facts and background ──────────────────────────────── #}
+      <section class="gu-cockpit__panel gu-cockpit__facts gu-pv__factscol" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
+        <div class="gu-cockpit__panelhead">
+          <h2 class="gu-cockpit__title" id="factsTitle">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-facts__count">{{ rail_facts | length }}</span></h2>
+          <a class="gu-iconbtn" href="{{ url_for('issues.facts', issue_id=issue.id) }}" title="{{ _('All facts, research and media') }}" aria-label="{{ _('All facts, research and media') }}">{{ expand_icon }}</a>
+        </div>
+        <div class="gu-cockpit__box">
+          {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
+          {% set fact_errs = (errors or {}).get('fact', {}) %}
+          {% set link_by_fact = {} %}
+          {% for row, fact in links %}{% set _ignored = link_by_fact.update({fact.id: row}) %}{% endfor %}
+          {# Which facts: the ones linked to this proposal (default) or all of the issue's. Without JavaScript both lists show. #}
+          <div class="gu-pv__subseg" role="group" aria-label="{% if nl %}Welke feiten{% else %}Which facts{% endif %}" hidden>
+            <button type="button" data-fact-view="linked" aria-pressed="true">{% if nl %}Bij dit voorstel{% else %}With this proposal{% endif %} <span class="gu-pv__c">{{ links | length }}</span></button>
+            <button type="button" data-fact-view="all" aria-pressed="false">{% if nl %}Alle{% else %}All{% endif %} <span class="gu-pv__c">{{ rail_facts | length }}</span></button>
           </div>
 
-          <div class="gu-pv__railpanel" id="rail-facts" data-rail-panel="facts" role="tabpanel" aria-labelledby="railtab-facts">
-            <h2 class="gu-pv__railhead">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-pv__cnt">{{ rail_facts | length }}</span></h2>
-            {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
-            {% set fact_errs = (errors or {}).get('fact', {}) %}
-            {% set link_by_fact = {} %}
-            {% for row, fact in links %}{% set _ignored = link_by_fact.update({fact.id: row}) %}{% endfor %}
-            {# Which facts: the ones linked to this proposal (default) or all of the issue's. Without JavaScript both lists show. #}
-            <div class="gu-pv__subseg" role="group" aria-label="{% if nl %}Welke feiten{% else %}Which facts{% endif %}" hidden>
-              <button type="button" data-fact-view="linked" aria-pressed="true">{% if nl %}Bij dit voorstel{% else %}With this proposal{% endif %} <span class="gu-pv__c">{{ links | length }}</span></button>
-              <button type="button" data-fact-view="all" aria-pressed="false">{% if nl %}Alle{% else %}All{% endif %} <span class="gu-pv__c">{{ rail_facts | length }}</span></button>
-            </div>
-
-            <div class="gu-pv__factview" id="basis" data-fact-panel="linked">
-              <h3 class="gu-pv__subhead">{% if nl %}Bij dit voorstel{% else %}With this proposal{% endif %} <span class="gu-pv__cnt">{{ links | length }}</span></h3>
-              {% if links %}
-              <ol class="gu-cockpit__factlist gu-pv__facts" data-rail-list>
-                {% for row, fact in links %}
-                <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}" id="koppeling-{{ row.id }}">
-                  {% include 'issues/_fact_card.html' %}
-                  <div class="gu-pv__factmeta">
-                    <span>{{ _('Linked by') }} {{ row.linked_by.public_name if row.linked_by else '@deleted_user' }}</span>
-                    {% if can_unlink(row) %}
-                    <form method="POST" action="{{ url_for('issues.proposal_unlink', issue_id=issue.id, proposal_id=proposal.id, link_id=row.id) }}">
-                      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-                      <button type="submit" class="gu-pv__factbtn">{{ _('Unlink') }}</button>
-                    </form>
-                    {% endif %}
-                  </div>
-                </li>
-                {% endfor %}
-              </ol>
-              {% if links | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
-              {% else %}
-              <p class="gu-composer__hint">{{ _('No facts linked yet.') }}</p>
-              {% endif %}
-            </div>
-
-            <div class="gu-pv__factview" data-fact-panel="all">
-              <h3 class="gu-pv__subhead">{% if nl %}Alle feiten{% else %}All facts{% endif %} <span class="gu-pv__cnt">{{ rail_facts | length }}</span></h3>
-              {% if rail_facts %}
-              <ol class="gu-cockpit__factlist gu-pv__facts" data-rail-list>
-                {% for fact in rail_facts %}
-                {% set row = link_by_fact.get(fact.id) %}
-                <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}">
-                  {% include 'issues/_fact_card.html' %}
-                  {% if row or can_link %}
-                  <div class="gu-pv__factmeta">
-                    {% if row %}<span class="gu-pv__linked">{% if nl %}Gekoppeld{% else %}Linked{% endif %}</span>{% endif %}
-                    {% if row and can_unlink(row) %}
-                    <form method="POST" action="{{ url_for('issues.proposal_unlink', issue_id=issue.id, proposal_id=proposal.id, link_id=row.id) }}">
-                      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-                      <button type="submit" class="gu-pv__factbtn">{{ _('Unlink') }}</button>
-                    </form>
-                    {% elif not row and can_link %}
-                    <form method="POST" action="{{ url_for('issues.proposal_link', issue_id=issue.id, proposal_id=proposal.id) }}">
-                      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-                      <input type="hidden" name="fact_ids" value="{{ fact.id }}">
-                      <button type="submit" class="gu-pv__factbtn">{{ _('Link') }}</button>
-                    </form>
-                    {% endif %}
-                  </div>
+          <div class="gu-pv__factview" id="basis" data-fact-panel="linked">
+            <h3 class="gu-pv__subhead">{% if nl %}Bij dit voorstel{% else %}With this proposal{% endif %} <span class="gu-pv__cnt">{{ links | length }}</span></h3>
+            {% if links %}
+            <ol class="gu-cockpit__factlist gu-pv__facts" data-rail-list>
+              {% for row, fact in links %}
+              <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}" id="koppeling-{{ row.id }}">
+                {% include 'issues/_fact_card.html' %}
+                <div class="gu-pv__factmeta">
+                  <span>{{ _('Linked by') }} {{ row.linked_by.public_name if row.linked_by else '@deleted_user' }}</span>
+                  {% if can_unlink(row) %}
+                  <form method="POST" action="{{ url_for('issues.proposal_unlink', issue_id=issue.id, proposal_id=proposal.id, link_id=row.id) }}">
+                    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                    <button type="submit" class="gu-pv__factbtn">{{ _('Unlink') }}</button>
+                  </form>
                   {% endif %}
-                </li>
-                {% endfor %}
-              </ol>
-              {% if rail_facts | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
-              {% else %}
-              <p class="gu-composer__hint">{{ _('No facts yet.') }}</p>
-              {% endif %}
-              <a class="gu-pv__railmore" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts, research and media') }} &rsaquo;</a>
-            </div>
-
-            {% if can_link %}
-            <details class="gu-pv__linkdet" id="feiten-koppelen"{% if fact_errs %} open{% endif %}>
-              <summary>{% if nl %}Feiten koppelen{% else %}Link facts{% endif %} &rsaquo;</summary>
-              <p class="gu-composer__hint">{{ _('Anyone can link facts, also facts that argue against the proposal. The direction stays visible.') }}</p>
-              {% if candidates %}
-              <form method="POST" action="{{ url_for('issues.proposal_link', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-pv__linkform">
-                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-                {% with choices=candidates, chosen=[] %}{% include 'issues/_fact_choices.html' %}{% endwith %}
-                <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Link') }}</button>
-              </form>
-              {% else %}
-              <p class="gu-composer__hint">{{ _('There are no other facts in this issue to link.') }}</p>
-              {% endif %}
-              {% if can_add_fact %}
-              <form method="POST" action="{{ url_for('issues.proposal_new_fact', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-fact-form gu-pv__newfact" novalidate>
-                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-                <p class="gu-fact-form__title">{{ _('Or add a new fact') }}</p>
-                {% from 'forum/_fact_fields.html' import fact_fields with context %}
-                {{ fact_fields('basis-fact', (form_data or {}).get('fact') or {}, fact_errs) }}
-                <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Add and link') }}</button>
-              </form>
-              {% endif %}
-            </details>
+                </div>
+              </li>
+              {% endfor %}
+            </ol>
+            {% if links | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
+            {% else %}
+            <p class="gu-composer__hint">{{ _('No facts linked yet.') }}</p>
             {% endif %}
           </div>
 
-          <div class="gu-pv__railpanel" id="rail-proposals" data-rail-panel="proposals" role="tabpanel" aria-labelledby="railtab-proposals">
-            <h2 class="gu-pv__railhead">{{ _('Proposals') }} <span class="gu-pv__cnt">{{ rail_proposals | length }}</span></h2>
-            <ul class="gu-pv__plist" data-rail-list>
-              {% for p, c in rail_proposals %}
-              <li>
-                <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=p.id) }}" class="gu-pv__pitem{% if p.id == proposal.id %} is-current{% endif %}"{% if p.id == proposal.id %} aria-current="page"{% endif %}>
-                  <span class="gu-pv__pitemtxt" lang="{{ p.lang or lang }}">{{ p.statement }}</span>
-                  <span class="gu-pv__pitemmeta">{% with proposal=p, count=c %}{% include 'issues/_ip_status.html' %}{% endwith %}<span class="gu-pv__dot" aria-hidden="true"></span><span title="{{ _('Version %(n)s', n=rail_versions[p.id]) }}">v{{ rail_versions[p.id] }}</span></span>
-                </a>
+          <div class="gu-pv__factview" data-fact-panel="all">
+            <h3 class="gu-pv__subhead">{% if nl %}Alle feiten{% else %}All facts{% endif %} <span class="gu-pv__cnt">{{ rail_facts | length }}</span></h3>
+            {% if rail_facts %}
+            <ol class="gu-cockpit__factlist gu-pv__facts" data-rail-list>
+              {% for fact in rail_facts %}
+              {% set row = link_by_fact.get(fact.id) %}
+              <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}">
+                {% include 'issues/_fact_card.html' %}
+                {% if row or can_link %}
+                <div class="gu-pv__factmeta">
+                  {% if row %}<span class="gu-pv__linked">{% if nl %}Gekoppeld{% else %}Linked{% endif %}</span>{% endif %}
+                  {% if row and can_unlink(row) %}
+                  <form method="POST" action="{{ url_for('issues.proposal_unlink', issue_id=issue.id, proposal_id=proposal.id, link_id=row.id) }}">
+                    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                    <button type="submit" class="gu-pv__factbtn">{{ _('Unlink') }}</button>
+                  </form>
+                  {% elif not row and can_link %}
+                  <form method="POST" action="{{ url_for('issues.proposal_link', issue_id=issue.id, proposal_id=proposal.id) }}">
+                    {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                    <input type="hidden" name="fact_ids" value="{{ fact.id }}">
+                    <button type="submit" class="gu-pv__factbtn">{{ _('Link') }}</button>
+                  </form>
+                  {% endif %}
+                </div>
+                {% endif %}
               </li>
               {% endfor %}
-            </ul>
-            {% if rail_proposals | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
-            <a class="gu-pv__railmore" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{% if nl %}Alle voorstellen{% else %}All proposals{% endif %} &rsaquo;</a>
+            </ol>
+            {% if rail_facts | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
+            {% else %}
+            <p class="gu-composer__hint">{{ _('No facts yet.') }}</p>
+            {% endif %}
+            <a class="gu-pv__railmore" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts, research and media') }} &rsaquo;</a>
           </div>
-        </div>
-      </aside>
 
-      {# ── Main column ──────────────────────────────────────────────── #}
-      <div class="gu-pv__main">
-        <div class="gu-pv__headrow">
-          <div class="gu-pv__statusrow">
-            {% include 'issues/_ip_status.html' %}
-            <span>{% if nl %}door{% else %}by{% endif %} {{ by_name }}</span>
-            {# The separator is bound to the item after it, so a line break never strands it. #}
-            <span class="gu-pv__metaitem"><span class="gu-pv__sep" aria-hidden="true">&middot;</span>
-            <span class="gu-pv__steun"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
-              {%- if nl %}{{ count }} {{ 'steunbetuiging' if count == 1 else 'steunbetuigingen' }}{% else %}{{ count }} {{ 'supporter' if count == 1 else 'supporters' }}{% endif %}</span></span>
-            {# The voting rules belong to the issue, so only a quiet link to it. #}
-            <a class="gu-pv__ruleslink" href="{{ url_for('issues.show', issue_id=issue.id) }}#stemregels">{% if nl %}Stemregels bij dit vraagstuk{% else %}Voting rules for this issue{% endif %}</a>
-            {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
-          </div>
-          {% if can_revise %}
-          <a class="gu-btn gu-btn--primary gu-btn--sm gu-pv__revisebtn" href="#bijstellen">{% if nl %}Voorstel aanpassen{% else %}Adjust proposal{% endif %}</a>
+          {% if can_link %}
+          <details class="gu-pv__linkdet" id="feiten-koppelen"{% if fact_errs %} open{% endif %}>
+            <summary>{% if nl %}Feiten koppelen{% else %}Link facts{% endif %} &rsaquo;</summary>
+            <p class="gu-composer__hint">{{ _('Anyone can link facts, also facts that argue against the proposal. The direction stays visible.') }}</p>
+            {% if candidates %}
+            <form method="POST" action="{{ url_for('issues.proposal_link', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-pv__linkform">
+              {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+              {% with choices=candidates, chosen=[] %}{% include 'issues/_fact_choices.html' %}{% endwith %}
+              <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Link') }}</button>
+            </form>
+            {% else %}
+            <p class="gu-composer__hint">{{ _('There are no other facts in this issue to link.') }}</p>
+            {% endif %}
+            {% if can_add_fact %}
+            <form method="POST" action="{{ url_for('issues.proposal_new_fact', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-fact-form gu-pv__newfact" novalidate>
+              {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+              <p class="gu-fact-form__title">{{ _('Or add a new fact') }}</p>
+              {% from 'forum/_fact_fields.html' import fact_fields with context %}
+              {{ fact_fields('basis-fact', (form_data or {}).get('fact') or {}, fact_errs) }}
+              <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Add and link') }}</button>
+            </form>
+            {% endif %}
+          </details>
           {% endif %}
+        </div>
+      </section>
+
+      {# ── Middle: the proposal ────────────────────────────────────── #}
+      <section class="gu-cockpit__panel gu-cockpit__main gu-pv__main" id="panel-proposal" data-panel="proposal" role="tabpanel" aria-labelledby="tab-proposal">
+        <div class="gu-cockpit__box gu-pv__body">
+        {% if can_revise %}
+        <div class="gu-pv__top">
+          <a class="gu-btn gu-btn--primary gu-btn--sm gu-pv__revisebtn" href="#bijstellen">{% if nl %}Voorstel aanpassen{% else %}Adjust proposal{% endif %}</a>
+        </div>
+        {% endif %}
+        <div class="gu-pv__statusrow">
+          {% include 'issues/_ip_status.html' %}
+          <span>{% if nl %}door{% else %}by{% endif %} {{ by_name }}</span>
+          {# The separator is bound to the item after it, so a line break never strands it. #}
+          <span class="gu-pv__metaitem"><span class="gu-pv__sep" aria-hidden="true">&middot;</span>
+          <span class="gu-pv__steun"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+            {%- if nl %}{{ count }} {{ 'steunbetuiging' if count == 1 else 'steunbetuigingen' }}{% else %}{{ count }} {{ 'supporter' if count == 1 else 'supporters' }}{% endif %}</span></span>
+          {# The voting rules belong to the issue, so only a quiet link to it. #}
+          <span class="gu-pv__metaitem"><span class="gu-pv__sep" aria-hidden="true">&middot;</span>
+          <a class="gu-pv__ruleslink" href="{{ url_for('issues.show', issue_id=issue.id) }}#stemregels">{% if nl %}Stemregels bij dit vraagstuk{% else %}Voting rules for this issue{% endif %}</a></span>
+          {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
         </div>
 
         {% if can_revise %}
@@ -260,13 +253,13 @@
           {% endif %}
         </section>
 
-        {# Casting a vote and the result: only while voting is open or after it (the rules are in the rail). #}
+        {# Casting a vote and the result: only while voting is open or after it. #}
         {% if vote.on_list and (vote.open or vote.over) %}
         <div class="gu-pv__section">{% include 'issues/_ip_vote.html' %}</div>
         {% endif %}
 
         {# Reactions on the current version (earlier ones sit with their version above). #}
-        <section class="gu-pv__section" id="reacties" aria-labelledby="reactionsTitle">
+        <section class="gu-pv__section gu-pv__disc" id="reacties" aria-labelledby="reactionsTitle">
           <h2 class="gu-pv__h" id="reactionsTitle">{% if nl %}Reacties op versie {{ current_version }}{% else %}Reactions to version {{ current_version }}{% endif %} <span class="gu-pv__n">({{ current.reactions | length }})</span></h2>
           {% if can_react %}
           <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=issue.thread_id) }}" class="gu-pv__composer">
@@ -295,40 +288,63 @@
           <a class="gu-btn gu-btn--danger gu-btn--sm" href="{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}">{% if nl %}Voorstel verwijderen{% else %}Delete proposal{% endif %}</a>
         </details>
         {% endif %}
-      </div>
-    </div>
+        </div>
+      </section>
 
+      {# ── Right: the issue's proposals ────────────────────────────── #}
+      <section class="gu-cockpit__panel gu-cockpit__proposals gu-pv__proposalscol" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
+        <div class="gu-cockpit__panelhead">
+          <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }} <span class="gu-facts__count">{{ rail_proposals | length }}</span></h2>
+          <a class="gu-iconbtn" href="{{ url_for('issues.proposals', issue_id=issue.id) }}" title="{% if nl %}Alle voorstellen{% else %}All proposals{% endif %}" aria-label="{% if nl %}Alle voorstellen{% else %}All proposals{% endif %}">{{ expand_icon }}</a>
+        </div>
+        <div class="gu-cockpit__box">
+          <ul class="gu-pv__plist" data-rail-list>
+            {% for p, c in rail_proposals %}
+            <li>
+              <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=p.id) }}" class="gu-pv__pitem{% if p.id == proposal.id %} is-current{% endif %}"{% if p.id == proposal.id %} aria-current="page"{% endif %}>
+                <span class="gu-pv__pitemtxt" lang="{{ p.lang or lang }}">{{ p.statement }}</span>
+                <span class="gu-pv__pitemmeta">{% with proposal=p, count=c %}{% include 'issues/_ip_status.html' %}{% endwith %}<span class="gu-pv__dot" aria-hidden="true"></span><span title="{{ _('Version %(n)s', n=rail_versions[p.id]) }}">v{{ rail_versions[p.id] }}</span><span class="gu-pv__dot" aria-hidden="true"></span>{% with n=reaction_counts.get(p.id, 0) %}{% include 'issues/_reaction_count.html' %}{% endwith %}</span>
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+          {% if rail_proposals | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
+          <a class="gu-pv__railmore" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{% if nl %}Alle voorstellen{% else %}All proposals{% endif %} &rsaquo;</a>
+        </div>
+      </section>
+
+    </div>
   </div>
 </main>
 <script nonce="{{ csp_nonce() }}">
   (function () {
     var root = document.getElementById('voorstel');
-    // Rail tabs: one list at a time (without JavaScript both lists show).
-    var tablist = root.querySelector('.gu-pv__railtabs');
-    var tabs = Array.prototype.slice.call(root.querySelectorAll('[data-rail-tab]'));
+    // Phone: the cockpit's tabs (wide, all three columns show and the tabs do
+    // nothing). The proposal is open first. Without JavaScript all columns stack.
+    var tablist = root.querySelector('.gu-cockpit__tabs');
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('.gu-cockpit__tab'));
     function show(name, focus) {
       tabs.forEach(function (tab) {
-        var on = tab.dataset.railTab === name;
+        var on = tab.dataset.tab === name;
         tab.setAttribute('aria-selected', on ? 'true' : 'false');
         tab.tabIndex = on ? 0 : -1;
         if (on && focus) tab.focus();
       });
-      root.querySelectorAll('[data-rail-panel]').forEach(function (panel) {
-        panel.hidden = panel.dataset.railPanel !== name;
+      root.querySelectorAll('[data-panel]').forEach(function (panel) {
+        panel.classList.toggle('is-shown', panel.dataset.panel === name);
       });
     }
     tabs.forEach(function (tab, i) {
-      tab.addEventListener('click', function () { show(tab.dataset.railTab); });
+      tab.addEventListener('click', function () { show(tab.dataset.tab); });
       tab.addEventListener('keydown', function (e) {
         var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
         if (!step) return;
         e.preventDefault();
-        show(tabs[(i + step + tabs.length) % tabs.length].dataset.railTab, true);
+        show(tabs[(i + step + tabs.length) % tabs.length].dataset.tab, true);
       });
     });
     tablist.hidden = false;
-    root.classList.add('gu-pv--tabs');
-    show('facts');
+    root.classList.add('gu-cockpit--tabs', 'gu-pv--tabs');
     // Within the facts: with this proposal (default) or all of the issue's.
     var views = Array.prototype.slice.call(root.querySelectorAll('[data-fact-view]'));
     function showFacts(name) {
@@ -362,15 +378,16 @@
     root.querySelectorAll('.gu-pv__revise a[href="#voorstel"]').forEach(function (a) {
       a.addEventListener('click', function () { panel.classList.remove('is-open'); });
     });
-    // A link to a reaction or a version opens the version it belongs to.
+    // A link to a fact, a reaction or a version opens the tab (and version) it sits in.
     function openTarget() {
       syncRevise();
       var target = location.hash && document.getElementById(location.hash.slice(1));
+      var tabPanel = target && target.closest('[data-panel]');
+      show(tabPanel ? tabPanel.dataset.panel : 'proposal');
       // After linking or unlinking a fact the page returns to #basis: show those facts.
-      if (target && target.closest('#rail-facts')) {
-        show('facts');
-        var panel = target.closest('[data-fact-panel]');
-        showFacts(panel ? panel.dataset.factPanel : 'linked');
+      if (target && target.closest('#panel-facts')) {
+        var factPanel = target.closest('[data-fact-panel]');
+        showFacts(factPanel ? factPanel.dataset.factPanel : 'linked');
       }
       var details = target && target.closest('details.gu-pv__version');
       if (details) { details.open = true; target.scrollIntoView(); }

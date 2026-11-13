@@ -1,0 +1,4 @@
+{#- The total number of reactions on a proposal (all versions), calm grey.
+    Expects `n`. Used in the Voorstellen column of the issue page and the
+    proposal page. A "new discussion" marker comes in a later step. -#}
+<span class="gu-rcount">{{ n }} {% if lang == 'nl' %}{{ 'reactie' if n == 1 else 'reacties' }}{% else %}{{ 'reaction' if n == 1 else 'reactions' }}{% endif %}</span>
