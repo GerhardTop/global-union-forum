@@ -7,7 +7,7 @@
   huidige fase de deadline en de resterende tijd als die bekend zijn.
   Context: issue, remaining (optioneel, uit issues.remaining).
 #}
-{% set n_props = issue.issue_proposals | rejectattr('is_final') | list | length %}
+{% set n_props = issue.issue_proposals | rejectattr('is_final') | rejectattr('is_hidden') | list | length %}
 {% set all_steps = {
   'feiten': (('Voorstellen maken' if lang == 'nl' else 'Making proposals'), issue.days_facts),
   'bijstellen': ((('Voorstel aanpassen' if n_props == 1 else 'Voorstellen aanpassen') if lang == 'nl' else ('Adjust the proposal' if n_props == 1 else 'Adjust the proposals')), issue.days_adjust),

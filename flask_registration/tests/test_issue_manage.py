@@ -238,7 +238,11 @@ def test_melding_label_leads_to_the_manage_screen_when_allowed(app, db, world):
     db.session.add(PostReport(post_id=fact.id, reporter_id=w['author'].id, reason='x'))
     db.session.commit()
     beheer = f'href="/moderator/vraagstuk/{w["mod_issue"].id}/beheer"'
-    pill = lambda page: page.split('class="gu-pill gu-pill--ctx"')[1].split('</a>')[0]  # noqa: E731
-    assert beheer in 'class="gu-pill gu-pill--ctx" ' + pill(_page(app, w['mod'], '/moderator?stroom=meldingen'))
+
+    def pill(page):
+        """The label of this issue's melding (other tests may leave other meldingen)."""
+        pills = [p.split('</a>')[0] for p in page.split('class="gu-pill gu-pill--ctx"')[1:]]
+        return next(p for p in pills if 'Vraagstuk van de moderator' in p)
+    assert beheer in pill(_page(app, w['mod'], '/moderator?stroom=meldingen'))
     other = pill(_page(app, w['other_mod'], '/moderator?stroom=meldingen'))
-    assert 'beheer' not in other and f'/vraagstuk/{w["mod_issue"].id}"' in other
+    assert 'beheer' not in other and f'href="/vraagstuk/{w["mod_issue"].id}"' in other

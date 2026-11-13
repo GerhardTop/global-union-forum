@@ -408,7 +408,8 @@ def overview(which='alle'):
     counts = {}
     if found:
         counts = dict(db.session.query(IssueProposal.issue_id, db.func.count(IssueProposal.id))
-                      .filter(IssueProposal.issue_id.in_([i.id for i in found]))
+                      .filter(IssueProposal.issue_id.in_([i.id for i in found]),
+                              IssueProposal.hidden_at.is_(None))  # hidden proposals are not public
                       .group_by(IssueProposal.issue_id).all())
     return [(i, counts.get(i.id, 0) + len(i.proposals), len(issue_lifecycle.participants(i))) for i in found]
 

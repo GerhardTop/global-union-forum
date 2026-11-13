@@ -405,13 +405,19 @@ def show_tally(proposal, count=None):
 
 # ── Het samenvattende voorstel (stap 6) ────────────────────────────────────────
 
-def final_proposal(issue):
-    return IssueProposal.query.filter_by(issue_id=issue.id, is_final=True).first()
+def final_proposal(issue, include_hidden=False):
+    """The summary proposal of the issue, or None. A hidden one is not public
+    (delete rights step 3), so it is skipped unless include_hidden."""
+    q = IssueProposal.query.filter_by(issue_id=issue.id, is_final=True)
+    if not include_hidden:
+        q = q.filter(IssueProposal.hidden_at.is_(None))
+    return q.first()
 
 
 def can_make_final(issue, user):
     return (getattr(user, 'is_authenticated', False) and bool(issue.final_vote) and not issue.is_closed
-            and issue.phase == 'samenvatten' and issue.created_by_id == user.id and final_proposal(issue) is None)
+            and issue.phase == 'samenvatten' and issue.created_by_id == user.id
+            and final_proposal(issue, include_hidden=True) is None)
 
 
 def create_final(issue, user, statement, explanation=None, lang=None, title=None, intro=None):
@@ -434,15 +440,20 @@ def create_final(issue, user, statement, explanation=None, lang=None, title=None
 
 # ── Lijst ────────────────────────────────────────────────────────────────
 
-def regular_query(issue):
-    """De gewone voorstellen van een vraagstuk (zonder het samenvattende)."""
-    return IssueProposal.query.filter(IssueProposal.issue_id == issue.id,
-                                      or_(IssueProposal.is_final.is_(None), IssueProposal.is_final.is_(False)))
+def regular_query(issue, include_hidden=False):
+    """De gewone voorstellen van een vraagstuk (zonder het samenvattende).
+    Delete rights step 3: hidden proposals are not public and are left out
+    unless include_hidden (the manage screen builds its own query)."""
+    q = IssueProposal.query.filter(IssueProposal.issue_id == issue.id,
+                                   or_(IssueProposal.is_final.is_(None), IssueProposal.is_final.is_(False)))
+    if not include_hidden:
+        q = q.filter(IssueProposal.hidden_at.is_(None))
+    return q
 
 
-def listing(issue, which='alle', order=DEFAULT_ORDER):
+def listing(issue, which='alle', order=DEFAULT_ORDER, include_hidden=False):
     """[(voorstel, aantal steunbetuigingen)], gefilterd en gesorteerd."""
-    proposals = regular_query(issue).all()
+    proposals = regular_query(issue, include_hidden=include_hidden).all()
     counts = support_counts(p.id for p in proposals)
     rows = [(p, counts.get(p.id, 0)) for p in proposals]
     if which == 'stemlijst':

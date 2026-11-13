@@ -4647,3 +4647,11 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-mgmt-entry__callout { display:flex; gap:10px; margin-top:12px; padding:12px 14px; background:#eaf2fb; border:1px solid #c5dcf4; border-radius:11px; }
 .gu-mgmt-entry__callout p { margin:0; font-size:12.5px; line-height:1.5; color:#1b5e9a; }
 .gu-mgmt-entry__num { flex:0 0 auto; width:20px; height:20px; border-radius:50%; background:var(--mod-accent); color:#fff; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; }
+
+/* Delete rights step 3: on the public proposal page, the author's quiet
+   "withdraw" and the note on a hidden proposal (only moderators see it). */
+.gu-pv__withdraw { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px; margin:26px 0 0; padding-top:14px; border-top:1px solid var(--gu-n-100); font-size:0.75rem; color:var(--gu-fg-3); }
+.gu-pv__withdraw a { font-size:0.8125rem; font-weight:500; color:var(--gu-fg-2); text-decoration:underline; text-decoration-color:var(--gu-n-300); text-underline-offset:2px; }
+.gu-pv__withdraw a:hover { color:#a3282c; text-decoration-color:currentColor; }
+.gu-pv__hidden { display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; margin:0 0 14px; padding:9px 12px; border:1px solid var(--gu-border); border-radius:10px; background:var(--gu-n-100); font-size:0.8125rem; color:var(--gu-fg-2); }
+.gu-pv__hidden a { margin-left:auto; font-weight:500; color:var(--gu-globe-deep); }

@@ -2,11 +2,13 @@
   Partial: issues/_beheer.html (Toegang.dc.html, delete flow step 1)
   One "Beheer" dropdown top-right in the cockpit header. Items are shown only
   to who may use them: the phase controls for the initiator (P7), archiving
-  and deleting for an admin. A <details> dropdown, so it works without JS.
-  Context: issue, can_step, next_phase, can_reopen, phase_labels.
+  for an admin, and (delete rights step 3) the link to the manage screen for
+  whoever may manage this issue; deleting lives there now. A <details>
+  dropdown, so it works without JS.
+  Context: issue, can_step, next_phase, can_reopen, phase_labels, can_manage.
 #}
 {% set is_admin = current_user.is_authenticated and current_user.is_admin %}
-{% if can_step or can_reopen or is_admin %}
+{% if can_step or can_reopen or is_admin or can_manage %}
 <details class="gu-beheer" id="beheer">
   <summary class="gu-btn gu-btn--ghost gu-btn--sm gu-beheer__toggle">
     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -49,9 +51,10 @@
     </div>
     {% endif %}
 
-    {% if is_admin %}
+    {% if is_admin or can_manage %}
     <div class="gu-beheer__group">
-      <p class="gu-beheer__label">{% if lang == 'nl' %}Admin{% else %}Admin{% endif %}</p>
+      <p class="gu-beheer__label">{% if is_admin %}Admin{% else %}Moderator{% endif %}</p>
+      {% if is_admin %}
       {% if issue.is_archived %}
       <form method="POST" action="{{ url_for('issues.unarchive_issue', issue_id=issue.id) }}" class="gu-beheer__form">
         {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
@@ -70,10 +73,13 @@
         </button>
       </form>
       {% endif %}
-      <a class="gu-beheer__item gu-beheer__item--danger" href="{{ url_for('issues.delete_issue', issue_id=issue.id) }}">
-        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.8 6.5v4.5M9.2 6.5v4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        {% if lang == 'nl' %}Vraagstuk verwijderen{% else %}Delete issue{% endif %}
+      {% endif %}
+      {% if can_manage %}
+      <a class="gu-beheer__item" href="{{ url_for('admin.issue_manage', issue_id=issue.id) }}">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 3.5h11M2.5 8h11M2.5 12.5h6M11.5 11l1.5 1.5L15 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        {% if lang == 'nl' %}Vraagstukbeheer{% else %}Manage issue{% endif %}
       </a>
+      {% endif %}
     </div>
     {% endif %}
 

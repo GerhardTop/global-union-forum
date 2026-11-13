@@ -73,9 +73,11 @@ def test_beheer_menu_shows_admin_items(app, db):
         page = _req(_client(app, admin), 'GET', f'/vraagstuk/{issue_id}').get_data(as_text=True)
         menu = page[page.index('<details class="gu-beheer" id="beheer">'):]
         menu = menu[:menu.index('</details>')]
-        assert 'Beheer' in menu and 'Archiveren' in menu and 'Vraagstuk verwijderen' in menu
-        assert f'/vraagstuk/{issue_id}/archiveren' in menu and f'/vraagstuk/{issue_id}/verwijderen' in menu
-        assert 'gu-beheer__item--danger' in menu
+        assert 'Beheer' in menu and 'Archiveren' in menu and f'/vraagstuk/{issue_id}/archiveren' in menu
+        # Delete rights step 3: deleting moved to the manage screen; the menu links there.
+        assert 'Vraagstuk verwijderen' not in menu and f'/vraagstuk/{issue_id}/verwijderen' not in menu
+        assert 'gu-beheer__item--danger' not in menu
+        assert f'href="/moderator/vraagstuk/{issue_id}/beheer"' in menu and 'Vraagstukbeheer' in menu
         assert page.count('id="beheer"') == 1 and 'beheer-admin' not in page
 
         # A participant who is not the initiator sees no Beheer menu.

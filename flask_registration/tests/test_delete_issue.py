@@ -143,13 +143,17 @@ def test_non_admin_cannot_delete(app, db):
     _cleanup(issue.id)
 
 
-def test_delete_link_only_for_admin(app, db):
+def test_no_delete_link_on_the_public_page(app, db):
+    """Delete rights step 3: deleting is on the manage screen; the public issue
+    page only links there, for whoever may manage the issue."""
     admin, author = _user(db, admin=True), _user(db)
     issue, fact, prop = _issue_full(db, author)
     admin_page = _req(_client(app, admin), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
     author_page = _req(_client(app, author), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
-    assert f'/vraagstuk/{issue.id}/verwijderen' in admin_page
-    assert f'/vraagstuk/{issue.id}/verwijderen' not in author_page
+    for page in (admin_page, author_page):
+        assert f'/vraagstuk/{issue.id}/verwijderen' not in page
+    assert f'/moderator/vraagstuk/{issue.id}/beheer' in admin_page
+    assert f'/moderator/vraagstuk/{issue.id}/beheer' not in author_page
     _cleanup(issue.id)
 
 

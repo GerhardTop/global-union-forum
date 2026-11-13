@@ -30,7 +30,7 @@ from app import conduct, db, issues, limiter
 from app import facts as fact_signals
 from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
-from app.models import FACT_DIRECTIONS, Issue, IssueProposal
+from app.models import FACT_DIRECTIONS, Issue, IssueProposal, Post
 from app.routes.forum import (_abort_if_thread_removed, _fact_form, _fact_phase_open, _new_fact, _require_csrf,
                               _rules_first_redirect, _thread_context, refuse_if_suspended)
 from app.utils import _pop_form_state, _stash_form_state, safe_next
@@ -168,7 +168,7 @@ def show(issue_id):
                            can_edit_followup=lifecycle.can_edit_followup(issue, current_user),
                            following=lifecycle.is_following(issue, current_user),
                            can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue),
-                           return_to=issue.id,
+                           return_to=issue.id, can_manage=issues.can_manage_issue(current_user, issue),
                            my_reported_proposal_ids=my_reported_proposal_ids, **discussion)
 
 
@@ -220,6 +220,10 @@ def _issue_or_404(issue_id):
 def _proposal_or_404(issue, proposal_id):
     proposal = db.session.get(IssueProposal, proposal_id)
     if proposal is None or proposal.issue_id != issue.id:
+        abort(404)
+    # Delete rights step 3: a hidden proposal is not public. Whoever may hide
+    # it (moderator of the issue, senior moderator, admin) still sees it.
+    if proposal.is_hidden and not issues.can_hide_proposal(current_user, proposal):
         abort(404)
     return proposal
 
@@ -367,6 +371,7 @@ def proposal(issue_id, proposal_id):
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),
                            can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data,
+                           can_withdraw=_can_withdraw(proposal),
                            links=links, can_link=ip.can_link(proposal, current_user),
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
                            candidates=[f for f in issue_facts if f.id not in linked_ids],
@@ -775,6 +780,16 @@ def _local_next():
     """An optional ?next= / form next (a local path only, e.g. the manage screen), or None."""
     raw = request.values.get('next')
     return safe_next(raw, None) if raw else None
+
+
+def _can_withdraw(proposal):
+    """Delete rights step 3: the author's own quiet "withdraw" on the public
+    proposal page, only while the proposal has no reactions at all. Moderators
+    and admins delete from the manage screen, not here."""
+    return (current_user.is_authenticated and proposal.created_by_id is not None
+            and proposal.created_by_id == current_user.id
+            and issues.can_delete_proposal(current_user, proposal)
+            and not Post.query.filter_by(issue_proposal_id=proposal.id).first())
 
 
 def _hide_toggle(issue_id, proposal_id, hide):
