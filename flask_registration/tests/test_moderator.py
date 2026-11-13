@@ -127,8 +127,11 @@ def test_dashboard_renders_each_stream(app, db):
     kpis = b[b.index('class="gu-mod__kpis"'):b.index('id="bak"')]
     assert len(re.findall(r'class="gu-kpi( gu-kpi--done)?"', kpis)) == 6 and 'Behandeld totaal' in kpis and 'Behandeld door jou' in kpis
     aside = b[b.index('<aside'):b.index('</aside>')]
-    for label in ('Oudste wachttijd', 'Lopende vraagstukken', 'Recente vraagstukken', 'Fasebeheer', 'id="vraagstukken"'):
+    for label in ('Oudste wachttijd', 'Lopende vraagstukken', 'Fasebeheer', 'id="vraagstukken"'):
         assert label in aside
+    # Delete rights step 2: "Vraagstukken beheren" replaces "Recente vraagstukken";
+    # this moderator has no issues of their own, so the section is not there.
+    assert 'Recente vraagstukken' not in aside and 'Vraagstukken beheren' not in aside
     assert 'Behandeld' not in aside and 'Recente berichten' not in b
 
     # Opruimen: de testdatabase is gedeeld, en andere tests tellen de open

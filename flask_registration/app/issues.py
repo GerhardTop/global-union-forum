@@ -25,7 +25,7 @@ from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 from app import db
-from app.models import ISSUE_KINDS, Issue, Post, Proposal, Thread
+from app.models import ISSUE_KINDS, Issue, IssueProposal, Post, Proposal, Thread
 
 # Grenzen voor het startformulier.
 DAYS_MIN, DAYS_MAX = 1, 365
@@ -499,13 +499,15 @@ def can_delete_proposal(user, proposal):
     return False
 
 
-def log_action(actor, action, target_type, target_id, snapshot=None):
+def log_action(actor, action, target_type, target_id, snapshot=None, issue_id=None):
     """Write one audit row (ModerationAction). Does not commit."""
     from app.models import MODERATION_ACTIONS, ModerationAction
     if action not in MODERATION_ACTIONS:
         raise ValueError(action)
+    if issue_id is None and target_type == 'issue':
+        issue_id = target_id
     row = ModerationAction(actor_id=getattr(actor, 'id', None), action=action, target_type=target_type,
-                           target_id=target_id, snapshot=(snapshot or '')[:300] or None)
+                           target_id=target_id, issue_id=issue_id, snapshot=(snapshot or '')[:300] or None)
     db.session.add(row)
     return row
 
@@ -516,7 +518,7 @@ def hide(proposal, user, now=None):
         return False
     proposal.hidden_at = now or datetime.utcnow()
     proposal.hidden_by_id = getattr(user, 'id', None)
-    log_action(user, 'hide', 'proposal', proposal.id, proposal.statement)
+    log_action(user, 'hide', 'proposal', proposal.id, proposal.statement, issue_id=proposal.issue_id)
     return True
 
 
@@ -526,8 +528,69 @@ def unhide(proposal, user):
         return False
     proposal.hidden_at = None
     proposal.hidden_by_id = None
-    log_action(user, 'unhide', 'proposal', proposal.id, proposal.statement)
+    log_action(user, 'unhide', 'proposal', proposal.id, proposal.statement, issue_id=proposal.issue_id)
     return True
+
+
+# ── Delete rights (step 2): the manage screen per issue ───────────────────
+
+def can_manage_issue(user, issue):
+    """May open the manage screen of this issue: a moderator (or higher) with
+    at least one right on it (delete the issue, or hide or delete one of its
+    proposals). A plain author who is no moderator never may."""
+    if not _acting(user) or not user.can_moderate():
+        return False
+    if can_delete_issue(user, issue):
+        return True
+    return any(can_hide_proposal(user, p) or can_delete_proposal(user, p)
+               for p in IssueProposal.query.filter_by(issue_id=issue.id))
+
+
+def rights_on(user, issue):
+    """What this viewer may do on this issue, by role (for "Wie mag wat"),
+    independent of the proposals that happen to exist."""
+    admin, senior = bool(user.is_admin), _is_senior(user)
+    own = _owns_issue(user, issue)
+    return {
+        'admin': admin, 'senior': senior and not admin, 'own': own,
+        'hide_proposals': admin or senior or own,
+        'delete_proposals': admin or senior or (own and delete_setting('delete.moderator_can_delete_own_issue_proposals')),
+        'delete_issue': can_delete_issue(user, issue),
+        'delete_any_issue': admin or (senior and delete_setting('delete.senior_can_delete_issues')),
+    }
+
+
+MANAGE_LIST_MAX = 6
+
+
+def manageable_issues(user, limit=MANAGE_LIST_MAX):
+    """(issues, more): the issues for "Vraagstukken beheren" on the moderator
+    overview. A moderator: their own issues (archived last). A senior
+    moderator or admin: the active issues they may manage. At most `limit`."""
+    if not _acting(user) or not user.can_moderate():
+        return [], False
+    if not _is_senior(user):
+        found = (Issue.query.filter(Issue.created_by_id == user.id)
+                 .order_by(Issue.archived_at.isnot(None), Issue.created_at.desc()).all())
+    else:
+        active = (Issue.query.filter(Issue.is_closed.is_(False), Issue.archived_at.is_(None))
+                  .order_by(Issue.created_at.desc()).all())
+        found = active if user.is_admin else [i for i in active if can_manage_issue(user, i)]
+    return found[:limit], len(found) > limit
+
+
+def manage_log(issue, limit=8):
+    """The latest audit rows for this issue and its proposals, newest first."""
+    from app.models import ModerationAction
+    from sqlalchemy import and_, or_
+    prop_ids = [pid for (pid,) in db.session.query(IssueProposal.id).filter_by(issue_id=issue.id)]
+    legacy = [and_(ModerationAction.issue_id.is_(None), ModerationAction.target_type == 'issue',
+                   ModerationAction.target_id == issue.id)]
+    if prop_ids:
+        legacy.append(and_(ModerationAction.issue_id.is_(None), ModerationAction.target_type == 'proposal',
+                           ModerationAction.target_id.in_(prop_ids)))
+    return (ModerationAction.query.filter(or_(ModerationAction.issue_id == issue.id, *legacy))
+            .order_by(ModerationAction.created_at.desc(), ModerationAction.id.desc()).limit(limit).all())
 
 
 # ── Verwijderen (fase 3) ─────────────────────────────────────────────────

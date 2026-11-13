@@ -345,6 +345,8 @@ _POLISH_COLUMNS = {
     # moderation_actions comes from db.create_all()).
     'issue_proposals': (('hidden_at', 'TIMESTAMP NULL'),
                         ('hidden_by_id', 'INTEGER NULL REFERENCES users(id)')),
+    # Delete rights step 2: the issue of a logged action (for the manage screen).
+    'moderation_actions': (('issue_id', 'INTEGER NULL'),),
 }
 
 

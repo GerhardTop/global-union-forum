@@ -72,13 +72,14 @@
 
       <form method="POST" action="{% if is_prop %}{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}{% else %}{{ url_for('issues.delete_issue', issue_id=issue.id) }}{% endif %}" class="gu-del__form" data-confirm-form>
         {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        {% if back_url %}<input type="hidden" name="next" value="{{ back_url }}">{% endif %}
         <label class="gu-del__field" for="confirmTitle">
           <span>{% if is_prop %}{% if lang == 'nl' %}Typ de stelling om te bevestigen:{% else %}Type the statement to confirm:{% endif %}{% else %}{% if lang == 'nl' %}Typ de titel om te bevestigen:{% else %}Type the title to confirm:{% endif %}{% endif %} <strong lang="{{ what_lang }}">{{ what }}</strong></span>
         </label>
         <input type="text" id="confirmTitle" name="confirm_title" class="gu-input" autocomplete="off" required
                data-expected="{{ (what or '')|trim }}">
         <div class="gu-del__actions">
-          <a class="gu-btn gu-btn--ghost" href="{% if is_prop %}{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}{% else %}{{ url_for('issues.show', issue_id=issue.id) }}{% endif %}">{% if lang == 'nl' %}Annuleren{% else %}Cancel{% endif %}</a>
+          <a class="gu-btn gu-btn--ghost" href="{% if back_url %}{{ back_url }}{% elif is_prop %}{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}{% else %}{{ url_for('issues.show', issue_id=issue.id) }}{% endif %}">{% if lang == 'nl' %}Annuleren{% else %}Cancel{% endif %}</a>
           <button type="submit" class="gu-btn gu-del__btn" data-confirm-button>{% if lang == 'nl' %}Definitief verwijderen{% else %}Delete permanently{% endif %}</button>
         </div>
         <p class="gu-del__hint">{% if is_prop %}{% if lang == 'nl' %}De knop wordt pas actief als de stelling exact klopt.{% else %}The button only becomes active when the statement matches exactly.{% endif %}{% else %}{% if lang == 'nl' %}De knop wordt pas actief als de titel exact klopt.{% else %}The button only becomes active when the title matches exactly.{% endif %}{% endif %}</p>

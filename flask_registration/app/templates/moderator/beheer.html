@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}{{ issue.title }} · {% if lang == 'nl' %}Beheer{% else %}Manage{% endif %} · Global Union{% endblock %}
+
+{#
+  Delete rights step 2: the manage screen of one issue, built to
+  docs/design/beheer.html. Left: this issue (archive, delete) and its
+  proposals (filter all / visible / hidden; hide, make visible, delete). Right:
+  who may do what (this viewer's actual rights) and the log. Every button shows
+  only when this viewer has that right. Context: routes/admin.py issue_manage().
+#}
+{% set nl = lang == 'nl' %}
+{% set i_eye %}<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/>{% endset %}
+{% set i_eyeoff %}<path d="M3 3l18 18M10.6 10.6a2.5 2.5 0 003.4 3.4M9.9 5.1A9.3 9.3 0 0112 5c6 0 10 7 10 7a15.8 15.8 0 01-3.1 3.6M6.1 6.1A15.6 15.6 0 002 12s4 7 10 7a9.2 9.2 0 003.9-.8"/>{% endset %}
+{% set i_bin %}<path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13"/>{% endset %}
+{% set i_box %}<path d="M3 7h18v4H3zM5 11v9h14v-9M9 15h6"/>{% endset %}
+{% macro icon(paths, size=16, cls='') -%}
+<svg class="gu-mgmt__ico{% if cls %} {{ cls }}{% endif %}" viewBox="0 0 24 24" width="{{ size }}" height="{{ size }}" aria-hidden="true" focusable="false">{{ paths }}</svg>
+{%- endmacro %}
+
+{% block content_outer %}{% block content %}
+<div class="gu-mod gu-mgmt" lang="{{ lang }}">
+  <div class="gu-mgmt__wrap">
+
+    <header class="gu-mgmt__head">
+      <nav class="gu-mgmt__crumb" aria-label="{% if nl %}Kruimelpad{% else %}Breadcrumb{% endif %}">
+        <a href="{{ url_for('admin.moderator_dashboard') }}">Moderator</a>
+        {{ icon('<path d="M9 6l6 6-6 6"/>', 13) }}
+        <a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title | truncate(60) }}</a>
+        {{ icon('<path d="M9 6l6 6-6 6"/>', 13) }}
+        <span aria-current="page">{% if nl %}Beheer{% else %}Manage{% endif %}</span>
+      </nav>
+      <p class="gu-eyebrow gu-mgmt__eyebrow">{% if nl %}Vraagstukbeheer{% else %}Issue management{% endif %}</p>
+      <h1 class="gu-mgmt__title" lang="{{ issue.lang or lang }}">{{ issue.title }}</h1>
+      <div class="gu-mgmt__pills">
+        <span class="gu-pill gu-mgmt__pill--phase">{% if issue.is_closed and not issue.is_archived %}{{ _('Closed') }}{% else %}{% if nl %}Fase{% else %}Phase{% endif %} {{ phase_labels_all.get(issue.phase, issue.phase) }}{% endif %}</span>
+        <span class="gu-pill">{% if issue.is_archived %}{% if nl %}In archief{% else %}Archived{% endif %}{% elif issue.kind == 'event' %}{{ _('Event') }}{% else %}{{ _('Online') }}{% endif %}</span>
+        {% if rights.own %}<span class="gu-pill">{% if nl %}Jouw vraagstuk{% else %}Your issue{% endif %}</span>{% endif %}
+        {% if open_count %}<span class="gu-pill gu-mgmt__pill--count">{{ open_count }} {% if nl %}open {{ 'melding' if open_count == 1 else 'meldingen' }}{% else %}open {{ 'report' if open_count == 1 else 'reports' }}{% endif %}</span>{% endif %}
+      </div>
+      <p class="gu-mgmt__lead">{% if nl %}De verwijder- en verberg-acties staan hier, niet meer op de openbare pagina. Verbergen is omkeerbaar. Verwijderen is onomkeerbaar en haalt ook de reacties weg. Wat je mag, hangt af van je rol en of dit jouw vraagstuk is.{% else %}The delete and hide actions are here, no longer on the public page. Hiding can be undone. Deleting cannot be undone and also removes the reactions. What you may do depends on your role and whether this is your issue.{% endif %}</p>
+    </header>
+
+    <div class="gu-mgmt__cols">
+      <div class="gu-mgmt__main">
+
+        {# ── This issue ─────────────────────────────────────────── #}
+        <section class="gu-mgmt__card gu-mgmt__issue" aria-labelledby="mgmtIssue">
+          <p class="gu-eyebrow" id="mgmtIssue">{% if nl %}Dit vraagstuk{% else %}This issue{% endif %}</p>
+          <div class="gu-mgmt__issuerow">
+            <div class="gu-mgmt__issuebody">
+              <div class="gu-mgmt__issuetitle" lang="{{ issue.lang or lang }}">{{ issue.title }}</div>
+              <div class="gu-mgmt__meta">
+                <span>{% if rights.own %}{% if nl %}Aangemaakt door jou{% else %}Created by you{% endif %}{% elif issue.created_by %}{% if nl %}Aangemaakt door{% else %}Created by{% endif %} {{ issue.created_by.public_name }}{% else %}{% if nl %}Aangemaakt door een verwijderd account{% else %}Created by a deleted account{% endif %}{% endif %}</span>
+                <span class="gu-mgmt__dot" aria-hidden="true"></span><span>{{ tally.alle }} {% if nl %}{{ 'voorstel' if tally.alle == 1 else 'voorstellen' }}{% else %}{{ 'proposal' if tally.alle == 1 else 'proposals' }}{% endif %}</span>
+                <span class="gu-mgmt__dot" aria-hidden="true"></span><span>{{ discussion_count }} {% if nl %}{{ 'reactie' if discussion_count == 1 else 'reacties' }}{% else %}{{ 'reaction' if discussion_count == 1 else 'reactions' }}{% endif %}</span>
+              </div>
+            </div>
+            {% if rights.admin or rights.delete_issue %}
+            <div class="gu-mgmt__actions">
+              {% if rights.admin %}
+              {% if issue.is_archived %}
+              <form method="POST" action="{{ url_for('issues.unarchive_issue', issue_id=issue.id) }}">
+                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                <button type="submit" class="gu-btn gu-btn--ghost">{{ icon(i_box) }}{% if nl %}Terug uit archief{% else %}Restore from archive{% endif %}</button>
+              </form>
+              {% else %}
+              <form method="POST" action="{{ url_for('issues.archive_issue', issue_id=issue.id) }}">
+                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                <button type="submit" class="gu-btn gu-btn--ghost">{{ icon(i_box) }}{% if nl %}Archiveren{% else %}Archive{% endif %}</button>
+              </form>
+              {% endif %}
+              {% endif %}
+              {% if rights.delete_issue %}
+              <a class="gu-btn gu-btn--ghost gu-btn--danger" href="{{ url_for('issues.delete_issue', issue_id=issue.id, next=here) }}">{{ icon(i_bin) }}{% if nl %}Vraagstuk verwijderen{% else %}Delete issue{% endif %}</a>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </section>
+
+        {# ── Proposals ──────────────────────────────────────────── #}
+        <section class="gu-mgmt__card gu-mgmt__props" id="voorstellen" aria-labelledby="mgmtProps">
+          <div class="gu-mgmt__propshead">
+            <div class="gu-mgmt__propstitle">
+              <h2 class="gu-eyebrow gu-mgmt__accent" id="mgmtProps">{% if nl %}Voorstellen{% else %}Proposals{% endif %}</h2>
+              <span class="gu-mgmt__n">{{ tally.alle }}</span>
+            </div>
+            <nav class="gu-mgmt__seg" aria-label="{% if nl %}Welke voorstellen{% else %}Which proposals{% endif %}">
+              {% for key, nl_label, en_label in (('alle', 'Alle', 'All'), ('zichtbaar', 'Zichtbaar', 'Visible'), ('verborgen', 'Verborgen', 'Hidden')) %}
+              <a href="{{ url_for('admin.issue_manage', issue_id=issue.id, toon=None if key == 'alle' else key) }}#voorstellen"{% if shown == key %} class="is-on" aria-current="true"{% endif %}>{{ nl_label if nl else en_label }} <span class="gu-mgmt__c">{{ tally[key] }}</span></a>
+              {% endfor %}
+            </nav>
+          </div>
+
+          {% for r in rows %}
+          {% set p = r.p %}
+          <div class="gu-mgmt__prow{% if p.is_hidden %} is-off{% endif %}" id="voorstel-{{ p.id }}">
+            <div class="gu-mgmt__prowbody">
+              <div class="gu-mgmt__prowstatus">
+                {% if p.is_hidden %}
+                <span class="gu-pill gu-mgmt__pill--off">{{ icon(i_eyeoff, 13) }}{% if nl %}Verborgen{% else %}Hidden{% endif %}</span>
+                {% else %}
+                <span class="gu-pill gu-mgmt__pill--on">{{ icon(i_eye, 13) }}{% if nl %}Zichtbaar{% else %}Visible{% endif %}</span>
+                {% endif %}
+                {% if p.is_final %}<span class="gu-pill">{{ _('Summary proposal') }}</span>{% endif %}
+              </div>
+              <a class="gu-mgmt__prowtext" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=p.id) }}" lang="{{ p.lang or lang }}">{{ p.statement }}</a>
+              <div class="gu-mgmt__meta">
+                <span>{{ p.created_by.public_name if p.created_by else ('verwijderd account' if nl else 'deleted account') }}</span>
+                <span class="gu-mgmt__dot" aria-hidden="true"></span><span>v{{ r.version }}</span>
+                <span class="gu-mgmt__dot" aria-hidden="true"></span><span>{{ r.reactions }} {% if nl %}{{ 'reactie' if r.reactions == 1 else 'reacties' }}{% else %}{{ 'reaction' if r.reactions == 1 else 'reactions' }}{% endif %}</span>
+                {% if r.on_list %}<span class="gu-mgmt__dot" aria-hidden="true"></span><span>{% if nl %}Op de stemlijst{% else %}On the voting list{% endif %}</span>{% endif %}
+                {% if p.is_hidden %}
+                <span class="gu-mgmt__dot" aria-hidden="true"></span>{% set hider = people.get(p.hidden_by_id) %}<span>{% if nl %}Verborgen door {% if p.hidden_by_id == current_user.id %}jou{% elif hider and not hider.is_deleted %}{{ hider.public_name }}{% else %}een verwijderd account{% endif %}{% else %}Hidden by {% if p.hidden_by_id == current_user.id %}you{% elif hider and not hider.is_deleted %}{{ hider.public_name }}{% else %}a deleted account{% endif %}{% endif %}, {{ p.hidden_at | local | datetimeformat('d MMM') }}</span>
+                {% endif %}
+              </div>
+            </div>
+            {% if r.can_hide or r.can_delete %}
+            <div class="gu-mgmt__prowact">
+              {% if r.can_hide %}
+              <form method="POST" action="{{ url_for('issues.unhide_proposal' if p.is_hidden else 'issues.hide_proposal', issue_id=issue.id, proposal_id=p.id) }}">
+                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                <input type="hidden" name="next" value="{{ here }}#voorstel-{{ p.id }}">
+                {% if p.is_hidden %}
+                <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ icon(i_eye, 14) }}{% if nl %}Zichtbaar maken{% else %}Make visible{% endif %}</button>
+                {% else %}
+                <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ icon(i_eyeoff, 14) }}{% if nl %}Verbergen{% else %}Hide{% endif %}</button>
+                {% endif %}
+              </form>
+              {% endif %}
+              {% if r.can_delete %}
+              <a class="gu-btn gu-btn--ghost gu-btn--sm gu-btn--danger" href="{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=p.id, next=here) }}">{{ icon(i_bin, 14) }}{% if nl %}Verwijderen{% else %}Delete{% endif %}</a>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+          {% else %}
+          <p class="gu-mgmt__empty">{% if shown == 'verborgen' %}{% if nl %}Geen verborgen voorstellen.{% else %}No hidden proposals.{% endif %}{% elif shown == 'zichtbaar' %}{% if nl %}Geen zichtbare voorstellen.{% else %}No visible proposals.{% endif %}{% else %}{{ _('No proposals yet.') }}{% endif %}</p>
+          {% endfor %}
+        </section>
+      </div>
+
+      <aside class="gu-mgmt__side">
+        {# ── Who may do what: this viewer's actual rights ───────────── #}
+        <section class="gu-mgmt__card gu-mgmt__aside" aria-labelledby="mgmtRights">
+          <h2 class="gu-eyebrow" id="mgmtRights">{% if nl %}Wie mag wat{% else %}Who may do what{% endif %}</h2>
+          <div class="gu-mgmt__role">
+            <span class="gu-pill gu-mgmt__pill--role">{% if rights.admin %}Admin{% elif rights.senior %}Senior moderator{% else %}Moderator{% endif %}</span>
+            {% if rights.own %}<span class="gu-mgmt__rolenote">{% if nl %}dit is jouw vraagstuk{% else %}this is your issue{% endif %}</span>{% endif %}
+          </div>
+          {% set may = [] %}
+          {% if rights.hide_proposals %}{% set _ = may.append(('Voorstellen hier verbergen en weer zichtbaar maken', 'Hide proposals here and make them visible again')) %}{% endif %}
+          {% if rights.delete_proposals %}{% set _ = may.append(('Voorstellen onder dit vraagstuk verwijderen', 'Delete proposals under this issue')) %}{% endif %}
+          {% if rights.delete_issue %}{% set _ = may.append(('Dit vraagstuk zelf verwijderen', 'Delete this issue itself')) %}{% endif %}
+          {% if rights.admin %}{% set _ = may.append(('Vraagstukken archiveren en de rechten instellen', 'Archive issues and set the rights')) %}{% endif %}
+          {# The one thing this viewer may not do here (an admin may do everything). #}
+          {% if rights.admin %}{% set locked = None %}
+          {% elif not rights.delete_proposals %}{% set locked = ('Voorstellen verwijderen staat voor moderators uit', 'Deleting proposals is turned off for moderators') %}
+          {% elif rights.delete_any_issue %}{% set locked = ('De rechten instellen kan alleen een admin', 'Only an admin can set the rights') %}
+          {% else %}{% set locked = ('Andermans vraagstuk verwijderen kan alleen een admin', "Only an admin can delete someone else's issue") %}{% endif %}
+          <ul class="gu-mgmt__rights">
+            {% for nl_text, en_text in may %}
+            <li>{{ icon('<path d="M5 12l5 5 9-11"/>', 16, 'gu-mgmt__chk') }}<span>{{ nl_text if nl else en_text }}</span></li>
+            {% endfor %}
+            {% if locked %}
+            <li class="is-locked">{{ icon('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>', 16, 'gu-mgmt__lock') }}<span>{{ locked[0] if nl else locked[1] }}</span></li>
+            {% endif %}
+          </ul>
+          {# "Rechten" (the rights page) is step 4 of this track; until then it is plain text, no link. #}
+          <p class="gu-mgmt__rightsnote">{% if nl %}Senior moderator mag alle voorstellen verwijderen. Admin mag alles. {% if rights.admin %}Jij stelt{% else %}Een admin stelt{% endif %} deze rechten in bij Rechten.{% else %}A senior moderator may delete all proposals. An admin may do everything. {% if rights.admin %}You set{% else %}An admin sets{% endif %} these rights under Rights.{% endif %}</p>
+        </section>
+
+        {# ── Log ────────────────────────────────────────────────── #}
+        <section class="gu-mgmt__card gu-mgmt__aside" aria-labelledby="mgmtLog">
+          <h2 class="gu-eyebrow" id="mgmtLog">{% if nl %}Logboek{% else %}Log{% endif %}</h2>
+          <div class="gu-mgmt__log">
+            {% set log_icons = {'hide': (i_eyeoff, 'gu-mgmt__logico--hide'), 'unhide': (i_eye, 'gu-mgmt__logico--show'),
+                                'delete_proposal': (i_bin, 'gu-mgmt__logico--del'), 'delete_issue': (i_bin, 'gu-mgmt__logico--del')} %}
+            {% for a in log %}
+            {% set actor = people.get(a.actor_id) %}
+            {% set who = ('Jij' if nl else 'You') if a.actor_id == current_user.id else (actor.public_name if actor and not actor.is_deleted else ('verwijderd account' if nl else 'deleted account')) %}
+            {% set snap = (a.snapshot or '') | truncate(40, killwords=True, end='...') %}
+            <div class="gu-mgmt__logrow">
+              {{ icon(log_icons[a.action][0], 15, 'gu-mgmt__logico ' ~ log_icons[a.action][1]) }}
+              <div><b>{{ who }}</b>
+                {% if a.action == 'hide' %}{% if nl %}verborg "{{ snap }}"{% else %}hid "{{ snap }}"{% endif %}
+                {% elif a.action == 'unhide' %}{% if nl %}maakte "{{ snap }}" weer zichtbaar{% else %}made "{{ snap }}" visible again{% endif %}
+                {% elif a.action == 'delete_proposal' %}{% if nl %}verwijderde "{{ snap }}"{% else %}deleted "{{ snap }}"{% endif %}
+                {% else %}{% if nl %}verwijderde het vraagstuk "{{ snap }}"{% else %}deleted the issue "{{ snap }}"{% endif %}{% endif %}
+                <span class="gu-mgmt__logtime">{{ ago(a.created_at)[lang] }}</span></div>
+            </div>
+            {% else %}
+            <p class="gu-mgmt__empty gu-mgmt__empty--log">{% if nl %}Nog niets verborgen of verwijderd.{% else %}Nothing hidden or deleted yet.{% endif %}</p>
+            {% endfor %}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}{% endblock %}

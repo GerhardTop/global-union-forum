@@ -725,20 +725,22 @@ def delete_issue(issue_id):
     issue = _issue_or_404(issue_id)
     if not issues.can_delete_issue(current_user, issue):
         abort(403)
+    back = _local_next()
     if request.method == 'POST':
         _require_csrf()
         typed = (request.form.get('confirm_title') or '').strip()
         if typed != (issue.title or '').strip():
             flash(gettext('Type the exact title to confirm.'), 'error')
-            return redirect(url_for('issues.delete_issue', issue_id=issue.id), code=303)
+            return redirect(url_for('issues.delete_issue', issue_id=issue.id, next=back), code=303)
         target_id, title = issue.id, issue.title
         issues.purge(issue)
         issues.log_action(current_user, 'delete_issue', 'issue', target_id, title)
         db.session.commit()
         flash(gettext('The issue has been deleted.'), 'success')
-        return redirect(url_for('issues.index'))
+        # From the manage screen back to the moderator overview (the screen itself is gone).
+        return redirect(url_for('admin.moderator_dashboard') if back else url_for('issues.index'))
     return render_template('issues/verwijderen.html', target='issue', issue=issue,
-                           counts=issues.purge_counts(issue))
+                           counts=issues.purge_counts(issue), back_url=back)
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/verwijderen', methods=['GET', 'POST'])
@@ -751,20 +753,28 @@ def delete_proposal(issue_id, proposal_id):
     proposal = _proposal_or_404(issue, proposal_id)
     if not issues.can_delete_proposal(current_user, proposal):
         abort(403)
+    back = _local_next()
     if request.method == 'POST':
         _require_csrf()
         typed = (request.form.get('confirm_title') or '').strip()
         if typed != (proposal.statement or '').strip():
             flash(gettext('Type the exact text to confirm.'), 'error')
-            return redirect(url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id), code=303)
+            return redirect(url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id, next=back),
+                            code=303)
         target_id, statement = proposal.id, proposal.statement
         issues.purge_proposal(proposal)
-        issues.log_action(current_user, 'delete_proposal', 'proposal', target_id, statement)
+        issues.log_action(current_user, 'delete_proposal', 'proposal', target_id, statement, issue_id=issue.id)
         db.session.commit()
         flash(gettext('The proposal has been deleted.'), 'success')
-        return redirect(url_for('issues.show', issue_id=issue.id))
+        return redirect(back or url_for('issues.show', issue_id=issue.id))
     return render_template('issues/verwijderen.html', target='proposal', issue=issue, proposal=proposal,
-                           counts=issues.purge_proposal_counts(proposal))
+                           counts=issues.purge_proposal_counts(proposal), back_url=back)
+
+
+def _local_next():
+    """An optional ?next= / form next (a local path only, e.g. the manage screen), or None."""
+    raw = request.values.get('next')
+    return safe_next(raw, None) if raw else None
 
 
 def _hide_toggle(issue_id, proposal_id, hide):

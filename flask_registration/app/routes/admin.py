@@ -161,7 +161,17 @@ def moderator_dashboard():
     from app import reports
     from app.models import Issue
     meldingen = reports.open_meldingen()
+    open_meldingen_all = list(meldingen)
     handled_total, handled_mine = reports.handled_counts(current_user)
+    from app import issues as issues_mod
+    manage_issues, manage_more = issues_mod.manageable_issues(current_user)
+    manageable = {}
+
+    def can_manage(issue):
+        """The vraagstuk label on a melding leads to the manage screen when this viewer may open it."""
+        if issue.id not in manageable:
+            manageable[issue.id] = issues_mod.can_manage_issue(current_user, issue)
+        return manageable[issue.id]
     oldest_at = reports.oldest_open_at()
 
     # Fase 2c: één bak met tabbladen; ?stroom= filtert welke groepen je ziet.
@@ -222,7 +232,11 @@ def moderator_dashboard():
         oldest_wait=reports.wait_bucket(oldest_at),
         wait_bucket=reports.wait_bucket,  # fase 2c: leeftijd-pill per rij
         open_issues=Issue.query.filter(Issue.is_closed.is_(False), Issue.archived_at.is_(None)).count(),
-        recent_issues=[(issue, reports.wait_bucket(dt)) for issue, dt in reports.recent_for(current_user)],
+        # Delete rights step 2: "Vraagstukken beheren" (replaces "Recente vraagstukken").
+        manage_issues=manage_issues, manage_more=manage_more,
+        manage_open=reports.open_counts_by_issue(open_meldingen_all),
+        manage_section=bool(manage_issues) or current_user.is_senior_moderator,
+        can_manage=can_manage,
         open_reports=open_reports,
         unjudged_posts=unjudged_posts,
         doubt_cases=doubt_cases,
@@ -237,6 +251,53 @@ def moderator_dashboard():
         posts_today=posts_today,
         closed_threads=closed_threads,
     )
+
+
+@admin_bp.route('/moderator/vraagstuk/<int:issue_id>/beheer')
+@login_required
+def issue_manage(issue_id):
+    """Delete rights step 2: the manage screen of one issue (docs/design/beheer.html).
+    Hide, show or delete its proposals, archive or delete the issue, each only
+    when this viewer has that right; plus who may do what and the log."""
+    from app import issue_proposals as ip
+    from app import issues, reports
+    from app.models import Issue, IssueProposal, time_ago
+    issue = db.session.get(Issue, issue_id)
+    if issue is None:
+        abort(404)
+    if not issues.can_manage_issue(current_user, issue):
+        abort(403)
+    proposals = (IssueProposal.query.filter_by(issue_id=issue.id)
+                 .order_by(IssueProposal.is_final.desc(), IssueProposal.created_at, IssueProposal.id).all())
+    ids = [p.id for p in proposals]
+    supports = ip.support_counts(ids)
+    reactions = dict(db.session.query(Post.issue_proposal_id, db.func.count(Post.id))
+                     .filter(Post.issue_proposal_id.in_(ids)).group_by(Post.issue_proposal_id).all()) if ids else {}
+    rows = [{'p': p, 'version': ip.current_version(p), 'reactions': reactions.get(p.id, 0),
+             'on_list': ip.on_list(p, supports.get(p.id, 0)),
+             'can_hide': issues.can_hide_proposal(current_user, p),
+             'can_delete': issues.can_delete_proposal(current_user, p)} for p in proposals]
+    shown = request.args.get('toon')
+    if shown not in ('zichtbaar', 'verborgen'):
+        shown = 'alle'
+    tally = {'alle': len(rows), 'verborgen': sum(1 for r in rows if r['p'].is_hidden)}
+    tally['zichtbaar'] = tally['alle'] - tally['verborgen']
+    if shown != 'alle':
+        rows = [r for r in rows if r['p'].is_hidden == (shown == 'verborgen')]
+    discussion = 0
+    if issue.thread_id:
+        discussion = (Post.query.filter(Post.thread_id == issue.thread_id, Post.issue_proposal_id.is_(None),
+                                        Post.is_op.isnot(True), or_(Post.kind.is_(None), Post.kind != 'feit'))
+                      .count())
+    log = issues.manage_log(issue)
+    # Names for the log and for "hidden by": one query.
+    people_ids = {a.actor_id for a in log if a.actor_id} | {p.hidden_by_id for p in proposals if p.hidden_by_id}
+    people = {u.id: u for u in User.query.filter(User.id.in_(people_ids))} if people_ids else {}
+    return render_template('moderator/beheer.html', issue=issue, rows=rows, shown=shown, tally=tally,
+                           discussion_count=discussion, rights=issues.rights_on(current_user, issue),
+                           open_count=reports.open_counts_by_issue().get(issue.id, 0),
+                           phase_labels_all=_phase_labels(), log=log, people=people,
+                           here=request.full_path.rstrip('?'), ago=time_ago)
 
 
 _MONTHS = {'nl': ('jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'),

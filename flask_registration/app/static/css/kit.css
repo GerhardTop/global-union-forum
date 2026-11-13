@@ -4554,3 +4554,96 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
   .gu-pv__vsum { flex-basis: 100%; order: 5; padding-left: 26px; }
   .gu-pv__vbody { padding-left: 15px; }
 }
+
+/* ── Delete rights step 2: the manage screen per issue (docs/design/beheer.html) ── */
+.gu-mgmt { background:var(--mod-n50); padding-bottom:64px; }
+.gu-mgmt__wrap { max-width:1360px; margin:0 auto; padding:0 40px; }
+.gu-mgmt__ico { flex:0 0 auto; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }
+.gu-mgmt .gu-eyebrow { margin:0; font-size:11px; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--mod-n500); }
+.gu-mgmt__head { padding:24px 0 16px; }
+.gu-mgmt__crumb { display:flex; align-items:center; gap:7px; flex-wrap:wrap; font-size:12.5px; color:var(--mod-n500); }
+.gu-mgmt__crumb a { color:var(--mod-n500); text-decoration:none; }
+.gu-mgmt__crumb a:hover { color:var(--mod-accent); }
+.gu-mgmt__crumb [aria-current] { color:#3a434e; }
+.gu-mgmt .gu-mgmt__eyebrow { margin-top:16px; }
+.gu-mgmt__title { margin:7px 0 0; font-size:25px; font-weight:600; letter-spacing:-.02em; overflow-wrap:anywhere; }
+.gu-mgmt__pills { display:flex; align-items:center; gap:8px; margin-top:11px; flex-wrap:wrap; }
+.gu-mgmt__pill--phase { background:#eaf2fb; border-color:#c5dcf4; color:#1b5e9a; font-weight:600; }
+.gu-mgmt__pill--count { background:#eef2fb; border-color:#c5dcf4; color:#1b5e9a; font-weight:600; }
+.gu-mgmt__pill--on { background:#f3f8f4; border-color:#d6e8dc; color:var(--mod-green); }
+.gu-mgmt__pill--off { background:var(--mod-n100); border-color:var(--mod-border); color:var(--mod-n600); }
+.gu-mgmt__pill--role { background:var(--gu-globe,#3ab0f0); border-color:var(--gu-globe,#3ab0f0); color:#fff; font-weight:600; }
+.gu-mgmt__lead { margin:12px 0 0; max-width:78ch; font-size:14.5px; line-height:1.55; color:var(--mod-n600); }
+
+.gu-mgmt__cols { display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:24px; align-items:start; }
+.gu-mgmt__main, .gu-mgmt__side { display:flex; flex-direction:column; gap:20px; min-width:0; }
+.gu-mgmt__card { background:var(--gu-paper,#fff); border:1px solid var(--mod-border); border-radius:14px;
+  box-shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05); }
+.gu-mgmt__issue { padding:20px 22px; }
+.gu-mgmt__issuerow { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-top:12px; }
+.gu-mgmt__issuebody { min-width:0; }
+.gu-mgmt__issuetitle { font-size:15px; font-weight:600; overflow-wrap:anywhere; }
+.gu-mgmt__actions { display:flex; gap:9px; flex:0 0 auto; flex-wrap:wrap; }
+.gu-mgmt__actions form, .gu-mgmt__prowact form { margin:0; }
+.gu-mgmt .gu-btn { display:inline-flex; align-items:center; gap:7px; }
+.gu-mgmt__meta { display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-top:7px; font-size:12px; color:var(--mod-n500); }
+.gu-mgmt__issue .gu-mgmt__meta { margin-top:6px; }
+.gu-mgmt__dot { width:3px; height:3px; border-radius:50%; background:#a7b1bd; flex:0 0 auto; }
+
+.gu-mgmt__propshead { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:16px 18px; border-bottom:1px solid var(--mod-n100); }
+.gu-mgmt__propstitle { display:flex; align-items:baseline; gap:9px; }
+.gu-mgmt .gu-mgmt__accent { color:var(--mod-accent); }
+.gu-mgmt__n { font-size:12px; color:var(--mod-n500); }
+.gu-mgmt__seg { display:inline-flex; background:var(--mod-n100); border:1px solid var(--mod-border); border-radius:9px; padding:3px; }
+.gu-mgmt__seg a { display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:7px; font-size:12.5px; font-weight:500; color:var(--mod-n600); text-decoration:none; }
+.gu-mgmt__seg a.is-on { background:#fff; color:var(--mod-ink); box-shadow:0 1px 2px rgba(15,25,35,.08); }
+.gu-mgmt__c { font-size:11px; color:var(--mod-n500); }
+.gu-mgmt__seg a.is-on .gu-mgmt__c { color:var(--mod-accent); }
+.gu-mgmt__prow { display:flex; align-items:flex-start; gap:14px; padding:16px 18px; }
+.gu-mgmt__prow + .gu-mgmt__prow { border-top:1px solid var(--mod-n100); }
+.gu-mgmt__prow.is-off { background:var(--mod-n50); }
+.gu-mgmt__prowbody { min-width:0; flex:1; }
+.gu-mgmt__prowstatus { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.gu-mgmt__prowtext { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-size:14px; line-height:1.5; color:var(--mod-ink); text-decoration:none; overflow-wrap:anywhere; }
+.gu-mgmt__prowtext:hover { color:var(--mod-accent); }
+.gu-mgmt__prow.is-off .gu-mgmt__prowtext { color:var(--mod-n600); }
+.gu-mgmt__prowact { display:flex; align-items:center; gap:8px; flex:0 0 auto; padding-top:1px; }
+.gu-mgmt__empty { margin:0; padding:16px 18px; font-size:13px; color:var(--mod-n500); }
+.gu-mgmt__empty--log { padding:10px 0 0; }
+
+.gu-mgmt__aside { padding:18px 20px; }
+.gu-mgmt__role { display:flex; align-items:center; gap:8px; margin-top:10px; }
+.gu-mgmt__rolenote { font-size:12.5px; color:var(--mod-n500); }
+.gu-mgmt__rights { margin:10px 0 0; padding:0; list-style:none; }
+.gu-mgmt__rights li { display:flex; gap:8px; margin:0 0 7px; font-size:13px; line-height:1.5; color:#3a434e; }
+.gu-mgmt__rights li.is-locked { color:var(--mod-n500); }
+.gu-mgmt__chk { color:var(--mod-green); }
+.gu-mgmt__lock { color:#a7b1bd; }
+.gu-mgmt__rightsnote { margin:12px 0 0; padding-top:11px; border-top:1px solid var(--mod-n100); font-size:12px; line-height:1.5; color:var(--mod-n500); }
+.gu-mgmt__log { margin-top:8px; }
+.gu-mgmt__logrow { display:flex; gap:10px; padding:10px 0; border-top:1px solid var(--mod-n100); font-size:12.5px; line-height:1.45; color:var(--mod-n600); }
+.gu-mgmt__logrow:first-child { border-top:0; }
+.gu-mgmt__logrow b { color:var(--mod-ink); font-weight:600; }
+.gu-mgmt__logico { margin-top:2px; color:#a7b1bd; }
+.gu-mgmt__logico--show { color:var(--mod-green); }
+.gu-mgmt__logico--del { color:#d8232a; }
+.gu-mgmt__logtime { color:var(--mod-n500); }
+
+@media (max-width: 960px) {
+  .gu-mgmt__wrap { padding:0 16px; }
+  .gu-mgmt__cols { grid-template-columns:minmax(0,1fr); }
+  .gu-mgmt__issuerow, .gu-mgmt__prow { flex-direction:column; }
+  .gu-mgmt__prowact { padding-top:4px; }
+}
+
+/* The entry on the moderator overview: "Vraagstukken beheren" (docs/design/main.html). */
+.gu-mgmt-entry__item { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.gu-mgmt-entry__body { min-width:0; }
+.gu-mgmt-entry__body > a { font-size:13.5px; font-weight:500; color:var(--mod-ink); }
+.gu-mgmt-entry__body .gu-mod-list__meta { flex-wrap:wrap; }
+.gu-mgmt-entry__link { display:inline-flex; align-items:center; gap:5px; padding:6px 10px; border-radius:8px; font-size:12.5px; font-weight:500; color:var(--mod-accent); white-space:nowrap; text-decoration:none; }
+.gu-mgmt-entry__link:hover { box-shadow:0 0 0 2px var(--gu-globe,#3ab0f0); }
+.gu-mgmt-entry__all { display:inline-block; margin-top:10px; font-size:12.5px; font-weight:500; color:var(--mod-accent); }
+.gu-mgmt-entry__callout { display:flex; gap:10px; margin-top:12px; padding:12px 14px; background:#eaf2fb; border:1px solid #c5dcf4; border-radius:11px; }
+.gu-mgmt-entry__callout p { margin:0; font-size:12.5px; line-height:1.5; color:#1b5e9a; }
+.gu-mgmt-entry__num { flex:0 0 auto; width:20px; height:20px; border-radius:50%; background:var(--mod-accent); color:#fff; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; }

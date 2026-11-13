@@ -993,6 +993,9 @@ class ModerationAction(db.Model):
     action      = db.Column(db.String(20), nullable=False)        # see MODERATION_ACTIONS
     target_type = db.Column(db.String(20), nullable=False)        # 'issue' | 'proposal'
     target_id   = db.Column(db.Integer, nullable=False, index=True)
+    # Step 2: the issue the action belongs to, so the manage screen still finds
+    # actions on proposals that are gone. No foreign key: the issue may be gone too.
+    issue_id    = db.Column(db.Integer, nullable=True, index=True)
     snapshot    = db.Column(db.String(300), nullable=True)        # title or statement at the time
     created_at  = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
 

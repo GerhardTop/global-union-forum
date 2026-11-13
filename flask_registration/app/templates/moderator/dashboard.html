@@ -5,7 +5,8 @@
 {# ── Fase 2c: compacte rijen (mrow) volgens Main.dc.html (docs/design/README.md) ── #}
 {% macro ctx_pill(issue=None, thread=None) -%}
 {%- if issue -%}
-<a class="gu-pill gu-pill--ctx" href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}"><span class="gu-arrow" aria-hidden="true"></span>{{ issue.title }}</a>
+{#- Delete rights step 2: to the manage screen when this viewer may open it, else the public page. -#}
+<a class="gu-pill gu-pill--ctx" href="{{ url_for('admin.issue_manage', issue_id=issue.id) if can_manage(issue) else url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}"><span class="gu-arrow" aria-hidden="true"></span>{{ issue.title }}</a>
 {%- elif thread -%}
 <a class="gu-pill gu-pill--ctx" href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}"><span class="gu-arrow" aria-hidden="true"></span>{{ thread.title(lang)|select|join(' ') }}</a>
 {%- endif -%}
@@ -399,19 +400,38 @@
             <div class="gu-ministat__lbl">{% if lang == 'nl' %}Lopende vraagstukken{% else %}Open issues{% endif %}</div>
           </div>
         </div>
-        <section class="gu-mod__block">
-          <div class="gu-mod__blockhead"><h2 style="margin:0;font-size:17px;font-weight:600">{% if lang == 'nl' %}Recente vraagstukken{% else %}Recent issues{% endif %}</h2><span class="gu-pill">{% if lang == 'nl' %}waar jij aan werkte{% else %}you worked on{% endif %}</span></div>
+        {# Delete rights step 2 (docs/design/main.html): the issues this viewer may
+           manage, each with a link to the manage screen. A moderator sees their own
+           issues (none: no section); a senior moderator or admin the active ones. #}
+        {% if manage_section %}
+        <section class="gu-mod__block gu-mgmt-entry" id="beheren">
+          <div class="gu-mod__blockhead"><h2 style="margin:0;font-size:17px;font-weight:600">{% if lang == 'nl' %}Vraagstukken beheren{% else %}Manage issues{% endif %}</h2></div>
           <div class="gu-mod-list">
-            {% for issue, w in recent_issues %}
-            <div class="gu-mod-list__item">
-              <a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
-              <div class="gu-mod-list__meta"><span class="gu-pill gu-pill--done">{% if lang == 'nl' %}beoordeeld{% else %}handled{% endif %}</span>{% if w %}<span>{% if lang == 'nl' %}jij besliste, {{ w[lang] }} geleden{% else %}you decided, {{ w[lang] }} ago{% endif %}</span>{% endif %}</div>
+            {% for issue in manage_issues %}
+            {% set n_open = manage_open.get(issue.id, 0) %}
+            <div class="gu-mod-list__item gu-mgmt-entry__item">
+              <div class="gu-mgmt-entry__body">
+                <a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
+                <div class="gu-mod-list__meta">
+                  {% if n_open %}<span class="gu-pill gu-pill--count">{{ n_open }} {% if lang == 'nl' %}open {{ 'melding' if n_open == 1 else 'meldingen' }}{% else %}open {{ 'report' if n_open == 1 else 'reports' }}{% endif %}</span>{% endif %}
+                  {% if issue.created_by_id == current_user.id %}<span>{% if lang == 'nl' %}jouw vraagstuk{% else %}your issue{% endif %}</span>
+                  {% elif issue.is_archived %}<span>{% if lang == 'nl' %}in archief{% else %}archived{% endif %}</span>
+                  {% else %}<span>{{ _('Closed') if issue.is_closed else phase_labels_all.get(issue.phase, issue.phase) }}</span>{% endif %}
+                </div>
+              </div>
+              <a class="gu-mgmt-entry__link" href="{{ url_for('admin.issue_manage', issue_id=issue.id) }}">{% if lang == 'nl' %}Beheer{% else %}Manage{% endif %}<span class="gu-sr-only">: {{ issue.title }}</span> <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg></a>
             </div>
             {% else %}
-            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Nog niets behandeld.{% else %}Nothing handled yet.{% endif %}</p>
+            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen lopende vraagstukken om te beheren.{% else %}No open issues to manage.{% endif %}</p>
             {% endfor %}
           </div>
+          {% if manage_more %}<a class="gu-mgmt-entry__all" href="{{ url_for('issues.index') }}">{% if lang == 'nl' %}Alle vraagstukken{% else %}All issues{% endif %} &rsaquo;</a>{% endif %}
+          <div class="gu-mgmt-entry__callout">
+            <span class="gu-mgmt-entry__num" aria-hidden="true">i</span>
+            <p>{% if lang == 'nl' %}Klik bij een vraagstuk op <strong>Beheer</strong> om voorstellen te verbergen of te verwijderen en het vraagstuk te beheren. De vraagstuk-label bij een melding leidt naar dezelfde pagina.{% else %}Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page.{% endif %}</p>
+          </div>
         </section>
+        {% endif %}
 
         {# Polijststap P7 / fase 2c: de fasen van vraagstukken beheren moderators hier. #}
         {% set ns = namespace(ready=0) %}

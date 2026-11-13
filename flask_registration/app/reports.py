@@ -207,34 +207,11 @@ def resolve(melding, decision, note, actor):
         r.decided_at = now
 
 
-def recent_for(user, limit=4):
-    """Recente vraagstukken waar deze moderator aan werkte: vraagstukken waarin
-    hij een melding behandelde, nieuwste beslissing eerst."""
-    rows = (PostReport.query.filter(PostReport.decided_by_id == user.id,
-                                    PostReport.decided_at.isnot(None))
-            .order_by(PostReport.decided_at.desc()).limit(40).all())
-    prop_rows = (ProposalReport.query.filter(ProposalReport.decided_by_id == user.id,
-                                             ProposalReport.decided_at.isnot(None))
-                 .order_by(ProposalReport.decided_at.desc()).limit(40).all())
-    thread_cache = {}
-    seen, out = set(), []
-    pairs = []
-    for r in rows:
-        post = Post.query.get(r.post_id)
-        issue = _issue_for_thread(post.thread_id, thread_cache) if post is not None else None
-        if issue is not None:
-            pairs.append((issue, r.decided_at))
-    for r in prop_rows:
-        prop = IssueProposal.query.get(r.proposal_id)
-        issue = Issue.query.get(prop.issue_id) if prop is not None else None
-        if issue is not None:
-            pairs.append((issue, r.decided_at))
-    pairs.sort(key=lambda t: t[1] or datetime.min, reverse=True)
-    for issue, decided_at in pairs:
-        if issue.id in seen or issue.archived_at is not None:  # archived: not listed
-            continue
-        seen.add(issue.id)
-        out.append((issue, decided_at))
-        if len(out) >= limit:
-            break
-    return out
+def open_counts_by_issue(meldingen=None):
+    """{issue_id: number of open meldingen (items)} for the manage list and screen."""
+    counts = {}
+    for m in (open_meldingen() if meldingen is None else meldingen):
+        if m.issue is not None:
+            counts[m.issue.id] = counts.get(m.issue.id, 0) + 1
+    return counts
+
