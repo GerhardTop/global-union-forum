@@ -3743,10 +3743,6 @@ body {
 .gu-newproposal__threshold { margin-top: 10px; }
 .gu-phasechip { display: inline-block; margin: 0 0 10px; padding: 2px 10px; border-radius: 999px; font-size: 0.8125rem; font-weight: 600; color: var(--gu-globe-deep); background: color-mix(in srgb, var(--gu-globe) 12%, transparent); }
 .gu-phasechip.is-closed { color: var(--gu-fg-3); background: var(--gu-bg-soft); }
-.gu-versionchip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; color: var(--gu-fg-2); background: var(--gu-bg-soft); border: 1px solid var(--gu-border); white-space: nowrap; }
-.gu-versionchip.is-old { color: var(--gu-fg-3); }
-.gu-post__proposalref { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 6px; font-size: 0.8125rem; color: var(--gu-fg-3); }
-.gu-post__proposalref a { color: var(--gu-globe-deep); }
 /* Polijstronde P6: vijf fasen moeten ook op een smal scherm passen. */
 .gu-phasebar .gu-proposal-steps__title { overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto; }
 
@@ -4532,8 +4528,7 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 
 .gu-pv__composer { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border: 1px solid var(--gu-border); border-radius: 10px; background: var(--gu-n-50); }
 .gu-pv__composer .gu-composer__input { min-height: 0; background: var(--gu-paper); }
-.gu-pv__composerfoot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
-.gu-pv__composerfoot .gu-composer__hint { margin: 0; }
+.gu-pv__composerfoot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
 .gu-pv__cmts { margin-top: 2px; }
 .gu-pv__cmt { padding: 16px 0; }
 .gu-pv__cmt + .gu-pv__cmt { border-top: 1px solid var(--gu-n-100); }
@@ -4546,8 +4541,6 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__cmtname { font-size: 0.875rem; font-weight: 600; color: var(--gu-fg-1); }
 .gu-pv__cmttime { font-size: 0.75rem; color: var(--gu-fg-3); }
 .gu-pv__cmttxt { margin: 9px 0 0; font-size: 0.875rem; line-height: 1.55; color: var(--gu-n-700); white-space: pre-line; overflow-wrap: anywhere; }
-.gu-pv__cmtactions { display: flex; align-items: center; gap: 18px; margin-top: 10px; font-size: 0.8125rem; }
-.gu-pv__cmtactions a { color: var(--gu-fg-2); }
 .gu-pv #beheer-admin { margin-top: 26px; }
 
 /* Phone: the cockpit's tabs and stacking (see .gu-cockpit__grid); only the

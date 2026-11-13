@@ -625,8 +625,11 @@ def forum_thread(thread_id):
         # thread wijzen (geen IDOR, alle posts zijn al publiek, maar wel een
         # corrupte reply-boomstructuur).
         parent = Post.query.filter_by(id=parent_id, thread_id=thread_id).first() if parent_id is not None else None
-        if parent is not None and (parent.is_fact or conduct.is_removed_for(parent, current_user)):
-            parent = None  # een feit, of uit het gesprek voor deze lezer: alsof hij niet bestaat
+        if parent is not None and (parent.is_fact or conduct.is_removed_for(parent, current_user)
+                                   or _proposal_of(parent) is not None):
+            # een feit, uit het gesprek voor deze lezer, of een reactie bij een
+            # voorstel (die staat niet in de discussie): alsof hij niet bestaat
+            parent = None
         if parent is not None and parent.user_id == current_user.id:
             # Punt 7: niet reageren op je eigen bericht (de knop is ook verborgen).
             flash(
@@ -736,6 +739,11 @@ def post_url(post):
     """Waar een bijdrage staat: in het gesprek zelf (niveau 1 tot 4), of in de
     doorlinkweergave van zijn voorouder op niveau 4, 7, 10, ... (die daar
     niveau 1 is, zodat de bijdrage op niveau 2 tot 4 valt)."""
+    if not post.is_op and not post.is_fact:
+        proposal = _proposal_of(post)
+        if proposal is not None:
+            return (url_for('issues.proposal', issue_id=proposal.issue_id, proposal_id=proposal.id)
+                    + f'#post-{post.id}')
     level, chain = _full_level(post)
     if post.is_op or level <= MAX_LEVEL:
         return url_for('forum.forum_thread', thread_id=post.thread_id) + f'#post-{post.id}'
@@ -744,9 +752,39 @@ def post_url(post):
     return url_for('forum.forum_branch', thread_id=post.thread_id, post_id=root.id) + f'#post-{post.id}'
 
 
-def _post_proposals(posts):
-    from app import issue_proposals
-    return issue_proposals.proposals_by_id(getattr(p, 'issue_proposal_id', None) for p in posts)
+def without_proposal_branches(posts):
+    """De berichten zonder de reacties bij een voorstel: een bericht met een
+    issue_proposal_id valt weg, en daarmee ook alle reacties eronder (op elk
+    niveau), zodat een tak bij een voorstel niet in de discussie lekt."""
+    by_id = {p.id: p for p in posts}
+    tied = {}
+
+    def is_tied(post):
+        chain = []
+        while post is not None and post.id not in tied:
+            if post.issue_proposal_id is not None:
+                tied[post.id] = True
+                break
+            chain.append(post)
+            post = by_id.get(post.parent_id) if post.parent_id is not None else None
+        result = tied.get(post.id, False) if post is not None else False
+        for p in chain:
+            tied[p.id] = result
+        return result
+
+    return [p for p in posts if not is_tied(p)]
+
+
+def _proposal_of(post):
+    """Het voorstel waar deze reactie (of de tak waarin ze staat) bij hoort, of None."""
+    seen = set()
+    while post is not None and post.id not in seen:
+        if post.issue_proposal_id is not None:
+            from app.models import IssueProposal
+            return db.session.get(IssueProposal, post.issue_proposal_id)
+        seen.add(post.id)
+        post = db.session.get(Post, post.parent_id) if post.parent_id is not None else None
+    return None
 
 
 def _reply_proposal(thread, proposal_id):
@@ -816,6 +854,9 @@ def _thread_context(thread, branch_root_id=None):
     # Eén query voor alle bijdragen; de feiten (fase E) staan in een eigen
     # blok en buiten de discussieboom, de tellingen en eens/oneens.
     everything = Post.query.filter_by(thread_id=thread.id).order_by(Post.created_at).all()
+    # Discussie stap 2: reacties bij een voorstel (en wat eronder hangt) staan
+    # alleen bij dat voorstel, niet in de gedeelde discussie van het vraagstuk.
+    everything = without_proposal_branches(everything)
     facts = [p for p in everything if p.is_fact]
     all_posts = [p for p in everything if not p.is_fact]
     posts_by_id = {p.id: p for p in everything}
@@ -938,7 +979,6 @@ def _thread_context(thread, branch_root_id=None):
         fact_errors=fact_errors,
         fact_data=fact_data,
         fact_marks=fact_signals.marked_ids(fact_ids),  # polijstronde P2: het kwaliteitsmerk
-        post_proposals=_post_proposals(all_posts),  # polijstronde P5: reacties bij een voorstel
         fact_my_disputed=fact_signals.my_disputed(fact_ids, current_user),
         conduct_cases=conduct_cases,
         moved_ids=moved_ids,

@@ -10,7 +10,8 @@
   support and a quiet link to the issue's voting rules, "Adjust proposal" for
   the proposer top right, the earlier versions collapsed (opening one shows its
   text and the reactions made on it), then the current version with its
-  explanation, the vote while voting is open or over, and the reactions.
+  explanation, the vote while voting is open or over, and the reactions
+  (which stay on the proposal: they are not in the issue's discussion).
   Right: the issue's proposals, ten at a time with "show more", the current one
   highlighted, each with its status, version and reaction count. On a phone
   the cockpit's tabs, with the proposal open first. Without JavaScript the
@@ -207,9 +208,6 @@
             <span class="gu-pv__cmttime">{{ post.time_ago[lang] }}</span>
           </div>
           <div class="gu-pv__cmttxt" lang="{{ post.source_lang if not (post.body_nl and post.body_en) else lang }}">{{ body | linkify }}</div>
-          <div class="gu-pv__cmtactions">
-            <a href="{{ url_for('issues.show', issue_id=issue.id) }}#post-{{ post.id }}">{{ _('In the discussion') }}</a>
-          </div>
         </article>
         {% endfor %}
         {% endmacro %}
@@ -269,7 +267,6 @@
             <label for="reactionBody" class="gu-sr-only">{{ _('Your reaction to version %(n)s', n=current_version) }}</label>
             <textarea name="body" id="reactionBody" rows="2" required class="gu-composer__input" placeholder="{% if nl %}Schrijf een reactie…{% else %}Write a reaction…{% endif %}"></textarea>
             <div class="gu-pv__composerfoot">
-              <p class="gu-composer__hint">{{ _('Your reaction also appears in the shared discussion of the issue.') }}</p>
               <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Post') }}</button>
             </div>
           </form>

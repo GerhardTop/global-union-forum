@@ -500,9 +500,10 @@ def test_versions_timeline_and_reactions_per_version(app, db, make_user):
     assert 'Reacties op versie 3' in reactions and 'Reactie op versie drie.' in reactions
     assert 'Reactie op de eerste versie.' not in reactions and 'Jouw reactie op versie 3' in reactions
     assert "gu-versionchip" not in page.split("id=\"voorstel\"")[1]  # gegroepeerd per versie: geen label per reactie
-    # In de gedeelde discussie staat de reactie met het voorstel en de versie.
+    # Discussie stap 2: reacties bij een voorstel staan niet in de gedeelde discussie, ook geen label.
     cockpit = _get(app, f'/vraagstuk/{issue.id}', anna)
-    assert 'Bij voorstel' in cockpit and 'op versie 1' in cockpit
+    assert 'Reactie op de eerste versie.' not in cockpit and 'Reactie op versie drie.' not in cockpit
+    assert 'Bij voorstel' not in cockpit and 'op versie 1' not in cockpit and 'gu-versionchip' not in cockpit
 
 
 def test_reaction_cannot_point_to_a_proposal_of_another_issue(app, db, make_user):
