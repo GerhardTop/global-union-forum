@@ -3482,8 +3482,9 @@ body {
 @media (min-width: 1024px) {
   .gu-cockpit__grid {
     grid-template-columns: 280px minmax(0, 1fr) 280px;
-    grid-template-rows: auto 1fr;
-    grid-template-areas: "facts discussion proposals" "facts discussion rights";
+    /* Right column: the voting rules card, the proposals, then (issue page) the right to vote. */
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "facts discussion rules" "facts discussion proposals" "facts discussion rights";
     align-items: start;
   }
   .gu-cockpit__tabs { display: none !important; }
@@ -3491,6 +3492,7 @@ body {
   .gu-cockpit__discussion, .gu-cockpit__main { grid-area: discussion; }
   .gu-cockpit__proposals { grid-area: proposals; }
   .gu-cockpit__side { grid-area: rights; }
+  .gu-rules { grid-area: rules; }
 }
 
 /* ── Herontwerp stap 3: nuttig en betwisten op een feit, de feitenpagina ── */
@@ -3707,7 +3709,7 @@ body {
 .gu-cockpit--expanded .gu-cockpit__grid { display: block; }
 .gu-cockpit--expanded .gu-cockpit__tabs { display: none !important; }
 .gu-cockpit--expanded [data-panel]:not(.is-expanded) { display: none !important; }
-.gu-cockpit--expanded [data-panel].is-expanded { display: block; max-width: 960px; margin: 0 auto 20px; }
+.gu-cockpit--expanded [data-panel].is-expanded { display: block; max-width: 980px; margin: 0 auto 20px; }
 .gu-cockpit--expanded .gu-cockpit__expand { display: none; }
 /* De fase-indicator (stepper) staat verderop in dit bestand. */
 
@@ -4655,3 +4657,40 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__withdraw a:hover { color:#a3282c; text-decoration-color:currentColor; }
 .gu-pv__hidden { display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; margin:0 0 14px; padding:9px 12px; border:1px solid var(--gu-border); border-radius:10px; background:var(--gu-n-100); font-size:0.8125rem; color:var(--gu-fg-2); }
 .gu-pv__hidden a { margin-left:auto; font-weight:500; color:var(--gu-globe-deep); }
+
+/* ── Consistency of the issue and proposal pages (docs/design/voorstel.html,
+   voorstel-vergroot.html): the voting rules card, the enlarged proposals ── */
+/* The voting rules: a card with a button header, collapsed by default. */
+.gu-rules__h { margin: 0; }
+.gu-rules__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;
+  padding: 12px 16px; border: 0; background: transparent; font: inherit; text-align: left; cursor: pointer; color: var(--gu-fg-1); }
+.gu-rules__head:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: -2px; }
+.gu-rules__chev { flex: none; color: var(--gu-n-400); transition: transform 0.15s; }
+.gu-rules__head[aria-expanded="true"] .gu-rules__chev { transform: rotate(180deg); }
+.gu-rules__body { padding: 12px 16px; border-top: 1px solid var(--gu-n-100); }
+/* While a column is enlarged, only that column: no rules card, no right to vote. */
+.gu-cockpit--expanded .gu-rules, .gu-cockpit--expanded .gu-cockpit__side { display: none !important; }
+
+/* The proposals column: the compact list in the column, every proposal in rows when enlarged. */
+.gu-cockpit__bigbox { display: none; }
+.gu-cockpit--expanded .is-expanded > .gu-cockpit__compact { display: none; }
+.gu-cockpit--expanded .is-expanded > .gu-cockpit__bigbox { display: block; padding: 16px; }
+.gu-bigp__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.gu-bigp__seg { display: inline-flex; flex-wrap: wrap; background: var(--gu-n-100); border: 1px solid var(--gu-border); border-radius: 9px; padding: 3px; }
+.gu-bigp__seg a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 7px; font-size: 0.78125rem; font-weight: 500; color: var(--gu-fg-2); text-decoration: none; }
+.gu-bigp__seg a.is-on { background: var(--gu-paper); color: var(--gu-fg-1); box-shadow: 0 1px 2px rgba(15,25,35,.1); }
+.gu-bigp__c { font-size: 0.6875rem; color: var(--gu-fg-3); }
+.gu-bigp__seg a.is-on .gu-bigp__c { color: var(--gu-globe-deep); }
+.gu-bigp__sort { display: inline-flex; align-items: center; gap: 7px; margin: 0; font-size: 0.78125rem; color: var(--gu-fg-2); }
+.gu-bigp__sort select { font: inherit; font-size: 0.78125rem; border: 1px solid var(--gu-border); border-radius: 7px; padding: 5px 8px; background: var(--gu-paper); color: var(--gu-fg-1); }
+.gu-bigp__row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 4px; text-decoration: none; color: inherit; }
+.gu-bigp__row + .gu-bigp__row { border-top: 1px solid var(--gu-n-100); }
+.gu-bigp__row:hover .gu-bigp__txt { color: var(--gu-globe-deep); }
+.gu-bigp__row.is-current { background: #f4faff; border-radius: 8px; }
+.gu-bigp__body { flex: 1; min-width: 0; display: block; }
+.gu-bigp__txt { display: block; font-size: 0.875rem; font-weight: 500; line-height: 1.4; color: var(--gu-fg-1); overflow-wrap: anywhere; }
+.gu-bigp__meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 6px; font-size: 0.75rem; color: var(--gu-fg-3); }
+.gu-bigp__meta .gu-ip-status { padding: 1px 8px; font-size: 0.6875rem; }
+.gu-bigp__dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gu-n-400); flex: none; }
+.gu-bigp__chev { flex: none; margin-top: 3px; color: var(--gu-n-300); }
+.gu-bigp__empty { margin: 10px 4px 0; }

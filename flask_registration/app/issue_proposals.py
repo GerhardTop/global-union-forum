@@ -60,6 +60,9 @@ OPEN_PHASES = ('feiten',)
 FILTERS = ('alle', 'stemlijst', 'steun')
 ORDERS = ('steun', 'nieuwste', 'stemlijst')
 DEFAULT_ORDER = 'steun'
+# Filter and sort show from more than this many proposals (counted before the
+# filter), on /voorstellen and in the enlarged proposals view.
+FILTER_MIN = 10
 # Feiten koppelen en ontkoppelen: in de feitenfase en de bijstelfase.
 LINK_PHASES = ('feiten', 'bijstellen')
 

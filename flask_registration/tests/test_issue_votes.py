@@ -213,8 +213,8 @@ def test_interim_tally(app, db, make_user, interim):
         vote = page.split('id="stemming"')[1].split('</section>')[0]
         assert ('Tussenstand' in vote) is interim
         assert ('2 mensen hebben al gestemd.' in vote) is (not interim)
-        # The rules belong to the issue: the proposal page only links to it.
-        assert 'Stemregels bij dit vraagstuk' in page and 'id="stemregels"' not in page
+        # The rules: their own collapsed card in the right column (no meta link any more).
+        assert 'Stemregels bij dit vraagstuk' not in page and 'id="stemregels"' in page
     finally:
         _drop(db, others)
 
@@ -302,7 +302,7 @@ def test_deleting_a_voter_keeps_the_vote_anonymously(app, db, make_user):
 def test_filter_label_after_the_facts_phase(app, db, make_user):
     author, supporter = make_user(), make_user()
     issue, _l, _u = _setup(db, author, [supporter], phase='feiten')
-    for i in range(5):  # de filterknoppen staan er pas bij meer dan 5 voorstellen
+    for i in range(ip.FILTER_MIN):  # the filter buttons only show above FILTER_MIN (10) proposals
         ip.create(issue, supporter, f'Extra voorstel {i}.')
     db.session.commit()
     page = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)

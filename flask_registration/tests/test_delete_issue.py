@@ -76,6 +76,20 @@ def _cleanup(issue_id):
     issue = Issue.query.get(issue_id)
     if issue is not None:
         issues.purge(issue)
+        _forget_deleted()
+
+
+def _forget_deleted():
+    """purge() deletes in bulk, past the session: drop exactly the objects whose
+    rows are gone from the session, so a later test (SQLite reuses ids) does not
+    collide with them. Everything else (users, other issues) stays attached."""
+    from sqlalchemy import inspect, select
+    for obj in list(db.session.identity_map.values()):
+        state = inspect(obj)
+        cols = state.mapper.primary_key
+        row = db.session.execute(select(*cols).where(*[c == v for c, v in zip(cols, state.identity)])).first()
+        if row is None:
+            db.session.expunge(obj)
 
 
 def test_admin_deletes_issue(app, db):

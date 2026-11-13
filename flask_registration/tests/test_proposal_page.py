@@ -116,14 +116,14 @@ def test_page_in_english_and_mobile_tabs(app, db, make_user):
     db.session.commit()
     page = _get(app, _detail(issue, proposal), host, 'en')
     for text in ('Back to the issue', 'Have your say', '<span aria-current="page">Proposal</span>',
-                 'Facts and background', 'With this proposal', 'Voting rules for this issue', 'All proposals', 'Current version', 'Reactions to version 1',
+                 'Facts and background', 'With this proposal', 'Voting rules</span>', 'All proposals', 'Current version', 'Reactions to version 1',
                  '0 supporters', 'Write a reaction', '0 reactions'):
         assert text in page
     # Phone: the cockpit's tabs in the order of the columns, the proposal selected by default.
     tabs = page.split('class="gu-cockpit__tabs"')[1].split('</div>')[0]
     assert tabs.index('data-tab="facts"') < tabs.index('data-tab="proposal"') < tabs.index('data-tab="proposals"')
     assert 'data-tab="proposal" aria-selected="true"' in tabs and 'data-tab="facts" aria-selected="false"' in tabs
-    assert "show(tabPanel ? tabPanel.dataset.panel : 'proposal')" in page
+    assert "GU.cockpit(root, {defaultTab: 'proposal'})" in page and '/static/js/cockpit.js' in page
     css = _css(app)
     assert '.gu-cockpit--tabs [data-panel]:not(.is-shown) { display: none; }' in css
 
@@ -178,24 +178,23 @@ def test_link_and_unlink_from_the_facts_column(app, db, make_user):
     assert 'Gekoppeld' in anon.split('data-fact-panel="all"')[1]
 
 
-def test_voting_rules_link_grey_support_and_pinned_button(app, db, make_user):
+def test_rules_card_replaces_the_meta_link_grey_support_and_pinned_button(app, db, make_user):
     host = make_user()
     issue = _issue(db, host)
     proposal = ip.create(issue, host, 'Een stelling.')
     issue.phase = 'bijstellen'
     db.session.commit()
     page = _get(app, _detail(issue, proposal), host)
-    # No rules block in the rail any more; a quiet link right after the support count.
-    assert 'id="stemregels"' not in page and 'Hoe werkt stemmen?' not in page
+    # The voting rules: their own card above the proposals, no quiet meta link in the middle any more.
+    assert 'gu-pv__ruleslink' not in page and 'Stemregels bij dit vraagstuk' not in page
+    assert page.index('id="stemregels"') < page.index('id="panel-proposals"')
     meta = page.split('class="gu-pv__statusrow"')[1].split('id="bijstellen"')[0]
-    assert meta.index('steunbetuigingen') < meta.index('class="gu-pv__ruleslink"')
-    assert f'class="gu-pv__ruleslink" href="/vraagstuk/{issue.id}#stemregels">Stemregels bij dit vraagstuk</a>' in meta
     # The separator travels with the support count, so a line break never strands it.
     assert '<span class="gu-pv__metaitem"><span class="gu-pv__sep" aria-hidden="true">&middot;</span>' in meta
     item = meta.split('gu-pv__metaitem')[1].split('</span></span>')[0]
-    assert 'steunbetuigingen' in item
+    assert 'steunbetuigingen' in item and meta.count('gu-pv__metaitem') == 1
     en = _get(app, _detail(issue, proposal), host, 'en')
-    assert '>Voting rules for this issue</a>' in en
+    assert 'Voting rules for this issue' not in en and '<span class="gu-cockpit__title">Voting rules</span>' in en
     css = _css(app)
     rule = lambda sel: css.split(sel + ' {')[1].split('}')[0]  # noqa: E731
     # Support in the normal grey meta colour, not green.
@@ -214,7 +213,7 @@ def test_issue_page_has_the_voting_rules_block(app, db, make_user):
     for viewer in (host, voter, None):  # also for whoever already has the right to vote
         page = _get(app, f'/vraagstuk/{issue.id}', viewer)
         block = page.split('id="stemregels"')[1].split('</section>')[0]
-        assert 'data-panel="proposals"' in block and '>Stemregels</h2>' in block
+        assert 'data-panel="proposals"' in block and '<span class="gu-cockpit__title">Stemregels</span>' in block
         assert 'Alleen over voorstellen met genoeg steun wordt gestemd.' in block
         assert f'Aangenomen bij meer dan {issue.proposal_threshold_pct}% voor van de geldige stemmen.' in block
         assert ('samenvattend voorstel' in block) is bool(issue.final_vote)
@@ -222,7 +221,7 @@ def test_issue_page_has_the_voting_rules_block(app, db, make_user):
     issue.final_vote = False
     db.session.commit()
     block = _get(app, f'/vraagstuk/{issue.id}', host, 'en').split('id="stemregels"')[1].split('</section>')[0]
-    assert '>Voting rules</h2>' in block and 'Only proposals with enough support are voted on.' in block
+    assert '<span class="gu-cockpit__title">Voting rules</span>' in block and 'Only proposals with enough support are voted on.' in block
     assert f'more than {issue.proposal_threshold_pct}% in favour of the valid votes' in block
     assert 'summary proposal' not in block and 'Abstentions' not in block
 

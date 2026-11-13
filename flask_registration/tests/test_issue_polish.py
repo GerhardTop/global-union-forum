@@ -715,22 +715,27 @@ def test_full_pages_match_the_cockpit(app, db, make_user):
         assert f'/vraagstuk/{issue.id}{anchor}' in page and 'Verkleinen' in page
 
 
-def test_sort_and_filter_only_with_more_than_five(app, db, make_user):
+def test_sort_and_filter_facts_above_five_proposals_above_ten(app, db, make_user):
     host, anna = make_user(), make_user()
     issue = _issue(db, host)
     for i in range(5):
         _fact(db, issue, anna, f'Feit {i}')
+    for i in range(10):
         ip.create(issue, anna, f'Voorstel {i}')
     db.session.commit()
     for path in (f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen'):
         page = _get(app, path)
         assert 'gu-factspage__sort' not in page and 'gu-factspage__filter' not in page
+    # Facts: from more than 5. Proposals: from more than 10 (ip.FILTER_MIN).
     _fact(db, issue, anna, 'Feit 5')
-    ip.create(issue, anna, 'Voorstel 5')
     db.session.commit()
-    for path in (f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen'):
-        page = _get(app, path)
-        assert 'gu-factspage__sort' in page and 'gu-factspage__filter' in page
+    page = _get(app, f'/vraagstuk/{issue.id}/feiten')
+    assert 'gu-factspage__sort' in page and 'gu-factspage__filter' in page
+    assert ip.FILTER_MIN == 10 and 'gu-factspage__filter' not in _get(app, f'/vraagstuk/{issue.id}/voorstellen')
+    ip.create(issue, anna, 'Voorstel 10')
+    db.session.commit()
+    page = _get(app, f'/vraagstuk/{issue.id}/voorstellen')
+    assert 'gu-factspage__sort' in page and 'gu-factspage__filter' in page
     # Bij de voorstellen telt het aantal vóór het filter: ook een leeg filter houdt de knoppen.
     page = _get(app, f'/vraagstuk/{issue.id}/voorstellen?filter=stemlijst')
     assert 'gu-factspage__filter' in page

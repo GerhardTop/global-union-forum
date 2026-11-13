@@ -153,11 +153,12 @@ def show(issue_id):
     proposal_rows = ip.listing(issue, order='stemlijst')
     my_reported_proposal_ids = _reported_proposal_ids([p.id for p, _c in proposal_rows])
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in proposal_rows])
+    big = _enlarged_proposals(issue, {p.id: ip.current_version(p) for p, _c in proposal_rows})
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
                            proposal_rows=proposal_rows, proposals_shown=COCKPIT_PROPOSALS,
-                           reaction_counts=reaction_counts, new_discussion=new_discussion,
+                           reaction_counts=reaction_counts, new_discussion=new_discussion, big=big,
                            proposal_total=ip.regular_query(issue).count(),
                            final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
@@ -285,7 +286,8 @@ def proposals(issue_id):
     rows = ip.listing(issue, which, order)
     my_reported_proposal_ids = _reported_proposal_ids([p.id for p, _c in rows])
     return render_template('issues/proposals.html', issue=issue, rows=rows, which=which, order=order,
-                           total=ip.regular_query(issue).count(),  # vóór het filter: sorteren en filteren pas bij > 5
+                           total=ip.regular_query(issue).count(),  # before the filter: filter and sort only above FILTER_MIN
+                           filter_min=ip.FILTER_MIN,
                            my_supports=ip.my_supports([p.id for p, _n in rows], current_user),
                            my_reported_proposal_ids=my_reported_proposal_ids,
                            can_propose=ip.can_propose(issue, current_user),
@@ -368,6 +370,7 @@ def proposal(issue_id, proposal_id):
         ip.mark_read(proposal, current_user)
         db.session.commit()
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in rail_proposals])
+    rail_versions = {p.id: ip.current_version(p) for p, _c in rail_proposals}
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),
                            can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data,
@@ -380,7 +383,7 @@ def proposal(issue_id, proposal_id):
                            can_react=_can_react(issue), remaining=issues.remaining(issue),
                            rail_facts=fact_signals.listing(issue_facts, order='kwaliteit'),
                            rail_proposals=rail_proposals, rail_shown=RAIL_SHOWN,
-                           rail_versions={p.id: ip.current_version(p) for p, _c in rail_proposals},
+                           rail_versions=rail_versions, big=_enlarged_proposals(issue, rail_versions),
                            reaction_counts=reaction_counts, new_discussion=new_discussion,
                            fact_marks=fact_signals.marked_ids(issue_fact_ids),
                            my_reported_ids=_reported_fact_ids(issue_fact_ids))
@@ -780,6 +783,32 @@ def _local_next():
     """An optional ?next= / form next (a local path only, e.g. the manage screen), or None."""
     raw = request.values.get('next')
     return safe_next(raw, None) if raw else None
+
+
+# The enlarged proposals view (docs/design/voorstel-vergroot.html), on the issue
+# page and the proposal page. Same filter and sort as /voorstellen (ip.listing
+# with ?filter= and ?sorteer=); ?vergroot=voorstellen reopens it enlarged.
+# ?vergroot= in the URL (Dutch, like the other parameters) to the panel to enlarge.
+ENLARGE_PANELS = {'feiten': 'facts', 'discussie': 'discussion', 'voorstel': 'proposal', 'voorstellen': 'proposals'}
+
+
+def _enlarged_proposals(issue, versions):
+    which = request.args.get('filter')
+    which = which if which in ip.FILTERS else 'alle'
+    order = request.args.get('sorteer')
+    order = order if order in ip.ORDERS else ip.DEFAULT_ORDER
+    everything = ip.listing(issue)
+    on_list = sum(1 for p, c in everything if ip.on_list(p, c))
+    rows = ip.listing(issue, which, order)
+    versions = dict(versions)
+    for p, _c in rows:
+        if p.id not in versions:
+            versions[p.id] = ip.current_version(p)
+    expanded = ENLARGE_PANELS.get(request.args.get('vergroot'))
+    return {'rows': rows, 'which': which, 'order': order, 'total': len(everything),
+            'counts': {'alle': len(everything), 'stemlijst': on_list, 'steun': len(everything) - on_list},
+            'filter_min': ip.FILTER_MIN, 'versions': versions, 'final': ip.final_proposal(issue),
+            'expanded': expanded}
 
 
 def _can_withdraw(proposal):

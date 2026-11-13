@@ -13,7 +13,7 @@
 #}
 {% block content_outer %}{% block content %}
 {% if has_discussion %}<template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>{% endif %}
-<main class="gu-forum gu-cockpit" lang="{{ lang }}" id="cockpit">
+<main class="gu-forum gu-cockpit" lang="{{ lang }}" id="cockpit"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
   <div class="gu-cockpit__inner">
 
     {# Teruglink naar het overzicht boven de titel; geen volledig kruimelpad. #}
@@ -137,6 +137,9 @@
         {% endif %}
       </section>
 
+      {# The voting rules: their own collapsed card at the top of the right column. #}
+      {% include 'issues/_rules_card.html' %}
+
       <section class="gu-cockpit__panel gu-cockpit__proposals" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}{% if proposal_total %} <span class="gu-facts__count">({{ proposal_total }})</span>{% endif %}</h2>
@@ -144,7 +147,7 @@
           <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="proposals" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Proposals') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
           <button type="button" class="gu-iconbtn gu-cockpit__shrink" data-collapse title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ _('Proposals') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button>
         </div>
-        <div class="gu-cockpit__box">
+        <div class="gu-cockpit__box gu-cockpit__compact">
         {# Stap 6: het samenvattende voorstel bovenaan. #}
         {% include 'issues/_ip_final.html' %}
         {# Stap 4: de voorstellen onder dit vraagstuk, stemlijst eerst, met hun status. #}
@@ -185,12 +188,13 @@
         <button type="button" class="gu-disclosure gu-showmore" data-more title="{{ _('Show more') }}" aria-label="{{ _('Show more') }}: {{ _('Proposals') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
         <noscript><a class="gu-cockpit__more" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Show more') }}</a></noscript>
         {% endif %}
-        <a class="gu-cockpit__fullpage" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals page with filters and sorting') }}</a>
         </div>
+        {# Enlarged in the page: every proposal, with filter and sort above FILTER_MIN. #}
+        <div class="gu-cockpit__box gu-cockpit__bigbox">{% include 'issues/_proposals_big.html' %}</div>
       </section>
 
       {# Right column under the proposals: your right to vote (P7: only for whoever
-         has none yet) and the issue's voting rules (linked from the proposal page). #}
+         has none yet). The voting rules are their own card above the proposals. #}
       <div class="gu-cockpit__side">
       {% if not (voting_right and voting_right.can_vote) %}
       <section class="gu-cockpit__panel gu-cockpit__rights" data-panel="proposals" aria-labelledby="rightsTitle">
@@ -212,15 +216,6 @@
         </div>
       </section>
       {% endif %}
-      <section class="gu-cockpit__panel gu-cockpit__rules" id="stemregels" data-panel="proposals" aria-labelledby="rulesTitle">
-        <div class="gu-cockpit__panelhead"><h2 class="gu-cockpit__title" id="rulesTitle">{% if lang == 'nl' %}Stemregels{% else %}Voting rules{% endif %}</h2></div>
-        <div class="gu-cockpit__box">
-          <p class="gu-cockpit__rulestext">
-            {%- if lang == 'nl' %}Alleen over voorstellen met genoeg steun wordt gestemd. Aangenomen bij meer dan {{ issue.proposal_threshold_pct }}% voor van de geldige stemmen.{% if issue.final_vote %} Aan het eind kan de initiatiefnemer een samenvattend voorstel doen, waarover opnieuw wordt gestemd.{% endif %}
-            {%- else %}Only proposals with enough support are voted on. Adopted with more than {{ issue.proposal_threshold_pct }}% in favour of the valid votes.{% if issue.final_vote %} At the end, the initiator can make a summary proposal, which is voted on again.{% endif %}{% endif -%}
-          </p>
-        </div>
-      </section>
       </div>
 
     </div>
@@ -229,36 +224,12 @@
 {% endblock %}
 
 {% if has_discussion %}{% include 'forum/_thread_script.html' %}{% endif %}
+<script src="{{ static_v('js/cockpit.js') }}" nonce="{{ csp_nonce() }}"></script>
 <script nonce="{{ csp_nonce() }}">
   (function () {
-    // Tabs op een smal scherm. Breed staan alle kolommen naast elkaar en
-    // doen de tabs niets. Zonder JavaScript staat alles onder elkaar.
+    // Tabs, enlarging, "show more", the rules card: the shared cockpit (static/js/cockpit.js).
     var root = document.getElementById('cockpit');
-    var tablist = root.querySelector('.gu-cockpit__tabs');
-    var tabs = Array.prototype.slice.call(root.querySelectorAll('.gu-cockpit__tab'));
-    function show(name, focus) {
-      tabs.forEach(function (tab) {
-        var on = tab.dataset.tab === name;
-        tab.setAttribute('aria-selected', on ? 'true' : 'false');
-        tab.tabIndex = on ? 0 : -1;
-        if (on && focus) tab.focus();
-      });
-      root.querySelectorAll('[data-panel]').forEach(function (panel) {
-        panel.classList.toggle('is-shown', panel.dataset.panel === name);
-      });
-      clampFacts();
-    }
-    tabs.forEach(function (tab, i) {
-      tab.addEventListener('click', function () { show(tab.dataset.tab); });
-      tab.addEventListener('keydown', function (e) {
-        var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-        if (!step) return;
-        e.preventDefault();
-        show(tabs[(i + step + tabs.length) % tabs.length].dataset.tab, true);
-      });
-    });
-    tablist.hidden = false;
-    root.classList.add('gu-cockpit--tabs');
+    GU.cockpit(root, {defaultTab: 'facts'});
     // De toelichting: bij het eerste bezoek open, daarna ingeklapt tot één
     // regel (per browser onthouden). Het pijltje vóór de tekst klapt in en uit.
     var about = document.getElementById('toelichting');
@@ -295,88 +266,6 @@
           .catch(function () { followBtn.form.submit(); });
       });
     }
-    // "Toon meer": in de kolom een handvol, in de grote weergave ongeveer 15;
-    // het pijltje laadt er steeds een stap bij en verdwijnt als er niets meer is.
-    var BIG = 15;
-    // Lange feiten in de lijst inkorten tot een paar regels, met per feit een
-    // kleine schakelaar "meer/minder"; alleen tonen als de tekst echt langer is.
-    function clampFacts() {
-      root.querySelectorAll('.gu-cockpit__facts .gu-fact').forEach(function (fact) {
-        if (fact.dataset.clampReady) return;
-        var titled = fact.classList.contains('gu-fact--titled');
-        if (!titled && (fact.hidden || !fact.offsetParent)) return;  // meten vereist zichtbaarheid
-        var text = fact.querySelector('.gu-fact__text');
-        var btn = fact.querySelector('[data-fact-more]');
-        if (!text || !btn) return;
-        fact.classList.add('is-clamped');
-        var source = fact.querySelector('.gu-fact__source');
-        var reveal = titled || (text.scrollHeight - text.clientHeight > 2) || !!source;
-        if (reveal) {
-          btn.hidden = false;
-          btn.addEventListener('click', function () {
-            var collapsed = fact.classList.toggle('is-clamped');
-            btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-            btn.querySelector('[data-more-on]').hidden = !collapsed;
-            btn.querySelector('[data-more-off]').hidden = collapsed;
-          });
-        } else {
-          fact.classList.remove('is-clamped');
-        }
-        fact.dataset.clampReady = '1';
-      });
-    }
-    var lists = Array.prototype.slice.call(root.querySelectorAll('[data-more-list]'));
-    function showList(list, n) {
-      var items = list.children, more = list.parentNode.querySelector('[data-more]');
-      list.dataset.shown = n;
-      for (var i = 0; i < items.length; i++) items[i].hidden = i >= n;
-      if (more) more.hidden = n >= items.length;
-    }
-    function baseCount(list) {
-      return root.classList.contains('gu-cockpit--expanded') && list.closest('.is-expanded')
-        ? BIG : Number(list.dataset.step);
-    }
-    lists.forEach(function (list) {
-      Array.prototype.forEach.call(list.children, function (li) { li.classList.remove('gu-cockpit__extra'); });
-      showList(list, baseCount(list));
-      var more = list.parentNode.querySelector('[data-more]');
-      if (more) more.addEventListener('click', function () {
-        var step = list.closest('.is-expanded') ? BIG : 10;
-        showList(list, Number(list.dataset.shown) + step);
-        clampFacts();
-      });
-    });
-    // Vergroten: één paneel groot onder de fase-indicator, de rest weg; het
-    // verklein-icoon naast de plus (of Escape) gaat terug.
-    function resetLists() { lists.forEach(function (list) { showList(list, baseCount(list)); }); clampFacts(); }
-    function collapse() {
-      var was = root.querySelector('[data-panel].is-expanded [data-expand]');
-      root.classList.remove('gu-cockpit--expanded');
-      root.querySelectorAll('[data-panel].is-expanded').forEach(function (p) { p.classList.remove('is-expanded'); });
-      resetLists();
-      if (was) was.focus();
-    }
-    root.querySelectorAll('[data-expand]').forEach(function (btn) {
-      btn.hidden = false;
-      btn.addEventListener('click', function () {
-        var name = btn.dataset.expand;
-        root.querySelectorAll('[data-panel].is-expanded').forEach(function (p) { p.classList.remove('is-expanded'); });
-        root.classList.add('gu-cockpit--expanded');
-        root.querySelectorAll('[data-panel="' + name + '"]').forEach(function (p) { p.classList.add('is-expanded'); });
-        show(name);
-        resetLists();
-        var shrink = root.querySelector('[data-panel="' + name + '"] [data-collapse]');
-        if (shrink) shrink.focus();
-      });
-    });
-    root.querySelectorAll('[data-collapse]').forEach(function (btn) { btn.addEventListener('click', collapse); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && root.classList.contains('gu-cockpit--expanded')) collapse();
-    });
-    // Een link naar een bericht of feit opent de tab waar het staat.
-    var target = location.hash && document.getElementById(location.hash.slice(1));
-    var panel = target && target.closest('[data-panel]');
-    show(panel ? panel.dataset.panel : 'facts');
   })();
 </script>
 {% endblock %}

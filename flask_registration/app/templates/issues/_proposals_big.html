@@ -1,0 +1,59 @@
+{#-
+  Partial: issues/_proposals_big.html (docs/design/voorstel-vergroot.html)
+  The proposals column enlarged in the page, on the issue page and the
+  proposal page: every proposal in a row (status, version, reactions). From
+  more than big.filter_min proposals (counted before the filter) a filter bar
+  (all, on the voting list, collecting support) and a sort control. These use
+  the same server logic as /voorstellen (ip.listing with ?filter= and
+  ?sorteer=) and reload this page with ?vergroot=voorstellen, so it opens
+  enlarged again. No "show all" and no link to a separate page: all is here.
+  Shown only while the column is enlarged (CSS). Context: issue, big,
+  reaction_counts, new_discussion; proposal (on the proposal page).
+-#}
+{% set nl = lang == 'nl' %}
+{% set here_args = dict(request.view_args or {}) %}
+<div class="gu-cockpit__big">
+  {% if big.total > big.filter_min %}
+  {% set rest_label = _('Collecting support') if issue.phase == 'feiten' and not issue.is_closed else _('Not on the voting list') %}
+  <div class="gu-bigp__bar">
+    <nav class="gu-bigp__seg" aria-label="{{ _('Filter proposals') }}">
+      {% for key, label in [('alle', _('All')), ('stemlijst', _('On the voting list')), ('steun', rest_label)] %}
+      <a href="{{ url_for(request.endpoint, filter=None if key == 'alle' else key, sorteer=big.order, vergroot='voorstellen', **here_args) }}#panel-proposals"{% if big.which == key %} class="is-on" aria-current="true"{% endif %}>{{ label }} <span class="gu-bigp__c">{{ big.counts[key] }}</span></a>
+      {% endfor %}
+    </nav>
+    <form method="GET" action="{{ url_for(request.endpoint, **here_args) }}#panel-proposals" class="gu-bigp__sort">
+      <input type="hidden" name="vergroot" value="voorstellen">
+      {% if big.which != 'alle' %}<input type="hidden" name="filter" value="{{ big.which }}">{% endif %}
+      <label for="bigSort">{{ _('Sort') }}</label>
+      <select name="sorteer" id="bigSort" data-autosubmit>
+        <option value="stemlijst"{% if big.order == 'stemlijst' %} selected{% endif %}>{{ _('Voting list first') }}</option>
+        <option value="steun"{% if big.order == 'steun' %} selected{% endif %}>{{ _('Most support') }}</option>
+        <option value="nieuwste"{% if big.order == 'nieuwste' %} selected{% endif %}>{{ _('Newest') }}</option>
+      </select>
+      <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm" data-autosubmit-button>{{ _('Apply') }}</button>
+    </form>
+  </div>
+  {% endif %}
+  <div class="gu-bigp__list">
+    {% if big.final %}
+    <a class="gu-bigp__row{% if proposal is defined and proposal.id == big.final.id %} is-current{% endif %}" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=big.final.id) }}">
+      <span class="gu-bigp__body">
+        <span class="gu-bigp__txt" lang="{{ big.final.lang or lang }}">{{ big.final.statement }}</span>
+        <span class="gu-bigp__meta"><span class="gu-ip-final">{{ _('Summary proposal') }}</span>{% with proposal=big.final, count=0 %}{% include 'issues/_ip_status.html' %}{% endwith %}</span>
+      </span>
+      <svg class="gu-bigp__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+    {% endif %}
+    {% for p, c in big.rows %}
+    <a class="gu-bigp__row{% if proposal is defined and proposal.id == p.id %} is-current{% endif %}" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=p.id) }}"{% if proposal is defined and proposal.id == p.id %} aria-current="page"{% endif %}>
+      <span class="gu-bigp__body">
+        <span class="gu-bigp__txt" lang="{{ p.lang or lang }}">{{ p.statement }}</span>
+        <span class="gu-bigp__meta">{% with proposal=p, count=c %}{% include 'issues/_ip_status.html' %}{% endwith %}<span class="gu-bigp__dot" aria-hidden="true"></span><span title="{{ _('Version %(n)s', n=big.versions[p.id]) }}">v{{ big.versions[p.id] }}</span><span class="gu-bigp__dot" aria-hidden="true"></span>{% with n=reaction_counts.get(p.id, 0), active=new_discussion.get(p.id, False) %}{% include 'issues/_reaction_count.html' %}{% endwith %}</span>
+      </span>
+      <svg class="gu-bigp__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+    {% else %}
+    <p class="gu-composer__hint gu-bigp__empty">{% if big.which != 'alle' %}{{ _('No proposals with this status.') }}{% else %}{{ _('No proposals yet.') }}{% endif %}</p>
+    {% endfor %}
+  </div>
+</div>

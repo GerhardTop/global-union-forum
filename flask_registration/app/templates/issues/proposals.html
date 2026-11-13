@@ -23,8 +23,8 @@
     </section>
 
     <div class="gu-factspage__bar">
-      {# Sorteren en filteren pas bij meer dan 5 voorstellen (geteld vóór het filter). #}
-      {% if total > 5 %}
+      {# Filter and sort only above FILTER_MIN (10) proposals, counted before the filter. #}
+      {% if total > filter_min %}
       <nav class="gu-factspage__filter" aria-label="{{ _('Filter proposals') }}">
         {# Na de feitenfase verzamelt niets meer steun: dan heet dat filter "niet op de stemlijst". #}
         {% set rest_label = _('Collecting support') if issue.phase == 'feiten' and not issue.is_closed else _('Not on the voting list') %}

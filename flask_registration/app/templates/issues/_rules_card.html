@@ -1,0 +1,21 @@
+{#-
+  Partial: issues/_rules_card.html (docs/design/voorstel.html)
+  The issue's voting rules as their own card at the top of the right column,
+  on the issue page and the proposal page. A button header, collapsed by
+  default (the chevron points down; up when open); static/js/cockpit.js
+  toggles it. On a phone it belongs to the Voorstellen tab. Context: issue.
+-#}
+<section class="gu-cockpit__panel gu-rules" id="stemregels" data-panel="proposals">
+  <h2 class="gu-rules__h">
+    <button type="button" class="gu-rules__head" id="rulesTitle" aria-expanded="false" aria-controls="rulesBody" data-disclosure>
+      <span class="gu-cockpit__title">{% if lang == 'nl' %}Stemregels{% else %}Voting rules{% endif %}</span>
+      <svg class="gu-rules__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+  </h2>
+  <div class="gu-rules__body" id="rulesBody" role="region" aria-labelledby="rulesTitle" hidden>
+    <p class="gu-cockpit__rulestext">
+      {%- if lang == 'nl' %}Alleen over voorstellen met genoeg steun wordt gestemd. Aangenomen bij meer dan {{ issue.proposal_threshold_pct }}% voor van de geldige stemmen.{% if issue.final_vote %} Aan het eind kan de initiatiefnemer een samenvattend voorstel doen, waarover opnieuw wordt gestemd.{% endif %}
+      {%- else %}Only proposals with enough support are voted on. Adopted with more than {{ issue.proposal_threshold_pct }}% in favour of the valid votes.{% if issue.final_vote %} At the end, the initiator can make a summary proposal, which is voted on again.{% endif %}{% endif -%}
+    </p>
+  </div>
+</section>

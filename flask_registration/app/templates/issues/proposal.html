@@ -13,8 +13,11 @@
   explanation, the vote while voting is open or over, and the reactions
   (which stay on the proposal: they are not in the issue's discussion).
   Right: the issue's proposals, ten at a time with "show more", the current one
-  highlighted, each with its status, version and reaction count. On a phone
-  the cockpit's tabs, with the proposal open first. Without JavaScript the
+  highlighted, each with its status, version and reaction count, under the
+  collapsed voting rules card. Every column enlarges in the page (the
+  proposals then in rows, with filter and sort above FILTER_MIN; see
+  _proposals_big.html). On a phone the cockpit's tabs, with the proposal
+  open first. Without JavaScript the
   columns stack and the versions open with <details>.
   Context: see routes/issues.py proposal().
 #}
@@ -24,8 +27,12 @@
 {% set by_name = proposal.created_by.public_name if proposal.created_by else '@deleted_user' %}
 {% set current = versions[-1] %}
 {% set older = versions[:-1] %}
-{% set expand_icon %}<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>{% endset %}
-<main class="gu-forum gu-cockpit gu-ipdetail gu-pv" lang="{{ lang }}" id="voorstel">
+{# Enlarge and reduce, the same buttons as on the issue page (static/js/cockpit.js). #}
+{% macro size_buttons(name, label) -%}
+<button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="{{ name }}" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ label }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+<button type="button" class="gu-iconbtn gu-cockpit__shrink" data-collapse title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ label }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button>
+{%- endmacro %}
+<main class="gu-forum gu-cockpit gu-ipdetail gu-pv" lang="{{ lang }}" id="voorstel"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
   <div class="gu-cockpit__inner">
 
     <header class="gu-pv__head">
@@ -57,7 +64,7 @@
       <section class="gu-cockpit__panel gu-cockpit__facts gu-pv__factscol" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="factsTitle">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-facts__count">{{ rail_facts | length }}</span></h2>
-          <a class="gu-iconbtn" href="{{ url_for('issues.facts', issue_id=issue.id) }}" title="{{ _('All facts, research and media') }}" aria-label="{{ _('All facts, research and media') }}">{{ expand_icon }}</a>
+          {{ size_buttons('facts', _('Facts and background')) }}
         </div>
         <div class="gu-cockpit__box">
           {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
@@ -158,7 +165,11 @@
       </section>
 
       {# ── Middle: the proposal ────────────────────────────────────── #}
-      <section class="gu-cockpit__panel gu-cockpit__main gu-pv__main" id="panel-proposal" data-panel="proposal" role="tabpanel" aria-labelledby="tab-proposal">
+      <section class="gu-cockpit__panel gu-cockpit__main gu-pv__main" id="panel-proposal" data-panel="proposal" role="tabpanel" aria-labelledby="proposalTitle">
+        <div class="gu-cockpit__panelhead">
+          <h2 class="gu-cockpit__title" id="proposalTitle">{{ _('Proposal') }}</h2>
+          {{ size_buttons('proposal', _('Proposal')) }}
+        </div>
         <div class="gu-cockpit__box gu-pv__body">
         {# Delete rights step 3: only whoever may hide it sees a hidden proposal. #}
         {% if proposal.is_hidden %}
@@ -180,9 +191,6 @@
           <span class="gu-pv__metaitem"><span class="gu-pv__sep" aria-hidden="true">&middot;</span>
           <span class="gu-pv__steun"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
             {%- if nl %}{{ count }} {{ 'steunbetuiging' if count == 1 else 'steunbetuigingen' }}{% else %}{{ count }} {{ 'supporter' if count == 1 else 'supporters' }}{% endif %}</span></span>
-          {# The voting rules belong to the issue, so only a quiet link to it. #}
-          <span class="gu-pv__metaitem"><span class="gu-pv__sep" aria-hidden="true">&middot;</span>
-          <a class="gu-pv__ruleslink" href="{{ url_for('issues.show', issue_id=issue.id) }}#stemregels">{% if nl %}Stemregels bij dit vraagstuk{% else %}Voting rules for this issue{% endif %}</a></span>
           {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
         </div>
 
@@ -297,13 +305,15 @@
         </div>
       </section>
 
-      {# ── Right: the issue's proposals ────────────────────────────── #}
+      {# ── Right: the voting rules (collapsed), then the issue's proposals ── #}
+      {% include 'issues/_rules_card.html' %}
+
       <section class="gu-cockpit__panel gu-cockpit__proposals gu-pv__proposalscol" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }} <span class="gu-facts__count">{{ rail_proposals | length }}</span></h2>
-          <a class="gu-iconbtn" href="{{ url_for('issues.proposals', issue_id=issue.id) }}" title="{% if nl %}Alle voorstellen{% else %}All proposals{% endif %}" aria-label="{% if nl %}Alle voorstellen{% else %}All proposals{% endif %}">{{ expand_icon }}</a>
+          {{ size_buttons('proposals', _('Proposals')) }}
         </div>
-        <div class="gu-cockpit__box">
+        <div class="gu-cockpit__box gu-cockpit__compact">
           <ul class="gu-pv__plist" data-rail-list>
             {% for p, c in rail_proposals %}
             <li>
@@ -317,40 +327,22 @@
           {% if rail_proposals | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
           <a class="gu-pv__railmore" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{% if nl %}Alle voorstellen{% else %}All proposals{% endif %} &rsaquo;</a>
         </div>
+        {# Enlarged in the page: every proposal, with filter and sort above FILTER_MIN. #}
+        <div class="gu-cockpit__box gu-cockpit__bigbox">{% include 'issues/_proposals_big.html' %}</div>
       </section>
 
     </div>
   </div>
 </main>
+<script src="{{ static_v('js/cockpit.js') }}" nonce="{{ csp_nonce() }}"></script>
 <script nonce="{{ csp_nonce() }}">
   (function () {
     var root = document.getElementById('voorstel');
-    // Phone: the cockpit's tabs (wide, all three columns show and the tabs do
-    // nothing). The proposal is open first. Without JavaScript all columns stack.
-    var tablist = root.querySelector('.gu-cockpit__tabs');
-    var tabs = Array.prototype.slice.call(root.querySelectorAll('.gu-cockpit__tab'));
-    function show(name, focus) {
-      tabs.forEach(function (tab) {
-        var on = tab.dataset.tab === name;
-        tab.setAttribute('aria-selected', on ? 'true' : 'false');
-        tab.tabIndex = on ? 0 : -1;
-        if (on && focus) tab.focus();
-      });
-      root.querySelectorAll('[data-panel]').forEach(function (panel) {
-        panel.classList.toggle('is-shown', panel.dataset.panel === name);
-      });
-    }
-    tabs.forEach(function (tab, i) {
-      tab.addEventListener('click', function () { show(tab.dataset.tab); });
-      tab.addEventListener('keydown', function (e) {
-        var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-        if (!step) return;
-        e.preventDefault();
-        show(tabs[(i + step + tabs.length) % tabs.length].dataset.tab, true);
-      });
-    });
-    tablist.hidden = false;
-    root.classList.add('gu-cockpit--tabs', 'gu-pv--tabs');
+    // Tabs (phone), enlarging all three columns in the page, the rules card:
+    // the shared cockpit (static/js/cockpit.js), as on the issue page. The
+    // proposal is the tab that is open first.
+    var cockpit = GU.cockpit(root, {defaultTab: 'proposal'});
+    root.classList.add('gu-pv--tabs');
     // Within the facts: with this proposal (default) or all of the issue's.
     var views = Array.prototype.slice.call(root.querySelectorAll('[data-fact-view]'));
     function showFacts(name) {
@@ -389,7 +381,7 @@
       syncRevise();
       var target = location.hash && document.getElementById(location.hash.slice(1));
       var tabPanel = target && target.closest('[data-panel]');
-      show(tabPanel ? tabPanel.dataset.panel : 'proposal');
+      cockpit.show(tabPanel ? tabPanel.dataset.panel : 'proposal');
       // After linking or unlinking a fact the page returns to #basis: show those facts.
       if (target && target.closest('#panel-facts')) {
         var factPanel = target.closest('[data-fact-panel]');
