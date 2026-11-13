@@ -8,14 +8,18 @@
   fase-balk.
   - Links (280px): Feiten en achtergrond, met de keuze Bij dit voorstel (N) /
     Alle (N) en de actie Feiten koppelen.
-  - Midden (breed): het voorstel. Status plus de knop Voorstel aanpassen
-    (alleen de indiener), het kleine meta-linkje "Stemregels bij dit vraagstuk",
-    eerdere versies ingeklapt (openklappen toont de tekst van die versie plus
+  - Midden (breed): het voorstel, met rechtsboven een vergroot-knop (zelfde
+    in-pagina-vergroting als de andere kolommen). Status plus de knop Voorstel
+    aanpassen (alleen de indiener), eerdere versies ingeklapt (openklappen toont de tekst van die versie plus
     de reacties die erbij horen), dan de huidige versie met een kleinere
     stelling, Wat veranderde, de toelichting, en daaronder de volledige
     discussie die bij de versies hoort.
-  - Rechts (280px): Voorstellen, het huidige uitgelicht, met per voorstel een
-    reactieteller. Een voorstel met nieuwe discussie (sinds de gebruiker het
+  - Rechts (280px): bovenaan een eigen kader "Stemregels", standaard ingeklapt
+    (pijltje naar beneden); de vergroot-knop opent de voorstellen in de pagina
+    met de fase-balk erboven en, vanaf meer dan 10 voorstellen, een filterbalk
+    met sorteren (zie docs/design/voorstel-vergroot.html). Daaronder Voorstellen,
+    het huidige uitgelicht, met per voorstel een reactieteller. Een voorstel met
+    nieuwe discussie (sinds de gebruiker het
     laatst opende) toont een blauw stipje en een actieve blauwe teller; zonder
     nieuws blijft de teller rustig grijs. Die nieuw-markering is een latere,
     aparte bouwstap.
@@ -138,6 +142,11 @@ a:hover{color:#0f5a93}
 .dot{width:4px;height:4px;border-radius:50%;background:var(--n400);flex:0 0 auto}
 .rnew{display:inline-flex;align-items:center;gap:5px;color:var(--globe-deep);font-weight:600}
 .rnew .nd{width:7px;height:7px;border-radius:50%;background:var(--globe-deep);flex:0 0 auto}
+.rstack{display:flex;flex-direction:column;gap:20px}
+.rulehead{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:14px 16px;border:0;background:transparent;font-family:inherit;cursor:pointer;color:var(--ink)}
+.rulehead .eyebrow{letter-spacing:.12em}
+.rulehead__chev{color:var(--n400)}
+.rulehead[aria-expanded="true"] .rulehead__chev{transform:rotate(180deg)}
 </style>
 <div class="gu" style="min-height:100%;padding-bottom:56px">
 
@@ -211,6 +220,7 @@ a:hover{color:#0f5a93}
 
       <!-- Midden: het voorstel plus discussie -->
       <section class="col">
+        <div class="col__h"><span class="eyebrow">Voorstel</span><svg class="ico exp" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
         <div class="col__body">
           <div class="pv__top"><button class="btn btn--primary">Voorstel aanpassen</button></div>
           <div class="statusrow">
@@ -218,8 +228,6 @@ a:hover{color:#0f5a93}
             <span>door Sarah Chen (demo)</span>
             <span class="sep">&middot;</span>
             <span class="steun"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>5 steunbetuigingen</span>
-            <span class="sep">&middot;</span>
-            <a href="#" class="metalink">Stemregels bij dit vraagstuk</a>
           </div>
 
           <div class="older">
@@ -260,7 +268,14 @@ a:hover{color:#0f5a93}
         </div>
       </section>
 
-      <!-- Rechts: Voorstellen -->
+      <!-- Rechts: Stemregels (eigen kader, ingeklapt) + Voorstellen -->
+      <div class="rstack">
+      <section class="col">
+        <button type="button" class="rulehead" aria-expanded="false">
+          <span class="eyebrow">Stemregels</span>
+          <svg class="ico rulehead__chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </section>
       <section class="col">
         <div class="col__h"><span class="eyebrow">Voorstellen</span><span class="n">3</span><svg class="ico exp" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
         <div class="col__body">
@@ -279,6 +294,7 @@ a:hover{color:#0f5a93}
           <a href="#" class="collink">Alle voorstellen &rsaquo;</a>
         </div>
       </section>
+      </div>
 
     </div>
   </div>
