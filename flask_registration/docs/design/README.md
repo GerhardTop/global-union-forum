@@ -14,8 +14,9 @@ De artboards staan als statische referentie-HTML in deze map (`docs/design/`). B
 | Gebruiker (gepland) | (gebruikersmoderatie) | docs/design/gebruiker.html |
 | Meldingen instellen | /profiel/meldingen | docs/design/notificaties.html |
 | Voorstel bekijken en aanpassen | /vraagstuk/<id>/voorstel/<pid> | docs/design/voorstel.html |
+| Vraagstuk beheren (moderatie) | /moderator/vraagstuk/<id>/beheer | docs/design/beheer.html |
 
-Toegang.html is niet het rollenbeheer, maar de ingang van de verwijder-flow: het Beheer-menu op het vraagstuk (fasen beheren, archiveren, verwijderen). Gebruiker.html (gebruikersmoderatie: waarschuwingen, schorsingen, account verwijderen) is een geplande functie en nog niet gebouwd.
+Main.html toont nu ook de ingang naar het vraagstukbeheer: in de rechterkolom "Vraagstukken beheren" staat per vraagstuk een Beheer-link naar docs/design/beheer.html. Toegang.html is niet het rollenbeheer, maar de ingang van de verwijder-flow: het Beheer-menu op het vraagstuk (fasen beheren, archiveren, verwijderen). Gebruiker.html (gebruikersmoderatie: waarschuwingen, schorsingen, account verwijderen) is een geplande functie en nog niet gebouwd.
 
 De bestanden zijn statisch, alleen om naar te kijken en naartoe te bouwen; ze zijn geen onderdeel van de app. De duur-knoppen in gebruiker.html staan op 7 en 30 dagen (de gekozen schorsingsduur).
 

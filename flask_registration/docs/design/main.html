@@ -53,6 +53,10 @@ a:hover{color:#0f5a93}
 .age--hot{background:#fcecec;border-color:#f0c9cb;color:#a3282c}
 .age--warm{background:#fff3e0;border-color:#f0d9b0;color:#8a5a12}
 .count{background:#eaf2fb;border-color:#c5dcf4;color:#1b5e9a;font-weight:600}
+.manage{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:500;color:var(--globe-deep);white-space:nowrap}
+.ring{box-shadow:0 0 0 2px var(--globe);border-radius:8px}
+.callout{background:#eaf2fb;border:1px solid #c5dcf4;border-radius:11px;padding:12px 14px;display:flex;gap:10px}
+.callout .num{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--globe-deep);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -190,24 +194,33 @@ a:hover{color:#0f5a93}
 
       <section>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <h2 style="margin:0;font-size:18px;font-weight:600">Recente vraagstukken</h2>
-          <span class="pill">waar jij aan werkte</span>
+          <h2 style="margin:0;font-size:18px;font-weight:600">Vraagstukken beheren</h2>
         </div>
         <div class="card" style="overflow:hidden">
-          <div style="padding:13px 16px;border-bottom:1px solid var(--n100)">
-            <a href="#" style="font-size:13.5px;font-weight:500;color:var(--ink)">Belasting multinationals</a>
-            <div style="display:flex;align-items:center;gap:7px;margin-top:6px">
-              <span class="pill count">3 open meldingen</span>
-              <span style="font-size:12px;color:var(--n500)">je volgt dit</span>
+          <div style="padding:13px 16px;border-bottom:1px solid var(--n100);display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="min-width:0">
+              <a href="#" style="font-size:13.5px;font-weight:500;color:var(--ink)">Belasting multinationals</a>
+              <div style="display:flex;align-items:center;gap:7px;margin-top:6px;flex-wrap:wrap">
+                <span class="pill count">3 open meldingen</span>
+                <span style="font-size:12px;color:var(--n500)">jouw vraagstuk</span>
+              </div>
             </div>
+            <a href="#" class="manage ring" style="padding:6px 10px">Beheer <svg class="ico" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M9 6l6 6-6 6"/></svg></a>
           </div>
-          <div style="padding:13px 16px">
-            <a href="#" style="font-size:13.5px;font-weight:500;color:var(--ink)">Lokale democratie en jongeren</a>
-            <div style="display:flex;align-items:center;gap:7px;margin-top:6px">
-              <span class="pill" style="background:#eef7f1;border-color:#c5e4d0;color:#108a4e">beoordeeld</span>
-              <span style="font-size:12px;color:var(--n500)">jij besliste, 1 dag geleden</span>
+          <div style="padding:13px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="min-width:0">
+              <a href="#" style="font-size:13.5px;font-weight:500;color:var(--ink)">Lokale democratie en jongeren</a>
+              <div style="display:flex;align-items:center;gap:7px;margin-top:6px;flex-wrap:wrap">
+                <span class="pill" style="background:#eef7f1;border-color:#c5e4d0;color:#108a4e">beoordeeld</span>
+                <span style="font-size:12px;color:var(--n500)">jij besliste, 1 dag geleden</span>
+              </div>
             </div>
+            <a href="#" class="manage" style="padding:6px 10px">Beheer <svg class="ico" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M9 6l6 6-6 6"/></svg></a>
           </div>
+        </div>
+        <div class="callout" style="margin-top:12px">
+          <span class="num">i</span>
+          <p style="margin:0;font-size:12.5px;color:#1b5e9a;line-height:1.5">Klik bij een vraagstuk op <strong>Beheer</strong> om voorstellen te verbergen of te verwijderen en het vraagstuk te beheren. De vraagstuk-label bij een melding leidt naar dezelfde pagina.</p>
         </div>
       </section>
 
