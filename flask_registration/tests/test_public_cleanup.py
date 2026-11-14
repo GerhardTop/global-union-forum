@@ -60,23 +60,23 @@ def _menu(page):
     return menu[:menu.index('</details>')]
 
 
-# ── 1. The Beheer menu on the issue page ───────────────────────────────────
+# ── 1. The issue page: only the initiator's "Fasen" menu ──────────────────
 
-def test_beheer_menu_links_to_the_manage_screen(app, db, world):
+def test_issue_page_has_no_manage_link_only_the_phases_menu(app, db, world):
     w = world
     path, manage = f'/vraagstuk/{w["issue"].id}', f'href="/moderator/vraagstuk/{w["issue"].id}/beheer"'
-    for who in ('mod', 'senior', 'admin'):
-        menu = _menu(_html(app, w[who], path))
-        assert menu is not None and manage in menu and 'Vraagstukbeheer' in menu, who
-        assert 'Vraagstuk verwijderen' not in menu and '/verwijderen' not in menu, who
-    assert 'Archiveren' in _menu(_html(app, w['admin'], path))       # archiving stays, admin only
-    assert 'Archiveren' not in _menu(_html(app, w['mod'], path))
-    assert 'Manage issue' in _menu(_html(app, w['mod'], path, 'en'))
-    # No right on this issue: no link (and no menu at all for these viewers).
-    for who in ('other_mod', 'author', 'contributor'):
+    # Managing and archiving live on the manage screen, not on the issue page.
+    for who in ('mod', 'senior', 'admin', 'other_mod', 'author', 'contributor'):
         page = _html(app, w[who], path)
-        assert manage not in page and _menu(page) is None, who
+        assert manage not in page and 'Vraagstukbeheer' not in page and 'Archiveren' not in page, who
+        assert 'Vraagstuk verwijderen' not in page and f'/vraagstuk/{w["issue"].id}/verwijderen' not in page, who
     assert manage not in _html(app, None, path)
+    # The moderator started this issue: their menu is "Fasen", with only the phase actions.
+    menu = _menu(_html(app, w['mod'], path))
+    assert menu is not None and 'Fasen' in menu and '/volgende-fase' in menu
+    assert 'Phases' in _menu(_html(app, w['mod'], path, 'en'))
+    for who in ('senior', 'admin', 'other_mod', 'author', 'contributor'):
+        assert _menu(_html(app, w[who], path)) is None, who
 
 
 # ── 2. The public proposal page ────────────────────────────────────────────

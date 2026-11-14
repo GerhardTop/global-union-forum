@@ -170,7 +170,7 @@ def show(issue_id):
                            can_edit_followup=lifecycle.can_edit_followup(issue, current_user),
                            following=lifecycle.is_following(issue, current_user),
                            can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue),
-                           return_to=issue.id, can_manage=issues.can_manage_issue(current_user, issue),
+                           return_to=issue.id,
                            my_reported_proposal_ids=my_reported_proposal_ids, **discussion)
 
 

@@ -1,18 +1,22 @@
 """Archiving an issue (delete flow step 1, Toegang.dc.html): an admin archives
-or restores an issue from the cockpit's Beheer menu. An archived issue is
+or restores an issue from the manage screen (/moderator/vraagstuk/<id>/beheer);
+the issue page only has the initiator's "Fasen" menu. An archived issue is
 closed, drops out of the public lists and stays reachable by its URL."""
 import uuid
 
 import pytest
 
 from app.models import Issue
-from tests.test_delete_issue import _cleanup, _client, _issue_full, _req, _user
+from tests.test_delete_issue import _cleanup, _client, _forget_deleted, _issue_full, _req, _user
 
 
 @pytest.fixture(autouse=True)
 def _clean_session(db):
     db.session.expunge_all()
     yield
+    # Purged rows must not linger in the identity map (SQLite reuses their ids).
+    db.session.rollback()
+    _forget_deleted()
 
 
 def _archivable(db):
@@ -40,8 +44,9 @@ def test_archive_hides_from_public_list_and_unarchive_restores(app, db):
         # Gone from the public list (also for a participant), reachable by URL.
         assert title not in _req(_client(app, author), 'GET', '/gesprekken').get_data(as_text=True)
         page = _req(c, 'GET', f'/vraagstuk/{issue_id}').get_data(as_text=True)
-        assert 'Gearchiveerd' in page and 'Terug uit archief' in page
-        assert f'/vraagstuk/{issue_id}/terug-uit-archief' in page
+        assert 'Gearchiveerd' in page and _menu(page) is None  # the archived banner, no menu
+        manage = _req(c, 'GET', f'/moderator/vraagstuk/{issue_id}/beheer').get_data(as_text=True)
+        assert 'Terug uit archief' in manage and f'/vraagstuk/{issue_id}/terug-uit-archief' in manage
 
         r = _req(c, 'POST', f'/vraagstuk/{issue_id}/terug-uit-archief')
         assert r.status_code == 302
@@ -66,23 +71,59 @@ def test_archive_and_unarchive_are_admin_only(app, db):
         _cleanup(issue_id)
 
 
-def test_beheer_menu_shows_admin_items(app, db):
+def _menu(page):
+    if '<details class="gu-beheer" id="beheer">' not in page:
+        return None
+    menu = page[page.index('<details class="gu-beheer" id="beheer">'):]
+    return menu[:menu.index('</details>')]
+
+
+def test_issue_page_has_no_archive_or_manage_link(app, db):
     admin, author, issue = _archivable(db)
     issue_id = issue.id
     try:
-        page = _req(_client(app, admin), 'GET', f'/vraagstuk/{issue_id}').get_data(as_text=True)
-        menu = page[page.index('<details class="gu-beheer" id="beheer">'):]
-        menu = menu[:menu.index('</details>')]
-        assert 'Beheer' in menu and 'Archiveren' in menu and f'/vraagstuk/{issue_id}/archiveren' in menu
-        # Delete rights step 3: deleting moved to the manage screen; the menu links there.
-        assert 'Vraagstuk verwijderen' not in menu and f'/vraagstuk/{issue_id}/verwijderen' not in menu
-        assert 'gu-beheer__item--danger' not in menu
-        assert f'href="/moderator/vraagstuk/{issue_id}/beheer"' in menu and 'Vraagstukbeheer' in menu
-        assert page.count('id="beheer"') == 1 and 'beheer-admin' not in page
+        for user in (admin, _user(db, 'senior_moderator'), _user(db)):
+            for lang in ('nl', 'en'):
+                page = _req(_client(app, user, lang), 'GET', f'/vraagstuk/{issue_id}').get_data(as_text=True)
+                assert f'/vraagstuk/{issue_id}/archiveren' not in page and f'/vraagstuk/{issue_id}/terug-uit-archief' not in page
+                assert 'Archiveren' not in page and 'Vraagstukbeheer' not in page and 'Manage issue' not in page
+                assert f'href="/moderator/vraagstuk/{issue_id}/beheer"' not in page
+                # An admin without a phase action sees no menu here at all.
+                assert _menu(page) is None, (user.username, lang)
+    finally:
+        _cleanup(issue_id)
 
-        # A participant who is not the initiator sees no Beheer menu.
-        other = _user(db)
-        plain = _req(_client(app, other), 'GET', f'/vraagstuk/{issue_id}').get_data(as_text=True)
-        assert 'class="gu-beheer"' not in plain and 'Archiveren' not in plain
+
+def test_phases_menu_only_with_phase_actions(app, db):
+    from app import issue_lifecycle as lifecycle
+    from tests.test_delete_rights import _issue
+    author = _user(db)
+    issue = _issue(db, author, f'Fasentest {uuid.uuid4().hex[:8]}')
+    issue_id = issue.id
+    try:
+        assert lifecycle.can_step(issue, author)
+        for lang, label, other in (('nl', 'Fasen', 'Beheer'), ('en', 'Phases', 'Manage')):
+            menu = _menu(_req(_client(app, author, lang), 'GET', f'/vraagstuk/{issue_id}').get_data(as_text=True))
+            assert menu is not None and f'{label}\n' in menu.split('</summary>')[0], lang
+            assert other not in menu.split('</summary>')[0], lang
+            assert f'action="/vraagstuk/{issue_id}/volgende-fase"' in menu, lang
+            assert 'archiveren' not in menu and '/moderator/' not in menu, lang
+        # The gear icon is gone; the caret stays.
+        summary = menu.split('</summary>')[0]
+        assert 'circle cx="12" cy="12" r="3"' not in summary and 'gu-beheer__caret' in summary
+    finally:
+        _cleanup(issue_id)
+
+
+def test_archive_still_on_the_manage_screen(app, db):
+    admin, _author, issue = _archivable(db)
+    issue_id = issue.id
+    try:
+        c = _client(app, admin)
+        manage = _req(c, 'GET', f'/moderator/vraagstuk/{issue_id}/beheer').get_data(as_text=True)
+        assert 'Archiveren' in manage and f'action="/vraagstuk/{issue_id}/archiveren"' in manage
+        assert _req(c, 'POST', f'/vraagstuk/{issue_id}/archiveren').status_code == 302
+        assert db.session.get(Issue, issue_id).is_archived
+        assert 'Restore from archive' in _req(_client(app, admin, 'en'), 'GET', f'/moderator/vraagstuk/{issue_id}/beheer').get_data(as_text=True)
     finally:
         _cleanup(issue_id)
