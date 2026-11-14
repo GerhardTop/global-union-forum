@@ -101,7 +101,7 @@
           <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="facts" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Facts and background') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
           <button type="button" class="gu-iconbtn gu-cockpit__shrink" data-collapse title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ _('Facts and background') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button>
         </div>
-        <div class="gu-cockpit__box">
+        <div class="gu-cockpit__box gu-cockpit__compact">
         {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
         {% if top_facts %}
         <ol class="gu-cockpit__factlist" data-more-list data-step="{{ facts_shown }}">
@@ -119,9 +119,9 @@
         <button type="button" class="gu-disclosure gu-showmore" data-more title="{{ _('Show more') }}" aria-label="{{ _('Show more') }}: {{ _('Facts and background') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
         <noscript><a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('Show more') }}</a></noscript>
         {% endif %}
-        {# In de grote weergave: de volledige pagina met filters, sorteren en betwisten. #}
-        {% if has_discussion %}<a class="gu-cockpit__fullpage" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('Facts page with filters and sorting') }}</a>{% endif %}
         </div>
+        {# Enlarged in the page: every fact, with filter and sort above FILTER_MIN. #}
+        <div class="gu-cockpit__box gu-cockpit__bigbox">{% include 'issues/_facts_big.html' %}</div>
       </section>
 
       <section class="gu-cockpit__panel gu-cockpit__discussion" id="panel-discussion" data-panel="discussion" role="tabpanel" aria-labelledby="discussionTitle">

@@ -1,0 +1,49 @@
+{#-
+  Partial: issues/_facts_big.html
+  The facts column enlarged in the page, on the issue page and the proposal
+  page, on the model of issues/_proposals_big.html: every fact of the issue as
+  a card. From more than big_facts.filter_min facts (counted before the
+  filter) a filter bar (all, argues for, against, neutral) and a sort control,
+  with the same server logic as /feiten (fact_signals.listing). Both apply at
+  once, without a button: the filter is a set of links, the sort select
+  submits on change. They reload this page with ?vergroot=feiten, so it opens
+  enlarged again. No "show more" and no link to a separate page: all is here.
+  Shown only while the column is enlarged (CSS). Context: issue, big_facts,
+  fact_marks, my_reported_ids.
+-#}
+{% set nl = lang == 'nl' %}
+{% set here_args = dict(request.view_args or {}) %}
+{% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
+<div class="gu-cockpit__big">
+  {% if big_facts.total > big_facts.filter_min %}
+  {% set filter_labels = {'alle': 'Alle' if nl else 'All', 'voor': 'Pleit voor' if nl else 'Argues for',
+                          'tegen': 'Tegen' if nl else 'Against', 'neutraal': 'Neutraal' if nl else 'Neutral'} %}
+  <div class="gu-bigp__bar">
+    <nav class="gu-bigp__seg" aria-label="{{ _('Filter on direction') }}">
+      {% for key in big_facts.filters %}
+      <a href="{{ url_for(request.endpoint, filter=None if key == 'alle' else key, sorteer=big_facts.order, vergroot='feiten', **here_args) }}#panel-facts"{% if big_facts.which == key %} class="is-on" aria-current="true"{% endif %}>{{ filter_labels[key] }} <span class="gu-bigp__c">{{ big_facts.counts[key] }}</span></a>
+      {% endfor %}
+    </nav>
+    <form method="GET" action="{{ url_for(request.endpoint, **here_args) }}#panel-facts" class="gu-bigp__sort">
+      <input type="hidden" name="vergroot" value="feiten">
+      {% if big_facts.which != 'alle' %}<input type="hidden" name="filter" value="{{ big_facts.which }}">{% endif %}
+      <label for="bigFactSort">{{ _('Sort') }}</label>
+      <select name="sorteer" id="bigFactSort" data-autosubmit>
+        <option value="kwaliteit"{% if big_facts.order == 'kwaliteit' %} selected{% endif %}>{{ _('Quality first') }}</option>
+        <option value="nieuwste"{% if big_facts.order == 'nieuwste' %} selected{% endif %}>{{ _('Newest') }}</option>
+      </select>
+    </form>
+  </div>
+  {% endif %}
+  {% if big_facts.rows %}
+  <ol class="gu-cockpit__factlist gu-bigf__list">
+    {% for fact in big_facts.rows %}
+    <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}">
+      {% include 'issues/_fact_card.html' %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="gu-composer__hint gu-bigp__empty">{% if big_facts.which != 'alle' %}{% if nl %}Geen feiten met deze richting.{% else %}No facts with this direction.{% endif %}{% else %}{{ _('No facts yet.') }}{% endif %}</p>
+  {% endif %}
+</div>

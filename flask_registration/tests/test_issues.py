@@ -328,7 +328,8 @@ def test_cockpit_shows_context_facts_discussion_and_proposals(app, db, make_user
     # Tien zichtbaar in de kolom: met vier feiten staan ze er allemaal meteen.
     assert 'gu-cockpit__extra' not in body.split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
     assert 'Pleit voor' in body and 'Pleit tegen' in body and 'https://example.org/1' in body
-    assert f'/vraagstuk/{proposal.issue_id}/feiten' in body and 'Feitenpagina met filters en sorteren' in body
+    # No link to the separate facts page: the enlarged column is the full view.
+    assert 'Feitenpagina met filters en sorteren' not in body
     assert 'Nuttig' not in body
     # Discussie in het midden: de bestaande boom met de reactie-invoer, zonder de feiten.
     discussion = body.split('id="panel-discussion"')[1].split('id="panel-proposals"')[0]

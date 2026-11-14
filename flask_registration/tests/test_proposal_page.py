@@ -62,7 +62,8 @@ def test_side_columns_list_facts_and_proposals_with_totals(app, db, make_user):
     current_item = plist.split('is-current')[1].split('</a>')[0]
     assert 'Stelling 3.' in current_item and 'aria-current="page"' in current_item and 'v1' in current_item
     assert 'Verzamelt steun' in current_item and '<span class="gu-rcount">0 reacties</span>' in current_item
-    assert f'href="/vraagstuk/{issue.id}/voorstellen"' in plist and 'Alle voorstellen' in plist
+    # No link to a separate page: the enlarged column is the full view.
+    assert f'href="/vraagstuk/{issue.id}/voorstellen"' not in plist and 'Alle voorstellen' not in plist
 
 
 def test_side_columns_without_show_more_when_ten_or_fewer(app, db, make_user):
@@ -116,7 +117,7 @@ def test_page_in_english_and_mobile_tabs(app, db, make_user):
     db.session.commit()
     page = _get(app, _detail(issue, proposal), host, 'en')
     for text in ('Back to the issue', 'Have your say', '<span aria-current="page">Proposal</span>',
-                 'Facts and background', 'With this proposal', 'Voting rules</span>', 'All proposals', 'Current version', 'Reactions to version 1',
+                 'Facts and background', 'With this proposal', 'Voting rules</span>', 'Current version', 'Reactions to version 1',
                  '0 supporters', 'Write a reaction', '0 reactions'):
         assert text in page
     # Phone: the cockpit's tabs in the order of the columns, the proposal selected by default.

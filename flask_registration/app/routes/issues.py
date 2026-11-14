@@ -155,6 +155,7 @@ def show(issue_id):
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in proposal_rows])
     big = _enlarged_proposals(issue, {p.id: ip.current_version(p) for p, _c in proposal_rows})
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
+                           big_facts=_enlarged_facts(visible),
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
                            proposal_rows=proposal_rows, proposals_shown=COCKPIT_PROPOSALS,
@@ -279,9 +280,11 @@ def report_proposal(issue_id, proposal_id):
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstellen')
 def proposals(issue_id):
     issue = _issue_or_404(issue_id)
-    which = request.args.get('filter')
+    # ?filter= and ?sorteer= belong to the facts while those are enlarged.
+    mine = request.args.get('vergroot') != 'feiten'
+    which = request.args.get('filter') if mine else None
     which = which if which in ip.FILTERS else 'alle'
-    order = request.args.get('sorteer')
+    order = request.args.get('sorteer') if mine else None
     order = order if order in ip.ORDERS else ip.DEFAULT_ORDER
     rows = ip.listing(issue, which, order)
     my_reported_proposal_ids = _reported_proposal_ids([p.id for p, _c in rows])
@@ -384,6 +387,7 @@ def proposal(issue_id, proposal_id):
                            rail_facts=fact_signals.listing(issue_facts, order='kwaliteit'),
                            rail_proposals=rail_proposals, rail_shown=RAIL_SHOWN,
                            rail_versions=rail_versions, big=_enlarged_proposals(issue, rail_versions),
+                           big_facts=_enlarged_facts(issue_facts),
                            reaction_counts=reaction_counts, new_discussion=new_discussion,
                            fact_marks=fact_signals.marked_ids(issue_fact_ids),
                            my_reported_ids=_reported_fact_ids(issue_fact_ids))
@@ -796,9 +800,11 @@ ENLARGED_DEFAULT_ORDER = 'stemlijst'
 
 
 def _enlarged_proposals(issue, versions):
-    which = request.args.get('filter')
+    # ?filter= and ?sorteer= belong to the facts while those are enlarged.
+    mine = request.args.get('vergroot') != 'feiten'
+    which = request.args.get('filter') if mine else None
     which = which if which in ip.FILTERS else 'alle'
-    order = request.args.get('sorteer')
+    order = request.args.get('sorteer') if mine else None
     # Without a choice the enlarged view keeps the order of the compact column
     # (voting list first), so enlarging does not reshuffle; the options and
     # their results are the same as /voorstellen.
@@ -815,6 +821,28 @@ def _enlarged_proposals(issue, versions):
             'counts': {'alle': len(everything), 'stemlijst': on_list, 'steun': len(everything) - on_list},
             'filter_min': ip.FILTER_MIN, 'versions': versions, 'final': ip.final_proposal(issue),
             'expanded': expanded}
+
+
+FACT_FILTERS = ('alle',) + FACT_DIRECTIONS
+
+
+def _enlarged_facts(facts):
+    """The facts column enlarged in the page (issues/_facts_big.html): every
+    fact, filtered on direction and sorted with the same logic as /feiten
+    (fact_signals.listing). ?filter= and ?sorteer= count only with
+    ?vergroot=feiten, so they do not mix with the enlarged proposals. The
+    filter bar shows from more than ip.FILTER_MIN facts (counted before the
+    filter), as with the proposals."""
+    mine = request.args.get('vergroot') == 'feiten'
+    which = request.args.get('filter') if mine else None
+    which = which if which in FACT_DIRECTIONS else 'alle'
+    order = request.args.get('sorteer') if mine else None
+    order = order if order in fact_signals.ORDERS else fact_signals.DEFAULT_ORDER
+    counts = {key: sum(1 for f in facts if f.fact_direction == key) for key in FACT_DIRECTIONS}
+    counts['alle'] = len(facts)
+    rows = fact_signals.listing(facts, None if which == 'alle' else which, order)
+    return {'rows': rows, 'which': which, 'order': order, 'total': len(facts), 'counts': counts,
+            'filter_min': ip.FILTER_MIN, 'filters': FACT_FILTERS}
 
 
 def _can_withdraw(proposal):

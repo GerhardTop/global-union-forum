@@ -3847,8 +3847,6 @@ body {
 .gu-statusladder__step.is-current .gu-statusladder__label { color: var(--gu-fg-1); font-weight: 700; }
 .gu-statusladder__label { overflow-wrap: anywhere; }
 .gu-statusladder__note { margin: 0 0 6px; font-size: 0.875rem; color: var(--gu-fg-2); }
-.gu-cockpit__fullpage { display: none; margin-top: 12px; font-size: 0.875rem; }
-.gu-cockpit--expanded [data-panel].is-expanded .gu-cockpit__fullpage { display: inline-block; }
 [data-more-list] > [hidden] { display: none !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -4462,7 +4460,6 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__pitemmeta .gu-ip-status { padding: 1px 8px; font-size: 0.6875rem; }
 .gu-pv__dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gu-n-400); flex: none; }
 .gu-pv__showmore { display: block; margin: 10px 0 0; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; font-size: 0.78125rem; color: var(--gu-globe-deep); }
-.gu-pv__railmore { display: block; margin-top: 12px; font-size: 0.78125rem; font-weight: 500; color: var(--gu-globe-deep); text-decoration: none; }
 /* Facts: with this proposal / all (a segmented choice with JavaScript; without, both lists show with a heading). */
 .gu-pv__subseg { display: flex; gap: 4px; margin-bottom: 12px; padding: 3px; background: var(--gu-n-100); border: 1px solid var(--gu-border); border-radius: 8px; }
 .gu-pv__subseg button {
@@ -4700,6 +4697,7 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-bigp__dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gu-n-400); flex: none; }
 .gu-bigp__chev { flex: none; margin-top: 3px; color: var(--gu-n-300); }
 .gu-bigp__empty { margin: 10px 4px 0; }
+.gu-bigf__list { margin-top: 10px; }
 
 /* Delete rights step 4: the admin rights page (moderator/rechten.html). */
 .gu-rights__form { max-width: 620px; margin-top: 16px; }

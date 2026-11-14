@@ -266,7 +266,7 @@ def test_detail_page_sections_in_english(app, db, make_user):
     page = _req(_client(app, lang='en'), 'GET', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}').get_data(as_text=True)
     for text in ('Plant more trees.', 'Shade and green.', 'Collecting support (0 of 2)', author.username,
                  'With this proposal', 'Voting rules</span>', 'Current version', 'Reactions to version 1',
-                 'Back to the issue', 'Facts and background', 'All proposals'):
+                 'Back to the issue', 'Facts and background'):
         assert text in page
     assert 'Earlier versions' not in page  # only one version
     assert 'id="stemming"' not in page  # no vote card before voting

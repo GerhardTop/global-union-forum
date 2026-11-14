@@ -66,7 +66,8 @@
           <h2 class="gu-cockpit__title" id="factsTitle">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-facts__count">{{ rail_facts | length }}</span></h2>
           {{ size_buttons('facts', _('Facts and background')) }}
         </div>
-        <div class="gu-cockpit__box">
+        {# The compact column; the "With this proposal / All" switch belongs here. Enlarged shows all facts. #}
+        <div class="gu-cockpit__box gu-cockpit__compact">
           {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
           {% set fact_errs = (errors or {}).get('fact', {}) %}
           {% set link_by_fact = {} %}
@@ -134,7 +135,6 @@
             {% else %}
             <p class="gu-composer__hint">{{ _('No facts yet.') }}</p>
             {% endif %}
-            <a class="gu-pv__railmore" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('All facts, research and media') }} &rsaquo;</a>
           </div>
 
           {% if can_link %}
@@ -162,6 +162,8 @@
           </details>
           {% endif %}
         </div>
+        {# Enlarged in the page: every fact of the issue, with filter and sort above FILTER_MIN. #}
+        <div class="gu-cockpit__box gu-cockpit__bigbox">{% include 'issues/_facts_big.html' %}</div>
       </section>
 
       {# ── Middle: the proposal ────────────────────────────────────── #}
@@ -325,7 +327,6 @@
             {% endfor %}
           </ul>
           {% if rail_proposals | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
-          <a class="gu-pv__railmore" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{% if nl %}Alle voorstellen{% else %}All proposals{% endif %} &rsaquo;</a>
         </div>
         {# Enlarged in the page: every proposal, with filter and sort above FILTER_MIN. #}
         <div class="gu-cockpit__box gu-cockpit__bigbox">{% include 'issues/_proposals_big.html' %}</div>

@@ -29,7 +29,8 @@ def _panel(page, panel_id):
 
 
 def _bigbox(page):
-    return page.split('class="gu-cockpit__box gu-cockpit__bigbox"')[1].split('</section>')[0]
+    """The enlarged proposals (the proposals column's big box)."""
+    return _panel(page, 'panel-proposals').split('class="gu-cockpit__box gu-cockpit__bigbox"')[1]
 
 
 @pytest.fixture
