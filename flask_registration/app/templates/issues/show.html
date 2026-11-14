@@ -13,7 +13,7 @@
 #}
 {% block content_outer %}{% block content %}
 {% if has_discussion %}<template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>{% endif %}
-<main class="gu-forum gu-cockpit" lang="{{ lang }}" id="cockpit"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
+<main class="gu-forum gu-cockpit{% if big.expanded %} gu-cockpit--expanded{% endif %}" lang="{{ lang }}" id="cockpit"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
   <div class="gu-cockpit__inner">
 
     {# Teruglink naar het overzicht boven de titel; geen volledig kruimelpad. #}
@@ -94,7 +94,7 @@
         <button type="button" role="tab" class="gu-cockpit__tab" id="tab-proposals" aria-controls="panel-proposals" data-tab="proposals" aria-selected="false" tabindex="-1">{{ _('Proposals') }}</button>
       </div>
 
-      <section class="gu-cockpit__panel gu-cockpit__facts" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
+      <section class="gu-cockpit__panel gu-cockpit__facts{% if big.expanded == 'facts' %} is-expanded{% endif %}" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="factsTitle">{{ _('Facts and background') }}{% if fact_total %} <span class="gu-facts__count">({{ fact_total }})</span>{% endif %}</h2>
           {% if can_add_fact %}<a href="{{ url_for('issues.facts', issue_id=issue.id) }}#toevoegen" class="gu-iconbtn" title="{{ _('Add a fact') }}" aria-label="{{ _('Add a fact') }}"><span aria-hidden="true">+</span></a>{% endif %}
@@ -124,7 +124,7 @@
         <div class="gu-cockpit__box gu-cockpit__bigbox">{% include 'issues/_facts_big.html' %}</div>
       </section>
 
-      <section class="gu-cockpit__panel gu-cockpit__discussion" id="panel-discussion" data-panel="discussion" role="tabpanel" aria-labelledby="discussionTitle">
+      <section class="gu-cockpit__panel gu-cockpit__discussion{% if big.expanded == 'discussion' %} is-expanded{% endif %}" id="panel-discussion" data-panel="discussion" role="tabpanel" aria-labelledby="discussionTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="discussionTitle">{{ _('Discussion') }}</h2>
           <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="discussion" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Discussion') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
@@ -140,7 +140,7 @@
       {# The voting rules: their own collapsed card at the top of the right column. #}
       {% include 'issues/_rules_card.html' %}
 
-      <section class="gu-cockpit__panel gu-cockpit__proposals" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
+      <section class="gu-cockpit__panel gu-cockpit__proposals{% if big.expanded == 'proposals' %} is-expanded{% endif %}" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }}{% if proposal_total %} <span class="gu-facts__count">({{ proposal_total }})</span>{% endif %}</h2>
           {% if can_propose %}<a href="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" class="gu-iconbtn" title="{{ _('New proposal') }}" aria-label="{{ _('New proposal') }}"><span aria-hidden="true">+</span></a>{% endif %}
@@ -186,7 +186,7 @@
         {% include 'issues/_propose_hint.html' %}
         {% if proposal_rows | length > proposals_shown %}
         <button type="button" class="gu-disclosure gu-showmore" data-more title="{{ _('Show more') }}" aria-label="{{ _('Show more') }}: {{ _('Proposals') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
-        <noscript><a class="gu-cockpit__more" href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Show more') }}</a></noscript>
+        <noscript><a class="gu-cockpit__more" href="{{ url_for('issues.show', issue_id=issue.id, vergroot='voorstellen', _anchor='panel-proposals') }}">{{ _('Show more') }}</a></noscript>
         {% endif %}
         </div>
         {# Enlarged in the page: every proposal, with filter and sort above FILTER_MIN. #}

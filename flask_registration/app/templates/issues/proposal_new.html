@@ -7,7 +7,7 @@
 <main class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
-    {{ crumbs(issue, [(_('Proposals'), url_for('issues.proposals', issue_id=issue.id)), (_('New'), None)]) }}
+    {{ crumbs(issue, [(_('Proposals'), url_for('issues.show', issue_id=issue.id, vergroot='voorstellen', _anchor='panel-proposals')), (_('New'), None)]) }}
 
     <header class="gu-forum__threadhead">
       <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>
@@ -43,7 +43,7 @@
       </section>
       {% endif %}
       <div class="gu-forum__newactions">
-        <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>
+        <a href="{{ url_for('issues.show', issue_id=issue.id) }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>
         <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">{{ _('Post proposal') }} <span class="gu-arrow"></span></button>
       </div>
       {% if issue.support_threshold >= 1 %}

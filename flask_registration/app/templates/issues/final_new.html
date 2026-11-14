@@ -16,7 +16,7 @@
 <main class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
-    {{ crumbs(issue, [(_('Proposals'), url_for('issues.proposals', issue_id=issue.id)), (_('Summary proposal'), None)]) }}
+    {{ crumbs(issue, [(_('Proposals'), url_for('issues.show', issue_id=issue.id, vergroot='voorstellen', _anchor='panel-proposals')), (_('Summary proposal'), None)]) }}
 
     <header class="gu-forum__threadhead">
       <p class="gu-eyebrow">{% include 'issues/_kind.html' %}</p>

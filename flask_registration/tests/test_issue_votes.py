@@ -186,7 +186,8 @@ def test_result_threshold_and_abstentions(app, db, make_user):
         page = _req(_client(app), 'GET', _detail(issue, listed)).get_data(as_text=True)
         assert 'Aangenomen' in page and '75% voor, 25% tegen (van de geldige stemmen)' in page
         assert 'Uitgebrachte stemmen: 6' in page or 'stemmen: 6' in page
-        listing = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
+        listing = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}?vergroot=voorstellen').get_data(as_text=True)
+        listing = listing.split('id="panel-proposals"')[1].split('gu-cockpit__bigbox')[1]  # the enlarged proposals
         assert 'Aangenomen met 75% voor' in listing and 'Niet op de stemlijst (0 van 1)' in listing
         cockpit = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
         assert 'Aangenomen met 75% voor' in cockpit.split('id="panel-proposals"')[1]
@@ -199,8 +200,8 @@ def test_rejected_without_valid_votes(app, db, make_user):
     issue, listed, _u = _setup(db, author, [supporter], phase='vervolg')
     res = ip.result(listed)
     assert res['pct_for'] is None and res['adopted'] is False
-    listing = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
-    assert 'Verworpen, geen geldige stemmen' in listing
+    listing = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}?vergroot=voorstellen').get_data(as_text=True)
+    assert 'Verworpen, geen geldige stemmen' in listing.split('id="panel-proposals"')[1].split('gu-cockpit__bigbox')[1]
 
 
 @pytest.mark.parametrize('interim', [True, False])
@@ -248,7 +249,7 @@ def test_final_proposal_by_initiator_in_summary_phase(app, db, make_user):
     assert _vote(app, voter, issue, final, 'voor').status_code == 302
     page = _req(_client(app), 'GET', _detail(issue, final)).get_data(as_text=True)
     assert 'Eindstemming' in page and 'Samenvattend voorstel' in page and 'Stemmen open tot' in page
-    for path in (f'/vraagstuk/{issue.id}/voorstellen', f'/vraagstuk/{issue.id}'):
+    for path in (f'/vraagstuk/{issue.id}?vergroot=voorstellen', f'/vraagstuk/{issue.id}'):
         body = _req(_client(app), 'GET', path).get_data(as_text=True)
         assert 'gu-ip-finalbox' in body and 'Het plein wordt autovrij, met de markt op zaterdag.' in body
 
@@ -305,9 +306,10 @@ def test_filter_label_after_the_facts_phase(app, db, make_user):
     for i in range(ip.FILTER_MIN):  # the filter buttons only show above FILTER_MIN (10) proposals
         ip.create(issue, supporter, f'Extra voorstel {i}.')
     db.session.commit()
-    page = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
-    assert '>Verzamelt steun</a>' in page
+    path = f'/vraagstuk/{issue.id}?vergroot=voorstellen'
+    page = _req(_client(app), 'GET', path).get_data(as_text=True)
+    assert '>Verzamelt steun <span class="gu-bigp__c">' in page
     issue.phase = 'stemmen'
     db.session.commit()
-    page = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
-    assert '>Niet op de stemlijst</a>' in page and '>Verzamelt steun</a>' not in page
+    page = _req(_client(app), 'GET', path).get_data(as_text=True)
+    assert '>Niet op de stemlijst <span class="gu-bigp__c">' in page and '>Verzamelt steun <span' not in page

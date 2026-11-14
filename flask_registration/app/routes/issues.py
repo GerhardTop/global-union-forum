@@ -279,22 +279,14 @@ def report_proposal(issue_id, proposal_id):
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstellen')
 def proposals(issue_id):
+    """Page consolidation step 1: the separate proposals list is gone; the
+    enlarged proposals column in the cockpit is the one view (all proposals,
+    filter and sort from more than ip.FILTER_MIN). Old links and bookmarks land
+    there, with their ?filter= and ?sorteer=."""
     issue = _issue_or_404(issue_id)
-    # ?filter= and ?sorteer= belong to the facts while those are enlarged.
-    mine = request.args.get('vergroot') != 'feiten'
-    which = request.args.get('filter') if mine else None
-    which = which if which in ip.FILTERS else 'alle'
-    order = request.args.get('sorteer') if mine else None
-    order = order if order in ip.ORDERS else ip.DEFAULT_ORDER
-    rows = ip.listing(issue, which, order)
-    my_reported_proposal_ids = _reported_proposal_ids([p.id for p, _c in rows])
-    return render_template('issues/proposals.html', issue=issue, rows=rows, which=which, order=order,
-                           total=ip.regular_query(issue).count(),  # before the filter: filter and sort only above FILTER_MIN
-                           filter_min=ip.FILTER_MIN,
-                           my_supports=ip.my_supports([p.id for p, _n in rows], current_user),
-                           my_reported_proposal_ids=my_reported_proposal_ids,
-                           can_propose=ip.can_propose(issue, current_user),
-                           final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user))
+    keep = {key: request.args.get(key) for key in ('filter', 'sorteer') if request.args.get(key)}
+    return redirect(url_for('issues.show', issue_id=issue.id, vergroot='voorstellen', **keep,
+                            _anchor='panel-proposals'))
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstellen/nieuw', methods=['GET', 'POST'])
@@ -807,7 +799,7 @@ def _enlarged_proposals(issue, versions):
     order = request.args.get('sorteer') if mine else None
     # Without a choice the enlarged view keeps the order of the compact column
     # (voting list first), so enlarging does not reshuffle; the options and
-    # their results are the same as /voorstellen.
+    # their results are the same as /voorstellen had.
     order = order if order in ip.ORDERS else ENLARGED_DEFAULT_ORDER
     everything = ip.listing(issue)
     on_list = sum(1 for p, c in everything if ip.on_list(p, c))

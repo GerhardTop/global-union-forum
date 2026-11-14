@@ -115,7 +115,8 @@ def test_hidden_proposal_left_out_of_public_lists(app, db, world):
         column = cockpit.split('id="panel-proposals"')[1].split('</section>')[0]
         assert 'Zichtbaar voorstel.' in column and 'Verborgen voorstel.' not in column, who
         assert 'Voorstellen <span class="gu-facts__count">(1)</span>' in column, who
-        listing = _html(app, w[who], f'/vraagstuk/{issue.id}/voorstellen')
+        listing = _html(app, w[who], f'/vraagstuk/{issue.id}?vergroot=voorstellen').split('id="panel-proposals"')[1]
+        listing = listing.split('gu-cockpit__bigbox')[1].split('</section>')[0]  # the enlarged proposals
         assert 'Zichtbaar voorstel.' in listing and 'Verborgen voorstel.' not in listing, who
         rail = _html(app, w[who], f'/vraagstuk/{issue.id}/voorstel/{w["shown"].id}')
         rail = rail.split('id="panel-proposals"')[1].split('</section>')[0]

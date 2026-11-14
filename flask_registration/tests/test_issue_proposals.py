@@ -227,7 +227,9 @@ def test_revise_in_revision_phase_keeping_every_version(app, db, make_user):
 
 # ── Pagina's ─────────────────────────────────────────────────────────────
 
-def test_proposals_page_filter_and_sort(app, db, make_user):
+def test_enlarged_proposals_filter_and_sort(app, db, make_user):
+    """Page consolidation step 1: the enlarged proposals in the cockpit took
+    over from the separate list (/voorstellen redirects there)."""
     author, a, b = make_user(), make_user(), make_user()
     issue = _issue(db, author, threshold=2)
     base = datetime.utcnow() - timedelta(days=1)
@@ -244,7 +246,8 @@ def test_proposals_page_filter_and_sort(app, db, make_user):
 
     def order(**args):
         q = '&'.join(f'{k}={v}' for k, v in args.items())
-        page = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstellen?{q}').get_data(as_text=True)
+        page = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}?vergroot=voorstellen&{q}').get_data(as_text=True)
+        page = page.split('id="panel-proposals"')[1].split('gu-cockpit__bigbox')[1]
         return sorted((n for n in rows if n in page), key=page.index)
 
     assert order() == ['Oud met steun', 'Nieuw met een steun', 'Midden zonder steun']
@@ -253,9 +256,8 @@ def test_proposals_page_filter_and_sort(app, db, make_user):
     assert order(filter='stemlijst') == ['Oud met steun']
     assert order(filter='steun') == ['Nieuw met een steun', 'Midden zonder steun']
 
-    page = _req(_client(app, b), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
-    assert page.count('>Steunen<') == 2 and 'Nieuw voorstel doen' in page
-    assert f'/vraagstuk/{issue.id}/voorstellen/nieuw' in page
+    page = _req(_client(app, b), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
+    assert f'/vraagstuk/{issue.id}/voorstellen/nieuw' in page.split('id="panel-proposals"')[1].split('</section>')[0]
 
 
 def test_detail_page_sections_in_english(app, db, make_user):
@@ -340,11 +342,9 @@ def test_propose_and_support_only_in_facts_phase(app, db, make_user, phase, clos
     assert IssueProposal.query.filter_by(issue_id=issue.id).count() == 1
     assert IssueProposalSupport.query.filter_by(proposal_id=proposal.id).count() == 0
 
-    # Weergave: geen knoppen op het formulier, de voorstellenpagina, het detail en in de cockpit.
+    # Weergave: geen knoppen op het formulier, het detail en in de cockpit.
     form = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstellen/nieuw').get_data(as_text=True)
     assert 'alleen in de feitenfase' in form and 'Voorstel indienen' not in form
-    listing = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
-    assert '>Steunen<' not in listing and 'Nieuw voorstel doen' not in listing
     detail = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}').get_data(as_text=True)
     assert '>Steunen<' not in detail
     cockpit = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
@@ -356,8 +356,9 @@ def test_buttons_shown_in_facts_phase(app, db, make_user):
     author, a = make_user(), make_user()
     issue = _issue(db, author)
     _propose(app, author, issue)
-    listing = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstellen').get_data(as_text=True)
-    assert '>Steunen<' in listing and 'Nieuw voorstel doen' in listing
+    proposal = IssueProposal.query.filter_by(issue_id=issue.id).one()
+    detail = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}').get_data(as_text=True)
+    assert '>Steunen<' in detail
     cockpit = _req(_client(app, a), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
     assert 'title="Nieuw voorstel"' in cockpit.split('id="panel-proposals"')[1].split('</section>')[0]
 

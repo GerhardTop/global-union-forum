@@ -32,7 +32,7 @@
 <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="{{ name }}" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ label }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
 <button type="button" class="gu-iconbtn gu-cockpit__shrink" data-collapse title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ label }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button>
 {%- endmacro %}
-<main class="gu-forum gu-cockpit gu-ipdetail gu-pv" lang="{{ lang }}" id="voorstel"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
+<main class="gu-forum gu-cockpit gu-ipdetail gu-pv{% if big.expanded %} gu-cockpit--expanded{% endif %}" lang="{{ lang }}" id="voorstel"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
   <div class="gu-cockpit__inner">
 
     <header class="gu-pv__head">
@@ -40,7 +40,7 @@
         <a class="gu-pv__back" href="{{ url_for('issues.show', issue_id=issue.id) }}">&lsaquo; {% if nl %}Terug naar het vraagstuk{% else %}Back to the issue{% endif %}</a>
         <span class="gu-pv__crumbsep" aria-hidden="true">|</span>
         <a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a><span aria-hidden="true">/</span>
-        <a href="{{ url_for('issues.proposals', issue_id=issue.id) }}">{{ _('Proposals') }}</a><span aria-hidden="true">/</span>
+        <a href="{{ url_for('issues.show', issue_id=issue.id, vergroot='voorstellen', _anchor='panel-proposals') }}">{{ _('Proposals') }}</a><span aria-hidden="true">/</span>
         <span aria-current="page">{{ _('Proposal') }}</span>
       </nav>
       <p class="gu-eyebrow">{{ _('Proposal') }}{% if proposal.is_final %} · <span class="gu-ip-final">{{ _('Summary proposal') }}</span>{% endif %}</p>
@@ -61,7 +61,7 @@
       </div>
 
       {# ── Left: facts and background ──────────────────────────────── #}
-      <section class="gu-cockpit__panel gu-cockpit__facts gu-pv__factscol" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
+      <section class="gu-cockpit__panel gu-cockpit__facts gu-pv__factscol{% if big.expanded == 'facts' %} is-expanded{% endif %}" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="factsTitle">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-facts__count">{{ rail_facts | length }}</span></h2>
           {{ size_buttons('facts', _('Facts and background')) }}
@@ -167,7 +167,7 @@
       </section>
 
       {# ── Middle: the proposal ────────────────────────────────────── #}
-      <section class="gu-cockpit__panel gu-cockpit__main gu-pv__main" id="panel-proposal" data-panel="proposal" role="tabpanel" aria-labelledby="proposalTitle">
+      <section class="gu-cockpit__panel gu-cockpit__main gu-pv__main{% if big.expanded == 'proposal' %} is-expanded{% endif %}" id="panel-proposal" data-panel="proposal" role="tabpanel" aria-labelledby="proposalTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="proposalTitle">{{ _('Proposal') }}</h2>
           {{ size_buttons('proposal', _('Proposal')) }}
@@ -310,7 +310,7 @@
       {# ── Right: the voting rules (collapsed), then the issue's proposals ── #}
       {% include 'issues/_rules_card.html' %}
 
-      <section class="gu-cockpit__panel gu-cockpit__proposals gu-pv__proposalscol" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
+      <section class="gu-cockpit__panel gu-cockpit__proposals gu-pv__proposalscol{% if big.expanded == 'proposals' %} is-expanded{% endif %}" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }} <span class="gu-facts__count">{{ rail_proposals | length }}</span></h2>
           {{ size_buttons('proposals', _('Proposals')) }}

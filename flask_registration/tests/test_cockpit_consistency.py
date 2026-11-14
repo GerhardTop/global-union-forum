@@ -134,12 +134,12 @@ def test_enlarged_proposals_filter_bar_above_ten_and_same_result_as_voorstellen(
             counts = re.findall(r'<span class="gu-bigp__c">(\d+)</span>', big)
             on_list = sum(1 for p, c in ip.listing(issue) if ip.on_list(p, c))
             assert counts == [str(len(proposals)), str(on_list), str(len(proposals) - on_list)], key
-            # Each filter and sort: the same proposals in the same order as /voorstellen.
+            # Each filter and sort: the same proposals in the same order as the server listing (ip.listing).
             for which in ('alle', 'stemlijst', 'steun'):
                 for order in ('stemlijst', 'steun', 'nieuwste'):
                     q = f'?filter={which}&sorteer={order}'
                     enlarged = statements(_bigbox(_get(app, path + q + '&vergroot=voorstellen', host)), 'gu-bigp__txt')
-                    listed = statements(_get(app, f'/vraagstuk/{issue.id}/voorstellen{q}', host), 'gu-iplist__statement')
+                    listed = [p.statement for p, _c in ip.listing(issue, which, order)]
                     assert enlarged == listed and enlarged, (key, which, order)
             # The filter links and the sort form reload this page enlarged.
             page = _get(app, path + '?filter=stemlijst&vergroot=voorstellen', host)
@@ -172,9 +172,6 @@ def test_enlarged_defaults_to_voting_list_first_and_applies_without_a_button(app
                 big = _bigbox(_get(app, path, host, lang))
                 assert 'data-autosubmit' in big and '<button' not in big, (key, lang)
                 assert 'Toepassen' not in big and 'Apply' not in big, (key, lang)
-        # /voorstellen itself keeps its own default.
-        listed = statements(_get(app, f'/vraagstuk/{issue.id}/voorstellen', host), 'gu-iplist__statement')
-        assert listed == [p.statement for p, _c in ip.listing(issue, order=ip.DEFAULT_ORDER)]
     finally:
         _cleanup(issue.id)
 

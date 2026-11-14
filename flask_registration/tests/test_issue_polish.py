@@ -161,14 +161,17 @@ def test_breadcrumb_names_the_issue(app, db, make_user):
     db.session.commit()
     # P7: de cockpit heeft geen kruimelpad meer, en de feiten- en voorstellenpagina
     # (de volledige weergave) ook niet; het voorstel-detail en de formulieren wel.
-    for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen'):
+    for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}/feiten'):
         assert 'gu-issue-crumbs' not in _get(app, path)
     crumbs = _get(app, f'/vraagstuk/{issue.id}/voorstellen/nieuw', host).split('gu-forum__crumbs gu-issue-crumbs')[1].split('</nav>')[0]
     assert '>Denk mee</a>' in crumbs and f'href="/vraagstuk/{issue.id}"' in crumbs
+    # "Voorstellen" leads to the enlarged proposals in the cockpit (the separate list is gone).
+    assert f'href="/vraagstuk/{issue.id}?vergroot=voorstellen#panel-proposals">Voorstellen</a>' in crumbs
     # Het voorstel (docs/design/voorstel.html): terug naar het vraagstuk, dan Denk mee / Voorstellen / Voorstel.
     crumbs = _get(app, f'/vraagstuk/{issue.id}/voorstel/{proposal.id}', host).split('class="gu-pv__crumbs"')[1].split('</nav>')[0]
     assert f'href="/vraagstuk/{issue.id}"' in crumbs and 'Terug naar het vraagstuk' in crumbs
-    assert '>Denk mee</a>' in crumbs and f'href="/vraagstuk/{issue.id}/voorstellen"' in crumbs
+    assert '>Denk mee</a>' in crumbs and f'href="/vraagstuk/{issue.id}?vergroot=voorstellen#panel-proposals"' in crumbs
+    assert f'/vraagstuk/{issue.id}/voorstellen"' not in crumbs
     assert crumbs.rstrip().endswith('<span aria-current="page">Voorstel</span>')
     assert 'Feiten, onderzoek en media' in _get(app, f'/vraagstuk/{issue.id}/feiten')
 
@@ -706,8 +709,7 @@ def test_no_reply_to_your_own_post(app, db, make_user):
 def test_full_pages_match_the_cockpit(app, db, make_user):
     host = make_user()
     issue = _issue(db, host, 'Waar komt de markt?')
-    for path, anchor in ((f'/vraagstuk/{issue.id}/feiten', '#panel-facts'),
-                         (f'/vraagstuk/{issue.id}/voorstellen', '#panel-proposals')):
+    for path, anchor in ((f'/vraagstuk/{issue.id}/feiten', '#panel-facts'),):
         page = _get(app, path, host)
         head = page.split('gu-forum__threadhead')[1].split('</header>')[0]
         assert 'gu-issue-crumbs' not in page and 'gu-issue-kind' not in head
@@ -723,22 +725,21 @@ def test_sort_and_filter_facts_above_five_proposals_above_ten(app, db, make_user
     for i in range(10):
         ip.create(issue, anna, f'Voorstel {i}')
     db.session.commit()
-    for path in (f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}/voorstellen'):
-        page = _get(app, path)
-        assert 'gu-factspage__sort' not in page and 'gu-factspage__filter' not in page
+    page = _get(app, f'/vraagstuk/{issue.id}/feiten')
+    assert 'gu-factspage__sort' not in page and 'gu-factspage__filter' not in page
+    enlarged = lambda q='': _get(app, f'/vraagstuk/{issue.id}?vergroot=voorstellen{q}').split('id="panel-proposals"')[1].split('gu-cockpit__bigbox')[1]  # noqa: E731
+    assert 'gu-bigp__bar' not in enlarged()
     # Facts: from more than 5. Proposals: from more than 10 (ip.FILTER_MIN).
     _fact(db, issue, anna, 'Feit 5')
     db.session.commit()
     page = _get(app, f'/vraagstuk/{issue.id}/feiten')
     assert 'gu-factspage__sort' in page and 'gu-factspage__filter' in page
-    assert ip.FILTER_MIN == 10 and 'gu-factspage__filter' not in _get(app, f'/vraagstuk/{issue.id}/voorstellen')
+    assert ip.FILTER_MIN == 10 and 'gu-bigp__bar' not in enlarged()
     ip.create(issue, anna, 'Voorstel 10')
     db.session.commit()
-    page = _get(app, f'/vraagstuk/{issue.id}/voorstellen')
-    assert 'gu-factspage__sort' in page and 'gu-factspage__filter' in page
+    assert 'gu-bigp__bar' in enlarged() and 'name="sorteer"' in enlarged()
     # Bij de voorstellen telt het aantal vóór het filter: ook een leeg filter houdt de knoppen.
-    page = _get(app, f'/vraagstuk/{issue.id}/voorstellen?filter=stemlijst')
-    assert 'gu-factspage__filter' in page
+    assert 'gu-bigp__bar' in enlarged('&filter=stemlijst')
 
 
 def test_faq_has_no_semicolons_and_uses_the_collection_name():
