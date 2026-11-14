@@ -3479,6 +3479,10 @@ body {
 @media (max-width: 768px) {
   .gu-cockpit__inner { padding: 0 16px; }
 }
+/* The voting rules card shares the class name of the unrelated rules list
+   (.gu-rules, around line 1620): drop that list's margin and flex, so the card
+   lines up with the columns beside it and its open body stacks normally. */
+.gu-cockpit__panel.gu-rules { margin: 0; display: block; }
 @media (min-width: 1024px) {
   .gu-cockpit__grid {
     grid-template-columns: 280px minmax(0, 1fr) 280px;
@@ -3493,6 +3497,8 @@ body {
   .gu-cockpit__proposals { grid-area: proposals; }
   .gu-cockpit__side { grid-area: rights; }
   .gu-rules { grid-area: rules; }
+  /* A tight gap to the proposals below: 6px instead of the 20px row gap. */
+  .gu-cockpit__panel.gu-rules { margin-bottom: -14px; }
 }
 
 /* ── Herontwerp stap 3: nuttig en betwisten op een feit, de feitenpagina ── */

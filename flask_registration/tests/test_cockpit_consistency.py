@@ -207,4 +207,9 @@ def test_rules_card_collapsed_above_the_proposals_on_both_pages(app, db, small):
     assert 'gu-cockpit__rules"' not in issue_page  # the old card at the bottom of the right column is gone
     css = _req(_client(app), 'GET', '/static/css/kit.css').get_data(as_text=True)
     assert '.gu-rules__head[aria-expanded="true"] .gu-rules__chev { transform: rotate(180deg); }' in css
+    # The card drops the old rules list's margin (top in line with the columns), and sits 6px above the proposals.
+    assert '.gu-cockpit__panel.gu-rules { margin: 0; display: block; }' in css
+    wide = css.split('@media (min-width: 1024px) {\n  .gu-cockpit__grid {')[1].split('\n}\n')[0]
+    assert '.gu-cockpit__panel.gu-rules { margin-bottom: -14px; }' in wide
+    assert '.gu-rules { list-style: none; margin: 24px 0;' in css  # the rules list elsewhere is untouched
     assert '"facts discussion rules" "facts discussion proposals" "facts discussion rights"' in css
