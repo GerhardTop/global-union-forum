@@ -1,0 +1,137 @@
+<!doctype html>
+<!--
+  Design-referentie (artboard FeitActies.dc.html). Statisch, alleen om naar te
+  kijken en naartoe te bouwen; geen app-code. De acties op de feitenkaart in de
+  vergrote feitenweergave: onder een feit van een ander staat "Betwisten", dat
+  een formulier opent (reden: geen bron, klopt niet, niet relevant, misleidend,
+  met optionele toelichting, naar een moderator). Melden (de vlag) en het
+  kwaliteitsmerk (het groene vinkje) staan al in de merken bovenin. Bij je eigen
+  feit staan onderaan Bewerken en Verwijderen. Zo heeft de cockpit alles wat
+  /feiten had, en kan die pagina vervallen.
+-->
+<html lang="nl">
+<head>
+<meta charset="utf-8"><title>Feitacties</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<style>
+body{margin:0}
+.gu *{box-sizing:border-box}
+.gu{--globe:#3ab0f0;--globe-deep:#1b74b8;--ink:#141b22;--paper:#fff;--americas:#d8232a;--africa:#e09400;--oceania:#108a4e;
+  --n50:#f5f7f9;--n100:#eef1f5;--n200:#e4e9ef;--n300:#d3dae2;--n400:#a7b1bd;--n500:#6c7683;--n600:#525c69;--n700:#3a434e;--border:#e4e9ef;
+  --shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05);
+  font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--n50)}
+a{color:#1b74b8;text-decoration:none}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--globe-deep);margin:0}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px}
+.card{background:var(--paper);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.ico{stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.colwide{max-width:980px;margin:0 auto}
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:500;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--ink);cursor:pointer}
+.btn--primary{background:var(--globe-deep);border-color:var(--globe-deep);color:#fff}
+/* feitkaart */
+.fcard{padding:16px 2px;border-top:1px solid var(--n100)}
+.fcard__top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dir{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px}
+.dir--voor{background:#eef7f1;color:#108a4e}.dir--tegen{background:#fcecec;color:#a3282c}.dir--neutraal{background:var(--n100);color:var(--n600)}
+.kind{font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;background:var(--n100);color:var(--n600);border:1px solid var(--border)}
+.mark{color:var(--oceania);display:inline-flex}
+.flag{color:var(--n400);display:inline-flex;margin-left:auto}
+.ftitle{font-size:14.5px;font-weight:600;margin:9px 0 3px}
+.ftext{font-size:13.5px;color:var(--n700);line-height:1.5;margin:0}
+.fsource{font-size:12px;color:var(--n500);margin:7px 0 0}
+.fsource a{color:var(--globe-deep)}
+.factions{display:flex;align-items:center;gap:16px;margin-top:11px}
+.faction{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--n600);cursor:pointer;background:none;border:0;font-family:inherit;padding:0}
+.faction:hover{color:var(--globe-deep)}
+.faction--danger{color:var(--americas)}
+.sep{color:var(--n300)}
+/* betwist-formulier */
+.dispute{margin-top:12px;background:#fff8f0;border:1px solid #f0d9b0;border-radius:11px;padding:14px 16px}
+.dispute__legend{font-size:12.5px;font-weight:600;color:var(--n700);margin:0 0 8px}
+.reasons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+.reason{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--n700);border:1px solid var(--n300);background:#fff;border-radius:999px;padding:6px 11px;cursor:pointer}
+.reason--on{border-color:var(--africa);background:#fff3e0;color:#8a5a12;font-weight:600}
+.radio{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--n400);display:inline-block}
+.reason--on .radio{border-color:var(--africa);background:var(--africa);box-shadow:inset 0 0 0 2px #fff}
+.dispute label.note{display:block;font-size:12px;color:var(--n600);margin-bottom:5px}
+.ta{width:100%;font-family:inherit;font-size:13px;border:1px solid var(--n300);border-radius:8px;padding:8px 10px;resize:vertical;min-height:52px}
+.hint{font-size:11.5px;color:var(--n500);margin:8px 0 10px}
+</style>
+</head>
+<body>
+<div class="gu" style="min-height:100%;padding:28px 0 60px">
+  <div class="wrap">
+    <section class="card colwide" style="padding:18px 22px">
+      <div style="display:flex;align-items:center;gap:10px;padding-bottom:4px">
+        <span class="eyebrow">Feiten en achtergrond</span><span style="font-size:12px;color:var(--n500)">13</span>
+        <span style="flex:1"></span>
+        <span class="btn" style="width:30px;height:30px;padding:0;justify-content:center;border-color:var(--globe-deep);color:var(--globe-deep)">+</span>
+        <span class="btn" style="width:30px;height:30px;padding:0;justify-content:center"><svg class="ico" viewBox="0 0 24 24" width="14" height="14"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></span>
+      </div>
+
+      <!-- kaart van iemand anders, met het betwist-formulier open -->
+      <div class="fcard" style="border-top:0">
+        <div class="fcard__top">
+          <span class="dir dir--voor">Pleit voor</span>
+          <span class="mark" title="Kwaliteitsmerk"><svg viewBox="0 0 16 16" width="15" height="15" class="ico" style="stroke-width:2.2"><path d="M3.5 8.5l3 3 6-7"/></svg></span>
+          <span class="flag" title="Melden"><svg viewBox="0 0 24 24" width="15" height="15" class="ico"><path d="M5 21V4a1 1 0 0 1 1-1h11l-2 4 2 4H6"/><path d="M5 21v-5"/></svg></span>
+        </div>
+        <p class="ftitle">Meer dan 140 landen onderschreven het minimumtarief van 15 procent</p>
+        <p class="ftext">De OESO meldt dat ruim 140 landen de afspraak over een wereldwijd minimumtarief hebben onderschreven.</p>
+        <p class="fsource">Bron: <a href="#">https://www.oecd.org/tax/</a></p>
+        <div class="factions">
+          <button class="faction" style="color:var(--globe-deep)"><svg class="ico" viewBox="0 0 24 24" width="15" height="15"><path d="M12 9v4M12 17h.01M10.3 3.9l-8 14A1 1 0 0 0 3.2 19h17.6a1 1 0 0 0 .9-1.5l-8-14a1 1 0 0 0-1.7 0z"/></svg>Betwisten</button>
+        </div>
+
+        <!-- geopend betwist-formulier -->
+        <div class="dispute">
+          <p class="dispute__legend">Wat klopt er niet aan dit feit?</p>
+          <div class="reasons">
+            <span class="reason reason--on"><span class="radio"></span>Geen bron</span>
+            <span class="reason"><span class="radio"></span>Klopt niet</span>
+            <span class="reason"><span class="radio"></span>Niet relevant</span>
+            <span class="reason"><span class="radio"></span>Misleidend</span>
+          </div>
+          <label class="note">Toelichting (optioneel)</label>
+          <textarea class="ta" placeholder="Licht kort toe"></textarea>
+          <p class="hint">Een moderator beoordeelt je bezwaar. Het feit blijft ondertussen zichtbaar.</p>
+          <button class="btn btn--primary">Naar een moderator sturen</button>
+        </div>
+      </div>
+
+      <!-- gewone kaart van iemand anders (betwisten dicht) -->
+      <div class="fcard">
+        <div class="fcard__top">
+          <span class="dir dir--tegen">Tegen</span>
+          <span class="kind">Nieuwsartikel</span>
+          <span class="flag" title="Melden"><svg viewBox="0 0 24 24" width="15" height="15" class="ico"><path d="M5 21V4a1 1 0 0 1 1-1h11l-2 4 2 4H6"/><path d="M5 21v-5"/></svg></span>
+        </div>
+        <p class="ftitle">Kleine landen vrezen minder investeringen bij een hoger tarief</p>
+        <p class="ftext">Volgens een nieuwsartikel waarschuwen enkele kleinere economieen voor een terugval in buitenlandse investeringen.</p>
+        <p class="fsource">Bron: <a href="#">https://nos.nl/...</a></p>
+        <div class="factions">
+          <button class="faction" style="color:var(--globe-deep)"><svg class="ico" viewBox="0 0 24 24" width="15" height="15"><path d="M12 9v4M12 17h.01M10.3 3.9l-8 14A1 1 0 0 0 3.2 19h17.6a1 1 0 0 0 .9-1.5l-8-14a1 1 0 0 0-1.7 0z"/></svg>Betwisten</button>
+        </div>
+      </div>
+
+      <!-- eigen kaart: bewerken en verwijderen -->
+      <div class="fcard">
+        <div class="fcard__top">
+          <span class="dir dir--neutraal">Neutraal</span>
+          <span style="font-size:11px;color:var(--n500)">Jouw feit</span>
+        </div>
+        <p class="ftitle">Het minimumtarief geldt voor bedrijven boven 750 miljoen omzet</p>
+        <p class="ftext">De drempel van 750 miljoen euro omzet bepaalt welke bedrijven onder de afspraak vallen.</p>
+        <p class="fsource">Bron: <a href="#">https://www.oecd.org/tax/</a></p>
+        <div class="factions">
+          <button class="faction"><svg class="ico" viewBox="0 0 24 24" width="15" height="15"><path d="M4 20h4L18 10l-4-4L4 16v4zM13 5l4 4"/></svg>Bewerken</button>
+          <span class="sep">·</span>
+          <button class="faction faction--danger"><svg class="ico" viewBox="0 0 24 24" width="15" height="15"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>Verwijderen</button>
+        </div>
+      </div>
+
+    </section>
+  </div>
+</div>
+</body>
+</html>

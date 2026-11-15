@@ -13,8 +13,11 @@
   above the filter bar, the add form (the "+" in the column head opens it).
   It posts to forum.fact_add and comes back here enlarged. Without JavaScript
   it shows with ?nieuw-feit=1; the close links then drop that parameter.
+  Step 3: each card with its actions (with_actions; see issues/_fact_card.html).
   Context: issue, big_facts, fact_marks, my_reported_ids, can_add_fact,
-  fact_add_open, fact_add_data, fact_add_errors, optional fact_return_proposal.
+  fact_add_open, fact_add_data, fact_add_errors, fact_my_disputed,
+  fact_phase_open, fact_removed_ids, fact_errors, fact_data, optional
+  fact_return_proposal.
 -#}
 {% set nl = lang == 'nl' %}
 {% set here_args = dict(request.view_args or {}) %}
@@ -63,8 +66,10 @@
   {% endif %}
   {% if big_facts.rows %}
   <ol class="gu-cockpit__factlist gu-bigf__list">
+    {% set with_actions = true %}
+    {% set fact_back = url_for(request.endpoint, vergroot='feiten', **here_args) %}
     {% for fact in big_facts.rows %}
-    <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}">
+    <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}" id="feit-{{ fact.id }}">
       {% include 'issues/_fact_card.html' %}
     </li>
     {% endfor %}

@@ -116,9 +116,10 @@ def test_adding_a_fact_in_the_page_comes_back_enlarged_with_the_fact(app, db, wo
         resp = _req(_client(app, host), 'POST', f'/forum/{issue.thread_id}/feiten',
                     data=dict(_fact_data(text=text), return_to=str(issue.id), in_page='1', **extra))
         assert resp.status_code == 302, key
-        target = _pages(issue, proposal)[key] + '?vergroot=feiten#panel-facts'
-        assert resp.headers['Location'].endswith(target), (key, resp.headers['Location'])
         fact = Post.query.filter_by(body=text).one()
+        # Step 3: back with the new fact in view.
+        target = _pages(issue, proposal)[key] + f'?vergroot=feiten#feit-{fact.id}'
+        assert resp.headers['Location'].endswith(target), (key, resp.headers['Location'])
         assert fact.kind == FACT_KIND and fact.fact_type == 'onderzoek' and fact.fact_direction == 'tegen'
         page = _get(app, resp.headers['Location'], host)
         big = page.split('id="panel-facts"')[1].split('</section>')[0].split('gu-cockpit__bigbox')[1]

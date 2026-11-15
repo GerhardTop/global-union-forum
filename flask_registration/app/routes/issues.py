@@ -154,8 +154,11 @@ def show(issue_id):
     my_reported_proposal_ids = _reported_proposal_ids([p.id for p, _c in proposal_rows])
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in proposal_rows])
     big = _enlarged_proposals(issue, {p.id: ip.current_version(p) for p, _c in proposal_rows})
+    # The enlarged facts column (add form, card actions) overrides the
+    # discussion's fact context: same facts, plus the edit state.
+    discussion.update(_fact_box(issue, visible))
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
-                           big_facts=_enlarged_facts(visible), **_fact_add_box(issue),
+                           big_facts=_enlarged_facts(visible),
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
                            proposal_rows=proposal_rows, proposals_shown=COCKPIT_PROPOSALS,
@@ -347,14 +350,15 @@ def proposal(issue_id, proposal_id):
     proposal = _proposal_or_404(issue, proposal_id)
     count = ip.support_counts([proposal.id]).get(proposal.id, 0)
     supported = proposal.id in ip.my_supports([proposal.id], current_user)
-    # The in-page add form of the facts column first (its own form state).
-    fact_box = _fact_add_box(issue)
+    # The facts column's own form state first (add or edit a fact).
+    fact_state = _fact_state(issue)
     # Eén formulierstaat per detailpagina: errors['revise'] of errors['fact'].
     errors, data = _pop_form_state(f'voorstel-{proposal.id}')
     links = ip.linked(proposal, current_user)
     linked_ids = {fact.id for _link, fact in links}
     issue_facts = ip.visible_issue_facts(issue, current_user)
     issue_fact_ids = [f.id for f in issue_facts]
+    fact_box = _fact_box(issue, issue_facts, fact_state)
     # The rail: the same proposals as the cockpit (voting list first), with
     # the summary proposal on top when there is one.
     rail_proposals = ip.listing(issue, order='stemlijst')
@@ -840,19 +844,37 @@ def _enlarged_facts(facts):
             'filter_min': ip.FILTER_MIN, 'filters': FACT_FILTERS}
 
 
-def _fact_add_box(issue):
-    """Page consolidation step 2: the add form at the top of the enlarged
-    facts column. Open with ?nieuw-feit=1 (the no-script "+" and the return
-    after an input error), with the entered values and errors of a rejected
-    fact (forum.fact_add stashes them under feit-<thread id>)."""
-    errors, data = ({}, {})
-    if issue.thread is not None:
-        errors, data = _pop_form_state_if(f'feit-{issue.thread.id}')
-    if not any(errors.get(key) for key in ('title', 'text', 'direction', 'source')):
-        errors, data = {}, {}  # (the state of an edit on /feiten is not ours)
+def _fact_state(issue):
+    """The form state of a rejected fact (forum.fact_add and forum.fact_edit
+    stash it under feit-<thread id>): flat for the add form, per edit-<id>
+    for an edit. Only taken when it is that state."""
+    if issue.thread is None:
+        return {}, {}
+    return _pop_form_state_if(f'feit-{issue.thread.id}')
+
+
+_ADD_FIELDS = ('title', 'text', 'direction', 'source')
+
+
+def _fact_box(issue, facts, state=None):
+    """The context of the enlarged facts column, mirroring issues.facts:
+    - step 2: the add form at the top, open with ?nieuw-feit=1 (the no-script
+      "+" and the return after an input error), with the entered values;
+    - step 3: the actions on each card (dispute; edit and delete your own fact
+      while the facts phase is open and it is not removed), with the edit
+      state per edit-<id>."""
+    errors, data = state if state is not None else _fact_state(issue)
+    add_errors = {key: errors[key] for key in _ADD_FIELDS if errors.get(key)}
     can_add = _can_add_fact(issue)
-    return {'fact_add_open': can_add and (bool(errors) or request.args.get('nieuw-feit') == '1'),
-            'fact_add_errors': errors if can_add else {}, 'fact_add_data': data if can_add else {}}
+    ids = [f.id for f in facts]
+    cases = conduct.cases_for(ids)
+    return {'fact_add_open': can_add and (bool(add_errors) or request.args.get('nieuw-feit') == '1'),
+            'fact_add_errors': add_errors if can_add else {},
+            'fact_add_data': data if can_add and add_errors else {},
+            'fact_errors': errors, 'fact_data': data,
+            'fact_my_disputed': fact_signals.my_disputed(ids, current_user),
+            'fact_phase_open': issue.thread is not None and _fact_phase_open(issue.thread),
+            'fact_removed_ids': {fid for fid, case in cases.items() if case.removes_from_thread}}
 
 
 def _can_withdraw(proposal):

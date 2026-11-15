@@ -1764,19 +1764,23 @@ def _fact_back(thread, anchor=''):
 
 
 def _fact_back_in_page(issue, anchor):
-    """Page consolidation step 2: the add form inside the enlarged facts
-    column. Back to the page it came from (the issue page, or a proposal page
-    of this issue via return_proposal) with the facts enlarged; after an error
-    with the form open again (nieuw-feit=1)."""
+    """Page consolidation steps 2 and 3: a form inside the enlarged facts
+    column (add, edit, delete). Back to the page it came from (the issue page,
+    or a proposal page of this issue via return_proposal) with the facts
+    enlarged. After an add error the add form opens again (nieuw-feit=1); after
+    an edit (or its error) the fact itself is in view (#feit-<id>)."""
     from app.models import IssueProposal
     args = {'vergroot': 'feiten'}
-    if anchor == '#feiten':  # an input error: reopen the form
+    target = '#panel-facts'
+    if request.endpoint == 'forum.fact_add' and anchor == '#feiten':  # an input error: reopen the form
         args['nieuw-feit'] = '1'
+    elif anchor.startswith('#post-'):
+        target = '#feit-' + anchor[len('#post-'):]
     proposal_id = request.form.get('return_proposal', type=int)
     proposal = db.session.get(IssueProposal, proposal_id) if proposal_id is not None else None
     if proposal is not None and proposal.issue_id == issue.id:
-        return url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id, **args) + '#panel-facts'
-    return url_for('issues.show', issue_id=issue.id, **args) + '#panel-facts'
+        return url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id, **args) + target
+    return url_for('issues.show', issue_id=issue.id, **args) + target
 
 
 @forum_bp.route('/forum/<int:thread_id>/feiten', methods=['POST'])

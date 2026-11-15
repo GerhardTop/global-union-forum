@@ -4729,3 +4729,29 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-fact-form__chip span { display: inline-flex; align-items: center; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--gu-n-300); background: var(--gu-paper); font-size: 0.78125rem; font-weight: 500; color: var(--gu-fg-2); }
 .gu-fact-form__chip input:checked + span { border-color: var(--gu-globe-deep); background: #eaf2fb; color: #1b5e9a; font-weight: 600; }
 .gu-fact-form__chip input:focus-visible + span { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
+
+/* Page consolidation step 3 (docs/design/feit-acties.html): the actions on a
+   fact card in the enlarged facts column. */
+.gu-fact__actions { margin-top: 11px; }
+.gu-fact__actions .gu-fact__signals, .gu-fact__actions .gu-fact__own { margin-top: 0; }
+.gu-fact__actions .gu-fact__own { align-items: center; gap: 10px; }
+.gu-fact__actions .gu-fact__own + .gu-fact__own, .gu-fact__actions .gu-fact__signals:not(:empty) + .gu-fact__own { margin-top: 8px; }
+.gu-fact__mine { font-size: 0.6875rem; color: var(--gu-fg-3); }
+.gu-fact__action, .gu-fact__actions .gu-fact__dispute summary {
+  display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: 0.78125rem; font-weight: 500; color: var(--gu-fg-2); list-style: none;
+}
+.gu-fact__action::-webkit-details-marker, .gu-fact__actions .gu-fact__dispute summary::-webkit-details-marker { display: none; }
+.gu-fact__actions .gu-fact__dispute summary { color: var(--gu-globe-deep); }
+.gu-fact__action:hover { color: var(--gu-globe-deep); }
+.gu-fact__action--danger, .gu-fact__action--danger:hover { color: var(--gu-americas, #d8232a); }
+.gu-fact__action:focus-visible, .gu-fact__actions .gu-fact__dispute summary:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; border-radius: 4px; }
+.gu-fact__sep { color: var(--gu-n-300); }
+.gu-fact__actions .gu-fact__edit[open] ~ .gu-fact__sep { display: none; }
+.gu-fact__actions .gu-fact__delete { margin: 0; }
+.gu-fact__actions .gu-fact__disputeform { margin-top: 12px; background: #fff8f0; border: 1px solid #f0d9b0; border-radius: 11px; padding: 14px 16px; }
+.gu-fact__actions .gu-fact__disputeform fieldset { gap: 8px; }
+.gu-fact__actions .gu-fact__disputereason { border: 1px solid var(--gu-n-300); background: var(--gu-paper); border-radius: 999px; padding: 6px 11px; cursor: pointer; color: var(--gu-fg-1); }
+.gu-fact__actions .gu-fact__disputereason input { accent-color: #e09400; margin: 0; }
+.gu-fact__actions .gu-fact__disputereason:has(input:checked) { border-color: #e09400; background: #fff3e0; color: #8a5a12; font-weight: 600; }
+.gu-fact__actions .gu-fact__disputeform .gu-btn { background: var(--gu-globe-deep); border-color: var(--gu-globe-deep); color: #fff; }
