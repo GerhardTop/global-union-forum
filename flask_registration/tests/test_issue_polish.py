@@ -161,7 +161,7 @@ def test_breadcrumb_names_the_issue(app, db, make_user):
     db.session.commit()
     # P7: de cockpit heeft geen kruimelpad meer, en de feiten- en voorstellenpagina
     # (de volledige weergave) ook niet; het voorstel-detail en de formulieren wel.
-    for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}/feiten'):
+    for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}?vergroot=feiten'):
         assert 'gu-issue-crumbs' not in _get(app, path)
     crumbs = _get(app, f'/vraagstuk/{issue.id}/voorstellen/nieuw', host).split('gu-forum__crumbs gu-issue-crumbs')[1].split('</nav>')[0]
     assert '>Denk mee</a>' in crumbs and f'href="/vraagstuk/{issue.id}"' in crumbs
@@ -173,7 +173,7 @@ def test_breadcrumb_names_the_issue(app, db, make_user):
     assert '>Denk mee</a>' in crumbs and f'href="/vraagstuk/{issue.id}?vergroot=voorstellen#panel-proposals"' in crumbs
     assert f'/vraagstuk/{issue.id}/voorstellen"' not in crumbs
     assert crumbs.rstrip().endswith('<span aria-current="page">Voorstel</span>')
-    assert 'Feiten, onderzoek en media' in _get(app, f'/vraagstuk/{issue.id}/feiten')
+    assert 'Feiten en achtergrond' in _get(app, f'/vraagstuk/{issue.id}?vergroot=feiten')
 
 
 def test_summary_proposal_wording(app, db, make_user):
@@ -228,7 +228,7 @@ def test_fact_gets_the_mark_when_all_points_hold(app, db, make_user, fake_ai):
     content = call['messages'][0]['content']
     assert 'Do NOT judge whether the source is reliable' in content and 'fact_has_location' in content
     assert 'fact_is_new' in call['output_config']['format']['schema']['required']
-    page = _get(app, f'/vraagstuk/{issue.id}/feiten')
+    page = _get(app, f'/vraagstuk/{issue.id}?vergroot=feiten')
     item = page.split(f'id="post-{fact.id}"')[1].split('</li>')[0]
     assert 'gu-factmark' in item and 'Het merk zegt niets over hoe betrouwbaar de bron is.' in item
     cockpit = _get(app, f'/vraagstuk/{issue.id}')
@@ -246,7 +246,7 @@ def test_no_mark_when_a_point_fails_or_the_source_is_no_link(app, db, make_user,
     for text in ('Zonder vindplaats.', 'Zonder link.'):
         fact = Post.query.filter_by(body=text).one()
         assert not QualityAward.query.filter_by(post_id=fact.id).one().fact_mark
-    assert 'gu-factmark' not in _get(app, f'/vraagstuk/{issue.id}/feiten').split('<main')[1].split('id="toevoegen"')[0]
+    assert 'gu-factmark' not in _get(app, f'/vraagstuk/{issue.id}?vergroot=feiten').split('<main')[1].split('id="panel-discussion"')[0]
 
 
 def test_ordinary_post_gets_no_fact_fields(app, db, make_user, fake_ai):
@@ -270,7 +270,7 @@ def test_media_type_and_label(app, db, make_user):
     media = Post.query.filter_by(body='Een podcast over het plein.').one()
     assert media.fact_type == 'podcast' and media.is_media
     assert Post.query.filter_by(body='Een onderzoek.').one().fact_type == 'feit'
-    page = _get(app, f'/vraagstuk/{issue.id}/feiten', anna)
+    page = _get(app, f'/vraagstuk/{issue.id}?vergroot=feiten', anna)
     assert 'gu-fact__media' in page.split(f'id="post-{media.id}"')[1].split('</li>')[0]
     assert '>Podcast</span>' in page.split(f'id="post-{media.id}"')[1].split('</li>')[0]
     assert '<span>Nieuwsartikel</span>' in page  # the kinds in the form
@@ -708,15 +708,15 @@ def test_no_reply_to_your_own_post(app, db, make_user):
 
 # ── Opmaak: de volledige pagina's en de FAQ ──────────────────────────────
 
-def test_full_pages_match_the_cockpit(app, db, make_user):
+def test_full_pages_are_gone_and_redirect_to_the_cockpit(app, db, make_user):
+    """Page consolidation steps 1 and 4: the facts and proposals lists are
+    redirects to the enlarged columns of the cockpit."""
     host = make_user()
     issue = _issue(db, host, 'Waar komt de markt?')
-    for path, anchor in ((f'/vraagstuk/{issue.id}/feiten', '#panel-facts'),):
-        page = _get(app, path, host)
-        head = page.split('gu-forum__threadhead')[1].split('</header>')[0]
-        assert 'gu-issue-crumbs' not in page and 'gu-issue-kind' not in head
-        assert f'href="/vraagstuk/{issue.id}">Waar komt de markt?</a>' in head
-        assert f'/vraagstuk/{issue.id}{anchor}' in page and 'Verkleinen' in page
+    for path, target in ((f'/vraagstuk/{issue.id}/feiten', f'/vraagstuk/{issue.id}?vergroot=feiten#panel-facts'),
+                         (f'/vraagstuk/{issue.id}/voorstellen', f'/vraagstuk/{issue.id}?vergroot=voorstellen#panel-proposals')):
+        resp = _req(_client(app, host), 'GET', path)
+        assert resp.status_code == 302 and resp.headers['Location'].endswith(target), path
 
 
 def test_sort_and_filter_facts_above_five_proposals_above_ten(app, db, make_user):
@@ -727,15 +727,15 @@ def test_sort_and_filter_facts_above_five_proposals_above_ten(app, db, make_user
     for i in range(10):
         ip.create(issue, anna, f'Voorstel {i}')
     db.session.commit()
-    page = _get(app, f'/vraagstuk/{issue.id}/feiten')
-    assert 'gu-factspage__sort' not in page and 'gu-factspage__filter' not in page
+    big_facts = lambda: _get(app, f'/vraagstuk/{issue.id}?vergroot=feiten').split('id="panel-facts"')[1].split('</section>')[0].split('gu-cockpit__bigbox')[1]  # noqa: E731
+    assert 'gu-bigp__bar' not in big_facts()
     enlarged = lambda q='': _get(app, f'/vraagstuk/{issue.id}?vergroot=voorstellen{q}').split('id="panel-proposals"')[1].split('gu-cockpit__bigbox')[1]  # noqa: E731
     assert 'gu-bigp__bar' not in enlarged()
-    # Facts: from more than 5. Proposals: from more than 10 (ip.FILTER_MIN).
-    _fact(db, issue, anna, 'Feit 5')
+    # Step 4: facts and proposals both from more than ip.FILTER_MIN (10), in the enlarged column.
+    for i in range(5, 11):
+        _fact(db, issue, anna, f'Feit {i}')
     db.session.commit()
-    page = _get(app, f'/vraagstuk/{issue.id}/feiten')
-    assert 'gu-factspage__sort' in page and 'gu-factspage__filter' in page
+    assert 'gu-bigp__bar' in big_facts() and 'name="sorteer"' in big_facts()
     assert ip.FILTER_MIN == 10 and 'gu-bigp__bar' not in enlarged()
     ip.create(issue, anna, 'Voorstel 10')
     db.session.commit()

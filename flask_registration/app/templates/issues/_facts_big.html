@@ -4,7 +4,7 @@
   page, on the model of issues/_proposals_big.html: every fact of the issue as
   a card. From more than big_facts.filter_min facts (counted before the
   filter) a filter bar (all, argues for, against, neutral) and a sort control,
-  with the same server logic as /feiten (fact_signals.listing). Both apply at
+  with the server logic of fact_signals.listing. Both apply at
   once, without a button: the filter is a set of links, the sort select
   submits on change. They reload this page with ?vergroot=feiten, so it opens
   enlarged again. No "show more" and no link to a separate page: all is here.
@@ -69,7 +69,7 @@
     {% set with_actions = true %}
     {% set fact_back = url_for(request.endpoint, vergroot='feiten', **here_args) %}
     {% for fact in big_facts.rows %}
-    <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}" id="feit-{{ fact.id }}">
+    <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}" id="post-{{ fact.id }}">
       {% include 'issues/_fact_card.html' %}
     </li>
     {% endfor %}

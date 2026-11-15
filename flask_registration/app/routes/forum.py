@@ -1747,35 +1747,34 @@ def _fact_phase_open(thread):
 
 
 def _fact_back(thread, anchor=''):
-    """Waarheen na een feitactie: de feitenpagina van het vraagstuk als het
-    formulier daarvandaan kwam (return_to), of als het gesprek geen voorstel
-    heeft (dan toont de gesprekspagina geen feitenblok); anders het gesprek."""
+    """Where to after a fact action: the issue (from return_to, or the issue
+    of a conversation without a proposal) with the facts enlarged and the fact
+    in view (page consolidation step 4: the facts list is gone); otherwise the
+    conversation."""
     from app import facts
     from app.models import Issue
     issue_id = request.form.get('return_to', type=int)
     issue = db.session.get(Issue, issue_id) if issue_id is not None else None
     if issue is None or issue.thread_id != thread.id:
         issue = facts.issue_for_thread(thread.id) if thread.proposal is None else None
-    if issue is not None and request.form.get('in_page') and issue.thread_id == thread.id:
-        return _fact_back_in_page(issue, anchor)
     if issue is not None:
-        return url_for('issues.facts', issue_id=issue.id) + anchor
+        return _fact_back_in_page(issue, anchor)
     return url_for('forum.forum_thread', thread_id=thread.id) + anchor
 
 
 def _fact_back_in_page(issue, anchor):
-    """Page consolidation steps 2 and 3: a form inside the enlarged facts
-    column (add, edit, delete). Back to the page it came from (the issue page,
-    or a proposal page of this issue via return_proposal) with the facts
-    enlarged. After an add error the add form opens again (nieuw-feit=1); after
-    an edit (or its error) the fact itself is in view (#feit-<id>)."""
+    """Page consolidation steps 2 to 4: after a fact action (add, edit,
+    delete, dispute). Back to the page it came from (the issue page, or a
+    proposal page of this issue via return_proposal) with the facts enlarged.
+    After an add error the add form opens again (nieuw-feit=1); otherwise the
+    fact itself is in view (#post-<id>, its card in the enlarged facts)."""
     from app.models import IssueProposal
     args = {'vergroot': 'feiten'}
     target = '#panel-facts'
     if request.endpoint == 'forum.fact_add' and anchor == '#feiten':  # an input error: reopen the form
         args['nieuw-feit'] = '1'
     elif anchor.startswith('#post-'):
-        target = '#feit-' + anchor[len('#post-'):]
+        target = anchor
     proposal_id = request.form.get('return_proposal', type=int)
     proposal = db.session.get(IssueProposal, proposal_id) if proposal_id is not None else None
     if proposal is not None and proposal.issue_id == issue.id:

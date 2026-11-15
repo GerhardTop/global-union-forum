@@ -118,17 +118,18 @@ def test_adding_a_fact_in_the_page_comes_back_enlarged_with_the_fact(app, db, wo
         assert resp.status_code == 302, key
         fact = Post.query.filter_by(body=text).one()
         # Step 3: back with the new fact in view.
-        target = _pages(issue, proposal)[key] + f'?vergroot=feiten#feit-{fact.id}'
+        target = _pages(issue, proposal)[key] + f'?vergroot=feiten#post-{fact.id}'
         assert resp.headers['Location'].endswith(target), (key, resp.headers['Location'])
         assert fact.kind == FACT_KIND and fact.fact_type == 'onderzoek' and fact.fact_direction == 'tegen'
         page = _get(app, resp.headers['Location'], host)
         big = page.split('id="panel-facts"')[1].split('</section>')[0].split('gu-cockpit__bigbox')[1]
         assert text in big and 'data-expanded="facts"' in page, key
         assert _box(page).group(1) == ' hidden', key  # the form is closed again
-    # Without in_page, the old route to /feiten stays.
+    # Step 4: without in_page (the facts list is gone) it also lands in the cockpit.
     resp = _req(_client(app, host), 'POST', f'/forum/{issue.thread_id}/feiten',
-                data=dict(_fact_data(text='Een feit van /feiten.'), return_to=str(issue.id)))
-    assert urlsplit(resp.headers['Location']).path == f'/vraagstuk/{issue.id}/feiten'
+                data=dict(_fact_data(text='Een feit zonder in_page.'), return_to=str(issue.id)))
+    parts = urlsplit(resp.headers['Location'])
+    assert parts.path == f'/vraagstuk/{issue.id}' and parts.query == 'vergroot=feiten'
 
 
 def test_an_input_error_reopens_the_form_with_the_values(app, db, world):
@@ -200,14 +201,14 @@ def test_an_old_media_fact_still_shows(app, db, world):
     db.session.add(old)
     db.session.commit()
     assert old.is_media and old.fact_kind == 'media'
-    for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}/feiten',
+    for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}?vergroot=feiten',
                  f'/vraagstuk/{issue.id}/voorstel/{proposal.id}?vergroot=feiten'):
         page = _get(app, path, host)
         card = page.split('Een oud mediafeit.')[0].rsplit('<li', 1)[1]
         assert 'gu-fact__kind--media">Media</span>' in card, path
-    # Editing it on /feiten: the form opens with Nieuwsartikel chosen, and an old form that sends 'media' still works.
-    page = _get(app, f'/vraagstuk/{issue.id}/feiten', host)
-    edit = page.split(f'id="edit-{old.id}-title"')[1].split(f'id="edit-{old.id}-source"')[0]
+    # Editing it on the enlarged card: the form opens with Nieuwsartikel chosen, and an old form that sends 'media' still works.
+    page = _get(app, f'/vraagstuk/{issue.id}?vergroot=feiten', host)
+    edit = page.split(f'id="big-edit-{old.id}-title"')[1].split(f'id="big-edit-{old.id}-source"')[0]
     assert re.findall(r'value="(\w+)" checked', edit.split('gu-fact-form__kinds')[1]) == ['nieuwsartikel']
     _req(_client(app, host), 'POST', f'/forum/feit/{old.id}/bewerken',
          data={'title': 'Oud', 'text': 'Een oud mediafeit.', 'direction': 'voor', 'source': 'https://nos.example',
@@ -220,7 +221,7 @@ def test_the_text_field_label_is_renamed(app, db, world):
     issue, proposal, host = world
     for lang, label, gone in (('nl', 'Toelichting of conclusies', 'Het feit</label>'),
                               ('en', 'Explanation or conclusions', 'The fact</label>')):
-        for path in (f'/vraagstuk/{issue.id}?vergroot=feiten&nieuw-feit=1', f'/vraagstuk/{issue.id}/feiten',
+        for path in (f'/vraagstuk/{issue.id}?vergroot=feiten&nieuw-feit=1', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}?vergroot=feiten&nieuw-feit=1',
                      f'/vraagstuk/{issue.id}/voorstellen/nieuw', f'/gesprekken/nieuw'):
             page = _get(app, path, host, lang)
             assert f'>{label}</label>' in page and gone not in page, (lang, path)
@@ -251,7 +252,7 @@ def test_direction_options_are_chips_with_a_dot(app, db, world):
     before each label, real radio inputs underneath; everywhere the form is."""
     issue, proposal, host = world
     for lang, labels in (('nl', ['Voor', 'Tegen', 'Neutraal']), ('en', ['For', 'Against', 'Neutral'])):
-        for path in (f'/vraagstuk/{issue.id}?vergroot=feiten&nieuw-feit=1', f'/vraagstuk/{issue.id}/feiten',
+        for path in (f'/vraagstuk/{issue.id}?vergroot=feiten&nieuw-feit=1', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}?vergroot=feiten&nieuw-feit=1',
                      f'/vraagstuk/{issue.id}/voorstellen/nieuw', '/gesprekken/nieuw'):
             page = _get(app, path, host, lang)
             dirs = page.split('<fieldset class="gu-fact-form__field gu-fact-form__dirs gu-fact-form__chips">')[1].split('</fieldset>')[0]

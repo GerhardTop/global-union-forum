@@ -6,7 +6,7 @@
   Context: fact, dir_labels, fact_marks, my_reported_ids.
   Page consolidation step 3 (docs/design/feit-acties.html): with with_actions
   (only the enlarged facts, issues/_facts_big.html) the card also gets the
-  actions /feiten had: dispute (forum/_fact_signals.html) for another's fact,
+  actions the old /feiten list had: dispute (forum/_fact_signals.html) for another's fact,
   and edit and delete for your own while the facts phase is open and the fact
   is not removed. They come back to this page with the facts enlarged and the
   fact in view. The compact column stays read-only. Extra context then:
@@ -35,7 +35,7 @@
 </div>
 {% if with_actions %}
 <div class="gu-fact__actions">
-  {% with signal_next=fact_back ~ '#feit-' ~ fact.id %}{% include 'forum/_fact_signals.html' %}{% endwith %}
+  {% with signal_next=fact_back ~ '#post-' ~ fact.id %}{% include 'forum/_fact_signals.html' %}{% endwith %}
   {% if own_actions %}
   {% from 'forum/_fact_fields.html' import fact_fields with context %}
   {% set edit_errs = (fact_errors or {}).get('edit-' ~ fact.id, {}) %}

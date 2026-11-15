@@ -215,7 +215,7 @@ def test_new_fact_from_detail_is_added_and_linked(app, db, make_user):
     assert (fact.kind, fact.thread_id, fact.user_id) == (FACT_KIND, issue.thread_id, other.id)
     assert IssueProposalFact.query.filter_by(proposal_id=proposal.id, fact_post_id=fact.id).count() == 1
     # Het feit staat ook gewoon in de gedeelde lijst.
-    assert 'Nieuw onderzoek naar luchtkwaliteit.' in _req(_client(app), 'GET', f'/vraagstuk/{issue.id}/feiten').get_data(as_text=True)
+    assert 'Nieuw onderzoek naar luchtkwaliteit.' in _req(_client(app), 'GET', f'/vraagstuk/{issue.id}?vergroot=feiten').get_data(as_text=True)
 
 
 def test_new_fact_errors_and_phase(app, db, make_user):

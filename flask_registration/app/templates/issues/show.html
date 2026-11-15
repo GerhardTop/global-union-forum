@@ -117,7 +117,7 @@
         {# P7: de bovenste volgens kwaliteit eerst; de rest met "toon meer" (alleen als er meer is). #}
         {% if top_facts | length > facts_shown %}
         <button type="button" class="gu-disclosure gu-showmore" data-more title="{{ _('Show more') }}" aria-label="{{ _('Show more') }}: {{ _('Facts and background') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
-        <noscript><a class="gu-cockpit__more" href="{{ url_for('issues.facts', issue_id=issue.id) }}">{{ _('Show more') }}</a></noscript>
+        <noscript><a class="gu-cockpit__more" href="{{ url_for('issues.show', issue_id=issue.id, vergroot='feiten', _anchor='panel-facts') }}">{{ _('Show more') }}</a></noscript>
         {% endif %}
         </div>
         {# Enlarged in the page: every fact, with filter and sort above FILTER_MIN. #}

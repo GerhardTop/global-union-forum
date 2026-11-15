@@ -47,7 +47,7 @@ def _pages(w):
 
 def _big_card(page, fact):
     big = page.split('id="panel-facts"')[1].split('</section>')[0].split('class="gu-cockpit__box gu-cockpit__bigbox"')[1]
-    return big.split(f'id="feit-{fact.id}"')[1].split('<li class="gu-fact ')[0]
+    return big.split(f'id="post-{fact.id}"')[1].split('<li class="gu-fact ')[0]
 
 
 def _compact(page):
@@ -75,7 +75,7 @@ def test_another_s_fact_can_be_disputed_in_the_enlarged_view(app, db, world):
             assert 'gu-factreport' in card and 'gu-factmark' in card, (key, lang)
         card = _big_card(_get(app, path, w['host']), w['theirs'])
         nxt = _hidden(card.split('gu-fact__disputeform')[1], 'next')
-        assert nxt == f'{path}?vergroot=feiten#feit-{w["theirs"].id}', key
+        assert nxt == f'{path}?vergroot=feiten#post-{w["theirs"].id}', key
     # Sending it: a dispute, back enlarged with the fact in view.
     path = _pages(w)['proposal']
     nxt = _hidden(_big_card(_get(app, path, w['host']), w['theirs']).split('gu-fact__disputeform')[1], 'next')
@@ -121,7 +121,7 @@ def test_editing_and_deleting_your_own_fact_work(app, db, world):
     c = _client(app, w['host'])
     resp = _req(c, 'POST', f'/forum/feit/{mine_id}/bewerken', data=dict(base, return_proposal=str(w['proposal'].id)))
     assert resp.status_code == 302
-    assert resp.headers['Location'].endswith(f'{_pages(w)["proposal"]}?vergroot=feiten#feit-{mine_id}')
+    assert resp.headers['Location'].endswith(f'{_pages(w)["proposal"]}?vergroot=feiten#post-{mine_id}')
     fact = db.session.get(Post, mine_id)
     db.session.refresh(fact)
     assert (fact.body, fact.fact_title, fact.fact_direction, fact.fact_type) == ('Mijn bewerkte feit.', 'Nieuwe kern', 'neutraal', 'video')
@@ -145,7 +145,7 @@ def test_an_edit_error_reopens_the_form_with_the_values(app, db, world):
                     data=dict({'title': 'Half bewerkt', 'text': 'Nog niet klaar.', 'direction': 'voor', 'source': '',
                                'type': 'podcast', 'return_to': str(w['issue'].id), 'in_page': '1'}, **extra))
         assert resp.status_code == 303, key
-        assert resp.headers['Location'].endswith(f'{_pages(w)[key]}?vergroot=feiten#feit-{mine.id}'), key
+        assert resp.headers['Location'].endswith(f'{_pages(w)[key]}?vergroot=feiten#post-{mine.id}'), key
         page = _req(c, 'GET', resp.headers['Location']).get_data(as_text=True)
         card = _big_card(page, mine)
         assert '<details class="gu-fact__edit" open>' in card, key

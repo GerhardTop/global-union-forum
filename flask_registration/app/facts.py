@@ -119,12 +119,13 @@ def open_disputes():
 
 
 def fact_url(fact):
-    """Waar een feit staat: op de feitenpagina van zijn vraagstuk, anders in
-    het feitenblok van het gesprek (een voorstel zonder vraagstuk)."""
+    """Where a fact is: on its issue's page with the facts enlarged and the
+    fact in view (page consolidation step 4), otherwise in the facts block of
+    the conversation (a proposal without an issue)."""
     from flask import url_for
     issue = issue_for_thread(fact.thread_id)
     if issue is not None:
-        return url_for('issues.facts', issue_id=issue.id) + f'#post-{fact.id}'
+        return url_for('issues.show', issue_id=issue.id, vergroot='feiten') + f'#post-{fact.id}'
     return url_for('forum.forum_thread', thread_id=fact.thread_id) + f'#post-{fact.id}'
 
 

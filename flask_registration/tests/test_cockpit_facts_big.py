@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
+from app import facts as fact_signals
 from app import issue_proposals as ip
 from app.models import FACT_KIND, Post
 from tests.test_delete_issue import _clean_session, _cleanup  # noqa: F401  (autouse fixture)
@@ -91,7 +92,8 @@ def test_no_separate_page_links_in_the_cockpit(app, db, many):
             assert f'href="/vraagstuk/{issue.id}/voorstellen"' not in visible, (key, lang)
     # The no-script fallback on the issue page stays.
     page = _get(app, f'/vraagstuk/{issue.id}', host)
-    assert re.search(rf'<noscript><a class="gu-cockpit__more" href="/vraagstuk/{issue.id}/feiten">', page)
+    # Step 4: it opens the enlarged facts (the list is gone).
+    assert re.search(rf'<noscript><a class="gu-cockpit__more" href="/vraagstuk/{issue.id}\?vergroot=feiten#panel-facts">', page)
 
 
 # ── 2. The enlarged facts column ───────────────────────────────────────────
@@ -129,8 +131,9 @@ def test_enlarged_facts_filter_above_threshold_same_as_feiten(app, db, many):
             for order in ('kwaliteit', 'nieuwste'):
                 q = f'filter={which}&sorteer={order}&vergroot=feiten'
                 enlarged = _texts(_bigfacts(_get(app, f'{path}?{q}', host)))
-                richting = '' if which == 'alle' else f'richting={which}&'
-                listed = _texts(_get(app, f'/vraagstuk/{issue.id}/feiten?{richting}sorteer={order}', host))
+                # (Step 4: /feiten is gone; the same server logic, fact_signals.listing.)
+                facts = Post.query.filter_by(thread_id=issue.thread_id, kind=FACT_KIND).all()
+                listed = [f.body for f in fact_signals.listing(facts, None if which == 'alle' else which, order)]
                 assert enlarged == listed and enlarged, (key, which, order)
         assert _texts(_bigfacts(_get(app, path + '?sorteer=kwaliteit&vergroot=feiten', host))) != \
             _texts(_bigfacts(_get(app, path + '?sorteer=nieuwste&vergroot=feiten', host))), key

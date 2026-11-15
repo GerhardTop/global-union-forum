@@ -6,8 +6,8 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
 /vraagstuk/<id>      de cockpit (stap 2): context en feiten links, de gedeelde
                      discussie in het midden, voorstellen en stemrecht rechts
 /vraagstuk/<id>/feiten
-                     feiten en onderzoek (stap 3): filteren, sorteren, nuttig,
-                     betwisten en toevoegen (P2: kwaliteitsmerk i.p.v. nuttig)
+                     redirect to the enlarged facts in the cockpit (page
+                     consolidation step 4; the list itself is gone)
 /vraagstuk/<id>/voorstellen, /voorstellen/nieuw, /voorstel/<pid>
                      voorstellen onder het vraagstuk (stap 4): doen, steunen,
                      bijstellen, de lijst en het detail; stap 5 feiten
@@ -179,38 +179,20 @@ def show(issue_id):
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/feiten')
 def facts(issue_id):
-    """Alle feiten en onderzoek van een vraagstuk, met filter op richting,
-    sorteren en "toon meer" (P7: eerst 15, dan steeds 15 erbij, zonder JavaScript)."""
-    issue = db.session.get(Issue, issue_id)
-    if issue is None:
-        abort(404)
-    thread = issue.thread
-    visible, cases, fact_errors, fact_data = [], {}, {}, {}
-    if thread is not None:
-        _abort_if_thread_removed(thread)
-        everything = fact_signals.thread_facts(thread.id)
-        cases = conduct.cases_for([f.id for f in everything])
-        # Zoals in het gesprek: een verplaatst of verborgen feit is weg voor
-        # anderen; de inbrenger en moderators zien het gemarkeerd.
-        visible = [f for f in everything
-                   if f.id not in cases or not conduct.removed_for(f, cases[f.id], current_user)]
-        fact_errors, fact_data = _pop_form_state(f'feit-{thread.id}')
+    """Page consolidation step 4: the separate facts list is gone; the
+    enlarged facts column in the cockpit is the one view (add, dispute, edit,
+    delete, report, filter and sort). Old links, bookmarks and notifications
+    land there: ?richting= becomes the column's ?filter=, ?sorteer= stays,
+    ?n= is dropped. The #post-<id> anchor of a browser stays on the redirect."""
+    issue = _issue_or_404(issue_id)
+    args = {'vergroot': 'feiten'}
     direction = request.args.get('richting')
-    direction = direction if direction in FACT_DIRECTIONS else None
+    if direction in FACT_DIRECTIONS:
+        args['filter'] = direction
     order = request.args.get('sorteer')
-    order = order if order in fact_signals.ORDERS else fact_signals.DEFAULT_ORDER
-    shown = min(max(request.args.get('n', type=int) or fact_signals.PAGE_SIZE, fact_signals.PAGE_SIZE), 1000)
-    listed = fact_signals.listing(visible, direction, order)
-    my_reported_ids = _reported_fact_ids([f.id for f in visible])
-    ids = [f.id for f in listed]
-    return render_template(
-        'issues/facts.html', issue=issue, thread=thread, facts=listed[:shown], listed_count=len(listed),
-        total=len(visible), shown=shown, direction=direction, order=order,
-        phase_open=thread is not None and _fact_phase_open(thread),
-        conduct_cases=cases, fact_errors=fact_errors, fact_data=fact_data, return_to=issue.id,
-        fact_marks=fact_signals.marked_ids(ids),
-        fact_my_disputed=fact_signals.my_disputed(ids, current_user),
-        my_reported_ids=my_reported_ids)
+    if order in fact_signals.ORDERS:
+        args['sorteer'] = order
+    return redirect(url_for('issues.show', issue_id=issue.id, **args, _anchor='panel-facts'))
 
 
 # ── Stap 4: voorstellen onder een vraagstuk ──────────────────────────────
@@ -827,7 +809,7 @@ FACT_FILTERS = ('alle',) + FACT_DIRECTIONS
 
 def _enlarged_facts(facts):
     """The facts column enlarged in the page (issues/_facts_big.html): every
-    fact, filtered on direction and sorted with the same logic as /feiten
+    fact, filtered on direction and sorted with fact_signals.listing
     (fact_signals.listing). ?filter= and ?sorteer= count only with
     ?vergroot=feiten, so they do not mix with the enlarged proposals. The
     filter bar shows from more than ip.FILTER_MIN facts (counted before the
@@ -857,7 +839,7 @@ _ADD_FIELDS = ('title', 'text', 'direction', 'source')
 
 
 def _fact_box(issue, facts, state=None):
-    """The context of the enlarged facts column, mirroring issues.facts:
+    """The context of the enlarged facts column (what the old /feiten had):
     - step 2: the add form at the top, open with ?nieuw-feit=1 (the no-script
       "+" and the return after an input error), with the entered values;
     - step 3: the actions on each card (dispute; edit and delete your own fact
