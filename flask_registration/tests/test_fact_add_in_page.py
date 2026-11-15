@@ -244,3 +244,18 @@ def test_proposal_plus_on_both_pages_opens_the_make_page(app, db, world, make_us
     db.session.commit()
     for key, path in _pages(issue, proposal).items():
         assert plus not in _get(app, path, host), key
+
+
+def test_direction_options_are_chips_with_a_dot(app, db, world):
+    """The direction in the fact form: chips like the kinds, a coloured dot
+    before each label, real radio inputs underneath; everywhere the form is."""
+    issue, proposal, host = world
+    for lang, labels in (('nl', ['Voor', 'Tegen', 'Neutraal']), ('en', ['For', 'Against', 'Neutral'])):
+        for path in (f'/vraagstuk/{issue.id}?vergroot=feiten&nieuw-feit=1', f'/vraagstuk/{issue.id}/feiten',
+                     f'/vraagstuk/{issue.id}/voorstellen/nieuw', '/gesprekken/nieuw'):
+            page = _get(app, path, host, lang)
+            dirs = page.split('<fieldset class="gu-fact-form__field gu-fact-form__dirs gu-fact-form__chips">')[1].split('</fieldset>')[0]
+            chips = re.findall(r'<label class="gu-fact-form__dir gu-fact-form__chip">\s*<input type="radio" name="(?:\w*)direction" value="(\w+)"[^>]*>\s*'
+                               r'<span><span class="gu-fact-form__dot gu-fact-form__dot--(\w+)" aria-hidden="true"></span>([^<]+)</span>', dirs)
+            assert [(v, d) for v, d, _l in chips] == [('voor', 'voor'), ('tegen', 'tegen'), ('neutraal', 'neutraal')], (lang, path)
+            assert [l for _v, _d, l in chips] == labels, (lang, path)

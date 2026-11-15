@@ -18,12 +18,13 @@
     <textarea class="gu-composer__input{% if errs.get('text') %} gu-input--error{% endif %}" id="{{ prefix }}-text" name="{{ name_prefix }}text" rows="3" maxlength="1000" required placeholder="{% if lang == 'nl' %}Wat is de kern, of wat concludeer je?{% else %}What is the core, or what do you conclude?{% endif %}">{{ data.get('text', '') }}</textarea>
     {% if errs.get('text') %}<p class="gu-join__formError">{{ _('Describe the fact (at most 1000 characters).') }}</p>{% endif %}
   </div>
-  <fieldset class="gu-fact-form__field gu-fact-form__dirs">
+  {# Direction as chips with the direction dot, in the same style as the kinds below (real radios underneath). #}
+  <fieldset class="gu-fact-form__field gu-fact-form__dirs gu-fact-form__chips">
     <legend>{{ _('Direction relative to the statement') }}</legend>
     {% for d in ['voor', 'tegen', 'neutraal'] %}
-    <label class="gu-fact-form__dir">
+    <label class="gu-fact-form__dir gu-fact-form__chip">
       <input type="radio" name="{{ name_prefix }}direction" value="{{ d }}"{% if data.get('direction') == d %} checked{% endif %} required>
-      <span class="gu-fact__dir gu-fact__dir--{{ d }}">{{ dir_labels[d] }}</span>
+      <span><span class="gu-fact-form__dot gu-fact-form__dot--{{ d }}" aria-hidden="true"></span>{{ dir_labels[d] }}</span>
     </label>
     {% endfor %}
     {% if errs.get('direction') %}<p class="gu-join__formError">{{ _('Choose a direction.') }}</p>{% endif %}
@@ -32,7 +33,7 @@
      fact with the legacy kind 'media' opens with Nieuwsartikel chosen. #}
   {% set kind_now = data.get('type') or 'feit' %}
   {% set kind_now = 'nieuwsartikel' if kind_now == 'media' else kind_now %}
-  <fieldset class="gu-fact-form__field gu-fact-form__dirs gu-fact-form__kinds">
+  <fieldset class="gu-fact-form__field gu-fact-form__dirs gu-fact-form__kinds gu-fact-form__chips">
     <legend>{% if lang == 'nl' %}Soort{% else %}Kind{% endif %}</legend>
     {% for t, nl_label, en_label in [('feit', 'Feit', 'Fact'), ('onderzoek', 'Onderzoek', 'Research'),
                                      ('nieuwsartikel', 'Nieuwsartikel', 'News article'),
