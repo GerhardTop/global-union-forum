@@ -15,7 +15,7 @@ from sqlalchemy import text, inspect as sa_inspect
 from config import Config, ratelimit_storage_uri
 # Importeren (niet gebruiken) registreert SQLStorage bij `limits` vóór
 # limiter.init_app(app) hieronder draait — zie app/rate_limit_storage.py.
-from . import rate_limit_storage  # noqa: F401
+from . import rate_limit_storage  # noqa: F401  (side effect on import: registers the SQL storage backend)
 from .utils import real_client_ip
 
 db = SQLAlchemy()

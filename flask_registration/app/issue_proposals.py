@@ -255,11 +255,6 @@ def delete_reads(proposal_ids=None, user_id=None):
     q.delete(synchronize_session=False)
 
 
-def proposals_by_id(ids):
-    ids = {i for i in ids if i is not None}
-    return {p.id: p for p in IssueProposal.query.filter(IssueProposal.id.in_(ids))} if ids else {}
-
-
 # ── Feiten koppelen (stap 5) ─────────────────────────────────────────────
 
 def _link_open(issue):

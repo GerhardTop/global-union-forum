@@ -268,7 +268,7 @@ def test_media_type_and_label(app, db, make_user):
     _add_fact(app, anna, issue, 'Een podcast over het plein.', kind='podcast')
     _add_fact(app, anna, issue, 'Een onderzoek.', kind='onzin')
     media = Post.query.filter_by(body='Een podcast over het plein.').one()
-    assert media.fact_type == 'podcast' and media.is_media
+    assert media.fact_type == 'podcast' and media.fact_kind == 'podcast'
     assert Post.query.filter_by(body='Een onderzoek.').one().fact_type == 'feit'
     page = _get(app, f'/vraagstuk/{issue.id}?vergroot=feiten', anna)
     assert 'gu-fact__media' in page.split(f'id="post-{media.id}"')[1].split('</li>')[0]

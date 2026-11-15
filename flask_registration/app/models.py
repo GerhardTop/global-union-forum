@@ -347,11 +347,6 @@ class Post(db.Model):
         return bool(self.fact_source) and self.fact_source.lower().startswith(('http://', 'https://'))
 
     @property
-    def is_media(self):
-        """News, a podcast, a video, or the legacy kind 'media'."""
-        return self.fact_type in FACT_MEDIA_TYPES
-
-    @property
     def fact_kind(self):
         """The kind for display: one of FACT_TYPES, or 'media' for an old fact."""
         return self.fact_type if self.fact_type in FACT_TYPES + FACT_LEGACY_TYPES else 'feit'
@@ -384,7 +379,6 @@ FACT_DIRECTIONS = ('voor', 'tegen', 'neutraal')
 # and show as "Media"; no data is rewritten.
 FACT_TYPES = ('feit', 'onderzoek', 'nieuwsartikel', 'podcast', 'video')
 FACT_LEGACY_TYPES = ('media',)
-FACT_MEDIA_TYPES = ('nieuwsartikel', 'podcast', 'video', 'media')
 
 # Herontwerp stap 3: nuttig en betwisten op een feit (zie app/facts.py).
 FACT_DISPUTE_REASONS = ('geen_bron', 'klopt_niet', 'niet_relevant', 'misleidend')

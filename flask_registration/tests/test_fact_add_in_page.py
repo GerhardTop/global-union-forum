@@ -200,7 +200,7 @@ def test_an_old_media_fact_still_shows(app, db, world):
                fact_source='https://nos.example', fact_type='media', fact_title='Oud')
     db.session.add(old)
     db.session.commit()
-    assert old.is_media and old.fact_kind == 'media'
+    assert old.fact_kind == 'media'
     for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}?vergroot=feiten',
                  f'/vraagstuk/{issue.id}/voorstel/{proposal.id}?vergroot=feiten'):
         page = _get(app, path, host)

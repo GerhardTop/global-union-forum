@@ -20,12 +20,10 @@ Een feit kan media zijn (fact_type 'media': nieuws, podcast, video).
 from datetime import datetime
 
 from app import db
-from app.models import (FACT_DIRECTIONS, FACT_DISPUTE_REASONS, FACT_KIND, FactDispute, FactUsefulVote, Issue,
-                        Post, QualityAward)
+from app.models import FACT_DIRECTIONS, FACT_DISPUTE_REASONS, FactDispute, FactUsefulVote, Issue, QualityAward
 
 ORDERS = ('kwaliteit', 'nieuwste')
 DEFAULT_ORDER = 'kwaliteit'
-PAGE_SIZE = 15  # polijststap P7: ongeveer 15, de rest in stappen
 NOTE_MAX = 500
 
 
@@ -155,10 +153,6 @@ def listing(facts, direction=None, order=DEFAULT_ORDER):
         facts = [f for f in facts if f.fact_direction == direction]
     order = order if order in ORDERS else DEFAULT_ORDER
     return sort_facts(facts, order, marked_ids(f.id for f in facts))
-
-
-def thread_facts(thread_id):
-    return Post.query.filter_by(thread_id=thread_id, kind=FACT_KIND).order_by(Post.created_at, Post.id).all()
 
 
 # ── Opruimen ─────────────────────────────────────────────────────────────

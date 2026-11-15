@@ -3187,9 +3187,6 @@ body {
     width: 100%;
   }
 
-  @media (max-width: 600px) {
-  }
-
   /* Sections */
   .gu-section { padding: 16px 0; }
   .gu-section__head { margin-bottom: 16px; }
@@ -3449,7 +3446,6 @@ body {
 .gu-cockpit__proposal:last-child { border-bottom: 0; padding-bottom: 0; }
 .gu-cockpit__proposal a { font-weight: 400; color: var(--gu-fg-1); text-decoration: none; overflow-wrap: anywhere; }
 .gu-cockpit__proposal a:hover { color: var(--gu-globe-deep); }
-.gu-cockpit__newproposal { width: 100%; justify-content: center; }
 /* Reaction count per proposal (issue page and proposal page): calm grey. */
 .gu-rcount { font-size: 0.71875rem; color: var(--gu-fg-3); white-space: nowrap; }
 /* New discussion since this reader last opened the proposal (docs/design/voorstel.html .rnew/.nd). */
@@ -3503,7 +3499,6 @@ body {
 
 /* ── Herontwerp stap 3: nuttig en betwisten op een feit, de feitenpagina ── */
 .gu-fact__signals { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
-.gu-fact__disputed { display: inline-flex; padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: #fff4e0; color: #8a5300; }
 .gu-fact__dispute summary { cursor: pointer; font-size: 0.8125rem; color: var(--gu-fg-3); }
 .gu-fact__dispute[open] { flex-basis: 100%; }
 .gu-fact__disputeform { display: grid; gap: 8px; margin-top: 8px; }
@@ -3512,12 +3507,10 @@ body {
 .gu-fact__disputereason { font-size: 0.8125rem; color: var(--gu-fg-2); display: inline-flex; gap: 6px; align-items: center; }
 .gu-fact__disputenote { display: grid; gap: 4px; font-size: 0.8125rem; color: var(--gu-fg-2); }
 .gu-fact__disputeform .gu-btn { justify-self: start; }
-.gu-cockpit__factmeta { margin: 6px 0 0; }
 
 .gu-factspage__question { margin: -8px 0 0; }
 .gu-factspage__question a { color: var(--gu-fg-2); text-decoration: none; }
 .gu-factspage__question a:hover { color: var(--gu-globe-deep); }
-.gu-factspage__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 24px 0 8px; }
 .gu-factspage__filter { display: flex; flex-wrap: wrap; gap: 6px; }
 .gu-factspage__chip {
   padding: 4px 12px; border: 1px solid var(--gu-border); border-radius: 999px; font-size: 0.8125rem;
@@ -3525,15 +3518,6 @@ body {
 }
 .gu-factspage__chip:hover { background: var(--gu-bg-soft); }
 .gu-factspage__chip.is-active { border-color: var(--gu-globe); color: var(--gu-globe-deep); font-weight: 600; }
-.gu-factspage__sort { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 0.8125rem; color: var(--gu-fg-2); }
-.gu-factspage__sort select { width: auto; padding-top: 4px; padding-bottom: 4px; }
-.gu-factspage__add { margin-left: auto; }
-.gu-factspage__list { margin-top: 16px; }
-.gu-factspage__more { text-align: center; margin: 20px 0 0; }
-.gu-factspage__addsection { margin-top: 32px; }
-@media (max-width: 600px) {
-  .gu-factspage__add { margin-left: 0; width: 100%; justify-content: center; }
-}
 
 /* ── Herontwerp stap 4: voorstellen onder een vraagstuk ─────────────────── */
 .gu-ip-status { display: inline-flex; padding: 1px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
@@ -3541,14 +3525,6 @@ body {
 .gu-ip-status--list { background: color-mix(in srgb, var(--gu-globe) 14%, transparent); color: var(--gu-globe-deep); }
 .gu-ip-supported { font-size: 0.8125rem; color: var(--gu-globe-deep); font-weight: 600; }
 .gu-ip-supportform { margin: 0; }
-.gu-iplist { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
-.gu-iplist__item { display: grid; gap: 8px; padding: 14px 16px; border-radius: 10px; background: var(--gu-bg-soft); }
-.gu-iplist__head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.gu-iplist__by { font-size: 0.8125rem; color: var(--gu-fg-3); }
-.gu-iplist__statement { font-weight: 600; color: var(--gu-fg-1); text-decoration: none; line-height: 1.45; overflow-wrap: anywhere; }
-.gu-iplist__statement:hover { color: var(--gu-globe-deep); }
-.gu-iplist__item .gu-ip-supportform, .gu-iplist__item .gu-ip-supported { justify-self: start; }
-.gu-ippage__legacy { margin-top: 32px; }
 .gu-ipdetail__section { margin-top: 20px; padding: 16px 18px; border: 1px solid var(--gu-border); border-radius: 12px; }
 .gu-ipdetail__vote { border-style: dashed; }
 .gu-cockpit__proposal .gu-ip-status { align-self: flex-start; }
@@ -3602,17 +3578,11 @@ body {
 .gu-final__issue { border: 1px solid var(--gu-border); border-radius: 12px; padding: 12px 16px; }
 
 /* ── Herontwerp stap 7: vervolg en het beheer van de fasen ─────────────── */
-.gu-cockpit__silence { margin: 8px 0 0; }
+
 .gu-cockpit__followup { margin-top: 16px; padding: 16px 18px; border: 2px solid var(--gu-globe); border-radius: 12px; background: var(--gu-paper); }
 .gu-cockpit__followupedit summary { cursor: pointer; font-size: 0.875rem; color: var(--gu-globe-deep); margin-top: 8px; }
 .gu-cockpit__followupedit .gu-forum__newform { margin-top: 8px; }
 .gu-cockpit__followupedit .gu-btn { justify-self: start; }
-.gu-cockpit__manage { margin-top: 12px; }
-.gu-cockpit__manage > summary { cursor: pointer; font-size: 0.875rem; color: var(--gu-fg-2); }
-.gu-cockpit__managebody { display: grid; gap: 14px; margin-top: 10px; padding: 14px 16px; border: 1px dashed var(--gu-border-strong); border-radius: 12px; }
-.gu-cockpit__manageform { display: grid; gap: 8px; margin: 0; }
-.gu-cockpit__manageform .gu-btn { justify-self: start; }
-.gu-cockpit__manageform p { margin: 0; }
 
 /* ── Polijstronde P1: kruimelpad en het overzicht "Denk mee" ─────────────── */
 .gu-issue-crumbs { flex-wrap: wrap; row-gap: 4px; min-width: 0; }
@@ -3752,8 +3722,6 @@ body {
 .gu-newproposal__issue { margin-top: 4px; }
 .gu-newproposal__issuelabel { margin: 0 0 2px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gu-fg-3); }
 .gu-newproposal__threshold { margin-top: 10px; }
-.gu-phasechip { display: inline-block; margin: 0 0 10px; padding: 2px 10px; border-radius: 999px; font-size: 0.8125rem; font-weight: 600; color: var(--gu-globe-deep); background: color-mix(in srgb, var(--gu-globe) 12%, transparent); }
-.gu-phasechip.is-closed { color: var(--gu-fg-3); background: var(--gu-bg-soft); }
 /* Polijstronde P6: vijf fasen moeten ook op een smal scherm passen. */
 .gu-phasebar .gu-proposal-steps__title { overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto; }
 
@@ -3800,15 +3768,15 @@ body {
 .gu-node__toggle svg { transition: transform 0.15s; }
 .gu-node__toggle[aria-expanded="false"] svg { transform: rotate(-90deg); }
 /* Uitklapblokken in de cockpit (zoals "Fasen beheren"): hetzelfde pijltje. */
-.gu-cockpit__manage > summary, .gu-cockpit__followupedit > summary { list-style: none; display: inline-flex; align-items: center; gap: 8px; }
-.gu-cockpit__manage > summary::-webkit-details-marker, .gu-cockpit__followupedit > summary::-webkit-details-marker { display: none; }
-.gu-cockpit__manage > summary::before, .gu-cockpit__followupedit > summary::before {
+.gu-cockpit__followupedit > summary { list-style: none; display: inline-flex; align-items: center; gap: 8px; }
+.gu-cockpit__followupedit > summary::-webkit-details-marker { display: none; }
+.gu-cockpit__followupedit > summary::before {
   content: ""; width: 20px; height: 20px; flex: none; border: 1px solid var(--gu-border); border-radius: 6px;
   background: var(--gu-paper) no-repeat center / 12px
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239aa1ab' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   transform: rotate(-90deg); transition: transform 0.15s;
 }
-.gu-cockpit__manage[open] > summary::before, .gu-cockpit__followupedit[open] > summary::before { transform: none; }
+.gu-cockpit__followupedit[open] > summary::before { transform: none; }
 /* Moderator-aantekening: ingeklapt achter een klein icoon. */
 .gu-conduct--fold { padding: 0; border: 0; background: none; }
 .gu-conduct--fold > summary { list-style: none; display: inline-flex; }
@@ -3835,8 +3803,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .gu-disclosure svg, .gu-node__toggle svg, .gu-switch, .gu-switch::after { transition: none; }
 }
-.gu-factspage__tools { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
-.gu-factspage__more .gu-showmore { margin: 8px auto 0; }
 /* Polijststap P7: de statusladder in het profiel. */
 .gu-statusladder { margin: 16px 0 4px; }
 .gu-statusladder__steps { list-style: none; margin: 0 0 10px; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
@@ -3983,10 +3949,7 @@ body {
 .gu-factspage.gu-forum--soft .gu-fact--moved { background: none; border: 0; padding: 4px 0; }
 
 /* ── Voorstellenpagina: voorstellen als witte kaarten ─────────────────── */
-.gu-ippage.gu-forum--soft .gu-iplist__item {
-  background: var(--gu-paper); border: 1px solid var(--gu-border);
-  border-radius: 12px; padding: 16px 18px;
-}
+
 
 /* ── Overzicht Denk mee: vraagstukken als witte kaarten ───────────────── */
 .gu-forum--soft .gu-issuelist { display: flex; flex-direction: column; gap: 12px; border-top: 0; margin-top: 0; }
@@ -4018,7 +3981,7 @@ body {
 
 
 /* ── P10: de fasebalk ook boven de losse feiten- en voorstellenpagina's ── */
-.gu-issuephase { margin: 2px 0 22px; }
+
 
 /* Compacte lijstweergave: met titel alleen de kern, anders de tekst op een paar regels; bron achter "meer". */
 .gu-fact__title { margin: 0; font-weight: 400; font-size: 0.9375rem; color: var(--gu-fg-1); line-height: 1.4; }
@@ -4498,8 +4461,6 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-pv__sep { color: var(--gu-n-300); }
 .gu-pv__metaitem { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .gu-pv__steun { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--gu-fg-2); }
-.gu-pv__ruleslink { font-size: 0.75rem; color: var(--gu-fg-3); text-decoration: underline; text-decoration-color: var(--gu-n-300); text-underline-offset: 2px; }
-.gu-pv__ruleslink:hover { color: var(--gu-fg-2); text-decoration-color: currentColor; }
 
 /* The revise form opens in place under the head row. */
 .gu-pv__revise { display: none; margin-top: 16px; padding: 16px 18px; background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 14px; }
