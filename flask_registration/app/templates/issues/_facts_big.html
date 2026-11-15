@@ -8,13 +8,39 @@
   once, without a button: the filter is a set of links, the sort select
   submits on change. They reload this page with ?vergroot=feiten, so it opens
   enlarged again. No "show more" and no link to a separate page: all is here.
-  Shown only while the column is enlarged (CSS). Context: issue, big_facts,
-  fact_marks, my_reported_ids.
+  Shown only while the column is enlarged (CSS).
+  Page consolidation step 2 (docs/design/feit-toevoegen.html): at the top,
+  above the filter bar, the add form (the "+" in the column head opens it).
+  It posts to forum.fact_add and comes back here enlarged. Without JavaScript
+  it shows with ?nieuw-feit=1; the close links then drop that parameter.
+  Context: issue, big_facts, fact_marks, my_reported_ids, can_add_fact,
+  fact_add_open, fact_add_data, fact_add_errors, optional fact_return_proposal.
 -#}
 {% set nl = lang == 'nl' %}
 {% set here_args = dict(request.view_args or {}) %}
 {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
 <div class="gu-cockpit__big">
+  {% if can_add_fact %}
+  {% from 'forum/_fact_fields.html' import fact_fields with context %}
+  {% set close_url = url_for(request.endpoint, vergroot='feiten', **here_args) ~ '#panel-facts' %}
+  <div class="gu-addfact" id="nieuw-feit" data-fact-add-box{% if not fact_add_open %} hidden{% endif %}>
+    <div class="gu-addfact__head">
+      <p class="gu-addfact__title" id="addFactTitle">{% if nl %}Toevoegen aan feiten en achtergrond{% else %}Add to facts and background{% endif %}</p>
+      <a href="{{ close_url }}" class="gu-addfact__close" data-fact-add-close title="{% if nl %}Sluiten{% else %}Close{% endif %}" aria-label="{% if nl %}Sluiten{% else %}Close{% endif %}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+    </div>
+    <form method="POST" action="{{ url_for('forum.fact_add', thread_id=issue.thread_id) }}" class="gu-fact-form gu-addfact__form" aria-labelledby="addFactTitle" novalidate>
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <input type="hidden" name="return_to" value="{{ issue.id }}">
+      <input type="hidden" name="in_page" value="1">
+      {% if fact_return_proposal %}<input type="hidden" name="return_proposal" value="{{ fact_return_proposal }}">{% endif %}
+      {{ fact_fields('add-fact', fact_add_data or {}, fact_add_errors or {}) }}
+      <div class="gu-addfact__actions">
+        <button type="submit" class="gu-btn gu-btn--primary">{% if nl %}Toevoegen{% else %}Add{% endif %} <span class="gu-arrow"></span></button>
+        <a href="{{ close_url }}" class="gu-btn gu-btn--ghost" data-fact-add-close>{% if nl %}Annuleren{% else %}Cancel{% endif %}</a>
+      </div>
+    </form>
+  </div>
+  {% endif %}
   {% if big_facts.total > big_facts.filter_min %}
   {% set filter_labels = {'alle': 'Alle' if nl else 'All', 'voor': 'Pleit voor' if nl else 'Argues for',
                           'tegen': 'Tegen' if nl else 'Against', 'neutraal': 'Neutraal' if nl else 'Neutral'} %}

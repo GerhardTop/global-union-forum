@@ -14,6 +14,10 @@
   - Disclosures ([data-disclosure] buttons with aria-controls), such as the
     collapsed voting rules card.
   - A sort select with [data-autosubmit] submits on change (no button).
+  - The "+" of the facts column ([data-fact-add]) toggles the add form
+    ([data-fact-add-box]) at the top of the enlarged facts, enlarging the
+    column first when it is compact; [data-fact-add-close] closes it. Without
+    JavaScript the "+" and the close links are plain links.
 
   Usage: var cockpit = GU.cockpit(rootElement, {defaultTab: 'facts'});
   The root may carry data-expanded="<panel>" to open enlarged (for example
@@ -149,6 +153,38 @@
     root.querySelectorAll('select[data-autosubmit]').forEach(function (select) {
       select.addEventListener('change', function () { select.form.submit(); });
     });
+
+    // ── Add a fact in the page ─────────────────────────────────────────
+    var addBox = root.querySelector('[data-fact-add-box]');
+    var addPlus = Array.prototype.slice.call(root.querySelectorAll('[data-fact-add]'));
+    function setAdd(open) {
+      if (!addBox) return;
+      addBox.hidden = !open;
+      addPlus.forEach(function (a) { a.setAttribute('aria-expanded', open ? 'true' : 'false'); });
+      if (open) {
+        var first = addBox.querySelector('input:not([type="hidden"]), textarea');
+        if (first) first.focus();
+      }
+    }
+    if (addBox) {
+      var addPanel = addBox.closest('[data-panel]');
+      addPlus.forEach(function (a) {
+        a.setAttribute('aria-expanded', addBox.hidden ? 'false' : 'true');
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var enlarged = root.classList.contains('gu-cockpit--expanded') && addPanel.classList.contains('is-expanded');
+          if (!enlarged) { expand(addPanel.dataset.panel, false); setAdd(true); }
+          else setAdd(addBox.hidden);
+        });
+      });
+      root.querySelectorAll('[data-fact-add-close]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          setAdd(false);
+          if (addPlus[0]) addPlus[0].focus();
+        });
+      });
+    }
 
     // ── Start: the tab of a linked item (or the default), maybe enlarged ─
     var target = location.hash && document.getElementById(location.hash.slice(1));

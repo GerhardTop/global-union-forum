@@ -64,6 +64,7 @@
       <section class="gu-cockpit__panel gu-cockpit__facts gu-pv__factscol{% if big.expanded == 'facts' %} is-expanded{% endif %}" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="factsTitle">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-facts__count">{{ rail_facts | length }}</span></h2>
+          {% include 'issues/_fact_add_plus.html' %}
           {{ size_buttons('facts', _('Facts and background')) }}
         </div>
         {# The compact column; the "With this proposal / All" switch belongs here. Enlarged shows all facts. #}
@@ -163,6 +164,7 @@
           {% endif %}
         </div>
         {# Enlarged in the page: every fact of the issue, with filter and sort above FILTER_MIN. #}
+        {% set fact_return_proposal = proposal.id %}
         <div class="gu-cockpit__box gu-cockpit__bigbox">{% include 'issues/_facts_big.html' %}</div>
       </section>
 
@@ -313,6 +315,7 @@
       <section class="gu-cockpit__panel gu-cockpit__proposals gu-pv__proposalscol{% if big.expanded == 'proposals' %} is-expanded{% endif %}" id="panel-proposals" data-panel="proposals" role="tabpanel" aria-labelledby="proposalsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="proposalsTitle">{{ _('Proposals') }} <span class="gu-facts__count">{{ rail_proposals | length }}</span></h2>
+          {% if can_propose %}<a href="{{ url_for('issues.proposal_new', issue_id=issue.id) }}" class="gu-iconbtn" title="{{ _('New proposal') }}" aria-label="{{ _('New proposal') }}"><span aria-hidden="true">+</span></a>{% endif %}
           {{ size_buttons('proposals', _('Proposals')) }}
         </div>
         <div class="gu-cockpit__box gu-cockpit__compact">

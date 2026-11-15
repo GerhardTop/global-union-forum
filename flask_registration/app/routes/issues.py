@@ -33,7 +33,7 @@ from app import issue_proposals as ip
 from app.models import FACT_DIRECTIONS, Issue, IssueProposal, Post
 from app.routes.forum import (_abort_if_thread_removed, _fact_form, _fact_phase_open, _new_fact, _require_csrf,
                               _rules_first_redirect, _thread_context, refuse_if_suspended)
-from app.utils import _pop_form_state, _stash_form_state, safe_next
+from app.utils import _pop_form_state, _pop_form_state_if, _stash_form_state, safe_next
 
 issues_bp = Blueprint("issues", __name__)
 issues_bp.before_request(refuse_if_suspended)
@@ -155,7 +155,7 @@ def show(issue_id):
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in proposal_rows])
     big = _enlarged_proposals(issue, {p.id: ip.current_version(p) for p, _c in proposal_rows})
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
-                           big_facts=_enlarged_facts(visible),
+                           big_facts=_enlarged_facts(visible), **_fact_add_box(issue),
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
                            proposal_rows=proposal_rows, proposals_shown=COCKPIT_PROPOSALS,
@@ -312,7 +312,7 @@ def proposal_new(issue_id):
             if fact_errors:
                 errors['fact'] = fact_errors
         if errors:
-            keep = ('statement', 'explanation', 'fact_title', 'fact_text', 'fact_direction', 'fact_source')
+            keep = ('statement', 'explanation', 'fact_title', 'fact_text', 'fact_direction', 'fact_source', 'fact_type')
             data = {k: request.form.get(k, '') for k in keep}
             data['fact_ids'] = fact_ids
             _stash_form_state(form_key, errors, data)
@@ -347,6 +347,8 @@ def proposal(issue_id, proposal_id):
     proposal = _proposal_or_404(issue, proposal_id)
     count = ip.support_counts([proposal.id]).get(proposal.id, 0)
     supported = proposal.id in ip.my_supports([proposal.id], current_user)
+    # The in-page add form of the facts column first (its own form state).
+    fact_box = _fact_add_box(issue)
     # Eén formulierstaat per detailpagina: errors['revise'] of errors['fact'].
     errors, data = _pop_form_state(f'voorstel-{proposal.id}')
     links = ip.linked(proposal, current_user)
@@ -379,7 +381,8 @@ def proposal(issue_id, proposal_id):
                            rail_facts=fact_signals.listing(issue_facts, order='kwaliteit'),
                            rail_proposals=rail_proposals, rail_shown=RAIL_SHOWN,
                            rail_versions=rail_versions, big=_enlarged_proposals(issue, rail_versions),
-                           big_facts=_enlarged_facts(issue_facts),
+                           big_facts=_enlarged_facts(issue_facts), **fact_box,
+                           can_propose=ip.can_propose(issue, current_user),
                            reaction_counts=reaction_counts, new_discussion=new_discussion,
                            fact_marks=fact_signals.marked_ids(issue_fact_ids),
                            my_reported_ids=_reported_fact_ids(issue_fact_ids))
@@ -835,6 +838,21 @@ def _enlarged_facts(facts):
     rows = fact_signals.listing(facts, None if which == 'alle' else which, order)
     return {'rows': rows, 'which': which, 'order': order, 'total': len(facts), 'counts': counts,
             'filter_min': ip.FILTER_MIN, 'filters': FACT_FILTERS}
+
+
+def _fact_add_box(issue):
+    """Page consolidation step 2: the add form at the top of the enlarged
+    facts column. Open with ?nieuw-feit=1 (the no-script "+" and the return
+    after an input error), with the entered values and errors of a rejected
+    fact (forum.fact_add stashes them under feit-<thread id>)."""
+    errors, data = ({}, {})
+    if issue.thread is not None:
+        errors, data = _pop_form_state_if(f'feit-{issue.thread.id}')
+    if not any(errors.get(key) for key in ('title', 'text', 'direction', 'source')):
+        errors, data = {}, {}  # (the state of an edit on /feiten is not ours)
+    can_add = _can_add_fact(issue)
+    return {'fact_add_open': can_add and (bool(errors) or request.args.get('nieuw-feit') == '1'),
+            'fact_add_errors': errors if can_add else {}, 'fact_add_data': data if can_add else {}}
 
 
 def _can_withdraw(proposal):

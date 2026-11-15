@@ -1,6 +1,6 @@
 {#
   Macro: forum/_fact_fields.html (fase E, stap 2; herontwerp stap 3)
-  De velden van het feitformulier (tekst, richting, bron), gedeeld door het
+  De velden van het feitformulier (titel, toelichting, richting, soort, bron), gedeeld door het
   feitenblok van een voorstel en de feitenpagina van een vraagstuk.
   Gebruik: {% from 'forum/_fact_fields.html' import fact_fields with context %}
 #}
@@ -14,8 +14,8 @@
     {% if errs.get('title') %}<p class="gu-join__formError">{% if lang == 'nl' %}Geef een korte titel (maximaal 80 tekens).{% else %}Give a short title (at most 80 characters).{% endif %}</p>{% endif %}
   </div>
   <div class="gu-fact-form__field">
-    <label for="{{ prefix }}-text">{{ _('The fact') }}</label>
-    <textarea class="gu-composer__input{% if errs.get('text') %} gu-input--error{% endif %}" id="{{ prefix }}-text" name="{{ name_prefix }}text" rows="3" maxlength="1000" required>{{ data.get('text', '') }}</textarea>
+    <label for="{{ prefix }}-text">{% if lang == 'nl' %}Toelichting of conclusies{% else %}Explanation or conclusions{% endif %}</label>
+    <textarea class="gu-composer__input{% if errs.get('text') %} gu-input--error{% endif %}" id="{{ prefix }}-text" name="{{ name_prefix }}text" rows="3" maxlength="1000" required placeholder="{% if lang == 'nl' %}Wat is de kern, of wat concludeer je?{% else %}What is the core, or what do you conclude?{% endif %}">{{ data.get('text', '') }}</textarea>
     {% if errs.get('text') %}<p class="gu-join__formError">{{ _('Describe the fact (at most 1000 characters).') }}</p>{% endif %}
   </div>
   <fieldset class="gu-fact-form__field gu-fact-form__dirs">
@@ -28,13 +28,18 @@
     {% endfor %}
     {% if errs.get('direction') %}<p class="gu-join__formError">{{ _('Choose a direction.') }}</p>{% endif %}
   </fieldset>
-  {# Polijstronde P2: feit of onderzoek, of media (nieuws, podcast, video). #}
-  <fieldset class="gu-fact-form__field gu-fact-form__dirs">
-    <legend>{{ _('Kind') }}</legend>
-    {% for t, label in [('feit', _('Fact or research')), ('media', _('Media: news, podcast, video'))] %}
-    <label class="gu-fact-form__dir">
-      <input type="radio" name="{{ name_prefix }}type" value="{{ t }}"{% if (data.get('type') or 'feit') == t %} checked{% endif %}>
-      <span>{{ label }}</span>
+  {# Page consolidation step 2: five kinds as chips, Feit by default. An old
+     fact with the legacy kind 'media' opens with Nieuwsartikel chosen. #}
+  {% set kind_now = data.get('type') or 'feit' %}
+  {% set kind_now = 'nieuwsartikel' if kind_now == 'media' else kind_now %}
+  <fieldset class="gu-fact-form__field gu-fact-form__dirs gu-fact-form__kinds">
+    <legend>{% if lang == 'nl' %}Soort{% else %}Kind{% endif %}</legend>
+    {% for t, nl_label, en_label in [('feit', 'Feit', 'Fact'), ('onderzoek', 'Onderzoek', 'Research'),
+                                     ('nieuwsartikel', 'Nieuwsartikel', 'News article'),
+                                     ('podcast', 'Podcast', 'Podcast'), ('video', 'Video', 'Video')] %}
+    <label class="gu-fact-form__dir gu-fact-form__chip">
+      <input type="radio" name="{{ name_prefix }}type" value="{{ t }}"{% if kind_now == t %} checked{% endif %}>
+      <span>{{ nl_label if lang == 'nl' else en_label }}</span>
     </label>
     {% endfor %}
   </fieldset>

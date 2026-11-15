@@ -1,0 +1,14 @@
+{#-
+  Partial: issues/_fact_add_plus.html (page consolidation step 2)
+  The "+" in the head of the facts column, on the issue page and the proposal
+  page. Only in the facts phase and for whoever may contribute (can_add_fact).
+  With JavaScript (static/js/cockpit.js) it enlarges the column when needed
+  and toggles the add form at the top of the enlarged facts, without a reload.
+  Without JavaScript it is a link that opens this page with the facts enlarged
+  and the form open (?vergroot=feiten&nieuw-feit=1).
+-#}
+{% if can_add_fact %}
+{% set plus_args = dict(request.view_args or {}) %}
+{% set _ignored = plus_args.update({'vergroot': 'feiten', 'nieuw-feit': '1'}) %}
+<a href="{{ url_for(request.endpoint, **plus_args) }}#panel-facts" class="gu-iconbtn gu-addfact__plus" data-fact-add aria-controls="nieuw-feit" title="{{ _('Add a fact') }}" aria-label="{{ _('Add a fact') }}"><span aria-hidden="true">+</span></a>
+{% endif %}

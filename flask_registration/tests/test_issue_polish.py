@@ -262,16 +262,18 @@ def test_ordinary_post_gets_no_fact_fields(app, db, make_user, fake_ai):
 
 
 def test_media_type_and_label(app, db, make_user):
+    """Page consolidation step 2: five kinds; the old 'media' stays as a legacy kind."""
     host, anna = make_user(), make_user()
     issue = _issue(db, host)
-    _add_fact(app, anna, issue, 'Een podcast over het plein.', kind='media')
+    _add_fact(app, anna, issue, 'Een podcast over het plein.', kind='podcast')
     _add_fact(app, anna, issue, 'Een onderzoek.', kind='onzin')
     media = Post.query.filter_by(body='Een podcast over het plein.').one()
-    assert media.fact_type == 'media' and media.is_media
+    assert media.fact_type == 'podcast' and media.is_media
     assert Post.query.filter_by(body='Een onderzoek.').one().fact_type == 'feit'
     page = _get(app, f'/vraagstuk/{issue.id}/feiten', anna)
     assert 'gu-fact__media' in page.split(f'id="post-{media.id}"')[1].split('</li>')[0]
-    assert 'Media: nieuws, podcast, video' in page  # het soort in het formulier
+    assert '>Podcast</span>' in page.split(f'id="post-{media.id}"')[1].split('</li>')[0]
+    assert '<span>Nieuwsartikel</span>' in page  # the kinds in the form
     _req(_client(app, anna), 'POST', f'/forum/feit/{media.id}/bewerken',
          data={'title': 'Podcast', 'text': 'Een podcast over het plein.', 'direction': 'voor', 'source': 'https://x.example',
                'type': 'feit', 'return_to': str(issue.id)})

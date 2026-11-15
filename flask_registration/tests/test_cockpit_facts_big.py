@@ -106,7 +106,7 @@ def test_facts_column_has_a_compact_box_and_a_big_box(app, db, small):
         assert big.count('<li class="gu-fact ') == 4, key
         assert 'gu-bigp__bar' not in big and 'name="sorteer"' not in big, key
         assert 'data-more-list' not in big and not re.search(r'data-more[\s>]', big), key  # (per-fact more/less is fine)
-        assert 'Toon meer' not in big and '/feiten"' not in big, key
+        assert 'Toon meer' not in big and f'/vraagstuk/{issue.id}/feiten' not in big, key
     # On the proposal page the small "With this proposal / All" switch is in the compact box only.
     facts = _panel(_get(app, _pages(issue, proposal)['proposal'], host), 'panel-facts')
     compact = facts.split('gu-cockpit__box gu-cockpit__bigbox')[0]

@@ -175,6 +175,15 @@ def _pop_form_state(form_key):
     return state.get('errors', {}), state.get('data', {})
 
 
+def _pop_form_state_if(form_key):
+    """Like _pop_form_state, but only takes the state when it belongs to
+    form_key; otherwise it stays for the next _pop_form_state on the page."""
+    state = session.get('form_state')
+    if not state or state.get('form') != form_key:
+        return {}, {}
+    return _pop_form_state(form_key)
+
+
 # ── Gedeelde globale mail-rate-limit (gedeeld door auth en social) ─────────
 #
 # Structureel vangnet bovenop de bestaande per-route- en per-IP-limieten:

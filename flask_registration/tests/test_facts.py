@@ -248,7 +248,8 @@ def test_cockpit_links_to_facts_page_with_counts(app, db, make_user):
     _fact(db, issue, author, 'Feit in de cockpit')
     body = _req(_client(app, reader), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
     panel = body.split('id="panel-facts"')[1].split('id="panel-discussion"')[0]
-    assert f'/vraagstuk/{issue.id}/feiten' in panel and 'Feit in de cockpit' in panel
+    # Page consolidation step 2: the "+" opens the add form in the page, not /feiten.
+    assert f'/vraagstuk/{issue.id}?vergroot=feiten&amp;nieuw-feit=1#panel-facts' in panel and 'Feit in de cockpit' in panel
     assert 'Nuttig' not in panel
 
 

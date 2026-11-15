@@ -322,7 +322,7 @@ _POLISH_COLUMNS = {
                       ('warning_id', 'INTEGER NULL REFERENCES user_warnings(id)'),
                       ('suspension_id', 'INTEGER NULL REFERENCES user_suspensions(id)')),
     # P2: het soort feit (media) en het kwaliteitsmerk van een feit.
-    'posts': (('fact_type', 'VARCHAR(10) NULL'),
+    'posts': (('fact_type', 'VARCHAR(20) NULL'),
               # P5: een reactie bij een voorstel, met de versie (de tabel
               # issue_proposal_versions maakt db.create_all() aan).
               ('issue_proposal_id', 'INTEGER NULL REFERENCES issue_proposals(id)'),
@@ -362,6 +362,25 @@ def _migrate_polish(existing):
                 for ddl in added:
                     conn.execute(text(ddl))
                 conn.commit()
+    _widen_fact_type(existing)
+
+
+def _widen_fact_type(existing):
+    """Page consolidation step 2: posts.fact_type was VARCHAR(10); the new kind
+    'nieuwsartikel' needs 13. Widen to VARCHAR(20), idempotent. SQLite (tests
+    only) does not enforce the length."""
+    dialect = db.engine.dialect.name
+    if 'posts' not in existing or dialect not in ('postgresql', 'mysql'):
+        return
+    col = next((c for c in sa_inspect(db.engine).get_columns('posts') if c['name'] == 'fact_type'), None)
+    length = getattr(col['type'], 'length', None) if col else None
+    if length is None or length >= 20:
+        return
+    ddl = ('ALTER TABLE posts ALTER COLUMN fact_type TYPE VARCHAR(20)' if dialect == 'postgresql'
+           else 'ALTER TABLE posts MODIFY COLUMN fact_type VARCHAR(20) NULL')
+    with db.engine.connect() as conn:
+        conn.execute(text(ddl))
+        conn.commit()
 
 
 # Indexen op veelgebruikte kolommen. Postgres maakt bij een foreign key niet

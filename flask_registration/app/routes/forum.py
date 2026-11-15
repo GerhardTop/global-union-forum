@@ -9,7 +9,7 @@ from sqlalchemy import func, or_
 
 from app import db, bcrypt, limiter
 from app.forms import ForumActionForm, ForumReplyForm
-from app.models import (FACT_DIRECTIONS, FACT_KIND, FACT_TYPES, STANCES, QUALITY_CRITERIA, User, Thread, Post,
+from app.models import (FACT_DIRECTIONS, FACT_KIND, FACT_LEGACY_TYPES, FACT_TYPES, STANCES, QUALITY_CRITERIA, User, Thread, Post,
                         PostLike, QualityAward, QualityReport, time_ago)
 from app import conduct, quality
 from app.models import PostReport
@@ -1717,8 +1717,10 @@ def _fact_form(prefix=''):
             'text': (form.get(f'{prefix}text') or '').strip(),
             'direction': form.get(f'{prefix}direction') or '',
             'source': (form.get(f'{prefix}source') or '').strip(),
-            # Polijstronde P2: feit of onderzoek, of media; standaard een feit.
-            'type': form.get(f'{prefix}type') if form.get(f'{prefix}type') in FACT_TYPES else 'feit'}
+            # One of the five kinds (step 2), default a fact. The legacy 'media'
+            # is still accepted, so an old form or an old fact keeps working.
+            'type': (form.get(f'{prefix}type') if form.get(f'{prefix}type') in FACT_TYPES + FACT_LEGACY_TYPES
+                     else 'feit')}
     errors = {}
     if not data['text'] or len(data['text']) > _FACT_MAX:
         errors['text'] = True
@@ -1754,9 +1756,27 @@ def _fact_back(thread, anchor=''):
     issue = db.session.get(Issue, issue_id) if issue_id is not None else None
     if issue is None or issue.thread_id != thread.id:
         issue = facts.issue_for_thread(thread.id) if thread.proposal is None else None
+    if issue is not None and request.form.get('in_page') and issue.thread_id == thread.id:
+        return _fact_back_in_page(issue, anchor)
     if issue is not None:
         return url_for('issues.facts', issue_id=issue.id) + anchor
     return url_for('forum.forum_thread', thread_id=thread.id) + anchor
+
+
+def _fact_back_in_page(issue, anchor):
+    """Page consolidation step 2: the add form inside the enlarged facts
+    column. Back to the page it came from (the issue page, or a proposal page
+    of this issue via return_proposal) with the facts enlarged; after an error
+    with the form open again (nieuw-feit=1)."""
+    from app.models import IssueProposal
+    args = {'vergroot': 'feiten'}
+    if anchor == '#feiten':  # an input error: reopen the form
+        args['nieuw-feit'] = '1'
+    proposal_id = request.form.get('return_proposal', type=int)
+    proposal = db.session.get(IssueProposal, proposal_id) if proposal_id is not None else None
+    if proposal is not None and proposal.issue_id == issue.id:
+        return url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id, **args) + '#panel-facts'
+    return url_for('issues.show', issue_id=issue.id, **args) + '#panel-facts'
 
 
 @forum_bp.route('/forum/<int:thread_id>/feiten', methods=['POST'])

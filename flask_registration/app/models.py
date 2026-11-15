@@ -299,9 +299,9 @@ class Post(db.Model):
     # de versie van dat voorstel waarop ze slaat (NULL: een gewone reactie).
     issue_proposal_id = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=True, index=True)
     proposal_version  = db.Column(db.Integer, nullable=True)
-    # Polijstronde P2: het soort feit (FACT_TYPES); NULL telt als 'feit'.
-    # 'media' is nieuws, een podcast, een video en dergelijke.
-    fact_type      = db.Column(db.String(10), nullable=True)
+    # The kind of fact (FACT_TYPES); NULL counts as 'feit'. The old value
+    # 'media' (news, podcast, video) stays readable as a legacy kind.
+    fact_type      = db.Column(db.String(20), nullable=True)
     # Een korte, handgeschreven kern (max 80 tekens) als kopregel in de lijst;
     # fact_title_en is de vertaalcache, net als body/body_en.
     fact_title     = db.Column(db.String(100), nullable=True)
@@ -348,7 +348,13 @@ class Post(db.Model):
 
     @property
     def is_media(self):
-        return self.fact_type == 'media'
+        """News, a podcast, a video, or the legacy kind 'media'."""
+        return self.fact_type in FACT_MEDIA_TYPES
+
+    @property
+    def fact_kind(self):
+        """The kind for display: one of FACT_TYPES, or 'media' for an old fact."""
+        return self.fact_type if self.fact_type in FACT_TYPES + FACT_LEGACY_TYPES else 'feit'
 
 
 def time_ago(moment):
@@ -373,8 +379,12 @@ def time_ago(moment):
 # Fase E: feiten bij een voorstel.
 FACT_KIND = 'feit'
 FACT_DIRECTIONS = ('voor', 'tegen', 'neutraal')
-# Polijstronde P2: feit of onderzoek, of media (nieuws, podcast, video).
-FACT_TYPES = ('feit', 'media')
+# Page consolidation step 2: five kinds of fact (Feit is the default). The old
+# value 'media' (before step 2) is accepted as a legacy kind: old facts keep it
+# and show as "Media"; no data is rewritten.
+FACT_TYPES = ('feit', 'onderzoek', 'nieuwsartikel', 'podcast', 'video')
+FACT_LEGACY_TYPES = ('media',)
+FACT_MEDIA_TYPES = ('nieuwsartikel', 'podcast', 'video', 'media')
 
 # Herontwerp stap 3: nuttig en betwisten op een feit (zie app/facts.py).
 FACT_DISPUTE_REASONS = ('geen_bron', 'klopt_niet', 'niet_relevant', 'misleidend')

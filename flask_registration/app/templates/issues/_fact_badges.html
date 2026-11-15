@@ -1,6 +1,7 @@
 {#
   Partial: issues/_fact_badges.html (polijstronde P2, meldknop)
-  Bij een feit: het label "media" (nieuws, podcast, video), het AI-
+  Bij een feit: het label van de soort (onderzoek, nieuwsartikel, podcast,
+  video, of het oude "media"; een gewoon feit krijgt geen label), het AI-
   kwaliteitsmerk (een groen vinkje met de criteria bij mouse-over of focus),
   en een meldvlag waarmee een deelnemer het feit bij een moderator meldt.
   De AI beoordeelt alleen wat na te gaan is, niet hoe betrouwbaar de bron is.
@@ -10,9 +11,12 @@
 #}
 {% set mark = fact.id in (fact_marks or ()) %}
 {% set can_report = not hide_report and current_user.is_authenticated and fact.user_id and fact.user_id != current_user.id %}
-{% if fact.is_media or mark or can_report %}
+{% set kind = fact.fact_kind %}
+{% if kind != 'feit' or mark or can_report %}
 <span class="gu-fact__badges">
-  {% if fact.is_media %}<span class="gu-fact__media">{{ _('Media') }}</span>{% endif %}
+  {% if kind != 'feit' %}{% set kind_labels = {'onderzoek': ('Onderzoek', 'Research'), 'nieuwsartikel': ('Nieuwsartikel', 'News article'),
+                                              'podcast': ('Podcast', 'Podcast'), 'video': ('Video', 'Video'), 'media': ('Media', 'Media')} %}
+  <span class="gu-fact__media gu-fact__kind--{{ kind }}">{{ kind_labels[kind][0] if lang == 'nl' else kind_labels[kind][1] }}</span>{% endif %}
   {% if mark %}
   <span class="gu-factmark" tabindex="0" role="img" aria-label="{{ _('Quality mark for facts') }}" aria-describedby="factmark-{{ fact.id }}">
     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>

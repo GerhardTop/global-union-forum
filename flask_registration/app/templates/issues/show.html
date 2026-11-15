@@ -97,7 +97,7 @@
       <section class="gu-cockpit__panel gu-cockpit__facts{% if big.expanded == 'facts' %} is-expanded{% endif %}" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
         <div class="gu-cockpit__panelhead">
           <h2 class="gu-cockpit__title" id="factsTitle">{{ _('Facts and background') }}{% if fact_total %} <span class="gu-facts__count">({{ fact_total }})</span>{% endif %}</h2>
-          {% if can_add_fact %}<a href="{{ url_for('issues.facts', issue_id=issue.id) }}#toevoegen" class="gu-iconbtn" title="{{ _('Add a fact') }}" aria-label="{{ _('Add a fact') }}"><span aria-hidden="true">+</span></a>{% endif %}
+          {% include 'issues/_fact_add_plus.html' %}
           <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="facts" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ _('Facts and background') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
           <button type="button" class="gu-iconbtn gu-cockpit__shrink" data-collapse title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ _('Facts and background') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button>
         </div>

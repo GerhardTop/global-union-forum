@@ -4709,3 +4709,23 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-rights__form .gu-btn { margin-top: 12px; }
 .gu-toggle__input:focus-visible ~ .gu-toggle__track { outline: 2px solid var(--gu-globe); outline-offset: 2px; }
 .gu-mgmt__rightslink { color: inherit; text-decoration: underline; }
+
+/* Page consolidation step 2 (docs/design/feit-toevoegen.html): the add form at
+   the top of the enlarged facts column, and the kind of a fact as chips. */
+.gu-addfact { border: 1px solid #c5dcf4; background: #f7fbff; border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; }
+.gu-addfact[hidden] { display: none; }
+.gu-addfact__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.gu-addfact__title { margin: 0; font-size: 0.875rem; font-weight: 600; color: var(--gu-fg-1); }
+.gu-addfact__close { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; color: var(--gu-fg-2); }
+.gu-addfact__close:hover { background: var(--gu-n-100); color: var(--gu-fg-1); }
+.gu-addfact__close:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 1px; }
+.gu-addfact__form { margin-top: 0; gap: 14px; }
+.gu-addfact__form .gu-input, .gu-addfact__form .gu-composer__input { background: var(--gu-paper); }
+.gu-addfact__actions { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.gu-addfact__plus[aria-expanded="true"] { border-color: var(--gu-globe-deep); color: var(--gu-globe-deep); }
+.gu-fact-form__kinds { gap: 8px; }
+.gu-fact-form__chip { position: relative; }
+.gu-fact-form__chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.gu-fact-form__chip span { display: inline-flex; align-items: center; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--gu-n-300); background: var(--gu-paper); font-size: 0.78125rem; font-weight: 500; color: var(--gu-fg-2); }
+.gu-fact-form__chip input:checked + span { border-color: var(--gu-globe-deep); background: #eaf2fb; color: #1b5e9a; font-weight: 600; }
+.gu-fact-form__chip input:focus-visible + span { outline: 2px solid var(--gu-globe); outline-offset: 2px; }

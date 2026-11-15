@@ -112,6 +112,15 @@ _LANGUAGE_RULES = {
 _LANGUAGE_NAMES = {'nl': 'Dutch', 'en': 'English'}
 
 
+# The kind of a fact as the contributor marked it, for the judging prompt.
+_FACT_KIND_PROMPT = {
+    'onderzoek': 'The contributor marks it as research. ',
+    'nieuwsartikel': 'The contributor marks it as a news article. ',
+    'podcast': 'The contributor marks it as a podcast. ',
+    'video': 'The contributor marks it as a video. ',
+    'media': 'The contributor marks it as media (news, a podcast, a video or similar). ',
+}
+
 def target_lang(post):
     """De taal waarin de AI antwoordt: de oorspronkelijke taal van de bijdrage."""
     return post.source_lang if post.source_lang in _LANGUAGE_RULES else 'en'
@@ -208,7 +217,7 @@ def judge_post(post_id):
             'is the statement of the proposal. The contributor says the fact points '
             f'{ {"voor": "in favour of", "tegen": "against", "neutraal": "neither for nor against"}.get(post.fact_direction, "neither for nor against") } '
             f'the statement and gives this source: <source>{(post.fact_source or "")[:500]}</source>. '
-            f'{"The contributor marks it as media (news, a podcast, a video or similar). " if post.is_media else ""}'
+            f'{_FACT_KIND_PROMPT.get(post.fact_kind, "")}'
             'Quality marks do not apply to facts: set suggested_criterion to none and k3_possible to '
             'false. For on_topic, judge whether the fact is relevant to the statement.\n\n'
             'Also give the fact quality mark, judging only these checkable points, each true or '

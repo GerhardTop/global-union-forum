@@ -1,0 +1,177 @@
+<!doctype html>
+<!--
+  Design-referentie (artboard FeitToevoegen.dc.html). Statisch, alleen om naar
+  te kijken en naartoe te bouwen; geen app-code. Feit toevoegen in de pagina:
+  de "+" in de kop van de feitenkolom opent dit invoervak bovenaan de vergrote
+  feitenweergave (en vergroot de kolom als dat nodig is). Velden: titel,
+  toelichting of conclusies, richting (pleit voor/tegen/neutraal), soort (feit,
+  onderzoek, nieuwsartikel, podcast, video) en bron. Afbeelding en upload volgen
+  in een latere versie. De "+" staat ook op de voorstellenkolom en opent daar de
+  pagina om een voorstel te maken.
+-->
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Feit toevoegen</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<style>
+body{margin:0}
+a{color:#1b74b8;text-decoration:none}
+.gu *{box-sizing:border-box}
+.gu{
+  --globe:#3ab0f0; --globe-deep:#1b74b8; --europe:#0077cc;
+  --ink:#141b22; --paper:#ffffff;
+  --americas:#d8232a; --africa:#e09400; --oceania:#108a4e;
+  --n50:#f5f7f9; --n100:#eef1f5; --n200:#e4e9ef; --n300:#d3dae2; --n400:#a7b1bd;
+  --n500:#6c7683; --n600:#525c69; --n700:#3a434e; --border:#e4e9ef;
+  --shadow:0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05);
+  font-family:'Inter',system-ui,sans-serif; color:var(--ink); background:var(--n50);
+}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--n500);margin:0}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px}
+.card{background:var(--paper);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.ico{stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:500;padding:9px 15px;border-radius:8px;border:1px solid var(--border);background:var(--paper);color:var(--ink);cursor:pointer}
+.btn--primary{background:var(--globe-deep);border-color:var(--globe-deep);color:#fff}
+.btn--ghost{background:transparent}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:2px 9px;border-radius:999px;background:var(--n100);color:var(--n600);border:1px solid var(--border)}
+.iconbtn{width:30px;height:30px;border:1px solid var(--border);border-radius:8px;background:#fff;display:inline-flex;align-items:center;justify-content:center;color:var(--n600);cursor:pointer}
+/* vergrote kolom */
+.colwide{max-width:980px;margin:0 auto}
+.colhead{display:flex;align-items:center;gap:10px;padding-bottom:12px}
+.colhead .eyebrow{color:var(--globe-deep)}
+.n{font-size:12px;color:var(--n500)}
+.spacer{flex:1}
+/* invoervak */
+.addcard{border:1px solid #c5dcf4;background:#f7fbff;border-radius:12px;padding:18px 20px;margin-bottom:16px}
+.addcard__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.addcard__title{font-size:14px;font-weight:600;margin:0}
+.field{margin-bottom:14px}
+.field>label,.field>legend{display:block;font-size:12.5px;font-weight:600;color:var(--n700);margin-bottom:5px;padding:0}
+.input,.textarea{width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--n300);border-radius:8px;padding:9px 11px}
+.textarea{resize:vertical;min-height:72px;line-height:1.5}
+.hint{display:block;font-size:11.5px;color:var(--n500);margin-top:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+fieldset.field{border:0;margin:0 0 14px;padding:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;padding:6px 11px;border-radius:999px;border:1px solid var(--n300);background:#fff;color:var(--n600);cursor:pointer}
+.chip--on{border-color:var(--globe-deep);background:#eaf2fb;color:#1b5e9a;font-weight:600}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.dot--voor{background:var(--oceania)} .dot--tegen{background:var(--americas)} .dot--neutraal{background:var(--n400)}
+.addcard__actions{display:flex;align-items:center;gap:10px;margin-top:4px}
+/* lijst eronder */
+.fbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.fseg{display:inline-flex;background:var(--n100);border:1px solid var(--border);border-radius:9px;padding:3px}
+.fseg button{font-family:inherit;font-size:12.5px;font-weight:500;border:0;background:transparent;color:var(--n600);padding:6px 11px;border-radius:7px;cursor:pointer}
+.fseg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(15,25,35,.1)}
+.frow{padding:14px 2px;border-top:1px solid var(--n100)}
+.frow__dir{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px}
+.dir--voor{background:#eef7f1;color:#108a4e} .dir--tegen{background:#fcecec;color:#a3282c} .dir--neutraal{background:var(--n100);color:var(--n600)}
+.frow__txt{font-size:14px;color:var(--ink);margin:7px 0 0;line-height:1.45}
+</style>
+</head>
+<body>
+<div class="gu" style="min-height:100%;padding-bottom:60px">
+
+  <header style="background:var(--paper);border-bottom:1px solid var(--border)">
+    <div class="wrap" style="height:64px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:17px"><strong style="font-weight:600">GLOBAL</strong> <span style="font-weight:300;color:var(--globe)">UNION</span></span>
+      <nav style="display:flex;gap:20px;font-size:14.5px;color:var(--n600)"><a href="#" style="color:var(--ink);font-weight:600">Denk mee</a><a href="#">Manifest</a><a href="#">FAQ</a><a href="#">Over ons</a></nav>
+    </div>
+  </header>
+
+  <!-- fasebalk (ingekort) -->
+  <div class="wrap" style="padding-top:22px">
+    <div style="display:flex;align-items:center;gap:0;max-width:1100px;margin:0 auto 22px;color:var(--n500);font-size:12.5px">
+      <div style="text-align:center"><div style="width:34px;height:34px;border-radius:50%;background:var(--globe-deep);margin:0 auto 6px"></div><div style="font-weight:600;color:var(--ink)">Voorstellen maken</div></div>
+      <div style="flex:1;height:2px;background:var(--globe-deep);margin:0 10px 18px"></div>
+      <div style="text-align:center"><div style="width:34px;height:34px;border-radius:50%;background:#dbeafe;margin:0 auto 6px"></div><div>Voorstel aanpassen</div></div>
+      <div style="flex:1;height:2px;background:var(--n200);margin:0 10px 18px"></div>
+      <div style="text-align:center"><div style="width:34px;height:34px;border-radius:50%;background:var(--n100);margin:0 auto 6px"></div><div>Stemmen</div></div>
+      <div style="flex:1;height:2px;background:var(--n200);margin:0 10px 18px"></div>
+      <div style="text-align:center"><div style="width:34px;height:34px;border-radius:50%;background:var(--n100);margin:0 auto 6px"></div><div>Samenvattend voorstel</div></div>
+      <div style="flex:1;height:2px;background:var(--n200);margin:0 10px 18px"></div>
+      <div style="text-align:center"><div style="width:34px;height:34px;border-radius:50%;background:var(--n100);margin:0 auto 6px"></div><div>Vervolg</div></div>
+    </div>
+  </div>
+
+  <!-- vergrote feitenkolom met het invoervak open -->
+  <div class="wrap">
+    <section class="card colwide" style="padding:20px 22px">
+      <div class="colhead">
+        <span class="eyebrow">Feiten en achtergrond</span><span class="n">13</span>
+        <span class="spacer"></span>
+        <span class="iconbtn" title="Feit toevoegen" style="border-color:var(--globe-deep);color:var(--globe-deep)">+</span>
+        <span class="iconbtn" title="Verkleinen"><svg class="ico" viewBox="0 0 24 24" width="14" height="14"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></span>
+      </div>
+
+      <!-- INVOERVAK (geopend door de +) -->
+      <div class="addcard">
+        <div class="addcard__head">
+          <p class="addcard__title">Toevoegen aan feiten en achtergrond</p>
+          <span class="iconbtn" title="Sluiten" style="border:0;width:24px;height:24px"><svg class="ico" viewBox="0 0 24 24" width="15" height="15"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+        </div>
+
+        <div class="field">
+          <label for="t">Titel (de kern)</label>
+          <input class="input" id="t" type="text" placeholder="Een korte kopregel" value="EU Tax Observatory: minimumtarief kan tientallen miljarden opleveren">
+          <span class="hint">Een korte kopregel, maximaal 80 tekens</span>
+        </div>
+
+        <div class="field">
+          <label for="x">Toelichting of conclusies</label>
+          <textarea class="textarea" id="x" placeholder="Wat is de kern, of wat concludeer je?">De EU Tax Observatory schat dat het minimumtarief in de eerste jaren tientallen miljarden extra kan opleveren, mits landen het volledig toepassen.</textarea>
+        </div>
+
+        <fieldset class="field">
+          <legend>Richting t.o.v. de stelling</legend>
+          <div class="chips">
+            <span class="chip chip--on"><span class="dot dot--voor"></span>Pleit voor</span>
+            <span class="chip"><span class="dot dot--tegen"></span>Tegen</span>
+            <span class="chip"><span class="dot dot--neutraal"></span>Neutraal</span>
+          </div>
+        </fieldset>
+        <fieldset class="field">
+          <legend>Soort</legend>
+          <div class="chips">
+            <span class="chip chip--on">Feit</span>
+            <span class="chip">Onderzoek</span>
+            <span class="chip">Nieuwsartikel</span>
+            <span class="chip">Podcast</span>
+            <span class="chip">Video</span>
+          </div>
+        </fieldset>
+
+        <div class="field" style="margin-bottom:16px">
+          <label for="b">Bron</label>
+          <input class="input" id="b" type="text" placeholder="Een link, en waar in de bron" value="https://www.taxobservatory.eu/">
+          <span class="hint">Een link, en waar in de bron het te vinden is (pagina, hoofdstuk of tijd)</span>
+        </div>
+
+        <div class="addcard__actions">
+          <button class="btn btn--primary">Toevoegen <span style="font-size:11px">&rsaquo;</span></button>
+          <button class="btn btn--ghost">Annuleren</button>
+        </div>
+      </div>
+
+      <!-- de bestaande lijst eronder -->
+      <div class="fbar">
+        <div class="fseg">
+          <button class="on">Alle <span style="font-size:11px;color:var(--n500)">13</span></button>
+          <button>Pleit voor <span style="font-size:11px;color:var(--n500)">7</span></button>
+          <button>Tegen <span style="font-size:11px;color:var(--n500)">3</span></button>
+          <button>Neutraal <span style="font-size:11px;color:var(--n500)">3</span></button>
+        </div>
+        <div style="font-size:12.5px;color:var(--n600)">Sorteren
+          <span style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:7px;padding:5px 9px;margin-left:6px;background:#fff">Kwaliteit eerst <svg class="ico" viewBox="0 0 24 24" width="12" height="12" style="color:var(--n400)"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+      </div>
+      <div class="frow" style="border-top:0"><span class="frow__dir dir--voor">Pleit voor</span><p class="frow__txt">OESO: 100-240 mld dollar misgelopen door winstverschuiving</p></div>
+      <div class="frow"><span class="frow__dir dir--neutraal">Neutraal</span><p class="frow__txt">Het minimumtarief geldt voor bedrijven boven 750 mln omzet</p></div>
+      <div class="frow"><span class="frow__dir dir--tegen">Tegen</span><p class="frow__txt">Kleine landen vrezen minder investeringen bij een hoger tarief</p></div>
+    </section>
+  </div>
+
+</div>
+</body>
+</html>
