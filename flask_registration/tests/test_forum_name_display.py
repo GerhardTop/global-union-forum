@@ -279,5 +279,8 @@ class TestMigration:
         _migrate_columns()
         rows = dict(db.session.execute(text('SELECT email, show_real_name FROM users')).all())
         assert not rows[anna.email]
-        for email in DEMO_USER_EMAILS.values():
+        # (henk and noa only exist once seed-demo-issues has run.)
+        present = [email for email in DEMO_USER_EMAILS.values() if email in rows]
+        assert present
+        for email in present:
             assert rows[email]

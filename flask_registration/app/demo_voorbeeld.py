@@ -6,7 +6,7 @@ voorstel met meerdere versies en reacties, en een lange discussie tot vier
 lagen diep met per deelnemer een eigen schrijfstijl. De inhoud staat in het
 Nederlands; de site vertaalt de Engelse weergave automatisch.
 
-Hergebruikt de helpers en de vier demo-personages uit demo_seed.py, dus er
+Hergebruikt de helpers en de demo-personages uit demo_seed.py, dus er
 komen geen accounts bij en reset-content laat de inhoud staan (is_demo). Apart
 commando, zodat je dit los van de gewone demo op productie kunt zetten:
 

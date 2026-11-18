@@ -151,6 +151,8 @@ DEMO_USER_EMAILS = {
     'fatima': 'fatima.elidrissi.demo@globalunionforum.org',
     'sarah':  'sarah.chen.demo@globalunionforum.org',
     'marcus': 'marcus.osei.demo@globalunionforum.org',
+    'henk':   'henk.veenstra.demo@globalunionforum.org',
+    'noa':    'noa.dewit.demo@globalunionforum.org',
 }
 
 

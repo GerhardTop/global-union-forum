@@ -1,15 +1,17 @@
 """Demo-inhoud voor het vraagstuk-model.
 
-Een paar vraagstukken met voorstellen, feiten, discussie, steun, stemmen en
-reacties, zodat de schermen (cockpit, voorstel-detail, feitenpagina,
-voorstellenpagina en het overzicht) met echte inhoud te beoordelen zijn.
-Sommige voorstellen zijn uitgebreid (meerdere versies, veel reacties, een
-stemming), andere beperkt.
+Twee vraagstukken met voorstellen, feiten, discussie, steun, stemmen, reacties
+en (in de vervolgfase) een tijdlijn van updates, zodat de schermen met echte,
+gevarieerde inhoud te beoordelen zijn. Net als een echt forum: feiten die
+uitgebreid zijn en feiten van een regel, soms met een link naar een dataset of
+tabel; reacties die lang zijn en reacties van een paar woorden; en voorstellen
+van verschillende kwaliteit.
 
-Hergebruikt de bestaande forum-demo-personages (DEMO_USER_EMAILS), zodat er
-geen nieuwe accounts bijkomen en reset-content de content laat staan (is_demo
-op de gesprekken en berichten). De steundrempel van de demo-vraagstukken staat
-op 3, zodat een voorstel met deze vier personages op de stemlijst kan komen.
+Zes demo-personages met een eigen stem (DEMO_USER_EMAILS in app/routes/forum.py),
+zodat de teksten vanzelf verschillen in lengte en toon. Er komen geen echte
+accounts bij; de content staat op is_demo en blijft staan bij reset-content. De
+steundrempel staat op 3, zodat een voorstel met deze personages op de stemlijst
+kan komen.
 
 Idempotent: draait de seed opnieuw, dan gebeurt er niets als de content er al
 staat.
@@ -28,16 +30,19 @@ SPECS = {
     'fatima': ('Fatima', 'El Idrissi (demo)', 'fatima_e', 'member', None, 38),
     'sarah':  ('Sarah',  'Chen (demo)',       'sarah_c',  'expert', 'Internationale betrekkingen · LSE', 34),
     'marcus': ('Marcus', 'Osei (demo)',       'marcus_o', 'member', None, 31),
+    'henk':   ('Henk',   'Veenstra (demo)',   'henk_v',   'member', None, 67),
+    'noa':    ('Noa',    'de Wit (demo)',     'noa_w',    'member', None, 23),
 }
 
 DEMO_SUPPORT_THRESHOLD = 3
 _SENTINEL_TITLE = 'Hoe versterken we de Europese defensie zonder de NAVO te ondermijnen?'
-_TITLE_B = 'Hoe maken we de lokale democratie toegankelijker voor jongeren?'
 _TITLE_C = 'Welke rol moet de EU spelen bij de opvang van vluchtelingen?'
+# Oude demo-titel, alleen nog om op te ruimen bij --force (wordt niet meer gemaakt).
+_TITLE_B_OLD = 'Hoe maken we de lokale democratie toegankelijker voor jongeren?'
 
 
 def _people():
-    """De vier demo-personages als {sleutel: (user, rol, badge, leeftijd)}."""
+    """De demo-personages als {sleutel: (user, rol, badge, leeftijd)}."""
     from app.routes.forum import DEMO_USER_EMAILS, _get_or_create_demo_user
     out = {}
     for key, (first, last, username, role, badge, age) in SPECS.items():
@@ -83,7 +88,7 @@ def _phase_pos(phase):
 
 
 def _issue(db, people, *, title, intro, author, created_at, phase, schedule,
-           deadline=None, closed=False, followup=None):
+           deadline=None, closed=False):
     """Een vraagstuk met een eigen gesprek en openingsbericht."""
     from app.models import Issue, Thread, Post
     user = people[author][0]
@@ -98,10 +103,6 @@ def _issue(db, people, *, title, intro, author, created_at, phase, schedule,
     )
     db.session.add(issue)
     db.session.flush()
-    if followup:  # one update in the follow-up timeline, a day after the start
-        from app.models import IssueFollowup
-        db.session.add(IssueFollowup(issue_id=issue.id, author_id=user.id, body=followup,
-                                     created_at=created_at + timedelta(days=1)))
     thread = Thread(eyebrow_nl='Vraagstuk', eyebrow_en='Issue',
                     title_prefix_nl=title, title_prefix_en=title,
                     is_closed=closed, is_demo=True, created_at=created_at)
@@ -167,6 +168,13 @@ def _votes(db, proposal, people, voor, tegen, onthouding, pad=(0, 0, 0)):
                                              choice=choice, created_at=now - timedelta(hours=3)))
 
 
+def _followup(db, issue, people, author, text, when):
+    """Een update in de vervolgtijdlijn (nieuwste wordt in beeld bovenaan)."""
+    from app.models import IssueFollowup
+    db.session.add(IssueFollowup(issue_id=issue.id, author_id=people[author][0].id,
+                                 body=text, created_at=when))
+
+
 def seed_demo_issues(force=False):
     """Maak de demo-vraagstukken. Geeft een korte samenvatting terug."""
     from app import db
@@ -182,83 +190,143 @@ def seed_demo_issues(force=False):
     now = datetime.utcnow()
     made = []
 
-    # Vraagstuk 1: Europese defensie, in de stemfase (rijk)
-    sch_a = (now - timedelta(days=20), now - timedelta(days=6),
+    # ════════════════════════════════════════════════════════════════════
+    # Vraagstuk A: Europese defensie, in de stemfase (rijk, veel variatie)
+    # ════════════════════════════════════════════════════════════════════
+    sch_a = (now - timedelta(days=22), now - timedelta(days=7),
              now - timedelta(days=3), now + timedelta(days=4))
     issue_a, thread_a = _issue(
         db, people, title=_SENTINEL_TITLE,
         intro=('Europa wil minder afhankelijk zijn van een enkele bondgenoot zonder de NAVO te '
                'verzwakken. Welke stap zetten we als eerste? Breng feiten in en denk mee.'),
-        author='jan', created_at=now - timedelta(days=20), phase='stemmen',
+        author='jan', created_at=now - timedelta(days=22), phase='stemmen',
         schedule=sch_a, deadline=sch_a[3])
 
-    f1 = _post(db, thread_a, people['sarah'], now - timedelta(days=19), kind='feit', fact_direction='voor',
-               fact_source='https://www.sipri.org/databases/milex',
-               fact_title='EU-defensiebudget samen groter dan dat van Rusland', body='De Europese defensiebegrotingen samen zijn groter dan die van Rusland.')
-    f2 = _post(db, thread_a, people['marcus'], now - timedelta(days=18), kind='feit', fact_direction='tegen',
-               fact_source='https://www.rand.org/pubs/research_reports.html',
-               fact_title='Dubbele commandostructuur kost tijd bij een crisis', body='Twee commandostructuren naast elkaar kosten tijd bij een crisis.')
-    _post(db, thread_a, people['jan'], now - timedelta(days=18), kind='feit', fact_direction='neutraal',
-               fact_source='NAVO-factsheet (geen directe link)',
-               fact_title='NATO Response Force inzetbaar binnen vijf dagen', body='De NATO Response Force kan binnen vijf dagen worden ingezet.')
-    f4 = _post(db, thread_a, people['fatima'], now - timedelta(days=17), kind='feit', fact_direction='voor',
-               fact_type='media', fact_source='https://nos.nl/artikel/europese-defensie',
-               fact_title='Reportage: gezamenlijke inkoop drukt de prijs per eenheid', body='Reportage over gezamenlijke inkoop en de prijsdaling per eenheid.')
-    f5 = _post(db, thread_a, people['marcus'], now - timedelta(days=16), kind='feit', fact_direction='tegen',
-               fact_source='https://www.politico.eu/',
-               fact_title='Niet alle lidstaten willen bevoegdheden afstaan aan Brussel', body='Niet alle lidstaten willen bevoegdheden aan Brussel overdragen.')
-    for fact in (f1, f2, f4, f5):
+    # ── Feiten: uitgebreid, kort, met tabel-link, zonder directe link, media ──
+    fa1 = _post(db, thread_a, people['sarah'], now - timedelta(days=21), kind='feit', fact_direction='voor',
+                fact_type='onderzoek', fact_source='https://milex.sipri.org/sipri',
+                fact_title='EU-defensiebudgetten samen ruim groter dan dat van Rusland',
+                body=('De gezamenlijke defensie-uitgaven van de EU-lidstaten lagen in 2024 boven de 300 '
+                      'miljard euro, ruim drie keer zo hoog als die van Rusland. Het geld is alleen over '
+                      '27 begrotingen verdeeld, waardoor veel capaciteit dubbel wordt aangeschaft. De '
+                      'cijfers per land en per jaar staan in de SIPRI Military Expenditure Database.'))
+    fa2 = _post(db, thread_a, people['marcus'], now - timedelta(days=21), kind='feit', fact_direction='tegen',
+                fact_type='feit', fact_source='Eigen analyse (geen directe link)',
+                fact_title='Twee commandostructuren kosten tijd bij een crisis',
+                body='Twee commandostructuren naast elkaar kosten bij een crisis kostbare tijd.')
+    fa3 = _post(db, thread_a, people['jan'], now - timedelta(days=20), kind='feit', fact_direction='neutraal',
+                fact_type='feit', fact_source='NAVO-factsheet (geen directe link)',
+                fact_title='NATO Response Force inzetbaar binnen vijf dagen',
+                body='De snelle reactiemacht van de NAVO kan volgens de NAVO binnen vijf dagen worden ingezet.')
+    fa4 = _post(db, thread_a, people['fatima'], now - timedelta(days=20), kind='feit', fact_direction='voor',
+                fact_type='nieuwsartikel', fact_source='https://nos.nl/artikel/europese-defensie-inkoop',
+                fact_title='Reportage: gezamenlijke inkoop drukt de prijs per eenheid',
+                body=('Een reportage over een gezamenlijke munitie-aanbesteding laat zien dat de prijs per '
+                      'eenheid daalt naarmate meer landen samen inkopen.'))
+    fa5 = _post(db, thread_a, people['henk'], now - timedelta(days=19), kind='feit', fact_direction='neutraal',
+                fact_type='onderzoek', fact_source='https://www.iiss.org/publications/the-military-balance',
+                fact_title='Versnippering van wapensystemen maakt Europese defensie duur',
+                body=('Sinds de jaren negentig is de defensie-uitgave in veel Europese landen als aandeel '
+                      'van het bbp gedaald, terwijl het aantal verschillende wapensystemen juist hoog bleef. '
+                      'De EU telt tientallen types gevechtsvoertuigen, fregatten en gevechtsvliegtuigen naast '
+                      'elkaar, waar de Verenigde Staten met een handvol toe kunnen. Die versnippering maakt '
+                      'onderhoud, opleiding en gezamenlijk optreden duur en traag, los van de vraag of er een '
+                      'aparte Europese structuur komt. Het IISS brengt deze aantallen elk jaar in kaart in '
+                      'The Military Balance.'))
+    fa6 = _post(db, thread_a, people['noa'], now - timedelta(days=18), kind='feit', fact_direction='voor',
+                fact_type='feit', fact_source='https://europa.eu/eurobarometer/',
+                fact_title='Jongeren steunen meer Europese defensiesamenwerking',
+                body='Uit de Eurobarometer: een ruime meerderheid van de 15 tot 24-jarigen steunt meer Europese samenwerking op defensie.')
+    fa7 = _post(db, thread_a, people['marcus'], now - timedelta(days=18), kind='feit', fact_direction='tegen',
+                fact_type='podcast', fact_source='https://www.politico.eu/podcast/',
+                fact_title='Podcast: lidstaten aarzelen om bevoegdheden af te staan',
+                body=('In een aflevering over Europese defensie leggen twee diplomaten uit waarom lidstaten '
+                      'terughoudend zijn om zeggenschap over inzet aan Brussel over te dragen.'))
+    for fact in (fa1, fa4, fa5, fa7):  # niet elk feit krijgt het merk: variatie in kwaliteit
         _fact_mark(db, fact)
 
-    d1 = _post(db, thread_a, people['sarah'], now - timedelta(days=15),
-               body=('Een eigen capaciteit voor crises aan de rand van Europa is aanvullend, '
-                     'geen vervanging van de NAVO. Door bestaande eenheden te bundelen blijven de kosten beperkt.'))
-    _post(db, thread_a, people['marcus'], now - timedelta(days=14), parent=d1,
-          body='Eens, mits de aansturing bij de NAVO-planning blijft. Anders krijg je dubbel werk.')
-    _post(db, thread_a, people['jan'], now - timedelta(days=13),
-          body='Wat mij betreft hoort hier ook de vraag bij hoe we dit betalen. Zonder dat wordt elk voorstel vrijblijvend.')
+    # ── Discussie: lang (Henk) en heel kort (Noa), met reacties erop ──
+    da1 = _post(db, thread_a, people['henk'], now - timedelta(days=17),
+                body=('Het is goed om te bedenken dat dit geen nieuwe discussie is. Al in de jaren vijftig lag '
+                      'er een plan voor een Europese Defensiegemeenschap, dat in 1954 sneuvelde in het Franse '
+                      'parlement. Daarna is defensie steeds nationaal gebleven, met de NAVO als gezamenlijk dak. '
+                      'Wie nu pleit voor meer Europese samenwerking, loopt tegen dezelfde vragen aan als toen: '
+                      'wie beslist over inzet, wie draagt de kosten, en wat gebeurt er met de nationale '
+                      'zeggenschap? Ik ben niet tegen, maar we moeten die vragen niet overslaan omdat de urgentie '
+                      'nu hoger is. Een structuur die je in haast optuigt, blijft decennia hangen.'))
+    _post(db, thread_a, people['noa'], now - timedelta(days=17), parent=da1,
+          body='Mooi verhaal, maar jongeren willen daden, geen geschiedenisles.')
+    da2 = _post(db, thread_a, people['sarah'], now - timedelta(days=16),
+                body=('Een eigen capaciteit voor crises aan de rand van Europa is aanvullend, geen vervanging '
+                      'van de NAVO. Door bestaande eenheden te bundelen blijven de kosten beperkt en houd je de '
+                      'aansturing bij de bestaande planning.'))
+    _post(db, thread_a, people['marcus'], now - timedelta(days=16), parent=da2,
+          body='Eens, mits de aansturing bij de NAVO blijft. Anders krijg je dubbel werk.')
+    _post(db, thread_a, people['fatima'], now - timedelta(days=15),
+          body=('Belangrijk is wie straks beslist over inzet en wie de rekening betaalt. Zonder heldere '
+                'afspraken daarover blijft elk voorstel vrijblijvend.'))
+    _post(db, thread_a, people['jan'], now - timedelta(days=14),
+          body='Eens. De financiering hoort er vanaf het begin bij.')
 
-    p1 = _proposal(db, issue_a, people, 'jan', versions=[
+    # ── Voorstellen van verschillende kwaliteit ──
+    pa1 = _proposal(db, issue_a, people, 'jan', versions=[
         ('Richt een Europese snelle-reactiemacht op.',
          'Een gezamenlijke eenheid die snel inzetbaar is aan de rand van Europa.',
-         now - timedelta(days=18)),
+         now - timedelta(days=19)),
         ('Richt een Europese snelle-reactiemacht op van 20.000 militairen.',
          'Een staande eenheid van ongeveer 20.000 militairen, inzetbaar binnen vijf dagen.',
-         now - timedelta(days=8)),
+         now - timedelta(days=9)),
         ('Richt een Europese snelle-reactiemacht op onder NAVO-planning.',
-         ('Een staande eenheid van ongeveer 20.000 militairen, inzetbaar binnen vijf dagen aan de '
-          'rand van Europa, met de operationele aansturing binnen de bestaande NAVO-planning. '
-          'Gefinancierd door bestaande nationale eenheden te bundelen.'),
+         ('Een staande eenheid van ongeveer 20.000 militairen, inzetbaar binnen vijf dagen aan de rand van '
+          'Europa, met de operationele aansturing binnen de bestaande NAVO-planning. Gefinancierd door '
+          'bestaande nationale eenheden te bundelen.'),
          now - timedelta(days=5)),
     ])
-    _support(db, p1, people, ['fatima', 'sarah', 'marcus'])
-    _link_fact(db, p1, f1, people['jan'])
-    _link_fact(db, p1, f2, people['marcus'])
-    _votes(db, p1, people, voor=['jan', 'sarah'], tegen=['marcus'], onthouding=['fatima'], pad=(15, 9, 3))
-    reacts_1 = [
+    _support(db, pa1, people, ['fatima', 'sarah', 'henk'])
+    _link_fact(db, pa1, fa1, people['jan'])
+    _link_fact(db, pa1, fa2, people['marcus'])
+    _votes(db, pa1, people, voor=['jan', 'sarah', 'henk'], tegen=['marcus'], onthouding=['fatima'], pad=(18, 9, 4))
+    reacts_a1 = [
         ('marcus', 2, 'De vijf-dagen-norm is ambitieus. Is daar een onderbouwing voor?'),
         ('jan', 3, 'Klopt, de aansturing ligt nu expliciet bij de NAVO-planning. Zie versie 3.'),
-        ('sarah', 3, 'De bundeling van eenheden maakt dit betaalbaar. Goede stap.'),
+        ('henk', 3, ('Dit is de juiste volgorde. Door de eenheid onder de bestaande planning te hangen voorkom '
+                     'je precies de dubbele structuur waar ik bang voor was, en houd je de nationale '
+                     'parlementen aan boord. Mijn eerdere bezwaar is hiermee grotendeels weg.')),
+        ('noa', 3, 'Eindelijk concreet. Doen.'),
         ('fatima', 2, 'Twintigduizend is veel. Begin kleiner en bouw op.'),
         ('marcus', 3, 'De koppeling met de NAVO-planning neemt mijn grootste bezwaar weg.'),
-        ('jan', 1, 'De eerste versie was nog te vaag. De huidige is concreet genoeg.'),
         ('sarah', 3, 'Eens. Snelheid is juist het punt waar we nu tekortschieten.'),
     ]
-    for i, (key, ver, text) in enumerate(reacts_1):
+    for i, (key, ver, text) in enumerate(reacts_a1):
         _post(db, thread_a, people[key], now - timedelta(days=4) + timedelta(hours=i),
-              body=text, issue_proposal_id=p1.id, proposal_version=ver)
+              body=text, issue_proposal_id=pa1.id, proposal_version=ver)
 
-    p2 = _proposal(db, issue_a, people, 'sarah', versions=[
+    pa2 = _proposal(db, issue_a, people, 'sarah', versions=[
         ('Bundel de inkoop van munitie op Europees niveau.',
          'Gezamenlijke inkoop drukt de prijs per eenheid en voorkomt tekorten.',
-         now - timedelta(days=12)),
+         now - timedelta(days=13)),
     ])
-    _support(db, p2, people, ['marcus'])
-    _link_fact(db, p2, f4, people['sarah'])
-    _post(db, thread_a, people['jan'], now - timedelta(days=11),
-          body='Dit kan los van de reactiemacht al winst opleveren.', issue_proposal_id=p2.id, proposal_version=1)
-    _post(db, thread_a, people['fatima'], now - timedelta(days=10),
-          body='Wie beheert de voorraad en wie beslist over de verdeling?', issue_proposal_id=p2.id, proposal_version=1)
+    _support(db, pa2, people, ['marcus', 'henk', 'noa'])
+    _link_fact(db, pa2, fa4, people['sarah'])
+    _votes(db, pa2, people, voor=['sarah', 'henk'], tegen=['marcus'], onthouding=['noa'], pad=(11, 5, 2))
+    _post(db, thread_a, people['jan'], now - timedelta(days=12),
+          body='Dit kan los van de reactiemacht al winst opleveren.', issue_proposal_id=pa2.id, proposal_version=1)
+    _post(db, thread_a, people['fatima'], now - timedelta(days=11),
+          body='Wie beheert de voorraad en wie beslist over de verdeling?', issue_proposal_id=pa2.id, proposal_version=1)
+
+    pa3 = _proposal(db, issue_a, people, 'noa', versions=[
+        ('Europa moet gewoon één leger krijgen.',
+         'Samen staan we sterker. Als we alles samenvoegen is het probleem opgelost.',
+         now - timedelta(days=10)),
+    ])
+    _support(db, pa3, people, ['noa'])
+    _post(db, thread_a, people['sarah'], now - timedelta(days=9),
+          body=('Dit klinkt sterk, maar "alles samenvoegen" springt over de moeilijke vragen heen: wie beslist '
+                'over inzet, en wat betekent dit voor de nationale grondwetten? Zonder antwoord daarop is het '
+                'niet uitvoerbaar.'),
+          issue_proposal_id=pa3.id, proposal_version=1)
+    _post(db, thread_a, people['marcus'], now - timedelta(days=9),
+          body='Een EU-leger haalt het nooit langs 27 parlementen.', issue_proposal_id=pa3.id, proposal_version=1)
 
     _proposal(db, issue_a, people, 'marcus', versions=[
         ('Houd defensie volledig bij de NAVO, investeer alleen nationaal bij.',
@@ -267,68 +335,82 @@ def seed_demo_issues(force=False):
     ])
     made.append(issue_a.title)
 
-    # Vraagstuk 2: lokale democratie, in de feitenfase (bescheiden)
-    sch_b = (now - timedelta(days=4), now + timedelta(days=17),
-             now + timedelta(days=22), now + timedelta(days=29))
-    issue_b, thread_b = _issue(
-        db, people, title=_TITLE_B,
-        intro=('Jongeren haken af bij de lokale politiek. Welke stappen helpen echt? '
-               'Deel feiten en voorbeelden en denk mee.'),
-        author='fatima', created_at=now - timedelta(days=4), phase='feiten',
-        schedule=sch_b, deadline=sch_b[1])
-    _post(db, thread_b, people['sarah'], now - timedelta(days=3), kind='feit', fact_direction='voor',
-          fact_source='https://www.scp.nl/',
-          fact_title='Opkomst jongeren bij gemeenteraad ver onder gemiddelde', body='De opkomst onder jongeren bij gemeenteraadsverkiezingen ligt ver onder het gemiddelde.')
-    fb2 = _post(db, thread_b, people['marcus'], now - timedelta(days=3), kind='feit', fact_direction='neutraal',
-                fact_source='https://www.prodemos.nl/',
-                fact_title='Gemeenten experimenteren met jongerenraden met eigen budget', body='Enkele gemeenten experimenteren met jongerenraden met een eigen budget.')
-    _fact_mark(db, fb2)
-    _post(db, thread_b, people['jan'], now - timedelta(days=2),
-          body='Begin bij de scholen. Zonder uitleg over wat de raad doet, blijft het abstract.')
-    pb1 = _proposal(db, issue_b, people, 'sarah', versions=[
-        ('Geef elke gemeente een jongerenraad met een eigen budget.',
-         'Een vast budget maakt de raad echt in plaats van symbolisch.',
-         now - timedelta(days=2)),
-    ])
-    _support(db, pb1, people, ['marcus'])
-    _post(db, thread_b, people['jan'], now - timedelta(days=1),
-          body='Een budget helpt, maar borg ook dat de raad echt gehoord wordt.',
-          issue_proposal_id=pb1.id, proposal_version=1)
-    pb2 = _proposal(db, issue_b, people, 'marcus', versions=[
-        ('Laat jongeren vanaf 16 meestemmen bij lokale verkiezingen.',
-         'Eerder meedoen vergroot de betrokkenheid op langere termijn.',
-         now - timedelta(days=1)),
-    ])
-    _support(db, pb2, people, ['sarah'])
-    made.append(issue_b.title)
-
-    # Vraagstuk 3: EU en opvang, afgerond met uitslag
-    sch_c = (now - timedelta(days=40), now - timedelta(days=22),
-             now - timedelta(days=17), now - timedelta(days=5))
+    # ════════════════════════════════════════════════════════════════════
+    # Vraagstuk C: EU en opvang, in de vervolgfase (toont de updatetijdlijn)
+    # ════════════════════════════════════════════════════════════════════
+    sch_c = (now - timedelta(days=46), now - timedelta(days=28),
+             now - timedelta(days=23), now - timedelta(days=11))
     issue_c, thread_c = _issue(
         db, people, title=_TITLE_C,
-        intro=('Een eerlijke verdeling en humane opvang vragen om Europese afspraken. '
-               'Welke aanpak kiezen we?'),
-        author='sarah', created_at=now - timedelta(days=40), phase='vervolg', schedule=sch_c,
-        followup=('Het voorstel voor een gezamenlijk opvangfonds met een eerlijke verdeling is '
-                  'aangenomen. De initiatiefnemers werken het samen met experts verder uit.'))
-    fc1 = _post(db, thread_c, people['fatima'], now - timedelta(days=39), kind='feit', fact_direction='voor',
-                fact_source='https://www.unhcr.org/',
-                fact_title='Enkele lidstaten vangen grootste deel van de aanvragen op', body='Een klein aantal lidstaten vangt nu het grootste deel van de aanvragen op.')
-    _fact_mark(db, fc1)
-    _post(db, thread_c, people['marcus'], now - timedelta(days=38),
-          body='Een eerlijke verdeling is alleen houdbaar met duidelijke afspraken en controle.')
+        intro=('Een eerlijke verdeling en humane opvang vragen om Europese afspraken. Welke aanpak kiezen we? '
+               'Breng feiten in en denk mee.'),
+        author='sarah', created_at=now - timedelta(days=46), phase='vervolg', schedule=sch_c)
+
+    fc1 = _post(db, thread_c, people['fatima'], now - timedelta(days=45), kind='feit', fact_direction='voor',
+                fact_type='onderzoek', fact_source='https://www.unhcr.org/refugee-statistics/',
+                fact_title='Een klein deel van de lidstaten vangt het grootste deel op',
+                body=('De aanvragen zijn ongelijk verdeeld: een handvol lidstaten neemt het grootste deel voor '
+                      'zijn rekening, terwijl andere er nauwelijks aan meedoen. De cijfers per land en per jaar '
+                      'staan in de statistiekendatabank van de UNHCR.'))
+    fc2 = _post(db, thread_c, people['marcus'], now - timedelta(days=44), kind='feit', fact_direction='neutraal',
+                fact_type='feit', fact_source='Eigen observatie (geen directe link)',
+                fact_title='Eerdere verdeelafspraken werden slecht nageleefd',
+                body='Eerdere afspraken over verdeling werden door meerdere landen niet nageleefd.')
+    fc3 = _post(db, thread_c, people['henk'], now - timedelta(days=43), kind='feit', fact_direction='tegen',
+                fact_type='onderzoek', fact_source='https://www.cbs.nl/',
+                fact_title='Opvang en integratie kosten jaren, niet maanden',
+                body=('Uit onderzoek naar eerdere opvanggolven blijkt dat integratie, taal en werk pas na jaren '
+                      'resultaat geven, niet na maanden. Een fonds dat alleen de eerste opvang dekt, laat de '
+                      'duurdere, langere fase bij de gemeenten liggen. Dat is een reden om de bekostiging breed '
+                      'en meerjarig op te zetten, niet om het idee af te wijzen.'))
+    fc4 = _post(db, thread_c, people['noa'], now - timedelta(days=42), kind='feit', fact_direction='voor',
+                fact_type='feit', fact_source='https://ec.europa.eu/eurostat',
+                fact_title='Meeste aanvragers zijn jong',
+                body='Het grootste deel van de aanvragers is jonger dan 35.')
+    for fact in (fc1, fc3):
+        _fact_mark(db, fact)
+
+    _post(db, thread_c, people['marcus'], now - timedelta(days=42),
+          body='Een eerlijke verdeling is alleen houdbaar met duidelijke afspraken en controle op naleving.')
+    _post(db, thread_c, people['henk'], now - timedelta(days=41),
+          body=('Let op dat we niet alleen de eerste opvang regelen. De echte kosten zitten in de jaren erna, '
+                'bij taal, onderwijs en werk. Als het fonds daar niet in voorziet, schuiven we het probleem '
+                'door naar de gemeenten.'))
+
     pc1 = _proposal(db, issue_c, people, 'sarah', versions=[
         ('Richt een gezamenlijk opvangfonds op met een eerlijke verdeelsleutel.',
          'Lidstaten dragen naar draagkracht bij. Opvang en integratie worden samen bekostigd.',
-         now - timedelta(days=37)),
+         now - timedelta(days=40)),
+        ('Richt een gezamenlijk, meerjarig opvangfonds op met een eerlijke verdeelsleutel.',
+         ('Lidstaten dragen naar draagkracht bij. Het fonds bekostigt niet alleen de eerste opvang, maar ook '
+          'de meerjarige integratie (taal, onderwijs, werk), met controle op naleving.'),
+         now - timedelta(days=30)),
     ])
-    _support(db, pc1, people, ['jan', 'fatima', 'marcus'])
+    _support(db, pc1, people, ['jan', 'fatima', 'marcus', 'henk'])
     _link_fact(db, pc1, fc1, people['sarah'])
-    _votes(db, pc1, people, voor=['jan', 'fatima', 'sarah'], tegen=['marcus'], onthouding=[], pad=(21, 7, 4))
-    _post(db, thread_c, people['jan'], now - timedelta(days=10),
+    _link_fact(db, pc1, fc3, people['henk'])
+    _votes(db, pc1, people, voor=['jan', 'fatima', 'sarah', 'henk'], tegen=['marcus'], onthouding=[], pad=(26, 6, 3))
+    _post(db, thread_c, people['jan'], now - timedelta(days=24),
           body='Goede sleutel. De bekostiging naar draagkracht maakt het eerlijk.',
-          issue_proposal_id=pc1.id, proposal_version=1)
+          issue_proposal_id=pc1.id, proposal_version=2)
+    _post(db, thread_c, people['henk'], now - timedelta(days=24),
+          body='Fijn dat de meerjarige integratie er in versie 2 bij is gekomen. Daarmee kan ik voor.',
+          issue_proposal_id=pc1.id, proposal_version=2)
+
+    # ── De vervolgtijdlijn: meerdere gedateerde updates (nieuwste in beeld bovenaan) ──
+    _followup(db, issue_c, people, 'sarah',
+              ('De stemming is afgerond en het voorstel voor een gezamenlijk, meerjarig opvangfonds is '
+               'aangenomen. We bundelen de uitkomst en bereiden een korte notitie voor de betrokken '
+               'Europarlementariërs voor.'),
+              now - timedelta(days=11))
+    _followup(db, issue_c, people, 'fatima',
+              ('Eerste gesprek met twee Europarlementariërs gehad. Zij willen het idee van een meerjarig fonds '
+               'agenderen bij de commissie en vroegen om een beknopte onderbouwing.'),
+              now - timedelta(days=6))
+    _followup(db, issue_c, people, 'sarah',
+              ('De position paper is af en gedeeld met de commissie. Wie wil meelezen voor de volgende versie, '
+               'kan zich melden. Zodra er een reactie is, zetten we die hier.'),
+              now - timedelta(days=1))
     made.append(issue_c.title)
 
     db.session.commit()
@@ -337,10 +419,10 @@ def seed_demo_issues(force=False):
 
 def _remove_demo(db):
     """Verwijder de demo-vraagstukken en hun content (voor --force). Laat de
-    demo-accounts staan."""
+    demo-accounts staan. Ruimt ook de oude demo (vraagstuk B) op."""
     from app.models import (Issue, IssueProposal, IssueProposalVersion, IssueProposalSupport,
-                            IssueProposalVote, IssueProposalFact, Post, Thread, ProposalReport)
-    titles = [_SENTINEL_TITLE, _TITLE_B, _TITLE_C]
+                            IssueProposalVote, IssueProposalFact, IssueFollowup, Post, Thread, ProposalReport)
+    titles = [_SENTINEL_TITLE, _TITLE_C, _TITLE_B_OLD]
     issues = Issue.query.filter(Issue.title.in_(titles)).all()
     if not issues:
         return
@@ -348,10 +430,6 @@ def _remove_demo(db):
     thread_ids = [i.thread_id for i in issues if i.thread_id]
     prop_ids = [p.id for p in IssueProposal.query.filter(IssueProposal.issue_id.in_(issue_ids))]
     post_ids = [p.id for p in Post.query.filter(Post.thread_id.in_(thread_ids))] if thread_ids else []
-    # Volgorde volgens de foreign keys, net als reset-content: eerst alles wat
-    # naar de berichten verwijst (merk, moderatie, feitstemmen en de koppeling
-    # van feiten aan voorstellen) via de bestaande helper, dan de likes, dan de
-    # self-referentie los en de berichten weg, en pas daarna de voorstellen.
     if post_ids:
         from app import quality
         from app.models import PostLike
@@ -365,11 +443,10 @@ def _remove_demo(db):
         from app import issue_proposals
         issue_proposals.delete_reads(prop_ids)
         IssueProposal.query.filter(IssueProposal.id.in_(prop_ids)).delete(synchronize_session=False)
-    # Volgers en eventdagen verwijzen ook naar de vraagstukken.
+    IssueFollowup.query.filter(IssueFollowup.issue_id.in_(issue_ids)).delete(synchronize_session=False)
     from app import issue_lifecycle
     from app.models import IssueEventDay
     issue_lifecycle.delete_follows(issue_ids=issue_ids)
-    issue_lifecycle.delete_followups(issue_ids)
     from app import notifications
     notifications.delete_for_issues(issue_ids)
     IssueEventDay.query.filter(IssueEventDay.issue_id.in_(issue_ids)).delete(synchronize_session=False)

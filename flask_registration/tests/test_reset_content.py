@@ -137,6 +137,9 @@ class TestDryRun:
 
 class TestExecute:
     def test_only_admin_and_demo_remain(self, app, world):
+        # The demo accounts that exist (henk and noa only come with seed-demo-issues).
+        demo_emails = {u.email for u in User.query.filter(User.email.in_(DEMO_USER_EMAILS.values()))}
+        assert demo_emails
         demo_posts = Post.query.filter_by(is_demo=True).count()
         demo_threads = Thread.query.filter_by(is_demo=True).count()
         result = _run(app, '--execute', '--yes')
@@ -144,7 +147,7 @@ class TestExecute:
         db.session.expire_all()
 
         emails = {u.email for u in User.query}
-        assert emails == {'admin@example.com', *DEMO_USER_EMAILS.values()}
+        assert emails == {'admin@example.com', *demo_emails}
         assert Thread.query.count() == demo_threads == Thread.query.filter_by(is_demo=True).count()
         assert Post.query.count() == demo_posts == Post.query.filter_by(is_demo=True).count()
         likes = PostLike.query.all()
@@ -158,9 +161,10 @@ class TestExecute:
         assert _counts() == before
 
     def test_confirmation_prompt_accepts_database_name(self, app, world):
+        demo = User.query.filter(User.email.in_(DEMO_USER_EMAILS.values())).count()
         result = _run(app, '--execute', input=':memory:\n')
         assert result.exit_code == 0, result.output
-        assert User.query.count() == 1 + len(DEMO_USER_EMAILS)
+        assert User.query.count() == 1 + demo
 
     def test_refuses_without_admin_in_keep_set(self, app, world):
         world['admin'].is_admin = False
