@@ -59,3 +59,20 @@ def test_homepage_eu_canada_sentence(client, lang):
     html = client.get('/').get_data(as_text=True)
     assert HOME[lang] in html
     assert 'associated member' not in html and 'geassocieerde lid' not in html
+
+
+HOME_INTRO = {
+    'nl': ('Global Union Forum is een open denktank. Wij onderzoeken hoe dit model wereldwijd kan werken.',
+           'een globale open denktank'),
+    'en': ('Global Union Forum is an open think tank. We are exploring how this model can work worldwide.',
+           'a global, open think tank'),
+}
+
+
+@pytest.mark.parametrize('lang', ['nl', 'en'])
+def test_homepage_intro_sentence(client, lang):
+    """The homepage intro calls the forum an open think tank (no "global")."""
+    client.get(f'/lang/{lang}')
+    html = client.get('/').get_data(as_text=True)
+    now, gone = HOME_INTRO[lang]
+    assert now in html and gone not in html
