@@ -16,7 +16,8 @@ Herontwerp, bouwstap 1: de vraagstukken (Issue).
                      het samenvattende voorstel van de initiatiefnemer (stap 6)
 /vraagstuk/<id>/volgende-fase, /vervolg, /heropenen
                      de levenscyclus met de hand (stap 7): een fase verder,
-                     de vervolgtekst, opnieuw openstellen
+                     de vervolgtijdlijn (updates toevoegen, de nieuwste
+                     bewerken of verwijderen), opnieuw openstellen
 /vraagstuk/<id>/volgen
                      volgen aan of uit (polijstronde P3)
 """
@@ -30,7 +31,7 @@ from app import conduct, db, issues, limiter
 from app import facts as fact_signals
 from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
-from app.models import FACT_DIRECTIONS, Issue, IssueProposal, Post
+from app.models import FACT_DIRECTIONS, Issue, IssueFollowup, IssueProposal, Post
 from app.routes.forum import (_fact_form, _fact_phase_open, _new_fact, _require_csrf,
                               _rules_first_redirect, _thread_context, refuse_if_suspended)
 from app.utils import _pop_form_state, _pop_form_state_if, _stash_form_state, safe_next
@@ -170,7 +171,7 @@ def show(issue_id):
                            can_step=lifecycle.can_step(issue, current_user) and lifecycle.is_initiator(issue, current_user),
                            next_phase=lifecycle.next_phase(issue),
                            can_reopen=lifecycle.can_reopen(issue, current_user) and lifecycle.is_initiator(issue, current_user),
-                           can_edit_followup=lifecycle.can_edit_followup(issue, current_user),
+                           can_add_followup=lifecycle.can_add_followup(issue, current_user),
                            following=lifecycle.is_following(issue, current_user),
                            can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue),
                            return_to=issue.id,
@@ -638,15 +639,52 @@ def next_phase(issue_id):
 @issues_bp.route('/vraagstuk/<int:issue_id>/vervolg', methods=['POST'])
 @login_required
 def followup(issue_id):
+    """Add a dated update to the follow-up timeline (the earlier ones stay)."""
     issue = _issue_or_404(issue_id)
     _require_csrf()
-    if not lifecycle.can_edit_followup(issue, current_user):
+    if not lifecycle.can_add_followup(issue, current_user):
         abort(403)
     text = (request.form.get('followup_text') or '').strip()
+    if not text:
+        return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg', code=303)
     if len(text) > FOLLOWUP_MAX:
         flash(gettext('The text can be at most %(n)s characters.', n=FOLLOWUP_MAX), 'error')
         return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg', code=303)
-    lifecycle.set_followup(issue, text)
+    lifecycle.add_followup(issue, text, current_user)
+    db.session.commit()
+    return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg')
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/vervolg/<int:update_id>/bewerken', methods=['POST'])
+@login_required
+def followup_edit(issue_id, update_id):
+    """Edit the newest update (only that one; older ones stay as they were)."""
+    issue = _issue_or_404(issue_id)
+    _require_csrf()
+    update = IssueFollowup.query.get_or_404(update_id)
+    if update.issue_id != issue.id or not lifecycle.can_manage_followup(update, current_user):
+        abort(403)
+    text = (request.form.get('followup_text') or '').strip()
+    if not text:
+        return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg', code=303)
+    if len(text) > FOLLOWUP_MAX:
+        flash(gettext('The text can be at most %(n)s characters.', n=FOLLOWUP_MAX), 'error')
+        return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg', code=303)
+    lifecycle.edit_followup(update, text)
+    db.session.commit()
+    return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg')
+
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/vervolg/<int:update_id>/verwijderen', methods=['POST'])
+@login_required
+def followup_delete(issue_id, update_id):
+    """Delete the newest update (only that one)."""
+    issue = _issue_or_404(issue_id)
+    _require_csrf()
+    update = IssueFollowup.query.get_or_404(update_id)
+    if update.issue_id != issue.id or not lifecycle.can_manage_followup(update, current_user):
+        abort(403)
+    lifecycle.delete_followup(update)
     db.session.commit()
     return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg')
 

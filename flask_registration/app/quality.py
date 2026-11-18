@@ -394,6 +394,9 @@ def detach_user(user_id):
         model.query.filter_by(user_id=user_id).delete(synchronize_session=False)
         model.query.filter_by(by_id=user_id).update({model.by_id: None}, synchronize_session=False)
     User.query.filter_by(deleted_by_id=user_id).update({User.deleted_by_id: None}, synchronize_session=False)
+    # A follow-up update they wrote stays, without the author.
+    from app.models import IssueFollowup
+    IssueFollowup.query.filter_by(author_id=user_id).update({IssueFollowup.author_id: None}, synchronize_session=False)
 
 
 def reset_for_edit(post):

@@ -91,14 +91,17 @@ def _issue(db, people, *, title, intro, author, created_at, phase, schedule,
         title=title, intro=intro, kind='online', phase=phase,
         created_by_id=user.id, created_at=created_at, lang='nl',
         support_threshold=DEMO_SUPPORT_THRESHOLD, proposal_threshold_pct=50,
-        show_interim=True, final_vote=True, is_closed=closed, followup_text=followup,
-        followup_at=(created_at + timedelta(days=1)) if followup else None,
+        show_interim=True, final_vote=True, is_closed=closed,
         starts_at=schedule[0], adjust_starts_at=schedule[1],
         vote_starts_at=schedule[2], vote_ends_at=schedule[3],
         phase_started_at=schedule[max(0, _phase_pos(phase))], phase_deadline=deadline,
     )
     db.session.add(issue)
     db.session.flush()
+    if followup:  # one update in the follow-up timeline, a day after the start
+        from app.models import IssueFollowup
+        db.session.add(IssueFollowup(issue_id=issue.id, author_id=user.id, body=followup,
+                                     created_at=created_at + timedelta(days=1)))
     thread = Thread(eyebrow_nl='Vraagstuk', eyebrow_en='Issue',
                     title_prefix_nl=title, title_prefix_en=title,
                     is_closed=closed, is_demo=True, created_at=created_at)
@@ -366,6 +369,7 @@ def _remove_demo(db):
     from app import issue_lifecycle
     from app.models import IssueEventDay
     issue_lifecycle.delete_follows(issue_ids=issue_ids)
+    issue_lifecycle.delete_followups(issue_ids)
     from app import notifications
     notifications.delete_for_issues(issue_ids)
     IssueEventDay.query.filter(IssueEventDay.issue_id.in_(issue_ids)).delete(synchronize_session=False)

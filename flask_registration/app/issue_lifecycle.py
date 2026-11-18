@@ -22,7 +22,8 @@ het vraagstuk naar het vervolg: de nazorg.
   moderator zet de fasen met de hand door ("naar de volgende fase"); die
   actie bestaat ook bij online, om een fase vroegtijdig af te sluiten.
 - Uit de vervolgfase gaat niets automatisch verder. Daar schrijft de
-  initiatiefnemer of een moderator de vervolgtekst, en kan het vraagstuk
+  initiatiefnemer of een moderator gedateerde updates (de vervolgtijdlijn,
+  IssueFollowup), en kan het vraagstuk
   (ook als het gesloten is) opnieuw worden opengesteld: terug naar de
   feitenfase, met een nieuwe planning.
 - Een vraagstuk dat een oud voorstel inpakt (Proposal, een voorstel is een
@@ -229,13 +230,73 @@ def migrate_summary_phase():
     return moved
 
 
-def can_edit_followup(issue, user):
+# ── The follow-up as a timeline (IssueFollowup) ──────────────────────────
+
+def can_add_followup(issue, user):
     return _is_host(issue, user) and issue.phase == 'vervolg'
 
 
-def set_followup(issue, text, now=None):
-    issue.followup_text = text or None
-    issue.followup_at = now or datetime.utcnow()
+def add_followup(issue, text, author, now=None):
+    """A new dated update; the earlier ones stay. Does not commit."""
+    from app.models import IssueFollowup
+    db.session.add(IssueFollowup(
+        issue_id=issue.id,
+        author_id=getattr(author, 'id', None),
+        body=text,
+        created_at=now or datetime.utcnow(),
+    ))
+    db.session.expire(issue, ['followups'])  # reload the timeline with the new update
+
+
+def latest_followup(issue):
+    # issue.followups is newest first (order_by in the backref)
+    return issue.followups[0] if issue.followups else None
+
+
+def can_manage_followup(update, user):
+    """Only the newest update, in the follow-up phase, by a host."""
+    issue = update.issue
+    latest = latest_followup(issue)
+    return (_is_host(issue, user) and issue.phase == 'vervolg'
+            and latest is not None and latest.id == update.id)
+
+
+def edit_followup(update, text, now=None):
+    update.body = text
+    update.edited_at = now or datetime.utcnow()
+
+
+def delete_followup(update):
+    db.session.delete(update)
+
+
+def delete_followups(issue_ids):
+    """Before deleting issues in bulk: their follow-up timeline goes too
+    (a bulk delete passes the ORM cascade)."""
+    from app.models import IssueFollowup
+    issue_ids = list(issue_ids)
+    if issue_ids:
+        IssueFollowup.query.filter(IssueFollowup.issue_id.in_(issue_ids)).delete(synchronize_session=False)
+
+
+def migrate_followup_log():
+    """Eenmalig: de oude vervolgtekst (Issue.followup_text) wordt één update
+    in de tijdlijn. Daarna wordt followup_text leeggemaakt, zodat dit niet
+    opnieuw gebeurt. Idempotent."""
+    from app.models import IssueFollowup
+    now, moved = datetime.utcnow(), 0
+    for issue in Issue.query.filter(Issue.followup_text.isnot(None)).all():
+        has = IssueFollowup.query.filter_by(issue_id=issue.id).first()
+        if has is None:
+            db.session.add(IssueFollowup(
+                issue_id=issue.id, author_id=None,
+                body=issue.followup_text, created_at=issue.followup_at or now))
+        issue.followup_text = None
+        issue.followup_at = None
+        moved += 1
+    if moved:
+        db.session.commit()
+    return moved
 
 
 def can_reopen(issue, user):
@@ -350,6 +411,7 @@ def changes(issue, since, now=None):
             res = ip.result(final)
             out.append({'type': 'ultiem_uitslag', 'statement': final.statement, 'adopted': res['adopted'],
                         'pct': res['pct_for']})
-    if issue.followup_at is not None and since < issue.followup_at <= now and issue.followup_text:
+    latest = issue.followups[0] if issue.followups else None
+    if latest is not None and since < latest.created_at <= now:
         out.append({'type': 'issue_vervolgtekst'})
     return out

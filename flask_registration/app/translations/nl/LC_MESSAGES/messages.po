@@ -1809,19 +1809,6 @@ msgstr "De feitenfase sluit eerder als er vóór %(date)s geen nieuw keurmerk wo
 msgid "What happens next"
 msgstr "Wat er nu gebeurt"
 
-#, python-format
-msgid "Updated %(date)s"
-msgstr "Bijgewerkt op %(date)s"
-
-msgid "Edit the text"
-msgstr "Tekst bewerken"
-
-msgid "Describe what happens with this issue"
-msgstr "Beschrijf wat er met dit vraagstuk gebeurt"
-
-msgid "For example: who takes the outcome further, and when."
-msgstr "Bijvoorbeeld: wie de uitkomst verder brengt, en wanneer."
-
 msgid "Manage the phases"
 msgstr "Fasen beheren"
 
@@ -2213,9 +2200,6 @@ msgstr "Het beraad is afgerond. Het vraagstuk is in de vervolgfase"
 msgid "The follow-up after the deliberation: lobbying, media, implementation. Kept up to date by the initiator and the moderators."
 msgstr "De nazorg na het beraad: lobby, media, uitvoering. Bijgehouden door de initiatiefnemer en de moderators."
 
-msgid "For example: who takes the outcome further, through lobbying, the media or implementation, and when."
-msgstr "Bijvoorbeeld: wie de uitkomst verder brengt, via lobby, media of uitvoering, en wanneer."
-
 msgid "The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again."
 msgstr "De initiatiefnemer maakt nu op basis van alle voorstellen en de discussie een samenvattend voorstel. Daarna stemmen de deelnemers er opnieuw over."
 
@@ -2312,3 +2296,29 @@ msgstr "Het vraagstuk is gearchiveerd."
 
 msgid "The issue is back from the archive."
 msgstr "Het vraagstuk is terug uit het archief."
+
+msgid "Add an update"
+msgstr "Update toevoegen"
+
+msgid "What has happened since the last update?"
+msgstr "Wat is er sinds de vorige update gebeurd?"
+
+msgid "The previous updates stay, each with the date from then."
+msgstr "De vorige updates blijven staan, elk met de datum van toen."
+
+msgid "Post the update"
+msgstr "Plaatsen"
+
+msgid "Latest"
+msgstr "Nieuwste"
+
+#, python-format
+msgid "by %(name)s"
+msgstr "door %(name)s"
+
+#, python-format
+msgid "edited %(date)s"
+msgstr "bewerkt %(date)s"
+
+msgid "Delete this update?"
+msgstr "Deze update verwijderen?"

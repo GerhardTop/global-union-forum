@@ -1809,19 +1809,6 @@ msgstr "The facts phase closes earlier if no new quality mark is awarded before 
 msgid "What happens next"
 msgstr "What happens next"
 
-#, python-format
-msgid "Updated %(date)s"
-msgstr "Updated %(date)s"
-
-msgid "Edit the text"
-msgstr "Edit the text"
-
-msgid "Describe what happens with this issue"
-msgstr "Describe what happens with this issue"
-
-msgid "For example: who takes the outcome further, and when."
-msgstr "For example: who takes the outcome further, and when."
-
 msgid "Manage the phases"
 msgstr "Manage the phases"
 
@@ -2213,9 +2200,6 @@ msgstr "The deliberation has ended. The issue is in the follow-up phase"
 msgid "The follow-up after the deliberation: lobbying, media, implementation. Kept up to date by the initiator and the moderators."
 msgstr "The follow-up after the deliberation: lobbying, media, implementation. Kept up to date by the initiator and the moderators."
 
-msgid "For example: who takes the outcome further, through lobbying, the media or implementation, and when."
-msgstr "For example: who takes the outcome further, through lobbying, the media or implementation, and when."
-
 msgid "The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again."
 msgstr "The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again."
 
@@ -2306,3 +2290,29 @@ msgstr "Conduct rules: removed by the AI"
 
 msgid "No posts removed by the AI."
 msgstr "No posts removed by the AI."
+
+msgid "Add an update"
+msgstr "Add an update"
+
+msgid "What has happened since the last update?"
+msgstr "What has happened since the last update?"
+
+msgid "The previous updates stay, each with the date from then."
+msgstr "The previous updates stay, each with the date from then."
+
+msgid "Post the update"
+msgstr "Post"
+
+msgid "Latest"
+msgstr "Latest"
+
+#, python-format
+msgid "by %(name)s"
+msgstr "by %(name)s"
+
+#, python-format
+msgid "edited %(date)s"
+msgstr "edited %(date)s"
+
+msgid "Delete this update?"
+msgstr "Delete this update?"

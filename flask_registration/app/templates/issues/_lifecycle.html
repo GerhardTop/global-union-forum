@@ -1,28 +1,64 @@
 {#
-  Partial: issues/_lifecycle.html (herontwerp stap 7)
-  Onder de fase-strip van de cockpit: in de vervolgfase de vervolgtekst (wat
-  er met het vraagstuk gebeurt), met het schrijven ervan. De fase-knoppen en
-  het admin-beheer staan in het Beheer-menu (issues/_beheer.html).
-  Context: issue, can_edit_followup.
+  Partial: issues/_lifecycle.html (herontwerp stap 7, vervolg als tijdlijn)
+  In de vervolgfase: de updates als gedateerde tijdlijn, nieuwste bovenaan.
+  Toevoegen doet de initiatiefnemer en moderators; de nieuwste is te bewerken
+  of te verwijderen, oudere blijven staan. Bouw naar docs/design/vervolg.html.
+  Context: issue, can_add_followup, forum_action_form.
 #}
-{% if issue.phase == 'vervolg' and (issue.followup_text or can_edit_followup) %}
-<section class="gu-cockpit__followup" id="vervolg" aria-labelledby="followupTitle">
-  <h2 class="gu-cockpit__title" id="followupTitle">{{ _('What happens next') }}</h2>
-  <p class="gu-composer__hint">{{ _('The follow-up after the deliberation: lobbying, media, implementation. Kept up to date by the initiator and the moderators.') }}</p>
-  {% if issue.followup_text %}
-  <div class="gu-cockpit__intro">{{ issue.followup_text | linkify }}</div>
-  <p class="gu-composer__hint">{{ _('Updated %(date)s', date=issue.followup_at | datetimeformat('d MMM y HH:mm')) }}</p>
-  {% endif %}
-  {% if can_edit_followup %}
-  <details class="gu-cockpit__followupedit"{% if not issue.followup_text %} open{% endif %}>
-    <summary>{% if issue.followup_text %}{{ _('Edit the text') }}{% else %}{{ _('Describe what happens with this issue') }}{% endif %}</summary>
+{% if issue.phase == 'vervolg' and (issue.followups or can_add_followup) %}
+<section class="gu-followup" id="vervolg" aria-labelledby="followupTitle">
+  <span class="gu-followup__eyebrow" id="followupTitle">{{ _('What happens next') }}</span>
+  <p class="gu-followup__hint">{{ _('The follow-up after the deliberation: lobbying, media, implementation. Kept up to date by the initiator and the moderators.') }}</p>
+
+  {% if can_add_followup %}
+  <details class="gu-followup__add"{% if not issue.followups %} open{% endif %}>
+    <summary>{{ _('Add an update') }}</summary>
     <form method="POST" action="{{ url_for('issues.followup', issue_id=issue.id) }}" class="gu-forum__newform">
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
       <textarea name="followup_text" rows="4" maxlength="5000" class="gu-composer__input"
-                placeholder="{{ _('For example: who takes the outcome further, through lobbying, the media or implementation, and when.') }}">{{ issue.followup_text or '' }}</textarea>
-      <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Save') }}</button>
+                placeholder="{{ _('What has happened since the last update?') }}"></textarea>
+      <div class="gu-followup__addrow">
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Post the update') }}</button>
+        <span class="gu-followup__addhint">{{ _('The previous updates stay, each with the date from then.') }}</span>
+      </div>
     </form>
   </details>
+  {% endif %}
+
+  {% if issue.followups %}
+  <ul class="gu-followup__tl">
+    {% for u in issue.followups %}
+    <li class="gu-followup__item{% if not loop.first %} gu-followup__item--old{% endif %}">
+      <span class="gu-followup__dot"></span>
+      <p class="gu-followup__date">
+        {{ u.created_at | datetimeformat('d MMM y HH:mm') }}
+        {% if loop.first %}<span class="gu-followup__now">{{ _('Latest') }}</span>{% endif %}
+        {% if u.edited_at %}<span class="gu-followup__edited">· {{ _('edited %(date)s', date=u.edited_at | datetimeformat('d MMM y HH:mm')) }}</span>{% endif %}
+      </p>
+      <div class="gu-followup__body">{{ u.body | linkify }}</div>
+      <p class="gu-followup__meta">
+        {% if u.author %}{{ _('by %(name)s', name=u.author.public_name) }}{% endif %}
+      </p>
+      {% if can_add_followup and loop.first %}
+      <div class="gu-followup__actions">
+        <details class="gu-followup__editwrap">
+          <summary>{{ _('Edit') }}</summary>
+          <form method="POST" action="{{ url_for('issues.followup_edit', issue_id=issue.id, update_id=u.id) }}" class="gu-forum__newform">
+            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+            <textarea name="followup_text" rows="4" maxlength="5000" class="gu-composer__input">{{ u.body }}</textarea>
+            <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Save') }}</button>
+          </form>
+        </details>
+        <form method="POST" action="{{ url_for('issues.followup_delete', issue_id=issue.id, update_id=u.id) }}"
+              class="gu-followup__delform" onsubmit="return confirm('{{ _('Delete this update?') }}')">
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          <button type="submit" class="gu-followup__linkbtn gu-followup__linkbtn--danger">{{ _('Delete') }}</button>
+        </form>
+      </div>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
   {% endif %}
 </section>
 {% endif %}

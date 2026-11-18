@@ -835,6 +835,8 @@ class Issue(db.Model):
     # Stap 2: het gesprek met de gedeelde discussie (de middenkolom van de
     # cockpit). Bij een ingepakt voorstel het gesprek van dat voorstel.
     thread_id              = db.Column(db.Integer, db.ForeignKey('threads.id'), nullable=True, index=True)
+    # Superseded by IssueFollowup (the follow-up timeline); kept only as the
+    # source of issue_lifecycle.migrate_followup_log, not used otherwise.
     # Stap 7: wat er met het vraagstuk gebeurt (de vervolgtekst), door de
     # initiatiefnemer of een moderator, met het moment van de laatste wijziging.
     followup_text          = db.Column(db.Text, nullable=True)
@@ -920,6 +922,26 @@ class IssueFollow(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     __table_args__ = (db.UniqueConstraint('issue_id', 'user_id', name='uq_issue_follow'),)
+
+
+class IssueFollowup(db.Model):
+    """Herontwerp stap 7: de vervolgfase als tijdlijn. Elke update is een
+    eigen gedateerde regel (nieuwste eerst); oude blijven staan. Toevoegen
+    doet de initiatiefnemer of een moderator; alleen de nieuwste is te
+    bewerken of te verwijderen."""
+    __tablename__ = "issue_followups"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    issue_id   = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=False, index=True)
+    author_id  = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    body       = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    edited_at  = db.Column(db.DateTime, nullable=True)
+
+    issue  = db.relationship('Issue', backref=db.backref(
+        'followups', lazy=True, cascade='all, delete-orphan',
+        order_by="IssueFollowup.created_at.desc(), IssueFollowup.id.desc()"))
+    author = db.relationship('User')
 
 
 # ── Herontwerp stap 4: voorstellen als onderdeel van een vraagstuk ───────

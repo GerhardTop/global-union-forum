@@ -61,6 +61,7 @@ def make_user(db):
     for tid in [t.id for t in Thread.query.join(Post).filter(Post.user_id.in_(made)).distinct()]:
         _delete_thread(db.session.get(Thread, tid))
     if issue_ids:
+        lifecycle.delete_followups(issue_ids)
         Issue.query.filter(Issue.id.in_(issue_ids)).delete(synchronize_session=False)
     row = db.session.get(AppSetting, lifecycle.SILENCE_KEY)
     if row is not None:
@@ -267,7 +268,8 @@ def test_followup_text(app, db, make_user):
     assert _req(_client(app, host), 'POST', url,
                 data={'followup_text': 'De gemeenteraad bespreekt de uitkomst in maart.'}).status_code == 302
     db.session.refresh(issue)
-    assert issue.followup_text == 'De gemeenteraad bespreekt de uitkomst in maart.' and issue.followup_at
+    # The follow-up is a timeline now: one dated update by the host.
+    assert [(u.body, u.author_id) for u in issue.followups] == [('De gemeenteraad bespreekt de uitkomst in maart.', host.id)]
     page = _req(_client(app), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
     assert 'Wat er nu gebeurt' in page and 'De gemeenteraad bespreekt de uitkomst in maart.' in page
 
@@ -346,7 +348,7 @@ def test_followup_and_reopen_are_announced(db, make_user):
     lifecycle.set_phase(issue, 'vervolg', datetime.utcnow() - timedelta(days=2))
     db.session.commit()
     since = datetime.utcnow() - timedelta(hours=1)
-    lifecycle.set_followup(issue, 'Wat er gebeurt.')
+    lifecycle.add_followup(issue, 'Wat er gebeurt.', host)
     db.session.commit()
     assert {'type': 'issue_vervolgtekst'} in lifecycle.changes(issue, since)
     lifecycle.reopen(issue)

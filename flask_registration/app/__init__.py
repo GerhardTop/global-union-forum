@@ -160,6 +160,7 @@ def _migrate_columns():
     # uit de vervolgfase naar de eigen fase samenvatten (idempotent).
     from app import issue_lifecycle
     issue_lifecycle.migrate_summary_phase()
+    issue_lifecycle.migrate_followup_log()
 
 
 def _migrate_roles(existing):

@@ -1,0 +1,82 @@
+<!doctype html>
+<!-- Statisch artboard (alleen om naar te kijken): het vervolgblok als tijdlijn.
+     Elke update is een eigen gedateerde regel; de oude blijft staan. Bovenaan
+     een vak om een update toe te voegen (alleen initiatiefnemer/moderator). -->
+<html lang="nl">
+<head>
+<meta charset="utf-8"><title>Vervolg (tijdlijn)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<style>
+body{margin:0}
+.gu *{box-sizing:border-box}
+.gu{--globe:#3ab0f0;--globe-deep:#1b74b8;--ink:#141b22;--paper:#fff;--americas:#d8232a;--oceania:#108a4e;
+  --n50:#f5f7f9;--n100:#eef1f5;--n200:#e4e9ef;--n300:#d3dae2;--n400:#a7b1bd;--n500:#6c7683;--n600:#525c69;--n700:#3a434e;--border:#e4e9ef;
+  --shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05);
+  font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--n50)}
+a{color:#1b74b8;text-decoration:none}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--globe-deep);margin:0}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px}
+.colwide{max-width:1040px;margin:0 auto}
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:500;padding:9px 15px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--ink);cursor:pointer}
+.btn--primary{background:var(--globe-deep);border-color:var(--globe-deep);color:#fff}
+.fu{background:var(--paper);border:1.5px solid var(--globe);border-radius:14px;box-shadow:var(--shadow);padding:22px 26px}
+.fu__hint{font-size:13px;color:var(--n500);margin:4px 0 18px}
+.add{border:1px solid #c5dcf4;background:#f7fbff;border-radius:12px;padding:16px 18px;margin-bottom:22px}
+.add__title{font-size:13.5px;font-weight:600;margin:0 0 10px}
+.textarea{width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--n300);border-radius:8px;padding:10px 12px;resize:vertical;min-height:78px;line-height:1.5}
+.add__actions{display:flex;align-items:center;gap:10px;margin-top:12px}
+.add__hint{font-size:11.5px;color:var(--n500);margin-left:auto}
+.tl{position:relative;margin:0;padding:0;list-style:none}
+.tl__item{position:relative;padding:0 0 22px 26px}
+.tl__item:last-child{padding-bottom:0}
+.tl__item::before{content:"";position:absolute;left:5px;top:6px;bottom:-6px;width:2px;background:var(--n200)}
+.tl__item:last-child::before{display:none}
+.tl__dot{position:absolute;left:0;top:4px;width:12px;height:12px;border-radius:50%;background:#fff;border:2.5px solid var(--globe-deep)}
+.tl__item--old .tl__dot{border-color:var(--n300)}
+.tl__date{font-size:12px;font-weight:600;color:var(--globe-deep);margin:0 0 5px}
+.tl__item--old .tl__date{color:var(--n500)}
+.tl__body{font-size:14.5px;color:var(--ink);line-height:1.55;margin:0}
+.tl__meta{font-size:11.5px;color:var(--n500);margin:6px 0 0}
+.tl__meta a{color:var(--n500)}
+.badge-now{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--globe-deep);background:#eaf2fb;border:1px solid #c5dcf4;border-radius:999px;padding:1px 8px;margin-left:8px}
+</style>
+</head>
+<body>
+<div class="gu" style="min-height:100%;padding:34px 0 60px">
+  <div class="wrap">
+    <section class="fu colwide">
+      <span class="eyebrow">Wat er nu gebeurt</span>
+      <p class="fu__hint">De nazorg na het beraad: lobby, media, uitvoering. Bijgehouden door de initiatiefnemer en de moderators.</p>
+      <div class="add">
+        <p class="add__title">Update toevoegen</p>
+        <textarea class="textarea" placeholder="Wat is er sinds de vorige update gebeurd?"></textarea>
+        <div class="add__actions">
+          <button class="btn btn--primary">Plaatsen &rsaquo;</button>
+          <span class="add__hint">De vorige updates blijven staan, elk met de datum van toen.</span>
+        </div>
+      </div>
+      <ul class="tl">
+        <li class="tl__item">
+          <span class="tl__dot"></span>
+          <p class="tl__date">18 nov 2026 16:47 <span class="badge-now">Nieuwste</span></p>
+          <div class="tl__body">Dit is gebeurd. Was leuk en succesvol. Zie onze blog.</div>
+          <p class="tl__meta">door Jan Hofman · <a href="#">Bewerken</a> · <a href="#">Verwijderen</a></p>
+        </li>
+        <li class="tl__item tl__item--old">
+          <span class="tl__dot"></span>
+          <p class="tl__date">4 nov 2026 09:12</p>
+          <div class="tl__body">We gaan dit met handtekeningen voorzien aanbieden aan de minister. Wie tekent mee?</div>
+          <p class="tl__meta">door Jan Hofman</p>
+        </li>
+        <li class="tl__item tl__item--old">
+          <span class="tl__dot"></span>
+          <p class="tl__date">28 okt 2026 14:30</p>
+          <div class="tl__body">De stemming is afgerond. We bundelen de uitkomst en bereiden een brief aan de Tweede Kamer voor.</div>
+          <p class="tl__meta">door Anne Top (moderator)</p>
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>
+</body>
+</html>
