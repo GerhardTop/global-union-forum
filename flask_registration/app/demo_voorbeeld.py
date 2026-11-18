@@ -45,7 +45,7 @@ _FACTS = [
     ('fatima', 'tegen', 'https://www.imf.org/en/Publications', None,
      'Kleinere landen waarschuwen dat ze met lage tarieven investeringen aantrekken. Een '
      'minimumtarief raakt dat instrument, blijkt uit een working paper van het IMF.'),
-    ('sarah', 'voor', 'https://www.ftm.nl/', 'media',
+    ('sarah', 'voor', 'https://www.ftm.nl/', 'nieuwsartikel',
      'In deze reportage volgt een journalist hoe een groot techbedrijf zijn winst via drie '
      'landen naar een belastingparadijs leidt.'),
     ('jan', 'voor', 'https://taxjustice.net/', None,
