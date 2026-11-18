@@ -165,20 +165,49 @@
 
 {# ── Feedback & uitnodiging ────────────────────────────────── #}
 <section style="background: #ffffff; padding: 48px 0;">
-  {# Altijd precies 2 kaarten (Feedback + Uitnodiging voor leden, Feedback +
-     Doe mee voor bezoekers) — dus altijd de gewone 2-koloms-grid, geen
+  {# Altijd precies 2 kaarten (Uitnodiging + Feedback voor leden, Doe mee +
+     Feedback voor bezoekers; feedback staat rechts) — dus altijd de gewone 2-koloms-grid, geen
      aparte 3-koloms-variant meer nodig sinds de uitnodig-kaart alleen nog
      aan ingelogde leden getoond wordt. #}
   <div class="gu-feedback-wrap">
     <div class="gu-feedback-grid">
 
-      {# Kaartje 1 — Feedback. /feedback vereist sinds @login_required een
+      {% if current_user.is_authenticated %}
+      {# Left card — Uitnodiging (alleen ingelogd: /uitnodiging vereist nu
+         @login_required — zie app/routes/social.py) #}
+      <div class="gu-feedback-card">
+        <p style="font-size: 1rem; line-height: 1.65; color: var(--gu-fg-2); margin: 0;">
+          {{ _('I know someone who would most probably like to join the conversation.') }}
+        </p>
+        <div>
+          <button type="button" id="guInviteBtn" class="gu-btn gu-btn--primary">
+            {{ _('Invite') }}
+            <span class="gu-arrow"></span>
+          </button>
+        </div>
+      </div>
+      {% else %}
+      {# Left card — Doe mee (alleen niet-ingelogd) #}
+      <div class="gu-feedback-card">
+        <p style="font-size: 1rem; line-height: 1.65; color: var(--gu-fg-2); margin: 0;">
+          {{ _('Are you enthusiastic or critical? Think along with us.') }}
+        </p>
+        <div>
+          <a href="{{ url_for('social.aanmelden') }}" class="gu-btn gu-btn--primary">
+            {{ _('Join the thinking') }}
+            <span class="gu-arrow"></span>
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      {# Feedback card, on the right (after the invite or join card). /feedback vereist sinds @login_required een
          ingelogde gebruiker (zie app/routes/social.py) — de kaart zelf blijft
          voor iedereen zichtbaar, alleen de knop verschilt: niet-ingelogd
          linkt 'm naar de loginpagina i.p.v. de modal te openen. #}
       <div class="gu-feedback-card">
         <p style="font-size: 1rem; line-height: 1.65; color: var(--gu-fg-2); margin: 0;">
-          {{ _('This site was designed with Claude Design and built with Claude and Claude Code. Do you have feedback about the site itself? I\'d love to hear it! Substantive reactions to the idea are welcome in the forum. Thanks in advance.') }}
+          {{ _('This site was designed and built with the help of AI. Do you have feedback about the site itself? I\'d love to hear it! Substantive reactions to the idea are welcome in the forum. Thanks in advance.') }}
         </p>
         <div>
           {% if current_user.is_authenticated %}
@@ -194,35 +223,6 @@
           {% endif %}
         </div>
       </div>
-
-      {% if current_user.is_authenticated %}
-      {# Kaartje 2 — Uitnodiging (alleen ingelogd: /uitnodiging vereist nu
-         @login_required — zie app/routes/social.py) #}
-      <div class="gu-feedback-card">
-        <p style="font-size: 1rem; line-height: 1.65; color: var(--gu-fg-2); margin: 0;">
-          {{ _('I know someone who would most probably like to join the conversation.') }}
-        </p>
-        <div>
-          <button type="button" id="guInviteBtn" class="gu-btn gu-btn--primary">
-            {{ _('Invite') }}
-            <span class="gu-arrow"></span>
-          </button>
-        </div>
-      </div>
-      {% else %}
-      {# Kaartje 3 — Doe mee (alleen niet-ingelogd) #}
-      <div class="gu-feedback-card">
-        <p style="font-size: 1rem; line-height: 1.65; color: var(--gu-fg-2); margin: 0;">
-          {{ _('Are you enthusiastic or critical? Think along with us.') }}
-        </p>
-        <div>
-          <a href="{{ url_for('social.aanmelden') }}" class="gu-btn gu-btn--primary">
-            {{ _('Join the thinking') }}
-            <span class="gu-arrow"></span>
-          </a>
-        </div>
-      </div>
-      {% endif %}
 
     </div>
   </div>
