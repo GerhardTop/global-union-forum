@@ -3939,18 +3939,6 @@ body {
 /* Koppen in het donker op de zachte pagina's. */
 .gu-forum--soft .gu-forum__title { color: var(--gu-fg-1); font-weight: 600; }
 
-/* ── Feitenpagina: feiten als witte kaarten, richting als pil bovenaan ── */
-.gu-factspage.gu-forum--soft .gu-fact {
-  flex-direction: column; gap: 7px;
-  background: var(--gu-paper); border: 1px solid var(--gu-border);
-  border-radius: 12px; padding: 14px 16px;
-}
-.gu-factspage.gu-forum--soft .gu-fact > .gu-fact__dir { min-width: 0; align-self: flex-start; justify-content: flex-start; margin: 0; }
-.gu-factspage.gu-forum--soft .gu-fact--moved { background: none; border: 0; padding: 4px 0; }
-
-/* ── Voorstellenpagina: voorstellen als witte kaarten ─────────────────── */
-
-
 /* ── Overzicht Denk mee: vraagstukken als witte kaarten ───────────────── */
 .gu-forum--soft .gu-issuelist { display: flex; flex-direction: column; gap: 12px; border-top: 0; margin-top: 0; }
 .gu-issuelist__by { font-size: 0.8125rem; color: var(--gu-fg-3); margin-top: 2px; }
