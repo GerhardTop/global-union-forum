@@ -68,20 +68,10 @@
 </div>
 <script nonce="{{ csp_nonce() }}">
   (function () {
-    var lang = '{{ lang }}';
     var messages = {
-      format: {
-        nl: '3-20 tekens: letters, cijfers, - en _',
-        en: '3-20 characters: letters, numbers, - and _'
-      },
-      blacklisted: {
-        nl: 'Deze gebruikersnaam is niet beschikbaar.',
-        en: 'This username is not available.'
-      },
-      taken: {
-        nl: 'Deze gebruikersnaam is al in gebruik.',
-        en: 'This username is already taken.'
-      }
+      format: {{ _('3-20 characters: letters, numbers, - and _') | tojson }},
+      blacklisted: {{ _('This username is not available.') | tojson }},
+      taken: {{ _('This username is already taken.') | tojson }}
     };
     var input = document.getElementById('username');
     var errorEl = document.getElementById('usernameError');
@@ -99,8 +89,8 @@
             errorEl.style.display = 'none';
             input.classList.remove('gu-input--error');
           } else {
-            var msgs = messages[data.reason] || messages.format;
-            errorEl.textContent = msgs[lang] || msgs.nl;
+            var msg = messages[data.reason] || messages.format;
+            errorEl.textContent = msg;
             errorEl.style.display = '';
             input.classList.add('gu-input--error');
           }

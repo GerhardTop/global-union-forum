@@ -59,7 +59,7 @@
           <input id="password" name="password" type="password"
                  class="gu-input{% if errors.password or errors.password_mismatch %} gu-input--error{% endif %}"
                  placeholder="{{ _('Min. 8 characters') }}" required>
-          <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+          <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
             <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
@@ -79,7 +79,7 @@
           <input id="password_confirm" name="password_confirm" type="password"
                  class="gu-input{% if errors.password_mismatch %} gu-input--error{% endif %}"
                  placeholder="{{ _('Repeat your password') }}" required>
-          <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+          <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
             <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
@@ -197,7 +197,6 @@
   (function () {
     var form = document.querySelector('form.gu-join__panel');
     if (!form) return;
-    var nl = {{ (lang == 'nl') | tojson }};
     function el(id) { return document.getElementById(id); }
     function mark(input, errorEl, bad, text) {
       if (input) input.classList.toggle('gu-input--error', bad);
@@ -216,7 +215,7 @@
       var first = el('first_name'), last = el('last_name'), rules = el('accept_rules');
       var problems = [];
       if (mark(u, el('usernameError'), !/^[A-Za-z0-9_-]{3,20}$/.test(u.value.trim()),
-               nl ? '3-20 tekens: letters, cijfers, - en _' : '3-20 characters: letters, numbers, - and _')) problems.push(u);
+               {{ _('3-20 characters: letters, numbers, - and _') | tojson }})) problems.push(u);
       if (mark(em, el('emailError'), !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim()))) problems.push(em);
       var weak = !strong(pw.value);
       pw.classList.toggle('gu-input--error', weak);
@@ -297,20 +296,10 @@
      Server-side (zie social.py aanmelden()/username_check()) blijft de
      uiteindelijke autoriteit — dit is puur snellere terugkoppeling. */
   (function () {
-    var lang = '{{ lang }}';
     var messages = {
-      format: {
-        nl: '3-20 tekens: letters, cijfers, - en _',
-        en: '3-20 characters: letters, numbers, - and _'
-      },
-      blacklisted: {
-        nl: 'Deze gebruikersnaam is niet beschikbaar.',
-        en: 'This username is not available.'
-      },
-      taken: {
-        nl: 'Deze gebruikersnaam is al in gebruik.',
-        en: 'This username is already taken.'
-      }
+      format: {{ _('3-20 characters: letters, numbers, - and _') | tojson }},
+      blacklisted: {{ _('This username is not available.') | tojson }},
+      taken: {{ _('This username is already taken.') | tojson }}
     };
     var input = document.getElementById('username');
     var errorEl = document.getElementById('usernameError');
@@ -328,8 +317,8 @@
             errorEl.style.display = 'none';
             input.classList.remove('gu-input--error');
           } else {
-            var msgs = messages[data.reason] || messages.format;
-            errorEl.textContent = msgs[lang] || msgs.nl;
+            var msg = messages[data.reason] || messages.format;
+            errorEl.textContent = msg;
             errorEl.style.display = '';
             input.classList.add('gu-input--error');
           }
@@ -357,13 +346,8 @@
   })();
 
   (function () {
-    var lang = '{{ lang }}';
-    var labels = {
-      nl: ['Zwak', 'Matig', 'Sterk'],
-      en: ['Weak', 'Fair',  'Strong']
-    };
+    var L = [{{ _('Weak') | tojson }}, {{ _('Fair') | tojson }}, {{ _('Strong') | tojson }}];
     var levels = ['gu-pw-strength--weak', 'gu-pw-strength--medium', 'gu-pw-strength--strong'];
-    var L = labels[lang] || labels.nl;
 
     var input = document.getElementById('password');
     var box   = document.getElementById('pwStrength');

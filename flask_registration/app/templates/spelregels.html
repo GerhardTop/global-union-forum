@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'nl' %}Spelregels{% else %}Ground rules{% endif %} · Global Union{% endblock %}
+{% block title %}{{ _('Ground rules') }} · Global Union{% endblock %}
 
 {% block content %}
 <div class="gu-profile" style="max-width: 720px;">
 
   <div class="gu-profile__head">
     <p class="gu-eyebrow">Global Union Forum</p>
-    <h1 class="gu-profile__title">{% if lang == 'nl' %}Spelregels{% else %}Ground rules{% endif %}</h1>
+    <h1 class="gu-profile__title">{{ _('Ground rules') }}</h1>
   </div>
 
   <div class="gu-join__panel">
@@ -16,7 +16,7 @@
     {% with compact=false %}{% include '_rules_list.html' %}{% endwith %}
 
     <p style="color: var(--gu-fg-2);">
-      {% if lang == 'nl' %}Moderators houden toezicht op de gedragsregels. Een bijdrage die een gedragsregel overtreedt, wordt niet verwijderd maar verplaatst naar de openbare <a href="{{ url_for('forum.achtergrond') }}">achtergrondpagina</a>, met de regel en de uitleg. Spam of grof misbruik wordt volledig verborgen. De auteur kan binnen zeven dagen bezwaar maken, en een moderator beslist. Moderators kunnen ook een gesprek sluiten.{% else %}Moderators oversee the conduct rules. A contribution that breaks a conduct rule is not deleted but moved to the public <a href="{{ url_for('forum.achtergrond') }}">background page</a>, with the rule and the explanation. Spam or gross abuse is hidden completely. The author can object within seven days, and a moderator decides. Moderators can also close a conversation.{% endif %}
+      {% trans value=url_for('forum.achtergrond') %}Moderators oversee the conduct rules. A contribution that breaks a conduct rule is not deleted but moved to the public <a href="{{ value }}">background page</a>, with the rule and the explanation. Spam or gross abuse is hidden completely. The author can object within seven days, and a moderator decides. Moderators can also close a conversation.{% endtrans %}
     </p>
 
     <hr class="gu-auth__divider" style="margin: 28px 0;">
@@ -26,7 +26,7 @@
       <a class="gu-btn gu-btn--primary" href="{{ url_for('social.aanmelden') }}">{{ _('Join the thinking') }} <span class="gu-arrow"></span></a>
     {% elif current_user.rules_accepted_at %}
       <p class="gu-rules__accepted">
-        {{ _('You accepted the conduct rules on %(date)s.', date=current_user.rules_accepted_at.strftime('%d-%m-%Y' if lang == 'nl' else '%d %B %Y')) }}
+        {{ _('You accepted the conduct rules on %(date)s.', date=current_user.rules_accepted_at.strftime(_('%d %B %Y'))) }}
       </p>
     {% else %}
       <form method="POST" action="{{ url_for('main.spelregels_accepteren') }}" id="rulesAcceptForm">

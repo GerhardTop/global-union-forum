@@ -4,14 +4,14 @@
   zoals de andere inhoudspagina's. Elke vraag klapt uit met <details>, dus
   zonder JavaScript te gebruiken; standaard staat alles dicht.
 #}
-{% block title %}{% if lang == 'nl' %}Veelgestelde vragen{% else %}FAQ{% endif %} · Global Union{% endblock %}
+{% block title %}{{ _('FAQ') }} · Global Union{% endblock %}
 
 {% block content %}
 <div class="gu-profile gu-faq" style="max-width: 720px;" lang="{{ lang }}">
 
   <div class="gu-profile__head">
     <p class="gu-eyebrow">FAQ</p>
-    <h1 class="gu-profile__title">{% if lang == 'nl' %}Veelgestelde vragen{% else %}FAQ{% endif %}</h1>
+    <h1 class="gu-profile__title">{{ _('FAQ') }}</h1>
   </div>
 
   {% for theme, questions in themes %}

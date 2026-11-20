@@ -4,6 +4,7 @@ anchor #vertrekpunt) and the corrected EU/Canada sentence on the homepage, in
 both languages.
 """
 import pytest
+from flask_babel import refresh
 
 INTRO = {
     'nl': ('Gelijkgezinde landen als positieve kracht', (
@@ -41,6 +42,7 @@ HOME = {
 @pytest.mark.parametrize('lang', ['nl', 'en'])
 def test_manifest_intro(client, lang):
     client.get(f'/lang/{lang}')
+    refresh()  # Flask-Babel caches the locale in the shared test app context
     html = client.get('/manifest').get_data(as_text=True)
     heading, paragraphs = INTRO[lang]
     section = html.split('id="vertrekpunt"')[1].split('</section>')[0]
@@ -56,6 +58,7 @@ def test_manifest_intro(client, lang):
 @pytest.mark.parametrize('lang', ['nl', 'en'])
 def test_homepage_eu_canada_sentence(client, lang):
     client.get(f'/lang/{lang}')
+    refresh()  # Flask-Babel caches the locale in the shared test app context
     html = client.get('/').get_data(as_text=True)
     assert HOME[lang] in html
     assert 'associated member' not in html and 'geassocieerde lid' not in html
@@ -73,6 +76,7 @@ HOME_INTRO = {
 def test_homepage_intro_sentence(client, lang):
     """The homepage intro calls the forum an open think tank (no "global")."""
     client.get(f'/lang/{lang}')
+    refresh()  # Flask-Babel caches the locale in the shared test app context
     html = client.get('/').get_data(as_text=True)
     now, gone = HOME_INTRO[lang]
     assert now in html and gone not in html

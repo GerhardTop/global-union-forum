@@ -3581,3 +3581,301 @@ msgstr "all time"
 
 msgid "all languages"
 msgstr "all languages"
+
+msgid "Page not found"
+msgstr "Page not found"
+
+msgid "Back to homepage"
+msgstr "Back to homepage"
+
+msgid "Something went wrong"
+msgstr "Something went wrong"
+
+msgid "You are suspended until"
+msgstr "You are suspended until"
+
+msgid "You can read, but not contribute or vote."
+msgstr "You can read, but not contribute or vote."
+
+msgid "Congratulations! Based on your quality contributions you now have the status"
+msgstr "Congratulations! Based on your quality contributions you now have the status"
+
+msgid ", with the right to vote"
+msgstr ", with the right to vote"
+
+msgid "Dismiss"
+msgstr "Dismiss"
+
+msgid "FAQ"
+msgstr "FAQ"
+
+msgid "The world needs a geopolitical power bloc that stands for our security, for our freedom, for the international rule of law, for democracy, human rights and sustainability."
+msgstr "The world needs a geopolitical power bloc that stands for our security, for our freedom, for the international rule of law, for democracy, human rights and sustainability."
+
+msgid "Russia threatens European security, and the US risks becoming a less reliable partner. China backs Russia. The UN Security Council is increasingly paralysed."
+msgstr "Russia threatens European security, and the US risks becoming a less reliable partner. China backs Russia. The UN Security Council is increasingly paralysed."
+
+msgid "Mark Carney, Prime Minister of Canada, called in Davos for cooperation between \"middle powers\": countries that together are large enough to matter and that respect the international rule of law. A first step was taken in October 2026: the EU and Canada formed an alliance for the future, open to like-minded countries."
+msgstr "Mark Carney, Prime Minister of Canada, called in Davos for cooperation between \"middle powers\": countries that together are large enough to matter and that respect the international rule of law. A first step was taken in October 2026: the EU and Canada formed an alliance for the future, open to like-minded countries."
+
+msgid "Global Union Forum wants to seize this momentum and argues for a permanent structure of cooperation, open to all countries that meet criteria for democracy, the rule of law, anti-corruption and human rights. Not as a replacement for the UN, but as a complement. A cooperation alongside the EU, not only with obvious partners such as Canada, the United Kingdom, Japan, South Korea and Australia, but also with countries beyond them that already have a strong democracy, such as Chile, Uruguay, Costa Rica, Cape Verde, Botswana and Ghana."
+msgstr "Global Union Forum wants to seize this momentum and argues for a permanent structure of cooperation, open to all countries that meet criteria for democracy, the rule of law, anti-corruption and human rights. Not as a replacement for the UN, but as a complement. A cooperation alongside the EU, not only with obvious partners such as Canada, the United Kingdom, Japan, South Korea and Australia, but also with countries beyond them that already have a strong democracy, such as Chile, Uruguay, Costa Rica, Cape Verde, Botswana and Ghana."
+
+msgid "With its enlargement into Eastern Europe, the EU showed how strong the pull of a bloc of prosperous democracies is: countries with formerly autocratic regimes carried out reforms in order to join. That pull can be scaled up to the global level, with, in the long term, the prospect of a Global Union of functioning democracies."
+msgstr "With its enlargement into Eastern Europe, the EU showed how strong the pull of a bloc of prosperous democracies is: countries with formerly autocratic regimes carried out reforms in order to join. That pull can be scaled up to the global level, with, in the long term, the prospect of a Global Union of functioning democracies."
+
+msgid "Global Union Forum is an open think tank. We are exploring how this model can work worldwide. A first manifesto has been written. We want to improve it with the knowledge and ideas of everyone who takes part. We will gather all input into a new manifesto. Ultimately with the intention of arriving at a sovereign, resilient and remarkably attractive union of ever more functioning democracies."
+msgstr "Global Union Forum is an open think tank. We are exploring how this model can work worldwide. A first manifesto has been written. We want to improve it with the knowledge and ideas of everyone who takes part. We will gather all input into a new manifesto. Ultimately with the intention of arriving at a sovereign, resilient and remarkably attractive union of ever more functioning democracies."
+
+msgid "Mark Carney, Prime Minister of Canada, World Economic Forum, Davos, January 2026"
+msgstr "Mark Carney, Prime Minister of Canada, World Economic Forum, Davos, January 2026"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "New:"
+msgstr "New:"
+
+msgid "Summaries"
+msgstr "Summaries"
+
+msgid "No notifications yet. You hear here when someone replies to your contribution or challenges your fact, and the summaries of what you follow appear here too."
+msgstr "No notifications yet. You hear here when someone replies to your contribution or challenges your fact, and the summaries of what you follow appear here too."
+
+msgid "Notification settings"
+msgstr "Notification settings"
+
+msgid "Choose what you hear about, and where. In the app you see everything under your notifications. The most important things you can also get by email."
+msgstr "Choose what you hear about, and where. In the app you see everything under your notifications. The most important things you can also get by email."
+
+msgid "In the app"
+msgstr "In the app"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Your participation"
+msgstr "Your participation"
+
+msgid "Moderation"
+msgstr "Moderation"
+
+msgid "for moderators"
+msgstr "for moderators"
+
+msgid "Summary by email"
+msgstr "Summary by email"
+
+msgid "One email with an overview of the changes you follow."
+msgstr "One email with an overview of the changes you follow."
+
+msgid "How often"
+msgstr "How often"
+
+msgid "right to vote"
+msgstr "right to vote"
+
+msgid "Earned"
+msgstr "Earned"
+
+msgid "With your first quality contribution you become a Contributor."
+msgstr "With your first quality contribution you become a Contributor."
+
+#, python-format
+msgid "Voter (with the right to vote) from %(voter_min)s quality contributions."
+msgstr "Voter (with the right to vote) from %(voter_min)s quality contributions."
+
+#, python-format
+msgid "Moderator (status) with more than %(moderator_min)s quality contributions in at least %(moderator_min_topics)s topics."
+msgstr "Moderator (status) with more than %(moderator_min)s quality contributions in at least %(moderator_min_topics)s topics."
+
+#, python-format
+msgid "Senior with more than %(senior_min)s quality contributions."
+msgstr "Senior with more than %(senior_min)s quality contributions."
+
+msgid "Status ladder"
+msgstr "Status ladder"
+
+#, python-format
+msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
+msgstr "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
+
+msgid "How do you appear in the forum?"
+msgstr "How do you appear in the forum?"
+
+msgid "By default you take part under your pseudonym. You can also choose to take part under your real name, and switch back at any time."
+msgstr "By default you take part under your pseudonym. You can also choose to take part under your real name, and switch back at any time."
+
+msgid "Pseudonym"
+msgstr "Pseudonym"
+
+msgid "default"
+msgstr "default"
+
+msgid "My real name"
+msgstr "My real name"
+
+msgid "No real name is known for your account."
+msgstr "No real name is known for your account."
+
+msgid "I understand that my real name will then be visible on all my contributions in the forum, including earlier ones."
+msgstr "I understand that my real name will then be visible on all my contributions in the forum, including earlier ones."
+
+msgid "Please first confirm that your real name may become visible."
+msgstr "Please first confirm that your real name may become visible."
+
+msgid "Saved!"
+msgstr "Saved!"
+
+msgid "As long as you use your pseudonym, your LinkedIn profile is not shown publicly in the forum."
+msgstr "As long as you use your pseudonym, your LinkedIn profile is not shown publicly in the forum."
+
+msgid "Your LinkedIn profile is shown publicly next to your name in the forum."
+msgstr "Your LinkedIn profile is shown publicly next to your name in the forum."
+
+msgid "Language & Translations"
+msgstr "Language & Translations"
+
+msgid "Language preference."
+msgstr "Language preference."
+
+msgid "Automatic translation."
+msgstr "Automatic translation."
+
+msgid "Automatically translate posts to English"
+msgstr "Automatically translate posts to English"
+
+msgid "Posts in another language are automatically translated when you open a conversation."
+msgstr "Posts in another language are automatically translated when you open a conversation."
+
+msgid "choose what you hear about, and where"
+msgstr "choose what you hear about, and where"
+
+msgid "Current password"
+msgstr "Current password"
+
+
+
+msgid "Danger zone"
+msgstr "Danger zone"
+
+msgid "This permanently deletes your account, all your forum posts, and all your likes.\n        This cannot be undone."
+msgstr "This permanently deletes your account, all your forum posts, and all your likes.\n        This cannot be undone."
+
+msgid "Delete my account"
+msgstr "Delete my account"
+
+msgid "Show your real name?"
+msgstr "Show your real name?"
+
+#, python-format
+msgid "Your real name (%(value)s) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym."
+msgstr "Your real name (%(value)s) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym."
+
+msgid "Yes, show my name"
+msgstr "Yes, show my name"
+
+msgid "Are you sure?"
+msgstr "Are you sure?"
+
+msgid "This permanently deletes your account and all associated data.\n        This <strong>cannot</strong> be undone."
+msgstr "This permanently deletes your account and all associated data.\n        This <strong>cannot</strong> be undone."
+
+msgid "Yes, delete my account"
+msgstr "Yes, delete my account"
+
+#, python-format
+msgid "Moderators oversee the conduct rules. A contribution that breaks a conduct rule is not deleted but moved to the public <a href=\"%(value)s\">background page</a>, with the rule and the explanation. Spam or gross abuse is hidden completely. The author can object within seven days, and a moderator decides. Moderators can also close a conversation."
+msgstr "Moderators oversee the conduct rules. A contribution that breaks a conduct rule is not deleted but moved to the public <a href=\"%(value)s\">background page</a>, with the rule and the explanation. Spam or gross abuse is hidden completely. The author can object within seven days, and a moderator decides. Moderators can also close a conversation."
+
+msgid "%d %B %Y"
+msgstr "%d %B %Y"
+
+msgid "This page does<br><em>not exist</em>"
+msgstr "This page does<br><em>not exist</em>"
+
+msgid "The page you're looking for has been moved, removed, or never existed. Head back to the homepage and try again."
+msgstr "The page you're looking for has been moved, removed, or never existed. Head back to the homepage and try again."
+
+msgid "Something went wrong<br><em>on our end</em>"
+msgstr "Something went wrong<br><em>on our end</em>"
+
+msgid "We've been notified and will fix this as soon as possible. Head back to the homepage and try again in a few minutes."
+msgstr "We've been notified and will fix this as soon as possible. Head back to the homepage and try again in a few minutes."
+
+#, python-format
+msgid "You have %(num)d new notification."
+msgid_plural "You have %(num)d new notifications."
+msgstr[0] "You have %(num)d new notification."
+msgstr[1] "You have %(num)d new notifications."
+
+msgid "What happened around your contributions and moderation."
+msgstr "What happened around your contributions and moderation."
+
+msgid "What happened around your contributions."
+msgstr "What happened around your contributions."
+
+msgctxt "notification settings"
+msgid "About"
+msgstr "About"
+
+msgctxt "notification settings"
+msgid "Save"
+msgstr "Save"
+
+msgctxt "summary frequency"
+msgid "Off"
+msgstr "Off"
+
+msgctxt "summary frequency"
+msgid "Daily"
+msgstr "Daily"
+
+msgctxt "summary frequency"
+msgid "Weekly"
+msgstr "Weekly"
+
+#, python-format
+msgid "%(num)d topic"
+msgid_plural "%(num)d topics"
+msgstr[0] "%(num)d topic"
+msgstr[1] "%(num)d topics"
+
+#, python-format
+msgid "%(count)s quality contribution in %(topics)s"
+msgid_plural "%(count)s quality contributions in %(topics)s"
+msgstr[0] "%(count)s quality contribution in %(topics)s"
+msgstr[1] "%(count)s quality contributions in %(topics)s"
+
+msgid "Saving failed, please try again."
+msgstr "Saving failed, please try again."
+
+msgid "Weak"
+msgstr "Weak"
+
+msgid "Fair"
+msgstr "Fair"
+
+msgid "Strong"
+msgstr "Strong"
+
+msgid "Please enter your email address first."
+msgstr "Please enter your email address first."
+
+msgctxt "login page"
+msgid "Reset link sent (check your inbox)."
+msgstr "Reset link sent (check your inbox)."
+
+msgctxt "profile"
+msgid "New password"
+msgstr "New password"
+
+msgctxt "profile"
+msgid "Confirm new password"
+msgstr "Confirm new password"

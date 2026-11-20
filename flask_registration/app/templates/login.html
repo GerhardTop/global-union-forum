@@ -31,9 +31,9 @@
         <div class="gu-pw-wrap">
           {{ form.password(
               class="gu-input" ~ (" gu-input--error" if login_error else ""),
-              placeholder=('Password' if lang == 'en' else 'Wachtwoord')
+              placeholder=(_('Password'))
           ) }}
-          <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+          <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
             <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
@@ -160,7 +160,6 @@
 
   document.getElementById('forgotLink').addEventListener('click', function (e) {
     e.preventDefault();
-    var lang = '{{ lang }}';
     var emailInput = document.getElementById('{{ form.email.id }}');
     var feedback = document.getElementById('forgotFeedback');
     var email = emailInput.value.trim();
@@ -168,9 +167,7 @@
     if (!email) {
       feedback.style.display = 'block';
       feedback.style.color = 'var(--gu-danger)';
-      feedback.textContent = lang === 'en'
-        ? 'Please enter your email address first.'
-        : 'Vul eerst je e-mailadres in.';
+      feedback.textContent = {{ _('Please enter your email address first.') | tojson }};
       emailInput.focus();
       return;
     }
@@ -185,14 +182,10 @@
       feedback.style.display = 'block';
       if (response.status === 429) {
         feedback.style.color = 'var(--gu-danger)';
-        feedback.textContent = lang === 'en'
-          ? 'Too many attempts. Please try again in an hour.'
-          : 'Te veel pogingen. Probeer het over een uur opnieuw.';
+        feedback.textContent = {{ _('Too many attempts. Please try again in an hour.') | tojson }};
       } else {
         feedback.style.color = '#166534';
-        feedback.textContent = lang === 'en'
-          ? 'Reset link sent (check your inbox).'
-          : 'Reset link verstuurd (check je inbox).';
+        feedback.textContent = {{ pgettext('login page', 'Reset link sent (check your inbox).') | tojson }};
       }
     });
   });

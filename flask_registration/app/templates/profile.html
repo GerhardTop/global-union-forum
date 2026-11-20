@@ -27,26 +27,26 @@
         <span class="gu-profile__info-label">Status</span>
         <span class="gu-profile__info-value">
           <span class="gu-status-badge gu-status-badge--{{ st }}">{{ status_labels[st][lang] }}</span>
-          {% if current_user.can_vote() %}<span class="gu-quality__meta">· {% if lang == 'nl' %}stemrecht{% else %}right to vote{% endif %}</span>{% endif %}
+          {% if current_user.can_vote() %}<span class="gu-quality__meta">· {{ _('right to vote') }}</span>{% endif %}
         </span>
       </div>
       <div class="gu-profile__info-row">
-        <span class="gu-profile__info-label">{% if lang == 'nl' %}Verdiend{% else %}Earned{% endif %}</span>
+        <span class="gu-profile__info-label">{{ _('Earned') }}</span>
         <span class="gu-profile__info-value">
           {{ status_labels[current_user.earned_status][lang] }}:
-          {% if lang == 'nl' %}{{ quality_count }} kwaliteitsbijdrage{{ 'n' if quality_count != 1 else '' }} in {{ quality_topics }} onderwerp{{ 'en' if quality_topics != 1 else '' }}{% else %}{{ quality_count }} quality contribution{{ 's' if quality_count != 1 else '' }} in {{ quality_topics }} topic{{ 's' if quality_topics != 1 else '' }}{% endif %}
+          {% set topics = ngettext('%(num)d topic', '%(num)d topics', quality_topics) %}{% trans count=quality_count, topics=topics %}{{ count }} quality contribution in {{ topics }}{% pluralize %}{{ count }} quality contributions in {{ topics }}{% endtrans %}
           <span class="gu-quality__meta" style="display:block;">
             {% set e = current_user.earned_status %}
-            {% if e == 'reader' %}{% if lang == 'nl' %}Met je eerste kwaliteitsbijdrage word je Bijdrager.{% else %}With your first quality contribution you become a Contributor.{% endif %}
-            {% elif e == 'contributor' %}{% if lang == 'nl' %}Stemmer (met stemrecht) vanaf {{ thresholds.voter_min }} kwaliteitsbijdragen.{% else %}Voter (with the right to vote) from {{ thresholds.voter_min }} quality contributions.{% endif %}
-            {% elif e == 'voter' %}{% if lang == 'nl' %}Moderator (status) bij meer dan {{ thresholds.moderator_min }} kwaliteitsbijdragen in minimaal {{ thresholds.moderator_min_topics }} onderwerpen.{% else %}Moderator (status) with more than {{ thresholds.moderator_min }} quality contributions in at least {{ thresholds.moderator_min_topics }} topics.{% endif %}
-            {% elif e == 'moderator' %}{% if lang == 'nl' %}Senior bij meer dan {{ thresholds.senior_min }} kwaliteitsbijdragen.{% else %}Senior with more than {{ thresholds.senior_min }} quality contributions.{% endif %}
+            {% if e == 'reader' %}{{ _('With your first quality contribution you become a Contributor.') }}
+            {% elif e == 'contributor' %}{% trans voter_min=thresholds.voter_min %}Voter (with the right to vote) from {{ voter_min }} quality contributions.{% endtrans %}
+            {% elif e == 'voter' %}{% trans moderator_min=thresholds.moderator_min, moderator_min_topics=thresholds.moderator_min_topics %}Moderator (status) with more than {{ moderator_min }} quality contributions in at least {{ moderator_min_topics }} topics.{% endtrans %}
+            {% elif e == 'moderator' %}{% trans senior_min=thresholds.senior_min %}Senior with more than {{ senior_min }} quality contributions.{% endtrans %}
             {% endif %}
           </span>
         </span>
       </div>
       {# Polijststap P7: de hele statusladder met je plek erop, en zonder stemrecht de voortgang ernaartoe. #}
-      <div class="gu-statusladder" aria-label="{% if lang == 'nl' %}Statusladder{% else %}Status ladder{% endif %}">
+      <div class="gu-statusladder" aria-label="{{ _('Status ladder') }}">
         <ol class="gu-statusladder__steps">
           {% for key in ['reader', 'contributor', 'voter', 'moderator', 'senior'] %}
           {% set reached = loop.index0 <= ['reader', 'contributor', 'voter', 'moderator', 'senior'].index(st) %}
@@ -57,12 +57,12 @@
           {% endfor %}
         </ol>
         {% if current_user.can_vote() %}
-        <p class="gu-statusladder__note">{% if lang == 'nl' %}Je hebt stemrecht.{% else %}You have the right to vote.{% endif %}</p>
+        <p class="gu-statusladder__note">{{ _('You have the right to vote.') }}</p>
         {% else %}
         {% set needed = thresholds.voter_min %}
-        <p class="gu-statusladder__note">{% if lang == 'nl' %}Op weg naar stemrecht: {{ quality_count }} van {{ needed }} kwaliteitsbijdragen.{% else %}On the way to the right to vote: {{ quality_count }} of {{ needed }} quality contributions.{% endif %}</p>
+        <p class="gu-statusladder__note">{% trans quality_count=quality_count, needed=needed %}On the way to the right to vote: {{ quality_count }} of {{ needed }} quality contributions.{% endtrans %}</p>
         <div class="gu-cockpit__progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ needed }}" aria-valuenow="{{ [quality_count, needed] | min }}"
-             aria-label="{% if lang == 'nl' %}Voortgang naar stemrecht{% else %}Progress to the right to vote{% endif %}"><span style="width: {{ (100 * ([quality_count, needed] | min) / needed) | round | int if needed else 100 }}%"></span></div>
+             aria-label="{{ _('Progress to the right to vote') }}"><span style="width: {{ (100 * ([quality_count, needed] | min) / needed) | round | int if needed else 100 }}%"></span></div>
         {% endif %}
       </div>
     </div>
@@ -85,53 +85,53 @@
     {# ── Naamweergave in het forum: pseudoniem (standaard) of echte naam ── #}
     <div id="guNameDisplay" class="gu-namechoice">
       <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 8px;">
-        {% if lang == 'nl' %}Hoe verschijn je in het forum?{% else %}How do you appear in the forum?{% endif %}
+        {{ _('How do you appear in the forum?') }}
       </h2>
       <p class="gu-namechoice__intro">
-        {% if lang == 'nl' %}Standaard doe je mee onder je pseudoniem. Je kunt er ook voor kiezen om onder je echte naam mee te doen, en dat later altijd weer terugzetten.{% else %}By default you take part under your pseudonym. You can also choose to take part under your real name, and switch back at any time.{% endif %}
+        {{ _('By default you take part under your pseudonym. You can also choose to take part under your real name, and switch back at any time.') }}
       </p>
       <form id="guNameForm" method="POST" action="{{ url_for('profile.profiel_naamweergave') }}" novalidate>
         {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
         <label class="gu-namechoice__option">
           <input type="radio" name="show_real_name" value="0"{% if not current_user.shows_real_name %} checked{% endif %}>
           <span>
-            <strong>{% if lang == 'nl' %}Pseudoniem{% else %}Pseudonym{% endif %} (@{{ current_user.username }})</strong>
-            <span class="gu-join__badge">{% if lang == 'nl' %}standaard{% else %}default{% endif %}</span>
+            <strong>{{ _('Pseudonym') }} (@{{ current_user.username }})</strong>
+            <span class="gu-join__badge">{{ _('default') }}</span>
           </span>
         </label>
         <label class="gu-namechoice__option{% if not current_user.real_name %} gu-namechoice__option--disabled{% endif %}">
           <input type="radio" name="show_real_name" value="1"{% if current_user.shows_real_name %} checked{% endif %}{% if not current_user.real_name %} disabled{% endif %}>
           <span>
-            <strong>{% if lang == 'nl' %}Mijn echte naam{% else %}My real name{% endif %}{% if current_user.real_name %} ({{ current_user.real_name }}){% endif %}</strong>
+            <strong>{{ _('My real name') }}{% if current_user.real_name %} ({{ current_user.real_name }}){% endif %}</strong>
             {% if not current_user.real_name %}
-            <span class="gu-namechoice__hint">{% if lang == 'nl' %}Er is geen echte naam bekend bij je account.{% else %}No real name is known for your account.{% endif %}</span>
+            <span class="gu-namechoice__hint">{{ _('No real name is known for your account.') }}</span>
             {% endif %}
           </span>
         </label>
         <noscript>
           <label class="gu-join__check" style="margin-top: 8px;">
             <input type="checkbox" name="confirm" value="1">
-            <span>{% if lang == 'nl' %}Ik begrijp dat mijn echte naam dan zichtbaar wordt bij al mijn bijdragen in het forum, ook mijn eerdere.{% else %}I understand that my real name will then be visible on all my contributions in the forum, including earlier ones.{% endif %}</span>
+            <span>{{ _('I understand that my real name will then be visible on all my contributions in the forum, including earlier ones.') }}</span>
           </label>
           <button type="submit" class="gu-btn gu-btn--primary" style="margin-top: 8px;">{{ _('Save') }} <span class="gu-arrow"></span></button>
         </noscript>
         <p class="gu-join__formError" id="guNameError"{% if not name_display_error %} style="display:none;"{% endif %}>
-          {% if name_display_error == 'no_name' %}{% if lang == 'nl' %}Er is geen echte naam bekend bij je account.{% else %}No real name is known for your account.{% endif %}
-          {% else %}{% if lang == 'nl' %}Bevestig eerst dat je echte naam zichtbaar mag worden.{% else %}Please first confirm that your real name may become visible.{% endif %}{% endif %}
+          {% if name_display_error == 'no_name' %}{{ _('No real name is known for your account.') }}
+          {% else %}{{ _('Please first confirm that your real name may become visible.') }}{% endif %}
         </p>
-        <span id="guNameSaved" class="gu-namechoice__saved" style="display:none;">{% if lang == 'nl' %}Opgeslagen!{% else %}Saved!{% endif %}</span>
+        <span id="guNameSaved" class="gu-namechoice__saved" style="display:none;">{{ _('Saved!') }}</span>
       </form>
 
       {# LinkedIn hoort bij de echte naam: alleen dan getoond en publiek. #}
       <p id="guLinkedInPseudoNote" class="gu-namechoice__hint"{% if current_user.shows_real_name %} hidden{% endif %}>
-        {% if lang == 'nl' %}Zolang je je pseudoniem gebruikt, staat je LinkedIn-profiel niet publiek in het forum.{% else %}As long as you use your pseudonym, your LinkedIn profile is not shown publicly in the forum.{% endif %}
+        {{ _('As long as you use your pseudonym, your LinkedIn profile is not shown publicly in the forum.') }}
       </p>
       <div id="guLinkedInSection"{% if not current_user.shows_real_name %} hidden{% endif %}>
     <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 24px 0 8px;">
       {{ _('Your LinkedIn profile.') }}
     </h3>
     <p class="gu-namechoice__hint" style="margin-bottom: 16px;">
-      {% if lang == 'nl' %}Je LinkedIn-profiel staat publiek bij je naam in het forum.{% else %}Your LinkedIn profile is shown publicly next to your name in the forum.{% endif %}
+      {{ _('Your LinkedIn profile is shown publicly next to your name in the forum.') }}
     </p>
     <p id="guLinkedInDisplay" style="margin-bottom: 16px; font-size: 14px;{% if not current_user.linkedin_url %} display: none;{% endif %}">
       <a id="guLinkedInLink" href="{{ current_user.linkedin_url or '' }}" target="_blank" rel="noopener noreferrer"
@@ -158,7 +158,7 @@
         {{ _('Save') }} <span class="gu-arrow"></span>
       </button>
       <span id="guLinkedInSuccess" style="display:none; margin-left: 12px; font-size: 0.875rem; color: var(--gu-success);">
-        {% if lang == 'nl' %}Opgeslagen!{% else %}Saved!{% endif %}
+        {{ _('Saved!') }}
       </span>
     </form>
       </div>
@@ -166,9 +166,9 @@
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
-    <p class="gu-eyebrow">{% if lang == 'nl' %}Taal & Vertalingen{% else %}Language & Translations{% endif %}</p>
+    <p class="gu-eyebrow">{% trans %}Language & Translations{% endtrans %}</p>
     <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 16px;">
-      {% if lang == 'nl' %}Taalvoorkeur.{% else %}Language preference.{% endif %}
+      {{ _('Language preference.') }}
     </h2>
     <div class="gu-lang-switch" style="margin-bottom: 24px;">
       <a href="{{ url_for('main.set_lang', code='nl') }}"
@@ -180,7 +180,7 @@
     </div>
 
     <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">
-      {% if lang == 'nl' %}Automatisch vertalen.{% else %}Automatic translation.{% endif %}
+      {{ _('Automatic translation.') }}
     </h3>
     {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else (lang == 'en') %}
     <form id="guTranslateForm" method="POST" action="{{ url_for('profile.profiel_vertaalvoorkeur') }}" style="margin-bottom: 4px;">
@@ -193,29 +193,25 @@
           <span class="gu-toggle__thumb"></span>
         </span>
         <span class="gu-toggle__text">
-          {% if lang == 'nl' %}
-            Vertaal berichten automatisch naar het Nederlands
-          {% else %}
-            Automatically translate posts to English
-          {% endif %}
+          
+            {{ _('Automatically translate posts to English') }}
+          
         </span>
       </label>
     </form>
     <p style="font-size: 13px; color: var(--gu-fg-3); margin-bottom: 0;">
-      {% if lang == 'nl' %}
-        Berichten in een andere taal worden bij het openen van een gesprek automatisch vertaald.
-      {% else %}
-        Posts in another language are automatically translated when you open a conversation.
-      {% endif %}
+      
+        {{ _('Posts in another language are automatically translated when you open a conversation.') }}
+      
     </p>
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
     {# The summary of what you follow. How often (off/daily/weekly) is set on
        /profiel/meldingen (notifications step 2); the old on/off toggle is gone. #}
-    <h3 id="samenvatting" style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">{% if lang == 'nl' %}Samenvatting per e-mail{% else %}Summary by email{% endif %}</h3>
+    <h3 id="samenvatting" style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">{{ _('Summary by email') }}</h3>
     <p style="font-size: 13px; color: var(--gu-fg-3); margin: 8px 0 0;"><a href="{{ url_for('profile.meldingen') }}">{{ _('View your daily summaries') }}</a></p>
-    <p style="font-size: 13px; color: var(--gu-fg-3); margin: 8px 0 0;"><a href="{{ url_for('profile.notificaties') }}" id="notificatiesLink">{% if lang == 'nl' %}Meldingen{% else %}Notifications{% endif %}</a> &middot; {% if lang == 'nl' %}kies waarover je bericht krijgt, en waar{% else %}choose what you hear about, and where{% endif %}</p>
+    <p style="font-size: 13px; color: var(--gu-fg-3); margin: 8px 0 0;"><a href="{{ url_for('profile.notificaties') }}" id="notificatiesLink">{{ _('Notifications') }}</a> &middot; {{ _('choose what you hear about, and where') }}</p>
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
@@ -231,9 +227,9 @@
         <div class="gu-pw-wrap">
           {{ form.current_password(
               class="gu-input" ~ (" gu-input--error" if current_password_empty else ""),
-              placeholder=("Current password" if lang == "en" else "Huidig wachtwoord")
+              placeholder=(_('Current password'))
           ) }}
-          <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+          <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
             <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
@@ -248,9 +244,9 @@
           <div class="gu-pw-wrap">
             {{ form.new_password(
                 class="gu-input" ~ (" gu-input--error" if (password_weak or password_mismatch) else ""),
-                placeholder=("New password" if lang == "en" else "Nieuw wachtwoord")
+                placeholder=(pgettext('profile', 'New password'))
             ) }}
-            <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+            <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
               <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
@@ -268,9 +264,9 @@
           <div class="gu-pw-wrap">
             {{ form.confirm_new_password(
                 class="gu-input" ~ (" gu-input--error" if password_mismatch else ""),
-                placeholder=("Confirm new password" if lang == "en" else "Bevestig nieuw wachtwoord")
+                placeholder=(pgettext('profile', 'Confirm new password'))
             ) }}
-            <button type="button" class="gu-pw-toggle" aria-label="{{ 'Show password' if lang == 'en' else 'Wachtwoord tonen' }}">
+            <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
               <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               <svg class="gu-pw-eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
@@ -394,10 +390,8 @@
       })();
 
       (function () {
-        var lang   = '{{ lang }}';
-        var labels = { nl: ['Zwak', 'Matig', 'Sterk'], en: ['Weak', 'Fair', 'Strong'] };
+        var L = [{{ _('Weak') | tojson }}, {{ _('Fair') | tojson }}, {{ _('Strong') | tojson }}];
         var levels = ['gu-pw-strength--weak', 'gu-pw-strength--medium', 'gu-pw-strength--strong'];
-        var L = labels[lang] || labels.nl;
 
         var input = document.getElementById('new_password');
         var box   = document.getElementById('pwStrengthProfile');
@@ -427,23 +421,20 @@
     <hr class="gu-auth__divider" style="margin: 40px 0 32px;">
 
     <p class="gu-eyebrow" style="color: #dc2626;">
-      {% if lang == 'nl' %}Gevarenzone{% else %}Danger zone{% endif %}
+      {{ _('Danger zone') }}
     </p>
     <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 12px;">
-      {% if lang == 'nl' %}Account verwijderen{% else %}Delete account{% endif %}
+      {{ _('Delete account') }}
     </h2>
     <p style="font-size: 14px; color: var(--gu-fg-2); margin-bottom: 20px;">
-      {% if lang == 'nl' %}
-        Dit verwijdert je account, al je forumberichten en al je likes permanent.
-        Dit kan niet ongedaan worden gemaakt.
-      {% else %}
-        This permanently deletes your account, all your forum posts, and all your likes.
-        This cannot be undone.
-      {% endif %}
+      
+        {% trans %}This permanently deletes your account, all your forum posts, and all your likes.
+        This cannot be undone.{% endtrans %}
+      
     </p>
     <button type="button" id="guDeleteBtn"
             class="gu-btn" style="border: 1px solid #dc2626; color: #dc2626; background: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500;">
-      {% if lang == 'nl' %}Verwijder mijn account{% else %}Delete my account{% endif %}
+      {{ _('Delete my account') }}
     </button>
     {% endif %}
 
@@ -455,19 +446,19 @@
 {# ── Bevestiging: echte naam publiek maken ─────────────────── #}
 <div class="gu-modal-overlay" id="guRealNameModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="guRealNameTitle">
   <div class="gu-modal">
-    <button type="button" class="gu-modal__close" id="guRealNameClose" aria-label="{% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}">✕</button>
+    <button type="button" class="gu-modal__close" id="guRealNameClose" aria-label="{{ _('Cancel') }}">✕</button>
     <h2 class="gu-modal__title" id="guRealNameTitle">
-      {% if lang == 'nl' %}Je echte naam tonen?{% else %}Show your real name?{% endif %}
+      {{ _('Show your real name?') }}
     </h2>
     <p class="gu-modal__body">
-      {% if lang == 'nl' %}Je echte naam ({{ current_user.real_name or '' }}) wordt dan zichtbaar bij al je bijdragen in het forum, ook je eerdere. Je kunt dit altijd terugzetten naar je pseudoniem.{% else %}Your real name ({{ current_user.real_name or '' }}) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym.{% endif %}
+      {% trans value=current_user.real_name or '' %}Your real name ({{ value }}) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym.{% endtrans %}
     </p>
     <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
       <button type="button" id="guRealNameCancel" class="gu-btn gu-btn--ghost">
-        {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
+        {{ _('Cancel') }}
       </button>
       <button type="button" id="guRealNameConfirm" class="gu-btn gu-btn--primary">
-        {% if lang == 'nl' %}Ja, toon mijn naam{% else %}Yes, show my name{% endif %}
+        {{ _('Yes, show my name') }}
       </button>
     </div>
   </div>
@@ -510,7 +501,7 @@
         .then(function (data) {
           if (!data.ok) {
             select(current);
-            showError(lang === 'nl' ? 'Opslaan mislukt, probeer het opnieuw.' : 'Saving failed, please try again.');
+            showError({{ _('Saving failed, please try again.') | tojson }});
             return;
           }
           applyUi(data.show_real_name ? '1' : '0');
@@ -519,7 +510,7 @@
         })
         .catch(function () {
           select(current);
-          showError(lang === 'nl' ? 'Opslaan mislukt, probeer het opnieuw.' : 'Saving failed, please try again.');
+          showError({{ _('Saving failed, please try again.') | tojson }});
         });
     }
     function openModal() {
@@ -569,27 +560,24 @@
       <line x1="12" y1="16" x2="12.01" y2="16"/>
     </svg>
     <h2 class="gu-modal__title" style="color: #dc2626;">
-      {% if lang == 'nl' %}Weet je het zeker?{% else %}Are you sure?{% endif %}
+      {{ _('Are you sure?') }}
     </h2>
     <p class="gu-modal__body">
-      {% if lang == 'nl' %}
-        Dit verwijdert je account en alle bijbehorende data permanent.
-        Dit kan <strong>niet</strong> ongedaan worden gemaakt.
-      {% else %}
-        This permanently deletes your account and all associated data.
-        This <strong>cannot</strong> be undone.
-      {% endif %}
+      
+        {% trans %}This permanently deletes your account and all associated data.
+        This <strong>cannot</strong> be undone.{% endtrans %}
+      
     </p>
     <form method="POST" action="{{ url_for('auth.account_verwijderen') }}" style="margin-top: 24px;">
       {{ form.hidden_tag() }}
       <div style="display: flex; gap: 12px; justify-content: center;">
         <button type="button" id="guDeleteCancelBtn"
                 class="gu-btn gu-btn--ghost">
-          {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
+          {{ _('Cancel') }}
         </button>
         <button type="submit"
                 class="gu-btn" style="background: #dc2626; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-          {% if lang == 'nl' %}Ja, verwijder mijn account{% else %}Yes, delete my account{% endif %}
+          {{ _('Yes, delete my account') }}
         </button>
       </div>
     </form>

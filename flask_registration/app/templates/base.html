@@ -79,7 +79,7 @@
             {% set unread_n = unread_notifications() %}
             {% if unread_n or current_user.has_unread_digest %}
             <div class="gu-promotion-banner gu-digest-banner" role="status" data-unread-notifications="{{ unread_n }}">
-              <span>{% if unread_n %}{% if lang == 'nl' %}Je hebt {{ unread_n }} nieuwe {{ 'melding' if unread_n == 1 else 'meldingen' }}.{% else %}You have {{ unread_n }} new notification{{ '' if unread_n == 1 else 's' }}.{% endif %}{% endif %}{% if unread_n and current_user.has_unread_digest %} {% endif %}{% if current_user.has_unread_digest %}{{ _('You have a new daily summary.') }}{% endif %}</span>
+              <span>{% if unread_n %}{{ ngettext('You have %(num)d new notification.', 'You have %(num)d new notifications.', unread_n) }}{% endif %}{% if unread_n and current_user.has_unread_digest %} {% endif %}{% if current_user.has_unread_digest %}{{ _('You have a new daily summary.') }}{% endif %}</span>
               <a href="{{ url_for('profile.meldingen') }}" class="gu-post__action gu-post__action--ghost">{{ _('View') }}</a>
             </div>
             {% endif %}
@@ -88,8 +88,8 @@
             {# User moderation: while suspended, a standing notice on every page. #}
             {% if current_user.is_authenticated and current_user.is_suspended %}
             <div class="gu-suspended-banner" role="status">
-              {% if lang == 'nl' %}Je bent geschorst tot{% else %}You are suspended until{% endif %} <strong>{{ (current_user.suspended_until|local).strftime('%d-%m-%Y %H:%M') }}</strong>.
-              {% if lang == 'nl' %}Je kunt lezen, maar niet bijdragen of stemmen.{% else %}You can read, but not contribute or vote.{% endif %}
+              {{ _('You are suspended until') }} <strong>{{ (current_user.suspended_until|local).strftime('%d-%m-%Y %H:%M') }}</strong>.
+              {{ _('You can read, but not contribute or vote.') }}
             </div>
             {% endif %}
 
@@ -98,13 +98,13 @@
             {% if promo %}
             <div class="gu-promotion-banner" role="status">
               <span>
-                {% if lang == 'nl' %}Gefeliciteerd! Op basis van je kwaliteitsbijdragen heb je nu de status{% else %}Congratulations! Based on your quality contributions you now have the status{% endif %}
-                <span class="gu-status-badge gu-status-badge--{{ promo.level }}">{{ status_labels[promo.level][lang] }}</span>{% if promo.level == 'voter' %}{% if lang == 'nl' %}, met stemrecht{% else %}, with the right to vote{% endif %}{% endif %}.
+                {{ _('Congratulations! Based on your quality contributions you now have the status') }}
+                <span class="gu-status-badge gu-status-badge--{{ promo.level }}">{{ status_labels[promo.level][lang] }}</span>{% if promo.level == 'voter' %}{{ _(', with the right to vote') }}{% endif %}.
               </span>
               <form method="POST" action="{{ url_for('profile.promotie_gezien') }}" style="margin:0;">
                 {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
                 <input type="hidden" name="next" value="{{ request.full_path }}">
-                <button type="submit" class="gu-post__action gu-post__action--ghost">{% if lang == 'nl' %}Sluiten{% else %}Dismiss{% endif %}</button>
+                <button type="submit" class="gu-post__action gu-post__action--ghost">{{ _('Dismiss') }}</button>
               </form>
             </div>
             {% endif %}

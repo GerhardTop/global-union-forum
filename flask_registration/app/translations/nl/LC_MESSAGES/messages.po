@@ -66,7 +66,7 @@ msgid "A first manifesto has been drawn up. We want to improve the idea with the
 msgstr "Een eerste manifest is opgesteld. Het idee willen we verbeteren met de intelligentie van alle mensen die mee willen denken. Alle input zullen we verzamelen en verwerken om te komen tot een nieuw manifest."
 
 msgid "We are looking for people who want to think along: experts and laypeople, 17 or 70, convinced or sceptical. Everyone who takes the conversation seriously."
-msgstr "We zoeken mensen die meedenken: experts én leken, 17 of 70, overtuigd of sceptisch. Iedereen die het gesprek serieus voert."
+msgstr "We zoeken mensen die meedenken: experts en leken, 17 of 70, overtuigd of sceptisch. Iedereen die het gesprek serieus voert."
 
 msgid "Join the conversation"
 msgstr "Doe mee aan het gesprek"
@@ -3587,3 +3587,301 @@ msgstr "alles"
 
 msgid "all languages"
 msgstr "alle talen"
+
+msgid "Page not found"
+msgstr "Pagina niet gevonden"
+
+msgid "Back to homepage"
+msgstr "Terug naar homepage"
+
+msgid "Something went wrong"
+msgstr "Er ging iets mis"
+
+msgid "You are suspended until"
+msgstr "Je bent geschorst tot"
+
+msgid "You can read, but not contribute or vote."
+msgstr "Je kunt lezen, maar niet bijdragen of stemmen."
+
+msgid "Congratulations! Based on your quality contributions you now have the status"
+msgstr "Gefeliciteerd! Op basis van je kwaliteitsbijdragen heb je nu de status"
+
+msgid ", with the right to vote"
+msgstr ", met stemrecht"
+
+msgid "Dismiss"
+msgstr "Sluiten"
+
+msgid "FAQ"
+msgstr "Veelgestelde vragen"
+
+msgid "The world needs a geopolitical power bloc that stands for our security, for our freedom, for the international rule of law, for democracy, human rights and sustainability."
+msgstr "De wereld heeft een geopolitiek machtsblok nodig dat staat voor onze veiligheid, voor onze vrijheid, voor de internationale rechtsorde, voor democratie, mensenrechten en duurzaamheid."
+
+msgid "Russia threatens European security, and the US risks becoming a less reliable partner. China backs Russia. The UN Security Council is increasingly paralysed."
+msgstr "Rusland bedreigt de Europese veiligheid, en de VS dreigt een minder betrouwbare partner te worden. China steunt Rusland. De VN-Veiligheidsraad raakt steeds vaker verlamd."
+
+msgid "Mark Carney, Prime Minister of Canada, called in Davos for cooperation between \"middle powers\": countries that together are large enough to matter and that respect the international rule of law. A first step was taken in October 2026: the EU and Canada formed an alliance for the future, open to like-minded countries."
+msgstr "Mark Carney, premier van Canada, riep in Davos op tot samenwerking tussen 'middle powers': landen die samen groot genoeg zijn om mee te tellen en de internationale rechtsorde respecteren. In oktober 2026 is een eerste stap gezet: de EU en Canada sloten een alliantie voor de toekomst, die openstaat voor gelijkgezinde landen."
+
+msgid "Global Union Forum wants to seize this momentum and argues for a permanent structure of cooperation, open to all countries that meet criteria for democracy, the rule of law, anti-corruption and human rights. Not as a replacement for the UN, but as a complement. A cooperation alongside the EU, not only with obvious partners such as Canada, the United Kingdom, Japan, South Korea and Australia, but also with countries beyond them that already have a strong democracy, such as Chile, Uruguay, Costa Rica, Cape Verde, Botswana and Ghana."
+msgstr "Global Union Forum wil dit momentum benutten en pleit voor een permanente samenwerkingsstructuur die openstaat voor alle landen die voldoen aan criteria voor democratie, rechtsstaat, corruptiebestrijding en mensenrechten. Niet als alternatief voor de VN, maar als aanvulling. Een samenwerking naast de EU, niet alleen met voor de hand liggende partners zoals Canada, het Verenigd Koninkrijk, Japan, Zuid-Korea en Australië, maar ook met landen daarbuiten die al een sterke democratie hebben, zoals Chili, Uruguay, Costa Rica, Kaapverdië, Botswana en Ghana."
+
+msgid "With its enlargement into Eastern Europe, the EU showed how strong the pull of a bloc of prosperous democracies is: countries with formerly autocratic regimes carried out reforms in order to join. That pull can be scaled up to the global level, with, in the long term, the prospect of a Global Union of functioning democracies."
+msgstr "Met de uitbreiding naar Oost-Europa liet de EU zien hoe sterk de aantrekkingskracht van een blok van welvarende democratieën is: landen met voorheen autocratische regimes voerden hervormingen door om te mogen toetreden. Die kracht kunnen we opschalen naar wereldniveau, met op de lange termijn het perspectief van een Globale Unie van functionerende democratieën."
+
+msgid "Global Union Forum is an open think tank. We are exploring how this model can work worldwide. A first manifesto has been written. We want to improve it with the knowledge and ideas of everyone who takes part. We will gather all input into a new manifesto. Ultimately with the intention of arriving at a sovereign, resilient and remarkably attractive union of ever more functioning democracies."
+msgstr "Global Union Forum is een open denktank. Wij onderzoeken hoe dit model wereldwijd kan werken. Er ligt een eerste manifest. Dat willen we verbeteren met de kennis en ideeën van iedereen die meedenkt. Alle input verzamelen we tot een nieuw manifest. Uiteindelijk met de intentie om te komen tot een soevereine, weerbare en bijzonder aantrekkelijke unie van steeds meer functionerende democratieën."
+
+msgid "Mark Carney, Prime Minister of Canada, World Economic Forum, Davos, January 2026"
+msgstr "Mark Carney, premier van Canada, World Economic Forum, Davos, januari 2026"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "Message"
+msgstr "Bericht"
+
+msgid "Notifications"
+msgstr "Meldingen"
+
+msgid "New:"
+msgstr "Nieuw:"
+
+msgid "Summaries"
+msgstr "Samenvattingen"
+
+msgid "No notifications yet. You hear here when someone replies to your contribution or challenges your fact, and the summaries of what you follow appear here too."
+msgstr "Nog geen meldingen. Je hoort het hier als iemand op je bijdrage reageert of je feit betwist, en hier staan ook de samenvattingen van wat je volgt."
+
+msgid "Notification settings"
+msgstr "Meldingen instellen"
+
+msgid "Choose what you hear about, and where. In the app you see everything under your notifications. The most important things you can also get by email."
+msgstr "Kies waarover je bericht krijgt, en waar. In de app zie je alles bij je meldingen. De belangrijkste dingen kun je ook per e-mail krijgen."
+
+msgid "In the app"
+msgstr "In de app"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Your participation"
+msgstr "Jouw deelname"
+
+msgid "Moderation"
+msgstr "Moderatie"
+
+msgid "for moderators"
+msgstr "voor moderators"
+
+msgid "Summary by email"
+msgstr "Samenvatting per e-mail"
+
+msgid "One email with an overview of the changes you follow."
+msgstr "Eén e-mail met een overzicht van de veranderingen die je volgt."
+
+msgid "How often"
+msgstr "Hoe vaak"
+
+msgid "right to vote"
+msgstr "stemrecht"
+
+msgid "Earned"
+msgstr "Verdiend"
+
+msgid "With your first quality contribution you become a Contributor."
+msgstr "Met je eerste kwaliteitsbijdrage word je Bijdrager."
+
+#, python-format
+msgid "Voter (with the right to vote) from %(voter_min)s quality contributions."
+msgstr "Stemmer (met stemrecht) vanaf %(voter_min)s kwaliteitsbijdragen."
+
+#, python-format
+msgid "Moderator (status) with more than %(moderator_min)s quality contributions in at least %(moderator_min_topics)s topics."
+msgstr "Moderator (status) bij meer dan %(moderator_min)s kwaliteitsbijdragen in minimaal %(moderator_min_topics)s onderwerpen."
+
+#, python-format
+msgid "Senior with more than %(senior_min)s quality contributions."
+msgstr "Senior bij meer dan %(senior_min)s kwaliteitsbijdragen."
+
+msgid "Status ladder"
+msgstr "Statusladder"
+
+#, python-format
+msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
+msgstr "Op weg naar stemrecht: %(quality_count)s van %(needed)s kwaliteitsbijdragen."
+
+msgid "How do you appear in the forum?"
+msgstr "Hoe verschijn je in het forum?"
+
+msgid "By default you take part under your pseudonym. You can also choose to take part under your real name, and switch back at any time."
+msgstr "Standaard doe je mee onder je pseudoniem. Je kunt er ook voor kiezen om onder je echte naam mee te doen, en dat later altijd weer terugzetten."
+
+msgid "Pseudonym"
+msgstr "Pseudoniem"
+
+msgid "default"
+msgstr "standaard"
+
+msgid "My real name"
+msgstr "Mijn echte naam"
+
+msgid "No real name is known for your account."
+msgstr "Er is geen echte naam bekend bij je account."
+
+msgid "I understand that my real name will then be visible on all my contributions in the forum, including earlier ones."
+msgstr "Ik begrijp dat mijn echte naam dan zichtbaar wordt bij al mijn bijdragen in het forum, ook mijn eerdere."
+
+msgid "Please first confirm that your real name may become visible."
+msgstr "Bevestig eerst dat je echte naam zichtbaar mag worden."
+
+msgid "Saved!"
+msgstr "Opgeslagen!"
+
+msgid "As long as you use your pseudonym, your LinkedIn profile is not shown publicly in the forum."
+msgstr "Zolang je je pseudoniem gebruikt, staat je LinkedIn-profiel niet publiek in het forum."
+
+msgid "Your LinkedIn profile is shown publicly next to your name in the forum."
+msgstr "Je LinkedIn-profiel staat publiek bij je naam in het forum."
+
+msgid "Language & Translations"
+msgstr "Taal & Vertalingen"
+
+msgid "Language preference."
+msgstr "Taalvoorkeur."
+
+msgid "Automatic translation."
+msgstr "Automatisch vertalen."
+
+msgid "Automatically translate posts to English"
+msgstr "Vertaal berichten automatisch naar het Nederlands"
+
+msgid "Posts in another language are automatically translated when you open a conversation."
+msgstr "Berichten in een andere taal worden bij het openen van een gesprek automatisch vertaald."
+
+msgid "choose what you hear about, and where"
+msgstr "kies waarover je bericht krijgt, en waar"
+
+msgid "Current password"
+msgstr "Huidig wachtwoord"
+
+
+
+msgid "Danger zone"
+msgstr "Gevarenzone"
+
+msgid "This permanently deletes your account, all your forum posts, and all your likes.\n        This cannot be undone."
+msgstr "Dit verwijdert je account, al je forumberichten en al je likes permanent.\n        Dit kan niet ongedaan worden gemaakt."
+
+msgid "Delete my account"
+msgstr "Verwijder mijn account"
+
+msgid "Show your real name?"
+msgstr "Je echte naam tonen?"
+
+#, python-format
+msgid "Your real name (%(value)s) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym."
+msgstr "Je echte naam (%(value)s) wordt dan zichtbaar bij al je bijdragen in het forum, ook je eerdere. Je kunt dit altijd terugzetten naar je pseudoniem."
+
+msgid "Yes, show my name"
+msgstr "Ja, toon mijn naam"
+
+msgid "Are you sure?"
+msgstr "Weet je het zeker?"
+
+msgid "This permanently deletes your account and all associated data.\n        This <strong>cannot</strong> be undone."
+msgstr "Dit verwijdert je account en alle bijbehorende data permanent.\n        Dit kan <strong>niet</strong> ongedaan worden gemaakt."
+
+msgid "Yes, delete my account"
+msgstr "Ja, verwijder mijn account"
+
+#, python-format
+msgid "Moderators oversee the conduct rules. A contribution that breaks a conduct rule is not deleted but moved to the public <a href=\"%(value)s\">background page</a>, with the rule and the explanation. Spam or gross abuse is hidden completely. The author can object within seven days, and a moderator decides. Moderators can also close a conversation."
+msgstr "Moderators houden toezicht op de gedragsregels. Een bijdrage die een gedragsregel overtreedt, wordt niet verwijderd maar verplaatst naar de openbare <a href=\"%(value)s\">achtergrondpagina</a>, met de regel en de uitleg. Spam of grof misbruik wordt volledig verborgen. De auteur kan binnen zeven dagen bezwaar maken, en een moderator beslist. Moderators kunnen ook een gesprek sluiten."
+
+msgid "%d %B %Y"
+msgstr "%d-%m-%Y"
+
+msgid "This page does<br><em>not exist</em>"
+msgstr "Deze pagina bestaat<br><em>niet (meer)</em>"
+
+msgid "The page you're looking for has been moved, removed, or never existed. Head back to the homepage and try again."
+msgstr "De pagina die je zoekt is verplaatst, verwijderd of heeft nooit bestaan. Ga terug naar de homepage en probeer het opnieuw."
+
+msgid "Something went wrong<br><em>on our end</em>"
+msgstr "Er is iets misgegaan<br><em>aan onze kant</em>"
+
+msgid "We've been notified and will fix this as soon as possible. Head back to the homepage and try again in a few minutes."
+msgstr "We zijn op de hoogte gesteld en lossen het zo snel mogelijk op. Ga terug naar de homepage en probeer het over een paar minuten opnieuw."
+
+#, python-format
+msgid "You have %(num)d new notification."
+msgid_plural "You have %(num)d new notifications."
+msgstr[0] "Je hebt %(num)d nieuwe melding."
+msgstr[1] "Je hebt %(num)d nieuwe meldingen."
+
+msgid "What happened around your contributions and moderation."
+msgstr "Wat er gebeurde rond jouw bijdragen en de moderatie."
+
+msgid "What happened around your contributions."
+msgstr "Wat er gebeurde rond jouw bijdragen."
+
+msgctxt "notification settings"
+msgid "About"
+msgstr "Waarover"
+
+msgctxt "notification settings"
+msgid "Save"
+msgstr "Bewaren"
+
+msgctxt "summary frequency"
+msgid "Off"
+msgstr "Uit"
+
+msgctxt "summary frequency"
+msgid "Daily"
+msgstr "Dagelijks"
+
+msgctxt "summary frequency"
+msgid "Weekly"
+msgstr "Wekelijks"
+
+#, python-format
+msgid "%(num)d topic"
+msgid_plural "%(num)d topics"
+msgstr[0] "%(num)d onderwerp"
+msgstr[1] "%(num)d onderwerpen"
+
+#, python-format
+msgid "%(count)s quality contribution in %(topics)s"
+msgid_plural "%(count)s quality contributions in %(topics)s"
+msgstr[0] "%(count)s kwaliteitsbijdrage in %(topics)s"
+msgstr[1] "%(count)s kwaliteitsbijdragen in %(topics)s"
+
+msgid "Saving failed, please try again."
+msgstr "Opslaan mislukt, probeer het opnieuw."
+
+msgid "Weak"
+msgstr "Zwak"
+
+msgid "Fair"
+msgstr "Matig"
+
+msgid "Strong"
+msgstr "Sterk"
+
+msgid "Please enter your email address first."
+msgstr "Vul eerst je e-mailadres in."
+
+msgctxt "login page"
+msgid "Reset link sent (check your inbox)."
+msgstr "Reset link verstuurd (check je inbox)."
+
+msgctxt "profile"
+msgid "New password"
+msgstr "Nieuw wachtwoord"
+
+msgctxt "profile"
+msgid "Confirm new password"
+msgstr "Bevestig nieuw wachtwoord"
