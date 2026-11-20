@@ -27,7 +27,7 @@
                          data-delay="{{ '6000' if category == 'error' else '2500' }}"
                          role="dialog" aria-modal="true" aria-live="assertive">
                       <div class="gu-modal gu-modal--{{ category if category in ('success', 'error') else 'success' }}">
-                        <button type="button" class="gu-modal__close" aria-label="{{ _('Sluiten') }}">✕</button>
+                        <button type="button" class="gu-modal__close" aria-label="{{ _('Close') }}">✕</button>
                         {% if category == 'success' %}
                         <svg class="gu-modal__icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

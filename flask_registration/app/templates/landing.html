@@ -8,7 +8,7 @@
   <div class="gu-dashboard__head">
     <p class="gu-eyebrow">Global Union</p>
     <h1 class="gu-dashboard__title">
-      {{ _('Welcome back, {{ current_user.first_name }}.') }}
+      {{ _('Welcome back, %(name)s.', name=current_user.first_name) }}
     </h1>
     <p class="gu-dashboard__sub">
       {{ _('Your account is active.') }}

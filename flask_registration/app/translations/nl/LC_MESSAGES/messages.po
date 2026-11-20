@@ -3799,18 +3799,6 @@ msgstr "Sterk"
 msgid "Please enter your email address first."
 msgstr "Vul eerst je e-mailadres in."
 
-msgctxt "login page"
-msgid "Reset link sent (check your inbox)."
-msgstr "Reset link verstuurd (check je inbox)."
-
-msgctxt "profile"
-msgid "New password"
-msgstr "Nieuw wachtwoord"
-
-msgctxt "profile"
-msgid "Confirm new password"
-msgstr "Bevestig nieuw wachtwoord"
-
 #. manifest, tekst 2
 msgid "The manifesto · August 2026"
 msgstr "Het manifest · augustus 2026"
@@ -5273,3 +5261,55 @@ msgstr "Niets doen, het feit blijft staan"
 
 msgid "Do nothing, the contribution stays"
 msgstr "Niets doen, de bijdrage blijft staan"
+
+msgid "Contact"
+msgstr "Contact"
+
+#, python-format
+msgid "Welcome back, %(name)s."
+msgstr "Welkom terug, %(name)s."
+
+msgid "Choose new password"
+msgstr "Nieuw wachtwoord kiezen"
+
+msgid "Link expired"
+msgstr "Link verlopen"
+
+msgid "This link is no longer valid."
+msgstr "Deze link werkt niet meer."
+
+msgid "The reset link has expired or is invalid. Request a new one below."
+msgstr "De resetlink is verlopen of werkt niet. Vraag hieronder een nieuwe aan."
+
+msgid "Request new link"
+msgstr "Nieuwe link aanvragen"
+
+msgid "New password"
+msgstr "Nieuw wachtwoord"
+
+msgid "Choose a new password."
+msgstr "Kies een nieuw wachtwoord."
+
+msgid "Confirm new password"
+msgstr "Bevestig nieuw wachtwoord"
+
+msgid "Save new password"
+msgstr "Nieuw wachtwoord opslaan"
+
+msgid "Forgot password"
+msgstr "Wachtwoord vergeten"
+
+msgid "Reset your password."
+msgstr "Stel een nieuw wachtwoord in."
+
+msgid "Enter your email address and we'll send you a reset link."
+msgstr "Vul je e-mailadres in, dan sturen we je een resetlink."
+
+msgid "Reset link sent (check your inbox)."
+msgstr "Reset link verstuurd (check je inbox)."
+
+msgid "Send reset link"
+msgstr "Resetlink versturen"
+
+msgid "Back to log in"
+msgstr "Terug naar inloggen"

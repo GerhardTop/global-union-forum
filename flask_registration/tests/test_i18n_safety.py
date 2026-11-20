@@ -169,3 +169,78 @@ def test_core_pages_render_with_their_core_sentences(app, db, smoke, lang):
         text = _text(resp.get_data(as_text=True))
         for sentence in sentences[lang]:
             assert sentence in text, (lang, path, sentence)
+
+
+# ── After-care: catch untranslated text and template syntax in msgids ──────
+
+def _extracted():
+    """The msgids extract finds in app/ (same keywords as the project's extract)."""
+    from babel.messages.extract import extract_from_dir
+    keywords = {'_': None, 'gettext': None, 'ngettext': (1, 2), 'pgettext': ((1, 'c'), 2),
+                'npgettext': ((1, 'c'), 2, 3), 'lazy_gettext': None, 'lazy_pgettext': ((1, 'c'), 2)}
+    method_map = [('**.py', 'python'), ('**/templates/**.html', 'jinja2')]
+    out = set()
+    for _f, _l, message, _c, context in extract_from_dir(APP, method_map=method_map, keywords=keywords):
+        out.add((context, message if isinstance(message, str) else tuple(message)))
+    return out
+
+
+def _all_texts(message):
+    ids = [message.id] if isinstance(message.id, str) else list(message.id)
+    strs = [message.string] if isinstance(message.string, str) else list(message.string)
+    return ids, strs
+
+
+def test_no_template_syntax_in_msgids_or_translations():
+    """A msgid with {{ }} or {% %} is never filled in; it shows literally."""
+    bad = []
+    for lang in ('nl', 'en'):
+        for message in _po(lang):
+            if not message.id:
+                continue
+            ids, strs = _all_texts(message)
+            if any(tag in text for text in ids + strs for tag in ('{{', '}}', '{%', '%}')):
+                bad.append((lang, message.id))
+    for _context, message in _extracted():
+        texts = [message] if isinstance(message, str) else list(message)
+        if any(tag in text for text in texts for tag in ('{{', '}}', '{%', '%}')):
+            bad.append(('source', message))
+    assert not bad, bad
+
+
+def test_every_extracted_msgid_is_in_the_nl_catalog():
+    """A msgid without an NL entry shows in English to Dutch readers."""
+    catalog = {(m.context, m.id if isinstance(m.id, str) else tuple(m.id)) for m in _po('nl') if m.id}
+    missing = sorted(_extracted() - catalog, key=str)
+    assert not missing, f'Not in the NL catalog: {missing[:10]}'
+
+
+# NL translations identical to their msgid, on purpose. Anything else that
+# stays identical is a Dutch msgid or an untranslated English text.
+SAME_IN_DUTCH = {
+    'Freedom for all': 'slogan, niet vertalen',
+    'Dashboard': 'leenwoord', 'Privacy': 'leenwoord', 'Cookies': 'leenwoord', 'Spam': 'leenwoord',
+    'Respect': 'leenwoord', 'Media': 'leenwoord', 'Podcast': 'leenwoord', 'Video': 'leenwoord',
+    'Online': 'leenwoord', 'Experts': 'leenwoord', 'Event': 'leenwoord', 'event': 'leenwoord',
+    'Contact': 'leenwoord',
+    'Admin': 'rolnaam', 'Moderator': 'rolnaam', 'Moderators': 'rolnaam', 'Senior': 'rolnaam',
+    'Senior moderator': 'rolnaam', 'Senior moderators': 'rolnaam',
+    'AI:': 'afkorting',
+    'WTO': 'naam van een organisatie', 'WCO': 'naam van een organisatie', 'FATF': 'naam van een organisatie',
+    'IASB': 'naam van een organisatie', 'FAO/WHO': 'naam van een organisatie', 'ICAO, IMO': 'naam van een organisatie',
+    'ISO, IEC, ITU': 'naam van een organisatie', 'Codex Alimentarius': 'naam van een standaard',
+    'Basel III': 'naam van een standaard', 'IFRS': 'naam van een standaard', 'UNCAC': 'naam van een verdrag',
+    'UNFCCC': 'naam van een verdrag',
+}
+
+
+def test_nl_translation_differs_from_the_msgid_unless_allowed():
+    same = []
+    for message in _po('nl'):
+        if not message.id:
+            continue
+        ids, strs = _all_texts(message)
+        if any(i == s for i, s in zip(ids, strs)) and ids[0] not in SAME_IN_DUTCH:
+            same.append(message.id)
+    assert not same, f'NL equals the msgid (translate it, or add it to SAME_IN_DUTCH with a reason): {same}'
+    assert all(SAME_IN_DUTCH.values())

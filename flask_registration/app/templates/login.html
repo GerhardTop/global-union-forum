@@ -185,7 +185,7 @@
         feedback.textContent = {{ _('Too many attempts. Please try again in an hour.') | tojson }};
       } else {
         feedback.style.color = '#166534';
-        feedback.textContent = {{ pgettext('login page', 'Reset link sent (check your inbox).') | tojson }};
+        feedback.textContent = {{ _('Reset link sent (check your inbox).') | tojson }};
       }
     });
   });
