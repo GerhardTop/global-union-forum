@@ -34,28 +34,25 @@ PATTERN = re.compile(
     r"""[!=]==?\s*['"](?:nl|en)['"]"""                     # lang == 'nl', lang === 'en', != 'nl'
     r"""|\bin\s*\(\s*['"]nl['"]\s*,\s*['"]en['"]\s*\)"""   # in ('nl', 'en')
     r"""|\bif\s+(?:not\s+)?nl\b"""                         # {% if nl %}, 'x' if nl else 'y'
-    r"""|['"]nl['"]\s*:""")                                 # {'nl': ..., 'en': ...}
+    r"""|['"]nl['"]\s*:"""                                 # {'nl': ..., 'en': ...}
+    r"""|\[\s*lang\s*\]""")                              # labels[lang]: a per-language lookup
 
 # path -> (count, reason). Lower the count as branches are converted.
 EXCEPTIONS = {
-    'app/__init__.py': (5, 'stap 4 (Python-teksten)'),
-    'app/digest.py': (1, 'stap 4 (Python-teksten)'),
-    'app/issues.py': (2, 'stap 4 (Python-teksten)'),
-    'app/models.py': (11, 'stap 4 (Python-teksten)'),
-    'app/notifications.py': (25, 'stap 4 (Python-teksten)'),
-    'app/quality.py': (8, 'stap 4 (Python-teksten)'),
-    'app/reports.py': (1, 'stap 4 (Python-teksten)'),
-    'app/routes/admin.py': (15, 'stap 4 (Python-teksten)'),
-    'app/routes/auth.py': (17, 'stap 4 (Python-teksten)'),
-    'app/routes/forum.py': (7, 'stap 4 (Python-teksten)'),
-    'app/routes/issues.py': (6, 'stap 4 (Python-teksten)'),
-    'app/routes/main.py': (3, 'stap 4 (Python-teksten)'),
-    'app/routes/profile.py': (3, 'stap 4 (Python-teksten)'),
-    'app/routes/social.py': (11, 'stap 4 (Python-teksten)'),
-    'app/status.py': (12, 'stap 4 (Python-teksten)'),
+    'app/__init__.py': (3, 'data: de taalkeuze (sessie, user.lang bij inloggen), get_locale en LANGUAGES; komt bij het taalregister'),
+    'app/digest.py': (1, 'data: lang_for(user), de opgeslagen taal van de ontvanger met terugval op nl'),
+    'app/issues.py': (2, 'contentmodel, fase 0 stap 6: titel en openingsbericht van een gesprek per taal (title_*_nl/_en, body_nl/_en)'),
+    'app/models.py': (4, 'contentmodel, fase 0 stap 6: Thread.title(lang), de AI-uitleg (explanation_nl/_en) en post_lang'),
+    'app/notifications.py': (1, 'contentmodel, fase 0 stap 6: de titel van een gesprek per taal in een melding'),
+    'app/quality.py': (9, 'contentmodel, fase 0 stap 6: AI-vertaal- en kwaliteitscode (taalregels voor de prompt, explanation_nl/_en, body_nl)'),
+    'app/routes/admin.py': (2, 'data: zoeken in de titels in beide talen; de taalmonitor filtert op taal'),
+    'app/routes/auth.py': (2, 'data: de registratietaal wordt opgeslagen (user.lang, auto_translate)'),
+    'app/routes/forum.py': (4, 'contentmodel, fase 0 stap 6: automatisch vertalen (auto_translate, translate_text, body_nl/_en)'),
+    'app/routes/main.py': (2, 'data: set_lang (de taalkiezer) en auto_translate'),
+    'app/routes/social.py': (2, 'data: de registratietaal wordt opgeslagen (user.lang, auto_translate)'),
+    'app/status.py': (4, 'data: de taalmonitor telt per taal'),
     'app/templates/_footer.html': (2, 'taalkiezer: markeert de actieve taal (is-active); de taalkiezer komt bij het taalregister'),
     'app/templates/_header.html': (4, 'taalkiezer: markeert de actieve taal (is-active); de taalkiezer komt bij het taalregister'),
-    'app/templates/email/notification.html': (4, 'stap 4: de mail wordt buiten de sessie gerenderd; samen met notifications.py met force_locale'),
     'app/templates/forum/_post.html': (1, 'contentmodel, fase 0 stap 6: body_nl/body_en van een bijdrage'),
     'app/templates/forum/closed.html': (2, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
     'app/templates/forum/edit_thread.html': (1, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
@@ -64,9 +61,7 @@ EXCEPTIONS = {
     'app/templates/issues/proposal.html': (2, 'contentmodel, fase 0 stap 6: body_nl/body_en van een reactie op een voorstel'),
     'app/templates/issues/show.html': (1, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
     'app/templates/landenlijst.html': (7, 'contentmodel, fase 0 stap 6: landgegevens per taal (land_nl/_en, niveau_nl/_en, remarks_nl/_en) en de downloads (Excel, PDF) per taal'),
-    'app/templates/notificaties.html': (3, 'stap 4: de categorielabels komen uit notifications.CATEGORIES (label_nl/label_en)'),
     'app/templates/profile.html': (3, 'taalkiezer (2x is-active); data: de standaard voor automatisch vertalen volgt de taal (auto_translate)'),
-    'app/utils.py': (1, 'stap 4 (Python-teksten)'),
 }
 
 

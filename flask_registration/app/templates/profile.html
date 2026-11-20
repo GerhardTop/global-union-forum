@@ -26,14 +26,14 @@
       <div class="gu-profile__info-row" id="guStatus">
         <span class="gu-profile__info-label">Status</span>
         <span class="gu-profile__info-value">
-          <span class="gu-status-badge gu-status-badge--{{ st }}">{{ status_labels[st][lang] }}</span>
+          <span class="gu-status-badge gu-status-badge--{{ st }}">{{ status_labels[st] }}</span>
           {% if current_user.can_vote() %}<span class="gu-quality__meta">· {{ _('right to vote') }}</span>{% endif %}
         </span>
       </div>
       <div class="gu-profile__info-row">
         <span class="gu-profile__info-label">{{ _('Earned') }}</span>
         <span class="gu-profile__info-value">
-          {{ status_labels[current_user.earned_status][lang] }}:
+          {{ status_labels[current_user.earned_status] }}:
           {% set topics = ngettext('%(num)d topic', '%(num)d topics', quality_topics) %}{% trans count=quality_count, topics=topics %}{{ count }} quality contribution in {{ topics }}{% pluralize %}{{ count }} quality contributions in {{ topics }}{% endtrans %}
           <span class="gu-quality__meta" style="display:block;">
             {% set e = current_user.earned_status %}
@@ -52,7 +52,7 @@
           {% set reached = loop.index0 <= ['reader', 'contributor', 'voter', 'moderator', 'senior'].index(st) %}
           <li class="gu-statusladder__step{% if key == st %} is-current{% elif reached %} is-done{% endif %}"{% if key == st %} aria-current="step"{% endif %}>
             <span class="gu-statusladder__dot" aria-hidden="true"></span>
-            <span class="gu-statusladder__label">{{ status_labels[key][lang] }}</span>
+            <span class="gu-statusladder__label">{{ status_labels[key] }}</span>
           </li>
           {% endfor %}
         </ol>

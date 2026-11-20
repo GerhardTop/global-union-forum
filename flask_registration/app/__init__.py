@@ -796,9 +796,7 @@ def create_app():
             f"Rate-limit overschreden: {request.method} {request.path} "
             f"van {real_client_ip()}"
         )
-        lang = session.get('lang', 'nl')
-        msg = ('Te veel pogingen. Probeer het over een minuut opnieuw.' if lang == 'nl'
-               else 'Too many attempts. Please try again in a minute.')
+        msg = (gettext('Too many attempts. Please try again in a minute.'))
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'error': 'rate_limited', 'message': msg}), 429
         flash(msg, 'error')
@@ -828,8 +826,7 @@ def create_app():
             session.clear()
             session['lang'] = lang
             flash(
-                'Je sessie is verlopen. Log opnieuw in.' if lang == 'nl'
-                else 'Your session has expired. Please log in again.',
+                gettext('Your session has expired. Please log in again.'),
                 'error'
             )
             return redirect(url_for('auth.login'))

@@ -27,7 +27,7 @@
         <span>{{ _('Criterion') }}</span>
         <select name="criterion" class="gu-input">
           {% for c in ['K1', 'K2', 'K3'] %}
-          <option value="{{ c }}"{% if qa and qa.criterion == c %} selected{% endif %}>{{ c }} {{ quality_labels[c][lang] }}</option>
+          <option value="{{ c }}"{% if qa and qa.criterion == c %} selected{% endif %}>{{ c }} {{ quality_labels[c] }}</option>
           {% endfor %}
         </select>
       </label>

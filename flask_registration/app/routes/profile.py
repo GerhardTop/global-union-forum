@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, abort
 from flask_login import login_required, current_user
-from flask_babel import gettext as _, get_locale
+from flask_babel import gettext, gettext as _, get_locale
 
 from app import db, bcrypt
 from app.forms import ForumActionForm, LinkedInForm
@@ -21,7 +21,6 @@ def dashboard():
 @login_required
 def profile():
     from app.forms import ChangePasswordForm
-    lang = session.get('lang', 'nl')
     form = ChangePasswordForm()
 
     if request.method == "POST":
@@ -50,7 +49,7 @@ def profile():
             if is_xhr:
                 return jsonify({'ok': True, 'linkedin_url': linkedin_url})
             flash(
-                "LinkedIn profiel opgeslagen." if lang == 'nl' else "LinkedIn profile saved.",
+                gettext('LinkedIn profile saved.'),
                 "success"
             )
             return redirect(url_for("profile.profile"))
@@ -176,7 +175,7 @@ def notificaties():
         _require_csrf()
         notifications.save_from_form(current_user, request.form)
         db.session.commit()
-        flash("Bewaard" if session.get("lang", "nl") == "nl" else "Saved", "success")
+        flash(gettext('Saved'), "success")
         return redirect(url_for("profile.notificaties"))
     allowed = set(notifications.allowed_categories(current_user))
     return render_template(
@@ -198,7 +197,7 @@ def meldingen():
     from markupsafe import Markup
     from app import digest, notifications
     from app.models import time_ago
-    lang = 'nl' if str(get_locale() or 'nl') == 'nl' else 'en'
+    lang = str(get_locale() or 'nl')
     items = []
     for n in notifications.recent_notifications(current_user):
         text, url = notifications.notification_line(n, lang)

@@ -201,7 +201,7 @@
         <div class="gu-cockpit__panelhead"><h2 class="gu-cockpit__title" id="rightsTitle">{{ _('Your right to vote') }}</h2></div>
         <div class="gu-cockpit__box">
         {% if voting_right %}
-        <p><span class="gu-status-badge gu-status-badge--{{ voting_right.status }}">{{ status_labels[voting_right.status][lang] }}</span></p>
+        <p><span class="gu-status-badge gu-status-badge--{{ voting_right.status }}">{{ status_labels[voting_right.status] }}</span></p>
         {% if voting_right.can_vote %}
         <p class="gu-cockpit__rightsline">{{ _('You have the right to vote.') }}</p>
         {% else %}

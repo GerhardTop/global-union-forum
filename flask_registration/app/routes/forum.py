@@ -3,7 +3,7 @@ from collections import deque
 from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify, abort, current_app, flash, g
-from flask_babel import gettext, get_locale
+from flask_babel import gettext
 from flask_login import login_required, current_user
 from sqlalchemy import func, or_
 
@@ -69,9 +69,7 @@ def suspended_notice(user):
     """'Je bent geschorst tot <datum>' (en: 'You are suspended until <date>')."""
     from app import issues
     until = issues.to_local(user.suspended_until).strftime('%d-%m-%Y %H:%M')
-    if str(get_locale() or 'nl') == 'nl':
-        return f'Je bent geschorst tot {until}. Je kunt lezen, maar niet bijdragen of stemmen.'
-    return f'You are suspended until {until}. You can read, but not contribute or vote.'
+    return gettext('You are suspended until %(until)s. You can read, but not contribute or vote.', until=until)
 
 
 # Contribution actions a suspended user may not take (POST). Reading,
@@ -635,8 +633,7 @@ def forum_thread(thread_id):
         if parent is not None and parent.user_id == current_user.id:
             # Punt 7: niet reageren op je eigen bericht (de knop is ook verborgen).
             flash(
-                'Je kunt niet reageren op je eigen bericht.' if session.get('lang', 'nl') == 'nl'
-                else 'You cannot reply to your own post.',
+                gettext('You cannot reply to your own post.'),
                 'error'
             )
             # Polijststap P7: vanuit de cockpit terug naar de cockpit.
@@ -644,9 +641,7 @@ def forum_thread(thread_id):
                             or url_for('forum.forum_thread', thread_id=thread_id) + f'#post-{parent.id}')
         if parent_id is not None and parent is None:
             flash(
-                'Ongeldige reactie: het bericht waarop je reageert bestaat niet in dit gesprek.'
-                if session.get('lang', 'nl') == 'nl'
-                else 'Invalid reply: the post you are replying to does not exist in this conversation.',
+                gettext('Invalid reply: the post you are replying to does not exist in this conversation.'),
                 'error'
             )
             return redirect(url_for('forum.forum_thread', thread_id=thread_id) + '#composer')
@@ -1310,10 +1305,9 @@ def forum_post_bewerken(post_id):
     body = request.form.get('body', '').strip()
     if body:
         _apply_edit(post, body)
-    lang = session.get('lang', 'nl')
     return jsonify({
         'body': post.body,
-        'edited': gettext('edited %(when)s', when=post.edited_ago[lang]) if post.edited_at else None,
+        'edited': gettext('edited %(when)s', when=post.edited_ago) if post.edited_at else None,
         # De nieuwe beoordeling verschijnt via de statuspoll, net als bij een nieuw bericht.
         'poll_url': url_for('forum.forum_quality_status', post_id=post.id),
     })

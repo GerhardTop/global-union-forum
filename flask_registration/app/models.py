@@ -353,22 +353,21 @@ class Post(db.Model):
 
 
 def time_ago(moment):
-    """{'nl': ..., 'en': ...}: hoe lang geleden, voor bijdragen en besluiten."""
+    """How long ago, for contributions and decisions, in the current language."""
+    from flask_babel import gettext, ngettext
     if moment is None:
-        return {'nl': '', 'en': ''}
+        return ''
     delta = datetime.utcnow() - moment
     d, s = delta.days, delta.seconds
-    if d >= 2:
-        return {'nl': f'{d} dagen geleden', 'en': f'{d} days ago'}
-    if d == 1:
-        return {'nl': '1 dag geleden', 'en': '1 day ago'}
+    if d >= 1:
+        return ngettext('%(num)d day ago', '%(num)d days ago', d)
     h = s // 3600
     if h >= 1:
-        return {'nl': f'{h} uur geleden', 'en': f'{h} hour{"s" if h > 1 else ""} ago'}
+        return ngettext('%(num)d hour ago', '%(num)d hours ago', h)
     m = s // 60
     if m >= 1:
-        return {'nl': f'{m} min geleden', 'en': f'{m} min ago'}
-    return {'nl': 'zojuist', 'en': 'just now'}
+        return gettext('%(num)d min ago', num=m)
+    return gettext('just now')
 
 
 # Fase E: feiten bij een voorstel.

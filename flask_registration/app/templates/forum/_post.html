@@ -24,7 +24,7 @@
   {% set is_foreign = post.source_lang != lang %}
 {% endif %}
 
-{% set time = post.time_ago[lang] %}
+{% set time = post.time_ago %}
 {% set is_own = current_user.is_authenticated and post.user_id == current_user.id %}
 {# Alleen de auteur. Bewerken alleen zonder reacties (welke status ook) en niet
    bij een verplaatst of verborgen bericht; verwijderen kan altijd (niet het
@@ -69,7 +69,7 @@
         <div class="gu-post__sub">
           {# Punt 4: geen rol, status of andere badge bij de auteur; alleen de tijd. #}
           <span class="gu-post__time">{{ time }}</span>
-          <span class="gu-post__edited" id="edited-{{ post.id }}">{% if post.edited_at %}· {{ _('edited %(when)s', when=post.edited_ago[lang]) }}{% endif %}</span>
+          <span class="gu-post__edited" id="edited-{{ post.id }}">{% if post.edited_at %}· {{ _('edited %(when)s', when=post.edited_ago) }}{% endif %}</span>
         </div>
       </div>
     </div>

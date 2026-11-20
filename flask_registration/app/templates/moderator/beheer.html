@@ -188,7 +188,7 @@
                 {% elif a.action == 'unhide' %}{% trans snap=snap %}made "{{ snap }}" visible again{% endtrans %}
                 {% elif a.action == 'delete_proposal' %}{% trans snap=snap %}deleted "{{ snap }}"{% endtrans %}
                 {% else %}{% trans snap=snap %}deleted the issue "{{ snap }}"{% endtrans %}{% endif %}
-                <span class="gu-mgmt__logtime">{{ ago(a.created_at)[lang] }}</span></div>
+                <span class="gu-mgmt__logtime">{{ ago(a.created_at) }}</span></div>
             </div>
             {% else %}
             <p class="gu-mgmt__empty gu-mgmt__empty--log">{{ _('Nothing hidden or deleted yet.') }}</p>

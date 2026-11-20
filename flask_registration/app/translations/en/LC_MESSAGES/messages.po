@@ -2476,12 +2476,6 @@ msgstr "Add"
 msgid "No facts with this direction."
 msgstr "No facts with this direction."
 
-msgid "to make a proposal."
-msgstr "to make a proposal."
-
-msgid "Accept the conduct rules"
-msgstr "Accept the conduct rules"
-
 msgid "New proposals can only be added in the facts and discussion phase."
 msgstr "New proposals can only be added in the facts and discussion phase."
 
@@ -3256,9 +3250,6 @@ msgstr "Reason (goes into the history)"
 msgid "For example: persistent behaviour that makes the conversation unsafe."
 msgstr "For example: persistent behaviour that makes the conversation unsafe."
 
-msgid "en"
-msgstr "en"
-
 msgid "Permanently delete account"
 msgstr "Permanently delete account"
 
@@ -3759,8 +3750,6 @@ msgstr "choose what you hear about, and where"
 
 msgid "Current password"
 msgstr "Current password"
-
-
 
 msgid "Danger zone"
 msgstr "Danger zone"
@@ -4825,3 +4814,457 @@ msgstr "Your contributions stay, but are no longer linked to your name. That way
 #. faq, vraag 4.7
 msgid "What happens to my contributions after I delete my account?"
 msgstr "What happens to my contributions after I delete my account?"
+
+msgid "Failed to send email. Please try again later."
+msgstr "Failed to send email. Please try again later."
+
+msgid "Password changed. You are now logged in."
+msgstr "Password changed. You are now logged in."
+
+msgid "Google sign-in cancelled."
+msgstr "Google sign-in cancelled."
+
+msgid "Google sign-in failed. Please try again."
+msgstr "Google sign-in failed. Please try again."
+
+msgid "No user information received from Google."
+msgstr "No user information received from Google."
+
+msgid "No email address received from Google."
+msgstr "No email address received from Google."
+
+msgid "Your Google email address is not verified. Please verify it with Google first."
+msgstr "Your Google email address is not verified. Please verify it with Google first."
+
+msgid "Username set!"
+msgstr "Username set!"
+
+msgid "This verification link has expired. Request a new one."
+msgstr "This verification link has expired. Request a new one."
+
+msgid "Invalid verification link."
+msgstr "Invalid verification link."
+
+msgid "Verification email resent — check your inbox."
+msgstr "Verification email resent — check your inbox."
+
+msgid "Admin accounts cannot be deleted."
+msgstr "Admin accounts cannot be deleted."
+
+msgid "An error occurred. Please try again."
+msgstr "An error occurred. Please try again."
+
+msgid "Your account has been deleted."
+msgstr "Your account has been deleted."
+
+msgid "Please enter a valid email address."
+msgstr "Please enter a valid email address."
+
+msgid "Invitation sent!"
+msgstr "Invitation sent!"
+
+msgid "Something went wrong. Please try again later."
+msgstr "Something went wrong. Please try again later."
+
+msgid "Thanks for your feedback!"
+msgstr "Thanks for your feedback!"
+
+msgid "Please fill in all fields."
+msgstr "Please fill in all fields."
+
+msgid "LinkedIn profile saved."
+msgstr "LinkedIn profile saved."
+
+msgid "Saved"
+msgstr "Saved"
+
+msgid "Thank you! You can now join the conversation."
+msgstr "Thank you! You can now join the conversation."
+
+msgid "You cannot reply to your own post."
+msgstr "You cannot reply to your own post."
+
+msgid "Invalid reply: the post you are replying to does not exist in this conversation."
+msgstr "Invalid reply: the post you are replying to does not exist in this conversation."
+
+msgid "Rights saved."
+msgstr "Rights saved."
+
+msgid "Write a message to the user first."
+msgstr "Write a message to the user first."
+
+msgid "The warning has been sent."
+msgstr "The warning has been sent."
+
+msgid "Choose 7 or 30 days."
+msgstr "Choose 7 or 30 days."
+
+msgid "Write the reason for the suspension first."
+msgstr "Write the reason for the suspension first."
+
+msgid "The username does not match. Nothing was deleted."
+msgstr "The username does not match. Nothing was deleted."
+
+msgid "Thresholds saved."
+msgstr "Thresholds saved."
+
+msgid "Too many attempts. Please try again in a minute."
+msgstr "Too many attempts. Please try again in a minute."
+
+msgid "Reset your password — Global Union Forum"
+msgstr "Reset your password — Global Union Forum"
+
+#, python-format
+msgid "Hi %(name)s,"
+msgstr "Hi %(name)s,"
+
+msgid "You requested a password reset. Click the link below to choose a new password:"
+msgstr "You requested a password reset. Click the link below to choose a new password:"
+
+msgid "This link expires in 1 hour."
+msgstr "This link expires in 1 hour."
+
+msgid "If you did not request this, you can safely ignore this email."
+msgstr "If you did not request this, you can safely ignore this email."
+
+msgid "Confirm your email — Global Union Forum"
+msgstr "Confirm your email — Global Union Forum"
+
+msgid "Please confirm your email address by clicking the link below:"
+msgstr "Please confirm your email address by clicking the link below:"
+
+msgid "This link expires in 24 hours."
+msgstr "This link expires in 24 hours."
+
+msgid "If you did not create an account, you can ignore this email."
+msgstr "If you did not create an account, you can ignore this email."
+
+msgid "Invitation: join the Global Union Forum conversation"
+msgstr "Invitation: join the Global Union Forum conversation"
+
+msgid "Hi,"
+msgstr "Hi,"
+
+#, python-format
+msgid "%(sender)s invites you to join Global Union Forum — a think tank exploring whether the success of the European Union can be replicated worldwide."
+msgstr "%(sender)s invites you to join Global Union Forum — a think tank exploring whether the success of the European Union can be replicated worldwide."
+
+#, python-format
+msgid "Personal message from %(sender)s:"
+msgstr "Personal message from %(sender)s:"
+
+msgid "Create a free account here:"
+msgstr "Create a free account here:"
+
+#, python-format
+msgid "@%(username)s has been suspended for %(days)s days."
+msgstr "@%(username)s has been suspended for %(days)s days."
+
+#, python-format
+msgid "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
+msgstr "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
+
+msgctxt "month"
+msgid "Jan"
+msgstr "Jan"
+
+msgctxt "month"
+msgid "Feb"
+msgstr "Feb"
+
+msgctxt "month"
+msgid "Mar"
+msgstr "Mar"
+
+msgctxt "month"
+msgid "Apr"
+msgstr "Apr"
+
+msgctxt "month"
+msgid "May"
+msgstr "May"
+
+msgctxt "month"
+msgid "Jun"
+msgstr "Jun"
+
+msgctxt "month"
+msgid "Jul"
+msgstr "Jul"
+
+msgctxt "month"
+msgid "Aug"
+msgstr "Aug"
+
+msgctxt "month"
+msgid "Sep"
+msgstr "Sep"
+
+msgctxt "month"
+msgid "Oct"
+msgstr "Oct"
+
+msgctxt "month"
+msgid "Nov"
+msgstr "Nov"
+
+msgctxt "month"
+msgid "Dec"
+msgstr "Dec"
+
+#, python-format
+msgid "You are suspended until %(until)s. You can read, but not contribute or vote."
+msgstr "You are suspended until %(until)s. You can read, but not contribute or vote."
+
+msgid "Suspend for {n} days"
+msgstr "Suspend for {n} days"
+
+msgid "Voter: minimum number of quality contributions"
+msgstr "Voter: minimum number of quality contributions"
+
+msgid "Moderator: more than this number of quality contributions"
+msgstr "Moderator: more than this number of quality contributions"
+
+msgid "Moderator: spread over at least this number of topics"
+msgstr "Moderator: spread over at least this number of topics"
+
+msgid "Senior: more than this number of quality contributions"
+msgstr "Senior: more than this number of quality contributions"
+
+msgid "Reader"
+msgstr "Reader"
+
+msgid "Senior"
+msgstr "Senior"
+
+msgid "Substantiation with a new fact and source"
+msgstr "Substantiation with a new fact and source"
+
+msgid "Fairness"
+msgstr "Fairness"
+
+#, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] "%(num)d day"
+msgstr[1] "%(num)d days"
+
+#, python-format
+msgid "%(num)d hour"
+msgid_plural "%(num)d hours"
+msgstr[0] "%(num)d hour"
+msgstr[1] "%(num)d hours"
+
+#, python-format
+msgid "%(num)d day ago"
+msgid_plural "%(num)d days ago"
+msgstr[0] "%(num)d day ago"
+msgstr[1] "%(num)d days ago"
+
+#, python-format
+msgid "%(num)d hour ago"
+msgid_plural "%(num)d hours ago"
+msgstr[0] "%(num)d hour ago"
+msgstr[1] "%(num)d hours ago"
+
+#, python-format
+msgid "%(num)d min ago"
+msgstr "%(num)d min ago"
+
+msgid "just now"
+msgstr "just now"
+
+msgctxt "notification setting"
+msgid "A reply to your contribution"
+msgstr "A reply to your contribution"
+
+msgid "Your proposal reaches the threshold or moves a phase on"
+msgstr "Your proposal reaches the threshold or moves a phase on"
+
+msgid "An issue you follow changes phase or voting is about to close"
+msgstr "An issue you follow changes phase or voting is about to close"
+
+msgctxt "notification setting"
+msgid "The outcome of an issue you follow"
+msgstr "The outcome of an issue you follow"
+
+msgid "Your fact is challenged or resolved"
+msgstr "Your fact is challenged or resolved"
+
+msgctxt "notification setting"
+msgid "A new report to handle"
+msgstr "A new report to handle"
+
+msgctxt "notification setting"
+msgid "A new objection to a decision"
+msgstr "A new objection to a decision"
+
+msgid "A challenged fact"
+msgstr "A challenged fact"
+
+msgid "Senior moderators"
+msgstr "Senior moderators"
+
+msgid "Someone replied to your contribution."
+msgstr "Someone replied to your contribution."
+
+msgid "Your fact is being challenged."
+msgstr "Your fact is being challenged."
+
+msgid "Your challenged fact has been resolved."
+msgstr "Your challenged fact has been resolved."
+
+msgid "A new report to handle."
+msgstr "A new report to handle."
+
+msgid "A new objection to a decision."
+msgstr "A new objection to a decision."
+
+msgid "A fact is being challenged."
+msgstr "A fact is being challenged."
+
+msgid "New notification."
+msgstr "New notification."
+
+msgctxt "notification phase"
+msgid "Facts"
+msgstr "Facts"
+
+msgctxt "notification phase"
+msgid "Adjusting"
+msgstr "Adjusting"
+
+msgctxt "notification phase"
+msgid "Voting"
+msgstr "Voting"
+
+msgctxt "notification phase"
+msgid "Summarising"
+msgstr "Summarising"
+
+msgctxt "notification phase"
+msgid "Follow-up"
+msgstr "Follow-up"
+
+msgctxt "notification subject"
+msgid "an issue"
+msgstr "an issue"
+
+msgctxt "notification subject"
+msgid "a proposal"
+msgstr "a proposal"
+
+#, python-format
+msgid "Your proposal on %(title)s has enough support and is on the voting list."
+msgstr "Your proposal on %(title)s has enough support and is on the voting list."
+
+#, python-format
+msgid "The final vote on %(title)s has started."
+msgstr "The final vote on %(title)s has started."
+
+#, python-format
+msgid "The final vote on %(title)s has concluded."
+msgstr "The final vote on %(title)s has concluded."
+
+#, python-format
+msgid "Voting on %(title)s closes within 24 hours."
+msgstr "Voting on %(title)s closes within 24 hours."
+
+#, python-format
+msgid "The outcome of %(title)s is in."
+msgstr "The outcome of %(title)s is in."
+
+#, python-format
+msgid "A new voting round on your proposal %(title)s has opened."
+msgstr "A new voting round on your proposal %(title)s has opened."
+
+#, python-format
+msgid "A new voting round on your issue %(title)s has opened."
+msgstr "A new voting round on your issue %(title)s has opened."
+
+#, python-format
+msgid "A new voting round on %(title)s has opened."
+msgstr "A new voting round on %(title)s has opened."
+
+#, python-format
+msgid "Your proposal %(title)s moves on to the next phase: %(phase)s."
+msgstr "Your proposal %(title)s moves on to the next phase: %(phase)s."
+
+#, python-format
+msgid "Your issue %(title)s moves on to the next phase: %(phase)s."
+msgstr "Your issue %(title)s moves on to the next phase: %(phase)s."
+
+#, python-format
+msgid "%(title)s has moved to a new phase: %(phase)s."
+msgstr "%(title)s has moved to a new phase: %(phase)s."
+
+msgctxt "email subject"
+msgid "A reply to your contribution"
+msgstr "A reply to your contribution"
+
+msgid "News about your proposal"
+msgstr "News about your proposal"
+
+msgid "News about an issue you follow"
+msgstr "News about an issue you follow"
+
+msgctxt "email subject"
+msgid "The outcome of an issue you follow"
+msgstr "The outcome of an issue you follow"
+
+msgid "News about your fact"
+msgstr "News about your fact"
+
+msgctxt "email subject"
+msgid "A new report to handle"
+msgstr "A new report to handle"
+
+msgctxt "email subject"
+msgid "A new objection to a decision"
+msgstr "A new objection to a decision"
+
+msgid "A fact is being challenged"
+msgstr "A fact is being challenged"
+
+msgid "You have received a warning"
+msgstr "You have received a warning"
+
+msgid "You have been suspended"
+msgstr "You have been suspended"
+
+msgid "This warning is about the forum rules."
+msgstr "This warning is about the forum rules."
+
+msgid "Until then you can still read, but not contribute or vote."
+msgstr "Until then you can still read, but not contribute or vote."
+
+msgid "A moderator has sent you a warning."
+msgstr "A moderator has sent you a warning."
+
+#, python-format
+msgid "A moderator has sent you a warning: “%(message)s”"
+msgstr "A moderator has sent you a warning: “%(message)s”"
+
+msgid "You have been suspended."
+msgstr "You have been suspended."
+
+#, python-format
+msgid "Reason: %(reason)s"
+msgstr "Reason: %(reason)s"
+
+#, python-format
+msgid "You are suspended until %(until)s."
+msgstr "You are suspended until %(until)s."
+
+msgctxt "email button"
+msgid "View"
+msgstr "View"
+
+msgid "This message is about your account and is always sent."
+msgstr "This message is about your account and is always sent."
+
+msgid "You receive this email because you turned on email for this. You can turn it off per kind of notification:"
+msgstr "You receive this email because you turned on email for this. You can turn it off per kind of notification:"
+
+msgid "Adjust the proposals"
+msgstr "Adjust the proposals"

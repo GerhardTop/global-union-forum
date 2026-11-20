@@ -45,7 +45,7 @@
         <span>{{ ngettext('%(num)d reply', '%(num)d replies', posts | length) }}</span>
         {% if posts %}
           <span aria-hidden="true">·</span>
-          <span>{{ _('last') }} {{ posts[-1].time_ago[lang] }}</span>
+          <span>{{ _('last') }} {{ posts[-1].time_ago }}</span>
         {% endif %}
         {% if thread.is_demo %}
           <span aria-hidden="true">·</span>

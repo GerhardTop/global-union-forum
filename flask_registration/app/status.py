@@ -22,6 +22,8 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import func, or_
 
+from flask_babel import lazy_gettext
+
 from app import db
 from app.models import (STATUS_LADDER, AppSetting, Post, QualityAward, QualityPromotion,
                         User, status_rank)
@@ -33,23 +35,21 @@ DEFAULT_THRESHOLDS = {
     'senior_min': 100,
 }
 
+# Display labels only (lazy: translated when shown, in the reader's language).
+# The stored values stay the codes (the keys).
 THRESHOLD_LABELS = {
-    'voter_min': {'nl': 'Stemmer: minimaal aantal kwaliteitsbijdragen',
-                  'en': 'Voter: minimum number of quality contributions'},
-    'moderator_min': {'nl': 'Moderator: meer dan dit aantal kwaliteitsbijdragen',
-                      'en': 'Moderator: more than this number of quality contributions'},
-    'moderator_min_topics': {'nl': 'Moderator: verdeeld over minimaal dit aantal onderwerpen',
-                             'en': 'Moderator: spread over at least this number of topics'},
-    'senior_min': {'nl': 'Senior: meer dan dit aantal kwaliteitsbijdragen',
-                   'en': 'Senior: more than this number of quality contributions'},
+    'voter_min': lazy_gettext('Voter: minimum number of quality contributions'),
+    'moderator_min': lazy_gettext('Moderator: more than this number of quality contributions'),
+    'moderator_min_topics': lazy_gettext('Moderator: spread over at least this number of topics'),
+    'senior_min': lazy_gettext('Senior: more than this number of quality contributions'),
 }
 
 STATUS_LABELS = {
-    'reader': {'nl': 'Lezer', 'en': 'Reader'},
-    'contributor': {'nl': 'Bijdrager', 'en': 'Contributor'},
-    'voter': {'nl': 'Stemmer', 'en': 'Voter'},
-    'moderator': {'nl': 'Moderator', 'en': 'Moderator'},
-    'senior': {'nl': 'Senior', 'en': 'Senior'},
+    'reader': lazy_gettext('Reader'),
+    'contributor': lazy_gettext('Contributor'),
+    'voter': lazy_gettext('Voter'),
+    'moderator': lazy_gettext('Moderator'),
+    'senior': lazy_gettext('Senior'),
 }
 
 

@@ -9,7 +9,6 @@
   Context: categories (only those the user may set), prefs, frequency.
 #}
 {% block content_outer %}{% block content %}
-{% set nl = lang == 'nl' %}
 <div class="gu-notif" lang="{{ lang }}">
   <div class="gu-notif__wrap">
 
@@ -33,7 +32,7 @@
         </div>
 
         {% set section = namespace(current=None) %}
-        {% for key, sect, label_nl, label_en, sub_nl, sub_en, _senior in categories %}
+        {% for key, sect, label, sub, _senior in categories %}
         {% if sect != section.current %}
         {% set section.current = sect %}
         <div class="gu-notif__sect{% if not loop.first %} gu-notif__sect--rule{% endif %}" id="sectie-{{ sect }}">
@@ -41,11 +40,10 @@
           {% else %}{{ _('Moderation') }} <span class="gu-notif__pill">{{ _('for moderators') }}</span>{% endif %}
         </div>
         {% endif %}
-        {% set label = label_nl if nl else label_en %}
         <div class="gu-notif__row" data-category="{{ key }}">
           <div>
             <div class="gu-notif__label" id="lbl-{{ key }}">{{ label }}</div>
-            {% if sub_nl %}<div class="gu-notif__sub">{{ sub_nl if nl else sub_en }}</div>{% endif %}
+            {% if sub %}<div class="gu-notif__sub">{{ sub }}</div>{% endif %}
           </div>
           {% for channel, ch_label in (('app', _('In the app')), ('email', _('Email'))) %}
           <div class="gu-notif__cell">

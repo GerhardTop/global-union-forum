@@ -93,15 +93,13 @@ def wait_bucket(dt):
     secs = (datetime.utcnow() - dt).total_seconds()
     days = int(secs // 86400)
     hours = int(secs // 3600)
+    from flask_babel import ngettext
     if days >= 1:
-        label_nl = f"{days} dag" if days == 1 else f"{days} dagen"
-        label_en = f"{days} day" if days == 1 else f"{days} days"
+        label = ngettext('%(num)d day', '%(num)d days', days)
     else:
-        h = max(hours, 1)
-        label_nl = f"{h} uur"
-        label_en = f"{h} hour" if h == 1 else f"{h} hours"
+        label = ngettext('%(num)d hour', '%(num)d hours', max(hours, 1))
     sev = 'hot' if days >= 5 else ('warm' if days >= 1 else 'cool')
-    return {'nl': label_nl, 'en': label_en, 'sev': sev}
+    return {'label': label, 'sev': sev}
 
 
 def _group(reports, item_by_id, issue_of, kind):

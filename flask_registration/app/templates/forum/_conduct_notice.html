@@ -28,7 +28,7 @@
   {% if case.action == 'twijfel' %}<p class="gu-conduct__why">{% if case.rule %}{{ _('Possible violation of the conduct rule: %(rule)s.', rule=c_rule_full) }}{% else %}{{ _('Possible violation of the conduct rules.') }}{% endif %}</p>
   {% elif case.action == 'verplaatst' and c_rule_full %}<p class="gu-conduct__why">{{ _('Conduct rule: %(rule)s.', rule=c_rule_full) }}</p>{% endif %}
   {% if case.explanation %}<p class="gu-conduct__why" lang="{{ case.explanation_lang or lang }}">{{ case.explanation }}</p>{% endif %}
-  <p class="gu-conduct__meta">{% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %} · {{ case.acted_ago[lang] }}</p>
+  <p class="gu-conduct__meta">{% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %} · {{ case.acted_ago }}</p>
 
   {% if case.removes_from_thread %}
     {% set objection = case.current_objections[-1] if case.current_objections else None %}

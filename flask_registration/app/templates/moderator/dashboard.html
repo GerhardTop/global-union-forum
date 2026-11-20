@@ -19,7 +19,7 @@
 
 {% macro age_pill(dt) -%}
 {%- set w = wait_bucket(dt) -%}
-{%- if w %}<span class="gu-pill gu-age gu-age--{{ w.sev }}">{{ w[lang] }}</span>{% endif -%}
+{%- if w %}<span class="gu-pill gu-age gu-age--{{ w.sev }}">{{ w.label }}</span>{% endif -%}
 {%- endmacro %}
 
 {% macro excerpt(text, href=None) -%}
@@ -57,7 +57,7 @@
   </div>
   <div class="gu-mrow__side">
     <span class="gu-pill gu-pill--count">{{ ngettext('%(num)d report', '%(num)d reports', m.count) }}</span>
-    {% if m.wait %}<span class="gu-pill gu-age gu-age--{{ m.wait.sev }}">{{ m.wait[lang] }}</span>{% endif %}
+    {% if m.wait %}<span class="gu-pill gu-age gu-age--{{ m.wait.sev }}">{{ m.wait.label }}</span>{% endif %}
     <a class="gu-btn gu-btn--primary gu-btn--sm" href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{{ _('Review') }}</a>
   </div>
 </div>
@@ -148,7 +148,7 @@
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
                   <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
-                  <p class="gu-mrow__reason">{{ r.award.criterion }} {{ quality_labels[r.award.criterion][lang] if r.award.criterion in quality_labels else '' }} · {{ _('Reported by') }} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
+                  <p class="gu-mrow__reason">{{ r.award.criterion }} {{ quality_labels[r.award.criterion] if r.award.criterion in quality_labels else '' }} · {{ _('Reported by') }} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
                   {% if current_user.id == post.user_id %}
                   <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
                   {% endif %}
@@ -391,7 +391,7 @@
       <aside class="gu-mod__side">
         <div class="gu-mod__ministats">
           <div class="gu-ministat">
-            <div class="gu-ministat__num gu-ministat__num--americas">{% if oldest_wait %}{{ oldest_wait[lang] }}{% else %}&mdash;{% endif %}</div>
+            <div class="gu-ministat__num gu-ministat__num--americas">{% if oldest_wait %}{{ oldest_wait.label }}{% else %}&mdash;{% endif %}</div>
             <div class="gu-ministat__lbl">{{ _('Longest wait') }}</div>
           </div>
           <div class="gu-ministat">

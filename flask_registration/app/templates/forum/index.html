@@ -60,7 +60,7 @@
             <span>{{ ngettext('%(num)d reply', '%(num)d replies', item.reply_count) }}</span>
             {% if item.last_time_ago %}
               <span aria-hidden="true">·</span>
-              <span>{{ _('last') }} {{ item.last_time_ago[lang] }}</span>
+              <span>{{ _('last') }} {{ item.last_time_ago }}</span>
             {% endif %}
           </span>
         </a>

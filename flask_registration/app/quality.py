@@ -21,6 +21,7 @@ import threading
 from datetime import datetime
 
 from flask import current_app
+from flask_babel import lazy_gettext
 
 from app import db
 from app.models import Post, QualityAward, QualityReport
@@ -30,10 +31,11 @@ TRANSLATION_MODEL = 'claude-haiku-4-5-20251001'
 # Bewust Haiku 4.5 voor het oordeel (testfase).
 JUDGE_MODEL = 'claude-haiku-4-5'
 
+# Display labels (lazy); the stored criterion stays the code (K1, K2, K3).
 CRITERIA_LABELS = {
-    'K1': {'nl': 'Nieuw argument', 'en': 'New argument'},
-    'K2': {'nl': 'Onderbouwing met nieuw feit en bron', 'en': 'Substantiation with a new fact and source'},
-    'K3': {'nl': 'Eerlijkheid', 'en': 'Fairness'},
+    'K1': lazy_gettext('New argument'),
+    'K2': lazy_gettext('Substantiation with a new fact and source'),
+    'K3': lazy_gettext('Fairness'),
 }
 
 _JUDGE_SYSTEM = (

@@ -744,11 +744,16 @@ def test_sort_and_filter_facts_above_five_proposals_above_ten(app, db, make_user
     assert 'gu-bigp__bar' in enlarged('&filter=stemlijst')
 
 
-def test_faq_has_no_semicolons_and_uses_the_collection_name():
+def test_faq_has_no_semicolons_and_uses_the_collection_name(app):
+    from flask_babel import force_locale
     from app import faq
-    answers = {lang: [str(a) for _title, items in faq.FAQ[lang] for _q, a in items] for lang in ('nl', 'en')}
+    answers, questions = {}, {}
+    for lang in ('nl', 'en'):
+        with app.test_request_context('/'), force_locale(lang):
+            themes = faq.themes()
+        answers[lang] = [str(a) for _title, items in themes for _q, a in items]
+        questions[lang] = [str(q) for _title, items in themes for q, _a in items]
     for lang, texts in answers.items():
-        questions = [str(q) for _title, items in faq.FAQ[lang] for q, _a in items]
-        assert not any(';' in t for t in texts + questions), lang
+        assert not any(';' in t for t in texts + questions[lang]), lang
     assert any(t.startswith('Feiten, onderzoek en media zijn onderbouwde bijdragen met een bron.') for t in answers['nl'])
     assert any(t.startswith('Facts, research and media are well-founded contributions with a source.') for t in answers['en'])

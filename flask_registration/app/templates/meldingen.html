@@ -24,7 +24,7 @@
       <span class="gu-inbox__dot" aria-hidden="true"></span>
       <a class="gu-inbox__link" href="{{ item.url }}">
         <span class="gu-inbox__text">{% if item.unread %}<span class="gu-sr-only">{{ _('New:') }} </span>{% endif %}{{ item.text }}</span>
-        <span class="gu-inbox__when">{{ item.when[_('en')] }}</span>
+        <span class="gu-inbox__when">{{ item.when }}</span>
       </a>
     </li>
     {% endfor %}

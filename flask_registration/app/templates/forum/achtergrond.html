@@ -37,7 +37,7 @@
           {%- else -%}{{ _('Objection period ended') }}{%- endif -%}
         </span>
       </div>
-      <p class="gu-background__meta">{% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %} · {{ case.acted_ago[lang] }}</p>
+      <p class="gu-background__meta">{% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %} · {{ case.acted_ago }}</p>
       <blockquote class="gu-background__text" lang="{{ case.post.source_lang }}">
         {% for para in (case.body_snapshot or case.post.body or '').split('\n\n') %}<p>{{ para }}</p>{% endfor %}
       </blockquote>

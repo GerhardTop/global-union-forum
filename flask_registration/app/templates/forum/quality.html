@@ -51,7 +51,7 @@
       <p class="gu-eyebrow">{{ _('Quality') }}</p>
       <h1 class="gu-forum__title">{{ _('Quality judgement') }}</h1>
       <blockquote class="gu-qthread__post">
-        <p class="gu-quality__meta">{{ post.public_author_name() }} · {{ post.time_ago[lang] }}</p>
+        <p class="gu-quality__meta">{{ post.public_author_name() }} · {{ post.time_ago }}</p>
         <p>{{ (post.body or '')[:600] }}{% if (post.body or '')|length > 600 %}…{% endif %}</p>
       </blockquote>
     </header>
@@ -60,7 +60,7 @@
     <div class="gu-qthread__current">
       <p class="gu-qthread__who">{{ _('Current status, after a change by a moderator') }}</p>
       <p class="gu-qthread__verdict">
-        {% with medal_size=16 %}{% include 'forum/_medal.html' %}{% endwith %} <strong>{{ _('Quality contribution') }}: {{ award.criterion }} {{ quality_labels[award.criterion][lang] if award.criterion in quality_labels else '' }}</strong>
+        {% with medal_size=16 %}{% include 'forum/_medal.html' %}{% endwith %} <strong>{{ _('Quality contribution') }}: {{ award.criterion }} {{ quality_labels[award.criterion] if award.criterion in quality_labels else '' }}</strong>
       </p>
       {% if award.moderator_note %}<p>{{ award.moderator_note }}</p>{% endif %}
       {% if award.decided_by %}<p class="gu-quality__meta">{{ _('By') }} {{ award.decided_by.public_name }} · {{ when(award.decided_at) }}</p>{% endif %}
@@ -82,7 +82,7 @@
         <p class="gu-qthread__verdict">
           {% if v_status == 'toegekend' %}
             {% with medal_size=16 %}{% include 'forum/_medal.html' %}{% endwith %}
-            <strong>{{ _('Quality contribution') }}: {{ v_criterion }} {{ quality_labels[v_criterion][lang] if v_criterion in quality_labels else '' }}</strong>
+            <strong>{{ _('Quality contribution') }}: {{ v_criterion }} {{ quality_labels[v_criterion] if v_criterion in quality_labels else '' }}</strong>
           {% else %}
             <strong>{{ _('Not marked as a quality contribution') }}</strong>
           {% endif %}

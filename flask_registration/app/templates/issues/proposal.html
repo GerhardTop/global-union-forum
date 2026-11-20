@@ -224,7 +224,7 @@
           <div class="gu-pv__cmthead">
             <span class="gu-pv__av gu-pv__av--{{ colors[(post.user_id or 0) % 5] }}" aria-hidden="true">{{ ((name or '').lstrip('@') or '?')[:1] | upper }}</span>
             <span class="gu-pv__cmtname">{{ name }}</span>
-            <span class="gu-pv__cmttime">{{ post.time_ago[lang] }}</span>
+            <span class="gu-pv__cmttime">{{ post.time_ago }}</span>
           </div>
           <div class="gu-pv__cmttxt" lang="{{ post.source_lang if not (post.body_nl and post.body_en) else lang }}">{{ body | linkify }}</div>
         </article>

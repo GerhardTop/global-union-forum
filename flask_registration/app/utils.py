@@ -216,24 +216,21 @@ def _send_verify_email(user, lang, secret_key):
     from app.mail import send_email
     token = _make_verify_token(user.email, secret_key)
     verify_url = url_for('auth.verify_email', token=token, _external=True)
-    if lang == 'en':
-        subject = "Confirm your email — Global Union Forum"
+    from flask_babel import force_locale, gettext
+    # In the language of the request (lang), Dutch when unknown.
+    with force_locale(lang or 'nl'):
+        subject = gettext('Confirm your email — Global Union Forum')
+        # gettext outside the f-strings, so pybabel extract finds the msgids.
+        lines = (gettext('Hi %(name)s,', name=user.first_name),
+                 gettext('Please confirm your email address by clicking the link below:'),
+                 gettext('This link expires in 24 hours.'),
+                 gettext('If you did not create an account, you can ignore this email.'))
         html = (
-            f"<p>Hi {user.first_name},</p>"
-            f"<p>Please confirm your email address by clicking the link below:</p>"
+            f"<p>{lines[0]}</p>"
+            f"<p>{lines[1]}</p>"
             f"<p><a href='{verify_url}'>{verify_url}</a></p>"
-            f"<p>This link expires in 24 hours.</p>"
-            f"<p>If you did not create an account, you can ignore this email.</p>"
-            f"<p>Global Union Forum</p>"
-        )
-    else:
-        subject = "Bevestig je e-mailadres — Global Union Forum"
-        html = (
-            f"<p>Hoi {user.first_name},</p>"
-            f"<p>Bevestig je e-mailadres via de onderstaande link:</p>"
-            f"<p><a href='{verify_url}'>{verify_url}</a></p>"
-            f"<p>Deze link verloopt na 24 uur.</p>"
-            f"<p>Als je geen account hebt aangemaakt, kun je deze e-mail negeren.</p>"
+            f"<p>{lines[2]}</p>"
+            f"<p>{lines[3]}</p>"
             f"<p>Global Union Forum</p>"
         )
     send_email(user.email, subject, html)

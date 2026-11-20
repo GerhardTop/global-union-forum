@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from flask import Blueprint, render_template, redirect, url_for, request, abort, jsonify, flash, session
+from flask import Blueprint, render_template, redirect, url_for, request, abort, jsonify, flash
 from flask_babel import gettext, get_locale
 from sqlalchemy import or_
 from flask_login import login_required, current_user
@@ -320,14 +320,18 @@ def rights_settings():
         for key in RIGHTS_SWITCHES:
             issues.set_delete_setting(key, request.form.get(key) == '1', user_id=current_user.id)
         db.session.commit()
-        flash('Rechten opgeslagen.' if session.get('lang', 'nl') == 'nl' else 'Rights saved.', 'success')
+        flash(gettext('Rights saved.'), 'success')
         return redirect(url_for('admin.rights_settings'))
     return render_template('moderator/rechten.html', admin_action_form=form,
                            settings={key: issues.delete_setting(key) for key in RIGHTS_SWITCHES})
 
 
-_MONTHS = {'nl': ('jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'),
-           'en': ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')}
+def _month(n):
+    """The abbreviated month name (1-12) in the current language."""
+    from flask_babel import pgettext
+    return (pgettext('month', 'Jan'), pgettext('month', 'Feb'), pgettext('month', 'Mar'), pgettext('month', 'Apr'),
+            pgettext('month', 'May'), pgettext('month', 'Jun'), pgettext('month', 'Jul'), pgettext('month', 'Aug'),
+            pgettext('month', 'Sep'), pgettext('month', 'Oct'), pgettext('month', 'Nov'), pgettext('month', 'Dec'))[n - 1]
 
 
 @admin_bp.route('/moderator/gebruiker/<int:user_id>')
@@ -354,7 +358,7 @@ def gebruiker(user_id):
     contributions = [(c, item_url(c)) for c in users.recent_contributions(user)]
     since = None
     if user.created_at:
-        since = {k: f'{m[user.created_at.month - 1]} {user.created_at.year}' for k, m in _MONTHS.items()}
+        since = f'{_month(user.created_at.month)} {user.created_at.year}'
     return render_template(
         'moderator/gebruiker.html', user=user, stats=users.user_stats(user),
         history=users.moderation_history(user), contributions=contributions,
@@ -375,11 +379,9 @@ def gebruiker_waarschuwing(user_id):
         abort(404)
     if user.id == current_user.id:
         abort(403)
-    nl = str(get_locale() or 'nl') == 'nl'
     message = (request.form.get('message') or '').strip()
     if not message:
-        flash('Schrijf eerst een bericht aan de gebruiker.' if nl
-              else 'Write a message to the user first.', 'error')
+        flash(gettext('Write a message to the user first.'), 'error')
     else:
         from app import notifications
         from app.models import Warning
@@ -388,7 +390,7 @@ def gebruiker_waarschuwing(user_id):
         db.session.commit()
         # Notifications step 4: always, in the app and by email, after the commit.
         notifications.notify_system(user, 'waarschuwing', warning=warning)
-        flash('De waarschuwing is verstuurd.' if nl else 'The warning has been sent.', 'success')
+        flash(gettext('The warning has been sent.'), 'success')
     return redirect(url_for('admin.gebruiker', user_id=user.id))
 
 
@@ -409,17 +411,15 @@ def gebruiker_schorsen(user_id):
         abort(404)
     if user.id == current_user.id or user.is_admin:
         abort(403)
-    nl = str(get_locale() or 'nl') == 'nl'
     try:
         days = int(request.form.get('duur') or 0)
     except ValueError:
         days = 0
     reason = (request.form.get('reason') or '').strip()
     if days not in SUSPENSION_DAYS:
-        flash('Kies 7 of 30 dagen.' if nl else 'Choose 7 or 30 days.', 'error')
+        flash(gettext('Choose 7 or 30 days.'), 'error')
     elif not reason:
-        flash('Schrijf eerst de reden van de schorsing.' if nl
-              else 'Write the reason for the suspension first.', 'error')
+        flash(gettext('Write the reason for the suspension first.'), 'error')
     else:
         from app import notifications
         from app.models import Suspension
@@ -430,8 +430,7 @@ def gebruiker_schorsen(user_id):
         db.session.commit()
         # Notifications step 4: always, in the app and by email, after the commit.
         notifications.notify_system(user, 'schorsing', suspension=suspension)
-        flash((f'@{user.username} is geschorst voor {days} dagen.' if nl
-               else f'@{user.username} has been suspended for {days} days.'), 'success')
+        flash(gettext('@%(username)s has been suspended for %(days)s days.', username=user.username, days=days), 'success')
     return redirect(url_for('admin.gebruiker', user_id=user.id))
 
 
@@ -455,21 +454,18 @@ def gebruiker_verwijderen(user_id):
     screen, then anonymise. The row stays so all contributions keep working."""
     user = _deletable_user_or_abort(user_id)
     from app import users
-    nl = str(get_locale() or 'nl') == 'nl'
     reason = (request.values.get('reden') or '').strip()[:2000]
     if request.method == 'POST':
         from app.routes.forum import _require_csrf
         _require_csrf()
         typed = (request.form.get('confirm_username') or '').strip().lstrip('@')
         if typed != user.username:
-            flash('De gebruikersnaam klopt niet. Er is niets verwijderd.' if nl
-                  else 'The username does not match. Nothing was deleted.', 'error')
+            flash(gettext('The username does not match. Nothing was deleted.'), 'error')
             return redirect(url_for('admin.gebruiker_verwijderen', user_id=user.id, reden=reason or None))
         old = user.username
         users.anonymise(user, current_user, reason or None)
         db.session.commit()
-        flash((f'Het account @{old} is verwijderd. De bijdragen staan nu onder @verwijderd.' if nl
-               else f'The account @{old} has been deleted. Its contributions now show as @verwijderd.'),
+        flash(gettext('The account @%(username)s has been deleted. Its contributions now show as @verwijderd.', username=old),
               'success')
         return redirect(url_for('admin.moderator_dashboard'))
     return render_template('moderator/gebruiker_verwijderen.html', user=user, reason=reason,
@@ -636,7 +632,7 @@ def admin_thresholds():
                 values[key] = int(raw)
         if not errors:
             status.set_thresholds(values, user_id=current_user.id)
-            flash('Drempels opgeslagen.' if session.get('lang', 'nl') == 'nl' else 'Thresholds saved.', 'success')
+            flash(gettext('Thresholds saved.'), 'success')
             return redirect(url_for('admin.admin_thresholds'))
     return render_template('admin/thresholds.html', thresholds=status.get_thresholds(),
                            labels=status.THRESHOLD_LABELS, defaults=status.DEFAULT_THRESHOLDS,

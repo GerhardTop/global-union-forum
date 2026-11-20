@@ -3,6 +3,7 @@ import secrets
 from datetime import datetime, timezone
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify, current_app, abort
+from flask_babel import gettext, force_locale
 from flask_login import login_user, logout_user, login_required, current_user
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
@@ -43,24 +44,20 @@ def _verify_reset_token(token):
 
 
 def _send_reset_email(user, reset_url, lang):
-    if lang == 'en':
-        subject = "Reset your password — Global Union Forum"
+    # In the language of the request (lang), Dutch when unknown.
+    with force_locale(lang or 'nl'):
+        subject = gettext('Reset your password — Global Union Forum')
+        # gettext outside the f-strings, so pybabel extract finds the msgids.
+        lines = (gettext('Hi %(name)s,', name=user.first_name),
+                 gettext('You requested a password reset. Click the link below to choose a new password:'),
+                 gettext('This link expires in 1 hour.'),
+                 gettext('If you did not request this, you can safely ignore this email.'))
         html = (
-            f"<p>Hi {user.first_name},</p>"
-            f"<p>You requested a password reset. Click the link below to choose a new password:</p>"
+            f"<p>{lines[0]}</p>"
+            f"<p>{lines[1]}</p>"
             f"<p><a href='{reset_url}'>{reset_url}</a></p>"
-            f"<p>This link expires in 1 hour.</p>"
-            f"<p>If you did not request this, you can safely ignore this email.</p>"
-            f"<p>Global Union Forum</p>"
-        )
-    else:
-        subject = "Wachtwoord opnieuw instellen — Global Union Forum"
-        html = (
-            f"<p>Hoi {user.first_name},</p>"
-            f"<p>Je hebt een wachtwoordreset aangevraagd. Klik op de link hieronder om een nieuw wachtwoord in te stellen:</p>"
-            f"<p><a href='{reset_url}'>{reset_url}</a></p>"
-            f"<p>Deze link verloopt na 1 uur.</p>"
-            f"<p>Als jij dit niet hebt aangevraagd, kun je deze e-mail negeren.</p>"
+            f"<p>{lines[2]}</p>"
+            f"<p>{lines[3]}</p>"
             f"<p>Global Union Forum</p>"
         )
     ok = send_email(user.email, subject, html)
@@ -131,8 +128,7 @@ def wachtwoord_vergeten():
                 mail_ok = _send_reset_email(user, reset_url, lang)
                 if not mail_ok:
                     flash(
-                        'E-mail versturen mislukt. Probeer het later opnieuw.' if lang == 'nl'
-                        else 'Failed to send email. Please try again later.',
+                        gettext('Failed to send email. Please try again later.'),
                         'error'
                     )
                     if is_xhr:
@@ -191,8 +187,7 @@ def wachtwoord_reset(token):
         session.permanent = True
         login_user(user)
         flash(
-            'Wachtwoord gewijzigd. Je bent nu ingelogd.' if lang == 'nl'
-            else 'Password changed. You are now logged in.',
+            gettext('Password changed. You are now logged in.'),
             'success'
         )
         return redirect(url_for('main.index'))
@@ -231,8 +226,7 @@ def auth_google_callback():
     if oauth_error:
         current_app.logger.warning(f"Google OAuth geweigerd: {oauth_error}")
         flash(
-            'Inloggen met Google geannuleerd.' if lang == 'nl'
-            else 'Google sign-in cancelled.',
+            gettext('Google sign-in cancelled.'),
             'warning'
         )
         return redirect(url_for('auth.login'))
@@ -243,8 +237,7 @@ def auth_google_callback():
             f"Google OAuth token-uitwisseling mislukt: {type(exc).__name__}: {exc}"
         )
         flash(
-            'Inloggen met Google mislukt. Probeer het opnieuw.' if lang == 'nl'
-            else 'Google sign-in failed. Please try again.',
+            gettext('Google sign-in failed. Please try again.'),
             'error'
         )
         return redirect(url_for('auth.login'))
@@ -252,8 +245,7 @@ def auth_google_callback():
     userinfo = token.get('userinfo')
     if not userinfo:
         flash(
-            'Geen gebruikersgegevens ontvangen van Google.' if lang == 'nl'
-            else 'No user information received from Google.',
+            gettext('No user information received from Google.'),
             'error'
         )
         return redirect(url_for('auth.login'))
@@ -265,8 +257,7 @@ def auth_google_callback():
 
     if not email:
         flash(
-            'Geen e-mailadres ontvangen van Google.' if lang == 'nl'
-            else 'No email address received from Google.',
+            gettext('No email address received from Google.'),
             'error'
         )
         return redirect(url_for('auth.login'))
@@ -276,8 +267,7 @@ def auth_google_callback():
             f"Google OAuth geweigerd: e-mailadres niet geverifieerd bij Google ({email})."
         )
         flash(
-            'Je Google-e-mailadres is nog niet bevestigd. Bevestig het eerst via Google.' if lang == 'nl'
-            else 'Your Google email address is not verified. Please verify it with Google first.',
+            gettext('Your Google email address is not verified. Please verify it with Google first.'),
             'error'
         )
         return redirect(url_for('auth.login'))
@@ -342,7 +332,6 @@ def kies_gebruikersnaam():
     """
     if not (current_user.username or '').startswith('user_'):
         return redirect(url_for('main.index'))
-    lang = session.get('lang', 'nl')
     form = KiesGebruikersnaamForm()
     # Nieuwe Google-accounts komen hier na registratie: dit is hun
     # aanmeldformulier, dus hier staat ook het verplichte akkoord op de
@@ -376,7 +365,7 @@ def kies_gebruikersnaam():
             _stash_form_state("kies_gebruikersnaam", {"username_taken": True}, {"username": username})
             return redirect(url_for('auth.kies_gebruikersnaam'), code=303)
         flash(
-            'Gebruikersnaam ingesteld!' if lang == 'nl' else 'Username set!',
+            gettext('Username set!'),
             'success'
         )
         return redirect(url_for('main.index'))
@@ -415,14 +404,13 @@ def verify_email(token):
         email = s.loads(token, salt='email-verify', max_age=86400)
     except SignatureExpired:
         flash(
-            "Deze verificatielink is verlopen. Vraag een nieuwe aan." if lang == 'nl'
-            else "This verification link has expired. Request a new one.",
+            gettext('This verification link has expired. Request a new one.'),
             "error"
         )
         return redirect(url_for('main.index'))
     except BadSignature:
         flash(
-            "Ongeldige verificatielink." if lang == 'nl' else "Invalid verification link.",
+            gettext('Invalid verification link.'),
             "error"
         )
         return redirect(url_for('main.index'))
@@ -455,8 +443,7 @@ def verify_resend():
         return redirect(url_for('main.index'))
     _send_verify_email(current_user, lang, current_app.config['SECRET_KEY'])
     flash(
-        "Verificatiemail opnieuw verzonden — check je inbox." if lang == 'nl'
-        else "Verification email resent — check your inbox.",
+        gettext('Verification email resent — check your inbox.'),
         "success"
     )
     return redirect(request.referrer or url_for('main.index'))
@@ -500,8 +487,7 @@ def account_verwijderen():
     lang = session.get('lang', 'nl')
     if current_user.is_admin:
         flash(
-            "Adminaccounts kunnen niet worden verwijderd." if lang == 'nl'
-            else "Admin accounts cannot be deleted.",
+            gettext('Admin accounts cannot be deleted.'),
             "error"
         )
         return redirect(url_for("profile.profile"))
@@ -526,8 +512,7 @@ def account_verwijderen():
     except Exception:
         db.session.rollback()
         flash(
-            "Er is een fout opgetreden. Probeer het opnieuw." if lang == 'nl'
-            else "An error occurred. Please try again.",
+            gettext('An error occurred. Please try again.'),
             "error"
         )
         return redirect(url_for("profile.profile"))
@@ -537,7 +522,7 @@ def account_verwijderen():
     session['lang'] = lang
 
     flash(
-        "Je account is verwijderd." if lang == 'nl' else "Your account has been deleted.",
+        gettext('Your account has been deleted.'),
         "success"
     )
     return redirect(url_for("main.index"))

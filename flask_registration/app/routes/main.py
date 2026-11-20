@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 
 from flask import Blueprint, render_template, redirect, url_for, request, session, abort, flash
+from flask_babel import gettext
 from flask_login import current_user, login_required
 
 from app import db
@@ -143,8 +144,7 @@ def spelregels_accepteren():
     current_user.accept_rules()
     db.session.commit()
     flash(
-        "Bedankt! Je kunt nu meedoen aan het gesprek." if session.get("lang", "nl") == "nl"
-        else "Thank you! You can now join the conversation.",
+        gettext('Thank you! You can now join the conversation.'),
         "success"
     )
     return redirect(safe_next(request.form.get("next"), url_for("forum.forum")))

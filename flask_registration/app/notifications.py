@@ -22,6 +22,7 @@ idempotent by event_key. Step 3b adds the per-event email: the in-app and
 email switches are independent; a row exists whenever either is on (in_app
 says whether it shows in the app), so event_key de-dups both channels."""
 import json
+from flask_babel import force_locale, gettext, lazy_gettext, lazy_pgettext, pgettext
 from datetime import datetime, timedelta
 
 from app import db
@@ -30,21 +31,18 @@ SUMMARY_FREQUENCIES = ('off', 'daily', 'weekly')
 DEFAULT_SUMMARY_FREQUENCY = 'weekly'
 
 # (key, section, nl, en, sub_nl, sub_en, senior_only), in display order.
+# (key, section, label, sub, senior_only). The keys and sections are the
+# stored codes; the labels are lazy (translated when shown).
 CATEGORIES = (
-    ('reactie', 'deelname', 'Reactie op je bijdrage', 'A reply to your contribution', None, None, False),
-    ('voorstel', 'deelname', 'Je voorstel haalt de drempel of gaat een fase verder',
-     'Your proposal reaches the threshold or moves a phase on', None, None, False),
-    ('gevolgd', 'deelname', 'Een gevolgd vraagstuk wisselt van fase of de stemming sluit bijna',
-     'An issue you follow changes phase or voting is about to close', None, None, False),
-    ('uitslag', 'deelname', 'De uitslag van een vraagstuk dat je volgt', 'The outcome of an issue you follow',
-     None, None, False),
-    ('feit', 'deelname', 'Je feit wordt betwist of afgehandeld', 'Your fact is challenged or resolved',
-     None, None, False),
-    ('melding', 'moderatie', 'Een nieuwe melding om te behandelen', 'A new report to handle', None, None, False),
-    ('bezwaar', 'moderatie', 'Een nieuw bezwaar tegen een beslissing', 'A new objection to a decision',
-     'Senior moderators', 'Senior moderators', True),
-    ('betwist', 'moderatie', 'Een betwist feit', 'A challenged fact',
-     'Senior moderators', 'Senior moderators', True),
+    ('reactie', 'deelname', lazy_pgettext('notification setting', 'A reply to your contribution'), None, False),
+    ('voorstel', 'deelname', lazy_gettext('Your proposal reaches the threshold or moves a phase on'), None, False),
+    ('gevolgd', 'deelname', lazy_gettext('An issue you follow changes phase or voting is about to close'), None, False),
+    ('uitslag', 'deelname', lazy_pgettext('notification setting', 'The outcome of an issue you follow'), None, False),
+    ('feit', 'deelname', lazy_gettext('Your fact is challenged or resolved'), None, False),
+    ('melding', 'moderatie', lazy_pgettext('notification setting', 'A new report to handle'), None, False),
+    ('bezwaar', 'moderatie', lazy_pgettext('notification setting', 'A new objection to a decision'),
+     lazy_gettext('Senior moderators'), True),
+    ('betwist', 'moderatie', lazy_gettext('A challenged fact'), lazy_gettext('Senior moderators'), True),
 )
 CATEGORY_KEYS = tuple(c[0] for c in CATEGORIES)
 
@@ -226,18 +224,24 @@ def mark_all_read(user, now=None):
 
 
 _LINES = {
-    'reactie': ('Er is op je bijdrage gereageerd.', 'Someone replied to your contribution.'),
-    'feit': ('Je feit wordt betwist.', 'Your fact is being challenged.'),
-    'feit_resolved': ('Je betwiste feit is afgehandeld.', 'Your challenged fact has been resolved.'),
-    'melding': ('Er is een nieuwe melding om te behandelen.', 'A new report to handle.'),
-    'bezwaar': ('Er is een nieuw bezwaar tegen een beslissing.', 'A new objection to a decision.'),
-    'betwist': ('Een feit wordt betwist.', 'A fact is being challenged.'),
+    'reactie': lazy_gettext('Someone replied to your contribution.'),
+    'feit': lazy_gettext('Your fact is being challenged.'),
+    'feit_resolved': lazy_gettext('Your challenged fact has been resolved.'),
+    'melding': lazy_gettext('A new report to handle.'),
+    'bezwaar': lazy_gettext('A new objection to a decision.'),
+    'betwist': lazy_gettext('A fact is being challenged.'),
 }
 
 
 def notification_line(n, lang):
-    """(text, url) for one Notification in 'nl' or 'en'. A 'feit' row that
-    points at a dispute (dispute_id) is the resolved case."""
+    """(text, url) for one Notification in the given language (a locale code
+    such as 'nl' or 'en'). A 'feit' row that points at a dispute (dispute_id)
+    is the resolved case."""
+    with force_locale(lang or 'nl'):
+        return _notification_line(n, lang)
+
+
+def _notification_line(n, lang):
     from flask import url_for
     from app.models import Post
     if n.category in SYSTEM_CATEGORIES:
@@ -245,8 +249,7 @@ def notification_line(n, lang):
     if n.event_key:
         return _tick_line(n, lang)
     key = 'feit_resolved' if n.category == 'feit' and n.dispute_id is not None else n.category
-    nl, en = _LINES.get(key, ('Nieuwe melding.', 'New notification.'))
-    text = nl if lang == 'nl' else en
+    text = str(_LINES[key]) if key in _LINES else gettext('New notification.')
     post = db.session.get(Post, n.post_id) if n.post_id is not None else None
     dashboard = url_for('admin.moderator_dashboard')
     if n.category == 'reactie' and post is not None:
@@ -396,9 +399,11 @@ def emit_tick(now=None):
     return made
 
 
-_PHASES = {'feiten': ('Feiten', 'Facts'), 'bijstellen': ('Bijstellen', 'Adjusting'),
-           'stemmen': ('Stemmen', 'Voting'), 'samenvatten': ('Samenvatten', 'Summarising'),
-           'vervolg': ('Vervolg', 'Follow-up')}
+_PHASES = {'feiten': lazy_pgettext('notification phase', 'Facts'),
+           'bijstellen': lazy_pgettext('notification phase', 'Adjusting'),
+           'stemmen': lazy_pgettext('notification phase', 'Voting'),
+           'samenvatten': lazy_pgettext('notification phase', 'Summarising'),
+           'vervolg': lazy_pgettext('notification phase', 'Follow-up')}
 
 
 def _tick_line(n, lang):
@@ -407,7 +412,6 @@ def _tick_line(n, lang):
     3a-3 the final vote: ultiem_open, ultiem_result)."""
     from flask import url_for
     from app.models import Issue, IssueProposal, Thread
-    nl = lang == 'nl'
     parts = n.event_key.split(':')
     source = parts[0]
     url = url_for('profile.meldingen')
@@ -416,52 +420,56 @@ def _tick_line(n, lang):
         title = issue.title
         url = url_for('issues.show', issue_id=issue.id)
     elif n.thread_id is not None and (thread := db.session.get(Thread, n.thread_id)) is not None:
-        title = thread.title_prefix_nl if nl else (thread.title_prefix_en or thread.title_prefix_nl)
+        # Content model (phase 0 step 6): the stored title per language.
+        title = thread.title_prefix_nl if lang == 'nl' else (thread.title_prefix_en or thread.title_prefix_nl)
         url = url_for('forum.forum_thread', thread_id=thread.id)
-    noun = ('je voorstel' if nl else 'your proposal') if source == 'proposal' else (
-        'je vraagstuk' if nl else 'your issue')
-    t = f'‘{title}’' if title else (('een vraagstuk' if nl else 'an issue') if source == 'issue'
-                                     else ('een voorstel' if nl else 'a proposal'))
+    if title:
+        t = f'‘{title}’'
+    elif source == 'issue':
+        t = pgettext('notification subject', 'an issue')
+    else:
+        t = pgettext('notification subject', 'a proposal')
     if source == 'issueproposal':
         ip = db.session.get(IssueProposal, int(parts[1])) if parts[1].isdigit() else None
         if ip is not None:
             url = url_for('issues.proposal', issue_id=ip.issue_id, proposal_id=ip.id)
-        return ((f'Je voorstel bij {t} heeft genoeg steun en staat op de stemlijst.' if nl
-                 else f'Your proposal on {t} has enough support and is on the voting list.'), url)
+        return gettext('Your proposal on %(title)s has enough support and is on the voting list.', title=t), url
     kind = parts[2]
     if kind == 'ultiem_open':
-        return (f'De eindstemming over {t} is begonnen.' if nl else f'The final vote on {t} has started.'), url
+        return gettext('The final vote on %(title)s has started.', title=t), url
     if kind == 'ultiem_result':
-        return (f'De eindstemming over {t} is afgerond.' if nl else f'The final vote on {t} has concluded.'), url
+        return gettext('The final vote on %(title)s has concluded.', title=t), url
     if kind == 'closing':
-        return (f'De stemming over {t} sluit binnen 24 uur.' if nl else f'Voting on {t} closes within 24 hours.'), url
+        return gettext('Voting on %(title)s closes within 24 hours.', title=t), url
     if kind == 'result' or (kind == 'round' and parts[-1] == 'result'):
-        return (f'De uitslag van {t} is bekend.' if nl else f'The outcome of {t} is in.'), url
+        return gettext('The outcome of %(title)s is in.', title=t), url
     if kind == 'round' or (kind == 'voorstel' and parts[3] == 'round'):
         if kind == 'voorstel':
-            return (f'Er is een nieuwe stemronde over {noun} {t}.' if nl
-                    else f'A new voting round on {noun} {t} has opened.'), url
-        return (f'Er is een nieuwe stemronde over {t}.' if nl else f'A new voting round on {t} has opened.'), url
+            if source == 'proposal':
+                return gettext('A new voting round on your proposal %(title)s has opened.', title=t), url
+            return gettext('A new voting round on your issue %(title)s has opened.', title=t), url
+        return gettext('A new voting round on %(title)s has opened.', title=t), url
     phase = parts[4] if kind == 'voorstel' else parts[3]
-    label = _PHASES.get(phase, (phase, phase))[0 if nl else 1]
+    label = str(_PHASES[phase]) if phase in _PHASES else phase
     if kind == 'voorstel':
-        return (f'{noun[0].upper()}{noun[1:]} {t} gaat een fase verder: {label}.' if nl
-                else f'{noun[0].upper()}{noun[1:]} {t} moves on to the next phase: {label}.'), url
-    return (f'{t[0].upper()}{t[1:]} is in een nieuwe fase: {label}.' if nl
-            else f'{t[0].upper()}{t[1:]} has moved to a new phase: {label}.'), url
+        if source == 'proposal':
+            return gettext('Your proposal %(title)s moves on to the next phase: %(phase)s.', title=t, phase=label), url
+        return gettext('Your issue %(title)s moves on to the next phase: %(phase)s.', title=t, phase=label), url
+    text = gettext('%(title)s has moved to a new phase: %(phase)s.', title=t, phase=label)
+    return text[0].upper() + text[1:], url
 
 
 # ── The per-event email (step 3b) ────────────────────────────────────────
 
 _SUBJECTS = {
-    'reactie': ('Er is op je bijdrage gereageerd', 'A reply to your contribution'),
-    'voorstel': ('Nieuws over je voorstel', 'News about your proposal'),
-    'gevolgd': ('Nieuws over een vraagstuk dat je volgt', 'News about an issue you follow'),
-    'uitslag': ('De uitslag van een vraagstuk dat je volgt', 'The outcome of an issue you follow'),
-    'feit': ('Nieuws over je feit', 'News about your fact'),
-    'melding': ('Een nieuwe melding om te behandelen', 'A new report to handle'),
-    'bezwaar': ('Een nieuw bezwaar tegen een beslissing', 'A new objection to a decision'),
-    'betwist': ('Een feit wordt betwist', 'A fact is being challenged'),
+    'reactie': lazy_pgettext('email subject', 'A reply to your contribution'),
+    'voorstel': lazy_gettext('News about your proposal'),
+    'gevolgd': lazy_gettext('News about an issue you follow'),
+    'uitslag': lazy_pgettext('email subject', 'The outcome of an issue you follow'),
+    'feit': lazy_gettext('News about your fact'),
+    'melding': lazy_pgettext('email subject', 'A new report to handle'),
+    'bezwaar': lazy_pgettext('email subject', 'A new objection to a decision'),
+    'betwist': lazy_gettext('A fact is being challenged'),
 }
 
 
@@ -478,11 +486,11 @@ def email_for(user, n):
         if url.startswith('/'):
             url = base + url
         system = n.category in SYSTEM_CATEGORIES
-        nl, en = (_SYSTEM_SUBJECTS if system else _SUBJECTS)[n.category]
-        note = _SYSTEM_NOTES[n.category][0 if lang == 'nl' else 1] if system else None
+        subject = str((_SYSTEM_SUBJECTS if system else _SUBJECTS)[n.category])
+        note = str(_SYSTEM_NOTES[n.category]) if system else None
         html = render_template('email/notification.html', lang=lang, text=text, url=url, note=note,
                                system=system, settings_url=url_for('profile.notificaties', _external=True))
-    return (nl if lang == 'nl' else en), html
+    return subject, html
 
 
 def send_notification_email(user, n):
@@ -506,14 +514,12 @@ def send_notification_email(user, n):
 
 SYSTEM_CATEGORIES = ('waarschuwing', 'schorsing')
 _SYSTEM_SUBJECTS = {
-    'waarschuwing': ('Je hebt een waarschuwing gekregen', 'You have received a warning'),
-    'schorsing': ('Je bent geschorst', 'You have been suspended'),
+    'waarschuwing': lazy_gettext('You have received a warning'),
+    'schorsing': lazy_gettext('You have been suspended'),
 }
 _SYSTEM_NOTES = {
-    'waarschuwing': ('Deze waarschuwing gaat over de spelregels van het forum.',
-                     'This warning is about the forum rules.'),
-    'schorsing': ('Tot dan kun je blijven lezen, maar niet bijdragen of stemmen.',
-                  'Until then you can still read, but not contribute or vote.'),
+    'waarschuwing': lazy_gettext('This warning is about the forum rules.'),
+    'schorsing': lazy_gettext('Until then you can still read, but not contribute or vote.'),
 }
 
 
@@ -544,21 +550,17 @@ def _local(moment):
 def _system_line(n, lang):
     from flask import url_for
     from app.models import Suspension, Warning
-    nl = lang == 'nl'
     url = url_for('main.spelregels')
     if n.category == 'waarschuwing':
         w = db.session.get(Warning, n.warning_id) if n.warning_id else None
         if w is None or not w.message:
-            return ('Een moderator heeft je een waarschuwing gestuurd.' if nl
-                    else 'A moderator has sent you a warning.'), url
-        return ((f'Een moderator heeft je een waarschuwing gestuurd: “{w.message}”' if nl
-                 else f'A moderator has sent you a warning: “{w.message}”'), url)
+            return gettext('A moderator has sent you a warning.'), url
+        return gettext('A moderator has sent you a warning: “%(message)s”', message=w.message), url
     s = db.session.get(Suspension, n.suspension_id) if n.suspension_id else None
     if s is None:
-        return ('Je bent geschorst.' if nl else 'You have been suspended.'), url
-    reason = f' Reden: {s.reason}' if nl else f' Reason: {s.reason}'
-    return ((f'Je bent geschorst tot {_local(s.until)}.' if nl else f'You are suspended until {_local(s.until)}.')
-            + (reason if s.reason else '')), url
+        return gettext('You have been suspended.'), url
+    reason = ' ' + gettext('Reason: %(reason)s', reason=s.reason) if s.reason else ''
+    return gettext('You are suspended until %(until)s.', until=_local(s.until)) + reason, url
 
 # ── Opruimen ─────────────────────────────────────────────────────────────
 

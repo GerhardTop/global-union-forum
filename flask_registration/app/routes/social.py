@@ -1,6 +1,7 @@
 from datetime import date, datetime, timezone
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app, jsonify, abort
+from flask_babel import gettext, force_locale
 from flask_login import current_user, login_required
 
 from sqlalchemy.exc import IntegrityError
@@ -93,7 +94,7 @@ def uitnodiging():
         if form.csrf_token.errors:
             abort(400)
         flash(
-            "Vul een geldig e-mailadres in." if lang == 'nl' else "Please enter a valid email address.",
+            gettext('Please enter a valid email address.'),
             "error"
         )
         return redirect(url_for("main.index"))
@@ -104,7 +105,7 @@ def uitnodiging():
     # Zelfde patroon als /feedback en /aanmelden.
     if request.form.get('website', '').strip():
         flash(
-            "Uitnodiging verstuurd!" if lang == 'nl' else "Invitation sent!",
+            gettext('Invitation sent!'),
             "success"
         )
         return redirect(url_for("main.index"))
@@ -117,38 +118,28 @@ def uitnodiging():
     # current_user hier altijd een ingelogde gebruiker is.
     sender_name = f"{current_user.first_name} {current_user.last_name}"
 
-    if lang == 'en':
-        subject = "Invitation: join the Global Union Forum conversation"
+    # In the inviter's language at the moment of sending (form or session).
+    with force_locale(lang or 'nl'):
+        subject = gettext('Invitation: join the Global Union Forum conversation')
         body = (
-            f"Hi,\n\n"
-            f"{sender_name} invites you to join Global Union Forum — a think tank exploring "
-            f"whether the success of the European Union can be replicated worldwide.\n\n"
+            gettext('Hi,') + "\n\n"
+            + gettext('%(sender)s invites you to join Global Union Forum — a think tank exploring whether the '
+                      'success of the European Union can be replicated worldwide.', sender=sender_name) + "\n\n"
         )
         if invite_message:
-            body += f'Personal message from {sender_name}:\n"{invite_message}"\n\n'
-        body += f"Create a free account here:\n{register_url}\n\nGlobal Union Forum"
-    else:
-        subject = "Uitnodiging: doe mee aan het Global Union Forum gesprek"
-        body = (
-            f"Hoi,\n\n"
-            f"{sender_name} nodigt je uit om mee te denken bij Global Union Forum — een denktank "
-            f"die onderzoekt of het succes van de Europese Unie wereldwijd herhaald kan worden.\n\n"
-        )
-        if invite_message:
-            body += f'Persoonlijk bericht van {sender_name}:\n"{invite_message}"\n\n'
-        body += f"Maak gratis een account aan:\n{register_url}\n\nGlobal Union Forum"
+            body += gettext('Personal message from %(sender)s:', sender=sender_name) + f'\n"{invite_message}"\n\n'
+        body += gettext('Create a free account here:') + f"\n{register_url}\n\nGlobal Union Forum"
 
     html = body.replace("\n", "<br>")
     ok = send_email(invite_email, subject, html)
     if ok:
         flash(
-            "Uitnodiging verstuurd!" if lang == 'nl' else "Invitation sent!",
+            gettext('Invitation sent!'),
             "success"
         )
     else:
         flash(
-            "Er is iets misgegaan. Probeer het later opnieuw."
-            if lang == 'nl' else "Something went wrong. Please try again later.",
+            gettext('Something went wrong. Please try again later.'),
             "error"
         )
     return redirect(url_for("main.index"))
@@ -170,14 +161,13 @@ def feedback():
     if not form.validate_on_submit():
         abort(400)
 
-    lang = request.form.get('lang', session.get('lang', 'nl'))
 
     # Honeypot: bots vullen dit verborgen veld vaak automatisch in, mensen
     # zien het nooit. Doe stil alsof het gelukt is — geen mail versturen,
     # geen foutmelding — zodat bots niet leren dat ze gefilterd worden.
     if request.form.get('website', '').strip():
         flash(
-            "Bedankt voor je feedback!" if lang == 'nl' else "Thanks for your feedback!",
+            gettext('Thanks for your feedback!'),
             "success"
         )
         return redirect(url_for("main.index"))
@@ -190,7 +180,7 @@ def feedback():
 
     if not (name and email and message):
         flash(
-            "Vul alle velden in." if lang == 'nl' else "Please fill in all fields.",
+            gettext('Please fill in all fields.'),
             "error"
         )
         return redirect(url_for("main.index"))
@@ -204,13 +194,12 @@ def feedback():
     ok = send_email("feedback@globalunionforum.org", subject, html)
     if ok:
         flash(
-            "Bedankt voor je feedback!" if lang == 'nl' else "Thanks for your feedback!",
+            gettext('Thanks for your feedback!'),
             "success"
         )
     else:
         flash(
-            "Er is iets misgegaan. Probeer het later opnieuw."
-            if lang == 'nl' else "Something went wrong. Please try again later.",
+            gettext('Something went wrong. Please try again later.'),
             "error"
         )
     return redirect(url_for("main.index"))
