@@ -51,7 +51,7 @@ EXCEPTIONS = {
     'app/notifications.py': (1, 'contentmodel, fase 0 stap 6: de titel van een gesprek per taal in een melding'),
     'app/quality.py': (9, 'contentmodel, fase 0 stap 6: AI-vertaal- en kwaliteitscode (taalregels voor de prompt, explanation_nl/_en, body_nl)'),
     'app/routes/admin.py': (2, 'contentmodel, fase 0 stap 6: zoeken in de titels in beide talen (Thread.title(lang)); data: de taalmonitor filtert op taal'),
-    'app/routes/forum.py': (3, 'contentmodel, fase 0 stap 6: de vertaalroute (translate_text, body_nl/_en)'),
+    'app/routes/forum.py': (2, 'contentmodel, fase 0 stap 6: de vertaalroute (translate_text, body_nl/_en)'),
     'app/status.py': (4, 'data: de taalmonitor telt per taal (source_lang)'),
     'app/templates/forum/_post.html': (1, 'contentmodel, fase 0 stap 6: body_nl/body_en van een bijdrage'),
     'app/templates/forum/closed.html': (2, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),

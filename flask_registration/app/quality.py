@@ -142,7 +142,10 @@ def _client():
 
 
 def translate_text(source, target_lang, client=None):
-    """Vertaal een forumtekst naar 'Dutch' of 'English'. Gooit bij een fout."""
+    """Translate a forum text into the language with code `target_lang` (a
+    code from the language register, e.g. 'nl' or 'de'). Raises on failure."""
+    from app import i18n
+    language = i18n.english_name(target_lang)
     client = client or _client()
     if client is None:
         raise RuntimeError('translation unavailable')
@@ -152,7 +155,7 @@ def translate_text(source, target_lang, client=None):
         messages=[{
             'role': 'user',
             'content': (
-                f'Translate the following forum post to {target_lang}. '
+                f'Translate the following forum post to {language}. '
                 'Preserve paragraph breaks. Return only the translation, no preamble.\n\n'
                 f'{source}'
             ),
@@ -172,7 +175,7 @@ def english_text(post, client=None):
         return source
     if not source.strip():
         return ''
-    translated = translate_text(source, 'English', client=client)
+    translated = translate_text(source, 'en', client=client)
     post.body_en = translated
     db.session.commit()
     return translated

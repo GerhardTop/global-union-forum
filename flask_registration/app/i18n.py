@@ -42,6 +42,14 @@ def language_name(code):
     return entry["name"] if entry else code
 
 
+def english_name(code):
+    """The language's English name, for AI prompts ("Translate ... to German")."""
+    entry = _register().get(code)
+    if entry is None:
+        raise ValueError(f'unknown language code: {code!r}')
+    return entry["english"]
+
+
 def text_direction(code):
     """'ltr' or 'rtl'; left to right for an unknown code."""
     entry = _register().get(code)

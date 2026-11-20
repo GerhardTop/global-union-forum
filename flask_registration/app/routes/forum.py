@@ -1019,12 +1019,10 @@ def forum_translate(post_id):
         if post.body_nl:
             return jsonify({'translation': post.body_nl})
         source = post.body_en or post.body or ''
-        target_lang = 'Dutch'
     else:
         if post.body_en:
             return jsonify({'translation': post.body_en})
         source = post.body_nl or post.body or ''
-        target_lang = 'English'
 
     if not source.strip():
         return jsonify({'error': 'no content'}), 400
@@ -1035,7 +1033,7 @@ def forum_translate(post_id):
 
     g.translation_api_called = True  # telt mee voor de rate limit hierboven
     try:
-        translation = quality.translate_text(source, target_lang)
+        translation = quality.translate_text(source, user_lang)
 
         if user_lang == 'nl':
             post.body_nl = translation
@@ -1429,7 +1427,7 @@ def _translate_ai_text(obj, prefix, src_lang):
         return jsonify({'error': 'translation unavailable'}), 503
     g.translation_api_called = True  # telt mee voor de rate limit
     try:
-        translation = quality.translate_text(source, 'Dutch' if user_lang == 'nl' else 'English')
+        translation = quality.translate_text(source, user_lang)
         setattr(obj, field, translation)
         db.session.commit()
         return jsonify({'translation': translation})

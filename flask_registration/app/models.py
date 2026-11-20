@@ -1354,3 +1354,31 @@ class Notification(db.Model):
     suspension_id = db.Column(db.Integer, db.ForeignKey('user_suspensions.id'), nullable=True)
 
     __table_args__ = (db.Index('ix_notifications_user_id_event_key', 'user_id', 'event_key'),)
+
+
+class ContentTranslation(db.Model):
+    """Multilingual phase 0 step 6: a translation of one field of one piece of
+    content (a post body, a thread title, an AI explanation) into one language.
+
+    The original lives on the object itself, in the language it was written in
+    (its source language). These rows are a cache per language: is_machine
+    marks an AI translation, False a handwritten one (editors, demo content).
+    source_hash is the hash of the original when this translation was made; a
+    translation whose hash no longer matches belongs to an older version and
+    is not shown. Read and write only through app/content_i18n.py."""
+    __tablename__ = "content_translations"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    object_type = db.Column(db.String(40), nullable=False)   # the table name, e.g. 'posts'
+    object_id   = db.Column(db.Integer, nullable=False)
+    field       = db.Column(db.String(40), nullable=False)   # the attribute of the original
+    lang        = db.Column(db.String(10), nullable=False)
+    text        = db.Column(db.Text, nullable=False)
+    is_machine  = db.Column(db.Boolean, nullable=False, default=False)
+    source_hash = db.Column(db.String(64), nullable=False)
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # The unique constraint is also the lookup index (object first, then field
+    # and language).
+    __table_args__ = (db.UniqueConstraint('object_type', 'object_id', 'field', 'lang',
+                                          name='uq_content_translations_object_field_lang'),)

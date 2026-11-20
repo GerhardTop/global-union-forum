@@ -58,14 +58,14 @@ def ratelimit_storage_uri(db_uri: str) -> str:
 
 # ── Languages ─────────────────────────────────────────────────────────────
 # The language register: every language the platform knows, with its name in
-# its own language and its writing direction. app/i18n.py reads it; nothing
-# else keeps its own list of languages.
+# its own language, its English name (for AI prompts) and its writing
+# direction. app/i18n.py reads it; nothing else keeps its own list of languages.
 LANGUAGES = [
-    {"code": "nl", "name": "Nederlands", "dir": "ltr"},
-    {"code": "en", "name": "English", "dir": "ltr"},
-    {"code": "de", "name": "Deutsch", "dir": "ltr"},
-    {"code": "es", "name": "Español", "dir": "ltr"},
-    {"code": "fr", "name": "Français", "dir": "ltr"},
+    {"code": "nl", "name": "Nederlands", "english": "Dutch", "dir": "ltr"},
+    {"code": "en", "name": "English", "english": "English", "dir": "ltr"},
+    {"code": "de", "name": "Deutsch", "english": "German", "dir": "ltr"},
+    {"code": "es", "name": "Español", "english": "Spanish", "dir": "ltr"},
+    {"code": "fr", "name": "Français", "english": "French", "dir": "ltr"},
 ]
 
 # The languages that are switched on. Switching a language on is adding its
