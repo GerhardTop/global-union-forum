@@ -1821,211 +1821,211 @@ msgstr "Link zum Zurücksetzen verschickt (schau in dein Postfach)."
 #. manifest, tekst 2
 #: app/templates/manifest.html:11
 msgid "The manifesto · August 2026"
-msgstr ""
+msgstr "Das Manifest · August 2026"
 
 #. manifest, titel
 #: app/templates/manifest.html:13
 msgid "A Global Union<br><em>for a growing number of functioning democracies</em>"
-msgstr ""
+msgstr "Eine Global Union<br><em>für immer mehr funktionierende Demokratien</em>"
 
 #. manifest, tekst 3
 #: app/templates/manifest.html:16
 msgid "A first manifesto for a Global Union for democracy, freedom and peace."
-msgstr ""
+msgstr "Ein erstes Manifest für eine Global Union für Demokratie, Freiheit und Frieden."
 
 #. manifest, tekst 4
 #: app/templates/manifest.html:23
 msgid "Written August 2026"
-msgstr ""
+msgstr "Geschrieben im August 2026"
 
 #. manifest, tekst 5
 #: app/templates/manifest.html:25
 msgid "8 minute read"
-msgstr ""
+msgstr "8 Minuten Lesezeit"
 
 #. manifest, tekst 6
 #. manifest, tekst 7
 #: app/templates/manifest.html:38 app/templates/manifest.html:39
 msgid "In this manifesto"
-msgstr ""
+msgstr "In diesem Manifest"
 
 #. manifest, tekst 8
 #. manifest, tekst 15
 #: app/templates/manifest.html:44 app/templates/manifest.html:92
 msgid "Like-minded countries as a positive force"
-msgstr ""
+msgstr "Gleichgesinnte Länder als positive Kraft"
 
 #. manifest, tekst 9
 #: app/templates/manifest.html:50
 msgid "Core principles"
-msgstr ""
+msgstr "Grundprinzipien"
 
 #. manifest, tekst 10
 #. manifest, tekst 23
 #: app/templates/manifest.html:56 app/templates/manifest.html:151
 msgid "Countries"
-msgstr ""
+msgstr "Länder"
 
 #. manifest, tekst 11
 #. manifest, tekst 25
 #: app/templates/manifest.html:62 app/templates/manifest.html:168
 msgid "Phased legislation"
-msgstr ""
+msgstr "Gesetzgebung in Phasen"
 
 #. manifest, tekst 12
 #. manifest, tekst 30
 #: app/templates/manifest.html:68 app/templates/manifest.html:216
 msgid "Aligning with global standards"
-msgstr ""
+msgstr "Anschluss an weltweite Standards"
 
 #. manifest, tekst 13
 #. manifest, tekst 34
 #: app/templates/manifest.html:74 app/templates/manifest.html:309
 msgid "Organisation"
-msgstr ""
+msgstr "Organisation"
 
 #. manifest, tekst 14
 #: app/templates/manifest.html:80
 msgid "Long-term perspective"
-msgstr ""
+msgstr "Langfristige Perspektive"
 
 #. manifest, alinea 1
 #: app/templates/manifest.html:94
 msgid "Major powers pay too little attention to international law. The Global Union (GU) offers an alternative: a permanent cooperation between functioning democracies, as a complement to the EU and the UN. Together we want to use our market power for prosperity, social security, a liveable planet, security and the enforcement of international agreements."
-msgstr ""
+msgstr "Großmächte kümmern sich zu wenig um das Völkerrecht. Die Global Union (GU) setzt dem etwas entgegen: eine dauerhafte Zusammenarbeit funktionierender Demokratien, als Ergänzung zur EU und zur UN. Gemeinsam wollen wir unsere Marktmacht für Wohlstand, soziale Sicherheit, einen lebenswerten Planeten, Sicherheit und die Durchsetzung internationaler Vereinbarungen einsetzen."
 
 #. manifest, alinea 2
 #: app/templates/manifest.html:95
 msgid "Any country that scores well on democracy, the rule of law, human rights and anti-corruption can join. A solid foundation already exists. In October 2026, the EU and Canada formed an alliance for the future. Like-minded countries have been invited to join. Together, our economy is more than one third of the world's and larger than that of the US."
-msgstr ""
+msgstr "Mitmachen kann jedes Land, das bei Demokratie, Rechtsstaatlichkeit, Menschenrechten und Korruptionsbekämpfung gut abschneidet. Es gibt schon eine solide Grundlage. Im Oktober 2026 schlossen die EU und Kanada ein Bündnis für die Zukunft. Gleichgesinnte Länder sind eingeladen, sich anzuschließen. Zusammen macht unsere Wirtschaft mehr als ein Drittel der Weltwirtschaft aus und ist größer als die der USA."
 
 #. manifest, alinea 3
 #: app/templates/manifest.html:96
 msgid "The GU is principled and pragmatic. Principled, because trade tariffs depend on how a country scores on honouring international agreements and shared values. Countries that meet all criteria pay no import duties. Countries that commit aggression are excluded. Pragmatic, because we start small, with limited tariffs. We want to be attractive and avoid unnecessary escalation. This gives us time to become strategically independent together."
-msgstr ""
+msgstr "Die GU ist grundsätzlich und pragmatisch. Grundsätzlich, weil die Handelszölle davon abhängen, wie ein Land bei der Einhaltung internationaler Vereinbarungen und gemeinsamer Werte abschneidet. Wer alle Kriterien erfüllt, zahlt keine Einfuhrzölle. Wer Aggression ausübt, wird ausgeschlossen. Pragmatisch, weil wir klein anfangen, mit begrenzten Zöllen. Wir wollen anziehend sein und unnötige Eskalation vermeiden. So gewinnen wir Zeit, um gemeinsam strategisch unabhängig zu werden."
 
 #. manifest, alinea 4
 #: app/templates/manifest.html:97
 msgid "Those who join benefit. That gives countries a reason to reform, as happened earlier with the EU. This is how the union grows: through attraction."
-msgstr ""
+msgstr "Wer mitmacht, profitiert. Das gibt Ländern einen Grund für Reformen, wie früher bei der EU. So wächst die Union: durch Anziehungskraft."
 
 #. manifest, tekst 16
 #: app/templates/manifest.html:103
 msgid "Core principles of the Global Union"
-msgstr ""
+msgstr "Grundprinzipien der Global Union"
 
 #. manifest, tekst 17
 #: app/templates/manifest.html:107
 msgid "A values-driven trade system"
-msgstr ""
+msgstr "Ein wertebasiertes Handelssystem"
 
 #. manifest, tekst 18
 #: app/templates/manifest.html:109
 msgid "The GU operates with a single system of trade tariffs based on a scorecard per country, measured on:"
-msgstr ""
+msgstr "Die GU arbeitet mit einem einzigen System von Handelszöllen auf Grundlage einer Scorecard pro Land, gemessen an:"
 
 #. manifest, lijstitem 5
 #. manifest, tabelkop 63
 #: app/templates/manifest.html:112 app/templates/manifest.html:278
 msgid "Anti-corruption"
-msgstr ""
+msgstr "Korruptionsbekämpfung"
 
 #. manifest, lijstitem 6
 #: app/templates/manifest.html:113
 msgid "Freedom: rule of law, democracy, free press"
-msgstr ""
+msgstr "Freiheit: Rechtsstaat, Demokratie, freie Presse"
 
 #. manifest, lijstitem 7
 #. manifest, tabelkop 60
 #: app/templates/manifest.html:114 app/templates/manifest.html:273
 msgid "Human rights"
-msgstr ""
+msgstr "Menschenrechte"
 
 #. manifest, lijstitem 8
 #: app/templates/manifest.html:115
 msgid "Sustainability: climate accords, respect for nature"
-msgstr ""
+msgstr "Nachhaltigkeit: Klimaabkommen, Respekt vor der Natur"
 
 #. manifest, lijstitem 9
 #: app/templates/manifest.html:116
 msgid "Conduct within the international legal order: IP protection, no espionage, no dumping, contribution to the International Court of Justice"
-msgstr ""
+msgstr "Verhalten in der internationalen Rechtsordnung: Schutz geistigen Eigentums, keine Spionage, kein Dumping, Beitrag zum Internationalen Gerichtshof"
 
 #. manifest, alinea 10
 #: app/templates/manifest.html:120
 #, python-format
 msgid "Countries that fully comply pay 0% import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs."
-msgstr ""
+msgstr "Länder, die alles erfüllen, zahlen 0% der Einfuhrzölle. Länder, die teilweise erfüllen, zahlen nach ihrer Punktzahl, mit jährlicher Messung und Anpassung. Länder, die Aggression ausüben oder ihre eigene Bevölkerung ermorden, werden ganz ausgeschlossen, und Länder, die weiter mit ihnen handeln, zahlen höhere Zölle."
 
 #. manifest, tekst 19
 #: app/templates/manifest.html:125
 msgid "Peaceful but firm foreign policy"
-msgstr ""
+msgstr "Friedliche, aber entschlossene Außenpolitik"
 
 #. manifest, alinea 11
 #: app/templates/manifest.html:128
 msgid "The GU invests in strategic independence for all members: raw materials, energy, defence and its own AI capabilities. The GU must urgently stand on its own two feet in these areas."
-msgstr ""
+msgstr "Die GU investiert in strategische Unabhängigkeit für alle Mitglieder: Rohstoffe, Energie, Verteidigung und eigene KI-Fähigkeiten. Auf diesen Gebieten muss die GU dringend auf eigenen Beinen stehen."
 
 #. manifest, alinea 12
 #: app/templates/manifest.html:129
 msgid "The GU does not pursue assertive military action, unless a broad majority of GU members judges intervention necessary because of crimes against a country's own population. Democratisation in autocratic countries happens through uprising from within the population itself. If regimes misbehave, we support the opposition."
-msgstr ""
+msgstr "Die GU führt keine offensiven Militäreinsätze, außer eine breite Mehrheit der GU-Mitglieder hält ein Eingreifen wegen Verbrechen gegen die eigene Bevölkerung eines Landes für nötig. Demokratisierung in autokratischen Ländern geschieht durch Aufstand aus der eigenen Bevölkerung. Wenn Regime sich danebenbenehmen, unterstützen wir die Opposition."
 
 #. manifest, tekst 20
 #: app/templates/manifest.html:134
 msgid "Information freedom as a strategic instrument"
-msgstr ""
+msgstr "Informationsfreiheit als strategisches Instrument"
 
 #. manifest, tekst 21
 #: app/templates/manifest.html:136
 msgid "The GU extends its influence through high-quality independent journalism in all local languages - by analogy to the BBC, reinforced with GU resources - and by making protected technology available that frees people from state-controlled internet access."
-msgstr ""
+msgstr "Die GU vergrößert ihren Einfluss durch hochwertigen, unabhängigen Journalismus in allen Landessprachen (nach dem Vorbild der BBC, verstärkt mit Mitteln der GU) und indem sie geschützte Technik bereitstellt, die Menschen vom staatlich kontrollierten Internetzugang unabhängig macht."
 
 #. manifest, alinea 13
 #: app/templates/manifest.html:143
 msgid "The GU does not function as a single market with full free movement of people, to avoid unwanted migration flows toward wealthier areas. Uniform trade tariffs based on the scorecard do apply."
-msgstr ""
+msgstr "Die GU ist kein Binnenmarkt mit voller Freizügigkeit, um unerwünschte Migrationsströme in wohlhabendere Gebiete zu vermeiden. Einheitliche Handelszölle auf Grundlage der Scorecard gelten aber."
 
 #. manifest, alinea 14
 #: app/templates/manifest.html:144
 msgid "For high-value work, we issue temporary work visas to scarce talent from GU countries as well as from non-GU countries. The principle is circular: those who work abroad temporarily bring knowledge, experience and networks back to their home country."
-msgstr ""
+msgstr "Für hochwertige Arbeit vergeben wir befristete Arbeitsvisa an knappe Talente aus GU-Ländern und auch aus anderen Ländern. Der Gedanke ist zirkulär: Wer eine Zeit lang woanders arbeitet, bringt Wissen, Erfahrung und Netzwerke ins eigene Land zurück."
 
 #. manifest, alinea 15
 #: app/templates/manifest.html:145
 msgid "The GU also invests in training programmes through which people in non-GU countries can develop to the level needed to make a valuable contribution. Once back home, they can continue to contribute to the GU economy remotely. This way prosperity grows on both sides."
-msgstr ""
+msgstr "Die GU investiert außerdem in Ausbildungsprogramme, mit denen sich Menschen in Nicht-GU-Ländern auf das Niveau entwickeln können, das für einen wertvollen Beitrag nötig ist. Zurück im eigenen Land können sie auch aus der Ferne weiter zur Wirtschaft der GU beitragen. So wächst der Wohlstand auf beiden Seiten."
 
 #. manifest, alinea 16
 #: app/templates/manifest.html:153
 msgid "Accession is tied to three existing, independent indices: the Democracy Index, the Corruption Perceptions Index, and the Human Rights Index. For each index, a 'sufficient' level and a 'minimum' level have been chosen. The minimum level is chosen so that the EU can join as a bloc."
-msgstr ""
+msgstr "Der Beitritt ist an drei bestehende, unabhängige Indizes gebunden: den Democracy Index, den Corruption Perceptions Index und den Human Rights Index. Für jeden Index wurden ein Niveau \"ausreichend\" und ein Niveau \"Minimum\" gewählt. Das Mindestniveau ist so gewählt, dass die EU als Block beitreten kann."
 
 #. manifest, alinea 17
 #: app/templates/manifest.html:154
 msgid "Countries above the minimum level are invited to join."
-msgstr ""
+msgstr "Länder über dem Mindestniveau werden eingeladen mitzumachen."
 
 #. manifest, alinea 18
 #: app/templates/manifest.html:155
 msgid "Three countries receive separate treatment. The United States and Israel are not invited for now. These countries do numerically meet the standard, but it cannot be expected that, under their current administrations, they would want to commit to the rules of the Global Union. Taiwan also qualifies, but lacks UN-recognised status. For this we can work with a separate status, as is already the case at the WTO."
-msgstr ""
+msgstr "Drei Länder werden gesondert behandelt. Die Vereinigten Staaten und Israel werden vorerst nicht eingeladen. Diese Länder erfüllen die Norm zahlenmäßig zwar, aber es ist nicht zu erwarten, dass sie sich unter ihren jetzigen Regierungen auf die Regeln der Global Union verpflichten wollen. Taiwan erfüllt sie ebenfalls, hat aber keinen von der UN anerkannten Status. Dafür können wir mit einem eigenen Status arbeiten, wie es bei der WTO schon geschieht."
 
 #. manifest, alinea 19
 #: app/templates/manifest.html:156
 msgid "The indices carry a limited margin of error. Countries that fall just short of the threshold can still be assessed on request."
-msgstr ""
+msgstr "Die Indizes haben eine begrenzte Fehlermarge. Länder, die knapp unter der Schwelle liegen, können auf Antrag trotzdem geprüft werden."
 
 #. manifest, tekst 24
 #: app/templates/manifest.html:160
 msgid "View the full list of all 183 countries and their scores"
-msgstr ""
+msgstr "Die vollständige Liste aller 183 Länder und ihrer Werte ansehen"
 
 #. manifest, alinea 20
 #: app/templates/manifest.html:170
 msgid "We adopt legislation in phases. Simple, technical rules come first; politically sensitive matters follow later and require a broader majority."
-msgstr ""
+msgstr "Gesetze übernehmen wir in Phasen. Einfache, technische Regeln kommen zuerst; politisch heikle Themen folgen später und brauchen eine breitere Mehrheit."
 
 #. manifest, tekst 26
 #: app/templates/issues/show.html:77 app/templates/manifest.html:177
@@ -2040,7 +2040,7 @@ msgstr "Phase"
 #: app/templates/manifest.html:178 app/templates/manifest.html:187
 #: app/templates/manifest.html:193 app/templates/manifest.html:199
 msgid "Examples"
-msgstr ""
+msgstr "Beispiele"
 
 #. manifest, tekst 28
 #. manifest, tabelcel 23
@@ -2059,74 +2059,74 @@ msgstr "Kriterium"
 #: app/templates/manifest.html:180 app/templates/manifest.html:189
 #: app/templates/manifest.html:195 app/templates/manifest.html:201
 msgid "Threshold"
-msgstr ""
+msgstr "Schwelle"
 
 #. manifest, tabelkop 21
 #: app/templates/manifest.html:186
 msgid "Foundation"
-msgstr ""
+msgstr "Fundament"
 
 #: app/templates/manifest.html:187
 msgid "Technical product standards; customs procedures; the scorecard's verification method and external tariff system; data protection; food and product safety"
-msgstr ""
+msgstr "Technische Produktnormen; Zollverfahren; Prüfverfahren und externes Zollsystem der Scorecard; Datenschutz; Lebensmittel- und Produktsicherheit"
 
 #: app/templates/manifest.html:188
 msgid "Technical or directly needed to function"
-msgstr ""
+msgstr "Technisch oder direkt nötig, um zu funktionieren"
 
 #: app/templates/manifest.html:189 app/templates/manifest.html:195
 msgid "Ordinary rules"
-msgstr ""
+msgstr "Gewöhnliche Regeln"
 
 #. manifest, tabelkop 25
 #: app/templates/manifest.html:192
 msgid "Deepening"
-msgstr ""
+msgstr "Vertiefung"
 
 #: app/templates/manifest.html:193
 msgid "Competition and state aid; procurement; digital markets; professional qualifications; financial oversight"
-msgstr ""
+msgstr "Wettbewerb und staatliche Beihilfen; öffentliche Vergabe; digitale Märkte; Berufsqualifikationen; Finanzaufsicht"
 
 #: app/templates/manifest.html:194
 msgid "Moderate sovereignty cost, strengthens cooperation"
-msgstr ""
+msgstr "Mäßige Kosten an Souveränität, stärkt die Zusammenarbeit"
 
 #. manifest, tabelkop 29
 #: app/templates/manifest.html:198
 msgid "Politically sensitive"
-msgstr ""
+msgstr "Politisch heikel"
 
 #: app/templates/manifest.html:199
 msgid "Rule-of-law conditionality; environmental and labour standards; tax coordination; sanctions against aggressive states"
-msgstr ""
+msgstr "Rechtsstaatskonditionalität; Umwelt- und Arbeitsnormen; steuerliche Abstimmung; Sanktionen gegen aggressive Staaten"
 
 #: app/templates/manifest.html:200
 msgid "Politically sensitive, high sovereignty cost"
-msgstr ""
+msgstr "Politisch heikel, hohe Kosten an Souveränität"
 
 #: app/templates/manifest.html:201
 msgid "80% threshold"
-msgstr ""
+msgstr "Schwelle von 80 Prozent"
 
 #. manifest, alinea 33
 #: app/templates/manifest.html:209
 msgid "The Global Union does not apply a single external tariff, but different tariffs per country, based on the score on the values scorecard. This appears to conflict with the World Trade Organization's principle that all countries should receive equal tariffs. Under Article XX GATT, protection of public morals, we expect to be able to make an exception here. Because this judgement is carried by the whole Global Union, and applied using fixed criteria equal for every country, this claim stands on firmer ground than if a single country made it alone."
-msgstr ""
+msgstr "Die Global Union arbeitet nicht mit einem einzigen Außenzoll, sondern mit unterschiedlichen Zöllen pro Land, je nach Punktzahl auf der Werte-Scorecard. Das scheint dem Grundsatz der Welthandelsorganisation zu widersprechen, dass alle Länder gleiche Zölle bekommen sollen. Auf Grundlage von Artikel XX GATT, dem Schutz der öffentlichen Moral, erwarten wir, hier eine Ausnahme machen zu können. Weil dieses Urteil von der ganzen Global Union getragen und nach festen, für jedes Land gleichen Kriterien angewandt wird, steht diese Berufung auf festerem Grund, als wenn ein einzelnes Land es allein täte."
 
 #. manifest, alinea 34
 #: app/templates/manifest.html:210
 msgid "We do not adopt agricultural policy, cohesion funds, or the monetary union; these are inseparably tied to the EU's own territory and budget."
-msgstr ""
+msgstr "Agrarpolitik, Kohäsionsfonds und die Währungsunion übernehmen wir nicht; sie sind untrennbar mit dem Gebiet und dem Haushalt der EU selbst verbunden."
 
 #. manifest, alinea 35
 #: app/templates/manifest.html:218
 msgid "We only choose our own rule where no global alternative exists or the existing one is too weak to enforce."
-msgstr ""
+msgstr "Wir wählen nur dann eine eigene Regel, wenn es keine weltweite Alternative gibt oder die bestehende zu unverbindlich ist."
 
 #. manifest, tekst 31
 #: app/templates/manifest.html:225
 msgid "Domain"
-msgstr ""
+msgstr "Bereich"
 
 #. manifest, tekst 32
 #. manifest, tabelcel 37
@@ -2150,7 +2150,7 @@ msgstr ""
 #: app/templates/manifest.html:279 app/templates/manifest.html:284
 #: app/templates/manifest.html:289 app/templates/manifest.html:294
 msgid "Leading standard"
-msgstr ""
+msgstr "Maßgeblicher Standard"
 
 #. manifest, tekst 33
 #. manifest, tabelcel 38
@@ -2174,207 +2174,207 @@ msgstr ""
 #: app/templates/manifest.html:280 app/templates/manifest.html:285
 #: app/templates/manifest.html:290 app/templates/manifest.html:295
 msgid "Body"
-msgstr ""
+msgstr "Gremium"
 
 #. manifest, tabelkop 36
 #: app/templates/manifest.html:233
 msgid "Trade rules"
-msgstr ""
+msgstr "Handelsregeln"
 
 #: app/templates/manifest.html:234
 msgid "GATT/GATS, TBT and SPS agreements"
-msgstr ""
+msgstr "GATT/GATS, TBT- und SPS-Abkommen"
 
 #: app/templates/manifest.html:235
 msgid "WTO"
-msgstr ""
+msgstr "WTO"
 
 #. manifest, tabelkop 39
 #: app/templates/manifest.html:238
 msgid "Customs and classification"
-msgstr ""
+msgstr "Zoll und Einreihung"
 
 #: app/templates/manifest.html:239
 msgid "Harmonized System, Revised Kyoto Convention"
-msgstr ""
+msgstr "Harmonisiertes System, Revidiertes Übereinkommen von Kyoto"
 
 #: app/templates/manifest.html:240
 msgid "WCO"
-msgstr ""
+msgstr "WCO"
 
 #. manifest, tabelkop 42
 #: app/templates/manifest.html:243
 msgid "Product standards"
-msgstr ""
+msgstr "Produktnormen"
 
 #: app/templates/manifest.html:244
 msgid "ISO, IEC, ITU"
-msgstr ""
+msgstr "ISO, IEC, ITU"
 
 #: app/templates/manifest.html:245
 msgid "International, non-state"
-msgstr ""
+msgstr "International, nichtstaatlich"
 
 #. manifest, tabelkop 45
 #: app/templates/manifest.html:248
 msgid "Food safety"
-msgstr ""
+msgstr "Lebensmittelsicherheit"
 
 #: app/templates/manifest.html:249
 msgid "Codex Alimentarius"
-msgstr ""
+msgstr "Codex Alimentarius"
 
 #: app/templates/manifest.html:250
 msgid "FAO/WHO"
-msgstr ""
+msgstr "FAO/WHO"
 
 #. manifest, tabelkop 48
 #: app/templates/manifest.html:253
 msgid "Taxation"
-msgstr ""
+msgstr "Steuern"
 
 #: app/templates/manifest.html:254
 msgid "Pillar Two (minimum rate), BEPS"
-msgstr ""
+msgstr "Säule Zwei (Mindeststeuersatz), BEPS"
 
 #: app/templates/manifest.html:255
 msgid "OECD/G20 Inclusive Framework"
-msgstr ""
+msgstr "Inclusive Framework von OECD/G20"
 
 #. manifest, tabelkop 51
 #: app/templates/manifest.html:258
 msgid "Banking supervision"
-msgstr ""
+msgstr "Bankenaufsicht"
 
 #: app/templates/manifest.html:259
 msgid "Basel III"
-msgstr ""
+msgstr "Basel III"
 
 #: app/templates/manifest.html:260
 msgid "Basel Committee"
-msgstr ""
+msgstr "Basler Ausschuss"
 
 #. manifest, tabelkop 54
 #: app/templates/manifest.html:263
 msgid "Anti-money laundering"
-msgstr ""
+msgstr "Geldwäschebekämpfung"
 
 #: app/templates/manifest.html:264
 msgid "40 Recommendations"
-msgstr ""
+msgstr "40 Empfehlungen"
 
 #: app/templates/manifest.html:265
 msgid "FATF"
-msgstr ""
+msgstr "FATF"
 
 #. manifest, tabelkop 57
 #: app/templates/manifest.html:268
 msgid "Reporting"
-msgstr ""
+msgstr "Rechnungslegung"
 
 #: app/templates/manifest.html:269
 msgid "IFRS"
-msgstr ""
+msgstr "IFRS"
 
 #: app/templates/manifest.html:270
 msgid "IASB"
-msgstr ""
+msgstr "IASB"
 
 #: app/templates/manifest.html:274
 msgid "UDHR, ICCPR, ICESCR, eight fundamental ILO conventions"
-msgstr ""
+msgstr "AEMR, IPbpR, IPwskR, acht grundlegende ILO-Übereinkommen"
 
 #: app/templates/manifest.html:275
 msgid "UN, ILO"
-msgstr ""
+msgstr "UN, ILO"
 
 #: app/templates/manifest.html:279
 msgid "UNCAC"
-msgstr ""
+msgstr "UNCAC"
 
 #: app/templates/manifest.html:280
 msgid "UN"
-msgstr ""
+msgstr "UN"
 
 #. manifest, tabelkop 66
 #: app/templates/manifest.html:283
 msgid "Climate"
-msgstr ""
+msgstr "Klima"
 
 #: app/templates/manifest.html:284
 msgid "Paris Agreement"
-msgstr ""
+msgstr "Übereinkommen von Paris"
 
 #: app/templates/manifest.html:285
 msgid "UNFCCC"
-msgstr ""
+msgstr "UNFCCC"
 
 #. manifest, tabelkop 69
 #: app/templates/manifest.html:288
 msgid "Aviation, shipping"
-msgstr ""
+msgstr "Luftfahrt, Schifffahrt"
 
 #: app/templates/manifest.html:289
 msgid "ICAO, IMO"
-msgstr ""
+msgstr "ICAO, IMO"
 
 #: app/templates/manifest.html:290
 msgid "UN agencies"
-msgstr ""
+msgstr "UN-Organisationen"
 
 #. manifest, tabelkop 72
 #: app/templates/manifest.html:293
 msgid "Data protection"
-msgstr ""
+msgstr "Datenschutz"
 
 #: app/templates/manifest.html:294
 msgid "Convention 108+"
-msgstr ""
+msgstr "Konvention 108+"
 
 #: app/templates/manifest.html:295
 msgid "Council of Europe, open to non-European states"
-msgstr ""
+msgstr "Europarat, offen für nichteuropäische Staaten"
 
 #. manifest, alinea 75
 #: app/templates/manifest.html:303
 msgid "For data protection, we choose the supranational Convention 108+ over the GDPR: the same protection, but without an EU label, and already open to countries such as Uruguay, Mexico, and Senegal. For AI, an authoritative global standard is still missing. This will need to be shaped as a priority."
-msgstr ""
+msgstr "Beim Datenschutz wählen wir die überstaatliche Konvention 108+ statt der DSGVO: derselbe Schutz, aber ohne EU-Etikett, und schon offen für Länder wie Uruguay, Mexiko und Senegal. Für KI fehlt noch ein maßgeblicher weltweiter Standard. Er muss vorrangig gestaltet werden."
 
 #. manifest, alinea 76
 #: app/templates/manifest.html:311
 msgid "The Global Union operates with a minimal organisation: a small commission and a limited civil service, supported by existing national and international institutions. The budget stays limited, since the union starts with a limited set of competences and does not take on large transfers such as agricultural or cohesion funds. Yet the union is effective: decisions are taken by a clear majority rather than unanimity. Implementation takes place within the countries themselves. Oversight of that implementation is carried out by the Global Union. There is, however, budget for international student exchange and for independent online news media and education programmes."
-msgstr ""
+msgstr "Die Global Union arbeitet mit einer schlanken Organisation: einer kleinen Kommission und einer begrenzten Verwaltung, unterstützt von bestehenden nationalen und internationalen Einrichtungen. Der Haushalt bleibt begrenzt, denn die Union beginnt mit wenigen Zuständigkeiten und übernimmt keine großen Transfers wie Agrar- oder Kohäsionsfonds. Trotzdem ist die Union handlungsfähig: Entscheidungen fallen mit klarer Mehrheit statt einstimmig. Die Umsetzung geschieht in den Ländern selbst. Die Aufsicht über die Umsetzung übernimmt die Global Union. Es gibt aber Geld für den internationalen Austausch von Studierenden und für unabhängige Online-Nachrichtenmedien und Bildungsprogramme."
 
 #. manifest, alinea 77
 #: app/templates/manifest.html:312
 msgid "Discussions and votes take place online. This effectiveness is strengthened by democratic innovation. Decision-making is transparent, including the underlying facts and considerations, explained at both expert and layperson level. Citizens worldwide can take part and exert influence in their own language."
-msgstr ""
+msgstr "Diskussionen und Abstimmungen finden online statt. Diese Handlungsfähigkeit wird durch demokratische Innovation gestärkt. Entscheidungen sind transparent, einschließlich der zugrunde liegenden Fakten und Überlegungen, erklärt für Fachleute und für Laien. Menschen auf der ganzen Welt können in ihrer eigenen Sprache mitreden und Einfluss nehmen."
 
 #. manifest, kop
 #: app/templates/manifest.html:318
 msgctxt "manifest heading"
 msgid "Long-term perspective"
-msgstr ""
+msgstr "Langfristige Perspektive"
 
 #. manifest, tekst 35
 #: app/templates/manifest.html:319
 msgid "The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations."
-msgstr ""
+msgstr "Die Global Union umfasst Länder aus der ganzen Welt, wächst stark und ist eine treibende Kraft für immer mehr funktionierende Demokratien. Die GU arbeitet konstruktiv mit anderen Ländern zusammen, die die Welt für kommende Generationen sicher und sauber halten wollen."
 
 #. manifest, tekst 36
 #: app/templates/manifest.html:322
 msgid "20 January 2026"
-msgstr ""
+msgstr "20. Januar 2026"
 
 #. manifest, tekst 37
 #: app/templates/manifest.html:340
 msgid "That's the manifesto."
-msgstr ""
+msgstr "So weit dieses Manifest."
 
 #. manifest, tekst 38
 #: app/templates/manifest.html:341
 msgid "This is a writing exercise, a first attempt. Not a blueprint, not a party programme. But a direction. Have your say. Improve the manifesto, write your own counter-position, or carry it further in a working session."
-msgstr ""
+msgstr "Das ist eine Schreibübung, ein erster Entwurf. Kein Bauplan, kein Parteiprogramm. Aber eine Richtung. Denk mit. Verbessere das Manifest, schreib eine eigene Gegenposition oder bring es in einer Arbeitssitzung weiter."
 
 #: app/templates/meldingen.html:9 app/templates/meldingen.html:15
 #: app/templates/notificaties.html:18 app/templates/notificaties.html:21
