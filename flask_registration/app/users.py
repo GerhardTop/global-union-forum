@@ -175,7 +175,12 @@ def anonymise(user, actor, reason):
     # The name snapshots on their posts (the fallback display) go too.
     Post.query.filter(Post.user_id == user.id).update(
         {Post.author_name: '', Post.author_username: DELETED_HANDLE,
-         Post.author_badge_nl: None, Post.author_badge_en: None}, synchronize_session=False)
+         Post.author_badge: None}, synchronize_session=False)
+    from app.models import ContentTranslation
+    ContentTranslation.query.filter(
+        ContentTranslation.object_type == Post.__tablename__, ContentTranslation.field == 'author_badge',
+        ContentTranslation.object_id.in_(db.session.query(Post.id).filter(Post.user_id == user.id))
+    ).delete(synchronize_session=False)
     # Own warnings and suspensions go; those given as a moderator stay without a name.
     # Their notifications point at them (step 4), so the notifications go first.
     from app import notifications as _notifications

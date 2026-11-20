@@ -128,7 +128,7 @@ def test_preload_fetches_a_page_in_one_query(app, post):
     db.session.commit()
     from flask import g
     g.pop('_content_translations', None)
-    content_i18n.preload([post], 'body', 'en')
+    content_i18n.preload([post], 'body')
     queries = []
 
     def record(conn, cursor, statement, *args):

@@ -50,6 +50,16 @@ def english_name(code):
     return entry["english"]
 
 
+def language_name_in(code, in_lang):
+    """The name of language `code` in language `in_lang` ("Engels" for en in
+    nl), from Babel's locale data; the code in capitals when unknown."""
+    from babel import Locale
+    try:
+        return Locale.parse(str(in_lang)).languages.get(code) or str(code).upper()
+    except (ValueError, TypeError):
+        return str(code).upper()
+
+
 def text_direction(code):
     """'ltr' or 'rtl'; left to right for an unknown code."""
     entry = _register().get(code)

@@ -137,6 +137,9 @@ def _migrate_columns():
                 conn.execute(text(sql))
             conn.commit()
 
+    # Multilingual step 6 first: any ORM query on these models selects the
+    # new original columns, so they must exist before the other migrations.
+    _migrate_content_columns(existing)
     # _migrate_roles eerst: elke ORM-query op User (zoals in de username-
     # backfill hieronder) selecteert alle modelkolommen, dus ook role en
     # rules_accepted_at; die moeten dan al bestaan.
@@ -152,6 +155,10 @@ def _migrate_columns():
     _migrate_issues(existing)
     _migrate_polish(existing)
     _migrate_indexes()
+    # Multilingual step 6: copy the old per-language columns into the
+    # originals and content_translations (raw SQL, idempotent).
+    from app import content_migration
+    content_migration.migrate(db.engine)
     _migrate_username_and_backfill(insp, existing, is_pg)
     # Na alle kolommigraties: de backfill gebruikt de ORM op Proposal en Thread.
     from app import issues
@@ -328,8 +335,8 @@ _POLISH_COLUMNS = {
               # issue_proposal_versions maakt db.create_all() aan).
               ('issue_proposal_id', 'INTEGER NULL REFERENCES issue_proposals(id)'),
               ('proposal_version', 'INTEGER NULL'),
-              # Titel: een korte kern als kopregel, met Engelse vertaalcache.
-              ('fact_title', 'VARCHAR(100) NULL'), ('fact_title_en', 'VARCHAR(100) NULL')),
+              # Titel: een korte kern als kopregel (vertalingen: content_translations).
+              ('fact_title', 'VARCHAR(100) NULL')),
     'quality_awards': (('fact_mark', 'BOOLEAN NULL'), ('fact_has_source', 'BOOLEAN NULL'),
                        ('fact_link_findable', 'BOOLEAN NULL'), ('fact_has_location', 'BOOLEAN NULL'),
                        ('fact_on_topic', 'BOOLEAN NULL'), ('fact_is_new', 'BOOLEAN NULL')),
@@ -349,6 +356,27 @@ _POLISH_COLUMNS = {
     # Delete rights step 2: the issue of a logged action (for the manage screen).
     'moderation_actions': (('issue_id', 'INTEGER NULL'),),
 }
+
+
+# Multilingual step 6: the originals of content that used to have a column
+# per language. Additive and nullable; a fresh database gets them from
+# db.create_all(). The old columns stay in the database (unused by the code).
+_CONTENT_COLUMNS = {
+    'posts': (('author_badge', 'VARCHAR(200) NULL'),),
+}
+
+
+def _migrate_content_columns(existing):
+    for table, columns in _CONTENT_COLUMNS.items():
+        if table not in existing:
+            continue
+        cols = {c['name'] for c in sa_inspect(db.engine).get_columns(table)}
+        added = [f'ALTER TABLE {table} ADD COLUMN {name} {ddl}' for name, ddl in columns if name not in cols]
+        if added:
+            with db.engine.connect() as conn:
+                for ddl in added:
+                    conn.execute(text(ddl))
+                conn.commit()
 
 
 def _migrate_polish(existing):
@@ -895,6 +923,9 @@ def create_app():
             # The language switcher: the enabled languages (code, name).
             languages=i18n.enabled_languages(),
             auto_translate_default=i18n.auto_translate_default,
+            language_name_in=i18n.language_name_in,
+            # Content in several languages (multilingual step 6).
+            content_i18n=content_i18n,
         )
 
     @app.context_processor

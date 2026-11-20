@@ -17,9 +17,11 @@ The rest of the code goes through these functions only:
     translate(obj, field, lang)          AI translation, cached (is_machine=True)
     set_translation(obj, field, lang, text, is_machine=False)
     invalidate(obj, field=None)          drop the translations (after an edit)
-    preload(objs, field, lang)           one query for a page full of objects
+    reader_view(obj, field, lang)        (text, written for the reader) for the post views
+    preload(objs, field)                 one query for a page full of objects
 """
 import hashlib
+from collections import namedtuple
 from datetime import datetime
 
 from flask import g, has_app_context
@@ -58,10 +60,19 @@ def source_hash(text):
 
 # ── Reading ────────────────────────────────────────────────────────────────
 
-_MISSING = object()
+# A cached translation: plain values, not ORM rows (those expire on commit).
+_Cached = namedtuple('_Cached', 'text is_machine source_hash')
+
+
+def _cached(row):
+    return _Cached(row.text, bool(row.is_machine), row.source_hash)
 
 
 def _cache():
+    """(object_type, object_id, field) -> {lang: _Cached}, complete for that
+    object and field once loaded. Lives in g and only within one
+    transaction: every commit or rollback clears it (see the listeners at
+    the bottom), so it never outlives the data it was read from."""
     if not has_app_context():
         return {}
     if not hasattr(g, '_content_translations'):
@@ -69,24 +80,27 @@ def _cache():
     return g._content_translations
 
 
-def _key(obj, field, lang):
-    return (object_type(obj), obj.id, field, lang)
+def clear_cache(*_args):
+    if has_app_context():
+        g.pop('_content_translations', None)
 
 
-def _row(obj, field, lang):
+def _key(obj, field):
+    return (object_type(obj), obj.id, field)
+
+
+def _rows(obj, field):
     if obj.id is None:
-        return None
+        return {}
     cache = _cache()
-    key = _key(obj, field, lang)
-    row = cache.get(key, _MISSING)
-    if row is _MISSING:
-        row = ContentTranslation.query.filter_by(object_type=key[0], object_id=key[1],
-                                                 field=field, lang=lang).first()
-        cache[key] = row
-    return row
+    key = _key(obj, field)
+    if key not in cache:
+        rows = ContentTranslation.query.filter_by(object_type=key[0], object_id=key[1], field=field).all()
+        cache[key] = {row.lang: _cached(row) for row in rows}
+    return cache[key]
 
 
-def preload(objs, field, lang):
+def preload(objs, field):
     """Fetch the translations of one field for many objects in one query (a
     thread page, an overview), so the per-object lookups below hit a cache."""
     objs = [o for o in objs if o is not None and o.id is not None]
@@ -98,18 +112,23 @@ def preload(objs, field, lang):
         by_type.setdefault(object_type(obj), set()).add(obj.id)
     for kind, ids in by_type.items():
         for oid in ids:
-            cache.setdefault((kind, oid, field, lang), None)
-        rows = ContentTranslation.query.filter(ContentTranslation.object_type == kind,
-                                               ContentTranslation.object_id.in_(ids),
-                                               ContentTranslation.field == field,
-                                               ContentTranslation.lang == lang).all()
-        for row in rows:
-            cache[(kind, row.object_id, field, lang)] = row
+            cache[(kind, oid, field)] = {}
+        for chunk in _chunks(sorted(ids), 500):
+            rows = ContentTranslation.query.filter(ContentTranslation.object_type == kind,
+                                                   ContentTranslation.object_id.in_(chunk),
+                                                   ContentTranslation.field == field).all()
+            for row in rows:
+                cache[(kind, row.object_id, field)].update({row.lang: _cached(row)})
+
+
+def _chunks(items, size):
+    for i in range(0, len(items), size):
+        yield items[i:i + size]
 
 
 def _current(obj, field, lang):
     """The translation row when it belongs to the current original, else None."""
-    row = _row(obj, field, lang)
+    row = _rows(obj, field).get(lang)
     if row is None or row.source_hash != source_hash(original(obj, field)):
         return None
     return row
@@ -132,8 +151,7 @@ def display(obj, field, lang):
 
 def handwritten_for(obj, field, lang):
     """A current handwritten translation into `lang` (editors, demo content),
-    else None. A handwritten translation is shown as is, without the
-    'original in' banner or a translate button."""
+    else None."""
     if lang == source_lang(obj):
         return None
     row = _current(obj, field, lang)
@@ -141,14 +159,23 @@ def handwritten_for(obj, field, lang):
 
 
 def has_handwritten(obj, field):
-    """True when the field has at least one current handwritten translation:
-    the content was written for every language (demo, editors)."""
-    if obj.id is None:
-        return False
+    """True when the field has a current handwritten translation: the content
+    was written for more than one language (demo content, editors)."""
     digest = source_hash(original(obj, field))
-    return db.session.query(ContentTranslation.id).filter_by(
-        object_type=object_type(obj), object_id=obj.id, field=field,
-        is_machine=False, source_hash=digest).first() is not None
+    return any(not row.is_machine and row.source_hash == digest for row in _rows(obj, field).values())
+
+
+def reader_view(obj, field, lang):
+    """(text, written_for_reader) as a reader of `lang` sees it. Content
+    written for several languages (handwritten translations) shows in the
+    reader's language as is, without the 'original in' banner or a translate
+    button; anything else shows the original (a translation comes on request)."""
+    text = handwritten_for(obj, field, lang)
+    if text is not None:
+        return text, True
+    if lang == source_lang(obj) and has_handwritten(obj, field):
+        return original(obj, field), True
+    return original(obj, field), False
 
 
 # ── Writing ────────────────────────────────────────────────────────────────
@@ -166,7 +193,7 @@ def set_translation(obj, field, lang, text, is_machine=False):
         db.session.add(row)
     row.text, row.is_machine, row.source_hash = text, bool(is_machine), digest
     row.created_at = datetime.utcnow()
-    _cache()[_key(obj, field, lang)] = row
+    _rows(obj, field).update({lang: _cached(row)})  # keep the request cache current
     return row
 
 
@@ -197,7 +224,7 @@ def invalidate(obj, field=None):
     cache = _cache()
     for key in [k for k in cache if k[0] == object_type(obj) and k[1] == obj.id
                 and (field is None or k[2] == field)]:
-        del cache[key]
+        cache[key] = {}
 
 
 # A deleted object takes its translations along (ORM deletes; bulk query
@@ -216,6 +243,8 @@ def register_cleanup(*models):
 def _register_models():
     from app.models import Post, QualityAward, QualityObjection, Thread
     register_cleanup(Post, Thread, QualityAward, QualityObjection)
+    event.listen(db.session, 'after_commit', clear_cache)
+    event.listen(db.session, 'after_rollback', clear_cache)
 
 
 _register_models()

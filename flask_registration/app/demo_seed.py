@@ -62,7 +62,7 @@ def _post(db, thread, who, created_at, *, body=None, source_lang='nl', is_op=Fal
         parent_id=parent.id if parent is not None else None,
         author_name=f'{user.first_name} {user.last_name}'.strip(),
         author_username=user.username, author_role=role,
-        author_badge_nl=badge, author_badge_en=badge, author_age=age,
+        author_badge=badge, author_age=age,
         body=body, source_lang=source_lang, is_op=is_op, is_demo=True, vote_count=0,
         kind=kind, fact_direction=fact_direction, fact_source=fact_source, fact_type=fact_type, fact_title=fact_title,
         issue_proposal_id=issue_proposal_id, proposal_version=proposal_version,

@@ -46,19 +46,17 @@ PATTERN = re.compile(
 
 # path -> (count, reason). Lower the count as branches are converted.
 EXCEPTIONS = {
-    'app/issues.py': (2, 'contentmodel, fase 0 stap 6: titel en openingsbericht van een gesprek per taal (title_*_nl/_en, body_nl/_en)'),
+    'app/content_migration.py': (1, 'data: de datamigratie van fase 0 stap 6 leest de oude kolommen per taal (nl, en)'),
+    'app/issues.py': (1, 'contentmodel, fase 0 stap 6: titel van een gesprek per taal (title_*_nl/_en)'),
     'app/models.py': (4, 'contentmodel, fase 0 stap 6: Thread.title(lang), de AI-uitleg (explanation_nl/_en) en post_lang'),
     'app/notifications.py': (1, 'contentmodel, fase 0 stap 6: de titel van een gesprek per taal in een melding'),
-    'app/quality.py': (9, 'contentmodel, fase 0 stap 6: AI-vertaal- en kwaliteitscode (taalregels voor de prompt, explanation_nl/_en, body_nl)'),
+    'app/quality.py': (8, 'contentmodel, fase 0 stap 6: AI-vertaal- en kwaliteitscode (taalregels voor de prompt, explanation_nl/_en, body_nl)'),
     'app/routes/admin.py': (2, 'contentmodel, fase 0 stap 6: zoeken in de titels in beide talen (Thread.title(lang)); data: de taalmonitor filtert op taal'),
-    'app/routes/forum.py': (2, 'contentmodel, fase 0 stap 6: de vertaalroute (translate_text, body_nl/_en)'),
     'app/status.py': (4, 'data: de taalmonitor telt per taal (source_lang)'),
-    'app/templates/forum/_post.html': (1, 'contentmodel, fase 0 stap 6: body_nl/body_en van een bijdrage'),
     'app/templates/forum/closed.html': (2, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
     'app/templates/forum/edit_thread.html': (1, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
     'app/templates/forum/index.html': (2, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
     'app/templates/forum/thread.html': (5, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
-    'app/templates/issues/proposal.html': (2, 'contentmodel, fase 0 stap 6: body_nl/body_en van een reactie op een voorstel'),
     'app/templates/issues/show.html': (1, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
     'app/templates/landenlijst.html': (7, 'contentmodel, fase 0 stap 6: landgegevens per taal (land_nl/_en, niveau_nl/_en, remarks_nl/_en) en de downloads (Excel, PDF) per taal'),
 }

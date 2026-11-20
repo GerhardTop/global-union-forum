@@ -11,7 +11,7 @@ from app import db, bcrypt, limiter, i18n
 from app.forms import ForumActionForm, ForumReplyForm
 from app.models import (FACT_DIRECTIONS, FACT_KIND, FACT_LEGACY_TYPES, FACT_TYPES, STANCES, QUALITY_CRITERIA, User, Thread, Post,
                         PostLike, QualityAward, QualityReport, time_ago)
-from app import conduct, quality
+from app import conduct, content_i18n, quality
 from app.models import PostReport
 from app.utils import _pop_form_state, _stash_form_state, safe_next
 
@@ -173,6 +173,17 @@ def _get_or_create_demo_user(first_name, last_name, email, username):
     return user
 
 
+def _demo_post(translations=None, **values):
+    """A demo post: the original in body (and author_badge) in its source
+    language, plus handwritten translations {(field, lang): text}."""
+    post = Post(**values)
+    db.session.add(post)
+    db.session.flush()
+    for (field, lang), value in (translations or {}).items():
+        content_i18n.set_translation(post, field, lang, value)
+    return post
+
+
 def _seed_forum():
     """Seed 4 demo threads with demo users on first run. Alleen bij het
     opstarten (create_app), niet per verzoek: dat kostte op elke forumpagina
@@ -213,11 +224,23 @@ def _seed_forum():
     db.session.add(t1)
     db.session.flush()
 
-    p1_op = Post(
+    p1_op = _demo_post(
+        translations={
+            ('body', 'en'): (
+                "I support the idea of the scorecard, but I'm worried about Goodhart's Law: once "
+                "a measure becomes a target, it ceases to be a good measure.\n\n"
+                "China has already been cited: spectacular anti-corruption numbers, while being one "
+                "of the most repressive regimes in the world. But this isn't a Chinese problem — "
+                "Western countries do this too. Greece manipulated its budget figures for years to "
+                "meet EU requirements.\n\n"
+                "My question: does Global Union need a mechanism to penalise countries that "
+                "demonstrably manipulate the figures? And if so, who decides that manipulation has occurred?"
+            ),
+        },
         thread_id=t1.id, user_id=jan.id,
         author_name='Jan Hofman (demo)', author_username='jan_h', author_role='member', author_age=52,
         source_lang='nl', is_op=True, vote_count=0, is_demo=True,
-        body_nl=(
+        body=(
             "Ik steun het idee van de scorecard, maar ik maak me zorgen over de wet van Goodhart: "
             "zodra een maatstaf een doel wordt, houdt het op een goede maatstaf te zijn.\n\n"
             "China werd al eerder aangehaald: spectaculaire anticorruptiecijfers, ondertussen een "
@@ -227,27 +250,19 @@ def _seed_forum():
             "Mijn vraag: heeft Global Union een mechanisme nodig dat landen bestraft die "
             "aantoonbaar de cijfers manipuleren? En zo ja, wie stelt vast dat er gemanipuleerd is?"
         ),
-        body_en=(
-            "I support the idea of the scorecard, but I'm worried about Goodhart's Law: once "
-            "a measure becomes a target, it ceases to be a good measure.\n\n"
-            "China has already been cited: spectacular anti-corruption numbers, while being one "
-            "of the most repressive regimes in the world. But this isn't a Chinese problem — "
-            "Western countries do this too. Greece manipulated its budget figures for years to "
-            "meet EU requirements.\n\n"
-            "My question: does Global Union need a mechanism to penalise countries that "
-            "demonstrably manipulate the figures? And if so, who decides that manipulation has occurred?"
-        ),
         created_at=now - timedelta(days=6),
     )
     db.session.add(p1_op)
     db.session.flush()
 
-    p1_r1 = Post(
+    p1_r1 = _demo_post(
+        translations={
+            ('author_badge', 'nl'): 'Internationale betrekkingen · LSE',
+        },
         thread_id=t1.id, user_id=sarah.id, parent_id=p1_op.id,
         author_name='Sarah Chen (demo)', author_username='sarah_c', author_role='expert', author_age=34,
-        author_badge_nl='Internationale betrekkingen · LSE',
-        author_badge_en='International relations · LSE',
         source_lang='en', vote_count=31, is_demo=True,
+        author_badge='International relations · LSE',
         body=(
             "Jan raises exactly the right concern. The technical term is 'metric gaming' "
             "and it's endemic to any scoring system.\n\n"
@@ -295,13 +310,32 @@ def _seed_forum():
     db.session.add(t2)
     db.session.flush()
 
-    p2_op = Post(
+    p2_op = _demo_post(
+        translations={
+            ('author_badge', 'en'): 'Trade law · Leiden University',
+            ('body', 'en'): (
+                "Principle 4 introduces an interesting hybrid: no full free movement of people, "
+                "but no closed borders either. Temporary work visas for scarce talent — from GU "
+                "countries as well as non-GU countries — linked to a circular idea: knowledge and "
+                "experience flow back to the country of origin.\n\n"
+                "I see the appeal of this model. But I have three critical questions.\n\n"
+                "First: how realistic is the circular assumption? In migration economics, "
+                "'temporary' is rarely truly temporary. Once someone puts down roots — career, "
+                "networks, children in school — the incentive to return fades. Without firm "
+                "commitments or positive incentives, temporary becomes permanent.\n\n"
+                "Second: who decides what counts as 'high-value'? This is a politically loaded "
+                "concept. In practice, wealthier member states define the demand, poorer countries "
+                "supply the talent. That sits uneasily with the partnership the GU aims to embody.\n\n"
+                "Third: the training programmes and remote-work facilitation sound promising — but "
+                "are these supplements to, or substitutes for, real mobility? If that is where the "
+                "ambitions lie, it requires a much more concrete implementation framework."
+            ),
+        },
         thread_id=t2.id, user_id=fatima.id,
         author_name='Fatima El Idrissi (demo)', author_username='fatima_e', author_role='expert', author_age=38,
-        author_badge_nl='Handelsrecht · Universiteit Leiden',
-        author_badge_en='Trade law · Leiden University',
         source_lang='nl', is_op=True, vote_count=0, is_demo=True,
-        body_nl=(
+        author_badge='Handelsrecht · Universiteit Leiden',
+        body=(
             "Principe 4 introduceert een interessante hybride: geen volledig vrij "
             "personenverkeer, maar ook geen gesloten grenzen. Tijdelijke werkvisa voor schaars "
             "talent — uit GU-landen én daarbuiten — gekoppeld aan een circulaire gedachte: "
@@ -317,23 +351,6 @@ def _seed_forum():
             "Ten derde: de opleidingsprogramma's en remote-werkfaciliteiten klinken "
             "veelbelovend — maar zijn dat aanvullingen op, of vervangers van, echte mobiliteit? "
             "Als de ambities daar liggen, vraagt dat om een veel concreter uitvoeringskader."
-        ),
-        body_en=(
-            "Principle 4 introduces an interesting hybrid: no full free movement of people, "
-            "but no closed borders either. Temporary work visas for scarce talent — from GU "
-            "countries as well as non-GU countries — linked to a circular idea: knowledge and "
-            "experience flow back to the country of origin.\n\n"
-            "I see the appeal of this model. But I have three critical questions.\n\n"
-            "First: how realistic is the circular assumption? In migration economics, "
-            "'temporary' is rarely truly temporary. Once someone puts down roots — career, "
-            "networks, children in school — the incentive to return fades. Without firm "
-            "commitments or positive incentives, temporary becomes permanent.\n\n"
-            "Second: who decides what counts as 'high-value'? This is a politically loaded "
-            "concept. In practice, wealthier member states define the demand, poorer countries "
-            "supply the talent. That sits uneasily with the partnership the GU aims to embody.\n\n"
-            "Third: the training programmes and remote-work facilitation sound promising — but "
-            "are these supplements to, or substitutes for, real mobility? If that is where the "
-            "ambitions lie, it requires a much more concrete implementation framework."
         ),
         created_at=now - timedelta(days=4),
     )
@@ -381,12 +398,14 @@ def _seed_forum():
     db.session.add(t3)
     db.session.flush()
 
-    p3_op = Post(
+    p3_op = _demo_post(
+        translations={
+            ('author_badge', 'nl'): 'Internationale betrekkingen · LSE',
+        },
         thread_id=t3.id, user_id=sarah.id,
         author_name='Sarah Chen (demo)', author_username='sarah_c', author_role='expert', author_age=34,
-        author_badge_nl='Internationale betrekkingen · LSE',
-        author_badge_en='International relations · LSE',
         source_lang='en', is_op=True, vote_count=0, is_demo=True,
+        author_badge='International relations · LSE',
         body=(
             "Principle 3 proposes independent journalism in local languages, modelled on the "
             "BBC. I work in media policy and I find this the most promising — and the most "
@@ -425,12 +444,14 @@ def _seed_forum():
     db.session.add(p3_r1)
     db.session.flush()
 
-    p3_r2 = Post(
+    p3_r2 = _demo_post(
+        translations={
+            ('author_badge', 'en'): 'Trade law · Leiden University',
+        },
         thread_id=t3.id, user_id=fatima.id, parent_id=p3_r1.id,
         author_name='Fatima El Idrissi (demo)', author_username='fatima_e', author_role='expert', author_age=38,
-        author_badge_nl='Handelsrecht · Universiteit Leiden',
-        author_badge_en='Trade law · Leiden University',
         source_lang='nl', vote_count=22, is_demo=True,
+        author_badge='Handelsrecht · Universiteit Leiden',
         body=(
             "Jan's suggestie is pragmatisch, maar die bestaande organisaties zijn niet "
             "neutraal — ze worden gesponsord door nationale overheden met eigen geopolitieke "
@@ -483,12 +504,14 @@ def _seed_forum():
     db.session.add(p4_op)
     db.session.flush()
 
-    p4_r1 = Post(
+    p4_r1 = _demo_post(
+        translations={
+            ('author_badge', 'en'): 'Trade law · Leiden University',
+        },
         thread_id=t4.id, user_id=fatima.id, parent_id=p4_op.id,
         author_name='Fatima El Idrissi (demo)', author_username='fatima_e', author_role='expert', author_age=38,
-        author_badge_nl='Handelsrecht · Universiteit Leiden',
-        author_badge_en='Trade law · Leiden University',
         source_lang='nl', vote_count=19, is_demo=True,
+        author_badge='Handelsrecht · Universiteit Leiden',
         body=(
             "De vergelijking met de EU-uitbreidingsprocedure is treffend maar ook een "
             "waarschuwing. De EU heeft 'kopenhaagencriteria' — democratie, rechtsstaat, "
@@ -850,6 +873,7 @@ def _thread_context(thread, branch_root_id=None):
     # Eén query voor alle bijdragen; de feiten (fase E) staan in een eigen
     # blok en buiten de discussieboom, de tellingen en eens/oneens.
     everything = Post.query.filter_by(thread_id=thread.id).order_by(Post.created_at).all()
+    content_i18n.preload(everything, 'body')  # one query for the translations on this page
     # Discussie stap 2: reacties bij een voorstel (en wat eronder hangt) staan
     # alleen bij dat voorstel, niet in de gedeelde discussie van het vraagstuk.
     everything = without_proposal_branches(everything)
@@ -998,7 +1022,7 @@ def _thread_context(thread, branch_root_id=None):
 @forum_bp.route('/forum/translate/<int:post_id>', methods=['POST'])
 @login_required
 # Per gebruiker (de route vereist login) en alleen echte API-aanroepen tellen
-# mee: een vertaling uit de cache (body_nl/body_en) is gratis. Voorheen per
+# mee: een vertaling uit de cache (content_translations) is gratis. Voorheen per
 # IP en elke klik telde: achter de proxy van Render delen bezoekers dan één
 # IP, en de automatische vertaling bij het laden van een pagina klikt alle
 # vertaalknoppen tegelijk, waardoor het budget voor iedereen snel op was.
@@ -1010,21 +1034,16 @@ def forum_translate(post_id):
     post = Post.query.get_or_404(post_id)
     if conduct.is_removed_for(post, current_user):
         abort(404)
-    user_lang = session.get('lang', 'nl')
+    user_lang = i18n.normalize(session.get('lang'))
 
-    if user_lang == post.source_lang:
+    if user_lang == content_i18n.source_lang(post):
         return jsonify({'error': 'no translation needed'}), 400
 
-    if user_lang == 'nl':
-        if post.body_nl:
-            return jsonify({'translation': post.body_nl})
-        source = post.body_en or post.body or ''
-    else:
-        if post.body_en:
-            return jsonify({'translation': post.body_en})
-        source = post.body_nl or post.body or ''
+    cached = content_i18n.text_for(post, 'body', user_lang)
+    if cached is not None:
+        return jsonify({'translation': cached})
 
-    if not source.strip():
+    if not (post.body or '').strip():
         return jsonify({'error': 'no content'}), 400
 
     api_key = current_app.config.get('ANTHROPIC_API_KEY', '')
@@ -1033,14 +1052,7 @@ def forum_translate(post_id):
 
     g.translation_api_called = True  # telt mee voor de rate limit hierboven
     try:
-        translation = quality.translate_text(source, user_lang)
-
-        if user_lang == 'nl':
-            post.body_nl = translation
-        else:
-            post.body_en = translation
-        db.session.commit()
-
+        translation = content_i18n.translate(post, 'body', user_lang)
         return jsonify({'translation': translation})
     except Exception as e:
         current_app.logger.error('Translation error: %s', e)
@@ -1328,8 +1340,7 @@ def forum_post_verwijderen(post_id):
         _delete_thread(post.thread)
         return redirect(url_for('forum.forum'))
     post.body = '[bericht verwijderd]'
-    post.body_nl = None
-    post.body_en = None
+    content_i18n.invalidate(post)
     post.user_id = None
     # Gedeelde placeholder i.p.v. per-post gok — zelfde principe als de
     # migratie-backfill van bestaande tombstones (zie _migrate_username_and_backfill).
@@ -1841,7 +1852,8 @@ def fact_edit(post_id):
         _stash_form_state(f'feit-{fact.thread_id}', {f'edit-{fact.id}': errors}, {f'edit-{fact.id}': data})
         return redirect(_fact_back(fact.thread, f'#post-{fact.id}'), code=303)
     fact.fact_direction, fact.fact_source, fact.fact_type = data['direction'], data['source'], data['type']
-    fact.fact_title, fact.fact_title_en = data['title'], None
+    fact.fact_title = data['title']
+    content_i18n.invalidate(fact, 'fact_title')
     _apply_edit(fact, data['text'])
     return redirect(_fact_back(fact.thread, f'#post-{fact.id}'))
 

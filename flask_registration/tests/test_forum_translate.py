@@ -82,7 +82,8 @@ class TestTranslateSuccess:
         assert resp.get_json() == {'translation': '[vertaald] English post number 0'}
         assert len(fake_anthropic) == 1 and 'Dutch' in fake_anthropic[0]['messages'][0]['content']
         db.session.expire_all()
-        assert db.session.get(Post, post.id).body_nl == '[vertaald] English post number 0'
+        from app import content_i18n
+        assert content_i18n.text_for(db.session.get(Post, post.id), 'body', 'nl') == '[vertaald] English post number 0'
         # Tweede keer uit de cache: geen nieuwe API-aanroep.
         assert _translate(client, post, token).get_json()['translation'] == '[vertaald] English post number 0'
         assert len(fake_anthropic) == 1

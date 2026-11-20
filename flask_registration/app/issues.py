@@ -24,7 +24,7 @@ import math
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-from app import db
+from app import content_i18n, db
 from app.models import ISSUE_KINDS, Issue, IssueProposal, Post, Proposal, Thread
 
 # Grenzen voor het startformulier.
@@ -61,7 +61,7 @@ def wrap(proposal):
     phase_start, phase_end = proposal.window(proposal.phase)
     issue = Issue(
         title=(_thread_title(thread, lang) if thread is not None else '')[:TITLE_MAX] or '?',
-        intro=(op.body or (op.body_en if lang == 'en' else op.body_nl)) if op is not None else None,
+        intro=content_i18n.reader_view(op, 'body', lang)[0] if op is not None else None,
         kind='online' if proposal.kind == 'publiek' else 'event',
         voting_deadline=proposal.stemmen_end.date() if proposal.stemmen_end else None,
         days_facts=_days(proposal.feiten_minutes, 21),

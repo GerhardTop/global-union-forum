@@ -273,12 +273,13 @@ class Post(db.Model):
     author_name    = db.Column(db.String(100), nullable=False)
     author_username = db.Column(db.String(30), nullable=False)
     author_role    = db.Column(db.String(20),  nullable=False, default='member')
-    author_badge_nl = db.Column(db.String(200), nullable=True)
-    author_badge_en = db.Column(db.String(200), nullable=True)
+    # Multilingual step 6b: one original per text (body, author_badge,
+    # fact_title) in source_lang; translations in content_translations via
+    # app/content_i18n.py. The old columns body_nl/_en, author_badge_nl/_en
+    # and fact_title_en stay in the database but the code no longer uses them.
+    author_badge   = db.Column(db.String(200), nullable=True)
     author_age     = db.Column(db.Integer, nullable=True)
     body           = db.Column(db.Text, nullable=True)
-    body_nl        = db.Column(db.Text, nullable=True)
-    body_en        = db.Column(db.Text, nullable=True)
     source_lang    = db.Column(db.String(5), nullable=False, default='nl')
     is_op          = db.Column(db.Boolean, default=False)
     is_demo        = db.Column(db.Boolean, nullable=False, default=False)
@@ -303,9 +304,8 @@ class Post(db.Model):
     # 'media' (news, podcast, video) stays readable as a legacy kind.
     fact_type      = db.Column(db.String(20), nullable=True)
     # Een korte, handgeschreven kern (max 80 tekens) als kopregel in de lijst;
-    # fact_title_en is de vertaalcache, net als body/body_en.
+    # vertalingen staan in content_translations, net als die van body.
     fact_title     = db.Column(db.String(100), nullable=True)
-    fact_title_en  = db.Column(db.String(100), nullable=True)
     author         = db.relationship('User', foreign_keys=[user_id], lazy='joined')
     # Geneste reacties: parent_id wijst naar het bericht waarop gereageerd
     # wordt (NULL = bericht op het hoogste niveau). De threadpagina bouwt de

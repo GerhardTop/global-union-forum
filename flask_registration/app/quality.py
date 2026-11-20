@@ -164,21 +164,21 @@ def translate_text(source, target_lang, client=None):
     return message.content[0].text.strip()
 
 
+# The language the quality judgement works in (the AI judges the English text).
+JUDGE_LANG = 'en'
+
+
 def english_text(post, client=None):
-    """De Engelse tekst van een bijdrage: origineel, uit de vertaalcache
-    (body_en, dezelfde cache als de vertaalknop) of nieuw vertaald en dan
-    in die cache bewaard."""
-    if post.body_en:
-        return post.body_en
-    source = post.body_nl or post.body or ''
-    if post.source_lang == 'en' and not post.body_nl:
-        return source
-    if not source.strip():
+    """The English text of a contribution: the original, a translation from
+    the cache (the same cache as the translate button) or newly translated
+    and then cached (app/content_i18n.py)."""
+    from app import content_i18n
+    existing = content_i18n.text_for(post, 'body', JUDGE_LANG)
+    if existing is not None:
+        return existing or ''
+    if not (post.body or '').strip():
         return ''
-    translated = translate_text(source, 'en', client=client)
-    post.body_en = translated
-    db.session.commit()
-    return translated
+    return content_i18n.translate(post, 'body', JUDGE_LANG, client=client)
 
 
 def _thread_title(thread):
@@ -204,8 +204,11 @@ def judge_post(post_id):
                                      Post.created_at <= post.created_at,
                                      Post.body != '[bericht verwijderd]')
                    .order_by(Post.created_at.desc()).limit(_MAX_EARLIER_POSTS).all())
+        from app import content_i18n
+        content_i18n.preload(earlier, 'body')
         earlier_text = '\n\n'.join(
-            f'<post>{((p.body_en or p.body or "")[:_MAX_CHARS])}</post>' for p in reversed(earlier)
+            f'<post>{((content_i18n.text_for(p, "body", JUDGE_LANG) or p.body or "")[:_MAX_CHARS])}</post>'
+            for p in reversed(earlier)
         ) or '(none)'
         # Handhaving (fase D) op de oorspronkelijke tekst, zodat toon en
         # context kloppen; de kwaliteit op de Engelse tekst, zoals altijd.
@@ -421,7 +424,8 @@ def reset_for_edit(post):
     if case is not None and case.action in ('twijfel', 'vrijgegeven') and not case.on_background:
         db.session.delete(case)
     # De vertaalcache hoort bij de oude tekst (en de AI beoordeelt de Engelse).
-    post.body_nl = post.body_en = None
+    from app import content_i18n
+    content_i18n.invalidate(post, 'body')
 
 
 def delete_for_posts(post_ids):

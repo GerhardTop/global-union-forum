@@ -12,16 +12,13 @@
   {% set display_body = '[bericht verwijderd]' %}
   {% set is_pretranslated = false %}
   {% set is_foreign = false %}
-{% elif post.body_nl and post.body_en %}
-  {% set is_deleted = false %}
-  {% set is_pretranslated = true %}
-  {% set display_body = post.body_nl if lang == 'nl' else post.body_en %}
-  {% set is_foreign = false %}
 {% else %}
+  {# Written for the reader (handwritten translations, demo content): shown
+     in the reader's language as is. Otherwise the original, with the
+     'original in' banner and the translate button for other languages. #}
   {% set is_deleted = false %}
-  {% set is_pretranslated = false %}
-  {% set display_body = post.body %}
-  {% set is_foreign = post.source_lang != lang %}
+  {% set display_body, is_pretranslated = content_i18n.reader_view(post, 'body', lang) %}
+  {% set is_foreign = not is_pretranslated and post.source_lang != lang %}
 {% endif %}
 
 {% set time = post.time_ago %}
@@ -78,8 +75,7 @@
   {% if is_foreign and not is_deleted %}
   <div class="gu-post__foreignbanner">
     <span class="gu-arrow" style="background:var(--gu-fg-3)"></span>
-    {% set source_names = dict(en=_('English'), nl=_('Dutch')) %}
-    <span>{% trans language=source_names.get(post.source_lang, post.source_lang | upper) %}Original in {{ language }}{% endtrans %}</span>
+    <span>{% trans language=language_name_in(post.source_lang, lang) %}Original in {{ language }}{% endtrans %}</span>
   </div>
   {% endif %}
 
