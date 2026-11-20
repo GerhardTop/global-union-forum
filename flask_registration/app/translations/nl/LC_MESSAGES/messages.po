@@ -1395,7 +1395,7 @@ msgid "End with a summary proposal"
 msgstr "Afsluiten met een samenvattend voorstel"
 
 msgid "Cancel"
-msgstr "Annuleer"
+msgstr "Annuleren"
 
 msgid "Start issue"
 msgstr "Vraagstuk starten"
@@ -2787,14 +2787,6 @@ msgstr "De knop wordt pas actief als de stelling exact klopt."
 msgid "The button only becomes active when the title matches exactly."
 msgstr "De knop wordt pas actief als de titel exact klopt."
 
-msgctxt "form"
-msgid "Cancel"
-msgstr "Annuleren"
-
-msgctxt "conversation"
-msgid "Reopen"
-msgstr "Heropen"
-
 #, python-format
 msgid "%(num)d supporter"
 msgid_plural "%(num)d supporters"
@@ -3341,10 +3333,6 @@ msgid_plural "%(num)d reports"
 msgstr[0] "%(num)d melding"
 msgstr[1] "%(num)d meldingen"
 
-msgctxt "moderator list"
-msgid "Sort"
-msgstr "Sorteer"
-
 msgid "Longest waiting"
 msgstr "Langst wachtend"
 
@@ -3376,14 +3364,6 @@ msgstr "%(n)s ontvangen"
 #, python-format
 msgid "(%(n)s upheld)"
 msgstr "(waarvan %(n)s gegrond)"
-
-msgctxt "issue kind"
-msgid "Event"
-msgstr "Evenement"
-
-msgctxt "issue pill"
-msgid "Archived"
-msgstr "In archief"
 
 #, python-format
 msgid "%(num)d proposal"
@@ -3779,10 +3759,6 @@ msgstr "Wat er gebeurde rond jouw bijdragen."
 msgctxt "notification settings"
 msgid "About"
 msgstr "Waarover"
-
-msgctxt "notification settings"
-msgid "Save"
-msgstr "Bewaren"
 
 msgctxt "summary frequency"
 msgid "Off"

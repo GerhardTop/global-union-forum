@@ -32,7 +32,7 @@
       <h1 class="gu-mgmt__title" lang="{{ issue.lang or lang }}">{{ issue.title }}</h1>
       <div class="gu-mgmt__pills">
         <span class="gu-pill gu-mgmt__pill--phase">{% if issue.is_closed and not issue.is_archived %}{{ _('Closed') }}{% else %}{{ _('Phase') }} {{ phase_labels_all.get(issue.phase, issue.phase) }}{% endif %}</span>
-        <span class="gu-pill">{% if issue.is_archived %}{{ pgettext('issue pill', 'Archived') }}{% elif issue.kind == 'event' %}{{ _('Event') }}{% else %}{{ _('Online') }}{% endif %}</span>
+        <span class="gu-pill">{% if issue.is_archived %}{{ _('Archived') }}{% elif issue.kind == 'event' %}{{ _('Event') }}{% else %}{{ _('Online') }}{% endif %}</span>
         {% if rights.own %}<span class="gu-pill">{{ _('Your issue') }}</span>{% endif %}
         {% if open_count %}<span class="gu-pill gu-mgmt__pill--count">{{ ngettext('%(num)d open report', '%(num)d open reports', open_count) }}</span>{% endif %}
       </div>

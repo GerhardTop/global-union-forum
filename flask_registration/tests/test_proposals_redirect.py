@@ -68,7 +68,7 @@ def test_links_go_to_the_cockpit(app, db, world):
     new = _get(app, f'/vraagstuk/{issue.id}/voorstellen/nieuw', host)
     crumbs = new.split('gu-forum__crumbs gu-issue-crumbs')[1].split('</nav>')[0]
     assert enlarged in crumbs
-    assert re.search(rf'<a href="/vraagstuk/{issue.id}" class="gu-btn gu-btn--ghost">Annuleer</a>', new)
+    assert re.search(rf'<a href="/vraagstuk/{issue.id}" class="gu-btn gu-btn--ghost">Annuleren</a>', new)
     assert re.search(rf'<a href="/vraagstuk/{issue.id}" class="gu-btn gu-btn--ghost">Cancel</a>',
                      _get(app, f'/vraagstuk/{issue.id}/voorstellen/nieuw', host, 'en'))
     for page in (detail, new, _get(app, f'/vraagstuk/{issue.id}', host)):

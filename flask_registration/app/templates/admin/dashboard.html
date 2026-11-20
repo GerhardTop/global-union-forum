@@ -166,14 +166,14 @@
 <div class="gu-modal-overlay" id="adminDeleteModal" hidden role="dialog" aria-modal="true"
      aria-labelledby="adminDeleteTitle">
   <div class="gu-modal">
-    <button type="button" class="gu-modal__close" id="adminDeleteClose" aria-label="Annuleer">✕</button>
+    <button type="button" class="gu-modal__close" id="adminDeleteClose" aria-label="{{ _('Cancel') }}">✕</button>
     <h2 class="gu-modal__title" id="adminDeleteTitle">Account verwijderen</h2>
     <p class="gu-modal__body" id="adminDeleteBody">
       Weet je zeker dat je dit account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
     </p>
     <form method="POST" id="adminDeleteForm" style="margin-top: 20px; display:flex; gap:12px; justify-content:flex-end;">
       {{ admin_action_form.hidden_tag() }}
-      <button type="button" class="gu-btn gu-btn--ghost" id="adminDeleteCancel">Annuleer</button>
+      <button type="button" class="gu-btn gu-btn--ghost" id="adminDeleteCancel">{{ _('Cancel') }}</button>
       <button type="submit" class="gu-btn gu-btn--primary" style="background:var(--gu-danger);">Verwijder account</button>
     </form>
   </div>

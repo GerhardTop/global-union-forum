@@ -50,7 +50,7 @@
       </h1>
       <div class="gu-modrev__pills">
         {% if m.issue %}
-        <span class="gu-pill">{% if m.issue.kind == 'event' %}{{ pgettext('issue kind', 'Event') }}{% else %}{{ _('Online issue') }}{% endif %} · {{ _('phase') }} {{ phase_labels.get(m.issue.phase, m.issue.phase) }}</span>
+        <span class="gu-pill">{% if m.issue.kind == 'event' %}{{ _('Event') }}{% else %}{{ _('Online issue') }}{% endif %} · {{ _('phase') }} {{ phase_labels.get(m.issue.phase, m.issue.phase) }}</span>
         {% endif %}
         {% if not is_own %}<span class="gu-pill gu-pill--done">{{ _('You are handling this') }}</span>{% endif %}
       </div>

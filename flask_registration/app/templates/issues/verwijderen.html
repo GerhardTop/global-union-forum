@@ -78,7 +78,7 @@
         <input type="text" id="confirmTitle" name="confirm_title" class="gu-input" autocomplete="off" required
                data-expected="{{ (what or '')|trim }}">
         <div class="gu-del__actions">
-          <a class="gu-btn gu-btn--ghost" href="{% if back_url %}{{ back_url }}{% elif is_prop %}{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}{% else %}{{ url_for('issues.show', issue_id=issue.id) }}{% endif %}">{{ pgettext('form', 'Cancel') }}</a>
+          <a class="gu-btn gu-btn--ghost" href="{% if back_url %}{{ back_url }}{% elif is_prop %}{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}{% else %}{{ url_for('issues.show', issue_id=issue.id) }}{% endif %}">{{ _('Cancel') }}</a>
           <button type="submit" class="gu-btn gu-del__btn" data-confirm-button>{{ _('Delete permanently') }}</button>
         </div>
         <p class="gu-del__hint">{% if is_prop %}{{ _('The button only becomes active when the statement matches exactly.') }}{% else %}{{ _('The button only becomes active when the title matches exactly.') }}{% endif %}</p>

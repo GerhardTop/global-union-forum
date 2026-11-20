@@ -70,7 +70,7 @@
         <label class="gu-del__field" for="deleteReason">{{ _('Reason (goes into the history)') }}</label>
         <textarea id="deleteReason" name="reden" class="gu-input" rows="2" maxlength="2000">{{ reason }}</textarea>
         <div class="gu-del__actions">
-          <a class="gu-btn gu-btn--ghost" href="{{ url_for('admin.gebruiker', user_id=user.id) }}">{{ pgettext('form', 'Cancel') }}</a>
+          <a class="gu-btn gu-btn--ghost" href="{{ url_for('admin.gebruiker', user_id=user.id) }}">{{ _('Cancel') }}</a>
           <button type="submit" class="gu-btn gu-del__btn" data-confirm-button>{{ _('Permanently delete account') }}</button>
         </div>
         <p class="gu-del__hint">{{ _('The button only becomes active when the username matches exactly.') }}</p>

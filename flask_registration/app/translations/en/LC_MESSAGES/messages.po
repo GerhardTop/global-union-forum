@@ -2781,14 +2781,6 @@ msgstr "The button only becomes active when the statement matches exactly."
 msgid "The button only becomes active when the title matches exactly."
 msgstr "The button only becomes active when the title matches exactly."
 
-msgctxt "form"
-msgid "Cancel"
-msgstr "Cancel"
-
-msgctxt "conversation"
-msgid "Reopen"
-msgstr "Reopen"
-
 #, python-format
 msgid "%(num)d supporter"
 msgid_plural "%(num)d supporters"
@@ -3335,10 +3327,6 @@ msgid_plural "%(num)d reports"
 msgstr[0] "%(num)d report"
 msgstr[1] "%(num)d reports"
 
-msgctxt "moderator list"
-msgid "Sort"
-msgstr "Sort"
-
 msgid "Longest waiting"
 msgstr "Longest waiting"
 
@@ -3370,14 +3358,6 @@ msgstr "%(n)s received"
 #, python-format
 msgid "(%(n)s upheld)"
 msgstr "(%(n)s upheld)"
-
-msgctxt "issue kind"
-msgid "Event"
-msgstr "Event"
-
-msgctxt "issue pill"
-msgid "Archived"
-msgstr "Archived"
 
 #, python-format
 msgid "%(num)d proposal"
@@ -3773,10 +3753,6 @@ msgstr "What happened around your contributions."
 msgctxt "notification settings"
 msgid "About"
 msgstr "About"
-
-msgctxt "notification settings"
-msgid "Save"
-msgstr "Save"
 
 msgctxt "summary frequency"
 msgid "Off"

@@ -38,7 +38,7 @@
       {{ fact_fields('add-fact', fact_add_data or {}, fact_add_errors or {}) }}
       <div class="gu-addfact__actions">
         <button type="submit" class="gu-btn gu-btn--primary">{{ _('Add') }} <span class="gu-arrow"></span></button>
-        <a href="{{ close_url }}" class="gu-btn gu-btn--ghost" data-fact-add-close>{{ pgettext('form', 'Cancel') }}</a>
+        <a href="{{ close_url }}" class="gu-btn gu-btn--ghost" data-fact-add-close>{{ _('Cancel') }}</a>
       </div>
     </form>
   </div>
