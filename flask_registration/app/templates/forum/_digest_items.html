@@ -15,7 +15,7 @@
         <a href="{{ base or '' }}{{ url_for('issues.show', issue_id=item.issue_id) }}">{{ item.title }}</a>
       {%- elif alive -%}<a href="{{ base or '' }}{{ url_for('forum.forum_thread', thread_id=item.thread_id) }}">{{ item.title }}</a>{% else %}{{ item.title }}{% endif %}
     </p>
-    <ul style="margin:0;padding-left:18px;" class="gu-digest__changes">
+    <ul style="margin:0;padding-left:18px;" class="gu-digest__changes"> {# physical on purpose: also sent as e-mail (email/digest.html); mail clients ignore logical properties #}
       {% for c in item.changes %}
       {% set until = digest_dt(c.get('until')) %}
       <li>
@@ -34,7 +34,7 @@
         {%- elif c.type == 'issue_vervolgtekst' -%}{{ _('The initiator has described what happens next') }}
         {%- elif c.type == 'issue_uitslag' -%}{{ _('Voting has closed. The results:') }}
           {%- if c.results -%}
-          <ul style="margin:4px 0 0;padding-left:18px;">
+          <ul style="margin:4px 0 0;padding-left:18px;"> {# physical on purpose: also sent as e-mail; mail clients ignore logical properties #}
             {%- for r in c.results -%}
             <li>{{ r.statement }}: {% if r.pct is none %}{{ _('rejected, no valid votes') }}{% elif r.adopted %}{{ _('adopted with %(pct)s%% in favour', pct=r.pct | decimalformat('0.#')) }}{% else %}{{ _('rejected with %(pct)s%% in favour', pct=r.pct | decimalformat('0.#')) }}{% endif %}</li>
             {%- endfor -%}
