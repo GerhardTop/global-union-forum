@@ -370,12 +370,6 @@ _CONTENT_COLUMNS = {
                 ('source_lang', 'VARCHAR(5) NULL')),
 }
 
-# The old NOT NULL columns of threads: the code no longer writes them, so new
-# rows need them nullable (they stay in the database until a later step).
-_RELAXED_COLUMNS = {
-    'threads': ('eyebrow_nl', 'eyebrow_en', 'title_prefix_nl', 'title_suffix_nl',
-                'title_prefix_en', 'title_suffix_en'),
-}
 
 
 def _migrate_content_columns(existing):
@@ -389,8 +383,9 @@ def _migrate_content_columns(existing):
                 for ddl in added:
                     conn.execute(text(ddl))
                 conn.commit()
+    from app.content_migration import RELAXED_COLUMNS
     dialect = db.engine.dialect.name
-    for table, names in _RELAXED_COLUMNS.items():
+    for table, names in RELAXED_COLUMNS.items():
         if table not in existing or dialect not in ('postgresql', 'mysql'):
             continue  # SQLite (tests only) builds the tables from the models
         info = {c['name']: c for c in sa_inspect(db.engine).get_columns(table)}

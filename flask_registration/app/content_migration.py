@@ -17,6 +17,14 @@ from sqlalchemy import text
 
 _OLD_LANGS = ('nl', 'en')
 
+# The old NOT NULL columns of threads: the code no longer writes them, so new
+# rows need them nullable (app/__init__.py relaxes them at start-up; they stay
+# in the database until a later step).
+RELAXED_COLUMNS = {
+    'threads': ('eyebrow_nl', 'eyebrow_en', 'title_prefix_nl', 'title_suffix_nl',
+                'title_prefix_en', 'title_suffix_en'),
+}
+
 
 def _hash(value):
     return hashlib.sha256((value or '').encode('utf-8')).hexdigest()

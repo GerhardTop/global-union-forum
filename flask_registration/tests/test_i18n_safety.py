@@ -49,7 +49,6 @@ EXCEPTIONS = {
     'app/content_migration.py': (1, 'data: de datamigratie van fase 0 stap 6 leest de oude kolommen per taal (nl, en)'),
     'app/routes/admin.py': (1, 'data: de taalmonitor filtert op taal (source_lang)'),
     'app/status.py': (4, 'data: de taalmonitor telt per taal (source_lang)'),
-    'app/templates/landenlijst.html': (7, 'contentmodel, fase 0 stap 6: landgegevens per taal (land_nl/_en, niveau_nl/_en, remarks_nl/_en) en de downloads (Excel, PDF) per taal'),
 }
 
 
@@ -257,3 +256,37 @@ def test_no_long_or_short_dashes_in_msgids_or_translations(lang):
         if any(dash in text for text in ids + strs for dash in ('–', '—')):
             bad.append(message.id)
     assert not bad, bad
+
+
+# ── Phase 0 step 6: the old per-language content columns are unused ─────────
+
+OLD_COLUMNS = re.compile(
+    r"\b(?:body|author_badge|explanation|ai_response|eyebrow|title_prefix|title_accent|title_suffix"
+    r"|land|niveau|uitnodigen|remarks)_(?:nl|en)\b"
+    r"|\bfact_title_en\b"
+    r"|\b(?:body|explanation|ai_response|eyebrow|title_prefix|title_accent|title_suffix)_\{")  # f'{field}_{lang}'
+# Only the data migration reads them (and names them to relax NOT NULL).
+OLD_COLUMNS_ALLOWED = {'app/content_migration.py'}
+
+
+def _without_comments(path, source):
+    if path.endswith('.py'):
+        return '\n'.join(line.split('#', 1)[0] for line in source.splitlines())
+    return re.sub(r'\{#.*?#\}', '', source, flags=re.S)
+
+
+def test_no_code_uses_the_old_content_columns():
+    found = []
+    for folder, _dirs, files in os.walk(APP):
+        if 'translations' in folder:
+            continue
+        for name in files:
+            if not name.endswith(('.py', '.html', '.js', '.json')):
+                continue
+            path = os.path.relpath(os.path.join(folder, name), ROOT)
+            if path in OLD_COLUMNS_ALLOWED:
+                continue
+            with open(os.path.join(folder, name), encoding='utf-8') as f:
+                source = _without_comments(path, f.read())
+            found += [(path, m.group(0)) for m in OLD_COLUMNS.finditer(source)]
+    assert not found, f'Old per-language columns in use (go through app/content_i18n.py): {found}'

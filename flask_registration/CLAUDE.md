@@ -35,10 +35,12 @@ Een vertaling die gelijk is aan de msgid mag alleen als hij op de toegestane lij
 
 Een taal aanzetten (voorbeeld de), vanuit `flask_registration/`:
 
-1. Staat de taal niet in `LANGUAGES`, voeg hem toe (code, naam in de eigen taal, `ltr` of `rtl`).
+1. Staat de taal niet in `LANGUAGES`, voeg hem toe (code, naam in de eigen taal, Engelse naam voor de AI-prompts, `ltr` of `rtl`).
 2. Extract zoals hierboven, dan `pybabel init -i messages.pot -d app/translations -l de --no-wrap`.
 3. Vertaal alles in `app/translations/de/LC_MESSAGES/messages.po`: geen lege of fuzzy items. Teksten die gelijk mogen blijven aan de msgid krijgen een eigen lijst in `SAME_AS_MSGID['de']`, met reden.
 4. `pybabel compile -d app/translations` en commit de .po en .mo.
 5. Zet `"de"` in `ENABLED_LANGUAGES`. De catalogustests gelden dan vanzelf ook voor de; draai de volledige suite.
 
-Let op: de gebruikersinhoud (titels, bijdragen, vertaalknop) kent nog alleen nl en en (contentmodel, fase 0 stap 6).
+### Inhoud in meerdere talen
+
+Van elke tekst van gebruikers en de AI (bijdrage, feitkern, gesprekstitel en eyebrow, AI-uitleg) is er één origineel, in de brontaal van dat object (`Post.source_lang`, `Thread.source_lang`, `QualityAward.post_lang`). Vertalingen staan als cache per taal in de tabel `content_translations` en lopen alleen via `app/content_i18n.py` (`text_for`, `display`, `reader_view`, `translate`, `set_translation`, `invalidate`, `set_label`). Na een bewerking van het origineel: `invalidate`. Een vaste label (zoals de eyebrow "Issue") gaat met `set_label` in elke ingeschakelde taal mee. De oude kolommen per taal (`body_nl`, `title_prefix_en` enzovoort) staan nog in de database maar de code gebruikt ze niet; alleen `app/content_migration.py` leest ze (tests/test_i18n_safety.py bewaakt dat). De landenlijst gebruikt ISO-codes met namen uit Babel.

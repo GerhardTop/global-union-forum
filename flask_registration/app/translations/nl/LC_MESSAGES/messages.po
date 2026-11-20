@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-20 17:59+0100\n"
+"POT-Creation-Date: 2026-11-20 18:12+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -1003,7 +1003,41 @@ msgstr "Het voorstel is verborgen."
 msgid "The proposal is visible again."
 msgstr "Het voorstel is weer zichtbaar."
 
-#: app/routes/main.py:147
+#. landenlijst, tekst 5
+#: app/routes/main.py:26 app/templates/landenlijst.html:38
+msgid "Meets standard"
+msgstr "Op niveau"
+
+#. landenlijst, tekst 8
+#: app/routes/main.py:27 app/templates/landenlijst.html:44
+msgid "Above minimum"
+msgstr "Boven minimum"
+
+#: app/routes/main.py:28
+msgid "Below minimum"
+msgstr "Onder minimum"
+
+#: app/routes/main.py:29
+msgid "Insufficient data"
+msgstr "Onvoldoende data"
+
+#: app/routes/main.py:32
+msgid "Yes"
+msgstr "Ja"
+
+#: app/routes/main.py:33
+msgid "No"
+msgstr "Nee"
+
+#: app/routes/main.py:34
+msgid "n/a"
+msgstr "n.v.t."
+
+#: app/routes/main.py:35
+msgid "separate status"
+msgstr "aparte status"
+
+#: app/routes/main.py:190
 msgid "Thank you! You can now join the conversation."
 msgstr "Bedankt! Je kunt nu meedoen aan het gesprek."
 
@@ -1647,47 +1681,37 @@ msgid "The manifesto"
 msgstr "Het manifest"
 
 #. landenlijst, tekst 4
-#: app/templates/landenlijst.html:38
+#: app/templates/landenlijst.html:30
 msgid "Level"
 msgstr "Niveau"
 
-#. landenlijst, tekst 5
-#: app/templates/landenlijst.html:46
-msgid "Meets standard"
-msgstr "Op niveau"
-
 #. landenlijst, tekst 6
-#: app/templates/landenlijst.html:47
+#: app/templates/landenlijst.html:39
 msgid "≥ 8.0"
 msgstr "≥ 8,0"
 
 #. landenlijst, tekst 7
-#: app/templates/landenlijst.html:49
+#: app/templates/landenlijst.html:41
 msgid "≥ 0.75"
 msgstr "≥ 0,75"
 
-#. landenlijst, tekst 8
-#: app/templates/landenlijst.html:52
-msgid "Above minimum"
-msgstr "Boven minimum"
-
 #. landenlijst, tekst 9
-#: app/templates/landenlijst.html:53
+#: app/templates/landenlijst.html:45
 msgid "≥ 6.0"
 msgstr "≥ 6,0"
 
 #. landenlijst, tekst 10
-#: app/templates/landenlijst.html:55
+#: app/templates/landenlijst.html:47
 msgid "≥ 0.70"
 msgstr "≥ 0,70"
 
 #. landenlijst, tekst 11
-#: app/templates/landenlijst.html:72
+#: app/templates/landenlijst.html:64
 msgid "Country"
 msgstr "Land"
 
 #. landenlijst, tekst 12
-#: app/templates/landenlijst.html:76
+#: app/templates/landenlijst.html:68
 msgid "Global Union level"
 msgstr "Global Union niveau"
 
@@ -6622,6 +6646,4 @@ msgstr "Verwijderen"
 #: app/templates/moderator/rechten.html:25
 msgid "An admin may always do everything. These settings apply as soon as you save, to all issues."
 msgstr "Een admin mag altijd alles. Deze instellingen gelden direct na het opslaan, voor alle vraagstukken."
-
-
 

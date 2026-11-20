@@ -10,21 +10,13 @@
   </div>
 
   <div class="gu-landen__downloads">
-    {% if lang == 'nl' %}
-    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename='downloads/bijlage_a_landenoverzicht_NL.xlsx') }}" download>
+    {# The files in the reader's language, else the English ones (main.landen_downloads). #}
+    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename=download_xlsx) }}" download>
       Download Excel <span class="gu-arrow"></span>
     </a>
-    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename='downloads/landenlijst.pdf') }}" download>
+    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename=download_pdf) }}" download>
       Download PDF <span class="gu-arrow"></span>
     </a>
-    {% else %}
-    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename='downloads/appendix_a_country_overview_EN.xlsx') }}" download>
-      Download Excel <span class="gu-arrow"></span>
-    </a>
-    <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename='downloads/country-list.pdf') }}" download>
-      Download PDF <span class="gu-arrow"></span>
-    </a>
-    {% endif %}
   </div>
 
   {# Legenda (wijziging 7) — vervangt de vroegere drempeltekst boven de
@@ -79,11 +71,11 @@
       <tbody>
         {% for c in countries %}
         {# is_exception: puur een boolean signaal (Taiwan/Israël/VS zijn de
-           enige landen met remarks_nl/en gevuld) om de naam oranje te
+           enige landen met een remark) om de naam oranje te
            kleuren — de toelichtingstekst zelf wordt niet meer getoond, die
            staat al op /manifest en zou hier dubbelop zijn. #}
-        {% set is_exception = (c.remarks_nl if lang == 'nl' else c.remarks_en) %}
-        {% set name = c.land_nl if lang == 'nl' else c.land_en %}
+        {% set is_exception = c.remark %}
+        {% set name = c.name %}
         {% set di_str = '%.2f'|format(c.di) if c.di is not none else '-' %}
         {% set cpi_str = c.cpi if c.cpi is not none else '-' %}
         {% set hri_str = '%.3f'|format(c.hri) if c.hri is not none else '-' %}
@@ -95,7 +87,7 @@
           <td class="gu-landen-table__td--center" data-sort-cell="cpi" data-sort-value="{{ c.cpi if c.cpi is not none else -1 }}"><span class="gu-index-dot gu-index-dot--{{ c.cpi_level }}"></span>{{ cpi_str }}</td>
           <td class="gu-landen-table__td--center" data-sort-cell="hri" data-sort-value="{{ c.hri if c.hri is not none else -1 }}"><span class="gu-index-dot gu-index-dot--{{ c.hri_level }}"></span>{{ hri_str }}</td>
           <td data-sort-cell="niveau" data-sort-value="{{ c.level_sort }}">
-            <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
+            <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.level_label }}</span>
           </td>
         </tr>
         {% endfor %}
@@ -109,8 +101,8 @@
      .gu-landen-cards in kit.css. #}
   <div class="gu-landen-cards">
     {% for c in countries %}
-    {% set is_exception = (c.remarks_nl if lang == 'nl' else c.remarks_en) %}
-    {% set name = c.land_nl if lang == 'nl' else c.land_en %}
+    {% set is_exception = c.remark %}
+    {% set name = c.name %}
     {% set di_str = '%.2f'|format(c.di) if c.di is not none else '-' %}
     {% set cpi_str = c.cpi if c.cpi is not none else '-' %}
     {% set hri_str = '%.3f'|format(c.hri) if c.hri is not none else '-' %}
@@ -125,7 +117,7 @@
             <span class="gu-index-dot gu-index-dot--{{ c.cpi_level }}" title="CPI {{ cpi_str }}" aria-label="CPI {{ cpi_str }}"></span>
             <span class="gu-index-dot gu-index-dot--{{ c.hri_level }}" title="HRI {{ hri_str }}" aria-label="HRI {{ hri_str }}"></span>
           </span>
-          <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.niveau_nl if lang == 'nl' else c.niveau_en }}</span>
+          <span class="gu-level-badge gu-level-badge--{{ c.level_class }}">{{ c.level_label }}</span>
         </span>
         <span class="gu-landen-card__chevron" aria-hidden="true"></span>
       </summary>

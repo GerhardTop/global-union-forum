@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 
 from flask import Blueprint, render_template, redirect, url_for, request, session, abort, flash
-from flask_babel import gettext
+from flask_babel import get_locale, gettext, lazy_gettext
 from flask_login import current_user, login_required
 
 from app import db, i18n
@@ -15,25 +15,65 @@ main = Blueprint("main", __name__)
 _log = logging.getLogger('babel_locale')
 
 # Landenlijst: eenmalig ingeladen bij module-import (statische referentiedata,
-# ~183 rijen) i.p.v. per request van schijf te lezen. level_class wordt hier
-# server-side afgeleid van niveau_en (stabieler dan op niveau_nl matchen) zodat
-# de template puur op CSS-modifier-klasse kan renderen, geen stringvergelijking
-# per rij in Jinja.
+# ~183 rijen) i.p.v. per request van schijf te lezen. Multilingual step 6e:
+# per land de ISO 3166-code; de naam komt per taal uit Babel (met een paar
+# vaste namen in "names" waar de site een eigen naam gebruikt), het niveau en
+# uitnodigen zijn codes met een gettext-label, remarks per taal met terugval
+# op Engels.
 _LANDEN_DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "landenlijst_data.json"
-_LEVEL_CLASS_MAP = {
-    "Meets standard": "meets",
-    "Above minimum": "above",
-    "Below minimum": "below",
-    "Insufficient data": "insufficient",
+# The level is a fixed vocabulary: the code is also the CSS modifier.
+LEVEL_LABELS = {
+    "meets": lazy_gettext("Meets standard"),
+    "above": lazy_gettext("Above minimum"),
+    "below": lazy_gettext("Below minimum"),
+    "insufficient": lazy_gettext("Insufficient data"),
 }
+INVITE_LABELS = {
+    "yes": lazy_gettext("Yes"),
+    "no": lazy_gettext("No"),
+    "na": lazy_gettext("n/a"),
+    "separate": lazy_gettext("separate status"),
+}
+# The downloads per language (Excel, PDF), with the English files as the
+# fallback for a language without its own.
+_LANDEN_DOWNLOADS = (
+    ("nl", "downloads/bijlage_a_landenoverzicht_NL.xlsx", "downloads/landenlijst.pdf"),
+    ("en", "downloads/appendix_a_country_overview_EN.xlsx", "downloads/country-list.pdf"),
+)
+
+
+def landen_downloads(lang):
+    """(xlsx, pdf) static paths for `lang`, else the English ones."""
+    table = {code: (xlsx, pdf) for code, xlsx, pdf in _LANDEN_DOWNLOADS}
+    return table.get(lang) or table[i18n.source_language()]
+
+
+def country_name(row, lang):
+    """The country's name in `lang`: the site's own name when it has one,
+    else Babel's, else the English name."""
+    from babel import Locale, UnknownLocaleError
+    names = row.get("names") or {}
+    own = names.get(lang)
+    if own:
+        return own
+    try:
+        name = Locale.parse(lang).territories.get(row["iso"])
+    except (UnknownLocaleError, ValueError, TypeError):
+        name = None
+    return name or names.get("en") or Locale("en").territories.get(row["iso"], row["iso"])
+
+
+def country_remark(row, lang):
+    remarks = row.get("remarks") or {}
+    return remarks.get(lang) or remarks.get("en")
 # Numerieke rangorde voor het sorteren van de Niveau-kolom (wijziging 3 op de
 # landenlijst) — laag naar hoog, analoog aan level_class hierboven.
 _LEVEL_SORT_RANK = {"insufficient": 0, "below": 1, "above": 2, "meets": 3}
 # Drempelwaarden per index — geverifieerd tegen alle 183 landen, reproduceert
-# niveau_en exact via AND-logica over beide niveaus. Hier gebruikt voor de
+# het niveau exact via AND-logica over beide niveaus. Hier gebruikt voor de
 # 3-standen per-index-indicatie: elke index afzonderlijk als 'below' (onder
 # Boven-minimum), 'above' (Boven minimum, maar niet Op niveau) of 'meets'
-# (Op niveau) geclassificeerd, los van het gecombineerde niveau_en-oordeel.
+# (Op niveau) geclassificeerd, los van het gecombineerde niveau-oordeel.
 _INDEX_THRESHOLDS_ABOVE = {"di": 6.0, "cpi": 40, "hri": 0.70}
 _INDEX_THRESHOLDS_MEETS = {"di": 8.0, "cpi": 70, "hri": 0.75}
 
@@ -52,7 +92,7 @@ def _load_landen_data():
     with open(_LANDEN_DATA_PATH, encoding="utf-8") as f:
         rows = json.load(f)
     for row in rows:
-        row["level_class"] = _LEVEL_CLASS_MAP.get(row["niveau_en"], "below")
+        row["level_class"] = row["niveau"] if row["niveau"] in LEVEL_LABELS else "below"
         row["level_sort"] = _LEVEL_SORT_RANK[row["level_class"]]
         row["di_level"] = _index_level_class(row["di"], "di")
         row["cpi_level"] = _index_level_class(row["cpi"], "cpi")
@@ -88,7 +128,11 @@ def manifest():
 
 @main.route("/manifest/landen")
 def landenlijst():
-    return render_template("landenlijst.html", countries=_LANDEN_DATA)
+    lang = i18n.normalize(str(get_locale()))
+    countries = [dict(row, name=country_name(row, lang), remark=country_remark(row, lang),
+                      level_label=LEVEL_LABELS[row["level_class"]]) for row in _LANDEN_DATA]
+    xlsx, pdf = landen_downloads(lang)
+    return render_template("landenlijst.html", countries=countries, download_xlsx=xlsx, download_pdf=pdf)
 
 
 @main.route("/about")

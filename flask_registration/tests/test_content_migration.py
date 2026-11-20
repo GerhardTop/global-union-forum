@@ -115,3 +115,36 @@ def test_awards_and_objections_are_migrated(old_awards):
     again = content_migration.migrate(old_awards)
     assert [r for r in _translations(old_awards) if r[0] != 'posts'] == rows
     assert again['quality_awards.explanation filled'] == again['quality_objections.ai_response filled'] == 0
+
+
+def test_threads_are_migrated(old_db):
+    with old_db.begin() as conn:
+        conn.execute(text(
+            'CREATE TABLE threads (id INTEGER PRIMARY KEY, source_lang VARCHAR(5), eyebrow VARCHAR(200), '
+            'title_prefix VARCHAR(300), title_accent VARCHAR(200), title_suffix VARCHAR(50), '
+            'eyebrow_nl VARCHAR(200), eyebrow_en VARCHAR(200), title_prefix_nl VARCHAR(300), '
+            'title_accent_nl VARCHAR(200), title_suffix_nl VARCHAR(50), title_prefix_en VARCHAR(300), '
+            'title_accent_en VARCHAR(200), title_suffix_en VARCHAR(50))'))
+        conn.execute(text("INSERT INTO threads VALUES "
+                          # 1: a demo thread, written in both languages
+                          "(1, NULL, NULL, NULL, NULL, NULL, 'Het idee', 'The idea', 'Wat als', 'manipuleren', '?', "
+                          "'What if', 'gaming it', '?'),"
+                          # 2: a member's thread, the same title in both columns
+                          "(2, NULL, NULL, NULL, NULL, NULL, 'Forum · gesprek', 'Forum · conversation', 'Mijn vraag', "
+                          "NULL, '', 'Mijn vraag', NULL, ''),"
+                          # 3: created after the migration (old columns empty)
+                          "(3, 'en', 'Issue', 'A new one', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)"))
+    counts = content_migration.migrate(old_db)
+    with old_db.connect() as conn:
+        threads = {r[0]: tuple(r[1:]) for r in conn.execute(text(
+            'SELECT id, source_lang, eyebrow, title_prefix, title_accent, title_suffix FROM threads'))}
+    assert threads == {1: ('nl', 'Het idee', 'Wat als', 'manipuleren', '?'),
+                       2: ('nl', 'Forum · gesprek', 'Mijn vraag', None, ''),
+                       3: ('en', 'Issue', 'A new one', None, '')}
+    rows = [r[1:5] for r in _translations(old_db) if r[0] == 'threads']
+    assert rows == [(1, 'eyebrow', 'en', 'The idea'), (1, 'title_accent', 'en', 'gaming it'),
+                    (1, 'title_prefix', 'en', 'What if'), (2, 'eyebrow', 'en', 'Forum · conversation')]
+    assert all(not r[5] for r in _translations(old_db) if r[0] == 'threads')  # handwritten
+    assert counts['threads filled'] == 2
+    again = content_migration.migrate(old_db)
+    assert [r[1:5] for r in _translations(old_db) if r[0] == 'threads'] == rows and again['threads filled'] == 0

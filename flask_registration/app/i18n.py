@@ -53,10 +53,10 @@ def english_name(code):
 def language_name_in(code, in_lang):
     """The name of language `code` in language `in_lang` ("Engels" for en in
     nl), from Babel's locale data; the code in capitals when unknown."""
-    from babel import Locale
+    from babel import Locale, UnknownLocaleError
     try:
         return Locale.parse(str(in_lang)).languages.get(code) or str(code).upper()
-    except (ValueError, TypeError):
+    except (UnknownLocaleError, ValueError, TypeError):
         return str(code).upper()
 
 

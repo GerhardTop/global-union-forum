@@ -146,3 +146,10 @@ def test_mail_to_a_german_member_falls_back_when_german_is_off(app, db, make_use
     user = make_user()
     user.lang = 'de'
     assert digest.lang_for(user) == 'nl'
+
+
+def test_language_name_in_another_language():
+    assert i18n.language_name_in('en', 'nl') == 'Engels'
+    assert i18n.language_name_in('nl', 'en') == 'Dutch'
+    assert i18n.language_name_in('de', 'de') == 'Deutsch'
+    assert i18n.language_name_in('en', 'xx') == 'EN'   # unknown locale: the code
