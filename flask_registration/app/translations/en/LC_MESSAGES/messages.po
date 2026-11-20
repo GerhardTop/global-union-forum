@@ -2316,3 +2316,257 @@ msgstr "edited %(date)s"
 
 msgid "Delete this update?"
 msgstr "Delete this update?"
+
+msgid "Criticise arguments, not people. No personal attacks, insults or assumptions about someone's intentions."
+msgstr "Criticise arguments, not people. No personal attacks, insults or assumptions about someone's intentions."
+
+msgid "Respond to the question of the conversation. Have a different topic? Then start a new conversation."
+msgstr "Respond to the question of the conversation. Have a different topic? Then start a new conversation."
+
+msgid "One account per person"
+msgstr "One account per person"
+
+msgid "Everyone speaks with one voice. More than one account per person is not allowed, not even under another pseudonym."
+msgstr "Everyone speaks with one voice. More than one account per person is not allowed, not even under another pseudonym."
+
+msgid "Substantiated"
+msgstr "Substantiated"
+
+msgid "A fact has a source. You are always free to give your opinion, but make clear what is fact and what is opinion."
+msgstr "A fact has a source. You are always free to give your opinion, but make clear what is fact and what is opinion."
+
+msgid "Concrete"
+msgstr "Concrete"
+
+msgid "Make your point as specific as possible: an example, a figure, a proposal. One clear argument beats ten vague ones."
+msgstr "Make your point as specific as possible: an example, a figure, a proposal. One clear argument beats ten vague ones."
+
+#, python-format
+msgid "Collapse branch (%(n_label)s)"
+msgstr "Collapse branch (%(n_label)s)"
+
+#, python-format
+msgid "Expand branch (%(n_label)s)"
+msgstr "Expand branch (%(n_label)s)"
+
+#, python-format
+msgid "%(n_label)s hidden"
+msgstr "%(n_label)s hidden"
+
+msgid "This conversation is closed."
+msgstr "This conversation is closed."
+
+msgid "Write your reply. Be concrete (a thought, a question, a pushback)."
+msgstr "Write your reply. Be concrete (a thought, a question, a pushback)."
+
+msgid "You are suspended and cannot contribute right now"
+msgstr "You are suspended and cannot contribute right now"
+
+msgid "Title (the core)"
+msgstr "Title (the core)"
+
+msgid "A short headline, at most 80 characters"
+msgstr "A short headline, at most 80 characters"
+
+msgid "Give a short title (at most 80 characters)."
+msgstr "Give a short title (at most 80 characters)."
+
+msgid "Explanation or conclusions"
+msgstr "Explanation or conclusions"
+
+msgid "What is the core, or what do you conclude?"
+msgstr "What is the core, or what do you conclude?"
+
+msgid "Reply"
+msgstr "Reply"
+
+msgid "Translate to English"
+msgstr "Translate to English"
+
+msgid "Show original"
+msgstr "Show original"
+
+msgid "Translating…"
+msgstr "Translating…"
+
+msgid "Failed, try again"
+msgstr "Failed, try again"
+
+msgid "Don't always translate"
+msgstr "Don't always translate"
+
+msgid "Always translate to English"
+msgstr "Always translate to English"
+
+msgid "Reported"
+msgstr "Reported"
+
+msgid "Report"
+msgstr "Report"
+
+msgid "Why are you reporting this?"
+msgstr "Why are you reporting this?"
+
+msgid "Briefly describe what is wrong."
+msgstr "Briefly describe what is wrong."
+
+msgid "Send report"
+msgstr "Send report"
+
+msgid "Write your reply…"
+msgstr "Write your reply…"
+
+msgid "Your report has been received. A moderator will look at it."
+msgstr "Your report has been received. A moderator will look at it."
+
+msgid "AI judgement:"
+msgstr "AI judgement:"
+
+msgid "none"
+msgstr "none"
+
+msgid "possibly K3"
+msgstr "possibly K3"
+
+msgid "source"
+msgstr "source"
+
+msgid "yes"
+msgstr "yes"
+
+msgid "no"
+msgstr "no"
+
+msgid "new"
+msgstr "new"
+
+msgid "not new"
+msgstr "not new"
+
+msgid "language"
+msgstr "language"
+
+msgid "Criterion"
+msgstr "Criterion"
+
+msgid "Explanation (one line, shown with the quality mark)"
+msgstr "Explanation (one line, shown with the quality mark)"
+
+msgid "Leave empty to keep the AI explanation"
+msgstr "Leave empty to keep the AI explanation"
+
+msgid "Phases"
+msgstr "Phases"
+
+msgid "Your fact"
+msgstr "Your fact"
+
+msgid "more"
+msgstr "more"
+
+msgid "less"
+msgstr "less"
+
+msgid "Add to facts and background"
+msgstr "Add to facts and background"
+
+msgid "Add"
+msgstr "Add"
+
+msgid "No facts with this direction."
+msgstr "No facts with this direction."
+
+msgid "to make a proposal."
+msgstr "to make a proposal."
+
+msgid "Accept the conduct rules"
+msgstr "Accept the conduct rules"
+
+msgid "New proposals can only be added in the facts and discussion phase."
+msgstr "New proposals can only be added in the facts and discussion phase."
+
+msgid "You can make a proposal during the days of the event."
+msgstr "You can make a proposal during the days of the event."
+
+msgid "You can make a proposal once the issue is open."
+msgstr "You can make a proposal once the issue is open."
+
+msgid "Making proposals"
+msgstr "Making proposals"
+
+msgid "All phases"
+msgstr "All phases"
+
+msgid "'Less'"
+msgstr "'Less'"
+
+#, python-format
+msgid "%(num)d reply"
+msgid_plural "%(num)d replies"
+msgstr[0] "%(num)d reply"
+msgstr[1] "%(num)d replies"
+
+#, python-format
+msgid "Continue this conversation (%(count)s reply)"
+msgid_plural "Continue this conversation (%(count)s replies)"
+msgstr[0] "Continue this conversation (%(count)s reply)"
+msgstr[1] "Continue this conversation (%(count)s replies)"
+
+#, python-format
+msgid "<a href=\"%(url)s\">Log in</a> to join the conversation."
+msgstr "<a href=\"%(url)s\">Log in</a> to join the conversation."
+
+msgid "English"
+msgstr "English"
+
+msgid "Dutch"
+msgstr "Dutch"
+
+#, python-format
+msgid "Original in %(language)s"
+msgstr "Original in %(language)s"
+
+msgctxt "add fact form"
+msgid "Cancel"
+msgstr "Cancel"
+
+#, python-format
+msgid "<a href=\"%(url)s\">Log in</a> to make a proposal."
+msgstr "<a href=\"%(url)s\">Log in</a> to make a proposal."
+
+#, python-format
+msgid "<a href=\"%(url)s\">Accept the conduct rules</a> to make a proposal."
+msgstr "<a href=\"%(url)s\">Accept the conduct rules</a> to make a proposal."
+
+#, python-format
+msgid "%(num)d reaction"
+msgid_plural "%(num)d reactions"
+msgstr[0] "%(num)d reaction"
+msgstr[1] "%(num)d reactions"
+
+#, python-format
+msgid "Only proposals with enough support are voted on. Adopted with more than %(pct)s%% in favour of the valid votes."
+msgstr "Only proposals with enough support are voted on. Adopted with more than %(pct)s%% in favour of the valid votes."
+
+msgid "At the end, the initiator can make a summary proposal, which is voted on again."
+msgstr "At the end, the initiator can make a summary proposal, which is voted on again."
+
+msgid "Delete this post?"
+msgstr "Delete this post?"
+
+msgid "Research"
+msgstr "Research"
+
+msgid "News article"
+msgstr "News article"
+
+msgid "Podcast"
+msgstr "Podcast"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Adjust the proposal"
+msgid_plural "Adjust the proposals"
+msgstr[0] "Adjust the proposal"
+msgstr[1] "Adjust the proposals"

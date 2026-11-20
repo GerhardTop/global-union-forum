@@ -2322,3 +2322,257 @@ msgstr "bewerkt %(date)s"
 
 msgid "Delete this update?"
 msgstr "Deze update verwijderen?"
+
+msgid "Criticise arguments, not people. No personal attacks, insults or assumptions about someone's intentions."
+msgstr "Bekritiseer argumenten, geen mensen. Geen persoonlijke aanvallen, beledigingen of aannames over iemands bedoelingen."
+
+msgid "Respond to the question of the conversation. Have a different topic? Then start a new conversation."
+msgstr "Reageer op de vraag van het gesprek. Heb je een ander onderwerp? Start dan een nieuw gesprek."
+
+msgid "One account per person"
+msgstr "Eén account per persoon"
+
+msgid "Everyone speaks with one voice. More than one account per person is not allowed, not even under another pseudonym."
+msgstr "Iedereen spreekt met één stem. Meerdere accounts per persoon zijn niet toegestaan, ook niet onder een ander pseudoniem."
+
+msgid "Substantiated"
+msgstr "Onderbouwd"
+
+msgid "A fact has a source. You are always free to give your opinion, but make clear what is fact and what is opinion."
+msgstr "Een feit heeft een bron. Een mening mag je altijd geven, maar maak duidelijk wat feit is en wat mening."
+
+msgid "Concrete"
+msgstr "Concreet"
+
+msgid "Make your point as specific as possible: an example, a figure, a proposal. One clear argument beats ten vague ones."
+msgstr "Maak je punt zo specifiek mogelijk: een voorbeeld, een cijfer, een voorstel. Liever één helder argument dan tien vage."
+
+#, python-format
+msgid "Collapse branch (%(n_label)s)"
+msgstr "Tak inklappen (%(n_label)s)"
+
+#, python-format
+msgid "Expand branch (%(n_label)s)"
+msgstr "Tak uitklappen (%(n_label)s)"
+
+#, python-format
+msgid "%(n_label)s hidden"
+msgstr "%(n_label)s verborgen"
+
+msgid "This conversation is closed."
+msgstr "Dit gesprek is gesloten."
+
+msgid "Write your reply. Be concrete (a thought, a question, a pushback)."
+msgstr "Schrijf je reactie. Wees concreet (een gedachte, een vraag, een tegenwerping)."
+
+msgid "You are suspended and cannot contribute right now"
+msgstr "Je bent geschorst en kunt nu niet bijdragen"
+
+msgid "Title (the core)"
+msgstr "Titel (de kern)"
+
+msgid "A short headline, at most 80 characters"
+msgstr "Een korte kopregel, maximaal 80 tekens"
+
+msgid "Give a short title (at most 80 characters)."
+msgstr "Geef een korte titel (maximaal 80 tekens)."
+
+msgid "Explanation or conclusions"
+msgstr "Toelichting of conclusies"
+
+msgid "What is the core, or what do you conclude?"
+msgstr "Wat is de kern, of wat concludeer je?"
+
+msgid "Reply"
+msgstr "Reageer"
+
+msgid "Translate to English"
+msgstr "Vertaal naar Nederlands"
+
+msgid "Show original"
+msgstr "Toon origineel"
+
+msgid "Translating…"
+msgstr "Bezig…"
+
+msgid "Failed, try again"
+msgstr "Mislukt, probeer opnieuw"
+
+msgid "Don't always translate"
+msgstr "Vertaal niet altijd"
+
+msgid "Always translate to English"
+msgstr "Vertaal altijd naar Nederlands"
+
+msgid "Reported"
+msgstr "Gemeld"
+
+msgid "Report"
+msgstr "Melden"
+
+msgid "Why are you reporting this?"
+msgstr "Waarom meld je dit?"
+
+msgid "Briefly describe what is wrong."
+msgstr "Beschrijf kort wat er mis is."
+
+msgid "Send report"
+msgstr "Melding versturen"
+
+msgid "Write your reply…"
+msgstr "Schrijf je reactie…"
+
+msgid "Your report has been received. A moderator will look at it."
+msgstr "Je melding is ontvangen. Een moderator kijkt ernaar."
+
+msgid "AI judgement:"
+msgstr "AI-oordeel:"
+
+msgid "none"
+msgstr "geen"
+
+msgid "possibly K3"
+msgstr "mogelijk K3"
+
+msgid "source"
+msgstr "bron"
+
+msgid "yes"
+msgstr "ja"
+
+msgid "no"
+msgstr "nee"
+
+msgid "new"
+msgstr "nieuw"
+
+msgid "not new"
+msgstr "niet nieuw"
+
+msgid "language"
+msgstr "taal"
+
+msgid "Criterion"
+msgstr "Criterium"
+
+msgid "Explanation (one line, shown with the quality mark)"
+msgstr "Uitleg (één regel, zichtbaar bij het keurmerk)"
+
+msgid "Leave empty to keep the AI explanation"
+msgstr "Leeg laten om de AI-uitleg te houden"
+
+msgid "Phases"
+msgstr "Fasen"
+
+msgid "Your fact"
+msgstr "Jouw feit"
+
+msgid "more"
+msgstr "meer"
+
+msgid "less"
+msgstr "minder"
+
+msgid "Add to facts and background"
+msgstr "Toevoegen aan feiten en achtergrond"
+
+msgid "Add"
+msgstr "Toevoegen"
+
+msgid "No facts with this direction."
+msgstr "Geen feiten met deze richting."
+
+msgid "to make a proposal."
+msgstr "om een voorstel te doen."
+
+msgid "Accept the conduct rules"
+msgstr "Accepteer de gedragsregels"
+
+msgid "New proposals can only be added in the facts and discussion phase."
+msgstr "Nieuwe voorstellen kunnen alleen in de fase Feiten en discussie."
+
+msgid "You can make a proposal during the days of the event."
+msgstr "Een voorstel doen kan tijdens de dagen van het event."
+
+msgid "You can make a proposal once the issue is open."
+msgstr "Een voorstel doen kan zodra het vraagstuk open is."
+
+msgid "Making proposals"
+msgstr "Voorstellen maken"
+
+msgid "All phases"
+msgstr "Alle fasen"
+
+msgid "'Less'"
+msgstr "'Minder'"
+
+#, python-format
+msgid "%(num)d reply"
+msgid_plural "%(num)d replies"
+msgstr[0] "%(num)d reactie"
+msgstr[1] "%(num)d reacties"
+
+#, python-format
+msgid "Continue this conversation (%(count)s reply)"
+msgid_plural "Continue this conversation (%(count)s replies)"
+msgstr[0] "Verder in dit gesprek (%(count)s reactie)"
+msgstr[1] "Verder in dit gesprek (%(count)s reacties)"
+
+#, python-format
+msgid "<a href=\"%(url)s\">Log in</a> to join the conversation."
+msgstr "<a href=\"%(url)s\">Log in</a> om mee te doen aan het gesprek."
+
+msgid "English"
+msgstr "Engels"
+
+msgid "Dutch"
+msgstr "Nederlands"
+
+#, python-format
+msgid "Original in %(language)s"
+msgstr "Origineel in %(language)s"
+
+msgctxt "add fact form"
+msgid "Cancel"
+msgstr "Annuleren"
+
+#, python-format
+msgid "<a href=\"%(url)s\">Log in</a> to make a proposal."
+msgstr "<a href=\"%(url)s\">Log in</a> om een voorstel te doen."
+
+#, python-format
+msgid "<a href=\"%(url)s\">Accept the conduct rules</a> to make a proposal."
+msgstr "<a href=\"%(url)s\">Accepteer de gedragsregels</a> om een voorstel te doen."
+
+#, python-format
+msgid "%(num)d reaction"
+msgid_plural "%(num)d reactions"
+msgstr[0] "%(num)d reactie"
+msgstr[1] "%(num)d reacties"
+
+#, python-format
+msgid "Only proposals with enough support are voted on. Adopted with more than %(pct)s%% in favour of the valid votes."
+msgstr "Alleen over voorstellen met genoeg steun wordt gestemd. Aangenomen bij meer dan %(pct)s%% voor van de geldige stemmen."
+
+msgid "At the end, the initiator can make a summary proposal, which is voted on again."
+msgstr "Aan het eind kan de initiatiefnemer een samenvattend voorstel doen, waarover opnieuw wordt gestemd."
+
+msgid "Delete this post?"
+msgstr "Bericht verwijderen?"
+
+msgid "Research"
+msgstr "Onderzoek"
+
+msgid "News article"
+msgstr "Nieuwsartikel"
+
+msgid "Podcast"
+msgstr "Podcast"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Adjust the proposal"
+msgid_plural "Adjust the proposals"
+msgstr[0] "Voorstel aanpassen"
+msgstr[1] "Voorstellen aanpassen"

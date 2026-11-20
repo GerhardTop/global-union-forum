@@ -18,7 +18,7 @@
 <div class="gu-fact__topline">
   <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
   {% include 'issues/_fact_badges.html' %}
-  {% if own_actions %}<span class="gu-fact__mine">{% if lang == 'nl' %}Jouw feit{% else %}Your fact{% endif %}</span>{% endif %}
+  {% if own_actions %}<span class="gu-fact__mine">{{ _('Your fact') }}</span>{% endif %}
 </div>
 <div class="gu-fact__main">
   {% if fact.fact_title %}<p class="gu-fact__title" lang="{{ fact.source_lang }}">{{ fact.fact_title }}</p>{% endif %}
@@ -31,7 +31,7 @@
     </p>
     {% endif %}
   </div>
-  <button type="button" class="gu-fact__more" data-fact-more aria-expanded="false" hidden><span data-more-on>{% if lang == 'nl' %}meer{% else %}more{% endif %}</span><span data-more-off hidden>{% if lang == 'nl' %}minder{% else %}less{% endif %}</span></button>
+  <button type="button" class="gu-fact__more" data-fact-more aria-expanded="false" hidden><span data-more-on>{{ _('more') }}</span><span data-more-off hidden>{{ _('less') }}</span></button>
 </div>
 {% if with_actions %}
 <div class="gu-fact__actions">

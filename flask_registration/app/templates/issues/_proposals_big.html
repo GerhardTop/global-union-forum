@@ -12,7 +12,6 @@
   Shown only while the column is enlarged (CSS). Context: issue, big,
   reaction_counts, new_discussion; proposal (on the proposal page).
 -#}
-{% set nl = lang == 'nl' %}
 {% set here_args = dict(request.view_args or {}) %}
 <div class="gu-cockpit__big">
   {% if big.total > big.filter_min %}

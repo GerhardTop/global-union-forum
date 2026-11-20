@@ -56,10 +56,9 @@
     var csrfToken = {{ (forum_action_form.csrf_token.current_token if forum_action_form.meta.csrf else '') | tojson }};
 
     // Delete confirm
-    var pageLang = {{ lang | tojson }};
     document.querySelectorAll('.gu-post__delete-form').forEach(function (form) {
       form.addEventListener('submit', function (e) {
-        var msg = pageLang === 'nl' ? 'Bericht verwijderen?' : 'Delete this post?';
+        var msg = {{ _('Delete this post?') | tojson }};
         if (!confirm(msg)) e.preventDefault();
       });
     });

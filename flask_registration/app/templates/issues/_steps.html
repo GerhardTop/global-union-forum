@@ -9,8 +9,8 @@
 #}
 {% set n_props = issue.issue_proposals | rejectattr('is_final') | rejectattr('is_hidden') | list | length %}
 {% set all_steps = {
-  'feiten': (('Voorstellen maken' if lang == 'nl' else 'Making proposals'), issue.days_facts),
-  'bijstellen': ((('Voorstel aanpassen' if n_props == 1 else 'Voorstellen aanpassen') if lang == 'nl' else ('Adjust the proposal' if n_props == 1 else 'Adjust the proposals')), issue.days_adjust),
+  'feiten': ((_('Making proposals')), issue.days_facts),
+  'bijstellen': (ngettext('Adjust the proposal', 'Adjust the proposals', n_props), issue.days_adjust),
   'stemmen': (_('Voting'), issue.days_vote),
   'samenvatten': (_('Summary proposal'), None),
   'vervolg': (_('Follow-up'), None),
@@ -54,7 +54,7 @@
   {% endfor %}
 </ol>
 <button type="button" class="gu-phasebar__toggle" aria-expanded="false" hidden>
-  <span class="gu-phasebar__toggle-label">{% if lang == 'nl' %}Alle fasen{% else %}All phases{% endif %}</span>
+  <span class="gu-phasebar__toggle-label">{{ _('All phases') }}</span>
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>
 </button>
 <script nonce="{{ csp_nonce() }}">
@@ -64,7 +64,7 @@
   var s = document.currentScript, btn = s.previousElementSibling, bar = btn && btn.previousElementSibling;
   if (!btn || !bar || !bar.classList.contains('gu-phasebar')) return;
   var more = btn.querySelector('.gu-phasebar__toggle-label').textContent;
-  var less = {% if lang == 'nl' %}'Minder'{% else %}'Less'{% endif %};
+  var less = {% trans %}'Less'{% endtrans %};
   bar.classList.add('is-collapsed'); btn.hidden = false;
   btn.addEventListener('click', function () {
     var open = !bar.classList.toggle('is-collapsed');

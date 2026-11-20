@@ -8,14 +8,14 @@
 {# name_prefix (stap 5): voor een feitblok binnen een ander formulier, bijvoorbeeld 'fact_'. #}
 {% macro fact_fields(prefix, data, errs, name_prefix='') %}
   <div class="gu-fact-form__field">
-    <label for="{{ prefix }}-title">{% if lang == 'nl' %}Titel (de kern){% else %}Title (the core){% endif %}</label>
+    <label for="{{ prefix }}-title">{{ _('Title (the core)') }}</label>
     <input type="text" class="gu-input{% if errs.get('title') %} gu-input--error{% endif %}" id="{{ prefix }}-title" name="{{ name_prefix }}title" maxlength="80" required value="{{ data.get('title', '') }}">
-    <span class="gu-composer__hint">{% if lang == 'nl' %}Een korte kopregel, maximaal 80 tekens{% else %}A short headline, at most 80 characters{% endif %}</span>
-    {% if errs.get('title') %}<p class="gu-join__formError">{% if lang == 'nl' %}Geef een korte titel (maximaal 80 tekens).{% else %}Give a short title (at most 80 characters).{% endif %}</p>{% endif %}
+    <span class="gu-composer__hint">{{ _('A short headline, at most 80 characters') }}</span>
+    {% if errs.get('title') %}<p class="gu-join__formError">{{ _('Give a short title (at most 80 characters).') }}</p>{% endif %}
   </div>
   <div class="gu-fact-form__field">
-    <label for="{{ prefix }}-text">{% if lang == 'nl' %}Toelichting of conclusies{% else %}Explanation or conclusions{% endif %}</label>
-    <textarea class="gu-composer__input{% if errs.get('text') %} gu-input--error{% endif %}" id="{{ prefix }}-text" name="{{ name_prefix }}text" rows="3" maxlength="1000" required placeholder="{% if lang == 'nl' %}Wat is de kern, of wat concludeer je?{% else %}What is the core, or what do you conclude?{% endif %}">{{ data.get('text', '') }}</textarea>
+    <label for="{{ prefix }}-text">{{ _('Explanation or conclusions') }}</label>
+    <textarea class="gu-composer__input{% if errs.get('text') %} gu-input--error{% endif %}" id="{{ prefix }}-text" name="{{ name_prefix }}text" rows="3" maxlength="1000" required placeholder="{{ _('What is the core, or what do you conclude?') }}">{{ data.get('text', '') }}</textarea>
     {% if errs.get('text') %}<p class="gu-join__formError">{{ _('Describe the fact (at most 1000 characters).') }}</p>{% endif %}
   </div>
   {# Direction as chips with the direction dot, in the same style as the kinds below (real radios underneath). #}
@@ -34,13 +34,12 @@
   {% set kind_now = data.get('type') or 'feit' %}
   {% set kind_now = 'nieuwsartikel' if kind_now == 'media' else kind_now %}
   <fieldset class="gu-fact-form__field gu-fact-form__dirs gu-fact-form__kinds gu-fact-form__chips">
-    <legend>{% if lang == 'nl' %}Soort{% else %}Kind{% endif %}</legend>
-    {% for t, nl_label, en_label in [('feit', 'Feit', 'Fact'), ('onderzoek', 'Onderzoek', 'Research'),
-                                     ('nieuwsartikel', 'Nieuwsartikel', 'News article'),
-                                     ('podcast', 'Podcast', 'Podcast'), ('video', 'Video', 'Video')] %}
+    <legend>{{ _('Kind') }}</legend>
+    {% for t, label in [('feit', _('Fact')), ('onderzoek', _('Research')), ('nieuwsartikel', _('News article')),
+                        ('podcast', _('Podcast')), ('video', _('Video'))] %}
     <label class="gu-fact-form__dir gu-fact-form__chip">
       <input type="radio" name="{{ name_prefix }}type" value="{{ t }}"{% if kind_now == t %} checked{% endif %}>
-      <span>{{ nl_label if lang == 'nl' else en_label }}</span>
+      <span>{{ label }}</span>
     </label>
     {% endfor %}
   </fieldset>

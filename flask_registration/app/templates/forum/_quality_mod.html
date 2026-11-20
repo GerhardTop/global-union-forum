@@ -12,11 +12,11 @@
   <div class="gu-quality-mod__body">
     {% if qa and qa.source == 'ai' %}
     <p class="gu-quality__meta">
-      {% if lang == 'nl' %}AI-oordeel:{% else %}AI judgement:{% endif %}
-      <strong>{{ qa.ai_criterion or (('geen' if lang == 'nl' else 'none')) }}</strong>
-      {% if qa.ai_k3_possible %}· {% if lang == 'nl' %}mogelijk K3{% else %}possibly K3{% endif %}{% endif %}
-      · {% if lang == 'nl' %}bron{% else %}source{% endif %}: {{ ('ja' if lang == 'nl' else 'yes') if qa.ai_has_source else ('nee' if lang == 'nl' else 'no') }}{% if qa.ai_has_source %} ({{ ('nieuw' if lang == 'nl' else 'new') if qa.ai_source_is_new else ('niet nieuw' if lang == 'nl' else 'not new') }}){% endif %}
-      · {% if lang == 'nl' %}taal{% else %}language{% endif %}: {{ (qa.post_lang or '?') | upper }}
+      {{ _('AI judgement:') }}
+      <strong>{{ qa.ai_criterion or ((_('none'))) }}</strong>
+      {% if qa.ai_k3_possible %}· {{ _('possibly K3') }}{% endif %}
+      · {{ _('source') }}: {{ (_('yes')) if qa.ai_has_source else (_('no')) }}{% if qa.ai_has_source %} ({{ (_('new')) if qa.ai_source_is_new else (_('not new')) }}){% endif %}
+      · {{ _('language') }}: {{ (qa.post_lang or '?') | upper }}
     </p>
     {% if qa.explanation(lang) %}<p class="gu-quality__meta">{{ qa.explanation(lang) }}</p>{% endif %}
     {% endif %}
@@ -24,7 +24,7 @@
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
       <input type="hidden" name="next" value="{{ quality_next or (request.path ~ '#post-' ~ post.id) }}">
       <label class="gu-quality-mod__field">
-        <span>{% if lang == 'nl' %}Criterium{% else %}Criterion{% endif %}</span>
+        <span>{{ _('Criterion') }}</span>
         <select name="criterion" class="gu-input">
           {% for c in ['K1', 'K2', 'K3'] %}
           <option value="{{ c }}"{% if qa and qa.criterion == c %} selected{% endif %}>{{ c }} {{ quality_labels[c][lang] }}</option>
@@ -32,9 +32,9 @@
         </select>
       </label>
       <label class="gu-quality-mod__field">
-        <span>{% if lang == 'nl' %}Uitleg (één regel, zichtbaar bij het keurmerk){% else %}Explanation (one line, shown with the quality mark){% endif %}</span>
+        <span>{{ _('Explanation (one line, shown with the quality mark)') }}</span>
         <input type="text" name="explanation" maxlength="400" class="gu-input"
-               placeholder="{% if lang == 'nl' %}Leeg laten om de AI-uitleg te houden{% else %}Leave empty to keep the AI explanation{% endif %}">
+               placeholder="{{ _('Leave empty to keep the AI explanation') }}">
       </label>
       <div class="gu-quality-mod__actions">
         <button type="submit" name="action" value="toekennen" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Award') }}</button>
