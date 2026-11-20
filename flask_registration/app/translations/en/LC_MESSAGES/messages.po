@@ -28,6 +28,7 @@ msgid "Log in"
 msgstr "Log in"
 
 #: app/templates/_footer.html
+#. Slogan, niet vertalen.
 msgid "Freedom for all"
 msgstr "Freedom for all"
 
