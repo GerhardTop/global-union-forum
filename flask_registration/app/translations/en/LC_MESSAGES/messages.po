@@ -1112,13 +1112,6 @@ msgstr "%(pct)s%% in favour of the valid votes"
 msgid "Nobody has voted yet."
 msgstr "Nobody has voted yet."
 
-msgid "One person has voted so far."
-msgstr "One person has voted so far."
-
-#, python-format
-msgid "%(n)s people have voted so far."
-msgstr "%(n)s people have voted so far."
-
 msgid "The tally is shown when voting closes."
 msgstr "The tally is shown when voting closes."
 
@@ -1307,9 +1300,6 @@ msgstr "No issues yet. Start the first one."
 msgid "Phases of the issue"
 msgstr "Phases of the issue"
 
-msgid "day"
-msgstr "day"
-
 msgid "until %(date)s"
 msgstr "until %(date)s"
 
@@ -1459,10 +1449,6 @@ msgstr "Deadline passed"
 
 msgid "1 day left"
 msgstr "1 day left"
-
-#, python-format
-msgid "%(num)s days left"
-msgstr "%(num)s days left"
 
 msgid "1 hour left"
 msgstr "1 hour left"
@@ -1929,18 +1915,6 @@ msgstr "Ongoing"
 
 msgid "Finished"
 msgstr "Finished"
-
-msgid "1 proposal"
-msgstr "1 proposal"
-
-msgid "%(num)s proposals"
-msgstr "%(num)s proposals"
-
-msgid "1 participant"
-msgstr "1 participant"
-
-msgid "%(num)s participants"
-msgstr "%(num)s participants"
 
 msgid "No issues match this filter."
 msgstr "No issues match this filter."
@@ -5304,3 +5278,21 @@ msgstr "Send reset link"
 
 msgid "Back to log in"
 msgstr "Back to log in"
+
+#, python-format
+msgid "%(num)d participant"
+msgid_plural "%(num)d participants"
+msgstr[0] "%(num)d participant"
+msgstr[1] "%(num)d participants"
+
+#, python-format
+msgid "%(num)d day left"
+msgid_plural "%(num)d days left"
+msgstr[0] "%(num)d day left"
+msgstr[1] "%(num)d days left"
+
+#, python-format
+msgid "One person has voted so far."
+msgid_plural "%(num)d people have voted so far."
+msgstr[0] "One person has voted so far."
+msgstr[1] "%(num)d people have voted so far."

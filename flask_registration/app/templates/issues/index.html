@@ -54,8 +54,8 @@
             <span class="gu-issuelist__phase{% if issue.is_closed %} is-closed{% endif %}">
               {%- if issue.is_closed -%}{{ _('Closed') }}{%- else -%}{{ phase_labels.get(issue.phase, issue.phase) }}{%- endif -%}
             </span>
-            <span>{{ _('1 proposal') if n_proposals == 1 else _('%(num)s proposals', num=n_proposals) }}</span>
-            <span>{{ _('1 participant') if n_people == 1 else _('%(num)s participants', num=n_people) }}</span>
+            <span>{{ ngettext('%(num)d proposal', '%(num)d proposals', n_proposals) }}</span>
+            <span>{{ ngettext('%(num)d participant', '%(num)d participants', n_people) }}</span>
           </span>
         </a>
       </li>

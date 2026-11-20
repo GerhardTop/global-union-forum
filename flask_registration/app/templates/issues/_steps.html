@@ -39,7 +39,7 @@
     {% if remaining and remaining[1] == 'over' %}
     <span class="gu-proposal-steps__left">{{ _('Deadline passed') }}</span>
     {% elif remaining and remaining[1] == 'days' and remaining[0] > 1 %}
-    <span class="gu-proposal-steps__left">{{ _('%(num)s days left', num=remaining[0]) }}</span>
+    <span class="gu-proposal-steps__left">{{ ngettext('%(num)d day left', '%(num)d days left', remaining[0]) }}</span>
     {% elif issue.phase_deadline %}
     {% set dl = issue.phase_deadline | local %}
     <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=(dl | datetimeformat('d MMM y HH:mm')) if (dl.hour or dl.minute) else (dl | end_day | datetimeformat('d MMM y'))) }}</span>
@@ -47,7 +47,7 @@
     {% elif issue.kind == 'online' and key in plan %}
     <span class="gu-proposal-steps__when">{{ _('%(start)s to %(end)s', start=plan[key][0] | local | datetimeformat('d MMM'), end=plan[key][1] | local | end_day | datetimeformat('d MMM y')) }}</span>
     {% elif days and issue.kind == 'online' %}
-    <span class="gu-proposal-steps__text">{{ days }} {{ _('day') if days == 1 else _('days') }}</span>
+    <span class="gu-proposal-steps__text">{{ ngettext('%(num)d day', '%(num)d days', days) }}</span>
     {% endif %}
     </span>
   </li>

@@ -75,8 +75,7 @@
     {% else %}
       <p class="gu-composer__hint">
         {% if voted == 0 %}{{ _('Nobody has voted yet.') }}
-        {% elif voted == 1 %}{{ _('One person has voted so far.') }}
-        {% else %}{{ _('%(n)s people have voted so far.', n=voted) }}{% endif %}
+        {% else %}{{ ngettext('One person has voted so far.', '%(num)d people have voted so far.', voted) }}{% endif %}
         {{ _('The tally is shown when voting closes.') }}
       </p>
     {% endif %}

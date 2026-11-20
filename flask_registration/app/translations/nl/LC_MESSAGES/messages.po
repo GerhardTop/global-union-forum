@@ -1109,13 +1109,6 @@ msgstr "%(pct)s%% voor van de geldige stemmen"
 msgid "Nobody has voted yet."
 msgstr "Er is nog niet gestemd."
 
-msgid "One person has voted so far."
-msgstr "Eén persoon heeft al gestemd."
-
-#, python-format
-msgid "%(n)s people have voted so far."
-msgstr "%(n)s mensen hebben al gestemd."
-
 msgid "The tally is shown when voting closes."
 msgstr "De verdeling volgt als het stemmen sluit."
 
@@ -1307,9 +1300,6 @@ msgstr "Nog geen vraagstukken. Start het eerste vraagstuk."
 msgid "Phases of the issue"
 msgstr "Fasen van het vraagstuk"
 
-msgid "day"
-msgstr "dag"
-
 msgid "until %(date)s"
 msgstr "tot %(date)s"
 
@@ -1459,10 +1449,6 @@ msgstr "Deadline verstreken"
 
 msgid "1 day left"
 msgstr "nog 1 dag"
-
-#, python-format
-msgid "%(num)s days left"
-msgstr "nog %(num)s dagen"
 
 msgid "1 hour left"
 msgstr "nog 1 uur"
@@ -1929,18 +1915,6 @@ msgstr "Lopend"
 
 msgid "Finished"
 msgstr "Afgerond"
-
-msgid "1 proposal"
-msgstr "1 voorstel"
-
-msgid "%(num)s proposals"
-msgstr "%(num)s voorstellen"
-
-msgid "1 participant"
-msgstr "1 deelnemer"
-
-msgid "%(num)s participants"
-msgstr "%(num)s deelnemers"
 
 msgid "No issues match this filter."
 msgstr "Geen vraagstukken bij dit filter."
@@ -5313,3 +5287,21 @@ msgstr "Resetlink versturen"
 
 msgid "Back to log in"
 msgstr "Terug naar inloggen"
+
+#, python-format
+msgid "%(num)d participant"
+msgid_plural "%(num)d participants"
+msgstr[0] "%(num)d deelnemer"
+msgstr[1] "%(num)d deelnemers"
+
+#, python-format
+msgid "%(num)d day left"
+msgid_plural "%(num)d days left"
+msgstr[0] "nog %(num)d dag"
+msgstr[1] "nog %(num)d dagen"
+
+#, python-format
+msgid "One person has voted so far."
+msgid_plural "%(num)d people have voted so far."
+msgstr[0] "Eén persoon heeft al gestemd."
+msgstr[1] "%(num)d mensen hebben al gestemd."
