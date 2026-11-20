@@ -25,7 +25,7 @@ import json
 from flask_babel import force_locale, gettext, lazy_gettext, lazy_pgettext, pgettext
 from datetime import datetime, timedelta
 
-from app import db
+from app import db, i18n
 
 SUMMARY_FREQUENCIES = ('off', 'daily', 'weekly')
 DEFAULT_SUMMARY_FREQUENCY = 'weekly'
@@ -237,7 +237,7 @@ def notification_line(n, lang):
     """(text, url) for one Notification in the given language (a locale code
     such as 'nl' or 'en'). A 'feit' row that points at a dispute (dispute_id)
     is the resolved case."""
-    with force_locale(lang or 'nl'):
+    with force_locale(i18n.normalize(lang)):
         return _notification_line(n, lang)
 
 

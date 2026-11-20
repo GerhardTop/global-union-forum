@@ -23,4 +23,18 @@ Werkwijze na een tekstwijziging, vanuit `flask_registration/`:
 3. Vul de nieuwe NL-teksten in (en de EN-msgstr gelijk aan de msgid); geen lege of fuzzy NL-items.
 4. `pybabel compile -d app/translations` en commit de .mo mee (Render compileert niet bij de build).
 
-Een NL-vertaling die gelijk is aan de msgid mag alleen als hij op `SAME_IN_DUTCH` in tests/test_i18n_safety.py staat, met reden. Geen lange of korte streepjes in msgids of vertalingen.
+Een vertaling die gelijk is aan de msgid mag alleen als hij op de toegestane lijst van die taal staat (`SAME_AS_MSGID` in tests/test_i18n_safety.py; voor nl is dat `SAME_IN_DUTCH`), met reden. Geen lange of korte streepjes in msgids of vertalingen.
+
+### Het taalregister
+
+`config.py` is de enige plek met talen: `LANGUAGES` (alle talen die het platform kent: code, naam in de eigen taal, schrijfrichting), `ENABLED_LANGUAGES` (de talen die aanstaan), `DEFAULT_LANGUAGE` (nl) en `SOURCE_LANGUAGE` (en, de taal van de msgids). Code en templates vragen het register via `app/i18n.py` (`enabled_languages()`, `is_enabled()`, `normalize()`, `language_name()`, `text_direction()`, `auto_translate_default()`); geen eigen lijsten als `('nl', 'en')`. De taalkiezer in header, footer en profiel is een lus over de ingeschakelde talen. Automatisch vertalen staat standaard aan voor iedereen wiens taal niet de standaardtaal is.
+
+Een taal aanzetten (voorbeeld de), vanuit `flask_registration/`:
+
+1. Staat de taal niet in `LANGUAGES`, voeg hem toe (code, naam in de eigen taal, `ltr` of `rtl`).
+2. Extract zoals hierboven, dan `pybabel init -i messages.pot -d app/translations -l de --no-wrap`.
+3. Vertaal alles in `app/translations/de/LC_MESSAGES/messages.po`: geen lege of fuzzy items. Teksten die gelijk mogen blijven aan de msgid krijgen een eigen lijst in `SAME_AS_MSGID['de']`, met reden.
+4. `pybabel compile -d app/translations` en commit de .po en .mo.
+5. Zet `"de"` in `ENABLED_LANGUAGES`. De catalogustests gelden dan vanzelf ook voor de; draai de volledige suite.
+
+Let op: de gebruikersinhoud (titels, bijdragen, vertaalknop) kent nog alleen nl en en (contentmodel, fase 0 stap 6).

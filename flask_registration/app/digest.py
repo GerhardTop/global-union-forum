@@ -208,8 +208,9 @@ def build(user, now=None, issue_participants=None):
 # ── Versturen ────────────────────────────────────────────────────────────
 
 def lang_for(user):
-    """The user's stored language (users.lang), falling back to Dutch."""
-    return user.lang if getattr(user, 'lang', None) in ('nl', 'en') else 'nl'
+    """The user's stored language (users.lang) when enabled, else the default language."""
+    from app import i18n
+    return i18n.normalize(getattr(user, 'lang', None))
 
 
 def _email(items, lang, freq='daily'):

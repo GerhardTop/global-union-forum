@@ -56,6 +56,29 @@ def ratelimit_storage_uri(db_uri: str) -> str:
     return "memory://"
 
 
+# ── Languages ─────────────────────────────────────────────────────────────
+# The language register: every language the platform knows, with its name in
+# its own language and its writing direction. app/i18n.py reads it; nothing
+# else keeps its own list of languages.
+LANGUAGES = [
+    {"code": "nl", "name": "Nederlands", "dir": "ltr"},
+    {"code": "en", "name": "English", "dir": "ltr"},
+    {"code": "de", "name": "Deutsch", "dir": "ltr"},
+    {"code": "es", "name": "Español", "dir": "ltr"},
+    {"code": "fr", "name": "Français", "dir": "ltr"},
+]
+
+# The languages that are switched on. Switching a language on is adding its
+# code here (after its catalog is translated and compiled, see CLAUDE.md).
+ENABLED_LANGUAGES = ["nl", "en"]
+
+# The language for visitors without a preference, and the fallback everywhere.
+DEFAULT_LANGUAGE = "nl"
+
+# The language of the msgids in the templates and the code.
+SOURCE_LANGUAGE = "en"
+
+
 class Config:
     SECRET_KEY = _require_env("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = _build_db_url()
@@ -79,7 +102,6 @@ class Config:
     SESSION_COOKIE_SAMESITE = 'Lax'
 
     # Flask-Babel configuration
-    BABEL_DEFAULT_LOCALE = 'nl'
-    BABEL_SUPPORTED_LOCALES = ['en', 'nl']
+    BABEL_DEFAULT_LOCALE = DEFAULT_LANGUAGE
     BABEL_DEFAULT_TIMEZONE = 'UTC'
     RESEND_API_KEY = _require_env('RESEND_API_KEY')

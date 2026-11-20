@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 
 from sqlalchemy.exc import IntegrityError
 
-from app import db, bcrypt, limiter
+from app import db, bcrypt, limiter, i18n
 from app.forms import FeedbackForm, InvitationForm, AanmeldenForm
 from app.mail import send_email
 from app.models import User
@@ -119,7 +119,7 @@ def uitnodiging():
     sender_name = f"{current_user.first_name} {current_user.last_name}"
 
     # In the inviter's language at the moment of sending (form or session).
-    with force_locale(lang or 'nl'):
+    with force_locale(i18n.normalize(lang)):
         subject = gettext('Invitation: join the Global Union Forum conversation')
         body = (
             gettext('Hi,') + "\n\n"
@@ -304,8 +304,8 @@ def aanmelden():
                 email=form_data["email"],
                 password_hash=password_hash,
                 linkedin_url=form_data["linkedin_url"] or None,
-                auto_translate=True if reg_lang == 'en' else None,
-                lang=reg_lang if reg_lang in ('nl', 'en') else 'nl',  # stored language preference
+                auto_translate=True if i18n.auto_translate_default(reg_lang) else None,
+                lang=i18n.normalize(reg_lang),  # stored language preference
                 verified=bypass_verificatie,
             )
             user.accept_rules()  # wordt zo Contributor, zie errors["rules"] hierboven

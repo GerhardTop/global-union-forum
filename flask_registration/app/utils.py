@@ -217,8 +217,9 @@ def _send_verify_email(user, lang, secret_key):
     token = _make_verify_token(user.email, secret_key)
     verify_url = url_for('auth.verify_email', token=token, _external=True)
     from flask_babel import force_locale, gettext
+    from app import i18n
     # In the language of the request (lang), Dutch when unknown.
-    with force_locale(lang or 'nl'):
+    with force_locale(i18n.normalize(lang)):
         subject = gettext('Global Union Forum: confirm your email')
         # gettext outside the f-strings, so pybabel extract finds the msgids.
         lines = (gettext('Hi %(name)s,', name=user.first_name),

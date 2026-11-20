@@ -9,7 +9,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 from sqlalchemy.exc import IntegrityError
 
-from app import db, bcrypt, limiter, oauth
+from app import db, bcrypt, limiter, oauth, i18n
 from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
                        KiesGebruikersnaamForm, DeleteAccountForm,
                        VerifyResendForm)
@@ -45,7 +45,7 @@ def _verify_reset_token(token):
 
 def _send_reset_email(user, reset_url, lang):
     # In the language of the request (lang), Dutch when unknown.
-    with force_locale(lang or 'nl'):
+    with force_locale(i18n.normalize(lang)):
         subject = gettext('Global Union Forum: reset your password')
         # gettext outside the f-strings, so pybabel extract finds the msgids.
         lines = (gettext('Hi %(name)s,', name=user.first_name),
@@ -310,8 +310,8 @@ def auth_google_callback():
         password_hash=pw_hash,
         google_id=google_id,
         verified=True,
-        auto_translate=True if reg_lang == 'en' else None,
-        lang=reg_lang if reg_lang in ('nl', 'en') else 'nl',  # stored language preference
+        auto_translate=True if i18n.auto_translate_default(reg_lang) else None,
+        lang=i18n.normalize(reg_lang),  # stored language preference
     )
     db.session.add(user)
     db.session.commit()

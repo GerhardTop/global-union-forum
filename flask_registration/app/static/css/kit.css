@@ -1242,7 +1242,8 @@ body {
 
 .gu-lang-switch {
   display: inline-flex;
-  gap: 3px;
+  flex-wrap: wrap;  /* more languages: buttons continue on the next line on narrow screens */
+  gap: 3px;         /* also the gap between the lines */
   border: 1px solid var(--gu-border);
   border-radius: 8px;
   padding: 3px;

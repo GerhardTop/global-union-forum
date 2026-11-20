@@ -40,11 +40,11 @@
   </div>
   {% if not current_user.is_authenticated %}
   <div class="gu-footer__lang">
-    <a href="{{ url_for('main.set_lang', code='nl') }}"
-       class="{% if lang == 'nl' %}is-active{% endif %}">NL</a>
-    <span class="gu-footer__lang-sep">|</span>
-    <a href="{{ url_for('main.set_lang', code='en') }}"
-       class="{% if lang == 'en' %}is-active{% endif %}">EN</a>
+    {% for language in languages %}
+    {% if not loop.first %}<span class="gu-footer__lang-sep">|</span>{% endif %}
+    <a href="{{ url_for('main.set_lang', code=language.code) }}"
+       class="{% if language.code == lang %}is-active{% endif %}" lang="{{ language.code }}" hreflang="{{ language.code }}">{{ language.code | upper }}</a>
+    {% endfor %}
   </div>
   {% endif %}
   </div>

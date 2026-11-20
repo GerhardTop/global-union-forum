@@ -7,7 +7,7 @@ from flask_babel import gettext
 from flask_login import login_required, current_user
 from sqlalchemy import func, or_
 
-from app import db, bcrypt, limiter
+from app import db, bcrypt, limiter, i18n
 from app.forms import ForumActionForm, ForumReplyForm
 from app.models import (FACT_DIRECTIONS, FACT_KIND, FACT_LEGACY_TYPES, FACT_TYPES, STANCES, QUALITY_CRITERIA, User, Thread, Post,
                         PostLike, QualityAward, QualityReport, time_ago)
@@ -125,10 +125,9 @@ def _rules_first_redirect():
 def _auto_translate():
     """Vertaalvoorkeur van de lezer: vertaalknoppen bij het laden automatisch
     aanklikken. Gebruikt door de threadpagina en de kwaliteitsdiscussie."""
-    user_lang = session.get('lang', 'nl')
     return current_user.is_authenticated and (
         current_user.auto_translate is True
-        or (current_user.auto_translate is None and user_lang == 'en')
+        or (current_user.auto_translate is None and i18n.auto_translate_default(session.get('lang')))
     )
 
 

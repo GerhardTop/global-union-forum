@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, sessio
 from flask_babel import gettext
 from flask_login import current_user, login_required
 
-from app import db
+from app import db, i18n
 from app.forms import RulesAcceptForm
 from app.utils import safe_next
 
@@ -65,11 +65,11 @@ _LANDEN_DATA = _load_landen_data()
 
 @main.route("/lang/<code>")
 def set_lang(code):
-    if code in ('nl', 'en'):
+    if i18n.is_enabled(code):
         session['lang'] = code
         session.permanent = True
         if current_user.is_authenticated:
-            current_user.auto_translate = True if code == 'en' else None
+            current_user.auto_translate = True if i18n.auto_translate_default(code) else None
             current_user.lang = code  # keep the stored language preference in sync
             db.session.commit()
     return redirect(request.referrer or url_for('main.index'))

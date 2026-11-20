@@ -171,18 +171,17 @@
       {{ _('Language preference.') }}
     </h2>
     <div class="gu-lang-switch" style="margin-bottom: 24px;">
-      <a href="{{ url_for('main.set_lang', code='nl') }}"
-         class="gu-lang-switch__btn{% if lang == 'nl' %} is-active{% endif %}"
-         onclick="guSaveScroll()">NL</a>
-      <a href="{{ url_for('main.set_lang', code='en') }}"
-         class="gu-lang-switch__btn{% if lang == 'en' %} is-active{% endif %}"
-         onclick="guSaveScroll()">EN</a>
+      {% for language in languages %}
+      <a href="{{ url_for('main.set_lang', code=language.code) }}"
+         class="gu-lang-switch__btn{% if language.code == lang %} is-active{% endif %}" lang="{{ language.code }}" hreflang="{{ language.code }}"
+         onclick="guSaveScroll()">{{ language.name }}</a>
+      {% endfor %}
     </div>
 
     <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">
       {{ _('Automatic translation.') }}
     </h3>
-    {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else (lang == 'en') %}
+    {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else auto_translate_default(lang) %}
     <form id="guTranslateForm" method="POST" action="{{ url_for('profile.profiel_vertaalvoorkeur') }}" style="margin-bottom: 4px;">
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
       <label class="gu-toggle-label">

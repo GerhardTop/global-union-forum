@@ -726,19 +726,22 @@ def create_app():
     limiter.init_app(app)
 
     from flask_login import user_logged_in
+    from app import i18n
 
     @user_logged_in.connect_via(app)
     def _apply_stored_lang(sender, user, **extra):
         # Open the site in the user's stored language, also on a new device.
-        if getattr(user, 'lang', None) in ('nl', 'en'):
+        if i18n.is_enabled(getattr(user, 'lang', None)):
             session['lang'] = user.lang
 
     oauth.init_app(app)
     def get_locale():
+        # The session's language when it is enabled, else the browser's best
+        # enabled match, else the default language.
         lang_in_session = session.get('lang')
-        if lang_in_session in ('nl', 'en'):
+        if i18n.is_enabled(lang_in_session):
             return lang_in_session
-        return request.accept_languages.best_match(['nl', 'en'], default='nl')
+        return request.accept_languages.best_match(i18n.enabled_codes(), default=i18n.default_language())
 
     babel.init_app(app, locale_selector=get_locale)
     oauth.register(
@@ -881,13 +884,16 @@ def create_app():
 
     @app.context_processor
     def inject_babel():
-        """Inject babel utilities and current language into templates."""
+        """Inject babel utilities and the language register into templates."""
+        lang = get_locale()
         return dict(
             _=gettext,
-            # Dezelfde taal als gettext kiest (sessie, anders Accept-Language),
-            # zodat losse NL/EN-teksten in templates niet botsen met de chrome.
-            lang=get_locale(),
-            LANGUAGES={'en': 'English', 'nl': 'Nederlands'}
+            # The same language gettext picks (session, else Accept-Language).
+            lang=lang,
+            text_dir=i18n.text_direction(lang),
+            # The language switcher: the enabled languages (code, name).
+            languages=i18n.enabled_languages(),
+            auto_translate_default=i18n.auto_translate_default,
         )
 
     @app.context_processor

@@ -21,10 +21,10 @@
         {{ lang | upper }}<span class="gu-lang-dd__chevron">▾</span>
       </button>
       <div class="gu-header__nav-lang-menu" id="navLangMenu" hidden>
-        <a href="{{ url_for('main.set_lang', code='nl') }}"
-           class="gu-header__nav-lang-item{% if lang == 'nl' %} is-active{% endif %}">NL</a>
-        <a href="{{ url_for('main.set_lang', code='en') }}"
-           class="gu-header__nav-lang-item{% if lang == 'en' %} is-active{% endif %}">EN</a>
+        {% for language in languages %}
+        <a href="{{ url_for('main.set_lang', code=language.code) }}"
+           class="gu-header__nav-lang-item{% if language.code == lang %} is-active{% endif %}" lang="{{ language.code }}" hreflang="{{ language.code }}">{{ language.code | upper }}</a>
+        {% endfor %}
       </div>
     </div>
     {% endif %}
@@ -58,10 +58,10 @@
         {{ lang | upper }}<span class="gu-lang-dd__chevron">▾</span>
       </button>
       <div class="gu-lang-dd__menu" id="langDdMenu" hidden>
-        <a href="{{ url_for('main.set_lang', code='nl') }}"
-           class="gu-lang-dd__item{% if lang == 'nl' %} is-active{% endif %}">NL</a>
-        <a href="{{ url_for('main.set_lang', code='en') }}"
-           class="gu-lang-dd__item{% if lang == 'en' %} is-active{% endif %}">EN</a>
+        {% for language in languages %}
+        <a href="{{ url_for('main.set_lang', code=language.code) }}"
+           class="gu-lang-dd__item{% if language.code == lang %} is-active{% endif %}" lang="{{ language.code }}" hreflang="{{ language.code }}">{{ language.code | upper }}</a>
+        {% endfor %}
       </div>
     </div>
     <a href="{{ url_for('auth.login') }}" class="gu-header__cta">

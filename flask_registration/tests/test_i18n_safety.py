@@ -3,10 +3,13 @@ branches to gettext.
 
 a) Every binary language branch in app/ (templates, Python, inline JS) is on
    the exception list below with its exact count. A new one fails; converting
-   one means lowering the count (and removing the file at zero). Branches that
-   are about DATA (source_lang, post_lang, an issue's language, the language
-   monitor, set_lang, get_locale) stay, with their reason.
-b) Every msgid in the NL catalog has a non-empty msgstr and no fuzzy flag.
+   one means lowering the count (and removing the file at zero). What is left
+   is the content model (fase 0 stap 6) or real data (the language monitor,
+   source_lang); the language choice itself goes through app/i18n.py.
+b) Every enabled language except the source language (en) has a complete
+   catalog: every msgid translated, nothing fuzzy, no template syntax, no
+   long or short dashes, and no translation equal to its msgid unless that
+   language's allow list (SAME_AS_MSGID) says so.
 c) The compiled .mo files in git match their .po files.
 d) A smoke test: core pages render in NL and EN with fixed core sentences,
    recorded before the conversion, so the output stays the same.
@@ -18,6 +21,7 @@ import os
 import re
 
 import pytest
+import config
 from babel.messages.mofile import write_mo
 from babel.messages.pofile import read_po
 
@@ -27,6 +31,9 @@ from tests.test_issue_polish import _client, _issue, _req, make_user  # noqa: F4
 ROOT = os.path.join(os.path.dirname(__file__), '..')
 APP = os.path.join(ROOT, 'app')
 TRANSLATIONS = os.path.join(APP, 'translations')
+# The languages with a catalog to check: every enabled language but the
+# source language of the msgids.
+TRANSLATED = [code for code in config.ENABLED_LANGUAGES if code != config.SOURCE_LANGUAGE]
 
 # ── a) The language branches ───────────────────────────────────────────────
 
@@ -39,20 +46,13 @@ PATTERN = re.compile(
 
 # path -> (count, reason). Lower the count as branches are converted.
 EXCEPTIONS = {
-    'app/__init__.py': (3, 'data: de taalkeuze (sessie, user.lang bij inloggen), get_locale en LANGUAGES; komt bij het taalregister'),
-    'app/digest.py': (1, 'data: lang_for(user), de opgeslagen taal van de ontvanger met terugval op nl'),
     'app/issues.py': (2, 'contentmodel, fase 0 stap 6: titel en openingsbericht van een gesprek per taal (title_*_nl/_en, body_nl/_en)'),
     'app/models.py': (4, 'contentmodel, fase 0 stap 6: Thread.title(lang), de AI-uitleg (explanation_nl/_en) en post_lang'),
     'app/notifications.py': (1, 'contentmodel, fase 0 stap 6: de titel van een gesprek per taal in een melding'),
     'app/quality.py': (9, 'contentmodel, fase 0 stap 6: AI-vertaal- en kwaliteitscode (taalregels voor de prompt, explanation_nl/_en, body_nl)'),
-    'app/routes/admin.py': (2, 'data: zoeken in de titels in beide talen; de taalmonitor filtert op taal'),
-    'app/routes/auth.py': (2, 'data: de registratietaal wordt opgeslagen (user.lang, auto_translate)'),
-    'app/routes/forum.py': (4, 'contentmodel, fase 0 stap 6: automatisch vertalen (auto_translate, translate_text, body_nl/_en)'),
-    'app/routes/main.py': (2, 'data: set_lang (de taalkiezer) en auto_translate'),
-    'app/routes/social.py': (2, 'data: de registratietaal wordt opgeslagen (user.lang, auto_translate)'),
-    'app/status.py': (4, 'data: de taalmonitor telt per taal'),
-    'app/templates/_footer.html': (2, 'taalkiezer: markeert de actieve taal (is-active); de taalkiezer komt bij het taalregister'),
-    'app/templates/_header.html': (4, 'taalkiezer: markeert de actieve taal (is-active); de taalkiezer komt bij het taalregister'),
+    'app/routes/admin.py': (2, 'contentmodel, fase 0 stap 6: zoeken in de titels in beide talen (Thread.title(lang)); data: de taalmonitor filtert op taal'),
+    'app/routes/forum.py': (3, 'contentmodel, fase 0 stap 6: de vertaalroute (translate_text, body_nl/_en)'),
+    'app/status.py': (4, 'data: de taalmonitor telt per taal (source_lang)'),
     'app/templates/forum/_post.html': (1, 'contentmodel, fase 0 stap 6: body_nl/body_en van een bijdrage'),
     'app/templates/forum/closed.html': (2, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
     'app/templates/forum/edit_thread.html': (1, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
@@ -61,7 +61,6 @@ EXCEPTIONS = {
     'app/templates/issues/proposal.html': (2, 'contentmodel, fase 0 stap 6: body_nl/body_en van een reactie op een voorstel'),
     'app/templates/issues/show.html': (1, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
     'app/templates/landenlijst.html': (7, 'contentmodel, fase 0 stap 6: landgegevens per taal (land_nl/_en, niveau_nl/_en, remarks_nl/_en) en de downloads (Excel, PDF) per taal'),
-    'app/templates/profile.html': (3, 'taalkiezer (2x is-active); data: de standaard voor automatisch vertalen volgt de taal (auto_translate)'),
 }
 
 
@@ -97,8 +96,9 @@ def _po(lang):
         return read_po(f)
 
 
-def test_nl_catalog_is_complete_and_not_fuzzy():
-    catalog = _po('nl')
+@pytest.mark.parametrize('lang', TRANSLATED)
+def test_catalog_is_complete_and_not_fuzzy(lang):
+    catalog = _po(lang)
     empty, fuzzy = [], []
     for message in catalog:
         if not message.id:
@@ -108,11 +108,11 @@ def test_nl_catalog_is_complete_and_not_fuzzy():
             empty.append(message.id)
         if message.fuzzy:
             fuzzy.append(message.id)
-    assert not empty, f'NL msgids without a translation: {empty[:10]}'
-    assert not fuzzy, f'NL msgids marked fuzzy: {fuzzy[:10]}'
+    assert not empty, f'{lang} msgids without a translation: {empty[:10]}'
+    assert not fuzzy, f'{lang} msgids marked fuzzy: {fuzzy[:10]}'
 
 
-@pytest.mark.parametrize('lang', ['nl', 'en'])
+@pytest.mark.parametrize('lang', config.ENABLED_LANGUAGES)
 def test_compiled_mo_matches_the_po(lang):
     buffer = io.BytesIO()
     write_mo(buffer, _po(lang))
@@ -194,7 +194,7 @@ def _all_texts(message):
 def test_no_template_syntax_in_msgids_or_translations():
     """A msgid with {{ }} or {% %} is never filled in; it shows literally."""
     bad = []
-    for lang in ('nl', 'en'):
+    for lang in config.ENABLED_LANGUAGES:
         for message in _po(lang):
             if not message.id:
                 continue
@@ -208,11 +208,12 @@ def test_no_template_syntax_in_msgids_or_translations():
     assert not bad, bad
 
 
-def test_every_extracted_msgid_is_in_the_nl_catalog():
-    """A msgid without an NL entry shows in English to Dutch readers."""
-    catalog = {(m.context, m.id if isinstance(m.id, str) else tuple(m.id)) for m in _po('nl') if m.id}
+@pytest.mark.parametrize('lang', TRANSLATED)
+def test_every_extracted_msgid_is_in_the_catalog(lang):
+    """A msgid without an entry shows in English to readers of that language."""
+    catalog = {(m.context, m.id if isinstance(m.id, str) else tuple(m.id)) for m in _po(lang) if m.id}
     missing = sorted(_extracted() - catalog, key=str)
-    assert not missing, f'Not in the NL catalog: {missing[:10]}'
+    assert not missing, f'Not in the {lang} catalog: {missing[:10]}'
 
 
 # NL translations identical to their msgid, on purpose. Anything else that
@@ -234,22 +235,33 @@ SAME_IN_DUTCH = {
 }
 
 
-def test_nl_translation_differs_from_the_msgid_unless_allowed():
+# Per language: the msgids whose translation may equal the msgid, with the
+# reason. A newly enabled language gets its own entry here.
+SAME_AS_MSGID = {
+    'nl': SAME_IN_DUTCH,
+}
+
+
+@pytest.mark.parametrize('lang', TRANSLATED)
+def test_translation_differs_from_the_msgid_unless_allowed(lang):
+    allowed = SAME_AS_MSGID.get(lang, {})
     same = []
-    for message in _po('nl'):
+    for message in _po(lang):
         if not message.id:
             continue
         ids, strs = _all_texts(message)
-        if any(i == s for i, s in zip(ids, strs)) and ids[0] not in SAME_IN_DUTCH:
+        if any(i == s for i, s in zip(ids, strs)) and ids[0] not in allowed:
             same.append(message.id)
-    assert not same, f'NL equals the msgid (translate it, or add it to SAME_IN_DUTCH with a reason): {same}'
-    assert all(SAME_IN_DUTCH.values())
+    assert not same, (f'{lang} equals the msgid (translate it, or add it to SAME_AS_MSGID[{lang!r}] '
+                      f'with a reason): {same}')
+    assert all(allowed.values())
 
 
-def test_no_long_or_short_dashes_in_msgids_or_dutch():
+@pytest.mark.parametrize('lang', TRANSLATED)
+def test_no_long_or_short_dashes_in_msgids_or_translations(lang):
     """App text has no en dash (U+2013) or em dash (U+2014)."""
     bad = []
-    for message in _po('nl'):
+    for message in _po(lang):
         if not message.id:
             continue
         ids, strs = _all_texts(message)
