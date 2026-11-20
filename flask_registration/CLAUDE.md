@@ -31,16 +31,18 @@ Een vertaling die gelijk is aan de msgid mag alleen als hij op de toegestane lij
 
 ### Het taalregister
 
-`config.py` is de enige plek met talen: `LANGUAGES` (alle talen die het platform kent: code, naam in de eigen taal, schrijfrichting), `ENABLED_LANGUAGES` (de talen die aanstaan), `DEFAULT_LANGUAGE` (nl) en `SOURCE_LANGUAGE` (en, de taal van de msgids). Code en templates vragen het register via `app/i18n.py` (`enabled_languages()`, `is_enabled()`, `normalize()`, `language_name()`, `text_direction()`, `auto_translate_default()`); geen eigen lijsten als `('nl', 'en')`. De taalkiezer in header, footer en profiel is een lus over de ingeschakelde talen. Automatisch vertalen staat standaard aan voor iedereen wiens taal niet de standaardtaal is.
+`config.py` is de enige plek met talen: `LANGUAGES` (alle talen die het platform kent: code, naam in de eigen taal, Engelse naam, schrijfrichting, en `reviewed`: of een moedertaalspreker de vertaling heeft nagelezen), `ENABLED_LANGUAGES` (de talen die aanstaan), `DEFAULT_LANGUAGE` (nl) en `SOURCE_LANGUAGE` (en, de taal van de msgids). Code en templates vragen het register via `app/i18n.py` (`enabled_languages()`, `is_enabled()`, `normalize()`, `language_name()`, `text_direction()`, `is_reviewed()`, `auto_translate_default()`); geen eigen lijsten als `('nl', 'en')`. De taalkiezer in header, footer en profiel is een lus over de ingeschakelde talen. Automatisch vertalen staat standaard aan voor iedereen wiens taal niet de standaardtaal is.
 
 Een taal aanzetten (voorbeeld de), vanuit `flask_registration/`:
 
-1. Staat de taal niet in `LANGUAGES`, voeg hem toe (code, naam in de eigen taal, Engelse naam voor de AI-prompts, `ltr` of `rtl`).
+1. Staat de taal niet in `LANGUAGES`, voeg hem toe (code, naam in de eigen taal, Engelse naam voor de AI-prompts, `ltr` of `rtl`, `reviewed`). Maak eerst een woordenlijst `docs/i18n/glossary_<code>.md` met de kernbegrippen en stijlregels (voorbeeld: `glossary_de.md`).
 2. Extract zoals hierboven, dan `pybabel init -i messages.pot -d app/translations -l de --no-wrap`.
 3. Vertaal alles in `app/translations/de/LC_MESSAGES/messages.po`: geen lege of fuzzy items. Teksten die gelijk mogen blijven aan de msgid krijgen een eigen lijst in `SAME_AS_MSGID['de']`, met reden.
    Landnamen in `app/data/landenlijst_data.json`: verplicht een eigen naam onder `names` in de nieuwe taal voor de vier politiek gevoelige gebieden (`"sensitive": true`: PS, HK, TW, XK); zij vallen nooit terug op Babel (tests/test_landenlijst_i18n.py faalt anders). Loop daarna eenmalig de Babel-namen van de overige landen in de nieuwe taal na; waar die informeel of fout zijn, neem een eigen naam op.
 4. `pybabel compile -d app/translations` en commit de .po en .mo.
 5. Zet `"de"` in `ENABLED_LANGUAGES`. De catalogustests gelden dan vanzelf ook voor de; draai de volledige suite.
+
+Een machinevertaling staat in het register met `"reviewed": False`; de footer zegt dan in die taal dat de pagina automatisch vertaald is. Geef de AI-taalregel voor de kwaliteitsprompt zo nodig een eigen regel in `_OWN_LANGUAGE_RULES` (app/quality.py), zoals voor nl en de (je/jij, du). Naleesbestand: `python i18n_review.py export de` schrijft `docs/i18n/review_de.csv` (bron, translator-comment, EN, NL, vertaling; manifest en spelregels bovenaan); na correcties door een moedertaalspreker zet `python i18n_review.py apply de` ze terug in de .po en .mo (met controle op placeholders en streepjes). Exporteer opnieuw na elke wijziging in de catalogus (tests/test_i18n_review.py bewaakt dat het bestand actueel is); zet `reviewed` op `True` als de taal helemaal is nagelezen.
 
 ### Inhoud in meerdere talen
 

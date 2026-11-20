@@ -942,6 +942,8 @@ def create_app():
             # The same language gettext picks (session, else Accept-Language).
             lang=lang,
             text_dir=i18n.text_direction(lang),
+            # A machine translation says so in the footer (register: reviewed).
+            machine_translated=not i18n.is_reviewed(str(lang)),
             # The language switcher: the enabled languages (code, name).
             languages=i18n.enabled_languages(),
             auto_translate_default=i18n.auto_translate_default,

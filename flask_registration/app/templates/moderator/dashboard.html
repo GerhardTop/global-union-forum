@@ -71,7 +71,7 @@
   <div class="gu-mod__wrap">
 
     <div class="gu-mod__head">
-      <p class="gu-eyebrow">Beheer</p>
+      <p class="gu-eyebrow">{{ _('Management') }}</p>
       <h1 class="gu-mod__title">Moderator</h1>
     </div>
 
@@ -478,7 +478,7 @@
 
     {# ── Gesloten gesprekken ────────────────────────────────────── #}
     <section class="gu-admin__section">
-      <p class="gu-eyebrow gu-eyebrow--section">Gesloten gesprekken</p>
+      <p class="gu-eyebrow gu-eyebrow--section">{{ _('Closed conversations') }}</p>
       {% if closed_threads %}
       <ul class="gu-admin-list">
         {% for thread in closed_threads %}
@@ -500,7 +500,7 @@
         {% endfor %}
       </ul>
       {% else %}
-      <p class="gu-threadlist__empty">Geen gesloten gesprekken.</p>
+      <p class="gu-threadlist__empty">{{ _('No closed conversations.') }}</p>
       {% endif %}
     </section>
 

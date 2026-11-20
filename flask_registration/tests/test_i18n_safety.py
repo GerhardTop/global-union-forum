@@ -116,20 +116,29 @@ def test_compiled_mo_matches_the_po(lang):
 
 CORE = {
     '/': {'nl': ('Een unie van functionerende democratieën', 'Global Union Forum is een open denktank.'),
-          'en': ('A union of functioning democracies', 'Global Union Forum is an open think tank.')},
-    '/forum': {'nl': ('Het gesprek', 'reacties · laatst'), 'en': ('The conversation', 'replies · last')},
-    'thread': {'nl': ('Het gesprek ›', 'reacties · laatst'), 'en': ('The conversation ›', 'replies · last')},
+          'en': ('A union of functioning democracies', 'Global Union Forum is an open think tank.'),
+          'de': ('Eine Union funktionierender Demokratien', 'Global Union Forum ist eine offene Denkfabrik.')},
+    '/forum': {'nl': ('Het gesprek', 'reacties · laatst'), 'en': ('The conversation', 'replies · last'),
+               'de': ('Das Gespräch', 'Antworten · zuletzt')},
+    'thread': {'nl': ('Het gesprek ›', 'reacties · laatst'), 'en': ('The conversation ›', 'replies · last'),
+               'de': ('Das Gespräch ›', 'Antworten · zuletzt')},
     'issue': {'nl': ('Feiten en achtergrond', 'Discussie', 'Voorstellen'),
-              'en': ('Facts and background', 'Discussion', 'Proposals')},
+              'en': ('Facts and background', 'Discussion', 'Proposals'),
+              'de': ('Fakten und Hintergrund', 'Diskussion', 'Vorschläge')},
     '/profile': {'nl': ('Mijn profiel', 'Hoe verschijn je in het forum?'),
-                 'en': ('My profile', 'How do you appear in the forum?')},
-    '/moderator': {'nl': ('Betwiste feiten', 'Geen open meldingen.'), 'en': ('Disputed facts', 'No open reports.')},
+                 'en': ('My profile', 'How do you appear in the forum?'),
+                 'de': ('Mein Profil', 'Wie erscheinst du im Forum?')},
+    '/moderator': {'nl': ('Betwiste feiten', 'Geen open meldingen.'), 'en': ('Disputed facts', 'No open reports.'),
+                   'de': ('Angezweifelte Fakten', 'Keine offenen Meldungen.')},
     '/manifest': {'nl': ('Gelijkgezinde landen als positieve kracht', 'In dit manifest'),
-                  'en': ('Like-minded countries as a positive force', 'In this manifesto')},
+                  'en': ('Like-minded countries as a positive force', 'In this manifesto'),
+                  'de': ('Gleichgesinnte Länder als positive Kraft', 'In diesem Manifest')},
     '/about': {'nl': ('Een denktank met sterke intentie', 'Geen lidmaatschap. Geen contributie.'),
-               'en': ('A think tank with strong intent', 'No membership. No fees.')},
+               'en': ('A think tank with strong intent', 'No membership. No fees.'),
+               'de': ('Eine Denkfabrik mit starker Absicht', 'Keine Mitgliedschaft. Keine Beiträge.')},
     '/faq': {'nl': ('Veelgestelde vragen', 'Wat is Global Union?'),
-             'en': ('What is Global Union?', 'What is the difference between Global Union and the Global Union Forum?')},
+             'en': ('What is Global Union?', 'What is the difference between Global Union and the Global Union Forum?'),
+             'de': ('Häufige Fragen', 'Was ist der Unterschied zwischen Global Union und dem Global Union Forum?')},
 }
 
 
@@ -148,7 +157,7 @@ def smoke(db, make_user):
     _cleanup(issue.id)
 
 
-@pytest.mark.parametrize('lang', ['nl', 'en'])
+@pytest.mark.parametrize('lang', ['nl', 'en', 'de'])
 def test_core_pages_render_with_their_core_sentences(app, db, smoke, lang):
     for key, sentences in CORE.items():
         path = smoke.get(key, key)
@@ -223,10 +232,30 @@ SAME_IN_DUTCH = {
 }
 
 
+# German translations identical to their msgid, on purpose (phase 1, see
+# docs/i18n/glossary_de.md).
+SAME_IN_GERMAN = {
+    'Freedom for all': 'Slogan, nicht übersetzen',
+    'Initiator · Global Union Forum': 'Rollenname und Markenname',
+    'Moderator': 'Rollenname', 'Senior': 'Rollenname', 'Admin': 'Rollenname',
+    'Spam': 'Lehnwort', 'Fairness': 'Lehnwort', 'Dashboard': 'Lehnwort', 'Cookies': 'Lehnwort',
+    'Podcast': 'Lehnwort', 'Video': 'Lehnwort', 'Online': 'Lehnwort',
+    'Name': 'im Deutschen gleich', 'Organisation': 'im Deutschen gleich', 'Phase': 'im Deutschen gleich',
+    'Moderation': 'im Deutschen gleich', 'Pseudonym': 'im Deutschen gleich', 'optional': 'im Deutschen gleich',
+    'Optional': 'im Deutschen gleich', 'Neutral': 'im Deutschen gleich', 'Version %(n)s': 'im Deutschen gleich',
+    'WTO': 'Name einer Organisation', 'WCO': 'Name einer Organisation', 'FATF': 'Name einer Organisation',
+    'IASB': 'Name einer Organisation', 'FAO/WHO': 'Name einer Organisation', 'ICAO, IMO': 'Name einer Organisation',
+    'ISO, IEC, ITU': 'Name einer Organisation', 'UN': 'Name einer Organisation', 'UN, ILO': 'Name einer Organisation',
+    'Codex Alimentarius': 'Name eines Standards', 'Basel III': 'Name eines Standards', 'IFRS': 'Name eines Standards',
+    'UNCAC': 'Name eines Abkommens', 'UNFCCC': 'Name eines Abkommens',
+}
+
+
 # Per language: the msgids whose translation may equal the msgid, with the
 # reason. A newly enabled language gets its own entry here.
 SAME_AS_MSGID = {
     'nl': SAME_IN_DUTCH,
+    'de': SAME_IN_GERMAN,
 }
 
 

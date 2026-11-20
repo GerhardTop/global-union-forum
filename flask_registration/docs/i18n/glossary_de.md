@@ -2,7 +2,7 @@
 
 De vaste Duitse vertaling van de kernbegrippen van het platform. Elke Duitse tekst (catalogus, mails, AI-prompt, landnamen) volgt deze lijst, zodat een begrip overal hetzelfde heet. Wie een begrip wil wijzigen, wijzigt het hier en daarna overal in `app/translations/de/LC_MESSAGES/messages.po`.
 
-De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` is het naleesbestand voor een Duitstalige; `scripts/apply_review_de.py` zet correcties daaruit terug in de catalogus.
+De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` is het naleesbestand voor een Duitstalige; `python i18n_review.py apply de` zet correcties daaruit terug in de catalogus.
 
 ## Stijlregels
 

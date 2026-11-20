@@ -60,6 +60,13 @@ def language_name_in(code, in_lang):
         return str(code).upper()
 
 
+def is_reviewed(code):
+    """True when a native speaker reviewed the translation; False for a
+    machine translation (and for an unknown code)."""
+    entry = _register().get(code)
+    return bool(entry and entry.get("reviewed"))
+
+
 def text_direction(code):
     """'ltr' or 'rtl'; left to right for an unknown code."""
     entry = _register().get(code)

@@ -37,6 +37,10 @@
   </div>
   <div class="gu-footer__legal">
     <span>&copy; 2026 Global Union Forum<br>{{ _('a movement in the making') }}</span>
+    {% if machine_translated %}
+    {# TRANSLATORS: footer note, only shown in a language whose translation has not been reviewed by a native speaker yet. #}
+    <span class="gu-footer__machine">{{ _('This page was translated by machine.') }}</span>
+    {% endif %}
   </div>
   {% if not current_user.is_authenticated %}
   <div class="gu-footer__lang">

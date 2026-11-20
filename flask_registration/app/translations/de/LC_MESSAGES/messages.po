@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-20 22:30+0100\n"
+"POT-Creation-Date: 2026-11-20 23:14+0100\n"
 "PO-Revision-Date: 2026-11-20 22:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -1170,6 +1170,12 @@ msgstr "Amsterdam, Niederlande"
 msgid "a movement in the making"
 msgstr "eine Bewegung im Aufbau"
 
+#. footer note, only shown in a language whose translation has not been
+#. reviewed by a native speaker yet.
+#: app/templates/_footer.html:42
+msgid "This page was translated by machine."
+msgstr "Diese Seite wurde maschinell übersetzt."
+
 #: app/templates/_header.html:11 app/templates/issues/_crumbs.html:10
 #: app/templates/issues/index.html:2 app/templates/issues/index.html:17
 #: app/templates/issues/proposal.html:41
@@ -1412,7 +1418,7 @@ msgstr "Mark Carney, Premierminister von Kanada, rief in Davos zur Zusammenarbei
 
 #: app/templates/index.html:24
 msgid "Global Union Forum wants to seize this momentum and argues for a permanent structure of cooperation, open to all countries that meet criteria for democracy, the rule of law, anti-corruption and human rights. Not as a replacement for the UN, but as a complement. A cooperation alongside the EU, not only with obvious partners such as Canada, the United Kingdom, Japan, South Korea and Australia, but also with countries beyond them that already have a strong democracy, such as Chile, Uruguay, Costa Rica, Cape Verde, Botswana and Ghana."
-msgstr "Global Union Forum will diesen Schwung nutzen und setzt sich für eine dauerhafte Struktur der Zusammenarbeit ein, offen für alle Länder, die Kriterien für Demokratie, Rechtsstaatlichkeit, Korruptionsbekämpfung und Menschenrechte erfüllen. Nicht als Ersatz für die UN, sondern als Ergänzung. Eine Zusammenarbeit neben der EU, nicht nur mit naheliegenden Partnern wie Kanada, dem Vereinigten Königreich, Japan, Südkorea und Australien, sondern auch mit Ländern darüber hinaus, die schon eine starke Demokratie haben, wie Chile, Uruguay, Costa Rica, Kap Verde, Botswana und Ghana."
+msgstr "Global Union Forum will diesen Schwung nutzen und setzt sich für eine dauerhafte Struktur der Zusammenarbeit ein, offen für alle Länder, die Kriterien für Demokratie, Rechtsstaatlichkeit, Korruptionsbekämpfung und Menschenrechte erfüllen. Nicht als Ersatz für die UN, sondern als Ergänzung. Eine Zusammenarbeit neben der EU, nicht nur mit naheliegenden Partnern wie Kanada, dem Vereinigten Königreich, Japan, Südkorea und Australien, sondern auch mit Ländern darüber hinaus, die schon eine starke Demokratie haben, wie Chile, Uruguay, Costa Rica, Kap Verde, Botsuana und Ghana."
 
 #: app/templates/index.html:27
 msgid "With its enlargement into Eastern Europe, the EU showed how strong the pull of a bloc of prosperous democracies is: countries with formerly autocratic regimes carried out reforms in order to join. That pull can be scaled up to the global level, with, in the long term, the prospect of a Global Union of functioning democracies."
@@ -2465,7 +2471,7 @@ msgstr "dieser Schwung für eine <strong>dauerhafte Struktur der Zusammenarbeit<
 #. motie_d66, tekst 12
 #: app/templates/motie_d66.html:65
 msgid "this structure should be open <strong>to all countries</strong> that meet criteria for democracy, the rule of law, anti-corruption and human rights, alongside Canada, the UK, South Korea, Japan, New Zealand and Australia, also countries beyond the wealthy West, such as Costa Rica, Botswana and Cape Verde;"
-msgstr "diese Struktur <strong>allen Ländern</strong> offenstehen soll, die Kriterien für Demokratie, Rechtsstaatlichkeit, Korruptionsbekämpfung und Menschenrechte erfüllen, neben Kanada, dem Vereinigten Königreich, Südkorea, Japan, Neuseeland und Australien auch Ländern außerhalb des reichen Westens, wie Costa Rica, Botswana und Kap Verde;"
+msgstr "diese Struktur <strong>allen Ländern</strong> offenstehen soll, die Kriterien für Demokratie, Rechtsstaatlichkeit, Korruptionsbekämpfung und Menschenrechte erfüllen, neben Kanada, dem Vereinigten Königreich, Südkorea, Japan, Neuseeland und Australien auch Ländern außerhalb des reichen Westens, wie Costa Rica, Botsuana und Kap Verde;"
 
 #. motie_d66, tekst 13
 #: app/templates/motie_d66.html:69
@@ -3165,6 +3171,12 @@ msgstr "Vorschläge: maximale Laufzeit pro Phase"
 msgid "Rights"
 msgstr "Rechte"
 
+#: app/templates/admin/dashboard.html:44 app/templates/forum/closed.html:2
+#: app/templates/forum/closed.html:16 app/templates/forum/index.html:29
+#: app/templates/moderator/dashboard.html:481
+msgid "Closed conversations"
+msgstr "Geschlossene Gespräche"
+
 #: app/templates/admin/dashboard.html:74
 msgid "Senior moderator"
 msgstr "Senior-Moderator"
@@ -3194,6 +3206,7 @@ msgid "all time"
 msgstr "gesamt"
 
 #: app/templates/admin/language_monitor.html:14
+#: app/templates/moderator/dashboard.html:74
 msgid "Management"
 msgstr "Verwaltung"
 
@@ -4283,11 +4296,6 @@ msgstr "Es wurden noch keine Beiträge verschoben."
 msgid "Pure spam and gross abuse are not listed here: they are hidden completely."
 msgstr "Reiner Spam und grober Missbrauch stehen hier nicht: Sie werden ganz verborgen."
 
-#: app/templates/forum/closed.html:2 app/templates/forum/closed.html:16
-#: app/templates/forum/index.html:29
-msgid "Closed conversations"
-msgstr "Geschlossene Gespräche"
-
 #: app/templates/forum/closed.html:11 app/templates/forum/edit_thread.html:9
 #: app/templates/forum/index.html:2 app/templates/forum/index.html:11
 #: app/templates/forum/new_thread.html:9 app/templates/forum/thread.html:16
@@ -4310,6 +4318,7 @@ msgid "Reopen"
 msgstr "Wieder öffnen"
 
 #: app/templates/forum/closed.html:57
+#: app/templates/moderator/dashboard.html:503
 msgid "No closed conversations."
 msgstr "Keine geschlossenen Gespräche."
 

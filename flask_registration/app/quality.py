@@ -112,6 +112,8 @@ _MAX_CHARS = 1500
 _OWN_LANGUAGE_RULES = (
     ('nl', 'Schrijf je volledige antwoord in het Nederlands. Gebruik geen Engelse woorden of zinsdelen. '
            'Meng geen talen. Spreek de auteur aan met je en jij, nooit met u.'),
+    ('de', 'Schreibe deine gesamte Antwort auf Deutsch. Verwende keine englischen Wörter oder Wendungen. '
+           'Mische keine Sprachen. Sprich die Person mit du an, nie mit Sie.'),
 )
 
 

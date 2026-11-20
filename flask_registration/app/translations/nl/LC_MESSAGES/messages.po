@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-20 18:12+0100\n"
+"POT-Creation-Date: 2026-11-20 23:14+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:858
+#: app/__init__.py:853
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Te veel pogingen. Probeer het over een minuut opnieuw."
 
-#: app/__init__.py:888
+#: app/__init__.py:883
 msgid "Your session has expired. Please log in again."
 msgstr "Je sessie is verlopen. Log opnieuw in."
 
@@ -1037,7 +1037,7 @@ msgstr "n.v.t."
 msgid "separate status"
 msgstr "aparte status"
 
-#: app/routes/main.py:190
+#: app/routes/main.py:197
 msgid "Thank you! You can now join the conversation."
 msgstr "Bedankt! Je kunt nu meedoen aan het gesprek."
 
@@ -1172,6 +1172,12 @@ msgstr "Amsterdam, Nederland"
 #: app/templates/_footer.html:39
 msgid "a movement in the making"
 msgstr "een beweging in opbouw"
+
+#. footer note, only shown in a language whose translation has not been
+#. reviewed by a native speaker yet.
+#: app/templates/_footer.html:42
+msgid "This page was translated by machine."
+msgstr "Deze pagina is automatisch vertaald."
 
 # Polijstronde P1: Denk mee, overzicht, kruimelpad, termen
 #: app/templates/_header.html:11 app/templates/issues/_crumbs.html:10
@@ -3170,6 +3176,12 @@ msgstr "Voorstellen: maximale doorlooptijd per fase"
 msgid "Rights"
 msgstr "Rechten"
 
+#: app/templates/admin/dashboard.html:44 app/templates/forum/closed.html:2
+#: app/templates/forum/closed.html:16 app/templates/forum/index.html:29
+#: app/templates/moderator/dashboard.html:481
+msgid "Closed conversations"
+msgstr "Gesloten gesprekken"
+
 #: app/templates/admin/dashboard.html:74
 msgid "Senior moderator"
 msgstr "Senior moderator"
@@ -3199,6 +3211,7 @@ msgid "all time"
 msgstr "alles"
 
 #: app/templates/admin/language_monitor.html:14
+#: app/templates/moderator/dashboard.html:74
 msgid "Management"
 msgstr "Beheer"
 
@@ -4289,11 +4302,6 @@ msgstr "Er zijn nog geen bijdragen verplaatst."
 msgid "Pure spam and gross abuse are not listed here: they are hidden completely."
 msgstr "Pure spam en grof misbruik staan hier niet: die worden volledig verborgen."
 
-#: app/templates/forum/closed.html:2 app/templates/forum/closed.html:16
-#: app/templates/forum/index.html:29
-msgid "Closed conversations"
-msgstr "Gesloten gesprekken"
-
 #: app/templates/forum/closed.html:11 app/templates/forum/edit_thread.html:9
 #: app/templates/forum/index.html:2 app/templates/forum/index.html:11
 #: app/templates/forum/new_thread.html:9 app/templates/forum/thread.html:16
@@ -4316,6 +4324,7 @@ msgid "Reopen"
 msgstr "Heropenen"
 
 #: app/templates/forum/closed.html:57
+#: app/templates/moderator/dashboard.html:503
 msgid "No closed conversations."
 msgstr "Geen gesloten gesprekken."
 

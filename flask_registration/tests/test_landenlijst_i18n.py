@@ -43,10 +43,12 @@ def test_names_per_language():
     assert main_routes.country_name(by_iso['NO'], 'de') == 'Norwegen'      # any language via Babel
     assert main_routes.country_name(by_iso['PS'], 'nl') == 'Palestina'      # the site's own name
     assert main_routes.country_name(by_iso['PS'], 'en') == 'Palestine'
-    assert main_routes.country_name(by_iso['PS'], 'de') == 'Palestine'      # not enabled: own English name
+    assert main_routes.country_name(by_iso['PS'], 'de') == 'Palästina'
+    assert main_routes.country_name(by_iso['PS'], 'fr') == 'Palestine'      # no own name: own English name
     assert main_routes.country_name(by_iso['CZ'], 'en') == 'Czech Republic'     # own name, not Babel's
     assert main_routes.country_name(by_iso['MV'], 'nl') == 'Malediven'
     assert main_routes.country_name(by_iso['CZ'], 'de') == Locale('de').territories['CZ']   # Babel fallback
+    assert main_routes.country_name(by_iso['LC'], 'de') == 'Saint Lucia'    # own name: Babel abbreviates
     assert main_routes.country_name(by_iso['NO'], 'xx') == 'Norway'         # unknown: English
 
 
@@ -59,8 +61,10 @@ def test_the_sensitive_territories_keep_their_names():
     by_iso = {r['iso']: r for r in rows}
     # The current names stay.
     assert {iso: by_iso[iso]['names'] for iso in SENSITIVE} == {
-        'PS': {'en': 'Palestine', 'nl': 'Palestina'}, 'HK': {'en': 'Hong Kong', 'nl': 'Hongkong'},
-        'TW': {'en': 'Taiwan', 'nl': 'Taiwan'}, 'XK': {'en': 'Kosovo', 'nl': 'Kosovo'}}
+        'PS': {'en': 'Palestine', 'nl': 'Palestina', 'de': 'Palästina'},
+        'HK': {'en': 'Hong Kong', 'nl': 'Hongkong', 'de': 'Hongkong'},
+        'TW': {'en': 'Taiwan', 'nl': 'Taiwan', 'de': 'Taiwan'},
+        'XK': {'en': 'Kosovo', 'nl': 'Kosovo', 'de': 'Kosovo'}}
 
 
 def test_every_country_has_an_own_name_in_dutch_and_english():
@@ -82,8 +86,8 @@ def test_every_enabled_language_has_an_own_name_for_the_sensitive_territories():
 
 
 def test_the_guard_fails_for_a_language_without_own_names(monkeypatch):
-    monkeypatch.setattr(config, 'ENABLED_LANGUAGES', ['nl', 'en', 'de'])
-    assert _missing_sensitive_names() == [('HK', 'de'), ('PS', 'de'), ('TW', 'de'), ('XK', 'de')]
+    monkeypatch.setattr(config, 'ENABLED_LANGUAGES', ['nl', 'en', 'de', 'fr'])
+    assert _missing_sensitive_names() == [('HK', 'fr'), ('PS', 'fr'), ('TW', 'fr'), ('XK', 'fr')]
 
 
 def test_remarks_and_downloads_fall_back_to_english():

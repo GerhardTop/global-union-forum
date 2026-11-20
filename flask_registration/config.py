@@ -58,19 +58,21 @@ def ratelimit_storage_uri(db_uri: str) -> str:
 
 # ── Languages ─────────────────────────────────────────────────────────────
 # The language register: every language the platform knows, with its name in
-# its own language, its English name (for AI prompts) and its writing
-# direction. app/i18n.py reads it; nothing else keeps its own list of languages.
+# its own language, its English name (for AI prompts), its writing direction
+# and whether a native speaker reviewed the translation (reviewed False: a
+# machine translation, the footer says so). app/i18n.py reads it; nothing
+# else keeps its own list of languages.
 LANGUAGES = [
-    {"code": "nl", "name": "Nederlands", "english": "Dutch", "dir": "ltr"},
-    {"code": "en", "name": "English", "english": "English", "dir": "ltr"},
-    {"code": "de", "name": "Deutsch", "english": "German", "dir": "ltr"},
-    {"code": "es", "name": "Español", "english": "Spanish", "dir": "ltr"},
-    {"code": "fr", "name": "Français", "english": "French", "dir": "ltr"},
+    {"code": "nl", "name": "Nederlands", "english": "Dutch", "dir": "ltr", "reviewed": True},
+    {"code": "en", "name": "English", "english": "English", "dir": "ltr", "reviewed": True},
+    {"code": "de", "name": "Deutsch", "english": "German", "dir": "ltr", "reviewed": False},
+    {"code": "es", "name": "Español", "english": "Spanish", "dir": "ltr", "reviewed": False},
+    {"code": "fr", "name": "Français", "english": "French", "dir": "ltr", "reviewed": False},
 ]
 
 # The languages that are switched on. Switching a language on is adding its
 # code here (after its catalog is translated and compiled, see CLAUDE.md).
-ENABLED_LANGUAGES = ["nl", "en"]
+ENABLED_LANGUAGES = ["nl", "en", "de"]
 
 # The language for visitors without a preference, and the fallback everywhere.
 DEFAULT_LANGUAGE = "nl"
