@@ -2860,3 +2860,724 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "report"
 msgstr[1] "reports"
+
+msgid "Earned status thresholds"
+msgstr "Earned status thresholds"
+
+msgid "Language monitor"
+msgstr "Language monitor"
+
+msgid "Rights"
+msgstr "Rights"
+
+msgid "Management"
+msgstr "Management"
+
+msgid "Does the AI systematically award more often in one language than in the other? The language is the one the author submitted the contribution in. The AI's own judgement is counted."
+msgstr "Does the AI systematically award more often in one language than in the other? The language is the one the author submitted the contribution in. The AI's own judgement is counted."
+
+msgid "Period"
+msgstr "Period"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Judged"
+msgstr "Judged"
+
+msgid "Share awarded"
+msgstr "Share awarded"
+
+msgid "no data"
+msgstr "no data"
+
+msgid "Difference (NL minus EN)"
+msgstr "Difference (NL minus EN)"
+
+msgid "percentage points"
+msgstr "percentage points"
+
+msgid "cannot be calculated yet (one of the languages has no judgements)"
+msgstr "cannot be calculated yet (one of the languages has no judgements)"
+
+msgid "Sample: most recent judgements"
+msgstr "Sample: most recent judgements"
+
+msgid "AI judgement"
+msgstr "AI judgement"
+
+msgid "Current status"
+msgstr "Current status"
+
+msgid "Contribution"
+msgstr "Contribution"
+
+msgid "awarded"
+msgstr "awarded"
+
+msgid "declined"
+msgstr "declined"
+
+msgid "No judgements yet."
+msgstr "No judgements yet."
+
+msgid "A quality contribution is an own contribution with an awarded quality judgement. Topics are the conversations those contributions are in. You become a contributor with the first one. New thresholds apply from the moment you save; nobody goes down because of them."
+msgstr "A quality contribution is an own contribution with an awarded quality judgement. Topics are the conversations those contributions are in. You become a contributor with the first one. New thresholds apply from the moment you save; nobody goes down because of them."
+
+msgid "Default"
+msgstr "Default"
+
+msgid "Enter a whole number of at least 1."
+msgstr "Enter a whole number of at least 1."
+
+msgid "Manage"
+msgstr "Manage"
+
+msgid "Issue management"
+msgstr "Issue management"
+
+msgid "Your issue"
+msgstr "Your issue"
+
+msgid "The delete and hide actions are here, no longer on the public page. Hiding can be undone. Deleting cannot be undone and also removes the reactions. What you may do depends on your role and whether this is your issue."
+msgstr "The delete and hide actions are here, no longer on the public page. Hiding can be undone. Deleting cannot be undone and also removes the reactions. What you may do depends on your role and whether this is your issue."
+
+msgid "This issue"
+msgstr "This issue"
+
+msgid "Created by you"
+msgstr "Created by you"
+
+msgid "Created by"
+msgstr "Created by"
+
+msgid "Created by a deleted account"
+msgstr "Created by a deleted account"
+
+msgid "Archive"
+msgstr "Archive"
+
+msgid "Delete issue"
+msgstr "Delete issue"
+
+msgid "Which proposals"
+msgstr "Which proposals"
+
+msgid "Hidden"
+msgstr "Hidden"
+
+msgid "Visible"
+msgstr "Visible"
+
+msgid "deleted account"
+msgstr "deleted account"
+
+msgid "Make visible"
+msgstr "Make visible"
+
+msgid "Hide"
+msgstr "Hide"
+
+msgid "No hidden proposals."
+msgstr "No hidden proposals."
+
+msgid "No visible proposals."
+msgstr "No visible proposals."
+
+msgid "Who may do what"
+msgstr "Who may do what"
+
+msgid "this is your issue"
+msgstr "this is your issue"
+
+msgid "Log"
+msgstr "Log"
+
+msgid "You"
+msgstr "You"
+
+#, python-format
+msgid "hid \"%(snap)s\""
+msgstr "hid \"%(snap)s\""
+
+#, python-format
+msgid "made \"%(snap)s\" visible again"
+msgstr "made \"%(snap)s\" visible again"
+
+#, python-format
+msgid "deleted \"%(snap)s\""
+msgstr "deleted \"%(snap)s\""
+
+#, python-format
+msgid "deleted the issue \"%(snap)s\""
+msgstr "deleted the issue \"%(snap)s\""
+
+msgid "Nothing hidden or deleted yet."
+msgstr "Nothing hidden or deleted yet."
+
+msgid "Review"
+msgstr "Review"
+
+#, python-format
+msgid "Show all %(value)s"
+msgstr "Show all %(value)s"
+
+#, python-format
+msgid "Nothing in this section for \"%(zoek)s\"."
+msgstr "Nothing in this section for \"%(zoek)s\"."
+
+msgid "anonymous"
+msgstr "anonymous"
+
+#, python-format
+msgid "show all %(count)s"
+msgstr "show all %(count)s"
+
+msgid "Reports"
+msgstr "Reports"
+
+msgid "Objections"
+msgstr "Objections"
+
+msgid "By the AI"
+msgstr "By the AI"
+
+msgid "Without AI judgement"
+msgstr "Without AI judgement"
+
+msgid "Handled total"
+msgstr "Handled total"
+
+msgid "Handled by you"
+msgstr "Handled by you"
+
+msgid "Moderation streams"
+msgstr "Moderation streams"
+
+msgid "reports, by participants"
+msgstr "reports, by participants"
+
+msgid "Search by issue"
+msgstr "Search by issue"
+
+msgid "Clear search"
+msgstr "Clear search"
+
+#, python-format
+msgid "No issue containing \"%(zoek)s\" in this stream."
+msgstr "No issue containing \"%(zoek)s\" in this stream."
+
+msgid "Reports, by participants"
+msgstr "Reports, by participants"
+
+msgid "No open reports."
+msgstr "No open reports."
+
+msgid "Reports: not quality"
+msgstr "Reports: not quality"
+
+msgid "Reported by"
+msgstr "Reported by"
+
+msgid "Note (optional, for moderators only)"
+msgstr "Note (optional, for moderators only)"
+
+msgid "Keep"
+msgstr "Keep"
+
+msgid "Withdraw"
+msgstr "Withdraw"
+
+msgid "Without judgement"
+msgstr "Without judgement"
+
+msgid "Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually."
+msgstr "Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually."
+
+msgid "No quality judgement"
+msgstr "No quality judgement"
+
+msgid "Your own contribution: another moderator assesses it."
+msgstr "Your own contribution: another moderator assesses it."
+
+msgid "No contributions without a judgement."
+msgstr "No contributions without a judgement."
+
+msgid "Longest wait"
+msgstr "Longest wait"
+
+msgid "Open issues"
+msgstr "Open issues"
+
+msgid "Manage issues"
+msgstr "Manage issues"
+
+msgid "your issue"
+msgstr "your issue"
+
+msgid "archived"
+msgstr "archived"
+
+msgid "No open issues to manage."
+msgstr "No open issues to manage."
+
+msgid "All issues"
+msgstr "All issues"
+
+msgid "Set the rights"
+msgstr "Set the rights"
+
+msgid "Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page."
+msgstr "Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page."
+
+msgid "Phase management"
+msgstr "Phase management"
+
+msgid "ready"
+msgstr "ready"
+
+msgid "User"
+msgstr "User"
+
+msgid "Member since"
+msgstr "Member since"
+
+msgid "Verified"
+msgstr "Verified"
+
+msgid "Deleted on"
+msgstr "Deleted on"
+
+msgid "Suspended until"
+msgstr "Suspended until"
+
+msgid "Contributions"
+msgstr "Contributions"
+
+msgid "Quality marks"
+msgstr "Quality marks"
+
+msgid "Reports received"
+msgstr "Reports received"
+
+msgid "upheld"
+msgstr "upheld"
+
+msgid "Reports made"
+msgstr "Reports made"
+
+msgid "Enforcement history"
+msgstr "Enforcement history"
+
+msgid "until"
+msgstr "until"
+
+msgid "by the AI"
+msgstr "by the AI"
+
+msgid "by you"
+msgstr "by you"
+
+msgid "by a deleted account"
+msgstr "by a deleted account"
+
+msgid "No measures yet. Nothing was moved or hidden and there are no warnings or suspensions."
+msgstr "No measures yet. Nothing was moved or hidden and there are no warnings or suspensions."
+
+msgid "Contributions by this user"
+msgstr "Contributions by this user"
+
+msgid "Fact: "
+msgstr "Fact: "
+
+msgid "This user has not contributed anything yet."
+msgstr "This user has not contributed anything yet."
+
+msgid "The aim is constructive: start by steering with a warning. Suspending and deleting are heavy steps for those who carry on despite warnings."
+msgstr "The aim is constructive: start by steering with a warning. Suspending and deleting are heavy steps for those who carry on despite warnings."
+
+msgid "Measure"
+msgstr "Measure"
+
+msgid "This account has been deleted"
+msgstr "This account has been deleted"
+
+msgid "Send a warning"
+msgstr "Send a warning"
+
+msgid "The lightest, constructive step. Added to the history."
+msgstr "The lightest, constructive step. Added to the history."
+
+msgid "You cannot send yourself a warning."
+msgstr "You cannot send yourself a warning."
+
+msgid "Message to the user"
+msgstr "Message to the user"
+
+msgid "Stick to the substance, not the person."
+msgstr "Stick to the substance, not the person."
+
+msgid "Send warning"
+msgstr "Send warning"
+
+msgid "Suspend temporarily"
+msgstr "Suspend temporarily"
+
+msgid "The user cannot contribute or vote for a while, but stays a member."
+msgstr "The user cannot contribute or vote for a while, but stays a member."
+
+msgid "Suspended now until"
+msgstr "Suspended now until"
+
+msgid "A new suspension counts from now."
+msgstr "A new suspension counts from now."
+
+msgid "Duration"
+msgstr "Duration"
+
+msgid "Reason for the suspension"
+msgstr "Reason for the suspension"
+
+msgid "For example: repeated insults after an earlier warning."
+msgstr "For example: repeated insults after an earlier warning."
+
+msgid "Suspend for 7 days"
+msgstr "Suspend for 7 days"
+
+msgid "Delete account"
+msgstr "Delete account"
+
+msgid "The heaviest step, for those who carry on after a warning and a suspension. Opens a confirmation screen. Senior moderator or admin only."
+msgstr "The heaviest step, for those who carry on after a warning and a suspension. Opens a confirmation screen. Senior moderator or admin only."
+
+msgid "Reason (goes into the history)"
+msgstr "Reason (goes into the history)"
+
+msgid "For example: persistent behaviour that makes the conversation unsafe."
+msgstr "For example: persistent behaviour that makes the conversation unsafe."
+
+msgid "en"
+msgstr "en"
+
+msgid "Permanently delete account"
+msgstr "Permanently delete account"
+
+#, python-format
+msgid "You are about to delete the account <strong>@%(username)s</strong>."
+msgstr "You are about to delete the account <strong>@%(username)s</strong>."
+
+msgid "What happens"
+msgstr "What happens"
+
+msgid "The account becomes <b>@verwijderd</b> and can no longer log in. Name, email address and password are erased."
+msgstr "The account becomes <b>@verwijderd</b> and can no longer log in. Name, email address and password are erased."
+
+msgid "<strong>This cannot be undone.</strong> If you only want to stop someone for a while, use a suspension instead; it ends by itself."
+msgstr "<strong>This cannot be undone.</strong> If you only want to stop someone for a while, use a suspension instead; it ends by itself."
+
+msgid "Type the username to confirm:"
+msgstr "Type the username to confirm:"
+
+msgid "The button only becomes active when the username matches exactly."
+msgstr "The button only becomes active when the username matches exactly."
+
+msgid "Review report"
+msgstr "Review report"
+
+msgid "Online issue"
+msgstr "Online issue"
+
+msgid "phase"
+msgstr "phase"
+
+msgid "You are handling this"
+msgstr "You are handling this"
+
+msgid "view in context"
+msgstr "view in context"
+
+msgid "on a proposal"
+msgstr "on a proposal"
+
+msgid "parent message"
+msgstr "parent message"
+
+msgid "reply below"
+msgstr "reply below"
+
+msgid "Decision"
+msgstr "Decision"
+
+msgid "Move to the background"
+msgstr "Move to the background"
+
+msgid "Reason when moving"
+msgstr "Reason when moving"
+
+msgid "Not respectful"
+msgstr "Not respectful"
+
+msgid "Off topic"
+msgstr "Off topic"
+
+msgid "When moving or hiding, the author sees this note; when moving, it is also shown on the background page."
+msgstr "When moving or hiding, the author sees this note; when moving, it is also shown on the background page."
+
+msgid "A proposal is not moved or hidden on its own. Deleting a whole proposal comes in a later step."
+msgstr "A proposal is not moved or hidden on its own. Deleting a whole proposal comes in a later step."
+
+msgid "Moving puts the contribution on the public background page with the reason. Hiding removes it from the conversation entirely. Both can be undone."
+msgstr "Moving puts the contribution on the public background page with the reason. Hiding removes it from the conversation entirely. Both can be undone."
+
+msgid "many reports do not automatically mean a violation. The numbers next to a name are context, not a verdict; you decide."
+msgstr "many reports do not automatically mean a violation. The numbers next to a name are context, not a verdict; you decide."
+
+msgid "Deleting"
+msgstr "Deleting"
+
+msgid "An admin may always do everything. These settings apply as soon as you save, to all issues."
+msgstr "An admin may always do everything. These settings apply as soon as you save, to all issues."
+
+msgctxt "reported item"
+msgid "proposal"
+msgstr "proposal"
+
+msgctxt "reported item"
+msgid "fact"
+msgstr "fact"
+
+msgctxt "reported item"
+msgid "contribution"
+msgstr "contribution"
+
+#, python-format
+msgid "%(kind)s · reason"
+msgstr "%(kind)s · reason"
+
+#, python-format
+msgid "%(num)d report"
+msgid_plural "%(num)d reports"
+msgstr[0] "%(num)d report"
+msgstr[1] "%(num)d reports"
+
+msgctxt "moderator list"
+msgid "Sort"
+msgstr "Sort"
+
+msgid "Longest waiting"
+msgstr "Longest waiting"
+
+msgid "Newest first"
+msgstr "Newest first"
+
+msgid "Most reports"
+msgstr "Most reports"
+
+msgid "By issue"
+msgstr "By issue"
+
+#, python-format
+msgid "%(num)d open report"
+msgid_plural "%(num)d open reports"
+msgstr[0] "%(num)d open report"
+msgstr[1] "%(num)d open reports"
+
+#, python-format
+msgid "%(num)d report made"
+msgid_plural "%(num)d reports made"
+msgstr[0] "%(num)d report made"
+msgstr[1] "%(num)d reports made"
+
+#, python-format
+msgid "%(n)s received"
+msgstr "%(n)s received"
+
+#, python-format
+msgid "(%(n)s upheld)"
+msgstr "(%(n)s upheld)"
+
+#, python-format
+msgid "Reported %(kind)s"
+msgstr "Reported %(kind)s"
+
+msgctxt "issue kind"
+msgid "Event"
+msgstr "Event"
+
+#, python-format
+msgid "The %(kind)s in the conversation"
+msgstr "The %(kind)s in the conversation"
+
+#, python-format
+msgid "Reports on this %(kind)s"
+msgstr "Reports on this %(kind)s"
+
+#, python-format
+msgid "This is your own %(kind)s: another moderator decides."
+msgstr "This is your own item: another moderator decides."
+
+#, python-format
+msgid "Choose what happens to the %(kind)s. The author is notified and can object."
+msgstr "Choose what happens to the %(kind)s. The author is notified and can object."
+
+#, python-format
+msgid "Do nothing, the %(kind)s stays"
+msgstr "Do nothing, the %(kind)s stays"
+
+msgctxt "issue pill"
+msgid "Archived"
+msgstr "Archived"
+
+#, python-format
+msgid "%(num)d proposal"
+msgid_plural "%(num)d proposals"
+msgstr[0] "%(num)d proposal"
+msgstr[1] "%(num)d proposals"
+
+msgctxt "filter"
+msgid "All"
+msgstr "All"
+
+msgctxt "filter"
+msgid "Visible"
+msgstr "Visible"
+
+msgctxt "filter"
+msgid "Hidden"
+msgstr "Hidden"
+
+msgctxt "hidden by"
+msgid "you"
+msgstr "you"
+
+msgctxt "hidden by"
+msgid "a deleted account"
+msgstr "a deleted account"
+
+#, python-format
+msgid "Hidden by %(name)s, %(date)s"
+msgstr "Hidden by %(name)s, %(date)s"
+
+msgid "Hide proposals here and make them visible again"
+msgstr "Hide proposals here and make them visible again"
+
+msgid "Delete proposals under this issue"
+msgstr "Delete proposals under this issue"
+
+msgid "Delete this issue itself"
+msgstr "Delete this issue itself"
+
+msgid "Archive issues and set the rights"
+msgstr "Archive issues and set the rights"
+
+msgid "Deleting proposals is turned off for moderators"
+msgstr "Deleting proposals is turned off for moderators"
+
+msgid "Only an admin can set the rights"
+msgstr "Only an admin can set the rights"
+
+msgid "Only an admin can delete someone else's issue"
+msgstr "Only an admin can delete someone else's issue"
+
+#, python-format
+msgid "A senior moderator may delete all proposals. An admin may do everything. You set these rights under %(rights_word)s."
+msgstr "A senior moderator may delete all proposals. An admin may do everything. You set these rights under %(rights_word)s."
+
+#, python-format
+msgid "A senior moderator may delete all proposals. An admin may do everything. An admin sets these rights under %(rights_word)s."
+msgstr "A senior moderator may delete all proposals. An admin may do everything. An admin sets these rights under %(rights_word)s."
+
+#, python-format
+msgid "%(num)d warning"
+msgid_plural "%(num)d warnings"
+msgstr[0] "%(num)d warning"
+msgstr[1] "%(num)d warnings"
+
+#, python-format
+msgid "%(num)d suspension"
+msgid_plural "%(num)d suspensions"
+msgstr[0] "%(num)d suspension"
+msgstr[1] "%(num)d suspensions"
+
+msgid "Contribution moved to the background"
+msgstr "Contribution moved to the background"
+
+msgid "Warning sent"
+msgstr "Warning sent"
+
+msgid "Suspended"
+msgstr "Suspended"
+
+msgctxt "user status"
+msgid "quality mark"
+msgstr "quality mark"
+
+msgctxt "user status"
+msgid "fact"
+msgstr "fact"
+
+msgctxt "user status"
+msgid "reported"
+msgstr "reported"
+
+msgctxt "user status"
+msgid "moved"
+msgstr "moved"
+
+msgctxt "user status"
+msgid "hidden"
+msgstr "hidden"
+
+msgctxt "delete count"
+msgid "contribution stays, without a name"
+msgid_plural "contributions stay, without a name"
+msgstr[0] "contribution stays, without a name"
+msgstr[1] "contributions stay, without a name"
+
+msgctxt "delete count"
+msgid "fact stays, without a name"
+msgid_plural "facts stay, without a name"
+msgstr[0] "fact stays, without a name"
+msgstr[1] "facts stay, without a name"
+
+msgctxt "delete count"
+msgid "warning to this person goes too"
+msgid_plural "warnings to this person go too"
+msgstr[0] "warning to this person goes too"
+msgstr[1] "warnings to this person go too"
+
+msgctxt "delete count"
+msgid "suspension of this person goes too"
+msgid_plural "suspensions of this person go too"
+msgstr[0] "suspension of this person goes too"
+msgstr[1] "suspensions of this person go too"
+
+msgctxt "delete count"
+msgid "measure this person gave as a moderator stays, without a name"
+msgid_plural "measures this person gave as a moderator stay, without a name"
+msgstr[0] "measure this person gave as a moderator stays, without a name"
+msgstr[1] "measures this person gave as a moderator stay, without a name"
+
+msgid "Senior moderators may also delete issues"
+msgstr "Senior moderators may also delete issues"
+
+msgid "By default a senior moderator only deletes proposals; deleting issues then stays with the admin."
+msgstr "By default a senior moderator only deletes proposals; deleting issues then stays with the admin."
+
+msgid "Moderators may delete proposals under their own issue"
+msgstr "Moderators may delete proposals under their own issue"
+
+msgid "When this is off, a moderator can only hide those proposals, not delete them."
+msgstr "When this is off, a moderator can only hide those proposals, not delete them."
+
+msgid "last 7 days"
+msgstr "last 7 days"
+
+msgid "last 30 days"
+msgstr "last 30 days"
+
+msgid "all time"
+msgstr "all time"
+
+msgid "all languages"
+msgstr "all languages"

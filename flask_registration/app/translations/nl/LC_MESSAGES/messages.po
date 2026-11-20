@@ -2866,3 +2866,724 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "melding"
 msgstr[1] "meldingen"
+
+msgid "Earned status thresholds"
+msgstr "Drempels verdiende status"
+
+msgid "Language monitor"
+msgstr "Taal-monitor"
+
+msgid "Rights"
+msgstr "Rechten"
+
+msgid "Management"
+msgstr "Beheer"
+
+msgid "Does the AI systematically award more often in one language than in the other? The language is the one the author submitted the contribution in. The AI's own judgement is counted."
+msgstr "Kent de AI in de ene taal stelselmatig vaker toe dan in de andere? De taal is die waarin de auteur de bijdrage indiende. Geteld wordt het oordeel van de AI zelf."
+
+msgid "Period"
+msgstr "Periode"
+
+msgid "Language"
+msgstr "Taal"
+
+msgid "Judged"
+msgstr "Beoordeeld"
+
+msgid "Share awarded"
+msgstr "Percentage toegekend"
+
+msgid "no data"
+msgstr "geen data"
+
+msgid "Difference (NL minus EN)"
+msgstr "Verschil (NL min EN)"
+
+msgid "percentage points"
+msgstr "procentpunt"
+
+msgid "cannot be calculated yet (one of the languages has no judgements)"
+msgstr "nog niet te berekenen (een van de talen heeft geen beoordelingen)"
+
+msgid "Sample: most recent judgements"
+msgstr "Steekproef: recentste oordelen"
+
+msgid "AI judgement"
+msgstr "Oordeel AI"
+
+msgid "Current status"
+msgstr "Huidige stand"
+
+msgid "Contribution"
+msgstr "Bijdrage"
+
+msgid "awarded"
+msgstr "toegekend"
+
+msgid "declined"
+msgstr "afgewezen"
+
+msgid "No judgements yet."
+msgstr "Nog geen oordelen."
+
+msgid "A quality contribution is an own contribution with an awarded quality judgement. Topics are the conversations those contributions are in. You become a contributor with the first one. New thresholds apply from the moment you save; nobody goes down because of them."
+msgstr "Een kwaliteitsbijdrage is een eigen bijdrage met een toegekend kwaliteitsoordeel. Onderwerpen zijn de gesprekken waarin die bijdragen staan. Bijdrager wordt je bij de eerste. Nieuwe drempels gelden vanaf het opslaan; niemand gaat daardoor omlaag."
+
+msgid "Default"
+msgstr "Standaard"
+
+msgid "Enter a whole number of at least 1."
+msgstr "Vul een geheel getal van minimaal 1 in."
+
+msgid "Manage"
+msgstr "Beheer"
+
+msgid "Issue management"
+msgstr "Vraagstukbeheer"
+
+msgid "Your issue"
+msgstr "Jouw vraagstuk"
+
+msgid "The delete and hide actions are here, no longer on the public page. Hiding can be undone. Deleting cannot be undone and also removes the reactions. What you may do depends on your role and whether this is your issue."
+msgstr "De verwijder- en verberg-acties staan hier, niet meer op de openbare pagina. Verbergen is omkeerbaar. Verwijderen is onomkeerbaar en haalt ook de reacties weg. Wat je mag, hangt af van je rol en of dit jouw vraagstuk is."
+
+msgid "This issue"
+msgstr "Dit vraagstuk"
+
+msgid "Created by you"
+msgstr "Aangemaakt door jou"
+
+msgid "Created by"
+msgstr "Aangemaakt door"
+
+msgid "Created by a deleted account"
+msgstr "Aangemaakt door een verwijderd account"
+
+msgid "Archive"
+msgstr "Archiveren"
+
+msgid "Delete issue"
+msgstr "Vraagstuk verwijderen"
+
+msgid "Which proposals"
+msgstr "Welke voorstellen"
+
+msgid "Hidden"
+msgstr "Verborgen"
+
+msgid "Visible"
+msgstr "Zichtbaar"
+
+msgid "deleted account"
+msgstr "verwijderd account"
+
+msgid "Make visible"
+msgstr "Zichtbaar maken"
+
+msgid "Hide"
+msgstr "Verbergen"
+
+msgid "No hidden proposals."
+msgstr "Geen verborgen voorstellen."
+
+msgid "No visible proposals."
+msgstr "Geen zichtbare voorstellen."
+
+msgid "Who may do what"
+msgstr "Wie mag wat"
+
+msgid "this is your issue"
+msgstr "dit is jouw vraagstuk"
+
+msgid "Log"
+msgstr "Logboek"
+
+msgid "You"
+msgstr "Jij"
+
+#, python-format
+msgid "hid \"%(snap)s\""
+msgstr "verborg \"%(snap)s\""
+
+#, python-format
+msgid "made \"%(snap)s\" visible again"
+msgstr "maakte \"%(snap)s\" weer zichtbaar"
+
+#, python-format
+msgid "deleted \"%(snap)s\""
+msgstr "verwijderde \"%(snap)s\""
+
+#, python-format
+msgid "deleted the issue \"%(snap)s\""
+msgstr "verwijderde het vraagstuk \"%(snap)s\""
+
+msgid "Nothing hidden or deleted yet."
+msgstr "Nog niets verborgen of verwijderd."
+
+msgid "Review"
+msgstr "Beoordelen"
+
+#, python-format
+msgid "Show all %(value)s"
+msgstr "Toon alle %(value)s"
+
+#, python-format
+msgid "Nothing in this section for \"%(zoek)s\"."
+msgstr "Niets in deze sectie voor \"%(zoek)s\"."
+
+msgid "anonymous"
+msgstr "anonieme deelnemer"
+
+#, python-format
+msgid "show all %(count)s"
+msgstr "toon alle %(count)s"
+
+msgid "Reports"
+msgstr "Meldingen"
+
+msgid "Objections"
+msgstr "Bezwaren"
+
+msgid "By the AI"
+msgstr "Door de AI"
+
+msgid "Without AI judgement"
+msgstr "Zonder AI-oordeel"
+
+msgid "Handled total"
+msgstr "Behandeld totaal"
+
+msgid "Handled by you"
+msgstr "Behandeld door jou"
+
+msgid "Moderation streams"
+msgstr "Moderatiestromen"
+
+msgid "reports, by participants"
+msgstr "meldingen, door deelnemers"
+
+msgid "Search by issue"
+msgstr "Zoek op vraagstuk"
+
+msgid "Clear search"
+msgstr "Wis zoekopdracht"
+
+#, python-format
+msgid "No issue containing \"%(zoek)s\" in this stream."
+msgstr "Geen vraagstuk gevonden dat \"%(zoek)s\" bevat in deze stroom."
+
+msgid "Reports, by participants"
+msgstr "Meldingen, door deelnemers"
+
+msgid "No open reports."
+msgstr "Geen open meldingen."
+
+msgid "Reports: not quality"
+msgstr "Meldingen: geen kwaliteit"
+
+msgid "Reported by"
+msgstr "Gemeld door"
+
+msgid "Note (optional, for moderators only)"
+msgstr "Toelichting (optioneel, alleen voor moderators)"
+
+msgid "Keep"
+msgstr "Handhaven"
+
+msgid "Withdraw"
+msgstr "Intrekken"
+
+msgid "Without judgement"
+msgstr "Zonder oordeel"
+
+msgid "Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually."
+msgstr "Recente bijdragen zonder (of nog zonder) oordeel, bijvoorbeeld omdat de AI niet beschikbaar was. Je kunt ze handmatig beoordelen."
+
+msgid "No quality judgement"
+msgstr "Geen kwaliteitsoordeel"
+
+msgid "Your own contribution: another moderator assesses it."
+msgstr "Je eigen bijdrage: een andere moderator beoordeelt deze."
+
+msgid "No contributions without a judgement."
+msgstr "Geen bijdragen zonder oordeel."
+
+msgid "Longest wait"
+msgstr "Oudste wachttijd"
+
+msgid "Open issues"
+msgstr "Lopende vraagstukken"
+
+msgid "Manage issues"
+msgstr "Vraagstukken beheren"
+
+msgid "your issue"
+msgstr "jouw vraagstuk"
+
+msgid "archived"
+msgstr "in archief"
+
+msgid "No open issues to manage."
+msgstr "Geen lopende vraagstukken om te beheren."
+
+msgid "All issues"
+msgstr "Alle vraagstukken"
+
+msgid "Set the rights"
+msgstr "Rechten instellen"
+
+msgid "Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page."
+msgstr "Klik bij een vraagstuk op <strong>Beheer</strong> om voorstellen te verbergen of te verwijderen en het vraagstuk te beheren. De vraagstuk-label bij een melding leidt naar dezelfde pagina."
+
+msgid "Phase management"
+msgstr "Fasebeheer"
+
+msgid "ready"
+msgstr "klaar"
+
+msgid "User"
+msgstr "Gebruiker"
+
+msgid "Member since"
+msgstr "Lid sinds"
+
+msgid "Verified"
+msgstr "Geverifieerd"
+
+msgid "Deleted on"
+msgstr "Verwijderd op"
+
+msgid "Suspended until"
+msgstr "Geschorst tot"
+
+msgid "Contributions"
+msgstr "Bijdragen"
+
+msgid "Quality marks"
+msgstr "Keurmerken"
+
+msgid "Reports received"
+msgstr "Meldingen ontvangen"
+
+msgid "upheld"
+msgstr "gegrond"
+
+msgid "Reports made"
+msgstr "Meldingen gedaan"
+
+msgid "Enforcement history"
+msgstr "Handhaving-historie"
+
+msgid "until"
+msgstr "tot"
+
+msgid "by the AI"
+msgstr "door de AI"
+
+msgid "by you"
+msgstr "door jou"
+
+msgid "by a deleted account"
+msgstr "door een verwijderd account"
+
+msgid "No measures yet. Nothing was moved or hidden and there are no warnings or suspensions."
+msgstr "Nog geen maatregelen. Er is niets verplaatst of verborgen en er zijn geen waarschuwingen of schorsingen."
+
+msgid "Contributions by this user"
+msgstr "Bijdragen van deze gebruiker"
+
+msgid "Fact: "
+msgstr "Feit: "
+
+msgid "This user has not contributed anything yet."
+msgstr "Deze gebruiker heeft nog niets bijgedragen."
+
+msgid "The aim is constructive: start by steering with a warning. Suspending and deleting are heavy steps for those who carry on despite warnings."
+msgstr "De bedoeling is opbouwend: begin bij bijsturen met een waarschuwing. Schorsen en verwijderen zijn zware stappen voor wie ondanks waarschuwingen doorgaat."
+
+msgid "Measure"
+msgstr "Maatregel"
+
+msgid "This account has been deleted"
+msgstr "Dit account is verwijderd"
+
+msgid "Send a warning"
+msgstr "Waarschuwing sturen"
+
+msgid "The lightest, constructive step. Added to the history."
+msgstr "De lichtste, opbouwende stap. Komt in de historie."
+
+msgid "You cannot send yourself a warning."
+msgstr "Je kunt jezelf geen waarschuwing sturen."
+
+msgid "Message to the user"
+msgstr "Bericht aan de gebruiker"
+
+msgid "Stick to the substance, not the person."
+msgstr "Blijf op de inhoud, niet op de persoon."
+
+msgid "Send warning"
+msgstr "Waarschuwing sturen"
+
+msgid "Suspend temporarily"
+msgstr "Tijdelijk schorsen"
+
+msgid "The user cannot contribute or vote for a while, but stays a member."
+msgstr "De gebruiker kan een tijd niet bijdragen of stemmen, maar blijft lid."
+
+msgid "Suspended now until"
+msgstr "Nu geschorst tot"
+
+msgid "A new suspension counts from now."
+msgstr "Een nieuwe schorsing telt vanaf nu."
+
+msgid "Duration"
+msgstr "Duur"
+
+msgid "Reason for the suspension"
+msgstr "Reden van de schorsing"
+
+msgid "For example: repeated insults after an earlier warning."
+msgstr "Bijvoorbeeld: herhaalde beledigingen na een eerdere waarschuwing."
+
+msgid "Suspend for 7 days"
+msgstr "Schorsen voor 7 dagen"
+
+msgid "Delete account"
+msgstr "Account verwijderen"
+
+msgid "The heaviest step, for those who carry on after a warning and a suspension. Opens a confirmation screen. Senior moderator or admin only."
+msgstr "De zwaarste stap, voor wie na waarschuwing en schorsing doorgaat. Opent een bevestigingsscherm. Alleen senior moderator of admin."
+
+msgid "Reason (goes into the history)"
+msgstr "Reden (komt in de historie)"
+
+msgid "For example: persistent behaviour that makes the conversation unsafe."
+msgstr "Bijvoorbeeld: structureel gedrag dat het gesprek onveilig maakt."
+
+msgid "en"
+msgstr "nl"
+
+msgid "Permanently delete account"
+msgstr "Account definitief verwijderen"
+
+#, python-format
+msgid "You are about to delete the account <strong>@%(username)s</strong>."
+msgstr "Je staat op het punt het account <strong>@%(username)s</strong> te verwijderen."
+
+msgid "What happens"
+msgstr "Wat er gebeurt"
+
+msgid "The account becomes <b>@verwijderd</b> and can no longer log in. Name, email address and password are erased."
+msgstr "Het account wordt <b>@verwijderd</b> en kan niet meer inloggen. Naam, e-mailadres en wachtwoord worden gewist."
+
+msgid "<strong>This cannot be undone.</strong> If you only want to stop someone for a while, use a suspension instead; it ends by itself."
+msgstr "<strong>Dit kan niet ongedaan worden gemaakt.</strong> Wil je iemand alleen een tijd tegenhouden, gebruik dan een schorsing; die loopt vanzelf af."
+
+msgid "Type the username to confirm:"
+msgstr "Typ de gebruikersnaam om te bevestigen:"
+
+msgid "The button only becomes active when the username matches exactly."
+msgstr "De knop wordt pas actief als de gebruikersnaam exact klopt."
+
+msgid "Review report"
+msgstr "Melding beoordelen"
+
+msgid "Online issue"
+msgstr "Online vraagstuk"
+
+msgid "phase"
+msgstr "fase"
+
+msgid "You are handling this"
+msgstr "Jij behandelt dit nu"
+
+msgid "view in context"
+msgstr "bekijk in context"
+
+msgid "on a proposal"
+msgstr "bij een voorstel"
+
+msgid "parent message"
+msgstr "bovenliggend bericht"
+
+msgid "reply below"
+msgstr "reactie eronder"
+
+msgid "Decision"
+msgstr "Beslissing"
+
+msgid "Move to the background"
+msgstr "Verplaatsen naar achtergrond"
+
+msgid "Reason when moving"
+msgstr "Reden bij verplaatsen"
+
+msgid "Not respectful"
+msgstr "Niet respectvol"
+
+msgid "Off topic"
+msgstr "Niet op het onderwerp"
+
+msgid "When moving or hiding, the author sees this note; when moving, it is also shown on the background page."
+msgstr "Bij verplaatsen of verbergen ziet de auteur deze toelichting; bij verplaatsen staat hij ook op de achtergrondpagina."
+
+msgid "A proposal is not moved or hidden on its own. Deleting a whole proposal comes in a later step."
+msgstr "Een voorstel verplaats of verberg je niet los. Een heel voorstel verwijderen komt in een latere stap."
+
+msgid "Moving puts the contribution on the public background page with the reason. Hiding removes it from the conversation entirely. Both can be undone."
+msgstr "Verplaatsen zet de bijdrage op de openbare achtergrondpagina met de reden erbij. Verbergen haalt hem helemaal uit het gesprek. Beide zijn terug te draaien."
+
+msgid "many reports do not automatically mean a violation. The numbers next to a name are context, not a verdict; you decide."
+msgstr "veel meldingen betekent niet automatisch een overtreding. De cijfers bij een naam zijn context, geen oordeel, jij beslist."
+
+msgid "Deleting"
+msgstr "Verwijderen"
+
+msgid "An admin may always do everything. These settings apply as soon as you save, to all issues."
+msgstr "Een admin mag altijd alles. Deze instellingen gelden direct na het opslaan, voor alle vraagstukken."
+
+msgctxt "reported item"
+msgid "proposal"
+msgstr "voorstel"
+
+msgctxt "reported item"
+msgid "fact"
+msgstr "feit"
+
+msgctxt "reported item"
+msgid "contribution"
+msgstr "bijdrage"
+
+#, python-format
+msgid "%(kind)s · reason"
+msgstr "%(kind)s · reden"
+
+#, python-format
+msgid "%(num)d report"
+msgid_plural "%(num)d reports"
+msgstr[0] "%(num)d melding"
+msgstr[1] "%(num)d meldingen"
+
+msgctxt "moderator list"
+msgid "Sort"
+msgstr "Sorteer"
+
+msgid "Longest waiting"
+msgstr "Langst wachtend"
+
+msgid "Newest first"
+msgstr "Nieuwste eerst"
+
+msgid "Most reports"
+msgstr "Meeste meldingen"
+
+msgid "By issue"
+msgstr "Per vraagstuk"
+
+#, python-format
+msgid "%(num)d open report"
+msgid_plural "%(num)d open reports"
+msgstr[0] "%(num)d open melding"
+msgstr[1] "%(num)d open meldingen"
+
+#, python-format
+msgid "%(num)d report made"
+msgid_plural "%(num)d reports made"
+msgstr[0] "%(num)d melding gedaan"
+msgstr[1] "%(num)d meldingen gedaan"
+
+#, python-format
+msgid "%(n)s received"
+msgstr "%(n)s ontvangen"
+
+#, python-format
+msgid "(%(n)s upheld)"
+msgstr "(waarvan %(n)s gegrond)"
+
+#, python-format
+msgid "Reported %(kind)s"
+msgstr "Gemelde %(kind)s"
+
+msgctxt "issue kind"
+msgid "Event"
+msgstr "Evenement"
+
+#, python-format
+msgid "The %(kind)s in the conversation"
+msgstr "De %(kind)s in het gesprek"
+
+#, python-format
+msgid "Reports on this %(kind)s"
+msgstr "Meldingen bij deze %(kind)s"
+
+#, python-format
+msgid "This is your own %(kind)s: another moderator decides."
+msgstr "Dit is je eigen %(kind)s: een andere moderator beslist."
+
+#, python-format
+msgid "Choose what happens to the %(kind)s. The author is notified and can object."
+msgstr "Kies wat er met de %(kind)s gebeurt. De auteur krijgt bericht en kan bezwaar maken."
+
+#, python-format
+msgid "Do nothing, the %(kind)s stays"
+msgstr "Niets doen, %(kind)s blijft staan"
+
+msgctxt "issue pill"
+msgid "Archived"
+msgstr "In archief"
+
+#, python-format
+msgid "%(num)d proposal"
+msgid_plural "%(num)d proposals"
+msgstr[0] "%(num)d voorstel"
+msgstr[1] "%(num)d voorstellen"
+
+msgctxt "filter"
+msgid "All"
+msgstr "Alle"
+
+msgctxt "filter"
+msgid "Visible"
+msgstr "Zichtbaar"
+
+msgctxt "filter"
+msgid "Hidden"
+msgstr "Verborgen"
+
+msgctxt "hidden by"
+msgid "you"
+msgstr "jou"
+
+msgctxt "hidden by"
+msgid "a deleted account"
+msgstr "een verwijderd account"
+
+#, python-format
+msgid "Hidden by %(name)s, %(date)s"
+msgstr "Verborgen door %(name)s, %(date)s"
+
+msgid "Hide proposals here and make them visible again"
+msgstr "Voorstellen hier verbergen en weer zichtbaar maken"
+
+msgid "Delete proposals under this issue"
+msgstr "Voorstellen onder dit vraagstuk verwijderen"
+
+msgid "Delete this issue itself"
+msgstr "Dit vraagstuk zelf verwijderen"
+
+msgid "Archive issues and set the rights"
+msgstr "Vraagstukken archiveren en de rechten instellen"
+
+msgid "Deleting proposals is turned off for moderators"
+msgstr "Voorstellen verwijderen staat voor moderators uit"
+
+msgid "Only an admin can set the rights"
+msgstr "De rechten instellen kan alleen een admin"
+
+msgid "Only an admin can delete someone else's issue"
+msgstr "Andermans vraagstuk verwijderen kan alleen een admin"
+
+#, python-format
+msgid "A senior moderator may delete all proposals. An admin may do everything. You set these rights under %(rights_word)s."
+msgstr "Senior moderator mag alle voorstellen verwijderen. Admin mag alles. Jij stelt deze rechten in bij %(rights_word)s."
+
+#, python-format
+msgid "A senior moderator may delete all proposals. An admin may do everything. An admin sets these rights under %(rights_word)s."
+msgstr "Senior moderator mag alle voorstellen verwijderen. Admin mag alles. Een admin stelt deze rechten in bij %(rights_word)s."
+
+#, python-format
+msgid "%(num)d warning"
+msgid_plural "%(num)d warnings"
+msgstr[0] "%(num)d waarschuwing"
+msgstr[1] "%(num)d waarschuwingen"
+
+#, python-format
+msgid "%(num)d suspension"
+msgid_plural "%(num)d suspensions"
+msgstr[0] "%(num)d schorsing"
+msgstr[1] "%(num)d schorsingen"
+
+msgid "Contribution moved to the background"
+msgstr "Bijdrage verplaatst naar achtergrond"
+
+msgid "Warning sent"
+msgstr "Waarschuwing gestuurd"
+
+msgid "Suspended"
+msgstr "Geschorst"
+
+msgctxt "user status"
+msgid "quality mark"
+msgstr "keurmerk"
+
+msgctxt "user status"
+msgid "fact"
+msgstr "feit"
+
+msgctxt "user status"
+msgid "reported"
+msgstr "gemeld"
+
+msgctxt "user status"
+msgid "moved"
+msgstr "verplaatst"
+
+msgctxt "user status"
+msgid "hidden"
+msgstr "verborgen"
+
+msgctxt "delete count"
+msgid "contribution stays, without a name"
+msgid_plural "contributions stay, without a name"
+msgstr[0] "bijdrage blijft staan, zonder naam"
+msgstr[1] "bijdragen blijven staan, zonder naam"
+
+msgctxt "delete count"
+msgid "fact stays, without a name"
+msgid_plural "facts stay, without a name"
+msgstr[0] "feit blijft staan, zonder naam"
+msgstr[1] "feiten blijven staan, zonder naam"
+
+msgctxt "delete count"
+msgid "warning to this person goes too"
+msgid_plural "warnings to this person go too"
+msgstr[0] "waarschuwing aan deze persoon gaat mee"
+msgstr[1] "waarschuwingen aan deze persoon gaan mee"
+
+msgctxt "delete count"
+msgid "suspension of this person goes too"
+msgid_plural "suspensions of this person go too"
+msgstr[0] "schorsing van deze persoon gaat mee"
+msgstr[1] "schorsingen van deze persoon gaan mee"
+
+msgctxt "delete count"
+msgid "measure this person gave as a moderator stays, without a name"
+msgid_plural "measures this person gave as a moderator stay, without a name"
+msgstr[0] "maatregel die deze persoon als moderator gaf, blijft staan zonder naam"
+msgstr[1] "maatregelen die deze persoon als moderator gaf, blijven staan zonder naam"
+
+msgid "Senior moderators may also delete issues"
+msgstr "Senior moderator mag ook vraagstukken verwijderen"
+
+msgid "By default a senior moderator only deletes proposals; deleting issues then stays with the admin."
+msgstr "Standaard verwijdert een senior moderator alleen voorstellen; vraagstukken verwijderen blijft dan bij de admin."
+
+msgid "Moderators may delete proposals under their own issue"
+msgstr "Moderator mag voorstellen onder het eigen vraagstuk verwijderen"
+
+msgid "When this is off, a moderator can only hide those proposals, not delete them."
+msgstr "Staat dit uit, dan kan een moderator die voorstellen alleen verbergen, niet verwijderen."
+
+msgid "last 7 days"
+msgstr "laatste 7 dagen"
+
+msgid "last 30 days"
+msgstr "laatste 30 dagen"
+
+msgid "all time"
+msgstr "alles"
+
+msgid "all languages"
+msgstr "alle talen"

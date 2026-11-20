@@ -25,7 +25,7 @@
           {% if errors.get(phase) %}<p class="gu-join__formError">{{ _('Enter a whole number from 1 to 365.') }}</p>{% endif %}
         </div>
         {% endfor %}
-        <button type="submit" class="gu-btn gu-btn--primary">{% if lang == 'nl' %}Opslaan{% else %}Save{% endif %} <span class="gu-arrow"></span></button>
+        <button type="submit" class="gu-btn gu-btn--primary">{{ _('Save') }} <span class="gu-arrow"></span></button>
       </form>
     </section>
 
@@ -40,7 +40,7 @@
           <input type="number" min="1" max="365" step="1" id="silence_days" name="silence_days" class="gu-input" value="{{ silence_days }}">
           <p class="gu-join__hint">{{ _('Default: %(days)s days', days=silence_default) }}</p>
         </div>
-        <button type="submit" class="gu-btn gu-btn--primary">{% if lang == 'nl' %}Opslaan{% else %}Save{% endif %} <span class="gu-arrow"></span></button>
+        <button type="submit" class="gu-btn gu-btn--primary">{{ _('Save') }} <span class="gu-arrow"></span></button>
       </form>
     </section>
   </div>

@@ -29,37 +29,36 @@
 {%- endmacro %}
 
 {% macro review_summary() -%}
-<summary class="gu-btn gu-btn--primary gu-btn--sm">{% if lang == 'nl' %}Beoordelen{% else %}Review{% endif %}</summary>
+<summary class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Review') }}</summary>
 {%- endmacro %}
 
 {% macro show_all_link(key) -%}
 {%- if not show_all and section_total[key] > 10 -%}
 <div class="gu-mod-bin__more">
-  <a href="{{ url_for('admin.moderator_dashboard', stroom=stroom, zoek=zoek or None, sorteer=sorteer if sorteer != 'wachtend' else None, alle=1) }}#{{ key }}">{% if lang == 'nl' %}Toon alle {{ section_total[key] }}{% else %}Show all {{ section_total[key] }}{% endif %}</a>
+  <a href="{{ url_for('admin.moderator_dashboard', stroom=stroom, zoek=zoek or None, sorteer=sorteer if sorteer != 'wachtend' else None, alle=1) }}#{{ key }}">{% trans value=section_total[key] %}Show all {{ value }}{% endtrans %}</a>
 </div>
 {%- endif -%}
 {%- endmacro %}
 
 {% macro empty(text) -%}
-<p class="gu-mod-bin__empty">{% if zoek %}{% if lang == 'nl' %}Niets in deze sectie voor "{{ zoek }}".{% else %}Nothing in this section for "{{ zoek }}".{% endif %}{% else %}{{ text }}{% endif %}</p>
+<p class="gu-mod-bin__empty">{% if zoek %}{% trans zoek=zoek %}Nothing in this section for "{{ zoek }}".{% endtrans %}{% else %}{{ text }}{% endif %}</p>
 {%- endmacro %}
 
 {% macro melding_row(m) %}
-{% set soort = 'voorstel' if m.kind == 'proposal' else ('feit' if m.is_fact else 'bijdrage') %}
-{% set soort_en = 'proposal' if m.kind == 'proposal' else ('fact' if m.is_fact else 'contribution') %}
+{% set soort = pgettext('reported item', 'proposal') if m.kind == 'proposal' else (pgettext('reported item', 'fact') if m.is_fact else pgettext('reported item', 'contribution')) %}
 <div class="gu-mrow">
   <div class="gu-mrow__body">
     <div class="gu-mrow__line">
-      <strong>{{ user_link(m.author_id, m.author_name or ('anonieme deelnemer' if lang == 'nl' else 'anonymous')) }}</strong>
+      <strong>{{ user_link(m.author_id, m.author_name or (_('anonymous'))) }}</strong>
       <span class="gu-mrow__dot">·</span> {{ ctx_pill(m.issue) }}
       {{ excerpt(m.snippet, post_url(m.item) if m.kind == 'post' else (url_for('issues.proposal', issue_id=m.issue.id, proposal_id=m.id) if m.issue else None)) }}
     </div>
-    <p class="gu-mrow__reason">{% if lang == 'nl' %}{{ soort|capitalize }} · reden{% else %}{{ soort_en|capitalize }} · reason{% endif %}: "{{ m.reports[0].reason }}"{% if m.count > 1 %} <a href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% if lang == 'nl' %}toon alle {{ m.count }}{% else %}show all {{ m.count }}{% endif %}</a>{% endif %}</p>
+    <p class="gu-mrow__reason">{% trans kind=soort|capitalize %}{{ kind }} · reason{% endtrans %}: "{{ m.reports[0].reason }}"{% if m.count > 1 %} <a href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% trans count=m.count %}show all {{ count }}{% endtrans %}</a>{% endif %}</p>
   </div>
   <div class="gu-mrow__side">
-    <span class="gu-pill gu-pill--count">{{ m.count }} {% if lang == 'nl' %}melding{{ '' if m.count == 1 else 'en' }}{% else %}report{{ '' if m.count == 1 else 's' }}{% endif %}</span>
+    <span class="gu-pill gu-pill--count">{{ ngettext('%(num)d report', '%(num)d reports', m.count) }}</span>
     {% if m.wait %}<span class="gu-pill gu-age gu-age--{{ m.wait.sev }}">{{ m.wait[lang] }}</span>{% endif %}
-    <a class="gu-btn gu-btn--primary gu-btn--sm" href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% if lang == 'nl' %}Beoordelen{% else %}Review{% endif %}</a>
+    <a class="gu-btn gu-btn--primary gu-btn--sm" href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{{ _('Review') }}</a>
   </div>
 </div>
 {% endmacro %}
@@ -76,72 +75,72 @@
 
     {# ── Kengetallen: één rij van zes tegels (statistieken, geen links) ── #}
     <div class="gu-mod__kpis">
-      <div class="gu-kpi"><span class="gu-kpi__num gu-kpi__num--accent">{{ stream_counts.meldingen }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Meldingen{% else %}Reports{% endif %}</span></div>
-      <div class="gu-kpi"><span class="gu-kpi__num">{{ stream_counts.bezwaren }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Bezwaren{% else %}Objections{% endif %}</span></div>
-      <div class="gu-kpi"><span class="gu-kpi__num">{{ stream_counts.ai }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Door de AI{% else %}By the AI{% endif %}</span></div>
-      <div class="gu-kpi"><span class="gu-kpi__num">{{ stream_counts.zonder }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Zonder AI-oordeel{% else %}Without AI judgement{% endif %}</span></div>
-      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_total }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Behandeld totaal{% else %}Handled total{% endif %}</span></div>
-      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_mine }}</span><span class="gu-kpi__lbl">{% if lang == 'nl' %}Behandeld door jou{% else %}Handled by you{% endif %}</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num gu-kpi__num--accent">{{ stream_counts.meldingen }}</span><span class="gu-kpi__lbl">{{ _('Reports') }}</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num">{{ stream_counts.bezwaren }}</span><span class="gu-kpi__lbl">{{ _('Objections') }}</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num">{{ stream_counts.ai }}</span><span class="gu-kpi__lbl">{{ _('By the AI') }}</span></div>
+      <div class="gu-kpi"><span class="gu-kpi__num">{{ stream_counts.zonder }}</span><span class="gu-kpi__lbl">{{ _('Without AI judgement') }}</span></div>
+      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_total }}</span><span class="gu-kpi__lbl">{{ _('Handled total') }}</span></div>
+      <div class="gu-kpi gu-kpi--done"><span class="gu-kpi__num">{{ handled_mine }}</span><span class="gu-kpi__lbl">{{ _('Handled by you') }}</span></div>
     </div>
 
     <div class="gu-mod__cols">
       {# ── De bak: tabbladen (?stroom=) in de kop, de stroom-secties eronder ── #}
       <section class="gu-mod__main gu-mod-bin gu-mod-bin--card" id="bak">
         <div class="gu-mod-bin__head">
-          <nav class="gu-mod-tabs" aria-label="{% if lang == 'nl' %}Moderatiestromen{% else %}Moderation streams{% endif %}">
+          <nav class="gu-mod-tabs" aria-label="{{ _('Moderation streams') }}">
             <div class="gu-seg">
               {% for key in ('alle', 'meldingen', 'bezwaren', 'ai', 'zonder') %}
               <a href="{{ url_for('admin.moderator_dashboard', stroom=key, zoek=zoek or None, sorteer=sorteer if sorteer != 'wachtend' else None) }}" class="gu-seg__btn{% if key == stroom %} is-on{% endif %}"{% if key == stroom %} aria-current="page"{% endif %}>
-              {%- if key == 'alle' %}{% if lang == 'nl' %}Alle{% else %}All{% endif %}
-              {%- elif key == 'meldingen' %}{% if lang == 'nl' %}Meldingen{% else %}Reports{% endif %}
-              {%- elif key == 'bezwaren' %}{% if lang == 'nl' %}Bezwaren{% else %}Objections{% endif %}
-              {%- elif key == 'ai' %}{% if lang == 'nl' %}Door de AI{% else %}By the AI{% endif %}
-              {%- else %}{% if lang == 'nl' %}Zonder AI-oordeel{% else %}Without AI judgement{% endif %}{% endif %}
+              {%- if key == 'alle' %}{{ _('All') }}
+              {%- elif key == 'meldingen' %}{{ _('Reports') }}
+              {%- elif key == 'bezwaren' %}{{ _('Objections') }}
+              {%- elif key == 'ai' %}{{ _('By the AI') }}
+              {%- else %}{{ _('Without AI judgement') }}{% endif %}
                 <span class="gu-seg__c">{{ stream_counts[key] }}</span></a>
               {% endfor %}
             </div>
           </nav>
           <div class="gu-mod-bin__bar">
-            <p class="gu-mod-bin__ctx">{{ stream_counts.meldingen }} {% if lang == 'nl' %}meldingen, door deelnemers{% else %}reports, by participants{% endif %}</p>
+            <p class="gu-mod-bin__ctx">{{ stream_counts.meldingen }} {{ _('reports, by participants') }}</p>
             <form method="GET" action="{{ url_for('admin.moderator_dashboard') }}#bak" class="gu-mod-bin__tools" role="search" data-bin-tools>
               <input type="hidden" name="stroom" value="{{ stroom }}">
               {% if show_all %}<input type="hidden" name="alle" value="1">{% endif %}
               <label class="gu-mod-bin__search">
                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                <span class="gu-sr-only">{% if lang == 'nl' %}Zoek op vraagstuk{% else %}Search by issue{% endif %}</span>
-                <input type="search" name="zoek" value="{{ zoek }}" maxlength="100" placeholder="{% if lang == 'nl' %}Zoek op vraagstuk{% else %}Search by issue{% endif %}">
+                <span class="gu-sr-only">{{ _('Search by issue') }}</span>
+                <input type="search" name="zoek" value="{{ zoek }}" maxlength="100" placeholder="{{ _('Search by issue') }}">
               </label>
-              <label><span class="gu-sr-only">{% if lang == 'nl' %}Sorteer{% else %}Sort{% endif %}</span>
+              <label><span class="gu-sr-only">{{ pgettext('moderator list', 'Sort') }}</span>
                 <select name="sorteer" class="gu-mod-bin__sel" data-autosubmit>
-                  {% for key, nl, en in (('wachtend', 'Langst wachtend', 'Longest waiting'), ('nieuwste', 'Nieuwste eerst', 'Newest first'), ('meldingen', 'Meeste meldingen', 'Most reports'), ('vraagstuk', 'Per vraagstuk', 'By issue')) %}
-                  <option value="{{ key }}"{% if key == sorteer %} selected{% endif %}>{{ nl if lang == 'nl' else en }}</option>
+                  {% for key, label in (('wachtend', _('Longest waiting')), ('nieuwste', _('Newest first')), ('meldingen', _('Most reports')), ('vraagstuk', _('By issue'))) %}
+                  <option value="{{ key }}"{% if key == sorteer %} selected{% endif %}>{{ label }}</option>
                   {% endfor %}
                 </select>
               </label>
-              <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Toepassen{% else %}Apply{% endif %}</button>
-              {% if zoek %}<a class="gu-mod-bin__clear" href="{{ url_for('admin.moderator_dashboard', stroom=stroom, sorteer=sorteer if sorteer != 'wachtend' else None) }}#bak">{% if lang == 'nl' %}Wis zoekopdracht{% else %}Clear search{% endif %}</a>{% endif %}
+              <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Apply') }}</button>
+              {% if zoek %}<a class="gu-mod-bin__clear" href="{{ url_for('admin.moderator_dashboard', stroom=stroom, sorteer=sorteer if sorteer != 'wachtend' else None) }}#bak">{{ _('Clear search') }}</a>{% endif %}
             </form>
           </div>
         </div>
         <div class="gu-mod-bin__streams">
           {% if zoek and not bin_matches %}
-          <p class="gu-mod-bin__nomatch" role="status">{% if lang == 'nl' %}Geen vraagstuk gevonden dat "{{ zoek }}" bevat in deze stroom.{% else %}No issue containing "{{ zoek }}" in this stream.{% endif %}</p>
+          <p class="gu-mod-bin__nomatch" role="status">{% trans zoek=zoek %}No issue containing "{{ zoek }}" in this stream.{% endtrans %}</p>
           {% endif %}
           {% if stroom in ('alle', 'meldingen') %}
           <section class="gu-mod-group" id="meldingen">
-            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen, door deelnemers{% else %}Reports, by participants{% endif %} ({{ section_total['meldingen'] }})</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Reports, by participants') }} ({{ section_total['meldingen'] }})</p>
             {% if meldingen %}
             <div class="gu-mod-rows">
               {% for m in meldingen %}{{ melding_row(m) }}{% endfor %}
             </div>
             {{ show_all_link('meldingen') }}
             {% else %}
-            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>{% endif %}
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{{ _('No open reports.') }}</p>{% endif %}
             {% endif %}
           </section>
 
           <section class="gu-mod-group" id="kwaliteit">
-            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Meldingen: geen kwaliteit{% else %}Reports: not quality{% endif %} ({{ section_total['kwaliteit'] }})</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Reports: not quality') }} ({{ section_total['kwaliteit'] }})</p>
             {% if open_reports %}
             <div class="gu-mod-rows">
               {% for r in open_reports %}
@@ -149,9 +148,9 @@
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
                   <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
-                  <p class="gu-mrow__reason">{{ r.award.criterion }} {{ quality_labels[r.award.criterion][lang] if r.award.criterion in quality_labels else '' }} · {% if lang == 'nl' %}Gemeld door{% else %}Reported by{% endif %} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
+                  <p class="gu-mrow__reason">{{ r.award.criterion }} {{ quality_labels[r.award.criterion][lang] if r.award.criterion in quality_labels else '' }} · {{ _('Reported by') }} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
                   {% if current_user.id == post.user_id %}
-                  <p class="gu-mrow__note">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beslist.{% else %}Your own contribution: another moderator decides.{% endif %}</p>
+                  <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
                   {% endif %}
                 </div>
                 <div class="gu-mrow__side">{{ age_pill(r.created_at) }}</div>
@@ -162,12 +161,12 @@
                     <form method="POST" action="{{ url_for('forum.forum_quality_report_decide', report_id=r.id) }}" class="gu-quality-mod__form">
                       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
                       <label class="gu-quality-mod__field">
-                        <span>{% if lang == 'nl' %}Toelichting (optioneel, alleen voor moderators){% else %}Note (optional, for moderators only){% endif %}</span>
+                        <span>{{ _('Note (optional, for moderators only)') }}</span>
                         <input type="text" name="note" maxlength="400" class="gu-input">
                       </label>
                       <div class="gu-quality-mod__actions">
-                        <button type="submit" name="decision" value="handhaven" class="gu-btn gu-btn--primary gu-btn--sm">{% if lang == 'nl' %}Handhaven{% else %}Keep{% endif %}</button>
-                        <button type="submit" name="decision" value="intrekken" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Intrekken{% else %}Withdraw{% endif %}</button>
+                        <button type="submit" name="decision" value="handhaven" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Keep') }}</button>
+                        <button type="submit" name="decision" value="intrekken" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Withdraw') }}</button>
                       </div>
                     </form>
                   </div>
@@ -178,7 +177,7 @@
             </div>
             {{ show_all_link('kwaliteit') }}
             {% else %}
-            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen open meldingen.{% else %}No open reports.{% endif %}</p>{% endif %}
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{{ _('No open reports.') }}</p>{% endif %}
             {% endif %}
           </section>
 
@@ -352,17 +351,17 @@
 
           {% if stroom in ('alle', 'zonder') %}
           <section class="gu-mod-group" id="zonder">
-            <p class="gu-eyebrow gu-eyebrow--section">{% if lang == 'nl' %}Zonder oordeel{% else %}Without judgement{% endif %} ({{ section_total['zonder'] }})</p>
-            <p class="gu-mod-group__intro">{% if lang == 'nl' %}Recente bijdragen zonder (of nog zonder) oordeel, bijvoorbeeld omdat de AI niet beschikbaar was. Je kunt ze handmatig beoordelen.{% else %}Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually.{% endif %}</p>
+            <p class="gu-eyebrow gu-eyebrow--section">{{ _('Without judgement') }} ({{ section_total['zonder'] }})</p>
+            <p class="gu-mod-group__intro">{{ _('Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually.') }}</p>
             {% if unjudged_posts %}
             <div class="gu-mod-rows">
               {% for post in unjudged_posts %}
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
                   <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
-                  <p class="gu-mrow__reason">{% if lang == 'nl' %}Geen kwaliteitsoordeel{% else %}No quality judgement{% endif %}</p>
+                  <p class="gu-mrow__reason">{{ _('No quality judgement') }}</p>
                   {% if current_user.id == post.user_id %}
-                  <p class="gu-mrow__note">{% if lang == 'nl' %}Je eigen bijdrage: een andere moderator beoordeelt deze.{% else %}Your own contribution: another moderator assesses it.{% endif %}</p>
+                  <p class="gu-mrow__note">{{ _('Your own contribution: another moderator assesses it.') }}</p>
                   {% endif %}
                 </div>
                 <div class="gu-mrow__side">{{ age_pill(post.created_at) }}</div>
@@ -382,7 +381,7 @@
             </div>
             {{ show_all_link('zonder') }}
             {% else %}
-            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen bijdragen zonder oordeel.{% else %}No contributions without a judgement.{% endif %}</p>{% endif %}
+            {% if zoek %}{{ empty('') }}{% else %}<p class="gu-mod-bin__empty">{{ _('No contributions without a judgement.') }}</p>{% endif %}
             {% endif %}
           </section>
           {% endif %}
@@ -393,11 +392,11 @@
         <div class="gu-mod__ministats">
           <div class="gu-ministat">
             <div class="gu-ministat__num gu-ministat__num--americas">{% if oldest_wait %}{{ oldest_wait[lang] }}{% else %}&mdash;{% endif %}</div>
-            <div class="gu-ministat__lbl">{% if lang == 'nl' %}Oudste wachttijd{% else %}Longest wait{% endif %}</div>
+            <div class="gu-ministat__lbl">{{ _('Longest wait') }}</div>
           </div>
           <div class="gu-ministat">
             <div class="gu-ministat__num">{{ open_issues }}</div>
-            <div class="gu-ministat__lbl">{% if lang == 'nl' %}Lopende vraagstukken{% else %}Open issues{% endif %}</div>
+            <div class="gu-ministat__lbl">{{ _('Open issues') }}</div>
           </div>
         </div>
         {# Delete rights step 2 (docs/design/main.html): the issues this viewer may
@@ -405,7 +404,7 @@
            issues (none: no section); a senior moderator or admin the active ones. #}
         {% if manage_section %}
         <section class="gu-mod__block gu-mgmt-entry" id="beheren">
-          <div class="gu-mod__blockhead"><h2 style="margin:0;font-size:17px;font-weight:600">{% if lang == 'nl' %}Vraagstukken beheren{% else %}Manage issues{% endif %}</h2></div>
+          <div class="gu-mod__blockhead"><h2 style="margin:0;font-size:17px;font-weight:600">{{ _('Manage issues') }}</h2></div>
           <div class="gu-mod-list">
             {% for issue in manage_issues %}
             {% set n_open = manage_open.get(issue.id, 0) %}
@@ -413,23 +412,23 @@
               <div class="gu-mgmt-entry__body">
                 <a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
                 <div class="gu-mod-list__meta">
-                  {% if n_open %}<span class="gu-pill gu-pill--count">{{ n_open }} {% if lang == 'nl' %}open {{ 'melding' if n_open == 1 else 'meldingen' }}{% else %}open {{ 'report' if n_open == 1 else 'reports' }}{% endif %}</span>{% endif %}
-                  {% if issue.created_by_id == current_user.id %}<span>{% if lang == 'nl' %}jouw vraagstuk{% else %}your issue{% endif %}</span>
-                  {% elif issue.is_archived %}<span>{% if lang == 'nl' %}in archief{% else %}archived{% endif %}</span>
+                  {% if n_open %}<span class="gu-pill gu-pill--count">{{ ngettext('%(num)d open report', '%(num)d open reports', n_open) }}</span>{% endif %}
+                  {% if issue.created_by_id == current_user.id %}<span>{{ _('your issue') }}</span>
+                  {% elif issue.is_archived %}<span>{{ _('archived') }}</span>
                   {% else %}<span>{{ _('Closed') if issue.is_closed else phase_labels_all.get(issue.phase, issue.phase) }}</span>{% endif %}
                 </div>
               </div>
-              <a class="gu-mgmt-entry__link" href="{{ url_for('admin.issue_manage', issue_id=issue.id) }}">{% if lang == 'nl' %}Beheer{% else %}Manage{% endif %}<span class="gu-sr-only">: {{ issue.title }}</span> <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg></a>
+              <a class="gu-mgmt-entry__link" href="{{ url_for('admin.issue_manage', issue_id=issue.id) }}">{{ _('Manage') }}<span class="gu-sr-only">: {{ issue.title }}</span> <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg></a>
             </div>
             {% else %}
-            <p class="gu-mod-bin__empty">{% if lang == 'nl' %}Geen lopende vraagstukken om te beheren.{% else %}No open issues to manage.{% endif %}</p>
+            <p class="gu-mod-bin__empty">{{ _('No open issues to manage.') }}</p>
             {% endfor %}
           </div>
-          {% if manage_more %}<a class="gu-mgmt-entry__all" href="{{ url_for('issues.index') }}">{% if lang == 'nl' %}Alle vraagstukken{% else %}All issues{% endif %} &rsaquo;</a>{% endif %}
-          {% if current_user.is_admin %}<a class="gu-mgmt-entry__all" href="{{ url_for('admin.rights_settings') }}">{% if lang == 'nl' %}Rechten instellen{% else %}Set the rights{% endif %} &rsaquo;</a>{% endif %}
+          {% if manage_more %}<a class="gu-mgmt-entry__all" href="{{ url_for('issues.index') }}">{{ _('All issues') }} &rsaquo;</a>{% endif %}
+          {% if current_user.is_admin %}<a class="gu-mgmt-entry__all" href="{{ url_for('admin.rights_settings') }}">{{ _('Set the rights') }} &rsaquo;</a>{% endif %}
           <div class="gu-mgmt-entry__callout">
             <span class="gu-mgmt-entry__num" aria-hidden="true">i</span>
-            <p>{% if lang == 'nl' %}Klik bij een vraagstuk op <strong>Beheer</strong> om voorstellen te verbergen of te verwijderen en het vraagstuk te beheren. De vraagstuk-label bij een melding leidt naar dezelfde pagina.{% else %}Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page.{% endif %}</p>
+            <p>{% trans %}Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page.{% endtrans %}</p>
           </div>
         </section>
         {% endif %}
@@ -438,7 +437,7 @@
         {% set ns = namespace(ready=0) %}
         {% for issue, next_key, can_step, can_reopen in phase_issues %}{% if can_step and next_key %}{% set ns.ready = ns.ready + 1 %}{% endif %}{% endfor %}
         <section class="gu-mod__block" id="vraagstukken">
-          <div class="gu-mod__blockhead"><h2>{% if lang == 'nl' %}Fasebeheer{% else %}Phase management{% endif %}</h2><span class="gu-pill">{{ ns.ready }} {% if lang == 'nl' %}klaar{% else %}ready{% endif %}</span></div>
+          <div class="gu-mod__blockhead"><h2>{{ _('Phase management') }}</h2><span class="gu-pill">{{ ns.ready }} {{ _('ready') }}</span></div>
           <div class="gu-mod-list">
             {% for issue, next_key, can_step, can_reopen in phase_issues %}
             <div class="gu-mod-list__item gu-modissue">
