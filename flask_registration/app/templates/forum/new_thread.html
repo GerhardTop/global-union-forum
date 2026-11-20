@@ -1,20 +1,20 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %} · Global Union{% endblock %}
+{% block title %}{{ _('New conversation') }} · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 <main class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-      <a href="{{ url_for('forum.forum') }}">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</a>
+      <a href="{{ url_for('forum.forum') }}">{{ _('The conversation') }}</a>
       <span aria-hidden="true">›</span>
-      <span>{% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %}</span>
+      <span>{{ _('New conversation') }}</span>
     </nav>
 
     <header class="gu-forum__threadhead">
       <p class="gu-eyebrow">Forum</p>
       <h1 class="gu-forum__title">
-        {% if lang == 'nl' %}Nieuw gesprek starten{% else %}Start a new conversation{% endif %}
+        {{ _('Start a new conversation') }}
       </h1>
     </header>
 
@@ -39,8 +39,8 @@
 
       <div class="gu-forum__newfield">
         <label for="title" id="titleLabel"
-               data-label-conversation="{% if lang == 'nl' %}Titel{% else %}Title{% endif %}"
-               data-label-proposal="{{ _('Statement') }}">{% if is_proposal %}{{ _('Statement') }}{% elif lang == 'nl' %}Titel{% else %}Title{% endif %}</label>
+               data-label-conversation="{{ _('Title') }}"
+               data-label-proposal="{{ _('Statement') }}">{% if is_proposal %}{{ _('Statement') }}{% else %}{{ _('Title') }}{% endif %}</label>
         <input
           type="text"
           name="title"
@@ -49,7 +49,7 @@
           required
           maxlength="300"
           value="{{ fd.get('title', '') }}"
-          placeholder="{% if lang == 'nl' %}Formuleer je vraag of stelling…{% else %}Phrase your question or statement…{% endif %}"
+          placeholder="{{ _('Phrase your question or statement…') }}"
           autocomplete="off"
         >
       </div>
@@ -108,29 +108,29 @@
       </div>
 
       <div class="gu-forum__newfield">
-        <label for="body">{% if lang == 'nl' %}Eerste bericht{% else %}First post{% endif %}</label>
+        <label for="body">{{ _('First post') }}</label>
         <textarea
           name="body"
           id="body"
           class="gu-composer__input"
           required
           rows="6"
-          placeholder="{% if lang == 'nl' %}Licht je vraag toe. Wees concreet (geef context, een standpunt, of een tegenwerping).{% else %}Explain your question. Be concrete (give context, a position, or a pushback).{% endif %}"
+          placeholder="{{ _('Explain your question. Be concrete (give context, a position, or a pushback).') }}"
         >{{ fd.get('body', '') }}</textarea>
         <span class="gu-composer__hint">
-          {% if lang == 'nl' %}Je post wordt op verzoek vertaald voor andere lezers{% else %}Your post will be translated on request for other readers{% endif %}
+          {{ _('Your post will be translated on request for other readers') }}
         </span>
       </div>
 
 
       <div class="gu-forum__newactions">
         <a href="{{ url_for('forum.forum') }}" class="gu-btn gu-btn--ghost">
-          {% if lang == 'nl' %}Annuleer{% else %}Cancel{% endif %}
+          {{ _('Cancel') }}
         </a>
         <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg" id="newSubmit" disabled
-                data-label-conversation="{% if lang == 'nl' %}Gesprek starten{% else %}Start conversation{% endif %}"
+                data-label-conversation="{{ _('Start conversation') }}"
                 data-label-proposal="{{ _('Start proposal') }}">
-          <span id="newSubmitLabel">{% if is_proposal %}{{ _('Start proposal') }}{% elif lang == 'nl' %}Gesprek starten{% else %}Start conversation{% endif %}</span> <span class="gu-arrow"></span>
+          <span id="newSubmitLabel">{% if is_proposal %}{{ _('Start proposal') }}{% else %}{{ _('Start conversation') }}{% endif %}</span> <span class="gu-arrow"></span>
         </button>
       </div>
 

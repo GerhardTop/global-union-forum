@@ -2526,10 +2526,6 @@ msgstr "Dutch"
 msgid "Original in %(language)s"
 msgstr "Original in %(language)s"
 
-msgctxt "add fact form"
-msgid "Cancel"
-msgstr "Cancel"
-
 #, python-format
 msgid "<a href=\"%(url)s\">Log in</a> to make a proposal."
 msgstr "<a href=\"%(url)s\">Log in</a> to make a proposal."
@@ -2570,3 +2566,297 @@ msgid "Adjust the proposal"
 msgid_plural "Adjust the proposals"
 msgstr[0] "Adjust the proposal"
 msgstr[1] "Adjust the proposals"
+
+#, python-format
+msgid "This page lists contributions that were moved out of a conversation because they broke a <a href=\"%(value)s#gedragsregels\">conduct rule</a>. We delete nothing: every move is listed here with the rule, the explanation and the status, so anyone can check how moderation works. The author stays anonymous and can object within seven days; a moderator decides."
+msgstr "This page lists contributions that were moved out of a conversation because they broke a <a href=\"%(value)s#gedragsregels\">conduct rule</a>. We delete nothing: every move is listed here with the rule, the explanation and the status, so anyone can check how moderation works. The author stays anonymous and can object within seven days; a moderator decides."
+
+msgid "No contributions have been moved yet."
+msgstr "No contributions have been moved yet."
+
+msgid "Pure spam and gross abuse are not listed here: they are hidden completely."
+msgstr "Pure spam and gross abuse are not listed here: they are hidden completely."
+
+msgid "← Back"
+msgstr "← Back"
+
+msgid "last"
+msgstr "last"
+
+msgid "No closed conversations."
+msgstr "No closed conversations."
+
+msgid "Edit conversation"
+msgstr "Edit conversation"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Your post will be translated on request for other readers"
+msgstr "Your post will be translated on request for other readers"
+
+msgid "Start a new conversation"
+msgstr "Start a new conversation"
+
+msgid "Phrase your question or statement…"
+msgstr "Phrase your question or statement…"
+
+msgid "Explain your question. Be concrete (give context, a position, or a pushback)."
+msgstr "Explain your question. Be concrete (give context, a position, or a pushback)."
+
+msgid "Start conversation"
+msgstr "Start conversation"
+
+msgid "Quality judgement"
+msgstr "Quality judgement"
+
+msgid "Prompt used"
+msgstr "Prompt used"
+
+msgid "Back to the contribution"
+msgstr "Back to the contribution"
+
+msgid "Quality"
+msgstr "Quality"
+
+msgid "Current status, after a change by a moderator"
+msgstr "Current status, after a change by a moderator"
+
+msgid "By"
+msgstr "By"
+
+msgid "Judgement by the AI"
+msgstr "Judgement by the AI"
+
+msgid "Judgement (demo content)"
+msgstr "Judgement (demo content)"
+
+msgid "Judgement by a moderator"
+msgstr "Judgement by a moderator"
+
+msgid "Not marked as a quality contribution"
+msgstr "Not marked as a quality contribution"
+
+msgid "Source present"
+msgstr "Source present"
+
+msgid "new in this conversation"
+msgstr "new in this conversation"
+
+msgid "used before"
+msgstr "used before"
+
+msgid "New argument"
+msgstr "New argument"
+
+msgid "Possibly K3 (fairness, judged by a person)"
+msgstr "Possibly K3 (fairness, judged by a person)"
+
+msgid "Language of the contribution"
+msgstr "Language of the contribution"
+
+msgid "The AI judges the English (translated) text and leaves style, spelling and fluency out of consideration."
+msgstr "The AI judges the English (translated) text and leaves style, spelling and fluency out of consideration."
+
+msgid "Reopen conversation"
+msgstr "Reopen conversation"
+
+msgid "Close conversation"
+msgstr "Close conversation"
+
+msgid "You are viewing part of this conversation."
+msgstr "You are viewing part of this conversation."
+
+msgid "Back to the previous level"
+msgstr "Back to the previous level"
+
+msgid "To the whole conversation"
+msgstr "To the whole conversation"
+
+msgid "submitted by"
+msgstr "submitted by"
+
+msgid "The issue"
+msgstr "The issue"
+
+msgid "Times are in Dutch time. Leave a field empty and it becomes 00:00 for the first phase and 24:00 for the next ones."
+msgstr "Times are in Dutch time. Leave a field empty and it becomes 00:00 for the first phase and 24:00 for the next ones."
+
+msgid "Back to the issue"
+msgstr "Back to the issue"
+
+msgid "Which facts"
+msgstr "Which facts"
+
+msgid "With this proposal"
+msgstr "With this proposal"
+
+msgid "All facts"
+msgstr "All facts"
+
+msgid "Linked"
+msgstr "Linked"
+
+msgid "Link facts"
+msgstr "Link facts"
+
+msgid "This proposal is hidden. Only moderators can still see it."
+msgstr "This proposal is hidden. Only moderators can still see it."
+
+msgid "Manage issue"
+msgstr "Manage issue"
+
+msgid "Adjust proposal"
+msgstr "Adjust proposal"
+
+msgid "Earlier versions"
+msgstr "Earlier versions"
+
+msgid "Reactions"
+msgstr "Reactions"
+
+msgid "reactions"
+msgstr "reactions"
+
+#, python-format
+msgid "Reactions to version %(number)s"
+msgstr "Reactions to version %(number)s"
+
+msgid "No reactions to this version."
+msgstr "No reactions to this version."
+
+msgid "Current version"
+msgstr "Current version"
+
+#, python-format
+msgid "Reactions to version %(current_version)s"
+msgstr "Reactions to version %(current_version)s"
+
+msgid "Write a reaction…"
+msgstr "Write a reaction…"
+
+msgid "No reactions to this version yet."
+msgstr "No reactions to this version yet."
+
+msgid "Withdraw proposal"
+msgstr "Withdraw proposal"
+
+msgid "You can withdraw your own proposal as long as nobody has reacted yet."
+msgstr "You can withdraw your own proposal as long as nobody has reacted yet."
+
+msgid "Archived"
+msgstr "Archived"
+
+msgid "This issue is archived: it is closed and no longer listed publicly."
+msgstr "This issue is archived: it is closed and no longer listed publicly."
+
+msgid "Restore from archive"
+msgstr "Restore from archive"
+
+msgid "Permanently delete proposal"
+msgstr "Permanently delete proposal"
+
+msgid "Permanently delete issue"
+msgstr "Permanently delete issue"
+
+#, python-format
+msgid "You are about to delete <strong lang=\"%(what_lang)s\">\"%(what)s\"</strong>, with everything attached to it."
+msgstr "You are about to delete <strong lang=\"%(what_lang)s\">\"%(what)s\"</strong>, with everything attached to it."
+
+msgid "The issue itself stays."
+msgstr "The issue itself stays."
+
+msgid "What will be removed"
+msgstr "What will be removed"
+
+msgid "<strong>This cannot be undone.</strong> If you only want to remove one contribution or fact, use hide or move instead; that can be reversed."
+msgstr "<strong>This cannot be undone.</strong> If you only want to remove one contribution or fact, use hide or move instead; that can be reversed."
+
+msgid "Type the statement to confirm:"
+msgstr "Type the statement to confirm:"
+
+msgid "Type the title to confirm:"
+msgstr "Type the title to confirm:"
+
+msgid "Delete permanently"
+msgstr "Delete permanently"
+
+msgid "The button only becomes active when the statement matches exactly."
+msgstr "The button only becomes active when the statement matches exactly."
+
+msgid "The button only becomes active when the title matches exactly."
+msgstr "The button only becomes active when the title matches exactly."
+
+msgctxt "form"
+msgid "Cancel"
+msgstr "Cancel"
+
+msgctxt "conversation"
+msgid "Reopen"
+msgstr "Reopen"
+
+#, python-format
+msgid "%(num)d supporter"
+msgid_plural "%(num)d supporters"
+msgstr[0] "%(num)d supporter"
+msgstr[1] "%(num)d supporters"
+
+msgctxt "delete count"
+msgid "proposal"
+msgid_plural "proposals"
+msgstr[0] "proposal"
+msgstr[1] "proposals"
+
+msgctxt "delete count"
+msgid "proposal version"
+msgid_plural "proposal versions"
+msgstr[0] "proposal version"
+msgstr[1] "proposal versions"
+
+msgctxt "delete count"
+msgid "version"
+msgid_plural "versions"
+msgstr[0] "version"
+msgstr[1] "versions"
+
+msgctxt "delete count"
+msgid "message in the discussion"
+msgid_plural "messages in the discussion"
+msgstr[0] "message in the discussion"
+msgstr[1] "messages in the discussion"
+
+msgctxt "delete count"
+msgid "fact"
+msgid_plural "facts"
+msgstr[0] "fact"
+msgstr[1] "facts"
+
+msgctxt "delete count"
+msgid "follower is detached"
+msgid_plural "followers are detached"
+msgstr[0] "follower is detached"
+msgstr[1] "followers are detached"
+
+msgctxt "delete count"
+msgid "support"
+msgid_plural "supports"
+msgstr[0] "support"
+msgstr[1] "supports"
+
+msgctxt "delete count"
+msgid "vote"
+msgid_plural "votes"
+msgstr[0] "vote"
+msgstr[1] "votes"
+
+msgctxt "delete count"
+msgid "reaction to the proposal"
+msgid_plural "reactions to the proposal"
+msgstr[0] "reaction to the proposal"
+msgstr[1] "reactions to the proposal"
+
+msgctxt "delete count"
+msgid "report"
+msgid_plural "reports"
+msgstr[0] "report"
+msgstr[1] "reports"

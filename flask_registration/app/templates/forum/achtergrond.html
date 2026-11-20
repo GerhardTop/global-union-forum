@@ -7,16 +7,16 @@
   Langere redactionele tekst inline tweetalig; korte labels via de catalogus.
   Context: cases (ConductCase), hidden_threads (gesprekken die deze lezer niet ziet).
 #}
-{% block title %}{% if lang == 'nl' %}Achtergrond{% else %}Background{% endif %} · Global Union{% endblock %}
+{% block title %}{{ _('Background') }} · Global Union{% endblock %}
 
 {% block content %}
 <div class="gu-profile" style="max-width: 720px;">
 
   <div class="gu-profile__head">
     <p class="gu-eyebrow">Global Union Forum</p>
-    <h1 class="gu-profile__title">{% if lang == 'nl' %}Achtergrond{% else %}Background{% endif %}</h1>
+    <h1 class="gu-profile__title">{{ _('Background') }}</h1>
     <p class="gu-background__intro">
-      {% if lang == 'nl' %}Hier staan bijdragen die uit een gesprek zijn verplaatst omdat ze een <a href="{{ url_for('main.spelregels') }}#gedragsregels">gedragsregel</a> overtraden. We verwijderen niets: elke verplaatsing staat hier met de regel, de uitleg en de status, zodat iedereen kan nagaan hoe er gemodereerd wordt. De auteur blijft anoniem en kan binnen zeven dagen bezwaar maken; een moderator beslist.{% else %}This page lists contributions that were moved out of a conversation because they broke a <a href="{{ url_for('main.spelregels') }}#gedragsregels">conduct rule</a>. We delete nothing: every move is listed here with the rule, the explanation and the status, so anyone can check how moderation works. The author stays anonymous and can object within seven days; a moderator decides.{% endif %}
+      {% trans value=url_for('main.spelregels') %}This page lists contributions that were moved out of a conversation because they broke a <a href="{{ value }}#gedragsregels">conduct rule</a>. We delete nothing: every move is listed here with the rule, the explanation and the status, so anyone can check how moderation works. The author stays anonymous and can object within seven days; a moderator decides.{% endtrans %}
     </p>
   </div>
 
@@ -55,12 +55,12 @@
   </ol>
   {% else %}
   <div class="gu-join__panel">
-    <p>{% if lang == 'nl' %}Er zijn nog geen bijdragen verplaatst.{% else %}No contributions have been moved yet.{% endif %}</p>
+    <p>{{ _('No contributions have been moved yet.') }}</p>
   </div>
   {% endif %}
 
   <p class="gu-background__footnote">
-    {% if lang == 'nl' %}Pure spam en grof misbruik staan hier niet: die worden volledig verborgen.{% else %}Pure spam and gross abuse are not listed here: they are hidden completely.{% endif %}
+    {{ _('Pure spam and gross abuse are not listed here: they are hidden completely.') }}
   </p>
 </div>
 {% endblock %}

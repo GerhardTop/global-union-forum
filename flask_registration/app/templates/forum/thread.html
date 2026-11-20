@@ -15,14 +15,14 @@
     {# Breadcrumbs + "Nieuw gesprek" toolbar #}
     <div class="gu-forum__topbar">
       <nav class="gu-forum__crumbs" aria-label="breadcrumb">
-        <a href="{{ url_for('forum.forum') }}">{% if lang == 'nl' %}Het gesprek{% else %}The conversation{% endif %}</a>
+        <a href="{{ url_for('forum.forum') }}">{{ _('The conversation') }}</a>
         <span aria-hidden="true">›</span>
         <span>{% if lang == 'nl' %}{{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} {{ thread.title_accent_nl }}{% endif %}{{ thread.title_suffix_nl }}{% else %}{{ thread.title_prefix_en }}{% if thread.title_accent_en %} {{ thread.title_accent_en }}{% endif %}{{ thread.title_suffix_en }}{% endif %}</span>
       </nav>
       {% if current_user.can_contribute() %}
       <a href="{{ url_for('forum.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
         <span style="font-size:1.1em;line-height:1">+</span>
-        {% if lang == 'nl' %}Nieuw gesprek{% else %}New conversation{% endif %}
+        {{ _('New conversation') }}
       </a>
       {% endif %}
     </div>
@@ -42,10 +42,10 @@
       {% endif %}
 
       <div class="gu-forum__threadmeta">
-        <span>{{ posts | length }} {% if lang == 'nl' %}reactie{{ 's' if posts|length != 1 else '' }}{% else %}repl{{ 'ies' if posts|length != 1 else 'y' }}{% endif %}</span>
+        <span>{{ ngettext('%(num)d reply', '%(num)d replies', posts | length) }}</span>
         {% if posts %}
           <span aria-hidden="true">·</span>
-          <span>{% if lang == 'nl' %}laatst {% else %}last {% endif %}{{ posts[-1].time_ago[lang] }}</span>
+          <span>{{ _('last') }} {{ posts[-1].time_ago[lang] }}</span>
         {% endif %}
         {% if thread.is_demo %}
           <span aria-hidden="true">·</span>
@@ -53,7 +53,7 @@
         {% endif %}
         {% if thread.is_closed %}
           <span aria-hidden="true">·</span>
-          <span class="gu-forum__closed-badge">{% if lang == 'nl' %}Gesloten{% else %}Closed{% endif %}</span>
+          <span class="gu-forum__closed-badge">{{ _('Closed') }}</span>
         {% endif %}
       </div>
 
@@ -152,14 +152,14 @@
         <form method="POST" action="{{ url_for('forum.forum_reopen', thread_id=thread.id) }}" style="display:inline;">
           {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
           <button type="submit" class="gu-forum__modbtn">
-            {% if lang == 'nl' %}Heropen gesprek{% else %}Reopen conversation{% endif %}
+            {{ _('Reopen conversation') }}
           </button>
         </form>
         {% else %}
         <form method="POST" action="{{ url_for('forum.forum_close', thread_id=thread.id) }}" style="display:inline;">
           {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
           <button type="submit" class="gu-forum__modbtn gu-forum__modbtn--close">
-            {% if lang == 'nl' %}Sluit gesprek{% else %}Close conversation{% endif %}
+            {{ _('Close conversation') }}
           </button>
         </form>
         {% endif %}
@@ -170,9 +170,9 @@
     {% if branch_root %}
     {# Doorlinkweergave: een deel van het gesprek, met dit bericht als niveau 1. #}
     <p class="gu-thread__branchnote">
-      {% if lang == 'nl' %}Je bekijkt een deel van dit gesprek.{% else %}You are viewing part of this conversation.{% endif %}
-      {% if branch_root.parent_id %}<a href="{{ post_url(branch_root) }}">{% if lang == 'nl' %}Terug naar het vorige niveau{% else %}Back to the previous level{% endif %}</a> ·{% endif %}
-      <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}">{% if lang == 'nl' %}Naar het hele gesprek{% else %}To the whole conversation{% endif %}</a>
+      {{ _('You are viewing part of this conversation.') }}
+      {% if branch_root.parent_id %}<a href="{{ post_url(branch_root) }}">{{ _('Back to the previous level') }}</a> ·{% endif %}
+      <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}">{{ _('To the whole conversation') }}</a>
     </p>
     {% endif %}
 

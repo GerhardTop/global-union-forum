@@ -23,7 +23,6 @@
 #}
 {% block content_outer %}{% block content %}
 {% from 'issues/_ip_fields.html' import ip_fields with context %}
-{% set nl = lang == 'nl' %}
 {% set by_name = proposal.created_by.public_name if proposal.created_by else '@deleted_user' %}
 {% set current = versions[-1] %}
 {% set older = versions[:-1] %}
@@ -37,7 +36,7 @@
 
     <header class="gu-pv__head">
       <nav class="gu-pv__crumbs" aria-label="{{ _('Breadcrumb') }}">
-        <a class="gu-pv__back" href="{{ url_for('issues.show', issue_id=issue.id) }}">&lsaquo; {% if nl %}Terug naar het vraagstuk{% else %}Back to the issue{% endif %}</a>
+        <a class="gu-pv__back" href="{{ url_for('issues.show', issue_id=issue.id) }}">&lsaquo; {{ _('Back to the issue') }}</a>
         <span class="gu-pv__crumbsep" aria-hidden="true">|</span>
         <a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a><span aria-hidden="true">/</span>
         <a href="{{ url_for('issues.show', issue_id=issue.id, vergroot='voorstellen', _anchor='panel-proposals') }}">{{ _('Proposals') }}</a><span aria-hidden="true">/</span>
@@ -63,7 +62,7 @@
       {# ── Left: facts and background ──────────────────────────────── #}
       <section class="gu-cockpit__panel gu-cockpit__facts gu-pv__factscol{% if big.expanded == 'facts' %} is-expanded{% endif %}" id="panel-facts" data-panel="facts" role="tabpanel" aria-labelledby="factsTitle">
         <div class="gu-cockpit__panelhead">
-          <h2 class="gu-cockpit__title" id="factsTitle">{% if nl %}Feiten en achtergrond{% else %}Facts and background{% endif %} <span class="gu-facts__count">{{ rail_facts | length }}</span></h2>
+          <h2 class="gu-cockpit__title" id="factsTitle">{{ _('Facts and background') }} <span class="gu-facts__count">{{ rail_facts | length }}</span></h2>
           {% include 'issues/_fact_add_plus.html' %}
           {{ size_buttons('facts', _('Facts and background')) }}
         </div>
@@ -74,13 +73,13 @@
           {% set link_by_fact = {} %}
           {% for row, fact in links %}{% set _ignored = link_by_fact.update({fact.id: row}) %}{% endfor %}
           {# Which facts: the ones linked to this proposal (default) or all of the issue's. Without JavaScript both lists show. #}
-          <div class="gu-pv__subseg" role="group" aria-label="{% if nl %}Welke feiten{% else %}Which facts{% endif %}" hidden>
-            <button type="button" data-fact-view="linked" aria-pressed="true">{% if nl %}Bij dit voorstel{% else %}With this proposal{% endif %} <span class="gu-pv__c">{{ links | length }}</span></button>
-            <button type="button" data-fact-view="all" aria-pressed="false">{% if nl %}Alle{% else %}All{% endif %} <span class="gu-pv__c">{{ rail_facts | length }}</span></button>
+          <div class="gu-pv__subseg" role="group" aria-label="{{ _('Which facts') }}" hidden>
+            <button type="button" data-fact-view="linked" aria-pressed="true">{{ _('With this proposal') }} <span class="gu-pv__c">{{ links | length }}</span></button>
+            <button type="button" data-fact-view="all" aria-pressed="false">{{ _('All') }} <span class="gu-pv__c">{{ rail_facts | length }}</span></button>
           </div>
 
           <div class="gu-pv__factview" id="basis" data-fact-panel="linked">
-            <h3 class="gu-pv__subhead">{% if nl %}Bij dit voorstel{% else %}With this proposal{% endif %} <span class="gu-pv__cnt">{{ links | length }}</span></h3>
+            <h3 class="gu-pv__subhead">{{ _('With this proposal') }} <span class="gu-pv__cnt">{{ links | length }}</span></h3>
             {% if links %}
             <ol class="gu-cockpit__factlist gu-pv__facts" data-rail-list>
               {% for row, fact in links %}
@@ -98,14 +97,14 @@
               </li>
               {% endfor %}
             </ol>
-            {% if links | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
+            {% if links | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{{ _('Show more') }}</button>{% endif %}
             {% else %}
             <p class="gu-composer__hint">{{ _('No facts linked yet.') }}</p>
             {% endif %}
           </div>
 
           <div class="gu-pv__factview" data-fact-panel="all">
-            <h3 class="gu-pv__subhead">{% if nl %}Alle feiten{% else %}All facts{% endif %} <span class="gu-pv__cnt">{{ rail_facts | length }}</span></h3>
+            <h3 class="gu-pv__subhead">{{ _('All facts') }} <span class="gu-pv__cnt">{{ rail_facts | length }}</span></h3>
             {% if rail_facts %}
             <ol class="gu-cockpit__factlist gu-pv__facts" data-rail-list>
               {% for fact in rail_facts %}
@@ -114,7 +113,7 @@
                 {% include 'issues/_fact_card.html' %}
                 {% if row or can_link %}
                 <div class="gu-pv__factmeta">
-                  {% if row %}<span class="gu-pv__linked">{% if nl %}Gekoppeld{% else %}Linked{% endif %}</span>{% endif %}
+                  {% if row %}<span class="gu-pv__linked">{{ _('Linked') }}</span>{% endif %}
                   {% if row and can_unlink(row) %}
                   <form method="POST" action="{{ url_for('issues.proposal_unlink', issue_id=issue.id, proposal_id=proposal.id, link_id=row.id) }}">
                     {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
@@ -132,7 +131,7 @@
               </li>
               {% endfor %}
             </ol>
-            {% if rail_facts | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
+            {% if rail_facts | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{{ _('Show more') }}</button>{% endif %}
             {% else %}
             <p class="gu-composer__hint">{{ _('No facts yet.') }}</p>
             {% endif %}
@@ -140,7 +139,7 @@
 
           {% if can_link %}
           <details class="gu-pv__linkdet" id="feiten-koppelen"{% if fact_errs %} open{% endif %}>
-            <summary>{% if nl %}Feiten koppelen{% else %}Link facts{% endif %} &rsaquo;</summary>
+            <summary>{{ _('Link facts') }} &rsaquo;</summary>
             <p class="gu-composer__hint">{{ _('Anyone can link facts, also facts that argue against the proposal. The direction stays visible.') }}</p>
             {% if candidates %}
             <form method="POST" action="{{ url_for('issues.proposal_link', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-pv__linkform">
@@ -179,29 +178,29 @@
         {% if proposal.is_hidden %}
         <p class="gu-pv__hidden" role="status">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 3l18 18M10.6 10.6a2.5 2.5 0 003.4 3.4M9.9 5.1A9.3 9.3 0 0112 5c6 0 10 7 10 7a15.8 15.8 0 01-3.1 3.6M6.1 6.1A15.6 15.6 0 002 12s4 7 10 7a9.2 9.2 0 003.9-.8"/></svg>
-          <span>{% if nl %}Dit voorstel is verborgen. Alleen moderators zien het nog.{% else %}This proposal is hidden. Only moderators can still see it.{% endif %}</span>
-          <a href="{{ url_for('admin.issue_manage', issue_id=issue.id) }}#voorstel-{{ proposal.id }}">{% if nl %}Vraagstukbeheer{% else %}Manage issue{% endif %}</a>
+          <span>{{ _('This proposal is hidden. Only moderators can still see it.') }}</span>
+          <a href="{{ url_for('admin.issue_manage', issue_id=issue.id) }}#voorstel-{{ proposal.id }}">{{ _('Manage issue') }}</a>
         </p>
         {% endif %}
         {% if can_revise %}
         <div class="gu-pv__top">
-          <a class="gu-btn gu-btn--primary gu-btn--sm gu-pv__revisebtn" href="#bijstellen">{% if nl %}Voorstel aanpassen{% else %}Adjust proposal{% endif %}</a>
+          <a class="gu-btn gu-btn--primary gu-btn--sm gu-pv__revisebtn" href="#bijstellen">{{ _('Adjust proposal') }}</a>
         </div>
         {% endif %}
         <div class="gu-pv__statusrow">
           {% include 'issues/_ip_status.html' %}
-          <span>{% if nl %}door{% else %}by{% endif %} {{ by_name }}</span>
+          <span>{{ _('by') }} {{ by_name }}</span>
           {# The separator is bound to the item after it, so a line break never strands it. #}
           <span class="gu-pv__metaitem"><span class="gu-pv__sep" aria-hidden="true">&middot;</span>
           <span class="gu-pv__steun"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
-            {%- if nl %}{{ count }} {{ 'steunbetuiging' if count == 1 else 'steunbetuigingen' }}{% else %}{{ count }} {{ 'supporter' if count == 1 else 'supporters' }}{% endif %}</span></span>
+            {{- ngettext('%(num)d supporter', '%(num)d supporters', count) }}</span></span>
           {% with next_url=request.path %}{% include 'issues/_ip_support.html' %}{% endwith %}
         </div>
 
         {% if can_revise %}
         {% set errs = (errors or {}).get('revise', {}) %}
         <section class="gu-pv__revise{% if errs %} is-open{% endif %}" id="bijstellen" aria-labelledby="reviseTitle">
-          <h2 class="gu-pv__h" id="reviseTitle">{% if nl %}Voorstel aanpassen{% else %}Adjust proposal{% endif %}</h2>
+          <h2 class="gu-pv__h" id="reviseTitle">{{ _('Adjust proposal') }}</h2>
           <form method="POST" action="{{ url_for('issues.proposal_revise', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-forum__newform" novalidate>
             {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
             {{ ip_fields('revise', (form_data or {}).get('revise') or {'statement': proposal.statement, 'explanation': proposal.explanation or ''}, errs) }}
@@ -209,7 +208,7 @@
             <p class="gu-composer__hint">{{ _('Each revision becomes a new version. Earlier versions stay visible.') }}</p>
             <div class="gu-pv__reviseactions">
               <button type="submit" class="gu-btn gu-btn--primary">{{ _('Save the revision') }}</button>
-              <a class="gu-btn gu-btn--ghost" href="#voorstel">{% if nl %}Annuleren{% else %}Cancel{% endif %}</a>
+              <a class="gu-btn gu-btn--ghost" href="#voorstel">{{ pgettext('form', 'Cancel') }}</a>
             </div>
           </form>
         </section>
@@ -235,7 +234,7 @@
         {# ── Earlier versions, collapsed, above the current one ──────── #}
         {% if older %}
         <section class="gu-pv__older" id="versies" aria-labelledby="olderTitle">
-          <h2 class="gu-pv__olderlbl" id="olderTitle">{% if nl %}Eerdere versies{% else %}Earlier versions{% endif %}</h2>
+          <h2 class="gu-pv__olderlbl" id="olderTitle">{{ _('Earlier versions') }}</h2>
           {% for row in older %}
           {% set v = row.version %}
           <details class="gu-pv__version" id="versie-{{ v.number }}">
@@ -244,14 +243,14 @@
               <span class="gu-pv__vn">{{ _('Version %(n)s', n=v.number) }}</span>
               {% if v.created_at %}<span class="gu-pv__vdate">{{ v.created_at | local | datetimeformat('d MMM y') }}</span>{% endif %}
               <span class="gu-pv__vsum" lang="{{ proposal.lang or lang }}">{{ v.statement }}</span>
-              <span class="gu-pv__vrc" title="{% if nl %}Reacties{% else %}Reactions{% endif %}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>{{ row.reactions | length }}<span class="gu-sr-only"> {% if nl %}reacties{% else %}reactions{% endif %}</span></span>
+              <span class="gu-pv__vrc" title="{{ _('Reactions') }}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>{{ row.reactions | length }}<span class="gu-sr-only"> {{ _('reactions') }}</span></span>
             </summary>
             <div class="gu-pv__vbody">
               <p class="gu-pv__vstatement" lang="{{ proposal.lang or lang }}">{{ v.statement }}</p>
               {% if v.explanation %}<div class="gu-pv__prose" lang="{{ proposal.lang or lang }}">{{ v.explanation | linkify }}</div>{% endif %}
-              <h3 class="gu-pv__h gu-pv__h--sub">{% if nl %}Reacties op versie {{ v.number }}{% else %}Reactions to version {{ v.number }}{% endif %} <span class="gu-pv__n">({{ row.reactions | length }})</span></h3>
+              <h3 class="gu-pv__h gu-pv__h--sub">{% trans number=v.number %}Reactions to version {{ number }}{% endtrans %} <span class="gu-pv__n">({{ row.reactions | length }})</span></h3>
               {% if row.reactions %}{{ reaction_list(row.reactions) }}
-              {% else %}<p class="gu-composer__hint">{% if nl %}Geen reacties op deze versie.{% else %}No reactions to this version.{% endif %}</p>{% endif %}
+              {% else %}<p class="gu-composer__hint">{{ _('No reactions to this version.') }}</p>{% endif %}
             </div>
           </details>
           {% endfor %}
@@ -259,7 +258,7 @@
         {% endif %}
 
         {# ── The current version ────────────────────────────────────── #}
-        <p class="gu-pv__curhead"><span class="gu-pv__vcur">{% if nl %}Huidige versie{% else %}Current version{% endif %}</span> {{ _('Version %(n)s', n=current_version) }}{% if current.version.created_at %} &middot; {{ current.version.created_at | local | datetimeformat('d MMM y') }}{% endif %}</p>
+        <p class="gu-pv__curhead"><span class="gu-pv__vcur">{{ _('Current version') }}</span> {{ _('Version %(n)s', n=current_version) }}{% if current.version.created_at %} &middot; {{ current.version.created_at | local | datetimeformat('d MMM y') }}{% endif %}</p>
         <h1 class="gu-pv__statement" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</h1>
 
         <section class="gu-pv__section" aria-labelledby="explTitle">
@@ -278,14 +277,14 @@
 
         {# Reactions on the current version (earlier ones sit with their version above). #}
         <section class="gu-pv__section gu-pv__disc" id="reacties" aria-labelledby="reactionsTitle">
-          <h2 class="gu-pv__h" id="reactionsTitle">{% if nl %}Reacties op versie {{ current_version }}{% else %}Reactions to version {{ current_version }}{% endif %} <span class="gu-pv__n">({{ current.reactions | length }})</span></h2>
+          <h2 class="gu-pv__h" id="reactionsTitle">{% trans current_version=current_version %}Reactions to version {{ current_version }}{% endtrans %} <span class="gu-pv__n">({{ current.reactions | length }})</span></h2>
           {% if can_react %}
           <form method="POST" action="{{ url_for('forum.forum_thread', thread_id=issue.thread_id) }}" class="gu-pv__composer">
             {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
             <input type="hidden" name="issue_proposal_id" value="{{ proposal.id }}">
             <input type="hidden" name="return_proposal" value="1">
             <label for="reactionBody" class="gu-sr-only">{{ _('Your reaction to version %(n)s', n=current_version) }}</label>
-            <textarea name="body" id="reactionBody" rows="2" required class="gu-composer__input" placeholder="{% if nl %}Schrijf een reactie…{% else %}Write a reaction…{% endif %}"></textarea>
+            <textarea name="body" id="reactionBody" rows="2" required class="gu-composer__input" placeholder="{{ _('Write a reaction…') }}"></textarea>
             <div class="gu-pv__composerfoot">
               <button type="submit" class="gu-btn gu-btn--primary gu-btn--sm">{{ _('Post') }}</button>
             </div>
@@ -294,7 +293,7 @@
           {% if current.reactions %}
           <div class="gu-pv__cmts">{{ reaction_list(current.reactions) }}</div>
           {% else %}
-          <p class="gu-composer__hint">{% if nl %}Nog geen reacties op deze versie.{% else %}No reactions to this version yet.{% endif %}</p>
+          <p class="gu-composer__hint">{{ _('No reactions to this version yet.') }}</p>
           {% endif %}
         </section>
 
@@ -302,8 +301,8 @@
            nobody has reacted. Moderation (hiding, deleting) is on the manage screen. #}
         {% if can_withdraw %}
         <p class="gu-pv__withdraw" id="intrekken">
-          <a href="{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}">{% if nl %}Voorstel intrekken{% else %}Withdraw proposal{% endif %}</a>
-          <span>{% if nl %}Je kunt je eigen voorstel intrekken zolang er nog geen reacties zijn.{% else %}You can withdraw your own proposal as long as nobody has reacted yet.{% endif %}</span>
+          <a href="{{ url_for('issues.delete_proposal', issue_id=issue.id, proposal_id=proposal.id) }}">{{ _('Withdraw proposal') }}</a>
+          <span>{{ _('You can withdraw your own proposal as long as nobody has reacted yet.') }}</span>
         </p>
         {% endif %}
         </div>
@@ -329,7 +328,7 @@
             </li>
             {% endfor %}
           </ul>
-          {% if rail_proposals | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{% if nl %}Toon meer{% else %}Show more{% endif %}</button>{% endif %}
+          {% if rail_proposals | length > rail_shown %}<button type="button" class="gu-pv__showmore" data-rail-more hidden>{{ _('Show more') }}</button>{% endif %}
         </div>
         {# Enlarged in the page: every proposal, with filter and sort above FILTER_MIN. #}
         <div class="gu-cockpit__box gu-cockpit__bigbox">{% include 'issues/_proposals_big.html' %}</div>

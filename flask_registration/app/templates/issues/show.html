@@ -36,12 +36,12 @@
       </div>
       {% if issue.is_archived %}
       <div class="gu-archived" role="status">
-        <p class="gu-archived__text"><strong>{% if lang == 'nl' %}Gearchiveerd{% else %}Archived{% endif %}</strong>
-          · {% if lang == 'nl' %}Dit vraagstuk staat in het archief: het is gesloten en niet meer te vinden in de openbare lijsten.{% else %}This issue is archived: it is closed and no longer listed publicly.{% endif %}</p>
+        <p class="gu-archived__text"><strong>{{ _('Archived') }}</strong>
+          · {{ _('This issue is archived: it is closed and no longer listed publicly.') }}</p>
         {% if current_user.is_authenticated and current_user.is_admin %}
         <form method="POST" action="{{ url_for('issues.unarchive_issue', issue_id=issue.id) }}" class="gu-archived__form">
           {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-          <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{% if lang == 'nl' %}Terug uit archief{% else %}Restore from archive{% endif %}</button>
+          <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Restore from archive') }}</button>
         </form>
         {% endif %}
       </div>

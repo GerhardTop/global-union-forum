@@ -23,7 +23,7 @@
           <span aria-hidden="true">+</span> {{ _('New issue') }}
         </a>
         {% elif current_user.is_suspended %}
-        <span class="gu-forum__suspended">{% if lang == 'nl' %}Je bent geschorst en kunt nu niet bijdragen{% else %}You are suspended and cannot contribute right now{% endif %}</span>
+        <span class="gu-forum__suspended">{{ _('You are suspended and cannot contribute right now') }}</span>
         {% else %}
         <a href="{{ url_for('main.spelregels', next=request.path) }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
           {{ _('Accept the conduct rules to join in') }}
@@ -49,7 +49,7 @@
         <a class="gu-threadlist__link" href="{{ url_for('issues.show', issue_id=issue.id) }}">
           <span class="gu-threadlist__eyebrow">{% include 'issues/_kind.html' %}</span>
           <span class="gu-threadlist__title" lang="{{ issue.lang or lang }}">{{ issue.title }}</span>
-          {% if issue.created_by %}<span class="gu-issuelist__by">{% if lang == 'nl' %}ingebracht door{% else %}submitted by{% endif %} {{ issue.created_by.public_name }}</span>{% endif %}
+          {% if issue.created_by %}<span class="gu-issuelist__by">{{ _('submitted by') }} {{ issue.created_by.public_name }}</span>{% endif %}
           <span class="gu-threadlist__meta gu-issuelist__meta">
             <span class="gu-issuelist__phase{% if issue.is_closed %} is-closed{% endif %}">
               {%- if issue.is_closed -%}{{ _('Closed') }}{%- else -%}{{ phase_labels.get(issue.phase, issue.phase) }}{%- endif -%}

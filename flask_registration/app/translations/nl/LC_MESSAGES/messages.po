@@ -2532,10 +2532,6 @@ msgstr "Nederlands"
 msgid "Original in %(language)s"
 msgstr "Origineel in %(language)s"
 
-msgctxt "add fact form"
-msgid "Cancel"
-msgstr "Annuleren"
-
 #, python-format
 msgid "<a href=\"%(url)s\">Log in</a> to make a proposal."
 msgstr "<a href=\"%(url)s\">Log in</a> om een voorstel te doen."
@@ -2576,3 +2572,297 @@ msgid "Adjust the proposal"
 msgid_plural "Adjust the proposals"
 msgstr[0] "Voorstel aanpassen"
 msgstr[1] "Voorstellen aanpassen"
+
+#, python-format
+msgid "This page lists contributions that were moved out of a conversation because they broke a <a href=\"%(value)s#gedragsregels\">conduct rule</a>. We delete nothing: every move is listed here with the rule, the explanation and the status, so anyone can check how moderation works. The author stays anonymous and can object within seven days; a moderator decides."
+msgstr "Hier staan bijdragen die uit een gesprek zijn verplaatst omdat ze een <a href=\"%(value)s#gedragsregels\">gedragsregel</a> overtraden. We verwijderen niets: elke verplaatsing staat hier met de regel, de uitleg en de status, zodat iedereen kan nagaan hoe er gemodereerd wordt. De auteur blijft anoniem en kan binnen zeven dagen bezwaar maken; een moderator beslist."
+
+msgid "No contributions have been moved yet."
+msgstr "Er zijn nog geen bijdragen verplaatst."
+
+msgid "Pure spam and gross abuse are not listed here: they are hidden completely."
+msgstr "Pure spam en grof misbruik staan hier niet: die worden volledig verborgen."
+
+msgid "← Back"
+msgstr "← Terug"
+
+msgid "last"
+msgstr "laatst"
+
+msgid "No closed conversations."
+msgstr "Geen gesloten gesprekken."
+
+msgid "Edit conversation"
+msgstr "Gesprek bewerken"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Your post will be translated on request for other readers"
+msgstr "Je post wordt op verzoek vertaald voor andere lezers"
+
+msgid "Start a new conversation"
+msgstr "Nieuw gesprek starten"
+
+msgid "Phrase your question or statement…"
+msgstr "Formuleer je vraag of stelling…"
+
+msgid "Explain your question. Be concrete (give context, a position, or a pushback)."
+msgstr "Licht je vraag toe. Wees concreet (geef context, een standpunt, of een tegenwerping)."
+
+msgid "Start conversation"
+msgstr "Gesprek starten"
+
+msgid "Quality judgement"
+msgstr "Kwaliteitsoordeel"
+
+msgid "Prompt used"
+msgstr "Gebruikte prompt"
+
+msgid "Back to the contribution"
+msgstr "Terug naar de bijdrage"
+
+msgid "Quality"
+msgstr "Kwaliteit"
+
+msgid "Current status, after a change by a moderator"
+msgstr "Huidige stand, na aanpassing door een moderator"
+
+msgid "By"
+msgstr "Door"
+
+msgid "Judgement by the AI"
+msgstr "Oordeel van de AI"
+
+msgid "Judgement (demo content)"
+msgstr "Oordeel (democontent)"
+
+msgid "Judgement by a moderator"
+msgstr "Oordeel van een moderator"
+
+msgid "Not marked as a quality contribution"
+msgstr "Niet aangemerkt als kwaliteitsbijdrage"
+
+msgid "Source present"
+msgstr "Bron aanwezig"
+
+msgid "new in this conversation"
+msgstr "nieuw in dit gesprek"
+
+msgid "used before"
+msgstr "al eerder gebruikt"
+
+msgid "New argument"
+msgstr "Nieuw argument"
+
+msgid "Possibly K3 (fairness, judged by a person)"
+msgstr "Mogelijk K3 (eerlijkheid, beoordeelt een mens)"
+
+msgid "Language of the contribution"
+msgstr "Taal van de bijdrage"
+
+msgid "The AI judges the English (translated) text and leaves style, spelling and fluency out of consideration."
+msgstr "De AI oordeelt op de Engelse (vertaalde) tekst en laat stijl, spelling en vlotheid buiten beschouwing."
+
+msgid "Reopen conversation"
+msgstr "Heropen gesprek"
+
+msgid "Close conversation"
+msgstr "Sluit gesprek"
+
+msgid "You are viewing part of this conversation."
+msgstr "Je bekijkt een deel van dit gesprek."
+
+msgid "Back to the previous level"
+msgstr "Terug naar het vorige niveau"
+
+msgid "To the whole conversation"
+msgstr "Naar het hele gesprek"
+
+msgid "submitted by"
+msgstr "ingebracht door"
+
+msgid "The issue"
+msgstr "Het vraagstuk"
+
+msgid "Times are in Dutch time. Leave a field empty and it becomes 00:00 for the first phase and 24:00 for the next ones."
+msgstr "De tijden zijn in Nederlandse tijd. Laat je een veld leeg, dan wordt het 00:00 bij de eerste fase en 24:00 bij de volgende."
+
+msgid "Back to the issue"
+msgstr "Terug naar het vraagstuk"
+
+msgid "Which facts"
+msgstr "Welke feiten"
+
+msgid "With this proposal"
+msgstr "Bij dit voorstel"
+
+msgid "All facts"
+msgstr "Alle feiten"
+
+msgid "Linked"
+msgstr "Gekoppeld"
+
+msgid "Link facts"
+msgstr "Feiten koppelen"
+
+msgid "This proposal is hidden. Only moderators can still see it."
+msgstr "Dit voorstel is verborgen. Alleen moderators zien het nog."
+
+msgid "Manage issue"
+msgstr "Vraagstukbeheer"
+
+msgid "Adjust proposal"
+msgstr "Voorstel aanpassen"
+
+msgid "Earlier versions"
+msgstr "Eerdere versies"
+
+msgid "Reactions"
+msgstr "Reacties"
+
+msgid "reactions"
+msgstr "reacties"
+
+#, python-format
+msgid "Reactions to version %(number)s"
+msgstr "Reacties op versie %(number)s"
+
+msgid "No reactions to this version."
+msgstr "Geen reacties op deze versie."
+
+msgid "Current version"
+msgstr "Huidige versie"
+
+#, python-format
+msgid "Reactions to version %(current_version)s"
+msgstr "Reacties op versie %(current_version)s"
+
+msgid "Write a reaction…"
+msgstr "Schrijf een reactie…"
+
+msgid "No reactions to this version yet."
+msgstr "Nog geen reacties op deze versie."
+
+msgid "Withdraw proposal"
+msgstr "Voorstel intrekken"
+
+msgid "You can withdraw your own proposal as long as nobody has reacted yet."
+msgstr "Je kunt je eigen voorstel intrekken zolang er nog geen reacties zijn."
+
+msgid "Archived"
+msgstr "Gearchiveerd"
+
+msgid "This issue is archived: it is closed and no longer listed publicly."
+msgstr "Dit vraagstuk staat in het archief: het is gesloten en niet meer te vinden in de openbare lijsten."
+
+msgid "Restore from archive"
+msgstr "Terug uit archief"
+
+msgid "Permanently delete proposal"
+msgstr "Voorstel definitief verwijderen"
+
+msgid "Permanently delete issue"
+msgstr "Vraagstuk definitief verwijderen"
+
+#, python-format
+msgid "You are about to delete <strong lang=\"%(what_lang)s\">\"%(what)s\"</strong>, with everything attached to it."
+msgstr "Je staat op het punt <strong lang=\"%(what_lang)s\">\"%(what)s\"</strong> te verwijderen, met alles wat eraan hangt."
+
+msgid "The issue itself stays."
+msgstr "Het vraagstuk zelf blijft staan."
+
+msgid "What will be removed"
+msgstr "Wat er verdwijnt"
+
+msgid "<strong>This cannot be undone.</strong> If you only want to remove one contribution or fact, use hide or move instead; that can be reversed."
+msgstr "<strong>Dit kan niet ongedaan worden gemaakt.</strong> Wil je alleen één bijdrage of feit weghalen, gebruik dan verbergen of verplaatsen, dat is terug te draaien."
+
+msgid "Type the statement to confirm:"
+msgstr "Typ de stelling om te bevestigen:"
+
+msgid "Type the title to confirm:"
+msgstr "Typ de titel om te bevestigen:"
+
+msgid "Delete permanently"
+msgstr "Definitief verwijderen"
+
+msgid "The button only becomes active when the statement matches exactly."
+msgstr "De knop wordt pas actief als de stelling exact klopt."
+
+msgid "The button only becomes active when the title matches exactly."
+msgstr "De knop wordt pas actief als de titel exact klopt."
+
+msgctxt "form"
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgctxt "conversation"
+msgid "Reopen"
+msgstr "Heropen"
+
+#, python-format
+msgid "%(num)d supporter"
+msgid_plural "%(num)d supporters"
+msgstr[0] "%(num)d steunbetuiging"
+msgstr[1] "%(num)d steunbetuigingen"
+
+msgctxt "delete count"
+msgid "proposal"
+msgid_plural "proposals"
+msgstr[0] "voorstel"
+msgstr[1] "voorstellen"
+
+msgctxt "delete count"
+msgid "proposal version"
+msgid_plural "proposal versions"
+msgstr[0] "versie van een voorstel"
+msgstr[1] "versies van voorstellen"
+
+msgctxt "delete count"
+msgid "version"
+msgid_plural "versions"
+msgstr[0] "versie"
+msgstr[1] "versies"
+
+msgctxt "delete count"
+msgid "message in the discussion"
+msgid_plural "messages in the discussion"
+msgstr[0] "bericht in de discussie"
+msgstr[1] "berichten in de discussie"
+
+msgctxt "delete count"
+msgid "fact"
+msgid_plural "facts"
+msgstr[0] "feit"
+msgstr[1] "feiten"
+
+msgctxt "delete count"
+msgid "follower is detached"
+msgid_plural "followers are detached"
+msgstr[0] "volger wordt ontkoppeld"
+msgstr[1] "volgers worden ontkoppeld"
+
+msgctxt "delete count"
+msgid "support"
+msgid_plural "supports"
+msgstr[0] "keer steun"
+msgstr[1] "keer steun"
+
+msgctxt "delete count"
+msgid "vote"
+msgid_plural "votes"
+msgstr[0] "stem"
+msgstr[1] "stemmen"
+
+msgctxt "delete count"
+msgid "reaction to the proposal"
+msgid_plural "reactions to the proposal"
+msgstr[0] "reactie op het voorstel"
+msgstr[1] "reacties op het voorstel"
+
+msgctxt "delete count"
+msgid "report"
+msgid_plural "reports"
+msgstr[0] "melding"
+msgstr[1] "meldingen"
