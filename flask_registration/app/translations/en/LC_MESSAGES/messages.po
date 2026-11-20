@@ -4389,10 +4389,6 @@ msgstr "The Global Union operates with a minimal organisation: a small commissio
 msgid "Discussions and votes take place online. This effectiveness is strengthened by democratic innovation. Decision-making is transparent, including the underlying facts and considerations, explained at both expert and layperson level. Citizens worldwide can take part and exert influence in their own language."
 msgstr "Discussions and votes take place online. This effectiveness is strengthened by democratic innovation. Decision-making is transparent, including the underlying facts and considerations, explained at both expert and layperson level. Citizens worldwide can take part and exert influence in their own language."
 
-#. initiatiefnemer, alinea 1
-msgid "At the end of my student years the Wall fell. At the moment of the breakthrough I was working on a Land Rover. Over the radio I heard the jubilant East Germans. Goosebumps! Unexpected, unimaginable, that dictatorship simply collapsed."
-msgstr "At the end of my student years the Wall fell. At the moment of the breakthrough I was working on a Land Rover. Over the radio I heard the jubilant East Germans. Goosebumps! Unexpected, unimaginable, that dictatorship simply collapsed."
-
 #. initiatiefnemer, alinea 2
 msgid "With that Land Rover the four of us drove to Cape Town. Straight through Africa. I saw the beauty and the poverty. The cheerfulness and the enormous corruption and political repression."
 msgstr "With that Land Rover the four of us drove to Cape Town. Straight through Africa. I saw the beauty and the poverty. The cheerfulness and the enormous corruption and political repression."
@@ -5296,3 +5292,7 @@ msgstr "Global Union Forum: confirm your email"
 #, python-format
 msgid "%(sender)s invites you to join Global Union Forum, a think tank exploring whether the success of the European Union can be replicated worldwide."
 msgstr "%(sender)s invites you to join Global Union Forum, a think tank exploring whether the success of the European Union can be replicated worldwide."
+
+#. initiatiefnemer, alinea 1
+msgid "At the end of my student years the Wall fell. At the moment of the breakthrough I was working on a Land Rover. Over the radio I heard the jubilant East Germans, and then a German version of a song by the Dutch singer Boudewijn de Groot: 'Nur die Vögel fliegen von Ost nach West Berlin...'. Goosebumps! Unexpected, unimaginable, that dictatorship simply collapsed."
+msgstr "At the end of my student years the Wall fell. At the moment of the breakthrough I was working on a Land Rover. Over the radio I heard the jubilant East Germans, and then a German version of a song by the Dutch singer Boudewijn de Groot: 'Nur die Vögel fliegen von Ost nach West Berlin...'. Goosebumps! Unexpected, unimaginable, that dictatorship simply collapsed."
