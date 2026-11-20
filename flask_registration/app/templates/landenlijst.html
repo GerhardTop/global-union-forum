@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'nl' %}Landenoverzicht{% else %}Country overview{% endif %} · Global Union{% endblock %}
+{% block title %}{# TRANSLATORS: landenlijst, tekst 1 #}{{ _('Country overview') }} · Global Union{% endblock %}
 
 {% block content %}
 <div class="gu-landen">
 
   <div class="gu-landen__head">
-    <p class="gu-eyebrow">{% if lang == 'nl' %}Het manifest{% else %}The manifesto{% endif %}</p>
-    <h1 class="gu-landen__title">{% if lang == 'nl' %}Landenoverzicht{% else %}Country overview{% endif %}</h1>
+    <p class="gu-eyebrow">{# TRANSLATORS: landenlijst, tekst 2 #}{{ _('The manifesto') }}</p>
+    <h1 class="gu-landen__title">{# TRANSLATORS: landenlijst, tekst 3 #}{{ _('Country overview') }}</h1>
   </div>
 
   <div class="gu-landen__downloads">
@@ -35,7 +35,7 @@
     <table class="gu-landen-legend">
       <thead>
         <tr>
-          <th>{% if lang == 'nl' %}Niveau{% else %}Level{% endif %}</th>
+          <th>{# TRANSLATORS: landenlijst, tekst 4 #}{{ _('Level') }}</th>
           <th>Democracy Index</th>
           <th>Corruption Perceptions Index</th>
           <th>Human Rights Index</th>
@@ -43,16 +43,16 @@
       </thead>
       <tbody>
         <tr>
-          <td><span class="gu-level-badge gu-level-badge--meets">{% if lang == 'nl' %}Op niveau{% else %}Meets standard{% endif %}</span></td>
-          <td>{% if lang == 'nl' %}≥ 8,0{% else %}≥ 8.0{% endif %}</td>
+          <td><span class="gu-level-badge gu-level-badge--meets">{# TRANSLATORS: landenlijst, tekst 5 #}{{ _('Meets standard') }}</span></td>
+          <td>{# TRANSLATORS: landenlijst, tekst 6 #}{{ _('≥ 8.0') }}</td>
           <td>≥ 70</td>
-          <td>{% if lang == 'nl' %}≥ 0,75{% else %}≥ 0.75{% endif %}</td>
+          <td>{# TRANSLATORS: landenlijst, tekst 7 #}{{ _('≥ 0.75') }}</td>
         </tr>
         <tr>
-          <td><span class="gu-level-badge gu-level-badge--above">{% if lang == 'nl' %}Boven minimum{% else %}Above minimum{% endif %}</span></td>
-          <td>{% if lang == 'nl' %}≥ 6,0{% else %}≥ 6.0{% endif %}</td>
+          <td><span class="gu-level-badge gu-level-badge--above">{# TRANSLATORS: landenlijst, tekst 8 #}{{ _('Above minimum') }}</span></td>
+          <td>{# TRANSLATORS: landenlijst, tekst 9 #}{{ _('≥ 6.0') }}</td>
           <td>≥ 40</td>
-          <td>{% if lang == 'nl' %}≥ 0,70{% else %}≥ 0.70{% endif %}</td>
+          <td>{# TRANSLATORS: landenlijst, tekst 10 #}{{ _('≥ 0.70') }}</td>
         </tr>
       </tbody>
     </table>
@@ -69,11 +69,11 @@
       </colgroup>
       <thead>
         <tr>
-          <th class="gu-landen-table__th--sortable" data-sort-key="land">{% if lang == 'nl' %}Land{% else %}Country{% endif %}<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
+          <th class="gu-landen-table__th--sortable" data-sort-key="land">{# TRANSLATORS: landenlijst, tekst 11 #}{{ _('Country') }}<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
           <th class="gu-landen-table__th--sortable gu-landen-table__th--center" data-sort-key="di">Democracy Index<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
           <th class="gu-landen-table__th--sortable gu-landen-table__th--center" data-sort-key="cpi">Corruption Perceptions Index<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
           <th class="gu-landen-table__th--sortable gu-landen-table__th--center" data-sort-key="hri">Human Rights Index<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
-          <th class="gu-landen-table__th--sortable" data-sort-key="niveau">{% if lang == 'nl' %}Global Union niveau{% else %}Global Union level{% endif %}<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
+          <th class="gu-landen-table__th--sortable" data-sort-key="niveau">{# TRANSLATORS: landenlijst, tekst 12 #}{{ _('Global Union level') }}<span class="gu-landen-table__sortIcon" aria-hidden="true"></span></th>
         </tr>
       </thead>
       <tbody>

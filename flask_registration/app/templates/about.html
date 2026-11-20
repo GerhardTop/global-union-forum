@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'nl' %}Over ons{% else %}About{% endif %} · Global Union{% endblock %}
+{% block title %}{# TRANSLATORS: about, tekst 1 #}{{ _('About') }} · Global Union{% endblock %}
 
 {% block content_outer %}
 {% block content %}
@@ -8,24 +8,19 @@
   {# ── 1. Hero (incl. "wat we nu doen", samengevoegd tot één blok) ── #}
   <section class="gu-about__section gu-about__hero">
     <div class="gu-about__inner">
-      <p class="gu-eyebrow">{% if lang == 'nl' %}Over Global Union Forum{% else %}About Global Union Forum{% endif %}</p>
+      <p class="gu-eyebrow">{# TRANSLATORS: about, tekst 2 #}{{ _('About Global Union Forum') }}</p>
       <h1 class="gu-display gu-about__title">
-        {% if lang == 'nl' %}Een denktank<br><em>met sterke intentie</em>
-        {% else %}A think tank<br><em>with strong intent</em>{% endif %}
+        {# TRANSLATORS: about, titel #}{% trans %}A think tank<br><em>with strong intent</em>{% endtrans %}
       </h1>
       <p class="gu-lead gu-about__leadwide">
-        {% if lang == 'nl' %}
-          Het doel is helder. Het idee staat op hoofdlijnen. Dit willen we verder uitwerken. We zoeken experts en andere enthousiastelingen. Iedereen die een bijdrage wil leveren aan welzijn en perspectief voor mensen in Europa én daarbuiten is welkom. Jongere of gepensioneerde, hartchirurg of loodgieter, voor- of tegenstander. Iedereen die het gesprek respectvol voert.
-        {% else %}
-          The goal is clear. The idea exists in broad strokes. We want to work it out further. We're looking for experts and other enthusiasts. Everyone who wants to contribute to wellbeing and prospects for people in Europe and beyond is welcome. Young or retired, heart surgeon or plumber, supporter or opponent. Everyone who holds the conversation with respect.
-        {% endif %}
+        {# TRANSLATORS: about, tekst 3 #}
+          {% trans %}The goal is clear. The idea exists in broad strokes. We want to work it out further. We're looking for experts and other enthusiasts. Everyone who wants to contribute to wellbeing and prospects for people in Europe and beyond is welcome. Young or retired, heart surgeon or plumber, supporter or opponent. Everyone who holds the conversation with respect.{% endtrans %}
+        
       </p>
       <p class="gu-lead gu-about__leadwide">
-        {% if lang == 'nl' %}
-          Geen lidmaatschap. Geen contributie. Wel een online plek waar het denken gebeurt. De eerste site is nu opgezet door <a href="{{ url_for('main.initiatiefnemer') }}" style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">Gerhard Top</a>. De eerst volgende stap is feedback verzamelen van enkele Bèta gebruikers en het betrekken van enkele mede-initiatiefnemers, zowel experts als andere enthousiastelingen. Hierna zullen we met een verbeterde versie voortbouwen op de discussie, veel meer mensen uitnodigen mee te doen en een stichting oprichten met als doel uit te groeien tot een beweging die veroorzaakt dat de Globale Unie er komt én succesvol wordt.
-        {% else %}
-          No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href="{{ url_for('main.initiatiefnemer') }}" style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed.
-        {% endif %}
+        {# TRANSLATORS: about, tekst 4 #}
+          {% trans value=url_for('main.initiatiefnemer') %}No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href="{{ value }}" style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed.{% endtrans %}
+        
       </p>
 
       <div class="gu-about__lookingGrid">
@@ -33,25 +28,25 @@
         <div class="gu-about__looking">
           <div class="gu-about__lookingHead">
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
-            <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Meedenkers{% else %}Co-thinkers{% endif %}</h3>
+            <h3 class="gu-about__lookingTitle">{# TRANSLATORS: about, tekst 5 #}{{ _('Co-thinkers') }}</h3>
           </div>
-          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Iedereen die wil meedoen, ook zonder vakkennis, ieder argument kan van belang zijn.{% else %}Everyone who wants to join in, even without expertise, every argument can matter.{% endif %}</p>
+          <p class="gu-about__lookingBody">{# TRANSLATORS: about, tekst 6 #}{{ _('Everyone who wants to join in, even without expertise, every argument can matter.') }}</p>
         </div>
 
         <div class="gu-about__looking">
           <div class="gu-about__lookingHead">
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
-            <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Experts{% else %}Experts{% endif %}</h3>
+            <h3 class="gu-about__lookingTitle">{# TRANSLATORS: about, tekst 7 #}{{ _('Experts') }}</h3>
           </div>
-          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Kennis delen, interessante ontwikkelingen tonen, voorstellen en kritische vragen.{% else %}Share knowledge, highlight interesting developments, proposals and critical questions.{% endif %}</p>
+          <p class="gu-about__lookingBody">{# TRANSLATORS: about, tekst 8 #}{{ _('Share knowledge, highlight interesting developments, proposals and critical questions.') }}</p>
         </div>
 
         <div class="gu-about__looking">
           <div class="gu-about__lookingHead">
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
-            <h3 class="gu-about__lookingTitle">{% if lang == 'nl' %}Moderators{% else %}Moderators{% endif %}</h3>
+            <h3 class="gu-about__lookingTitle">{# TRANSLATORS: about, tekst 9 #}{{ _('Moderators') }}</h3>
           </div>
-          <p class="gu-about__lookingBody">{% if lang == 'nl' %}Zorgen dat het gesprek loopt en toezien op de gedragsregels. Een overtreding wordt niet verwijderd maar verplaatst naar de openbare <a href="{{ url_for('forum.achtergrond') }}">achtergrondpagina</a>; spam of misbruik wordt volledig verborgen. De auteur kan bezwaar maken, en een moderator beslist.{% else %}Keep the conversation flowing and oversee the conduct rules. A violation is not deleted but moved to the public <a href="{{ url_for('forum.achtergrond') }}">background page</a>; spam or abuse is hidden completely. The author can object, and a moderator decides.{% endif %}</p>
+          <p class="gu-about__lookingBody">{# TRANSLATORS: about, tekst 10 #}{% trans value=url_for('forum.achtergrond') %}Keep the conversation flowing and oversee the conduct rules. A violation is not deleted but moved to the public <a href="{{ value }}">background page</a>; spam or abuse is hidden completely. The author can object, and a moderator decides.{% endtrans %}</p>
         </div>
 
       </div>
@@ -64,38 +59,36 @@
       <div class="gu-about__identity">
 
         <div class="gu-about__identityHead">
-          <p class="gu-eyebrow">{% if lang == 'nl' %}In goed overleg{% else %}By mutual agreement{% endif %}</p>
-          <h2 class="gu-h2">{% if lang == 'nl' %}Het gesprek wordt respectvol gevoerd.{% else %}The conversation is held with respect.{% endif %}</h2>
+          <p class="gu-eyebrow">{# TRANSLATORS: about, tekst 11 #}{{ _('By mutual agreement') }}</p>
+          <h2 class="gu-h2">{# TRANSLATORS: about, tekst 12 #}{{ _('The conversation is held with respect.') }}</h2>
         </div>
 
         <div class="gu-about__identityBody">
           <p class="gu-lead">
-            {% if lang == 'nl' %}
-              Het gesprek wordt respectvol gevoerd met als doel te komen tot gedragen voorstellen. We zullen naar voorbeeld van Wikipedia onze '4 pilaren' samen verder uitwerken en functionaliteit toevoegen.
-            {% else %}
-              The conversation is held with respect, with the aim of arriving at proposals that are broadly supported. Following the example of Wikipedia, we'll work out our '4 pillars' further together and add functionality.
-            {% endif %}
+            {# TRANSLATORS: about, tekst 13 #}
+              {% trans %}The conversation is held with respect, with the aim of arriving at proposals that are broadly supported. Following the example of Wikipedia, we'll work out our '4 pillars' further together and add functionality.{% endtrans %}
+            
           </p>
         </div>
 
         <aside class="gu-about__verifyCard">
-          <p class="gu-eyebrow" style="margin-bottom:20px;">{% if lang == 'nl' %}Onze vier pilaren{% else %}Our four pillars{% endif %}</p>
+          <p class="gu-eyebrow" style="margin-bottom:20px;">{# TRANSLATORS: about, tekst 14 #}{{ _('Our four pillars') }}</p>
           <div class="gu-about__pillars">
             <div class="gu-about__verifyAccount">
               <span class="gu-arrow" style="background:var(--gu-europe)"></span>
-              <span>{% if lang == 'nl' %}Een democratische kracht voor iedereen.{% else %}A democratic force for everyone.{% endif %}</span>
+              <span>{# TRANSLATORS: about, tekst 15 #}{{ _('A democratic force for everyone.') }}</span>
             </div>
             <div class="gu-about__verifyAccount">
               <span class="gu-arrow" style="background:var(--gu-asia)"></span>
-              <span>{% if lang == 'nl' %}We behandelen elkaar met respect.{% else %}We treat each other with respect.{% endif %}</span>
+              <span>{# TRANSLATORS: about, tekst 16 #}{{ _('We treat each other with respect.') }}</span>
             </div>
             <div class="gu-about__verifyAccount">
               <span class="gu-arrow" style="background:var(--gu-americas)"></span>
-              <span>{% if lang == 'nl' %}Feiten vanuit een neutraal oogpunt.{% else %}Facts from a neutral point of view.{% endif %}</span>
+              <span>{# TRANSLATORS: about, tekst 17 #}{{ _('Facts from a neutral point of view.') }}</span>
             </div>
             <div class="gu-about__verifyAccount">
               <span class="gu-arrow" style="background:var(--gu-africa)"></span>
-              <span>{% if lang == 'nl' %}Content vrij beschikbaar voor iedereen.{% else %}Content freely available to everyone.{% endif %}</span>
+              <span>{# TRANSLATORS: about, tekst 18 #}{{ _('Content freely available to everyone.') }}</span>
             </div>
           </div>
         </aside>

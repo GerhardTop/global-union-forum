@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if lang == 'nl' %}Het manifest{% else %}The manifesto{% endif %} · Global Union{% endblock %}
+{% block title %}{# TRANSLATORS: manifest, tekst 1 #}{{ _('The manifesto') }} · Global Union{% endblock %}
 
 {% block content_outer %}
 {% block content %}
@@ -8,23 +8,21 @@
   {# ── HERO ──────────────────────────────────────────────── #}
   <section class="gu-manifest__hero">
     <div class="gu-manifest__heroInner">
-      <p class="gu-eyebrow">{% if lang == 'nl' %}Het manifest · augustus 2026{% else %}The manifesto · August 2026{% endif %}</p>
+      <p class="gu-eyebrow">{# TRANSLATORS: manifest, tekst 2 #}{{ _('The manifesto · August 2026') }}</p>
       <h1 class="gu-manifest__title">
-        {% if lang == 'nl' %}Een Globale Unie<br><em>voor steeds meer functionerende democratieën</em>
-        {% else %}A Global Union<br><em>for a growing number of functioning democracies</em>{% endif %}
+        {# TRANSLATORS: manifest, titel #}{% trans %}A Global Union<br><em>for a growing number of functioning democracies</em>{% endtrans %}
       </h1>
       <p class="gu-manifest__subtitle">
-        {% if lang == 'nl' %}Een eerste manifest voor een Globale Unie voor democratie, vrijheid en vrede.
-        {% else %}A first manifesto for a Global Union for democracy, freedom and peace.{% endif %}
+        {# TRANSLATORS: manifest, tekst 3 #}{{ _('A first manifesto for a Global Union for democracy, freedom and peace.') }}
       </p>
       <div class="gu-manifest__meta">
         <div class="gu-manifest__metaRow">
           <span class="gu-manifest__metaAuthor">Gerhard Top</span>
         </div>
         <div class="gu-manifest__metaRow">
-          <span>{% if lang == 'nl' %}Geschreven augustus 2026{% else %}Written August 2026{% endif %}</span>
+          <span>{# TRANSLATORS: manifest, tekst 4 #}{{ _('Written August 2026') }}</span>
           <span aria-hidden="true">·</span>
-          <span>{% if lang == 'nl' %}8 minuten lezen{% else %}8 minute read{% endif %}</span>
+          <span>{# TRANSLATORS: manifest, tekst 5 #}{{ _('8 minute read') }}</span>
         </div>
       </div>
     </div>
@@ -37,49 +35,49 @@
       {# TOC #}
       <div class="gu-manifest__tocCol">
         <nav class="gu-manifest__toc"
-             aria-label="{% if lang == 'nl' %}In dit manifest{% else %}In this manifesto{% endif %}">
-          <p class="gu-eyebrow">{% if lang == 'nl' %}In dit manifest{% else %}In this manifesto{% endif %}</p>
+             aria-label="{# TRANSLATORS: manifest, tekst 6 #}{{ _('In this manifesto') }}">
+          <p class="gu-eyebrow">{# TRANSLATORS: manifest, tekst 7 #}{{ _('In this manifesto') }}</p>
           <ol>
             <li>
               <a href="#vertrekpunt">
                 <span class="gu-manifest__tocN">01</span>
-                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Gelijkgezinde landen als positieve kracht{% else %}Like-minded countries as a positive force{% endif %}</span>
+                <span class="gu-manifest__tocLabel">{# TRANSLATORS: manifest, tekst 8 #}{{ _('Like-minded countries as a positive force') }}</span>
               </a>
             </li>
             <li>
               <a href="#principes">
                 <span class="gu-manifest__tocN">02</span>
-                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Kernprincipes{% else %}Core principles{% endif %}</span>
+                <span class="gu-manifest__tocLabel">{# TRANSLATORS: manifest, tekst 9 #}{{ _('Core principles') }}</span>
               </a>
             </li>
             <li>
               <a href="#landen">
                 <span class="gu-manifest__tocN">03</span>
-                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Landen{% else %}Countries{% endif %}</span>
+                <span class="gu-manifest__tocLabel">{# TRANSLATORS: manifest, tekst 10 #}{{ _('Countries') }}</span>
               </a>
             </li>
             <li>
               <a href="#wetgeving">
                 <span class="gu-manifest__tocN">04</span>
-                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Gefaseerde wetgeving{% else %}Phased legislation{% endif %}</span>
+                <span class="gu-manifest__tocLabel">{# TRANSLATORS: manifest, tekst 11 #}{{ _('Phased legislation') }}</span>
               </a>
             </li>
             <li>
               <a href="#mondiale-standaarden">
                 <span class="gu-manifest__tocN">05</span>
-                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Aansluiten op mondiale standaarden{% else %}Aligning with global standards{% endif %}</span>
+                <span class="gu-manifest__tocLabel">{# TRANSLATORS: manifest, tekst 12 #}{{ _('Aligning with global standards') }}</span>
               </a>
             </li>
             <li>
               <a href="#organisatie">
                 <span class="gu-manifest__tocN">06</span>
-                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Organisatie{% else %}Organisation{% endif %}</span>
+                <span class="gu-manifest__tocLabel">{# TRANSLATORS: manifest, tekst 13 #}{{ _('Organisation') }}</span>
               </a>
             </li>
             <li>
               <a href="#lange-termijn">
                 <span class="gu-manifest__tocN">07</span>
-                <span class="gu-manifest__tocLabel">{% if lang == 'nl' %}Lange termijn{% else %}Long-term perspective{% endif %}</span>
+                <span class="gu-manifest__tocLabel">{# TRANSLATORS: manifest, tekst 14 #}{{ _('Long-term perspective') }}</span>
               </a>
             </li>
           </ol>
@@ -91,100 +89,75 @@
 
         {# ── 1. Like-minded countries as a positive force (anchor kept as #vertrekpunt) ── #}
         <section id="vertrekpunt" class="gu-manifest__section">
-          <h2>{% if lang == 'nl' %}Gelijkgezinde landen als positieve kracht{% else %}Like-minded countries as a positive force{% endif %}</h2>
-          {% if lang == 'nl' %}
-            <p>Grootmachten trekken zich te weinig aan van internationaal recht. De Global Union (GU) zet daar iets tegenover: een vaste samenwerking tussen functionerende democratieën, als aanvulling op de EU en de VN. Samen willen we onze marktmacht inzetten voor welvaart, sociale zekerheid, een leefbare planeet, veiligheid en handhaving van internationale afspraken.</p>
-            <p>Meedoen kan elk land dat goed scoort op democratie, rechtsstaat, mensenrechten en corruptiebestrijding. Er ligt al een stevige basis. In oktober 2026 sloten de EU en Canada een alliantie voor de toekomst. Gelijkgezinde landen zijn uitgenodigd mee te doen. Gezamenlijk is onze economie ruim een derde van de wereld en groter dan de VS.</p>
-            <p>De GU is principieel én pragmatisch. Principieel omdat handelstarieven afhangen van hoe een land scoort op het nakomen van internationale afspraken en gedeelde waarden. Wie aan alle criteria voldoet, betaalt geen invoerrechten. Wie agressie pleegt, wordt uitgesloten. Pragmatisch omdat we klein beginnen, met beperkte tarieven. We willen aantrekkelijk zijn en onnodige escalatie voorkomen. Zo winnen we tijd om samen strategisch onafhankelijk te worden.</p>
-            <p>Wie meedoet, profiteert. Dat geeft landen een reden om te hervormen, zoals eerder bij de EU. Zo groeit de unie uit aantrekkingskracht.</p>
-          {% else %}
-            <p>Major powers pay too little attention to international law. The Global Union (GU) offers an alternative: a permanent cooperation between functioning democracies, as a complement to the EU and the UN. Together we want to use our market power for prosperity, social security, a liveable planet, security and the enforcement of international agreements.</p>
-            <p>Any country that scores well on democracy, the rule of law, human rights and anti-corruption can join. A solid foundation already exists. In October 2026, the EU and Canada formed an alliance for the future. Like-minded countries have been invited to join. Together, our economy is more than one third of the world's and larger than that of the US.</p>
-            <p>The GU is principled and pragmatic. Principled, because trade tariffs depend on how a country scores on honouring international agreements and shared values. Countries that meet all criteria pay no import duties. Countries that commit aggression are excluded. Pragmatic, because we start small, with limited tariffs. We want to be attractive and avoid unnecessary escalation. This gives us time to become strategically independent together.</p>
-            <p>Those who join benefit. That gives countries a reason to reform, as happened earlier with the EU. This is how the union grows: through attraction.</p>
-          {% endif %}
+          <h2>{# TRANSLATORS: manifest, tekst 15 #}{{ _('Like-minded countries as a positive force') }}</h2>
+          
+            <p>{# TRANSLATORS: manifest, alinea 1 #}{% trans %}Major powers pay too little attention to international law. The Global Union (GU) offers an alternative: a permanent cooperation between functioning democracies, as a complement to the EU and the UN. Together we want to use our market power for prosperity, social security, a liveable planet, security and the enforcement of international agreements.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 2 #}{% trans %}Any country that scores well on democracy, the rule of law, human rights and anti-corruption can join. A solid foundation already exists. In October 2026, the EU and Canada formed an alliance for the future. Like-minded countries have been invited to join. Together, our economy is more than one third of the world's and larger than that of the US.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 3 #}{% trans %}The GU is principled and pragmatic. Principled, because trade tariffs depend on how a country scores on honouring international agreements and shared values. Countries that meet all criteria pay no import duties. Countries that commit aggression are excluded. Pragmatic, because we start small, with limited tariffs. We want to be attractive and avoid unnecessary escalation. This gives us time to become strategically independent together.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 4 #}{% trans %}Those who join benefit. That gives countries a reason to reform, as happened earlier with the EU. This is how the union grows: through attraction.{% endtrans %}</p>
+          
         </section>
 
         {# ── 2. Kernprincipes ───────────────────────────── #}
         <section id="principes" class="gu-manifest__section">
-          <h2>{% if lang == 'nl' %}Kernprincipes van de Globale Unie{% else %}Core principles of the Global Union{% endif %}</h2>
+          <h2>{# TRANSLATORS: manifest, tekst 16 #}{{ _('Core principles of the Global Union') }}</h2>
 
           <div class="gu-manifest__numbered">
             <span class="gu-manifest__numberedN">01</span>
-            <h4 class="gu-manifest__numberedTitle">{% if lang == 'nl' %}Een waarden-gedreven handelsstelsel{% else %}A values-driven trade system{% endif %}</h4>
+            <h4 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 17 #}{{ _('A values-driven trade system') }}</h4>
           </div>
-          <p>{% if lang == 'nl' %}De GU werkt met één systeem van handelstarieven op basis van een scorecard per land, gemeten op:{% else %}The GU operates with a single system of trade tariffs based on a scorecard per country, measured on:{% endif %}</p>
+          <p>{# TRANSLATORS: manifest, tekst 18 #}{{ _('The GU operates with a single system of trade tariffs based on a scorecard per country, measured on:') }}</p>
           <ul>
-            {% if lang == 'nl' %}
-              <li>Corruptiebestrijding</li>
-              <li>Vrijheid: rechtsstaat, democratie, vrije pers</li>
-              <li>Mensenrechten</li>
-              <li>Duurzaamheid: klimaatakkoorden, respect voor natuur</li>
-              <li>Gedrag binnen de internationale rechtsorde: IP-bescherming, geen spionage, geen dumping, bijdrage aan het Internationaal Gerechtshof</li>
-            {% else %}
-              <li>Anti-corruption</li>
-              <li>Freedom: rule of law, democracy, free press</li>
-              <li>Human rights</li>
-              <li>Sustainability: climate accords, respect for nature</li>
-              <li>Conduct within the international legal order: IP protection, no espionage, no dumping, contribution to the International Court of Justice</li>
-            {% endif %}
+            
+              <li>{# TRANSLATORS: manifest, lijstitem 5 #}{% trans %}Anti-corruption{% endtrans %}</li>
+              <li>{# TRANSLATORS: manifest, lijstitem 6 #}{% trans %}Freedom: rule of law, democracy, free press{% endtrans %}</li>
+              <li>{# TRANSLATORS: manifest, lijstitem 7 #}{% trans %}Human rights{% endtrans %}</li>
+              <li>{# TRANSLATORS: manifest, lijstitem 8 #}{% trans %}Sustainability: climate accords, respect for nature{% endtrans %}</li>
+              <li>{# TRANSLATORS: manifest, lijstitem 9 #}{% trans %}Conduct within the international legal order: IP protection, no espionage, no dumping, contribution to the International Court of Justice{% endtrans %}</li>
+            
           </ul>
-          {% if lang == 'nl' %}
-            <p>Landen die volledig voldoen betalen 0% invoerrechten. Landen die gedeeltelijk voldoen betalen op basis van hun score, met jaarlijkse meting en aanpassing. Landen die agressie plegen of hun eigen bevolking vermoorden worden volledig uitgesloten, en landen die wél handel met hen drijven krijgen hogere tarieven.</p>
-          {% else %}
-            <p>Countries that fully comply pay 0% import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs.</p>
-          {% endif %}
+          
+            <p>{# TRANSLATORS: manifest, alinea 10 #}{{ _('Countries that fully comply pay 0% import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs.') }}</p>
+          
 
           <div class="gu-manifest__numbered">
             <span class="gu-manifest__numberedN">02</span>
-            <h4 class="gu-manifest__numberedTitle">{% if lang == 'nl' %}Vreedzame maar krachtige buitenlandse politiek{% else %}Peaceful but firm foreign policy{% endif %}</h4>
+            <h4 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 19 #}{{ _('Peaceful but firm foreign policy') }}</h4>
           </div>
-          {% if lang == 'nl' %}
-            <p>De GU investeert in strategische onafhankelijkheid voor alle leden: grondstoffen, energie, defensie en eigen AI-capaciteit. De GU moet op deze gebieden urgent op eigen benen staan.</p>
-            <p>De GU voert geen assertieve militaire acties, tenzij een brede meerderheid van de GU-landen oordeelt dat ingrijpen noodzakelijk is vanwege misdaden tegen de eigen bevolking. Democratisering in autocratische landen gebeurt door opstand vanuit de eigen bevolking. Als regimes zich misdragen ondersteunen wij de oppositie.</p>
-          {% else %}
-            <p>The GU invests in strategic independence for all members: raw materials, energy, defence and its own AI capabilities. The GU must urgently stand on its own two feet in these areas.</p>
-            <p>The GU does not pursue assertive military action, unless a broad majority of GU members judges intervention necessary because of crimes against a country's own population. Democratisation in autocratic countries happens through uprising from within the population itself. If regimes misbehave, we support the opposition.</p>
-          {% endif %}
+          
+            <p>{# TRANSLATORS: manifest, alinea 11 #}{% trans %}The GU invests in strategic independence for all members: raw materials, energy, defence and its own AI capabilities. The GU must urgently stand on its own two feet in these areas.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 12 #}{% trans %}The GU does not pursue assertive military action, unless a broad majority of GU members judges intervention necessary because of crimes against a country's own population. Democratisation in autocratic countries happens through uprising from within the population itself. If regimes misbehave, we support the opposition.{% endtrans %}</p>
+          
 
           <div class="gu-manifest__numbered">
             <span class="gu-manifest__numberedN">03</span>
-            <h4 class="gu-manifest__numberedTitle">{% if lang == 'nl' %}Informatievrijheid als strategisch instrument{% else %}Information freedom as a strategic instrument{% endif %}</h4>
+            <h4 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 20 #}{{ _('Information freedom as a strategic instrument') }}</h4>
           </div>
-          <p>{% if lang == 'nl' %}De GU vergroot haar invloed door kwalitatief hoogwaardige en onafhankelijke journalistiek in alle lokale talen - naar analogie van de BBC, versterkt met GU-middelen - en door het beschikbaar stellen van beschermde technologie die burgers onafhankelijk maakt van staatsgecontroleerde internettoegang.{% else %}The GU extends its influence through high-quality independent journalism in all local languages - by analogy to the BBC, reinforced with GU resources - and by making protected technology available that frees people from state-controlled internet access.{% endif %}</p>
+          <p>{# TRANSLATORS: manifest, tekst 21 #}{{ _('The GU extends its influence through high-quality independent journalism in all local languages - by analogy to the BBC, reinforced with GU resources - and by making protected technology available that frees people from state-controlled internet access.') }}</p>
 
           <div class="gu-manifest__numbered">
             <span class="gu-manifest__numberedN">04</span>
-            <h4 class="gu-manifest__numberedTitle">{% if lang == 'nl' %}Eén handelszone, beperkt vrij verkeer van personen{% else %}A single trade zone, limited free movement of people{% endif %}</h4>
+            <h4 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 22 #}{{ _('A single trade zone, limited free movement of people') }}</h4>
           </div>
-          {% if lang == 'nl' %}
-            <p>De GU functioneert niet als één markt met volledig vrij personenverkeer, om ongewenste migratiestromen naar welvarende gebieden te voorkomen. Wel gelden uniforme handelstarieven op basis van de scorecard.</p>
-            <p>Voor hoogwaardig werk verstrekken we tijdelijke werkvisa aan schaars talent uit GU-landen én uit andere landen. De gedachte is circulair: wie tijdelijk elders werkt, brengt kennis, ervaring en netwerken terug naar het eigen land.</p>
-            <p>De GU investeert daarnaast in opleidingsprogramma's waarmee mensen in niet-GU-landen zich kunnen ontwikkelen tot het niveau dat nodig is om een waardevolle bijdrage te leveren. Eenmaal terug in eigen land kunnen zij ook op afstand blijven bijdragen aan de GU-economie. Zo groeit de welvaart aan beide kanten.</p>
-          {% else %}
-            <p>The GU does not function as a single market with full free movement of people, to avoid unwanted migration flows toward wealthier areas. Uniform trade tariffs based on the scorecard do apply.</p>
-            <p>For high-value work, we issue temporary work visas to scarce talent from GU countries as well as from non-GU countries. The principle is circular: those who work abroad temporarily bring knowledge, experience and networks back to their home country.</p>
-            <p>The GU also invests in training programmes through which people in non-GU countries can develop to the level needed to make a valuable contribution. Once back home, they can continue to contribute to the GU economy remotely. This way prosperity grows on both sides.</p>
-          {% endif %}
+          
+            <p>{# TRANSLATORS: manifest, alinea 13 #}{% trans %}The GU does not function as a single market with full free movement of people, to avoid unwanted migration flows toward wealthier areas. Uniform trade tariffs based on the scorecard do apply.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 14 #}{% trans %}For high-value work, we issue temporary work visas to scarce talent from GU countries as well as from non-GU countries. The principle is circular: those who work abroad temporarily bring knowledge, experience and networks back to their home country.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 15 #}{% trans %}The GU also invests in training programmes through which people in non-GU countries can develop to the level needed to make a valuable contribution. Once back home, they can continue to contribute to the GU economy remotely. This way prosperity grows on both sides.{% endtrans %}</p>
+          
         </section>
 
         {# ── 3. Landen ──────────────────────────────────── #}
         <section id="landen" class="gu-manifest__section">
-          <h2>{% if lang == 'nl' %}Landen{% else %}Countries{% endif %}</h2>
-          {% if lang == 'nl' %}
-            <p>Toetreding is gekoppeld aan drie bestaande, onafhankelijke indices: de Democracy Index, de Corruption Perceptions Index en de Human Rights Index. Voor iedere index is een 'voldoende' niveau en een 'minimum' niveau gekozen. Het minimumniveau is zo gekozen dat de EU als blok kan toetreden.</p>
-            <p>Landen boven het minimumniveau worden uitgenodigd mee te doen.</p>
-            <p>Drie landen krijgen een aparte behandeling. De Verenigde Staten en Israël worden voorlopig niet uitgenodigd. De landen voldoen cijfermatig weliswaar aan de norm, maar het valt niet te verwachten dat deze landen onder de huidige regeringen zich zouden willen committeren aan de regels van de Globale Unie. Taiwan voldoet eveneens, maar heeft geen VN-erkende status. Hiervoor kunnen we werken met een aparte status, zoals dat nu ook gebeurt bij de WTO.</p>
-            <p>De indices hebben een beperkte foutmarge. Landen die net onder de drempel zitten, kunnen op aanvraag alsnog worden beoordeeld.</p>
-          {% else %}
-            <p>Accession is tied to three existing, independent indices: the Democracy Index, the Corruption Perceptions Index, and the Human Rights Index. For each index, a 'sufficient' level and a 'minimum' level have been chosen. The minimum level is chosen so that the EU can join as a bloc.</p>
-            <p>Countries above the minimum level are invited to join.</p>
-            <p>Three countries receive separate treatment. The United States and Israel are not invited for now. These countries do numerically meet the standard, but it cannot be expected that, under their current administrations, they would want to commit to the rules of the Global Union. Taiwan also qualifies, but lacks UN-recognised status. For this we can work with a separate status, as is already the case at the WTO.</p>
-            <p>The indices carry a limited margin of error. Countries that fall just short of the threshold can still be assessed on request.</p>
-          {% endif %}
+          <h2>{# TRANSLATORS: manifest, tekst 23 #}{{ _('Countries') }}</h2>
+          
+            <p>{# TRANSLATORS: manifest, alinea 16 #}{% trans %}Accession is tied to three existing, independent indices: the Democracy Index, the Corruption Perceptions Index, and the Human Rights Index. For each index, a 'sufficient' level and a 'minimum' level have been chosen. The minimum level is chosen so that the EU can join as a bloc.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 17 #}{% trans %}Countries above the minimum level are invited to join.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 18 #}{% trans %}Three countries receive separate treatment. The United States and Israel are not invited for now. These countries do numerically meet the standard, but it cannot be expected that, under their current administrations, they would want to commit to the rules of the Global Union. Taiwan also qualifies, but lacks UN-recognised status. For this we can work with a separate status, as is already the case at the WTO.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 19 #}{% trans %}The indices carry a limited margin of error. Countries that fall just short of the threshold can still be assessed on request.{% endtrans %}</p>
+          
           <p>
             <a href="{{ url_for('main.landenlijst') }}" class="gu-manifest__inlineLink">
-              {% if lang == 'nl' %}Bekijk de volledige lijst met alle 183 landen en hun scores{% else %}View the full list of all 183 countries and their scores{% endif %}
+              {# TRANSLATORS: manifest, tekst 24 #}{{ _('View the full list of all 183 countries and their scores') }}
               <span class="gu-arrow"></span>
             </a>
           </p>
@@ -192,262 +165,161 @@
 
         {# ── 4. Wetgeving ───────────────────────────────── #}
         <section id="wetgeving" class="gu-manifest__section">
-          <h2>{% if lang == 'nl' %}Gefaseerde wetgeving{% else %}Phased legislation{% endif %}</h2>
-          {% if lang == 'nl' %}
-            <p>Wetgeving nemen we gefaseerd over. Eenvoudige, technische regels komen eerst; politiek gevoelige onderwerpen volgen later en vragen een bredere meerderheid.</p>
-          {% else %}
-            <p>We adopt legislation in phases. Simple, technical rules come first; politically sensitive matters follow later and require a broader majority.</p>
-          {% endif %}
+          <h2>{# TRANSLATORS: manifest, tekst 25 #}{{ _('Phased legislation') }}</h2>
+          
+            <p>{# TRANSLATORS: manifest, alinea 20 #}{% trans %}We adopt legislation in phases. Simple, technical rules come first; politically sensitive matters follow later and require a broader majority.{% endtrans %}</p>
+          
 
           <div class="gu-wet-table-wrap">
             <table class="gu-wet-table">
               <thead>
                 <tr>
-                  <th scope="col">{% if lang == 'nl' %}Fase{% else %}Phase{% endif %}</th>
-                  <th scope="col">{% if lang == 'nl' %}Voorbeelden{% else %}Examples{% endif %}</th>
-                  <th scope="col">{% if lang == 'nl' %}Criterium{% else %}Criterion{% endif %}</th>
-                  <th scope="col">{% if lang == 'nl' %}Drempel{% else %}Threshold{% endif %}</th>
+                  <th scope="col">{# TRANSLATORS: manifest, tekst 26 #}{{ _('Phase') }}</th>
+                  <th scope="col">{# TRANSLATORS: manifest, tekst 27 #}{{ _('Examples') }}</th>
+                  <th scope="col">{# TRANSLATORS: manifest, tekst 28 #}{{ _('Criterion') }}</th>
+                  <th scope="col">{# TRANSLATORS: manifest, tekst 29 #}{{ _('Threshold') }}</th>
                 </tr>
               </thead>
-              {% if lang == 'nl' %}
+              
               <tbody>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Fundament</th>
-                  <td data-label="Voorbeelden">Technische productnormen; douaneprocedures; verificatiemethode en extern tarievenstelsel van de scorecard; gegevensbescherming; voedsel- en productveiligheid</td>
-                  <td data-label="Criterium">Technisch of direct nodig om te functioneren</td>
-                  <td data-label="Drempel">Gewone regels</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 21 #}{% trans %}Foundation{% endtrans %}</th>
+                  <td data-label="{{ _('Examples') }}">{# TRANSLATORS: manifest, tabelcel 22 #}{% trans %}Technical product standards; customs procedures; the scorecard's verification method and external tariff system; data protection; food and product safety{% endtrans %}</td>
+                  <td data-label="{{ _('Criterion') }}">{# TRANSLATORS: manifest, tabelcel 23 #}{% trans %}Technical or directly needed to function{% endtrans %}</td>
+                  <td data-label="{{ _('Threshold') }}">{# TRANSLATORS: manifest, tabelcel 24 #}{% trans %}Ordinary rules{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Verdieping</th>
-                  <td data-label="Voorbeelden">Mededinging en staatssteun; aanbestedingen; digitale markten; beroepskwalificaties; financieel toezicht</td>
-                  <td data-label="Criterium">Matige soevereiniteitskosten, versterkt de samenwerking</td>
-                  <td data-label="Drempel">Gewone regels</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 25 #}{% trans %}Deepening{% endtrans %}</th>
+                  <td data-label="{{ _('Examples') }}">{# TRANSLATORS: manifest, tabelcel 26 #}{% trans %}Competition and state aid; procurement; digital markets; professional qualifications; financial oversight{% endtrans %}</td>
+                  <td data-label="{{ _('Criterion') }}">{# TRANSLATORS: manifest, tabelcel 27 #}{% trans %}Moderate sovereignty cost, strengthens cooperation{% endtrans %}</td>
+                  <td data-label="{{ _('Threshold') }}">{# TRANSLATORS: manifest, tabelcel 28 #}{% trans %}Ordinary rules{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Politiek gevoelig</th>
-                  <td data-label="Voorbeelden">Rechtsstaatconditionaliteit; milieu- en arbeidsnormen; fiscale afstemming; sancties tegen agressieve landen</td>
-                  <td data-label="Criterium">Politiek gevoelig, hoge soevereiniteitskosten</td>
-                  <td data-label="Drempel">80%-drempel</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 29 #}{% trans %}Politically sensitive{% endtrans %}</th>
+                  <td data-label="{{ _('Examples') }}">{# TRANSLATORS: manifest, tabelcel 30 #}{% trans %}Rule-of-law conditionality; environmental and labour standards; tax coordination; sanctions against aggressive states{% endtrans %}</td>
+                  <td data-label="{{ _('Criterion') }}">{# TRANSLATORS: manifest, tabelcel 31 #}{% trans %}Politically sensitive, high sovereignty cost{% endtrans %}</td>
+                  <td data-label="{{ _('Threshold') }}">{# TRANSLATORS: manifest, tabelcel 32 #}{{ _('80% threshold') }}</td>
                 </tr>
               </tbody>
-              {% else %}
-              <tbody>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Foundation</th>
-                  <td data-label="Examples">Technical product standards; customs procedures; the scorecard's verification method and external tariff system; data protection; food and product safety</td>
-                  <td data-label="Criterion">Technical or directly needed to function</td>
-                  <td data-label="Threshold">Ordinary rules</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Deepening</th>
-                  <td data-label="Examples">Competition and state aid; procurement; digital markets; professional qualifications; financial oversight</td>
-                  <td data-label="Criterion">Moderate sovereignty cost, strengthens cooperation</td>
-                  <td data-label="Threshold">Ordinary rules</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Politically sensitive</th>
-                  <td data-label="Examples">Rule-of-law conditionality; environmental and labour standards; tax coordination; sanctions against aggressive states</td>
-                  <td data-label="Criterion">Politically sensitive, high sovereignty cost</td>
-                  <td data-label="Threshold">80% threshold</td>
-                </tr>
-              </tbody>
-              {% endif %}
+              
             </table>
           </div>
 
-          {% if lang == 'nl' %}
-            <p>De Global Union werkt niet met één extern tarief, maar met verschillende tarieven per land, gebaseerd op de score op de waarden-scorecard. Dit lijkt strijdig met het principe van de wereldhandelsorganisatie dat alle landen gelijke tarieven dienen te krijgen. Op basis van artikel XX GATT, bescherming van de publieke moraal, verwachten we hier een uitzondering op te kunnen maken. Omdat dit oordeel gedragen wordt door de hele Global Union, en volgens vaste, voor elk land gelijke criteria wordt toegepast, staat dit beroep steviger dan wanneer een enkel land het alleen zou doen.</p>
-            <p>Landbouwbeleid, cohesiefondsen en de muntunie nemen we niet over; die zijn onlosmakelijk verbonden met het grondgebied en de begroting van de EU zelf.</p>
-          {% else %}
-            <p>The Global Union does not apply a single external tariff, but different tariffs per country, based on the score on the values scorecard. This appears to conflict with the World Trade Organization's principle that all countries should receive equal tariffs. Under Article XX GATT, protection of public morals, we expect to be able to make an exception here. Because this judgement is carried by the whole Global Union, and applied using fixed criteria equal for every country, this claim stands on firmer ground than if a single country made it alone.</p>
-            <p>We do not adopt agricultural policy, cohesion funds, or the monetary union; these are inseparably tied to the EU's own territory and budget.</p>
-          {% endif %}
+          
+            <p>{# TRANSLATORS: manifest, alinea 33 #}{% trans %}The Global Union does not apply a single external tariff, but different tariffs per country, based on the score on the values scorecard. This appears to conflict with the World Trade Organization's principle that all countries should receive equal tariffs. Under Article XX GATT, protection of public morals, we expect to be able to make an exception here. Because this judgement is carried by the whole Global Union, and applied using fixed criteria equal for every country, this claim stands on firmer ground than if a single country made it alone.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 34 #}{% trans %}We do not adopt agricultural policy, cohesion funds, or the monetary union; these are inseparably tied to the EU's own territory and budget.{% endtrans %}</p>
+          
         </section>
 
         {# ── 5. Aansluiten op mondiale standaarden ──────── #}
         <section id="mondiale-standaarden" class="gu-manifest__section">
-          <h2>{% if lang == 'nl' %}Aansluiten op mondiale standaarden{% else %}Aligning with global standards{% endif %}</h2>
-          {% if lang == 'nl' %}
-            <p>We kiezen alleen voor een eigen regel als er geen mondiaal alternatief is of het bestaande te vrijblijvend is.</p>
-          {% else %}
-            <p>We only choose our own rule where no global alternative exists or the existing one is too weak to enforce.</p>
-          {% endif %}
+          <h2>{# TRANSLATORS: manifest, tekst 30 #}{{ _('Aligning with global standards') }}</h2>
+          
+            <p>{# TRANSLATORS: manifest, alinea 35 #}{% trans %}We only choose our own rule where no global alternative exists or the existing one is too weak to enforce.{% endtrans %}</p>
+          
 
           <div class="gu-wet-table-wrap">
             <table class="gu-wet-table">
               <thead>
                 <tr>
-                  <th scope="col">{% if lang == 'nl' %}Domein{% else %}Domain{% endif %}</th>
-                  <th scope="col">{% if lang == 'nl' %}Leidende standaard{% else %}Leading standard{% endif %}</th>
-                  <th scope="col">{% if lang == 'nl' %}Orgaan{% else %}Body{% endif %}</th>
+                  <th scope="col">{# TRANSLATORS: manifest, tekst 31 #}{{ _('Domain') }}</th>
+                  <th scope="col">{# TRANSLATORS: manifest, tekst 32 #}{{ _('Leading standard') }}</th>
+                  <th scope="col">{# TRANSLATORS: manifest, tekst 33 #}{{ _('Body') }}</th>
                 </tr>
               </thead>
-              {% if lang == 'nl' %}
+              
               <tbody>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Handelsregels</th>
-                  <td data-label="Leidende standaard">GATT/GATS, TBT- en SPS-akkoorden</td>
-                  <td data-label="Orgaan">WTO</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 36 #}{% trans %}Trade rules{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 37 #}{% trans %}GATT/GATS, TBT and SPS agreements{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 38 #}{% trans %}WTO{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Douane en indeling</th>
-                  <td data-label="Leidende standaard">Geharmoniseerd Systeem, Herzien Verdrag van Kyoto</td>
-                  <td data-label="Orgaan">WCO</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 39 #}{% trans %}Customs and classification{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 40 #}{% trans %}Harmonized System, Revised Kyoto Convention{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 41 #}{% trans %}WCO{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Productnormen</th>
-                  <td data-label="Leidende standaard">ISO, IEC, ITU</td>
-                  <td data-label="Orgaan">Internationaal, niet-statelijk</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 42 #}{% trans %}Product standards{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 43 #}{% trans %}ISO, IEC, ITU{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 44 #}{% trans %}International, non-state{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Voedselveiligheid</th>
-                  <td data-label="Leidende standaard">Codex Alimentarius</td>
-                  <td data-label="Orgaan">FAO/WHO</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 45 #}{% trans %}Food safety{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 46 #}{% trans %}Codex Alimentarius{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 47 #}{% trans %}FAO/WHO{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Belastingen</th>
-                  <td data-label="Leidende standaard">Pillar Two (minimumtarief), BEPS</td>
-                  <td data-label="Orgaan">OESO/G20 Inclusive Framework</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 48 #}{% trans %}Taxation{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 49 #}{% trans %}Pillar Two (minimum rate), BEPS{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 50 #}{% trans %}OECD/G20 Inclusive Framework{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Bankentoezicht</th>
-                  <td data-label="Leidende standaard">Basel III</td>
-                  <td data-label="Orgaan">Bazels Comité</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 51 #}{% trans %}Banking supervision{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 52 #}{% trans %}Basel III{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 53 #}{% trans %}Basel Committee{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Witwasbestrijding</th>
-                  <td data-label="Leidende standaard">40 aanbevelingen</td>
-                  <td data-label="Orgaan">FATF</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 54 #}{% trans %}Anti-money laundering{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 55 #}{% trans %}40 Recommendations{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 56 #}{% trans %}FATF{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Verslaggeving</th>
-                  <td data-label="Leidende standaard">IFRS</td>
-                  <td data-label="Orgaan">IASB</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 57 #}{% trans %}Reporting{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 58 #}{% trans %}IFRS{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 59 #}{% trans %}IASB{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Mensenrechten</th>
-                  <td data-label="Leidende standaard">UVRM, IVBPR, IVESCR, acht fundamentele ILO-verdragen</td>
-                  <td data-label="Orgaan">VN, ILO</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 60 #}{% trans %}Human rights{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 61 #}{% trans %}UDHR, ICCPR, ICESCR, eight fundamental ILO conventions{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 62 #}{% trans %}UN, ILO{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Corruptiebestrijding</th>
-                  <td data-label="Leidende standaard">UNCAC</td>
-                  <td data-label="Orgaan">VN</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 63 #}{% trans %}Anti-corruption{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 64 #}{% trans %}UNCAC{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 65 #}{% trans %}UN{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Klimaat</th>
-                  <td data-label="Leidende standaard">Akkoord van Parijs</td>
-                  <td data-label="Orgaan">UNFCCC</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 66 #}{% trans %}Climate{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 67 #}{% trans %}Paris Agreement{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 68 #}{% trans %}UNFCCC{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Luchtvaart, scheepvaart</th>
-                  <td data-label="Leidende standaard">ICAO, IMO</td>
-                  <td data-label="Orgaan">VN-organisaties</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 69 #}{% trans %}Aviation, shipping{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 70 #}{% trans %}ICAO, IMO{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 71 #}{% trans %}UN agencies{% endtrans %}</td>
                 </tr>
                 <tr>
-                  <th class="gu-wet-table__phase" scope="row">Gegevensbescherming</th>
-                  <td data-label="Leidende standaard">Verdrag 108+</td>
-                  <td data-label="Orgaan">Raad van Europa, open voor niet-Europese staten</td>
+                  <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 72 #}{% trans %}Data protection{% endtrans %}</th>
+                  <td data-label="{{ _('Leading standard') }}">{# TRANSLATORS: manifest, tabelcel 73 #}{% trans %}Convention 108+{% endtrans %}</td>
+                  <td data-label="{{ _('Body') }}">{# TRANSLATORS: manifest, tabelcel 74 #}{% trans %}Council of Europe, open to non-European states{% endtrans %}</td>
                 </tr>
               </tbody>
-              {% else %}
-              <tbody>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Trade rules</th>
-                  <td data-label="Leading standard">GATT/GATS, TBT and SPS agreements</td>
-                  <td data-label="Body">WTO</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Customs and classification</th>
-                  <td data-label="Leading standard">Harmonized System, Revised Kyoto Convention</td>
-                  <td data-label="Body">WCO</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Product standards</th>
-                  <td data-label="Leading standard">ISO, IEC, ITU</td>
-                  <td data-label="Body">International, non-state</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Food safety</th>
-                  <td data-label="Leading standard">Codex Alimentarius</td>
-                  <td data-label="Body">FAO/WHO</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Taxation</th>
-                  <td data-label="Leading standard">Pillar Two (minimum rate), BEPS</td>
-                  <td data-label="Body">OECD/G20 Inclusive Framework</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Banking supervision</th>
-                  <td data-label="Leading standard">Basel III</td>
-                  <td data-label="Body">Basel Committee</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Anti-money laundering</th>
-                  <td data-label="Leading standard">40 Recommendations</td>
-                  <td data-label="Body">FATF</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Reporting</th>
-                  <td data-label="Leading standard">IFRS</td>
-                  <td data-label="Body">IASB</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Human rights</th>
-                  <td data-label="Leading standard">UDHR, ICCPR, ICESCR, eight fundamental ILO conventions</td>
-                  <td data-label="Body">UN, ILO</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Anti-corruption</th>
-                  <td data-label="Leading standard">UNCAC</td>
-                  <td data-label="Body">UN</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Climate</th>
-                  <td data-label="Leading standard">Paris Agreement</td>
-                  <td data-label="Body">UNFCCC</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Aviation, shipping</th>
-                  <td data-label="Leading standard">ICAO, IMO</td>
-                  <td data-label="Body">UN agencies</td>
-                </tr>
-                <tr>
-                  <th class="gu-wet-table__phase" scope="row">Data protection</th>
-                  <td data-label="Leading standard">Convention 108+</td>
-                  <td data-label="Body">Council of Europe, open to non-European states</td>
-                </tr>
-              </tbody>
-              {% endif %}
+              
             </table>
           </div>
 
-          {% if lang == 'nl' %}
-            <p>Bij gegevensbescherming kiezen we het supranationale Verdrag 108+ in plaats van de AVG: dezelfde bescherming, maar zonder EU-label, en al opengesteld voor landen als Uruguay, Mexico en Senegal. Bij AI ontbreekt nog een gezaghebbende mondiale standaard. Deze zal met prioriteit vormgegeven moeten worden.</p>
-          {% else %}
-            <p>For data protection, we choose the supranational Convention 108+ over the GDPR: the same protection, but without an EU label, and already open to countries such as Uruguay, Mexico, and Senegal. For AI, an authoritative global standard is still missing. This will need to be shaped as a priority.</p>
-          {% endif %}
+          
+            <p>{# TRANSLATORS: manifest, alinea 75 #}{% trans %}For data protection, we choose the supranational Convention 108+ over the GDPR: the same protection, but without an EU label, and already open to countries such as Uruguay, Mexico, and Senegal. For AI, an authoritative global standard is still missing. This will need to be shaped as a priority.{% endtrans %}</p>
+          
         </section>
 
         {# ── 6. Organisatie ─────────────────────────────── #}
         <section id="organisatie" class="gu-manifest__section">
-          <h2>{% if lang == 'nl' %}Organisatie{% else %}Organisation{% endif %}</h2>
-          {% if lang == 'nl' %}
-            <p>De Global Union werkt met een minimale organisatie: een kleine commissie en een beperkt ambtenarenapparaat, ondersteund door bestaande nationale en internationale instellingen. Het budget blijft beperkt, want de unie begint met een beperkte set bevoegdheden en neemt geen grote overdrachten over zoals landbouw- of cohesiefondsen. Toch is de unie daadkrachtig: besluiten vallen met een heldere meerderheid in plaats van unanimiteit. Uitvoering vindt plaats in de landen zelf. Toezicht op de uitvoering wordt wel door de Global Union verzorgd. Wel is er budget voor internationale uitwisseling van studenten en voor onafhankelijke online nieuwsmedia en opleidingen.</p>
-            <p>Discussies en stemmingen vinden online plaats. De slagkracht wordt versterkt door democratische innovatie. Besluitvorming is transparant, inclusief de onderliggende feiten en overwegingen, uitgelegd op zowel expert- als lekenniveau. Burgers wereldwijd kunnen in hun eigen taal meepraten en invloed uitoefenen.</p>
-          {% else %}
-            <p>The Global Union operates with a minimal organisation: a small commission and a limited civil service, supported by existing national and international institutions. The budget stays limited, since the union starts with a limited set of competences and does not take on large transfers such as agricultural or cohesion funds. Yet the union is effective: decisions are taken by a clear majority rather than unanimity. Implementation takes place within the countries themselves. Oversight of that implementation is carried out by the Global Union. There is, however, budget for international student exchange and for independent online news media and education programmes.</p>
-            <p>Discussions and votes take place online. This effectiveness is strengthened by democratic innovation. Decision-making is transparent, including the underlying facts and considerations, explained at both expert and layperson level. Citizens worldwide can take part and exert influence in their own language.</p>
-          {% endif %}
+          <h2>{# TRANSLATORS: manifest, tekst 34 #}{{ _('Organisation') }}</h2>
+          
+            <p>{# TRANSLATORS: manifest, alinea 76 #}{% trans %}The Global Union operates with a minimal organisation: a small commission and a limited civil service, supported by existing national and international institutions. The budget stays limited, since the union starts with a limited set of competences and does not take on large transfers such as agricultural or cohesion funds. Yet the union is effective: decisions are taken by a clear majority rather than unanimity. Implementation takes place within the countries themselves. Oversight of that implementation is carried out by the Global Union. There is, however, budget for international student exchange and for independent online news media and education programmes.{% endtrans %}</p>
+            <p>{# TRANSLATORS: manifest, alinea 77 #}{% trans %}Discussions and votes take place online. This effectiveness is strengthened by democratic innovation. Decision-making is transparent, including the underlying facts and considerations, explained at both expert and layperson level. Citizens worldwide can take part and exert influence in their own language.{% endtrans %}</p>
+          
         </section>
 
         {# ── 7. Lange termijn ───────────────────────────── #}
         <section id="lange-termijn" class="gu-manifest__section">
-          <h2>{% if lang == 'nl' %}Perspectief op de lange termijn{% else %}Long-term perspective{% endif %}</h2>
-          <p>{% if lang == 'nl' %}De Globale Unie omvat landen uit de gehele wereld, groeit sterk en is een drijvende kracht voor steeds meer functionerende democratieën. De GU werkt constructief samen met andere landen die de wereld veilig en schoon willen houden voor komende generaties.{% else %}The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations.{% endif %}</p>
+          <h2>{# TRANSLATORS: manifest, kop #}{{ pgettext('manifest heading', 'Long-term perspective') }}</h2>
+          <p>{# TRANSLATORS: manifest, tekst 35 #}{{ _('The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations.') }}</p>
           <aside class="gu-manifest__pullquote">
             <span class="gu-manifest__pullquote-mark">"</span>Middle powers must act together, because if we're not at the table, we're on the menu.<span class="gu-manifest__pullquote-mark">"</span>
-            <footer class="gu-manifest__pullquote-cite">Mark Carney, Davos, {% if lang == 'nl' %}20 januari 2026{% else %}20 January 2026{% endif %}</footer>
+            <footer class="gu-manifest__pullquote-cite">Mark Carney, Davos, {# TRANSLATORS: manifest, tekst 36 #}{{ _('20 January 2026') }}</footer>
           </aside>
         </section>
 
@@ -465,8 +337,8 @@
         <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-africa)"></span>
         <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-oceania)"></span>
       </div>
-      <h2 class="gu-h2">{% if lang == 'nl' %}Tot zover dit manifest.{% else %}That's the manifesto.{% endif %}</h2>
-      <p class="gu-lead">{% if lang == 'nl' %}Dit is een schrijfoefening, een eerste aanzet. Geen blauwdruk, geen partijprogramma. Wel een richting. Denk mee. Verbeter het manifest, schrijf een eigen tegenpositie, of breng het verder in een werksessie.{% else %}This is a writing exercise, a first attempt. Not a blueprint, not a party programme. But a direction. Have your say. Improve the manifesto, write your own counter-position, or carry it further in a working session.{% endif %}</p>
+      <h2 class="gu-h2">{# TRANSLATORS: manifest, tekst 37 #}{% trans %}That's the manifesto.{% endtrans %}</h2>
+      <p class="gu-lead">{# TRANSLATORS: manifest, tekst 38 #}{{ _('This is a writing exercise, a first attempt. Not a blueprint, not a party programme. But a direction. Have your say. Improve the manifesto, write your own counter-position, or carry it further in a working session.') }}</p>
       <div class="gu-manifest__endCTA">
         <a href="{{ url_for('social.aanmelden') }}" class="gu-btn gu-btn--primary gu-btn--lg">
           {{ _('Join the thinking') }}

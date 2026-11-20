@@ -8,6 +8,8 @@ Dekt: de banner-CSS-klasse verschijnt nergens meer, in geen van beide talen,
 voor een ingelogde gebruiker zonder LinkedIn-URL. De verweesde
 /profiel/linkedin-aanvullen-pagina is inmiddels ook verwijderd.
 """
+from flask_babel import refresh
+
 from app import bcrypt
 from app.models import User
 
@@ -32,7 +34,7 @@ class TestLinkedinBannerVerwijderd:
     def test_geen_banner_op_homepage_nederlands(self, client, db):
         _maak_ingelogde_client_zonder_linkedin(client, db, "geenlinkedin_nl@example.com")
         client.get("/lang/nl")
-
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         html = client.get("/").get_data(as_text=True)
 
         assert "gu-linkedin-banner" not in html
@@ -42,7 +44,7 @@ class TestLinkedinBannerVerwijderd:
     def test_geen_banner_op_homepage_engels(self, client, db):
         _maak_ingelogde_client_zonder_linkedin(client, db, "geenlinkedin_en@example.com")
         client.get("/lang/en")
-
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         html = client.get("/").get_data(as_text=True)
 
         assert "gu-linkedin-banner" not in html

@@ -121,7 +121,7 @@ def privacy():
 @main.route("/faq")
 def faq():
     from app import faq as faq_content
-    return render_template("faq.html", themes=faq_content.for_lang(session.get('lang', 'nl')))
+    return render_template("faq.html", themes=faq_content.themes())
 
 
 @main.route("/spelregels")

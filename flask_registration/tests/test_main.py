@@ -6,6 +6,8 @@ geen intro-tekst en geen (i)-info-icoon/uitklap-mechanisme meer is voor de
 drie uitzonderingsgevallen (Taiwan/Israel/VS) — die toelichting staat alleen
 nog op /manifest.
 """
+from flask_babel import refresh
+
 
 
 class TestLandenlijst:
@@ -20,12 +22,14 @@ class TestLandenlijst:
 
     def test_landenlijst_dutch_text(self, client):
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         assert "Landenoverzicht" in html
 
     def test_landenlijst_english_text(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         assert "Country overview" in html
@@ -34,12 +38,15 @@ class TestLandenlijst:
         # De intro-tekst (voorheen via _landen_intro.html) staat alleen nog
         # op /manifest, niet meer op de lijst-pagina zelf.
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         assert "Toetreding is gekoppeld aan drie bestaande" not in html
         assert "gu-landen__intro" not in html
 
         client.get("/lang/en")
+
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         assert "Accession is tied to three existing" not in html
@@ -60,6 +67,7 @@ class TestLandenlijst:
 
     def test_mobile_card_details_show_scores_not_level_again(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         idx = html.find('class="gu-landen-card"')
@@ -91,6 +99,7 @@ class TestLandenlijst:
     def test_legend_table_present_dutch(self, client):
         # Wijziging 7: compacte legenda-tabel vervangt de weggehaalde tekst.
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         idx = html.find('gu-landen-legend')
@@ -108,6 +117,7 @@ class TestLandenlijst:
 
     def test_legend_table_present_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         idx = html.find('gu-landen-legend')
@@ -142,6 +152,7 @@ class TestLandenlijst:
         # Wijziging 4: kolomkop wordt voluit "Global Union niveau"/"level";
         # de badge-tekst in de cellen zelf (bijv. "Op niveau") blijft gelijk.
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         wrap_start = html.find('class="gu-landen-table-wrap"')
@@ -150,6 +161,8 @@ class TestLandenlijst:
         assert 'Niveau GU' not in thead
 
         client.get("/lang/en")
+
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         wrap_start = html.find('class="gu-landen-table-wrap"')
@@ -160,6 +173,7 @@ class TestLandenlijst:
     def test_index_columns_centered(self, client):
         # Wijziging 5: alleen DI/CPI/HRI-kolommen (kop én waarde) gecentreerd.
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         wrap_start = html.find('class="gu-landen-table-wrap"')
@@ -195,6 +209,7 @@ class TestLandenlijst:
         # de zichtbare naam — zoeken vanaf de tekst 'Norway' zou dat
         # attribuut-prefix missen.
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
@@ -219,6 +234,7 @@ class TestLandenlijst:
         # 'Op niveau'-drempel, dus alle drie 'meets' (groen), elk los in zijn
         # eigen kolom (niet gegroepeerd).
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
@@ -233,6 +249,7 @@ class TestLandenlijst:
         # niveau: 40 <= 68 < 70), HRI 0.930 (Op niveau) -> 2x meets, 1x above,
         # zichtbaar in de hoofdrij zelf (niet pas na uitklappen).
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
@@ -247,6 +264,7 @@ class TestLandenlijst:
         # heeft geen remark en dus ook geen uitklaprij: de dots moeten in de
         # hoofdrij zelf zichtbaar zijn.
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
@@ -259,6 +277,7 @@ class TestLandenlijst:
         # Mobiel blijft de gegroepeerde variant gebruiken (wijziging A is
         # desktop-only).
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         cards_start = html.find('class="gu-landen-cards"')
@@ -276,6 +295,7 @@ class TestLandenlijst:
         # hier dubbelop zijn geweest. <tbody> vanaf gu-landen-table-wrap
         # zoeken: de legenda-tabel (wijziging 7) heeft óók een <tbody>.
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         wrap_start = html.find('class="gu-landen-table-wrap"')
@@ -301,6 +321,7 @@ class TestLandenlijst:
         # Zelfde verwijdering op mobiel: geen (i)-icoon en geen remark-tekst
         # meer in de kaart-details van Taiwan/Israel/VS.
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         cards_start = html.find('class="gu-landen-cards"')
@@ -315,6 +336,7 @@ class TestLandenlijst:
 
     def test_exception_country_name_orange_desktop(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
@@ -326,6 +348,7 @@ class TestLandenlijst:
 
     def test_non_exception_country_name_not_orange_desktop(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
@@ -337,6 +360,7 @@ class TestLandenlijst:
 
     def test_exception_country_name_orange_mobile(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         cards_start = html.find('class="gu-landen-cards"')
@@ -349,6 +373,7 @@ class TestLandenlijst:
 
     def test_dutch_country_names_on_dutch_page(self, client):
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
@@ -360,6 +385,7 @@ class TestLandenlijst:
 
     def test_english_country_names_on_english_page(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         table_start = html.find('gu-landen-table__country')
@@ -390,6 +416,7 @@ class TestManifestLandenSection:
         # Wijziging 2: de (uitgebreide) uitlegtekst staat nu op /manifest,
         # in de #landen-sectie, i.p.v. als losse tekst op /manifest/landen.
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section_start = html.find('id="landen"')
@@ -402,6 +429,7 @@ class TestManifestLandenSection:
 
     def test_manifest_landen_new_explainer_text_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section_start = html.find('id="landen"')
@@ -416,6 +444,7 @@ class TestManifestLandenSection:
         # De nieuwe tekst (met de unieke zin over uitnodigen) hoort alleen op
         # /manifest te staan, niet (ook) op /manifest/landen.
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest/landen")
         html = response.get_data(as_text=True)
         assert "Landen boven het minimumniveau worden uitgenodigd mee te doen." not in html
@@ -435,6 +464,7 @@ class TestManifestWetgevingSection:
         # Sectiekop én TOC-label worden "Gefaseerde wetgeving" (i.p.v. enkel
         # "Wetgeving"), in beide gevallen exact dezelfde tekst.
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert html.count("Gefaseerde wetgeving") == 2  # TOC-label + <h2>
@@ -442,6 +472,7 @@ class TestManifestWetgevingSection:
 
     def test_wetgeving_title_renamed_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert html.count("Phased legislation") == 2
@@ -499,6 +530,7 @@ class TestManifestWetgevingSection:
         # nieuwe 'mondiale standaarden'-sectie ook daar hergebruikt (13x), dus
         # een ongebonden paginabrede telling zou nu 16 geven i.p.v. 3.
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section_start = html.find('id="wetgeving"')
@@ -516,6 +548,7 @@ class TestManifestWetgevingSection:
 
     def test_wetgeving_table_has_three_rows_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section_start = html.find('id="wetgeving"')
@@ -532,6 +565,7 @@ class TestManifestWetgevingSection:
 
     def test_wetgeving_new_intro_text_dutch(self, client):
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert "Wetgeving nemen we gefaseerd over. Eenvoudige, technische regels komen eerst" in html
@@ -540,6 +574,7 @@ class TestManifestWetgevingSection:
 
     def test_wetgeving_new_intro_text_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert "We adopt legislation in phases. Simple, technical rules come first" in html
@@ -547,6 +582,7 @@ class TestManifestWetgevingSection:
 
     def test_wetgeving_gatt_and_exclusions_paragraphs_dutch(self, client):
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert "artikel XX GATT" in html
@@ -558,6 +594,7 @@ class TestManifestWetgevingSection:
 
     def test_wetgeving_gatt_and_exclusions_paragraphs_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert "Article XX GATT" in html
@@ -580,6 +617,7 @@ class TestManifestGlobalStandardsSection:
     def test_title_dutch(self, client):
         # Sectiekop én TOC-label exact "Aansluiten op mondiale standaarden".
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert html.count("Aansluiten op mondiale standaarden") == 2  # TOC-label + <h2>
@@ -587,6 +625,7 @@ class TestManifestGlobalStandardsSection:
 
     def test_title_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert html.count("Aligning with global standards") == 2
@@ -619,6 +658,7 @@ class TestManifestGlobalStandardsSection:
 
     def test_intro_text_dutch(self, client):
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)
@@ -626,6 +666,7 @@ class TestManifestGlobalStandardsSection:
 
     def test_intro_text_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)
@@ -634,6 +675,7 @@ class TestManifestGlobalStandardsSection:
     def test_table_data_sample_dutch(self, client):
         # Steekproef: eerste, een middelste, en de laatste rij.
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)
@@ -644,6 +686,7 @@ class TestManifestGlobalStandardsSection:
 
     def test_table_data_sample_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)
@@ -654,6 +697,7 @@ class TestManifestGlobalStandardsSection:
 
     def test_paragraph_below_table_dutch(self, client):
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)
@@ -663,6 +707,7 @@ class TestManifestGlobalStandardsSection:
 
     def test_paragraph_below_table_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)
@@ -684,6 +729,7 @@ class TestManifestOrganizationSection:
     def test_title_dutch(self, client):
         # Sectiekop én TOC-label exact "Organisatie".
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert html.count("Organisatie") == 2  # TOC-label + <h2>
@@ -691,6 +737,7 @@ class TestManifestOrganizationSection:
 
     def test_title_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         assert html.count("Organisation") == 2
@@ -711,6 +758,7 @@ class TestManifestOrganizationSection:
 
     def test_paragraphs_dutch(self, client):
         client.get("/lang/nl")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)
@@ -735,6 +783,7 @@ class TestManifestOrganizationSection:
 
     def test_paragraphs_english(self, client):
         client.get("/lang/en")
+        refresh()  # Flask-Babel caches the locale in the shared test app context
         response = client.get("/manifest")
         html = response.get_data(as_text=True)
         section = self._section_html(html)

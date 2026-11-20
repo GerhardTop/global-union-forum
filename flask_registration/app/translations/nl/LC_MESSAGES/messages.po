@@ -3885,3 +3885,949 @@ msgstr "Nieuw wachtwoord"
 msgctxt "profile"
 msgid "Confirm new password"
 msgstr "Bevestig nieuw wachtwoord"
+
+#. manifest, tekst 2
+msgid "The manifesto · August 2026"
+msgstr "Het manifest · augustus 2026"
+
+#. manifest, tekst 3
+msgid "A first manifesto for a Global Union for democracy, freedom and peace."
+msgstr "Een eerste manifest voor een Globale Unie voor democratie, vrijheid en vrede."
+
+#. manifest, tekst 4
+msgid "Written August 2026"
+msgstr "Geschreven augustus 2026"
+
+#. manifest, tekst 5
+msgid "8 minute read"
+msgstr "8 minuten lezen"
+
+#. manifest, tekst 6
+msgid "In this manifesto"
+msgstr "In dit manifest"
+
+#. manifest, tekst 8
+msgid "Like-minded countries as a positive force"
+msgstr "Gelijkgezinde landen als positieve kracht"
+
+#. manifest, tekst 9
+msgid "Core principles"
+msgstr "Kernprincipes"
+
+#. manifest, tekst 10
+msgid "Countries"
+msgstr "Landen"
+
+#. manifest, tekst 11
+msgid "Phased legislation"
+msgstr "Gefaseerde wetgeving"
+
+#. manifest, tekst 12
+msgid "Aligning with global standards"
+msgstr "Aansluiten op mondiale standaarden"
+
+#. manifest, tekst 13
+msgid "Organisation"
+msgstr "Organisatie"
+
+#. manifest, tekst 14
+msgid "Long-term perspective"
+msgstr "Lange termijn"
+
+#. manifest, tekst 16
+msgid "Core principles of the Global Union"
+msgstr "Kernprincipes van de Globale Unie"
+
+#. manifest, tekst 17
+msgid "A values-driven trade system"
+msgstr "Een waarden-gedreven handelsstelsel"
+
+#. manifest, tekst 18
+msgid "The GU operates with a single system of trade tariffs based on a scorecard per country, measured on:"
+msgstr "De GU werkt met één systeem van handelstarieven op basis van een scorecard per land, gemeten op:"
+
+#. manifest, tekst 19
+msgid "Peaceful but firm foreign policy"
+msgstr "Vreedzame maar krachtige buitenlandse politiek"
+
+#. manifest, tekst 20
+msgid "Information freedom as a strategic instrument"
+msgstr "Informatievrijheid als strategisch instrument"
+
+#. manifest, tekst 21
+msgid "The GU extends its influence through high-quality independent journalism in all local languages - by analogy to the BBC, reinforced with GU resources - and by making protected technology available that frees people from state-controlled internet access."
+msgstr "De GU vergroot haar invloed door kwalitatief hoogwaardige en onafhankelijke journalistiek in alle lokale talen - naar analogie van de BBC, versterkt met GU-middelen - en door het beschikbaar stellen van beschermde technologie die burgers onafhankelijk maakt van staatsgecontroleerde internettoegang."
+
+#. manifest, tekst 24
+msgid "View the full list of all 183 countries and their scores"
+msgstr "Bekijk de volledige lijst met alle 183 landen en hun scores"
+
+#. manifest, tekst 27
+msgid "Examples"
+msgstr "Voorbeelden"
+
+#. manifest, tekst 29
+msgid "Threshold"
+msgstr "Drempel"
+
+#. manifest, tekst 31
+msgid "Domain"
+msgstr "Domein"
+
+#. manifest, tekst 32
+msgid "Leading standard"
+msgstr "Leidende standaard"
+
+#. manifest, tekst 33
+msgid "Body"
+msgstr "Orgaan"
+
+#. manifest, tekst 35
+msgid "The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations."
+msgstr "De Globale Unie omvat landen uit de gehele wereld, groeit sterk en is een drijvende kracht voor steeds meer functionerende democratieën. De GU werkt constructief samen met andere landen die de wereld veilig en schoon willen houden voor komende generaties."
+
+#. manifest, tekst 36
+msgid "20 January 2026"
+msgstr "20 januari 2026"
+
+#. manifest, tekst 37
+msgid "That's the manifesto."
+msgstr "Tot zover dit manifest."
+
+#. manifest, tekst 38
+msgid "This is a writing exercise, a first attempt. Not a blueprint, not a party programme. But a direction. Have your say. Improve the manifesto, write your own counter-position, or carry it further in a working session."
+msgstr "Dit is een schrijfoefening, een eerste aanzet. Geen blauwdruk, geen partijprogramma. Wel een richting. Denk mee. Verbeter het manifest, schrijf een eigen tegenpositie, of breng het verder in een werksessie."
+
+#. about, tekst 2
+msgid "About Global Union Forum"
+msgstr "Over Global Union Forum"
+
+#. about, tekst 3
+msgid "The goal is clear. The idea exists in broad strokes. We want to work it out further. We're looking for experts and other enthusiasts. Everyone who wants to contribute to wellbeing and prospects for people in Europe and beyond is welcome. Young or retired, heart surgeon or plumber, supporter or opponent. Everyone who holds the conversation with respect."
+msgstr "Het doel is helder. Het idee staat op hoofdlijnen. Dit willen we verder uitwerken. We zoeken experts en andere enthousiastelingen. Iedereen die een bijdrage wil leveren aan welzijn en perspectief voor mensen in Europa én daarbuiten is welkom. Jongere of gepensioneerde, hartchirurg of loodgieter, voor- of tegenstander. Iedereen die het gesprek respectvol voert."
+
+#. about, tekst 4
+#, python-format
+msgid "No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href=\"%(value)s\" style=\"color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;\">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed."
+msgstr "Geen lidmaatschap. Geen contributie. Wel een online plek waar het denken gebeurt. De eerste site is nu opgezet door <a href=\"%(value)s\" style=\"color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;\">Gerhard Top</a>. De eerst volgende stap is feedback verzamelen van enkele Bèta gebruikers en het betrekken van enkele mede-initiatiefnemers, zowel experts als andere enthousiastelingen. Hierna zullen we met een verbeterde versie voortbouwen op de discussie, veel meer mensen uitnodigen mee te doen en een stichting oprichten met als doel uit te groeien tot een beweging die veroorzaakt dat de Globale Unie er komt én succesvol wordt."
+
+#. about, tekst 5
+msgid "Co-thinkers"
+msgstr "Meedenkers"
+
+#. about, tekst 6
+msgid "Everyone who wants to join in, even without expertise, every argument can matter."
+msgstr "Iedereen die wil meedoen, ook zonder vakkennis, ieder argument kan van belang zijn."
+
+#. about, tekst 7
+msgid "Experts"
+msgstr "Experts"
+
+#. about, tekst 8
+msgid "Share knowledge, highlight interesting developments, proposals and critical questions."
+msgstr "Kennis delen, interessante ontwikkelingen tonen, voorstellen en kritische vragen."
+
+#. about, tekst 9
+msgid "Moderators"
+msgstr "Moderators"
+
+#. about, tekst 10
+#, python-format
+msgid "Keep the conversation flowing and oversee the conduct rules. A violation is not deleted but moved to the public <a href=\"%(value)s\">background page</a>; spam or abuse is hidden completely. The author can object, and a moderator decides."
+msgstr "Zorgen dat het gesprek loopt en toezien op de gedragsregels. Een overtreding wordt niet verwijderd maar verplaatst naar de openbare <a href=\"%(value)s\">achtergrondpagina</a>; spam of misbruik wordt volledig verborgen. De auteur kan bezwaar maken, en een moderator beslist."
+
+#. about, tekst 11
+msgid "By mutual agreement"
+msgstr "In goed overleg"
+
+#. about, tekst 12
+msgid "The conversation is held with respect."
+msgstr "Het gesprek wordt respectvol gevoerd."
+
+#. about, tekst 13
+msgid "The conversation is held with respect, with the aim of arriving at proposals that are broadly supported. Following the example of Wikipedia, we'll work out our '4 pillars' further together and add functionality."
+msgstr "Het gesprek wordt respectvol gevoerd met als doel te komen tot gedragen voorstellen. We zullen naar voorbeeld van Wikipedia onze '4 pilaren' samen verder uitwerken en functionaliteit toevoegen."
+
+#. about, tekst 14
+msgid "Our four pillars"
+msgstr "Onze vier pilaren"
+
+#. about, tekst 15
+msgid "A democratic force for everyone."
+msgstr "Een democratische kracht voor iedereen."
+
+#. about, tekst 16
+msgid "We treat each other with respect."
+msgstr "We behandelen elkaar met respect."
+
+#. about, tekst 17
+msgid "Facts from a neutral point of view."
+msgstr "Feiten vanuit een neutraal oogpunt."
+
+#. about, tekst 18
+msgid "Content freely available to everyone."
+msgstr "Content vrij beschikbaar voor iedereen."
+
+#. motie_d66, tekst 1
+msgid "Motion · Global Union"
+msgstr "Motie · Globale Unie"
+
+#. motie_d66, tekst 2
+msgid "Political motion · D66"
+msgstr "Politieke motie · D66"
+
+#. motie_d66, tekst 3
+msgid "The General Assembly of D66,"
+msgstr "De Algemene Vergadering van D66,"
+
+#. motie_d66, tekst 4
+msgid "Noting that"
+msgstr "Constaterende dat"
+
+#. motie_d66, tekst 5
+msgid "the US is undermining the trust of its allies by acting unilaterally and ignoring international agreements;"
+msgstr "de VS het vertrouwen van bondgenoten ondermijnt door eenzijdig op te treden en internationale afspraken te negeren;"
+
+#. motie_d66, tekst 6
+msgid "Russia threatens the European security order and China backs Russia and regularly disregards international norms;"
+msgstr "Rusland de Europese veiligheidsorde bedreigt en China Rusland steunt en zich regelmatig niet houdt aan internationale normen;"
+
+#. motie_d66, tekst 7
+msgid "Europe is heavily dependent on American technology and AI infrastructure, and on China for raw materials;"
+msgstr "Europa sterk afhankelijk is van Amerikaanse technologie en AI-infrastructuur en van China voor grondstoffen;"
+
+#. motie_d66, tekst 8
+msgid "Prime Minister Carney, in Davos (January 2026), called for cooperation between \"middle powers\", countries large enough to matter that respect the international rule of law;"
+msgstr "premier Carney in Davos (januari 2026) opriep tot samenwerking tussen \"middle powers\", landen die groot genoeg zijn om mee te tellen en de internationale rechtsorde respecteren;"
+
+#. motie_d66, tekst 9
+msgid "Canada was announced on 16 September 2026 as the EU's first associated member;"
+msgstr "Canada op 16 september 2026 is aangekondigd als het eerste geassocieerde lid van de EU;"
+
+#. motie_d66, tekst 10
+msgid "Considering that"
+msgstr "Overwegende dat"
+
+#. motie_d66, tekst 11
+msgid "this momentum must be used for a <strong>permanent structure of cooperation</strong> between democracies, not as a replacement for but a complement to the UN;"
+msgstr "dit momentum benut moet worden voor een <strong>permanente samenwerkingsstructuur</strong> tussen democratieën, niet als vervanging maar als aanvulling op de VN;"
+
+#. motie_d66, tekst 12
+msgid "this structure should be open <strong>to all countries</strong> that meet criteria for democracy, the rule of law, anti-corruption and human rights, alongside Canada, the UK, South Korea, Japan, New Zealand and Australia, also countries beyond the wealthy West, such as Costa Rica, Botswana and Cape Verde;"
+msgstr "deze structuur open moet staan <strong>voor alle landen</strong> die voldoen aan criteria voor democratie, rechtsstaat, corruptiebestrijding en mensenrechten, naast Canada, de UK, Zuid-Korea, Japan, Nieuw-Zeeland en Australië, ook landen buiten het rijke westen, zoals Costa Rica, Botswana en Kaapverdië;"
+
+#. motie_d66, tekst 13
+msgid "with its enlargement into Eastern Europe, the EU has shown that joining a bloc of prosperous democracies exerts a powerful pull, leading countries with formerly autocratic regimes to carry out reforms in order to join;"
+msgstr "de EU met de uitbreiding naar Oost-Europa heeft aangetoond dat het samengaan met een blok van welvarende democratieën een krachtige aantrekkingskracht uitoefent, waardoor landen met voorheen autocratische regimes hervormingen doorvoerden om toe te treden;"
+
+#. motie_d66, tekst 14
+msgid "that pull can be scaled up to the global level, with, in the long term, the <strong>prospect of a Global Union</strong> of functioning democracies;"
+msgstr "die aantrekkingskracht opgeschaald kan worden naar wereldniveau, met op de lange termijn het <strong>perspectief van een Globale Unie</strong> van functionerende democratieën;"
+
+#. motie_d66, tekst 15
+msgid "Requests the EP delegation"
+msgstr "Verzoekt de EP-delegatie"
+
+#. motie_d66, tekst 16
+msgid "to work towards the establishment of a permanent structure of cooperation between the EU, Canada and other democratic countries that meet criteria for the rule of law, anti-corruption and human rights, with the aim of strengthening the strategic autonomy of democracies and attracting more countries that embrace democratic values,"
+msgstr "zich in te spannen voor de totstandkoming van een permanente samenwerkingsstructuur tussen de EU, Canada en andere democratische landen, die voldoen aan criteria voor rechtsstaat, corruptiebestrijding en mensenrechten, met als doel de strategische autonomie van democratieën te versterken en meer landen aan te trekken die democratische waarden omarmen,"
+
+#. motie_d66, tekst 17
+msgid "and proceeds to the order of the day."
+msgstr "en gaat over tot de orde van de dag."
+
+#. motie_d66, tekst 18
+msgid "Would you like to co-submit or support this motion?"
+msgstr "Wil jij deze motie mede-indienen of ondersteunen?"
+
+#. motie_d66, tekst 19
+msgid "Global%20Union%20motion"
+msgstr "Motie%20Globale%20Unie"
+
+#. motie_d66, tekst 20
+msgid "Co-submit or support"
+msgstr "Mede-indienen of steunen"
+
+#. landenlijst, tekst 1
+msgid "Country overview"
+msgstr "Landenoverzicht"
+
+#. landenlijst, tekst 4
+msgid "Level"
+msgstr "Niveau"
+
+#. landenlijst, tekst 5
+msgid "Meets standard"
+msgstr "Op niveau"
+
+#. landenlijst, tekst 6
+msgid "≥ 8.0"
+msgstr "≥ 8,0"
+
+#. landenlijst, tekst 7
+msgid "≥ 0.75"
+msgstr "≥ 0,75"
+
+#. landenlijst, tekst 8
+msgid "Above minimum"
+msgstr "Boven minimum"
+
+#. landenlijst, tekst 9
+msgid "≥ 6.0"
+msgstr "≥ 6,0"
+
+#. landenlijst, tekst 10
+msgid "≥ 0.70"
+msgstr "≥ 0,70"
+
+#. landenlijst, tekst 11
+msgid "Country"
+msgstr "Land"
+
+#. landenlijst, tekst 12
+msgid "Global Union level"
+msgstr "Global Union niveau"
+
+#. initiatiefnemer, tekst 1
+msgid "The initiator"
+msgstr "De initiatiefnemer"
+
+#. initiatiefnemer, tekst 3
+msgid "Initiator · Global Union Forum"
+msgstr "Initiatiefnemer · Global Union Forum"
+
+#. initiatiefnemer, tekst 4
+msgid "Absurdly grand, many people will think. I believe we can work it out together."
+msgstr "Idioot groots, zullen veel mensen denken. Ik geloof dat we het samen kunnen uitwerken."
+
+#. privacy, tekst 1
+msgid "Privacy statement"
+msgstr "Privacyverklaring"
+
+#. privacy, tekst 2
+msgid "Privacy statement Global Union Forum"
+msgstr "Privacyverklaring Global Union Forum"
+
+#. privacy, tekst 3
+msgid "Last updated: 24 October 2026"
+msgstr "Laatst bijgewerkt: 24 oktober 2026"
+
+#. manifest, alinea 1
+msgid "Major powers pay too little attention to international law. The Global Union (GU) offers an alternative: a permanent cooperation between functioning democracies, as a complement to the EU and the UN. Together we want to use our market power for prosperity, social security, a liveable planet, security and the enforcement of international agreements."
+msgstr "Grootmachten trekken zich te weinig aan van internationaal recht. De Global Union (GU) zet daar iets tegenover: een vaste samenwerking tussen functionerende democratieën, als aanvulling op de EU en de VN. Samen willen we onze marktmacht inzetten voor welvaart, sociale zekerheid, een leefbare planeet, veiligheid en handhaving van internationale afspraken."
+
+#. manifest, alinea 2
+msgid "Any country that scores well on democracy, the rule of law, human rights and anti-corruption can join. A solid foundation already exists. In October 2026, the EU and Canada formed an alliance for the future. Like-minded countries have been invited to join. Together, our economy is more than one third of the world's and larger than that of the US."
+msgstr "Meedoen kan elk land dat goed scoort op democratie, rechtsstaat, mensenrechten en corruptiebestrijding. Er ligt al een stevige basis. In oktober 2026 sloten de EU en Canada een alliantie voor de toekomst. Gelijkgezinde landen zijn uitgenodigd mee te doen. Gezamenlijk is onze economie ruim een derde van de wereld en groter dan de VS."
+
+#. manifest, alinea 3
+msgid "The GU is principled and pragmatic. Principled, because trade tariffs depend on how a country scores on honouring international agreements and shared values. Countries that meet all criteria pay no import duties. Countries that commit aggression are excluded. Pragmatic, because we start small, with limited tariffs. We want to be attractive and avoid unnecessary escalation. This gives us time to become strategically independent together."
+msgstr "De GU is principieel én pragmatisch. Principieel omdat handelstarieven afhangen van hoe een land scoort op het nakomen van internationale afspraken en gedeelde waarden. Wie aan alle criteria voldoet, betaalt geen invoerrechten. Wie agressie pleegt, wordt uitgesloten. Pragmatisch omdat we klein beginnen, met beperkte tarieven. We willen aantrekkelijk zijn en onnodige escalatie voorkomen. Zo winnen we tijd om samen strategisch onafhankelijk te worden."
+
+#. manifest, alinea 4
+msgid "Those who join benefit. That gives countries a reason to reform, as happened earlier with the EU. This is how the union grows: through attraction."
+msgstr "Wie meedoet, profiteert. Dat geeft landen een reden om te hervormen, zoals eerder bij de EU. Zo groeit de unie uit aantrekkingskracht."
+
+#. manifest, lijstitem 5
+msgid "Anti-corruption"
+msgstr "Corruptiebestrijding"
+
+#. manifest, lijstitem 6
+msgid "Freedom: rule of law, democracy, free press"
+msgstr "Vrijheid: rechtsstaat, democratie, vrije pers"
+
+#. manifest, lijstitem 7
+msgid "Human rights"
+msgstr "Mensenrechten"
+
+#. manifest, lijstitem 8
+msgid "Sustainability: climate accords, respect for nature"
+msgstr "Duurzaamheid: klimaatakkoorden, respect voor natuur"
+
+#. manifest, lijstitem 9
+msgid "Conduct within the international legal order: IP protection, no espionage, no dumping, contribution to the International Court of Justice"
+msgstr "Gedrag binnen de internationale rechtsorde: IP-bescherming, geen spionage, geen dumping, bijdrage aan het Internationaal Gerechtshof"
+
+#. manifest, alinea 10
+msgid "Countries that fully comply pay 0% import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs."
+msgstr "Landen die volledig voldoen betalen 0% invoerrechten. Landen die gedeeltelijk voldoen betalen op basis van hun score, met jaarlijkse meting en aanpassing. Landen die agressie plegen of hun eigen bevolking vermoorden worden volledig uitgesloten, en landen die wél handel met hen drijven krijgen hogere tarieven."
+
+#. manifest, alinea 11
+msgid "The GU invests in strategic independence for all members: raw materials, energy, defence and its own AI capabilities. The GU must urgently stand on its own two feet in these areas."
+msgstr "De GU investeert in strategische onafhankelijkheid voor alle leden: grondstoffen, energie, defensie en eigen AI-capaciteit. De GU moet op deze gebieden urgent op eigen benen staan."
+
+#. manifest, alinea 12
+msgid "The GU does not pursue assertive military action, unless a broad majority of GU members judges intervention necessary because of crimes against a country's own population. Democratisation in autocratic countries happens through uprising from within the population itself. If regimes misbehave, we support the opposition."
+msgstr "De GU voert geen assertieve militaire acties, tenzij een brede meerderheid van de GU-landen oordeelt dat ingrijpen noodzakelijk is vanwege misdaden tegen de eigen bevolking. Democratisering in autocratische landen gebeurt door opstand vanuit de eigen bevolking. Als regimes zich misdragen ondersteunen wij de oppositie."
+
+#. manifest, alinea 13
+msgid "The GU does not function as a single market with full free movement of people, to avoid unwanted migration flows toward wealthier areas. Uniform trade tariffs based on the scorecard do apply."
+msgstr "De GU functioneert niet als één markt met volledig vrij personenverkeer, om ongewenste migratiestromen naar welvarende gebieden te voorkomen. Wel gelden uniforme handelstarieven op basis van de scorecard."
+
+#. manifest, alinea 14
+msgid "For high-value work, we issue temporary work visas to scarce talent from GU countries as well as from non-GU countries. The principle is circular: those who work abroad temporarily bring knowledge, experience and networks back to their home country."
+msgstr "Voor hoogwaardig werk verstrekken we tijdelijke werkvisa aan schaars talent uit GU-landen én uit andere landen. De gedachte is circulair: wie tijdelijk elders werkt, brengt kennis, ervaring en netwerken terug naar het eigen land."
+
+#. manifest, alinea 15
+msgid "The GU also invests in training programmes through which people in non-GU countries can develop to the level needed to make a valuable contribution. Once back home, they can continue to contribute to the GU economy remotely. This way prosperity grows on both sides."
+msgstr "De GU investeert daarnaast in opleidingsprogramma's waarmee mensen in niet-GU-landen zich kunnen ontwikkelen tot het niveau dat nodig is om een waardevolle bijdrage te leveren. Eenmaal terug in eigen land kunnen zij ook op afstand blijven bijdragen aan de GU-economie. Zo groeit de welvaart aan beide kanten."
+
+#. manifest, alinea 16
+msgid "Accession is tied to three existing, independent indices: the Democracy Index, the Corruption Perceptions Index, and the Human Rights Index. For each index, a 'sufficient' level and a 'minimum' level have been chosen. The minimum level is chosen so that the EU can join as a bloc."
+msgstr "Toetreding is gekoppeld aan drie bestaande, onafhankelijke indices: de Democracy Index, de Corruption Perceptions Index en de Human Rights Index. Voor iedere index is een 'voldoende' niveau en een 'minimum' niveau gekozen. Het minimumniveau is zo gekozen dat de EU als blok kan toetreden."
+
+#. manifest, alinea 17
+msgid "Countries above the minimum level are invited to join."
+msgstr "Landen boven het minimumniveau worden uitgenodigd mee te doen."
+
+#. manifest, alinea 18
+msgid "Three countries receive separate treatment. The United States and Israel are not invited for now. These countries do numerically meet the standard, but it cannot be expected that, under their current administrations, they would want to commit to the rules of the Global Union. Taiwan also qualifies, but lacks UN-recognised status. For this we can work with a separate status, as is already the case at the WTO."
+msgstr "Drie landen krijgen een aparte behandeling. De Verenigde Staten en Israël worden voorlopig niet uitgenodigd. De landen voldoen cijfermatig weliswaar aan de norm, maar het valt niet te verwachten dat deze landen onder de huidige regeringen zich zouden willen committeren aan de regels van de Globale Unie. Taiwan voldoet eveneens, maar heeft geen VN-erkende status. Hiervoor kunnen we werken met een aparte status, zoals dat nu ook gebeurt bij de WTO."
+
+#. manifest, alinea 19
+msgid "The indices carry a limited margin of error. Countries that fall just short of the threshold can still be assessed on request."
+msgstr "De indices hebben een beperkte foutmarge. Landen die net onder de drempel zitten, kunnen op aanvraag alsnog worden beoordeeld."
+
+#. manifest, alinea 20
+msgid "We adopt legislation in phases. Simple, technical rules come first; politically sensitive matters follow later and require a broader majority."
+msgstr "Wetgeving nemen we gefaseerd over. Eenvoudige, technische regels komen eerst; politiek gevoelige onderwerpen volgen later en vragen een bredere meerderheid."
+
+#. manifest, tabelkop 21
+msgid "Foundation"
+msgstr "Fundament"
+
+#. manifest, tabelcel 22
+msgid "Technical product standards; customs procedures; the scorecard's verification method and external tariff system; data protection; food and product safety"
+msgstr "Technische productnormen; douaneprocedures; verificatiemethode en extern tarievenstelsel van de scorecard; gegevensbescherming; voedsel- en productveiligheid"
+
+#. manifest, tabelcel 23
+msgid "Technical or directly needed to function"
+msgstr "Technisch of direct nodig om te functioneren"
+
+#. manifest, tabelcel 24
+msgid "Ordinary rules"
+msgstr "Gewone regels"
+
+#. manifest, tabelkop 25
+msgid "Deepening"
+msgstr "Verdieping"
+
+#. manifest, tabelcel 26
+msgid "Competition and state aid; procurement; digital markets; professional qualifications; financial oversight"
+msgstr "Mededinging en staatssteun; aanbestedingen; digitale markten; beroepskwalificaties; financieel toezicht"
+
+#. manifest, tabelcel 27
+msgid "Moderate sovereignty cost, strengthens cooperation"
+msgstr "Matige soevereiniteitskosten, versterkt de samenwerking"
+
+#. manifest, tabelkop 29
+msgid "Politically sensitive"
+msgstr "Politiek gevoelig"
+
+#. manifest, tabelcel 30
+msgid "Rule-of-law conditionality; environmental and labour standards; tax coordination; sanctions against aggressive states"
+msgstr "Rechtsstaatconditionaliteit; milieu- en arbeidsnormen; fiscale afstemming; sancties tegen agressieve landen"
+
+#. manifest, tabelcel 31
+msgid "Politically sensitive, high sovereignty cost"
+msgstr "Politiek gevoelig, hoge soevereiniteitskosten"
+
+#. manifest, tabelcel 32
+msgid "80% threshold"
+msgstr "80%-drempel"
+
+#. manifest, alinea 33
+msgid "The Global Union does not apply a single external tariff, but different tariffs per country, based on the score on the values scorecard. This appears to conflict with the World Trade Organization's principle that all countries should receive equal tariffs. Under Article XX GATT, protection of public morals, we expect to be able to make an exception here. Because this judgement is carried by the whole Global Union, and applied using fixed criteria equal for every country, this claim stands on firmer ground than if a single country made it alone."
+msgstr "De Global Union werkt niet met één extern tarief, maar met verschillende tarieven per land, gebaseerd op de score op de waarden-scorecard. Dit lijkt strijdig met het principe van de wereldhandelsorganisatie dat alle landen gelijke tarieven dienen te krijgen. Op basis van artikel XX GATT, bescherming van de publieke moraal, verwachten we hier een uitzondering op te kunnen maken. Omdat dit oordeel gedragen wordt door de hele Global Union, en volgens vaste, voor elk land gelijke criteria wordt toegepast, staat dit beroep steviger dan wanneer een enkel land het alleen zou doen."
+
+#. manifest, alinea 34
+msgid "We do not adopt agricultural policy, cohesion funds, or the monetary union; these are inseparably tied to the EU's own territory and budget."
+msgstr "Landbouwbeleid, cohesiefondsen en de muntunie nemen we niet over; die zijn onlosmakelijk verbonden met het grondgebied en de begroting van de EU zelf."
+
+#. manifest, alinea 35
+msgid "We only choose our own rule where no global alternative exists or the existing one is too weak to enforce."
+msgstr "We kiezen alleen voor een eigen regel als er geen mondiaal alternatief is of het bestaande te vrijblijvend is."
+
+#. manifest, tabelkop 36
+msgid "Trade rules"
+msgstr "Handelsregels"
+
+#. manifest, tabelcel 37
+msgid "GATT/GATS, TBT and SPS agreements"
+msgstr "GATT/GATS, TBT- en SPS-akkoorden"
+
+#. manifest, tabelcel 38
+msgid "WTO"
+msgstr "WTO"
+
+#. manifest, tabelkop 39
+msgid "Customs and classification"
+msgstr "Douane en indeling"
+
+#. manifest, tabelcel 40
+msgid "Harmonized System, Revised Kyoto Convention"
+msgstr "Geharmoniseerd Systeem, Herzien Verdrag van Kyoto"
+
+#. manifest, tabelcel 41
+msgid "WCO"
+msgstr "WCO"
+
+#. manifest, tabelkop 42
+msgid "Product standards"
+msgstr "Productnormen"
+
+#. manifest, tabelcel 43
+msgid "ISO, IEC, ITU"
+msgstr "ISO, IEC, ITU"
+
+#. manifest, tabelcel 44
+msgid "International, non-state"
+msgstr "Internationaal, niet-statelijk"
+
+#. manifest, tabelkop 45
+msgid "Food safety"
+msgstr "Voedselveiligheid"
+
+#. manifest, tabelcel 46
+msgid "Codex Alimentarius"
+msgstr "Codex Alimentarius"
+
+#. manifest, tabelcel 47
+msgid "FAO/WHO"
+msgstr "FAO/WHO"
+
+#. manifest, tabelkop 48
+msgid "Taxation"
+msgstr "Belastingen"
+
+#. manifest, tabelcel 49
+msgid "Pillar Two (minimum rate), BEPS"
+msgstr "Pillar Two (minimumtarief), BEPS"
+
+#. manifest, tabelcel 50
+msgid "OECD/G20 Inclusive Framework"
+msgstr "OESO/G20 Inclusive Framework"
+
+#. manifest, tabelkop 51
+msgid "Banking supervision"
+msgstr "Bankentoezicht"
+
+#. manifest, tabelcel 52
+msgid "Basel III"
+msgstr "Basel III"
+
+#. manifest, tabelcel 53
+msgid "Basel Committee"
+msgstr "Bazels Comité"
+
+#. manifest, tabelkop 54
+msgid "Anti-money laundering"
+msgstr "Witwasbestrijding"
+
+#. manifest, tabelcel 55
+msgid "40 Recommendations"
+msgstr "40 aanbevelingen"
+
+#. manifest, tabelcel 56
+msgid "FATF"
+msgstr "FATF"
+
+#. manifest, tabelkop 57
+msgid "Reporting"
+msgstr "Verslaggeving"
+
+#. manifest, tabelcel 58
+msgid "IFRS"
+msgstr "IFRS"
+
+#. manifest, tabelcel 59
+msgid "IASB"
+msgstr "IASB"
+
+#. manifest, tabelcel 61
+msgid "UDHR, ICCPR, ICESCR, eight fundamental ILO conventions"
+msgstr "UVRM, IVBPR, IVESCR, acht fundamentele ILO-verdragen"
+
+#. manifest, tabelcel 62
+msgid "UN, ILO"
+msgstr "VN, ILO"
+
+#. manifest, tabelcel 64
+msgid "UNCAC"
+msgstr "UNCAC"
+
+#. manifest, tabelcel 65
+msgid "UN"
+msgstr "VN"
+
+#. manifest, tabelkop 66
+msgid "Climate"
+msgstr "Klimaat"
+
+#. manifest, tabelcel 67
+msgid "Paris Agreement"
+msgstr "Akkoord van Parijs"
+
+#. manifest, tabelcel 68
+msgid "UNFCCC"
+msgstr "UNFCCC"
+
+#. manifest, tabelkop 69
+msgid "Aviation, shipping"
+msgstr "Luchtvaart, scheepvaart"
+
+#. manifest, tabelcel 70
+msgid "ICAO, IMO"
+msgstr "ICAO, IMO"
+
+#. manifest, tabelcel 71
+msgid "UN agencies"
+msgstr "VN-organisaties"
+
+#. manifest, tabelkop 72
+msgid "Data protection"
+msgstr "Gegevensbescherming"
+
+#. manifest, tabelcel 73
+msgid "Convention 108+"
+msgstr "Verdrag 108+"
+
+#. manifest, tabelcel 74
+msgid "Council of Europe, open to non-European states"
+msgstr "Raad van Europa, open voor niet-Europese staten"
+
+#. manifest, alinea 75
+msgid "For data protection, we choose the supranational Convention 108+ over the GDPR: the same protection, but without an EU label, and already open to countries such as Uruguay, Mexico, and Senegal. For AI, an authoritative global standard is still missing. This will need to be shaped as a priority."
+msgstr "Bij gegevensbescherming kiezen we het supranationale Verdrag 108+ in plaats van de AVG: dezelfde bescherming, maar zonder EU-label, en al opengesteld voor landen als Uruguay, Mexico en Senegal. Bij AI ontbreekt nog een gezaghebbende mondiale standaard. Deze zal met prioriteit vormgegeven moeten worden."
+
+#. manifest, alinea 76
+msgid "The Global Union operates with a minimal organisation: a small commission and a limited civil service, supported by existing national and international institutions. The budget stays limited, since the union starts with a limited set of competences and does not take on large transfers such as agricultural or cohesion funds. Yet the union is effective: decisions are taken by a clear majority rather than unanimity. Implementation takes place within the countries themselves. Oversight of that implementation is carried out by the Global Union. There is, however, budget for international student exchange and for independent online news media and education programmes."
+msgstr "De Global Union werkt met een minimale organisatie: een kleine commissie en een beperkt ambtenarenapparaat, ondersteund door bestaande nationale en internationale instellingen. Het budget blijft beperkt, want de unie begint met een beperkte set bevoegdheden en neemt geen grote overdrachten over zoals landbouw- of cohesiefondsen. Toch is de unie daadkrachtig: besluiten vallen met een heldere meerderheid in plaats van unanimiteit. Uitvoering vindt plaats in de landen zelf. Toezicht op de uitvoering wordt wel door de Global Union verzorgd. Wel is er budget voor internationale uitwisseling van studenten en voor onafhankelijke online nieuwsmedia en opleidingen."
+
+#. manifest, alinea 77
+msgid "Discussions and votes take place online. This effectiveness is strengthened by democratic innovation. Decision-making is transparent, including the underlying facts and considerations, explained at both expert and layperson level. Citizens worldwide can take part and exert influence in their own language."
+msgstr "Discussies en stemmingen vinden online plaats. De slagkracht wordt versterkt door democratische innovatie. Besluitvorming is transparant, inclusief de onderliggende feiten en overwegingen, uitgelegd op zowel expert- als lekenniveau. Burgers wereldwijd kunnen in hun eigen taal meepraten en invloed uitoefenen."
+
+#. initiatiefnemer, alinea 1
+msgid "At the end of my student years the Wall fell. At the moment of the breakthrough I was working on a Land Rover. Over the radio I heard the jubilant East Germans. Goosebumps! Unexpected, unimaginable, that dictatorship simply collapsed."
+msgstr "Aan het eind van mijn studietijd viel de Muur. Op het moment van de doorbraak lag ik te sleutelen aan een Landrover. Ik hoorde op de radio de enthousiaste Oost-Duitsers en daarna een Duitse versie van het lied van Boudewijn de Groot: 'Nur die Vögel fliegen von Ost nach West Berlin...'. Kippenvel! Onverwacht, onvoorstelbaar, die dictatuur stortte gewoon in."
+
+#. initiatiefnemer, alinea 2
+msgid "With that Land Rover the four of us drove to Cape Town. Straight through Africa. I saw the beauty and the poverty. The cheerfulness and the enormous corruption and political repression."
+msgstr "Met die Landrover zijn we met vier man naar Kaapstad gereden. Dwars door Afrika. Ik zag de schoonheid én de armoede. De vrolijkheid en de enorme corruptie en politieke onderdrukking."
+
+#. initiatiefnemer, alinea 3
+msgid "Ten years after that Africa trip I took part in a meeting of the D66 Business Club. We discussed the misuse of development funds, the difficulties for businesses that refused to participate in corruption, clientelism and how deeply it was embedded in the culture. The atmosphere turned somewhat hopeless, but no one had a solution."
+msgstr "Tien jaar na die Afrikareis nam ik deel aan een bijeenkomst van de Business Club van D66. We spraken over misbruik van ontwikkelingsgelden, moeilijkheden voor bedrijven die niet wilden bijdragen aan corruptie, cliëntalisme en de inbedding in de cultuur. De sfeer werd wat hopeloos, maar niemand had een oplossing."
+
+#. initiatiefnemer, alinea 4
+msgid "This spring I attended a member meeting of Transparency International. The all-corrupting rot is still widespread in Africa and in many other countries. This lack of development, and the negative trend in the growing number of countries that undermine the rule of law, including the United States, means that a counterforce is needed. A powerful cooperation between functioning democracies, a geopolitical force that can also serve as a magnet for other countries. With the Global Union Forum I want to make a contribution by facilitating a meaningful conversation, enriching the idea along the way, and broadening support for it."
+msgstr "Dit voorjaar bezocht ik een ledenvergadering van Transparency International. De allesondermijnende corruptie is nog alom aanwezig in Afrika en in heel veel andere landen. Dit gebrek aan ontwikkeling, en de negatieve tendens in het groeiend aantal landen dat de rechtsstaat ondermijnt, waaronder de Verenigde Staten, maakt dat er een tegenkracht nodig is. Een krachtige samenwerking tussen functionerende democratieën, een geopolitieke macht die tevens als magneet kan dienen voor andere landen. Met het Global Union Forum wil ik een bijdrage leveren door een goed gesprek te faciliteren, het idee te verrijken en het draagvlak te vergroten."
+
+#. initiatiefnemer, alinea 5
+msgid "Since Covid I have been a lecturer at the University of Applied Sciences in Amsterdam. After years in leadership roles in software and telecom I wanted a more socially engaged role. I succeeded, I work with students from all kinds of backgrounds, including refugees. Sometimes I have conversations with them that move me. They make me want more and more countries to be places where young people grow up in freedom, with prospects for growth in prosperity and wellbeing."
+msgstr "Sinds Covid ben ik docent aan de Hogeschool van Amsterdam. Na jaren in leidinggevende rollen in software en telecom wilde ik graag een meer maatschappelijke rol. Dat is gelukt, ik begeleid studenten met allerlei achtergrond, waaronder ook vluchtelingen. Soms heb ik gesprekken met hen die me raken. Die maken dat ik wil dat in steeds meer landen jongeren opgroeien in vrijheid met perspectief op groei in welvaart en welzijn."
+
+#. privacy, kop 1
+msgid "Who we are"
+msgstr "Wie zijn wij"
+
+#. privacy, alinea 2
+#, python-format
+msgid "Global Union Forum is run by Stichting Global Union Forum (in formation). If you have a question about your data, email %(mail)s."
+msgstr "Global Union Forum wordt beheerd door Stichting Global Union Forum (in oprichting). Heb je een vraag over je gegevens, mail dan %(mail)s."
+
+#. privacy, kop 3
+msgid "What data we collect"
+msgstr "Welke gegevens we verzamelen"
+
+#. privacy, alinea 4
+msgid "Your username (pseudonym), which is public. Your email address, which is private and not visible to other users. Your password, which we store encrypted. If you fill them in yourself: your first and last name and your LinkedIn address, which stay private unless you choose in your profile to show your real name. What you write on the forum, your replies, and your agree and disagree votes; your contributions are public under your pseudonym. And your IP address and technical log data, which we use to prevent abuse."
+msgstr "Je gebruikersnaam (pseudoniem), die openbaar is. Je e-mailadres, dat privé is en dat andere gebruikers niet zien. Je wachtwoord, dat we versleuteld opslaan. Als je ze zelf invult: je voor- en achternaam en je LinkedIn-adres, die privé blijven tenzij je er in je profiel zelf voor kiest je echte naam te tonen. Wat je op het forum schrijft, je reacties en je eens- en oneens-stemmen; je bijdragen zijn openbaar onder je pseudoniem. En je IP-adres en technische loggegevens, die we gebruiken om misbruik tegen te gaan."
+
+#. privacy, kop 5
+msgid "What we use it for"
+msgstr "Waarvoor we ze gebruiken"
+
+#. privacy, alinea 6
+msgid "To make your account work and sign you in, to run the forum, to prevent abuse and overload, to translate your contributions and give them a quality assessment, and to send you emails that relate to your account."
+msgstr "Om je account te laten werken en je aan te melden, om het forum te laten functioneren, om misbruik en overbelasting tegen te gaan, om je bijdragen te vertalen en van een kwaliteitsoordeel te voorzien, en om je e-mails te sturen die bij je account horen."
+
+#. privacy, kop 7
+msgid "Who we share data with"
+msgstr "Met wie we gegevens delen"
+
+#. privacy, alinea 8
+msgid "We do not sell your data. We do use service providers that process data on our behalf: Neon (database), Render (hosting), Cloudflare (traffic and security), Resend (email) and Anthropic (automatic translation and the quality assessment). For the latter, the text of your contribution is sent to Anthropic to translate and assess. Some of these services may process data outside the European Union; in that case we ensure appropriate safeguards, such as the European Commission's standard contractual clauses. Your public contributions are visible to everyone; your real name and LinkedIn only if you choose so."
+msgstr "We verkopen je gegevens niet. We gebruiken wel dienstverleners die namens ons gegevens verwerken: Neon (database), Render (hosting), Cloudflare (verkeer en beveiliging), Resend (e-mail) en Anthropic (automatische vertaling en het kwaliteitsoordeel). Voor dat laatste wordt de tekst van je bijdrage naar Anthropic gestuurd om te vertalen en te beoordelen. Sommige van deze diensten kunnen gegevens buiten de Europese Unie verwerken; in dat geval zorgen we voor passende waarborgen, zoals de standaardcontractbepalingen van de Europese Commissie. Je openbare bijdragen zijn zichtbaar voor iedereen; je echte naam en LinkedIn alleen als je daar zelf voor kiest."
+
+#. privacy, kop 9
+msgid "How long we keep it"
+msgstr "Hoe lang we bewaren"
+
+#. privacy, alinea 10
+msgid "We keep your account data as long as your account exists. If you ask for deletion, we delete your personal data; your public contributions we anonymise, so the conversation stays readable. We keep technical log data for six months."
+msgstr "We bewaren je accountgegevens zolang je account bestaat. Vraag je om verwijdering, dan verwijderen we je persoonsgegevens; je openbare bijdragen maken we anoniem, zodat het gesprek leesbaar blijft. Technische loggegevens bewaren we zes maanden."
+
+#. privacy, kop 11
+msgid "Minimum age"
+msgstr "Minimumleeftijd"
+
+#. privacy, alinea 12
+msgid "You must be at least 16 years old to create an account."
+msgstr "Je moet minstens 16 jaar zijn om een account aan te maken."
+
+#. privacy, kop 13
+msgid "Cookies"
+msgstr "Cookies"
+
+#. privacy, alinea 14
+msgid "We use only functional cookies, for example to keep you signed in and to remember your language choice. We do not use cookies to track you or for advertising."
+msgstr "We gebruiken alleen functionele cookies, bijvoorbeeld om je ingelogd te houden en je taalkeuze te onthouden. We gebruiken geen cookies om je te volgen of voor advertenties."
+
+#. privacy, kop 15
+msgid "Security"
+msgstr "Beveiliging"
+
+#. privacy, alinea 16
+msgid "We store passwords encrypted, use a secure connection (https) and limit the number of attempts to prevent abuse."
+msgstr "We slaan wachtwoorden versleuteld op, gebruiken een beveiligde verbinding (https) en beperken het aantal pogingen om misbruik tegen te gaan."
+
+#. privacy, kop 17
+msgid "Your rights"
+msgstr "Jouw rechten"
+
+#. privacy, alinea 18
+#, python-format
+msgid "You may access, correct or delete your data, object to its use, and withdraw your consent. Email %(mail)s for this. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens)."
+msgstr "Je mag je gegevens inzien, corrigeren of laten verwijderen, bezwaar maken tegen het gebruik, en je toestemming intrekken. Mail daarvoor %(mail)s. Ben je het niet eens met hoe we met je gegevens omgaan, dan kun je een klacht indienen bij de Autoriteit Persoonsgegevens."
+
+#. privacy, kop 19
+msgid "Changes"
+msgstr "Wijzigingen"
+
+#. privacy, alinea 20
+msgid "We may update this statement. The date at the top shows when we last did so."
+msgstr "We kunnen deze verklaring aanpassen. De datum bovenaan laat zien wanneer we dat voor het laatst deden."
+
+#. manifest, titel
+msgid "A Global Union<br><em>for a growing number of functioning democracies</em>"
+msgstr "Een Globale Unie<br><em>voor steeds meer functionerende democratieën</em>"
+
+#. about, titel
+msgid "A think tank<br><em>with strong intent</em>"
+msgstr "Een denktank<br><em>met sterke intentie</em>"
+
+#. motie_d66, titel
+msgid "The EU and Canada as<br><em>initiators of a global coalition of democracies</em>"
+msgstr "De EU en Canada als<br><em>initiatiefnemers van een globale coalitie van democratieën</em>"
+
+#. manifest, kop
+msgctxt "manifest heading"
+msgid "Long-term perspective"
+msgstr "Perspectief op de lange termijn"
+
+#. faq, antwoord 1.1
+msgid "Global Union is the idea of a partnership of functioning democracies worldwide. It is built on attraction instead of force, following the example of the European Union. It is open to countries that respect the rule of law, human rights, the fight against corruption, sustainability and the international legal order."
+msgstr "Global Union is het idee van een samenwerkingsverband van functionerende democratieën wereldwijd. Het is gebouwd op aantrekkingskracht in plaats van dwang, naar het voorbeeld van de Europese Unie. Het staat open voor landen die de rechtsstaat, mensenrechten, de aanpak van corruptie, duurzaamheid en de internationale rechtsorde respecteren."
+
+#. faq, vraag 1.1
+msgid "What is Global Union?"
+msgstr "Wat is Global Union?"
+
+#. faq, antwoord 1.2
+msgid "Global Union is the idea and the movement. The Global Union Forum is the place where that idea is developed and discussed. Here you think along, bring in facts and vote. Experts and beginners do this side by side."
+msgstr "Global Union is het idee en de beweging. Het Global Union Forum is de plek waar dat idee wordt ontwikkeld en besproken. Hier denk je mee, breng je feiten in en stem je mee. Experts en beginners doen dat naast elkaar."
+
+#. faq, vraag 1.2
+msgid "What is the difference between Global Union and the Global Union Forum?"
+msgstr "Wat is het verschil tussen Global Union en het Global Union Forum?"
+
+#. faq, antwoord 1.3
+msgid "It is an independent initiative, set up by founder Gerhard Top. With enough momentum, this initiative will be placed in a foundation. The idea is to involve co-initiators first, and then a growing group of participants and experts, to develop it further together."
+msgstr "Het is een onafhankelijk initiatief, opgezet door oprichter Gerhard Top. Bij voldoende momentum wordt dit initiatief ondergebracht in een stichting. Het idee is om eerst mede-initiatiefnemers te betrekken en daarna een groeiende groep deelnemers en experts, om het samen verder uit te werken."
+
+#. faq, vraag 1.3
+msgid "Who is behind the platform?"
+msgstr "Wie zit er achter het platform?"
+
+#. faq, antwoord 1.4
+msgid "No. The forum is independent and not linked to a party, a government or a company. It is reformist and it is not tied to a political colour."
+msgstr "Nee. Het forum is onafhankelijk en niet verbonden aan een partij, een regering of een bedrijf. Het is reformistisch en het is niet gebonden aan een politieke kleur."
+
+#. faq, vraag 1.4
+msgid "Is this linked to a political party or a government?"
+msgstr "Is dit verbonden aan een politieke partij of een overheid?"
+
+#. faq, antwoord 1.5
+msgid "Create an account and read the ground rules. Then you can start: add facts, give your opinion or start an issue yourself. What this becomes is decided by the people who take part."
+msgstr "Maak een account aan en lees de spelregels. Daarna kun je beginnen: voeg feiten toe, geef je mening of start zelf een vraagstuk. Wat dit wordt, bepalen de mensen die meedoen."
+
+#. faq, vraag 1.5
+msgid "How can I take part or contribute?"
+msgstr "Hoe kan ik meedoen of bijdragen?"
+
+#. faq, thema 2
+msgid "Manifesto"
+msgstr "Manifest"
+
+#. faq, antwoord 2.1
+msgid "The manifesto from March 2026 is a personal essay by the founder. In it he sets out the idea of a global union of functioning democracies: why it is needed, how it could work and why it is worth trying. See it as the start of the discussion."
+msgstr "Het manifest uit maart 2026 is een persoonlijk essay van de oprichter. Daarin zet hij het idee van een globale unie van functionerende democratieën uiteen: waarom het nodig is, hoe het zou kunnen werken en waarom het de moeite waard is om te proberen. Zie het als een begin van de discussie."
+
+#. faq, vraag 2.1
+msgid "What is in the manifesto?"
+msgstr "Wat staat er in het manifest?"
+
+#. faq, antwoord 2.2
+msgid "A partnership of countries that truly uphold democracy and the rule of law. Countries from all over the world can join. What counts is whether a country meets those values."
+msgstr "Een samenwerking van landen die de democratie en de rechtsstaat echt naleven. Landen uit de hele wereld kunnen meedoen. Wat telt is of een land aan die waarden voldoet."
+
+#. faq, vraag 2.2
+msgid "What does \"a union of functioning democracies\" mean?"
+msgstr "Wat betekent \"een unie van functionerende democratieën\"?"
+
+#. faq, antwoord 2.3
+msgid "The EU shows that countries can work together voluntarily, based on shared rules. They attract each other instead of forcing each other. We want to apply that principle on a world scale."
+msgstr "De EU laat zien dat landen vrijwillig kunnen samenwerken op basis van gedeelde regels. Ze trekken elkaar aan in plaats van elkaar te dwingen. Dat principe willen we toepassen op wereldschaal."
+
+#. faq, vraag 2.3
+msgid "Why the example of the European Union?"
+msgstr "Waarom het voorbeeld van de Europese Unie?"
+
+#. faq, antwoord 2.4
+msgid "Countries that meet standards such as the rule of law, human rights, the fight against corruption and the international legal order. Membership is based on democratic performance. Not only wealthy Western countries, but also, and especially, model countries from Africa and South America."
+msgstr "Landen die voldoen aan maatstaven als de rechtsstaat, mensenrechten, de aanpak van corruptie en de internationale rechtsorde. Toetreding gaat op democratische prestatie. Niet alleen welvarende westerse landen, maar juist ook voorbeeldlanden uit Afrika en Zuid-Amerika."
+
+#. faq, vraag 2.4
+msgid "Which countries could join, and on what basis?"
+msgstr "Welke landen zouden kunnen meedoen en op basis waarvan?"
+
+#. faq, antwoord 2.5
+msgid "It is a grand idea. Perhaps hard to achieve, but worth it. You start small and build it up together, step by step."
+msgstr "Het is een groots idee. Misschien moeilijk haalbaar, maar wel de moeite waard. Je begint klein en bouwt het samen op, stap voor stap."
+
+#. faq, vraag 2.5
+msgid "Is this not too grand or too idealistic?"
+msgstr "Is dit niet te groots of te idealistisch?"
+
+#. faq, thema 3
+msgid "How it works"
+msgstr "Hoe het werkt"
+
+#. faq, antwoord 3.1
+msgid "Someone starts an issue with a question or problem. In the first phase, facts and discussion, you bring in facts, research and media and discuss it together. Proposals come out of that. After that, the proposer can revise a proposal. Then there is a vote. If the initiator chose so, a summary proposal follows, with a new vote. Finally there is the follow-up phase: what happens with it, such as lobbying, media or implementation."
+msgstr "Iemand start een vraagstuk met een vraag of probleem. In de eerste fase, feiten en discussie, breng je feiten, onderzoek en media in en bespreek je het samen. Daar komen voorstellen uit voort. Daarna kan de inbrenger een voorstel bijstellen. Vervolgens wordt er gestemd. Als de initiatiefnemer dat koos, volgt een samenvattend voorstel met een nieuwe stemming. Tot slot volgt de vervolgfase: wat gebeurt ermee, zoals lobby, media of uitvoering."
+
+#. faq, vraag 3.1
+msgid "How does an issue go, from discussion to vote?"
+msgstr "Hoe verloopt een vraagstuk, van discussie tot stemming?"
+
+#. faq, antwoord 3.2
+msgid "Facts, research and media are well-founded contributions with a source. Media are news items, podcasts or videos. Each fact has a direction: argues for, argues against or neutral. A fact gets a green quality mark when the AI finds a source, a findable link, where in the source it is, that it is on the topic and that it is new. The mark does not judge how reliable the source is."
+msgstr "Feiten, onderzoek en media zijn onderbouwde bijdragen met een bron. Media zijn nieuwsberichten, podcasts of video's. Elk feit heeft een richting: pleit voor, pleit tegen of neutraal. Een feit krijgt een groen kwaliteitsmerk als de AI een bron vindt, een vindbare link, waar in de bron het staat, dat het over het onderwerp gaat en dat het nieuw is. Het merk zegt niets over hoe betrouwbaar de bron is."
+
+#. faq, vraag 3.2
+msgid "What are facts, research and media, and how do they count?"
+msgstr "Wat zijn feiten, onderzoek en media en hoe tellen ze mee?"
+
+#. faq, antwoord 3.3
+msgid "Proposals come out of the discussion. A proposal goes on the voting list as soon as enough people support it. Each proposal is voted on with for, against or abstain. Based on all proposals and the discussion, the initiator can adjust the issue and make a summary proposal. The participants can then vote on that again."
+msgstr "Voorstellen komen voort uit de discussie. Een voorstel komt op de stemlijst zodra genoeg mensen het steunen. Er wordt per voorstel gestemd met voor, tegen of onthouding. Op basis van alle voorstellen en de discussie kan de initiatiefnemer het vraagstuk aanpassen en een samenvattend voorstel doen. Daarover kunnen de deelnemers dan opnieuw stemmen."
+
+#. faq, vraag 3.3
+msgid "How do proposals come about, and how is the vote held?"
+msgstr "Hoe ontstaan voorstellen en hoe wordt erover gestemd?"
+
+#. faq, antwoord 3.4
+msgid "A medal that is given automatically to a contribution that moves the discussion forward. That can be a new argument or support with a source. No quality mark is not a punishment. Style and language skills do not count."
+msgstr "Een medaille die automatisch wordt toegekend aan een bijdrage die de discussie verder brengt. Dat kan met een nieuw argument of met een onderbouwing met een bron. Geen keurmerk is geen straf. Stijl en taalvaardigheid tellen niet mee."
+
+#. faq, vraag 3.4
+msgid "What is the quality mark?"
+msgstr "Wat is het kwaliteitskeurmerk?"
+
+#. faq, antwoord 3.5
+msgid "By contributing quality. After three contributions with a quality mark, you may vote. That way, what you bring in counts, not just having an account."
+msgstr "Door kwaliteit bij te dragen. Na drie bijdragen met een keurmerk mag je meestemmen. Zo telt wat je inbrengt en niet alleen dat je een account hebt."
+
+#. faq, vraag 3.5
+msgid "How do I earn the right to vote?"
+msgstr "Hoe verdien ik stemrecht?"
+
+#. faq, antwoord 3.6
+msgid "There are conduct rules: stay respectful, stay on topic and one account per person. These are enforced. There are also quality guidelines, such as well-founded and concrete. These are rewarded and not enforced. When a rule is clearly broken, a contribution moves to a public background page with an explanation. You can object to that there. Nothing is removed for good. Only pure spam and gross abuse are hidden completely."
+msgstr "Er zijn gedragsregels: respectvol blijven, bij het onderwerp blijven en één account per persoon. Die worden gehandhaafd. Daarnaast zijn er kwaliteitsrichtlijnen zoals onderbouwd en concreet. Die worden beloond en niet afgedwongen. Bij een duidelijke overtreding gaat een bijdrage naar een openbare achtergrondpagina met uitleg. Je kunt daar bezwaar tegen maken. Niets wordt definitief verwijderd. Alleen pure spam en grof misbruik worden volledig verborgen."
+
+#. faq, vraag 3.6
+msgid "Which ground rules apply, and what happens when they are broken?"
+msgstr "Welke spelregels gelden er en wat gebeurt er bij een overtreding?"
+
+#. faq, antwoord 3.7
+msgid "It cannot be prevented completely. A new account starts at zero and has to earn the right to vote first, with quality contributions. One account per person is a rule, and moderation steps in when there is abuse. This makes mass fake voting a lot of work for little gain."
+msgstr "Helemaal te voorkomen is het niet. Een nieuw account begint op nul en moet stemrecht eerst verdienen met kwaliteitsbijdragen. Eén account per persoon is een regel en moderatie grijpt in bij misbruik. Daardoor is massaal nepstemmen veel werk en levert het weinig op."
+
+#. faq, vraag 3.7
+msgid "How do you prevent double voting or fake accounts?"
+msgstr "Hoe voorkomen jullie dubbel stemmen of nepaccounts?"
+
+#. faq, thema 4
+msgid "Account and privacy"
+msgstr "Account en privacy"
+
+#. faq, antwoord 4.1
+msgid "Choose a name and enter an email address. That email address is only for recovery and is never shown. Accept the ground rules and you can start. You do not have to pay and you do not need to show any ID."
+msgstr "Kies een naam en vul een e-mailadres in. Dat e-mailadres is alleen voor herstel en wordt nooit getoond. Accepteer de spelregels en je kunt beginnen. Je hoeft niet te betalen en geen identiteitsbewijs te geven."
+
+#. faq, vraag 4.1
+msgid "How do I create an account?"
+msgstr "Hoe maak ik een account aan?"
+
+#. faq, antwoord 4.2
+msgid "We want you to be able to join the discussion freely, without having to answer to anyone here. A pseudonym makes that possible. In many countries, political participation can bring risks. An identity barrier would shut out exactly the people we want to reach."
+msgstr "We willen dat je vrijuit mee kunt doen aan de discussie, zonder dat je hier aan wie dan ook verantwoording moet afleggen. Een pseudoniem maakt dat mogelijk. Politieke deelname kan in veel landen risico's meebrengen. Een identiteitsdrempel sluit juist mensen uit die we willen bereiken."
+
+#. faq, vraag 4.2
+msgid "Why is a pseudonym the default?"
+msgstr "Waarom is een pseudoniem standaard?"
+
+#. faq, antwoord 4.3
+#, python-format
+msgid "As little as possible. Your pseudonym, your email address for recovery and what you post yourself. Extra profile details only if you fill them in yourself. The details are on the <a href=\"%(url)s\">privacy page</a>."
+msgstr "Zo min mogelijk. Je pseudoniem, je e-mailadres voor herstel en wat je zelf plaatst. Extra profielgegevens alleen als je ze zelf invult. De details staan op de <a href=\"%(url)s\">privacy-pagina</a>."
+
+#. faq, vraag 4.3
+msgid "Which data do you keep, and what for?"
+msgstr "Welke gegevens bewaren jullie en waarvoor?"
+
+#. faq, antwoord 4.4
+msgid "Your contributions are public and visible under your pseudonym. Anyone can read them. Your email address and any private details stay private."
+msgstr "Je bijdragen zijn openbaar en zichtbaar onder je pseudoniem. Iedereen kan ze lezen. Je e-mailadres en eventuele privégegevens blijven privé."
+
+#. faq, vraag 4.4
+msgid "Who can see what I write?"
+msgstr "Wie kan zien wat ik schrijf?"
+
+#. faq, antwoord 4.5
+msgid "Sixteen."
+msgstr "Zestien jaar."
+
+#. faq, vraag 4.5
+msgid "What is the minimum age?"
+msgstr "Wat is de minimumleeftijd?"
+
+#. faq, antwoord 4.6
+msgid "You can do that in your account settings or on request. Your personal data, such as your email address and profile, is then erased."
+msgstr "Dat kan via je accountinstellingen of op verzoek. Je persoonlijke gegevens zoals je e-mailadres en profiel worden dan gewist."
+
+#. faq, vraag 4.6
+msgid "How do I delete my account or my data?"
+msgstr "Hoe verwijder ik mijn account of mijn gegevens?"
+
+#. faq, antwoord 4.7
+msgid "Your contributions stay, but are no longer linked to your name. That way, the discussions and votes others took part in keep their coherence. Only the link to you disappears."
+msgstr "Je bijdragen blijven staan, maar losgekoppeld van je naam. Zo houden de discussies en stemmingen waaraan anderen hebben meegedaan hun samenhang. Alleen de koppeling met jou verdwijnt."
+
+#. faq, vraag 4.7
+msgid "What happens to my contributions after I delete my account?"
+msgstr "Wat gebeurt er met mijn inbreng nadat ik mijn account heb verwijderd?"

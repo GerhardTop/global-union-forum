@@ -1,11 +1,18 @@
 """
-De FAQ-pagina (/faq): tweetalig, vier thema's met uitklapbare vragen
-(<details>, standaard dicht), de link naar /privacy en het menu-item.
+De FAQ-pagina (/faq): vier thema's met uitklapbare vragen (<details>,
+standaard dicht), de link naar /privacy en het menu-item. Since
+multilingual phase 0 step 3 the content is in the translation catalog
+(app/faq.py, lazy_gettext); tests/data/faq_snapshot.json holds the NL and EN
+text from before, and both renders must still show exactly that.
 
 Gedeelde conftest-app.
 """
+import html
+import json
+import os
 import re
 
+import pytest
 from flask import g
 from flask_babel import refresh
 
@@ -21,17 +28,34 @@ def _get(app, lang):
     return c.get('/faq')
 
 
-def test_nl_and_en_have_the_same_shape():
-    nl, en = faq.FAQ['nl'], faq.FAQ['en']
-    assert len(nl) == len(en) == 4
-    assert [len(q) for _t, q in nl] == [len(q) for _t, q in en] == [5, 5, 7, 7]
+SNAPSHOT = json.load(open(os.path.join(os.path.dirname(__file__), 'data', 'faq_snapshot.json'), encoding='utf-8'))
+
+
+def test_one_list_with_the_same_shape():
+    assert len(faq.FAQ) == 4
+    assert [len(q) for _t, q in faq.FAQ] == [5, 5, 7, 7]
+    for lang in ('nl', 'en'):
+        assert [len(q) for _t, q in SNAPSHOT[lang]] == [5, 5, 7, 7]
 
 
 def test_no_long_or_short_dashes():
     for lang in ('nl', 'en'):
-        for theme, questions in faq.FAQ[lang]:
+        for theme, questions in SNAPSHOT[lang]:
             for text in [theme] + [part for pair in questions for part in pair]:
                 assert '–' not in text and '—' not in text
+
+
+@pytest.mark.parametrize('lang', ['nl', 'en'])
+def test_render_matches_the_text_from_before(app, lang):
+    page = _get(app, lang).get_data(as_text=True)
+    themes = re.findall(r'<h2 class="gu-faq__themetitle"[^>]*>(.*?)</h2>', page)
+    questions = re.findall(r'<summary class="gu-faq__question">(.*?)</summary>', page)
+    answers = re.findall(r'<div class="gu-faq__answer"><p>(.*?)</p></div>', page, re.S)
+    snap = SNAPSHOT[lang]
+    assert [html.unescape(t) for t in themes] == [t for t, _q in snap]
+    assert [html.unescape(q) for q in questions] == [q for _t, qs in snap for q, _a in qs]
+    # The answers render as before (the one with the privacy link as markup).
+    assert [html.unescape(a) for a in answers] == [html.unescape(a) for _t, qs in snap for _q, a in qs]
 
 
 def test_page_in_dutch(app):

@@ -3879,3 +3879,949 @@ msgstr "New password"
 msgctxt "profile"
 msgid "Confirm new password"
 msgstr "Confirm new password"
+
+#. manifest, tekst 2
+msgid "The manifesto · August 2026"
+msgstr "The manifesto · August 2026"
+
+#. manifest, tekst 3
+msgid "A first manifesto for a Global Union for democracy, freedom and peace."
+msgstr "A first manifesto for a Global Union for democracy, freedom and peace."
+
+#. manifest, tekst 4
+msgid "Written August 2026"
+msgstr "Written August 2026"
+
+#. manifest, tekst 5
+msgid "8 minute read"
+msgstr "8 minute read"
+
+#. manifest, tekst 6
+msgid "In this manifesto"
+msgstr "In this manifesto"
+
+#. manifest, tekst 8
+msgid "Like-minded countries as a positive force"
+msgstr "Like-minded countries as a positive force"
+
+#. manifest, tekst 9
+msgid "Core principles"
+msgstr "Core principles"
+
+#. manifest, tekst 10
+msgid "Countries"
+msgstr "Countries"
+
+#. manifest, tekst 11
+msgid "Phased legislation"
+msgstr "Phased legislation"
+
+#. manifest, tekst 12
+msgid "Aligning with global standards"
+msgstr "Aligning with global standards"
+
+#. manifest, tekst 13
+msgid "Organisation"
+msgstr "Organisation"
+
+#. manifest, tekst 14
+msgid "Long-term perspective"
+msgstr "Long-term perspective"
+
+#. manifest, tekst 16
+msgid "Core principles of the Global Union"
+msgstr "Core principles of the Global Union"
+
+#. manifest, tekst 17
+msgid "A values-driven trade system"
+msgstr "A values-driven trade system"
+
+#. manifest, tekst 18
+msgid "The GU operates with a single system of trade tariffs based on a scorecard per country, measured on:"
+msgstr "The GU operates with a single system of trade tariffs based on a scorecard per country, measured on:"
+
+#. manifest, tekst 19
+msgid "Peaceful but firm foreign policy"
+msgstr "Peaceful but firm foreign policy"
+
+#. manifest, tekst 20
+msgid "Information freedom as a strategic instrument"
+msgstr "Information freedom as a strategic instrument"
+
+#. manifest, tekst 21
+msgid "The GU extends its influence through high-quality independent journalism in all local languages - by analogy to the BBC, reinforced with GU resources - and by making protected technology available that frees people from state-controlled internet access."
+msgstr "The GU extends its influence through high-quality independent journalism in all local languages - by analogy to the BBC, reinforced with GU resources - and by making protected technology available that frees people from state-controlled internet access."
+
+#. manifest, tekst 24
+msgid "View the full list of all 183 countries and their scores"
+msgstr "View the full list of all 183 countries and their scores"
+
+#. manifest, tekst 27
+msgid "Examples"
+msgstr "Examples"
+
+#. manifest, tekst 29
+msgid "Threshold"
+msgstr "Threshold"
+
+#. manifest, tekst 31
+msgid "Domain"
+msgstr "Domain"
+
+#. manifest, tekst 32
+msgid "Leading standard"
+msgstr "Leading standard"
+
+#. manifest, tekst 33
+msgid "Body"
+msgstr "Body"
+
+#. manifest, tekst 35
+msgid "The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations."
+msgstr "The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations."
+
+#. manifest, tekst 36
+msgid "20 January 2026"
+msgstr "20 January 2026"
+
+#. manifest, tekst 37
+msgid "That's the manifesto."
+msgstr "That's the manifesto."
+
+#. manifest, tekst 38
+msgid "This is a writing exercise, a first attempt. Not a blueprint, not a party programme. But a direction. Have your say. Improve the manifesto, write your own counter-position, or carry it further in a working session."
+msgstr "This is a writing exercise, a first attempt. Not a blueprint, not a party programme. But a direction. Have your say. Improve the manifesto, write your own counter-position, or carry it further in a working session."
+
+#. about, tekst 2
+msgid "About Global Union Forum"
+msgstr "About Global Union Forum"
+
+#. about, tekst 3
+msgid "The goal is clear. The idea exists in broad strokes. We want to work it out further. We're looking for experts and other enthusiasts. Everyone who wants to contribute to wellbeing and prospects for people in Europe and beyond is welcome. Young or retired, heart surgeon or plumber, supporter or opponent. Everyone who holds the conversation with respect."
+msgstr "The goal is clear. The idea exists in broad strokes. We want to work it out further. We're looking for experts and other enthusiasts. Everyone who wants to contribute to wellbeing and prospects for people in Europe and beyond is welcome. Young or retired, heart surgeon or plumber, supporter or opponent. Everyone who holds the conversation with respect."
+
+#. about, tekst 4
+#, python-format
+msgid "No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href=\"%(value)s\" style=\"color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;\">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed."
+msgstr "No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href=\"%(value)s\" style=\"color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;\">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed."
+
+#. about, tekst 5
+msgid "Co-thinkers"
+msgstr "Co-thinkers"
+
+#. about, tekst 6
+msgid "Everyone who wants to join in, even without expertise, every argument can matter."
+msgstr "Everyone who wants to join in, even without expertise, every argument can matter."
+
+#. about, tekst 7
+msgid "Experts"
+msgstr "Experts"
+
+#. about, tekst 8
+msgid "Share knowledge, highlight interesting developments, proposals and critical questions."
+msgstr "Share knowledge, highlight interesting developments, proposals and critical questions."
+
+#. about, tekst 9
+msgid "Moderators"
+msgstr "Moderators"
+
+#. about, tekst 10
+#, python-format
+msgid "Keep the conversation flowing and oversee the conduct rules. A violation is not deleted but moved to the public <a href=\"%(value)s\">background page</a>; spam or abuse is hidden completely. The author can object, and a moderator decides."
+msgstr "Keep the conversation flowing and oversee the conduct rules. A violation is not deleted but moved to the public <a href=\"%(value)s\">background page</a>; spam or abuse is hidden completely. The author can object, and a moderator decides."
+
+#. about, tekst 11
+msgid "By mutual agreement"
+msgstr "By mutual agreement"
+
+#. about, tekst 12
+msgid "The conversation is held with respect."
+msgstr "The conversation is held with respect."
+
+#. about, tekst 13
+msgid "The conversation is held with respect, with the aim of arriving at proposals that are broadly supported. Following the example of Wikipedia, we'll work out our '4 pillars' further together and add functionality."
+msgstr "The conversation is held with respect, with the aim of arriving at proposals that are broadly supported. Following the example of Wikipedia, we'll work out our '4 pillars' further together and add functionality."
+
+#. about, tekst 14
+msgid "Our four pillars"
+msgstr "Our four pillars"
+
+#. about, tekst 15
+msgid "A democratic force for everyone."
+msgstr "A democratic force for everyone."
+
+#. about, tekst 16
+msgid "We treat each other with respect."
+msgstr "We treat each other with respect."
+
+#. about, tekst 17
+msgid "Facts from a neutral point of view."
+msgstr "Facts from a neutral point of view."
+
+#. about, tekst 18
+msgid "Content freely available to everyone."
+msgstr "Content freely available to everyone."
+
+#. motie_d66, tekst 1
+msgid "Motion · Global Union"
+msgstr "Motion · Global Union"
+
+#. motie_d66, tekst 2
+msgid "Political motion · D66"
+msgstr "Political motion · D66"
+
+#. motie_d66, tekst 3
+msgid "The General Assembly of D66,"
+msgstr "The General Assembly of D66,"
+
+#. motie_d66, tekst 4
+msgid "Noting that"
+msgstr "Noting that"
+
+#. motie_d66, tekst 5
+msgid "the US is undermining the trust of its allies by acting unilaterally and ignoring international agreements;"
+msgstr "the US is undermining the trust of its allies by acting unilaterally and ignoring international agreements;"
+
+#. motie_d66, tekst 6
+msgid "Russia threatens the European security order and China backs Russia and regularly disregards international norms;"
+msgstr "Russia threatens the European security order and China backs Russia and regularly disregards international norms;"
+
+#. motie_d66, tekst 7
+msgid "Europe is heavily dependent on American technology and AI infrastructure, and on China for raw materials;"
+msgstr "Europe is heavily dependent on American technology and AI infrastructure, and on China for raw materials;"
+
+#. motie_d66, tekst 8
+msgid "Prime Minister Carney, in Davos (January 2026), called for cooperation between \"middle powers\", countries large enough to matter that respect the international rule of law;"
+msgstr "Prime Minister Carney, in Davos (January 2026), called for cooperation between \"middle powers\", countries large enough to matter that respect the international rule of law;"
+
+#. motie_d66, tekst 9
+msgid "Canada was announced on 16 September 2026 as the EU's first associated member;"
+msgstr "Canada was announced on 16 September 2026 as the EU's first associated member;"
+
+#. motie_d66, tekst 10
+msgid "Considering that"
+msgstr "Considering that"
+
+#. motie_d66, tekst 11
+msgid "this momentum must be used for a <strong>permanent structure of cooperation</strong> between democracies, not as a replacement for but a complement to the UN;"
+msgstr "this momentum must be used for a <strong>permanent structure of cooperation</strong> between democracies, not as a replacement for but a complement to the UN;"
+
+#. motie_d66, tekst 12
+msgid "this structure should be open <strong>to all countries</strong> that meet criteria for democracy, the rule of law, anti-corruption and human rights, alongside Canada, the UK, South Korea, Japan, New Zealand and Australia, also countries beyond the wealthy West, such as Costa Rica, Botswana and Cape Verde;"
+msgstr "this structure should be open <strong>to all countries</strong> that meet criteria for democracy, the rule of law, anti-corruption and human rights, alongside Canada, the UK, South Korea, Japan, New Zealand and Australia, also countries beyond the wealthy West, such as Costa Rica, Botswana and Cape Verde;"
+
+#. motie_d66, tekst 13
+msgid "with its enlargement into Eastern Europe, the EU has shown that joining a bloc of prosperous democracies exerts a powerful pull, leading countries with formerly autocratic regimes to carry out reforms in order to join;"
+msgstr "with its enlargement into Eastern Europe, the EU has shown that joining a bloc of prosperous democracies exerts a powerful pull, leading countries with formerly autocratic regimes to carry out reforms in order to join;"
+
+#. motie_d66, tekst 14
+msgid "that pull can be scaled up to the global level, with, in the long term, the <strong>prospect of a Global Union</strong> of functioning democracies;"
+msgstr "that pull can be scaled up to the global level, with, in the long term, the <strong>prospect of a Global Union</strong> of functioning democracies;"
+
+#. motie_d66, tekst 15
+msgid "Requests the EP delegation"
+msgstr "Requests the EP delegation"
+
+#. motie_d66, tekst 16
+msgid "to work towards the establishment of a permanent structure of cooperation between the EU, Canada and other democratic countries that meet criteria for the rule of law, anti-corruption and human rights, with the aim of strengthening the strategic autonomy of democracies and attracting more countries that embrace democratic values,"
+msgstr "to work towards the establishment of a permanent structure of cooperation between the EU, Canada and other democratic countries that meet criteria for the rule of law, anti-corruption and human rights, with the aim of strengthening the strategic autonomy of democracies and attracting more countries that embrace democratic values,"
+
+#. motie_d66, tekst 17
+msgid "and proceeds to the order of the day."
+msgstr "and proceeds to the order of the day."
+
+#. motie_d66, tekst 18
+msgid "Would you like to co-submit or support this motion?"
+msgstr "Would you like to co-submit or support this motion?"
+
+#. motie_d66, tekst 19
+msgid "Global%20Union%20motion"
+msgstr "Global%20Union%20motion"
+
+#. motie_d66, tekst 20
+msgid "Co-submit or support"
+msgstr "Co-submit or support"
+
+#. landenlijst, tekst 1
+msgid "Country overview"
+msgstr "Country overview"
+
+#. landenlijst, tekst 4
+msgid "Level"
+msgstr "Level"
+
+#. landenlijst, tekst 5
+msgid "Meets standard"
+msgstr "Meets standard"
+
+#. landenlijst, tekst 6
+msgid "≥ 8.0"
+msgstr "≥ 8.0"
+
+#. landenlijst, tekst 7
+msgid "≥ 0.75"
+msgstr "≥ 0.75"
+
+#. landenlijst, tekst 8
+msgid "Above minimum"
+msgstr "Above minimum"
+
+#. landenlijst, tekst 9
+msgid "≥ 6.0"
+msgstr "≥ 6.0"
+
+#. landenlijst, tekst 10
+msgid "≥ 0.70"
+msgstr "≥ 0.70"
+
+#. landenlijst, tekst 11
+msgid "Country"
+msgstr "Country"
+
+#. landenlijst, tekst 12
+msgid "Global Union level"
+msgstr "Global Union level"
+
+#. initiatiefnemer, tekst 1
+msgid "The initiator"
+msgstr "The initiator"
+
+#. initiatiefnemer, tekst 3
+msgid "Initiator · Global Union Forum"
+msgstr "Initiator · Global Union Forum"
+
+#. initiatiefnemer, tekst 4
+msgid "Absurdly grand, many people will think. I believe we can work it out together."
+msgstr "Absurdly grand, many people will think. I believe we can work it out together."
+
+#. privacy, tekst 1
+msgid "Privacy statement"
+msgstr "Privacy statement"
+
+#. privacy, tekst 2
+msgid "Privacy statement Global Union Forum"
+msgstr "Privacy statement Global Union Forum"
+
+#. privacy, tekst 3
+msgid "Last updated: 24 October 2026"
+msgstr "Last updated: 24 October 2026"
+
+#. manifest, alinea 1
+msgid "Major powers pay too little attention to international law. The Global Union (GU) offers an alternative: a permanent cooperation between functioning democracies, as a complement to the EU and the UN. Together we want to use our market power for prosperity, social security, a liveable planet, security and the enforcement of international agreements."
+msgstr "Major powers pay too little attention to international law. The Global Union (GU) offers an alternative: a permanent cooperation between functioning democracies, as a complement to the EU and the UN. Together we want to use our market power for prosperity, social security, a liveable planet, security and the enforcement of international agreements."
+
+#. manifest, alinea 2
+msgid "Any country that scores well on democracy, the rule of law, human rights and anti-corruption can join. A solid foundation already exists. In October 2026, the EU and Canada formed an alliance for the future. Like-minded countries have been invited to join. Together, our economy is more than one third of the world's and larger than that of the US."
+msgstr "Any country that scores well on democracy, the rule of law, human rights and anti-corruption can join. A solid foundation already exists. In October 2026, the EU and Canada formed an alliance for the future. Like-minded countries have been invited to join. Together, our economy is more than one third of the world's and larger than that of the US."
+
+#. manifest, alinea 3
+msgid "The GU is principled and pragmatic. Principled, because trade tariffs depend on how a country scores on honouring international agreements and shared values. Countries that meet all criteria pay no import duties. Countries that commit aggression are excluded. Pragmatic, because we start small, with limited tariffs. We want to be attractive and avoid unnecessary escalation. This gives us time to become strategically independent together."
+msgstr "The GU is principled and pragmatic. Principled, because trade tariffs depend on how a country scores on honouring international agreements and shared values. Countries that meet all criteria pay no import duties. Countries that commit aggression are excluded. Pragmatic, because we start small, with limited tariffs. We want to be attractive and avoid unnecessary escalation. This gives us time to become strategically independent together."
+
+#. manifest, alinea 4
+msgid "Those who join benefit. That gives countries a reason to reform, as happened earlier with the EU. This is how the union grows: through attraction."
+msgstr "Those who join benefit. That gives countries a reason to reform, as happened earlier with the EU. This is how the union grows: through attraction."
+
+#. manifest, lijstitem 5
+msgid "Anti-corruption"
+msgstr "Anti-corruption"
+
+#. manifest, lijstitem 6
+msgid "Freedom: rule of law, democracy, free press"
+msgstr "Freedom: rule of law, democracy, free press"
+
+#. manifest, lijstitem 7
+msgid "Human rights"
+msgstr "Human rights"
+
+#. manifest, lijstitem 8
+msgid "Sustainability: climate accords, respect for nature"
+msgstr "Sustainability: climate accords, respect for nature"
+
+#. manifest, lijstitem 9
+msgid "Conduct within the international legal order: IP protection, no espionage, no dumping, contribution to the International Court of Justice"
+msgstr "Conduct within the international legal order: IP protection, no espionage, no dumping, contribution to the International Court of Justice"
+
+#. manifest, alinea 10
+msgid "Countries that fully comply pay 0% import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs."
+msgstr "Countries that fully comply pay 0% import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs."
+
+#. manifest, alinea 11
+msgid "The GU invests in strategic independence for all members: raw materials, energy, defence and its own AI capabilities. The GU must urgently stand on its own two feet in these areas."
+msgstr "The GU invests in strategic independence for all members: raw materials, energy, defence and its own AI capabilities. The GU must urgently stand on its own two feet in these areas."
+
+#. manifest, alinea 12
+msgid "The GU does not pursue assertive military action, unless a broad majority of GU members judges intervention necessary because of crimes against a country's own population. Democratisation in autocratic countries happens through uprising from within the population itself. If regimes misbehave, we support the opposition."
+msgstr "The GU does not pursue assertive military action, unless a broad majority of GU members judges intervention necessary because of crimes against a country's own population. Democratisation in autocratic countries happens through uprising from within the population itself. If regimes misbehave, we support the opposition."
+
+#. manifest, alinea 13
+msgid "The GU does not function as a single market with full free movement of people, to avoid unwanted migration flows toward wealthier areas. Uniform trade tariffs based on the scorecard do apply."
+msgstr "The GU does not function as a single market with full free movement of people, to avoid unwanted migration flows toward wealthier areas. Uniform trade tariffs based on the scorecard do apply."
+
+#. manifest, alinea 14
+msgid "For high-value work, we issue temporary work visas to scarce talent from GU countries as well as from non-GU countries. The principle is circular: those who work abroad temporarily bring knowledge, experience and networks back to their home country."
+msgstr "For high-value work, we issue temporary work visas to scarce talent from GU countries as well as from non-GU countries. The principle is circular: those who work abroad temporarily bring knowledge, experience and networks back to their home country."
+
+#. manifest, alinea 15
+msgid "The GU also invests in training programmes through which people in non-GU countries can develop to the level needed to make a valuable contribution. Once back home, they can continue to contribute to the GU economy remotely. This way prosperity grows on both sides."
+msgstr "The GU also invests in training programmes through which people in non-GU countries can develop to the level needed to make a valuable contribution. Once back home, they can continue to contribute to the GU economy remotely. This way prosperity grows on both sides."
+
+#. manifest, alinea 16
+msgid "Accession is tied to three existing, independent indices: the Democracy Index, the Corruption Perceptions Index, and the Human Rights Index. For each index, a 'sufficient' level and a 'minimum' level have been chosen. The minimum level is chosen so that the EU can join as a bloc."
+msgstr "Accession is tied to three existing, independent indices: the Democracy Index, the Corruption Perceptions Index, and the Human Rights Index. For each index, a 'sufficient' level and a 'minimum' level have been chosen. The minimum level is chosen so that the EU can join as a bloc."
+
+#. manifest, alinea 17
+msgid "Countries above the minimum level are invited to join."
+msgstr "Countries above the minimum level are invited to join."
+
+#. manifest, alinea 18
+msgid "Three countries receive separate treatment. The United States and Israel are not invited for now. These countries do numerically meet the standard, but it cannot be expected that, under their current administrations, they would want to commit to the rules of the Global Union. Taiwan also qualifies, but lacks UN-recognised status. For this we can work with a separate status, as is already the case at the WTO."
+msgstr "Three countries receive separate treatment. The United States and Israel are not invited for now. These countries do numerically meet the standard, but it cannot be expected that, under their current administrations, they would want to commit to the rules of the Global Union. Taiwan also qualifies, but lacks UN-recognised status. For this we can work with a separate status, as is already the case at the WTO."
+
+#. manifest, alinea 19
+msgid "The indices carry a limited margin of error. Countries that fall just short of the threshold can still be assessed on request."
+msgstr "The indices carry a limited margin of error. Countries that fall just short of the threshold can still be assessed on request."
+
+#. manifest, alinea 20
+msgid "We adopt legislation in phases. Simple, technical rules come first; politically sensitive matters follow later and require a broader majority."
+msgstr "We adopt legislation in phases. Simple, technical rules come first; politically sensitive matters follow later and require a broader majority."
+
+#. manifest, tabelkop 21
+msgid "Foundation"
+msgstr "Foundation"
+
+#. manifest, tabelcel 22
+msgid "Technical product standards; customs procedures; the scorecard's verification method and external tariff system; data protection; food and product safety"
+msgstr "Technical product standards; customs procedures; the scorecard's verification method and external tariff system; data protection; food and product safety"
+
+#. manifest, tabelcel 23
+msgid "Technical or directly needed to function"
+msgstr "Technical or directly needed to function"
+
+#. manifest, tabelcel 24
+msgid "Ordinary rules"
+msgstr "Ordinary rules"
+
+#. manifest, tabelkop 25
+msgid "Deepening"
+msgstr "Deepening"
+
+#. manifest, tabelcel 26
+msgid "Competition and state aid; procurement; digital markets; professional qualifications; financial oversight"
+msgstr "Competition and state aid; procurement; digital markets; professional qualifications; financial oversight"
+
+#. manifest, tabelcel 27
+msgid "Moderate sovereignty cost, strengthens cooperation"
+msgstr "Moderate sovereignty cost, strengthens cooperation"
+
+#. manifest, tabelkop 29
+msgid "Politically sensitive"
+msgstr "Politically sensitive"
+
+#. manifest, tabelcel 30
+msgid "Rule-of-law conditionality; environmental and labour standards; tax coordination; sanctions against aggressive states"
+msgstr "Rule-of-law conditionality; environmental and labour standards; tax coordination; sanctions against aggressive states"
+
+#. manifest, tabelcel 31
+msgid "Politically sensitive, high sovereignty cost"
+msgstr "Politically sensitive, high sovereignty cost"
+
+#. manifest, tabelcel 32
+msgid "80% threshold"
+msgstr "80% threshold"
+
+#. manifest, alinea 33
+msgid "The Global Union does not apply a single external tariff, but different tariffs per country, based on the score on the values scorecard. This appears to conflict with the World Trade Organization's principle that all countries should receive equal tariffs. Under Article XX GATT, protection of public morals, we expect to be able to make an exception here. Because this judgement is carried by the whole Global Union, and applied using fixed criteria equal for every country, this claim stands on firmer ground than if a single country made it alone."
+msgstr "The Global Union does not apply a single external tariff, but different tariffs per country, based on the score on the values scorecard. This appears to conflict with the World Trade Organization's principle that all countries should receive equal tariffs. Under Article XX GATT, protection of public morals, we expect to be able to make an exception here. Because this judgement is carried by the whole Global Union, and applied using fixed criteria equal for every country, this claim stands on firmer ground than if a single country made it alone."
+
+#. manifest, alinea 34
+msgid "We do not adopt agricultural policy, cohesion funds, or the monetary union; these are inseparably tied to the EU's own territory and budget."
+msgstr "We do not adopt agricultural policy, cohesion funds, or the monetary union; these are inseparably tied to the EU's own territory and budget."
+
+#. manifest, alinea 35
+msgid "We only choose our own rule where no global alternative exists or the existing one is too weak to enforce."
+msgstr "We only choose our own rule where no global alternative exists or the existing one is too weak to enforce."
+
+#. manifest, tabelkop 36
+msgid "Trade rules"
+msgstr "Trade rules"
+
+#. manifest, tabelcel 37
+msgid "GATT/GATS, TBT and SPS agreements"
+msgstr "GATT/GATS, TBT and SPS agreements"
+
+#. manifest, tabelcel 38
+msgid "WTO"
+msgstr "WTO"
+
+#. manifest, tabelkop 39
+msgid "Customs and classification"
+msgstr "Customs and classification"
+
+#. manifest, tabelcel 40
+msgid "Harmonized System, Revised Kyoto Convention"
+msgstr "Harmonized System, Revised Kyoto Convention"
+
+#. manifest, tabelcel 41
+msgid "WCO"
+msgstr "WCO"
+
+#. manifest, tabelkop 42
+msgid "Product standards"
+msgstr "Product standards"
+
+#. manifest, tabelcel 43
+msgid "ISO, IEC, ITU"
+msgstr "ISO, IEC, ITU"
+
+#. manifest, tabelcel 44
+msgid "International, non-state"
+msgstr "International, non-state"
+
+#. manifest, tabelkop 45
+msgid "Food safety"
+msgstr "Food safety"
+
+#. manifest, tabelcel 46
+msgid "Codex Alimentarius"
+msgstr "Codex Alimentarius"
+
+#. manifest, tabelcel 47
+msgid "FAO/WHO"
+msgstr "FAO/WHO"
+
+#. manifest, tabelkop 48
+msgid "Taxation"
+msgstr "Taxation"
+
+#. manifest, tabelcel 49
+msgid "Pillar Two (minimum rate), BEPS"
+msgstr "Pillar Two (minimum rate), BEPS"
+
+#. manifest, tabelcel 50
+msgid "OECD/G20 Inclusive Framework"
+msgstr "OECD/G20 Inclusive Framework"
+
+#. manifest, tabelkop 51
+msgid "Banking supervision"
+msgstr "Banking supervision"
+
+#. manifest, tabelcel 52
+msgid "Basel III"
+msgstr "Basel III"
+
+#. manifest, tabelcel 53
+msgid "Basel Committee"
+msgstr "Basel Committee"
+
+#. manifest, tabelkop 54
+msgid "Anti-money laundering"
+msgstr "Anti-money laundering"
+
+#. manifest, tabelcel 55
+msgid "40 Recommendations"
+msgstr "40 Recommendations"
+
+#. manifest, tabelcel 56
+msgid "FATF"
+msgstr "FATF"
+
+#. manifest, tabelkop 57
+msgid "Reporting"
+msgstr "Reporting"
+
+#. manifest, tabelcel 58
+msgid "IFRS"
+msgstr "IFRS"
+
+#. manifest, tabelcel 59
+msgid "IASB"
+msgstr "IASB"
+
+#. manifest, tabelcel 61
+msgid "UDHR, ICCPR, ICESCR, eight fundamental ILO conventions"
+msgstr "UDHR, ICCPR, ICESCR, eight fundamental ILO conventions"
+
+#. manifest, tabelcel 62
+msgid "UN, ILO"
+msgstr "UN, ILO"
+
+#. manifest, tabelcel 64
+msgid "UNCAC"
+msgstr "UNCAC"
+
+#. manifest, tabelcel 65
+msgid "UN"
+msgstr "UN"
+
+#. manifest, tabelkop 66
+msgid "Climate"
+msgstr "Climate"
+
+#. manifest, tabelcel 67
+msgid "Paris Agreement"
+msgstr "Paris Agreement"
+
+#. manifest, tabelcel 68
+msgid "UNFCCC"
+msgstr "UNFCCC"
+
+#. manifest, tabelkop 69
+msgid "Aviation, shipping"
+msgstr "Aviation, shipping"
+
+#. manifest, tabelcel 70
+msgid "ICAO, IMO"
+msgstr "ICAO, IMO"
+
+#. manifest, tabelcel 71
+msgid "UN agencies"
+msgstr "UN agencies"
+
+#. manifest, tabelkop 72
+msgid "Data protection"
+msgstr "Data protection"
+
+#. manifest, tabelcel 73
+msgid "Convention 108+"
+msgstr "Convention 108+"
+
+#. manifest, tabelcel 74
+msgid "Council of Europe, open to non-European states"
+msgstr "Council of Europe, open to non-European states"
+
+#. manifest, alinea 75
+msgid "For data protection, we choose the supranational Convention 108+ over the GDPR: the same protection, but without an EU label, and already open to countries such as Uruguay, Mexico, and Senegal. For AI, an authoritative global standard is still missing. This will need to be shaped as a priority."
+msgstr "For data protection, we choose the supranational Convention 108+ over the GDPR: the same protection, but without an EU label, and already open to countries such as Uruguay, Mexico, and Senegal. For AI, an authoritative global standard is still missing. This will need to be shaped as a priority."
+
+#. manifest, alinea 76
+msgid "The Global Union operates with a minimal organisation: a small commission and a limited civil service, supported by existing national and international institutions. The budget stays limited, since the union starts with a limited set of competences and does not take on large transfers such as agricultural or cohesion funds. Yet the union is effective: decisions are taken by a clear majority rather than unanimity. Implementation takes place within the countries themselves. Oversight of that implementation is carried out by the Global Union. There is, however, budget for international student exchange and for independent online news media and education programmes."
+msgstr "The Global Union operates with a minimal organisation: a small commission and a limited civil service, supported by existing national and international institutions. The budget stays limited, since the union starts with a limited set of competences and does not take on large transfers such as agricultural or cohesion funds. Yet the union is effective: decisions are taken by a clear majority rather than unanimity. Implementation takes place within the countries themselves. Oversight of that implementation is carried out by the Global Union. There is, however, budget for international student exchange and for independent online news media and education programmes."
+
+#. manifest, alinea 77
+msgid "Discussions and votes take place online. This effectiveness is strengthened by democratic innovation. Decision-making is transparent, including the underlying facts and considerations, explained at both expert and layperson level. Citizens worldwide can take part and exert influence in their own language."
+msgstr "Discussions and votes take place online. This effectiveness is strengthened by democratic innovation. Decision-making is transparent, including the underlying facts and considerations, explained at both expert and layperson level. Citizens worldwide can take part and exert influence in their own language."
+
+#. initiatiefnemer, alinea 1
+msgid "At the end of my student years the Wall fell. At the moment of the breakthrough I was working on a Land Rover. Over the radio I heard the jubilant East Germans. Goosebumps! Unexpected, unimaginable, that dictatorship simply collapsed."
+msgstr "At the end of my student years the Wall fell. At the moment of the breakthrough I was working on a Land Rover. Over the radio I heard the jubilant East Germans. Goosebumps! Unexpected, unimaginable, that dictatorship simply collapsed."
+
+#. initiatiefnemer, alinea 2
+msgid "With that Land Rover the four of us drove to Cape Town. Straight through Africa. I saw the beauty and the poverty. The cheerfulness and the enormous corruption and political repression."
+msgstr "With that Land Rover the four of us drove to Cape Town. Straight through Africa. I saw the beauty and the poverty. The cheerfulness and the enormous corruption and political repression."
+
+#. initiatiefnemer, alinea 3
+msgid "Ten years after that Africa trip I took part in a meeting of the D66 Business Club. We discussed the misuse of development funds, the difficulties for businesses that refused to participate in corruption, clientelism and how deeply it was embedded in the culture. The atmosphere turned somewhat hopeless, but no one had a solution."
+msgstr "Ten years after that Africa trip I took part in a meeting of the D66 Business Club. We discussed the misuse of development funds, the difficulties for businesses that refused to participate in corruption, clientelism and how deeply it was embedded in the culture. The atmosphere turned somewhat hopeless, but no one had a solution."
+
+#. initiatiefnemer, alinea 4
+msgid "This spring I attended a member meeting of Transparency International. The all-corrupting rot is still widespread in Africa and in many other countries. This lack of development, and the negative trend in the growing number of countries that undermine the rule of law, including the United States, means that a counterforce is needed. A powerful cooperation between functioning democracies, a geopolitical force that can also serve as a magnet for other countries. With the Global Union Forum I want to make a contribution by facilitating a meaningful conversation, enriching the idea along the way, and broadening support for it."
+msgstr "This spring I attended a member meeting of Transparency International. The all-corrupting rot is still widespread in Africa and in many other countries. This lack of development, and the negative trend in the growing number of countries that undermine the rule of law, including the United States, means that a counterforce is needed. A powerful cooperation between functioning democracies, a geopolitical force that can also serve as a magnet for other countries. With the Global Union Forum I want to make a contribution by facilitating a meaningful conversation, enriching the idea along the way, and broadening support for it."
+
+#. initiatiefnemer, alinea 5
+msgid "Since Covid I have been a lecturer at the University of Applied Sciences in Amsterdam. After years in leadership roles in software and telecom I wanted a more socially engaged role. I succeeded, I work with students from all kinds of backgrounds, including refugees. Sometimes I have conversations with them that move me. They make me want more and more countries to be places where young people grow up in freedom, with prospects for growth in prosperity and wellbeing."
+msgstr "Since Covid I have been a lecturer at the University of Applied Sciences in Amsterdam. After years in leadership roles in software and telecom I wanted a more socially engaged role. I succeeded, I work with students from all kinds of backgrounds, including refugees. Sometimes I have conversations with them that move me. They make me want more and more countries to be places where young people grow up in freedom, with prospects for growth in prosperity and wellbeing."
+
+#. privacy, kop 1
+msgid "Who we are"
+msgstr "Who we are"
+
+#. privacy, alinea 2
+#, python-format
+msgid "Global Union Forum is run by Stichting Global Union Forum (in formation). If you have a question about your data, email %(mail)s."
+msgstr "Global Union Forum is run by Stichting Global Union Forum (in formation). If you have a question about your data, email %(mail)s."
+
+#. privacy, kop 3
+msgid "What data we collect"
+msgstr "What data we collect"
+
+#. privacy, alinea 4
+msgid "Your username (pseudonym), which is public. Your email address, which is private and not visible to other users. Your password, which we store encrypted. If you fill them in yourself: your first and last name and your LinkedIn address, which stay private unless you choose in your profile to show your real name. What you write on the forum, your replies, and your agree and disagree votes; your contributions are public under your pseudonym. And your IP address and technical log data, which we use to prevent abuse."
+msgstr "Your username (pseudonym), which is public. Your email address, which is private and not visible to other users. Your password, which we store encrypted. If you fill them in yourself: your first and last name and your LinkedIn address, which stay private unless you choose in your profile to show your real name. What you write on the forum, your replies, and your agree and disagree votes; your contributions are public under your pseudonym. And your IP address and technical log data, which we use to prevent abuse."
+
+#. privacy, kop 5
+msgid "What we use it for"
+msgstr "What we use it for"
+
+#. privacy, alinea 6
+msgid "To make your account work and sign you in, to run the forum, to prevent abuse and overload, to translate your contributions and give them a quality assessment, and to send you emails that relate to your account."
+msgstr "To make your account work and sign you in, to run the forum, to prevent abuse and overload, to translate your contributions and give them a quality assessment, and to send you emails that relate to your account."
+
+#. privacy, kop 7
+msgid "Who we share data with"
+msgstr "Who we share data with"
+
+#. privacy, alinea 8
+msgid "We do not sell your data. We do use service providers that process data on our behalf: Neon (database), Render (hosting), Cloudflare (traffic and security), Resend (email) and Anthropic (automatic translation and the quality assessment). For the latter, the text of your contribution is sent to Anthropic to translate and assess. Some of these services may process data outside the European Union; in that case we ensure appropriate safeguards, such as the European Commission's standard contractual clauses. Your public contributions are visible to everyone; your real name and LinkedIn only if you choose so."
+msgstr "We do not sell your data. We do use service providers that process data on our behalf: Neon (database), Render (hosting), Cloudflare (traffic and security), Resend (email) and Anthropic (automatic translation and the quality assessment). For the latter, the text of your contribution is sent to Anthropic to translate and assess. Some of these services may process data outside the European Union; in that case we ensure appropriate safeguards, such as the European Commission's standard contractual clauses. Your public contributions are visible to everyone; your real name and LinkedIn only if you choose so."
+
+#. privacy, kop 9
+msgid "How long we keep it"
+msgstr "How long we keep it"
+
+#. privacy, alinea 10
+msgid "We keep your account data as long as your account exists. If you ask for deletion, we delete your personal data; your public contributions we anonymise, so the conversation stays readable. We keep technical log data for six months."
+msgstr "We keep your account data as long as your account exists. If you ask for deletion, we delete your personal data; your public contributions we anonymise, so the conversation stays readable. We keep technical log data for six months."
+
+#. privacy, kop 11
+msgid "Minimum age"
+msgstr "Minimum age"
+
+#. privacy, alinea 12
+msgid "You must be at least 16 years old to create an account."
+msgstr "You must be at least 16 years old to create an account."
+
+#. privacy, kop 13
+msgid "Cookies"
+msgstr "Cookies"
+
+#. privacy, alinea 14
+msgid "We use only functional cookies, for example to keep you signed in and to remember your language choice. We do not use cookies to track you or for advertising."
+msgstr "We use only functional cookies, for example to keep you signed in and to remember your language choice. We do not use cookies to track you or for advertising."
+
+#. privacy, kop 15
+msgid "Security"
+msgstr "Security"
+
+#. privacy, alinea 16
+msgid "We store passwords encrypted, use a secure connection (https) and limit the number of attempts to prevent abuse."
+msgstr "We store passwords encrypted, use a secure connection (https) and limit the number of attempts to prevent abuse."
+
+#. privacy, kop 17
+msgid "Your rights"
+msgstr "Your rights"
+
+#. privacy, alinea 18
+#, python-format
+msgid "You may access, correct or delete your data, object to its use, and withdraw your consent. Email %(mail)s for this. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens)."
+msgstr "You may access, correct or delete your data, object to its use, and withdraw your consent. Email %(mail)s for this. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens)."
+
+#. privacy, kop 19
+msgid "Changes"
+msgstr "Changes"
+
+#. privacy, alinea 20
+msgid "We may update this statement. The date at the top shows when we last did so."
+msgstr "We may update this statement. The date at the top shows when we last did so."
+
+#. manifest, titel
+msgid "A Global Union<br><em>for a growing number of functioning democracies</em>"
+msgstr "A Global Union<br><em>for a growing number of functioning democracies</em>"
+
+#. about, titel
+msgid "A think tank<br><em>with strong intent</em>"
+msgstr "A think tank<br><em>with strong intent</em>"
+
+#. motie_d66, titel
+msgid "The EU and Canada as<br><em>initiators of a global coalition of democracies</em>"
+msgstr "The EU and Canada as<br><em>initiators of a global coalition of democracies</em>"
+
+#. manifest, kop
+msgctxt "manifest heading"
+msgid "Long-term perspective"
+msgstr "Long-term perspective"
+
+#. faq, antwoord 1.1
+msgid "Global Union is the idea of a partnership of functioning democracies worldwide. It is built on attraction instead of force, following the example of the European Union. It is open to countries that respect the rule of law, human rights, the fight against corruption, sustainability and the international legal order."
+msgstr "Global Union is the idea of a partnership of functioning democracies worldwide. It is built on attraction instead of force, following the example of the European Union. It is open to countries that respect the rule of law, human rights, the fight against corruption, sustainability and the international legal order."
+
+#. faq, vraag 1.1
+msgid "What is Global Union?"
+msgstr "What is Global Union?"
+
+#. faq, antwoord 1.2
+msgid "Global Union is the idea and the movement. The Global Union Forum is the place where that idea is developed and discussed. Here you think along, bring in facts and vote. Experts and beginners do this side by side."
+msgstr "Global Union is the idea and the movement. The Global Union Forum is the place where that idea is developed and discussed. Here you think along, bring in facts and vote. Experts and beginners do this side by side."
+
+#. faq, vraag 1.2
+msgid "What is the difference between Global Union and the Global Union Forum?"
+msgstr "What is the difference between Global Union and the Global Union Forum?"
+
+#. faq, antwoord 1.3
+msgid "It is an independent initiative, set up by founder Gerhard Top. With enough momentum, this initiative will be placed in a foundation. The idea is to involve co-initiators first, and then a growing group of participants and experts, to develop it further together."
+msgstr "It is an independent initiative, set up by founder Gerhard Top. With enough momentum, this initiative will be placed in a foundation. The idea is to involve co-initiators first, and then a growing group of participants and experts, to develop it further together."
+
+#. faq, vraag 1.3
+msgid "Who is behind the platform?"
+msgstr "Who is behind the platform?"
+
+#. faq, antwoord 1.4
+msgid "No. The forum is independent and not linked to a party, a government or a company. It is reformist and it is not tied to a political colour."
+msgstr "No. The forum is independent and not linked to a party, a government or a company. It is reformist and it is not tied to a political colour."
+
+#. faq, vraag 1.4
+msgid "Is this linked to a political party or a government?"
+msgstr "Is this linked to a political party or a government?"
+
+#. faq, antwoord 1.5
+msgid "Create an account and read the ground rules. Then you can start: add facts, give your opinion or start an issue yourself. What this becomes is decided by the people who take part."
+msgstr "Create an account and read the ground rules. Then you can start: add facts, give your opinion or start an issue yourself. What this becomes is decided by the people who take part."
+
+#. faq, vraag 1.5
+msgid "How can I take part or contribute?"
+msgstr "How can I take part or contribute?"
+
+#. faq, thema 2
+msgid "Manifesto"
+msgstr "Manifesto"
+
+#. faq, antwoord 2.1
+msgid "The manifesto from March 2026 is a personal essay by the founder. In it he sets out the idea of a global union of functioning democracies: why it is needed, how it could work and why it is worth trying. See it as the start of the discussion."
+msgstr "The manifesto from March 2026 is a personal essay by the founder. In it he sets out the idea of a global union of functioning democracies: why it is needed, how it could work and why it is worth trying. See it as the start of the discussion."
+
+#. faq, vraag 2.1
+msgid "What is in the manifesto?"
+msgstr "What is in the manifesto?"
+
+#. faq, antwoord 2.2
+msgid "A partnership of countries that truly uphold democracy and the rule of law. Countries from all over the world can join. What counts is whether a country meets those values."
+msgstr "A partnership of countries that truly uphold democracy and the rule of law. Countries from all over the world can join. What counts is whether a country meets those values."
+
+#. faq, vraag 2.2
+msgid "What does \"a union of functioning democracies\" mean?"
+msgstr "What does \"a union of functioning democracies\" mean?"
+
+#. faq, antwoord 2.3
+msgid "The EU shows that countries can work together voluntarily, based on shared rules. They attract each other instead of forcing each other. We want to apply that principle on a world scale."
+msgstr "The EU shows that countries can work together voluntarily, based on shared rules. They attract each other instead of forcing each other. We want to apply that principle on a world scale."
+
+#. faq, vraag 2.3
+msgid "Why the example of the European Union?"
+msgstr "Why the example of the European Union?"
+
+#. faq, antwoord 2.4
+msgid "Countries that meet standards such as the rule of law, human rights, the fight against corruption and the international legal order. Membership is based on democratic performance. Not only wealthy Western countries, but also, and especially, model countries from Africa and South America."
+msgstr "Countries that meet standards such as the rule of law, human rights, the fight against corruption and the international legal order. Membership is based on democratic performance. Not only wealthy Western countries, but also, and especially, model countries from Africa and South America."
+
+#. faq, vraag 2.4
+msgid "Which countries could join, and on what basis?"
+msgstr "Which countries could join, and on what basis?"
+
+#. faq, antwoord 2.5
+msgid "It is a grand idea. Perhaps hard to achieve, but worth it. You start small and build it up together, step by step."
+msgstr "It is a grand idea. Perhaps hard to achieve, but worth it. You start small and build it up together, step by step."
+
+#. faq, vraag 2.5
+msgid "Is this not too grand or too idealistic?"
+msgstr "Is this not too grand or too idealistic?"
+
+#. faq, thema 3
+msgid "How it works"
+msgstr "How it works"
+
+#. faq, antwoord 3.1
+msgid "Someone starts an issue with a question or problem. In the first phase, facts and discussion, you bring in facts, research and media and discuss it together. Proposals come out of that. After that, the proposer can revise a proposal. Then there is a vote. If the initiator chose so, a summary proposal follows, with a new vote. Finally there is the follow-up phase: what happens with it, such as lobbying, media or implementation."
+msgstr "Someone starts an issue with a question or problem. In the first phase, facts and discussion, you bring in facts, research and media and discuss it together. Proposals come out of that. After that, the proposer can revise a proposal. Then there is a vote. If the initiator chose so, a summary proposal follows, with a new vote. Finally there is the follow-up phase: what happens with it, such as lobbying, media or implementation."
+
+#. faq, vraag 3.1
+msgid "How does an issue go, from discussion to vote?"
+msgstr "How does an issue go, from discussion to vote?"
+
+#. faq, antwoord 3.2
+msgid "Facts, research and media are well-founded contributions with a source. Media are news items, podcasts or videos. Each fact has a direction: argues for, argues against or neutral. A fact gets a green quality mark when the AI finds a source, a findable link, where in the source it is, that it is on the topic and that it is new. The mark does not judge how reliable the source is."
+msgstr "Facts, research and media are well-founded contributions with a source. Media are news items, podcasts or videos. Each fact has a direction: argues for, argues against or neutral. A fact gets a green quality mark when the AI finds a source, a findable link, where in the source it is, that it is on the topic and that it is new. The mark does not judge how reliable the source is."
+
+#. faq, vraag 3.2
+msgid "What are facts, research and media, and how do they count?"
+msgstr "What are facts, research and media, and how do they count?"
+
+#. faq, antwoord 3.3
+msgid "Proposals come out of the discussion. A proposal goes on the voting list as soon as enough people support it. Each proposal is voted on with for, against or abstain. Based on all proposals and the discussion, the initiator can adjust the issue and make a summary proposal. The participants can then vote on that again."
+msgstr "Proposals come out of the discussion. A proposal goes on the voting list as soon as enough people support it. Each proposal is voted on with for, against or abstain. Based on all proposals and the discussion, the initiator can adjust the issue and make a summary proposal. The participants can then vote on that again."
+
+#. faq, vraag 3.3
+msgid "How do proposals come about, and how is the vote held?"
+msgstr "How do proposals come about, and how is the vote held?"
+
+#. faq, antwoord 3.4
+msgid "A medal that is given automatically to a contribution that moves the discussion forward. That can be a new argument or support with a source. No quality mark is not a punishment. Style and language skills do not count."
+msgstr "A medal that is given automatically to a contribution that moves the discussion forward. That can be a new argument or support with a source. No quality mark is not a punishment. Style and language skills do not count."
+
+#. faq, vraag 3.4
+msgid "What is the quality mark?"
+msgstr "What is the quality mark?"
+
+#. faq, antwoord 3.5
+msgid "By contributing quality. After three contributions with a quality mark, you may vote. That way, what you bring in counts, not just having an account."
+msgstr "By contributing quality. After three contributions with a quality mark, you may vote. That way, what you bring in counts, not just having an account."
+
+#. faq, vraag 3.5
+msgid "How do I earn the right to vote?"
+msgstr "How do I earn the right to vote?"
+
+#. faq, antwoord 3.6
+msgid "There are conduct rules: stay respectful, stay on topic and one account per person. These are enforced. There are also quality guidelines, such as well-founded and concrete. These are rewarded and not enforced. When a rule is clearly broken, a contribution moves to a public background page with an explanation. You can object to that there. Nothing is removed for good. Only pure spam and gross abuse are hidden completely."
+msgstr "There are conduct rules: stay respectful, stay on topic and one account per person. These are enforced. There are also quality guidelines, such as well-founded and concrete. These are rewarded and not enforced. When a rule is clearly broken, a contribution moves to a public background page with an explanation. You can object to that there. Nothing is removed for good. Only pure spam and gross abuse are hidden completely."
+
+#. faq, vraag 3.6
+msgid "Which ground rules apply, and what happens when they are broken?"
+msgstr "Which ground rules apply, and what happens when they are broken?"
+
+#. faq, antwoord 3.7
+msgid "It cannot be prevented completely. A new account starts at zero and has to earn the right to vote first, with quality contributions. One account per person is a rule, and moderation steps in when there is abuse. This makes mass fake voting a lot of work for little gain."
+msgstr "It cannot be prevented completely. A new account starts at zero and has to earn the right to vote first, with quality contributions. One account per person is a rule, and moderation steps in when there is abuse. This makes mass fake voting a lot of work for little gain."
+
+#. faq, vraag 3.7
+msgid "How do you prevent double voting or fake accounts?"
+msgstr "How do you prevent double voting or fake accounts?"
+
+#. faq, thema 4
+msgid "Account and privacy"
+msgstr "Account and privacy"
+
+#. faq, antwoord 4.1
+msgid "Choose a name and enter an email address. That email address is only for recovery and is never shown. Accept the ground rules and you can start. You do not have to pay and you do not need to show any ID."
+msgstr "Choose a name and enter an email address. That email address is only for recovery and is never shown. Accept the ground rules and you can start. You do not have to pay and you do not need to show any ID."
+
+#. faq, vraag 4.1
+msgid "How do I create an account?"
+msgstr "How do I create an account?"
+
+#. faq, antwoord 4.2
+msgid "We want you to be able to join the discussion freely, without having to answer to anyone here. A pseudonym makes that possible. In many countries, political participation can bring risks. An identity barrier would shut out exactly the people we want to reach."
+msgstr "We want you to be able to join the discussion freely, without having to answer to anyone here. A pseudonym makes that possible. In many countries, political participation can bring risks. An identity barrier would shut out exactly the people we want to reach."
+
+#. faq, vraag 4.2
+msgid "Why is a pseudonym the default?"
+msgstr "Why is a pseudonym the default?"
+
+#. faq, antwoord 4.3
+#, python-format
+msgid "As little as possible. Your pseudonym, your email address for recovery and what you post yourself. Extra profile details only if you fill them in yourself. The details are on the <a href=\"%(url)s\">privacy page</a>."
+msgstr "As little as possible. Your pseudonym, your email address for recovery and what you post yourself. Extra profile details only if you fill them in yourself. The details are on the <a href=\"%(url)s\">privacy page</a>."
+
+#. faq, vraag 4.3
+msgid "Which data do you keep, and what for?"
+msgstr "Which data do you keep, and what for?"
+
+#. faq, antwoord 4.4
+msgid "Your contributions are public and visible under your pseudonym. Anyone can read them. Your email address and any private details stay private."
+msgstr "Your contributions are public and visible under your pseudonym. Anyone can read them. Your email address and any private details stay private."
+
+#. faq, vraag 4.4
+msgid "Who can see what I write?"
+msgstr "Who can see what I write?"
+
+#. faq, antwoord 4.5
+msgid "Sixteen."
+msgstr "Sixteen."
+
+#. faq, vraag 4.5
+msgid "What is the minimum age?"
+msgstr "What is the minimum age?"
+
+#. faq, antwoord 4.6
+msgid "You can do that in your account settings or on request. Your personal data, such as your email address and profile, is then erased."
+msgstr "You can do that in your account settings or on request. Your personal data, such as your email address and profile, is then erased."
+
+#. faq, vraag 4.6
+msgid "How do I delete my account or my data?"
+msgstr "How do I delete my account or my data?"
+
+#. faq, antwoord 4.7
+msgid "Your contributions stay, but are no longer linked to your name. That way, the discussions and votes others took part in keep their coherence. Only the link to you disappears."
+msgstr "Your contributions stay, but are no longer linked to your name. That way, the discussions and votes others took part in keep their coherence. Only the link to you disappears."
+
+#. faq, vraag 4.7
+msgid "What happens to my contributions after I delete my account?"
+msgstr "What happens to my contributions after I delete my account?"
