@@ -18,7 +18,9 @@ The rest of the code goes through these functions only:
     set_translation(obj, field, lang, text, is_machine=False)
     invalidate(obj, field=None)          drop the translations (after an edit)
     reader_view(obj, field, lang)        (text, written for the reader) for the post views
-    preload(objs, field)                 one query for a page full of objects
+    preload(objs, *fields)               one query for a page full of objects
+    set_label(obj, field, label)         a gettext label in every enabled language
+    all_texts(obj, fields)               originals and translations (search)
 """
 import hashlib
 from collections import namedtuple
@@ -100,11 +102,11 @@ def _rows(obj, field):
     return cache[key]
 
 
-def preload(objs, field):
-    """Fetch the translations of one field for many objects in one query (a
+def preload(objs, *fields):
+    """Fetch the translations of some fields for many objects in one query (a
     thread page, an overview), so the per-object lookups below hit a cache."""
     objs = [o for o in objs if o is not None and o.id is not None]
-    if not objs:
+    if not objs or not fields:
         return
     cache = _cache()
     by_type = {}
@@ -112,13 +114,14 @@ def preload(objs, field):
         by_type.setdefault(object_type(obj), set()).add(obj.id)
     for kind, ids in by_type.items():
         for oid in ids:
-            cache[(kind, oid, field)] = {}
+            for field in fields:
+                cache[(kind, oid, field)] = {}
         for chunk in _chunks(sorted(ids), 500):
             rows = ContentTranslation.query.filter(ContentTranslation.object_type == kind,
                                                    ContentTranslation.object_id.in_(chunk),
-                                                   ContentTranslation.field == field).all()
+                                                   ContentTranslation.field.in_(fields)).all()
             for row in rows:
-                cache[(kind, row.object_id, field)].update({row.lang: _cached(row)})
+                cache[(kind, row.object_id, row.field)].update({row.lang: _cached(row)})
 
 
 def _chunks(items, size):
@@ -165,6 +168,19 @@ def has_handwritten(obj, field):
     return any(not row.is_machine and row.source_hash == digest for row in _rows(obj, field).values())
 
 
+def all_texts(obj, fields):
+    """The originals and every current translation of some fields (for
+    searching in all languages)."""
+    out = []
+    for field in fields:
+        value = original(obj, field)
+        if value:
+            out.append(value)
+        digest = source_hash(value)
+        out.extend(row.text for row in _rows(obj, field).values() if row.source_hash == digest)
+    return out
+
+
 def reader_view(obj, field, lang):
     """(text, written_for_reader) as a reader of `lang` sees it. Content
     written for several languages (handwritten translations) shows in the
@@ -195,6 +211,24 @@ def set_translation(obj, field, lang, text, is_machine=False):
     row.created_at = datetime.utcnow()
     _rows(obj, field).update({lang: _cached(row)})  # keep the request cache current
     return row
+
+
+def set_label(obj, field, label):
+    """Fill a field with a fixed label from the gettext catalog (e.g. the
+    eyebrow 'Issue' of a conversation): the original in the object's source
+    language, a handwritten translation for every other enabled language.
+    `label` is a lazy_gettext string. The caller commits."""
+    from flask_babel import force_locale
+    from app import i18n
+    src = source_lang(obj)
+    with force_locale(src):
+        setattr(obj, field, str(label))
+    if obj.id is None:
+        db.session.flush()
+    for lang in i18n.enabled_codes():
+        if lang != src:
+            with force_locale(lang):
+                set_translation(obj, field, lang, str(label))
 
 
 def translate(obj, field, lang, client=None):

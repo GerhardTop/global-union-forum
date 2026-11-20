@@ -61,8 +61,7 @@ def _make_user(username):
 
 @pytest.fixture
 def thread(app):
-    t = Thread(eyebrow_nl='Test', eyebrow_en='Test',
-               title_prefix_nl='Beveiliging', title_prefix_en='Security')
+    t = Thread(eyebrow='Test', title_prefix='Beveiliging')
     db.session.add(t)
     db.session.flush()
     op = Post(thread_id=t.id, author_name='Op', author_username='op_user',

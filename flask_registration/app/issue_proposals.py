@@ -425,9 +425,7 @@ def create_final(issue, user, statement, explanation=None, lang=None, title=None
         issue.title = title
         thread = issue.thread
         if thread is not None and thread.proposal is None:  # het gesprek van een oud voorstel niet hernoemen
-            thread.title_prefix_nl = thread.title_prefix_en = title
-            thread.title_accent_nl = thread.title_accent_en = None
-            thread.title_suffix_nl = thread.title_suffix_en = ''
+            thread.set_title(title)
     if intro is not None:
         issue.intro = intro or issue.intro
     proposal = IssueProposal(issue_id=issue.id, statement=statement, explanation=explanation,

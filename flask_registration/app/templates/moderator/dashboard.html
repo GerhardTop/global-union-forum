@@ -485,9 +485,10 @@
         <li class="gu-admin-list__item">
           <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}"
              class="gu-admin-list__link">
-            <span class="gu-admin-list__eyebrow">{{ thread.eyebrow_nl }}</span>
+            {# The original, as written (the moderator list showed the Dutch title). #}
+            <span class="gu-admin-list__eyebrow">{{ thread.eyebrow }}</span>
             <span class="gu-admin-list__title">
-              {{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} <em>{{ thread.title_accent_nl }}</em>{% endif %}{{ thread.title_suffix_nl }}
+              {{ thread.title_prefix }}{% if thread.title_accent %} <em>{{ thread.title_accent }}</em>{% endif %}{{ thread.title_suffix }}
             </span>
           </a>
           <form method="POST" action="{{ url_for('forum.forum_reopen', thread_id=thread.id) }}"

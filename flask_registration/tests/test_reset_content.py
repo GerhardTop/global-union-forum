@@ -78,7 +78,7 @@ def world(app):
     anna = _user('anna')
     bram = _user('bram')
 
-    real = Thread(eyebrow_nl='x', eyebrow_en='x', title_prefix_nl='Echt', title_prefix_en='Real')
+    real = Thread(eyebrow='x', title_prefix='Echt')
     db.session.add(real)
     db.session.flush()
     op = _post(real, anna, 'echte opening', is_op=True)

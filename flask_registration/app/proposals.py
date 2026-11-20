@@ -250,12 +250,9 @@ def revise(proposal, statement, now=None):
     """Pas de stelling (de titel van het gesprek) één keer aan; de
     oorspronkelijke tekst blijft bewaard voor de markering. Commit niet zelf."""
     thread = proposal.thread
-    proposal.original_statement = ' '.join(
-        part for part in (thread.title_prefix_nl, thread.title_accent_nl, thread.title_suffix_nl) if part)
+    proposal.original_statement = thread.title_text()
     proposal.revised_at = now or datetime.utcnow()
-    thread.title_prefix_nl = thread.title_prefix_en = statement
-    thread.title_accent_nl = thread.title_accent_en = None
-    thread.title_suffix_nl = thread.title_suffix_en = ''
+    thread.set_title(statement)
 
 
 # ── Stemmen ──────────────────────────────────────────────────────────────

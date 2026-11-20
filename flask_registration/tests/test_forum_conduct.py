@@ -123,7 +123,7 @@ def make_thread(db):
     made = []
 
     def _make(op_user=None, title='Handhaving'):
-        t = Thread(eyebrow_nl='T', eyebrow_en='T', title_prefix_nl=title, title_prefix_en=title)
+        t = Thread(eyebrow='T', title_prefix=title)
         db.session.add(t)
         db.session.flush()
         db.session.add(Post(thread_id=t.id, user_id=op_user.id if op_user else None, author_name='',
@@ -641,7 +641,7 @@ class TestModeratorCannotEditOrDelete:
                         data={'title': 'Moderatortitel', 'body': 'Moderatortekst'}).status_code == 403
         db.session.expire_all()
         assert db.session.get(Post, post.id).body == 'Van Anna, niet van de moderator.'
-        assert db.session.get(Post, op.id).body == op.body and db.session.get(Thread, t.id).title_prefix_nl != 'Moderatortitel'
+        assert db.session.get(Post, op.id).body == op.body and db.session.get(Thread, t.id).title_prefix != 'Moderatortitel'
 
 
 class TestAuthorEditing:

@@ -24,8 +24,8 @@ import math
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-from app import content_i18n, db
-from app.models import ISSUE_KINDS, Issue, IssueProposal, Post, Proposal, Thread
+from app import content_i18n, db, i18n
+from app.models import ISSUE_KINDS, THREAD_EYEBROWS, Issue, IssueProposal, Post, Proposal, Thread
 
 # Grenzen voor het startformulier.
 DAYS_MIN, DAYS_MAX = 1, 365
@@ -38,11 +38,8 @@ DAY_FIELDS = (('days_facts', 21), ('days_adjust', 5), ('days_vote', 7))
 # ── Backfill en het inpakken van een voorstel ────────────────────────────
 
 def _thread_title(thread, lang):
-    suffix = 'en' if lang == 'en' else 'nl'
-    accent = getattr(thread, f'title_accent_{suffix}')
-    return ''.join((getattr(thread, f'title_prefix_{suffix}') or '',
-                    f' {accent}' if accent else '',
-                    getattr(thread, f'title_suffix_{suffix}') or '')).strip()
+    prefix, accent, suffix = thread.title(lang or i18n.default_language())
+    return ''.join((prefix or '', f' {accent}' if accent else '', suffix or '')).strip()
 
 
 def _days(minutes, default):
@@ -86,10 +83,12 @@ def wrap(proposal):
 def _open_thread(issue, user):
     """Een eigen gesprek voor een vraagstuk, met het eerste bericht als
     openingsbericht. Geeft het openingsbericht terug. Commit niet zelf."""
-    thread = Thread(eyebrow_nl='Vraagstuk', eyebrow_en='Issue',
-                    title_prefix_nl=issue.title, title_prefix_en=issue.title, is_closed=bool(issue.is_closed))
+    # The conversation takes the issue's title, in the issue's language.
+    thread = Thread(title_prefix=issue.title, source_lang=i18n.normalize(issue.lang),
+                    is_closed=bool(issue.is_closed))
     db.session.add(thread)
     db.session.flush()
+    content_i18n.set_label(thread, 'eyebrow', THREAD_EYEBROWS['issue'])
     issue.thread = thread
     op = Post(thread_id=thread.id, user_id=user.id,
               author_name=f'{user.first_name} {user.last_name}' if user.first_name else '',

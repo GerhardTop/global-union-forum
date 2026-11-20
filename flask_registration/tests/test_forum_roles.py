@@ -68,7 +68,7 @@ def make_user(db):
 
 @pytest.fixture
 def thread(db):
-    t = Thread(eyebrow_nl='Test', eyebrow_en='Test', title_prefix_nl='Rollen', title_prefix_en='Roles')
+    t = Thread(eyebrow='Test', title_prefix='Rollen')
     db.session.add(t)
     db.session.flush()
     op = Post(thread_id=t.id, author_name='Op', author_username='op_user', body='Opening', is_op=True)
@@ -223,7 +223,7 @@ class TestExistingUsersUnchanged:
         assert Post.query.filter_by(thread_id=thread.id, user_id=anna.id).count() == 2
         resp = _req(client, 'POST', '/forum/nieuw', data={'title': 'Draad van Anna', 'body': 'Eerste bericht'})
         assert resp.status_code == 302
-        new_thread = Thread.query.filter_by(title_prefix_nl='Draad van Anna').one()
+        new_thread = Thread.query.filter_by(title_prefix='Draad van Anna').one()
         for p in Post.query.filter_by(thread_id=new_thread.id):
             app.extensions['sqlalchemy'].session.delete(p)
         app.extensions['sqlalchemy'].session.delete(new_thread)

@@ -365,6 +365,16 @@ _CONTENT_COLUMNS = {
     'posts': (('author_badge', 'VARCHAR(200) NULL'),),
     'quality_awards': (('explanation', 'VARCHAR(400) NULL'),),
     'quality_objections': (('ai_response', 'TEXT NULL'), ('ai_response_lang', 'VARCHAR(5) NULL')),
+    'threads': (('eyebrow', 'VARCHAR(200) NULL'), ('title_prefix', "VARCHAR(300) NULL DEFAULT ''"),
+                ('title_accent', 'VARCHAR(200) NULL'), ('title_suffix', "VARCHAR(50) NULL DEFAULT ''"),
+                ('source_lang', 'VARCHAR(5) NULL')),
+}
+
+# The old NOT NULL columns of threads: the code no longer writes them, so new
+# rows need them nullable (they stay in the database until a later step).
+_RELAXED_COLUMNS = {
+    'threads': ('eyebrow_nl', 'eyebrow_en', 'title_prefix_nl', 'title_suffix_nl',
+                'title_prefix_en', 'title_suffix_en'),
 }
 
 
@@ -378,6 +388,21 @@ def _migrate_content_columns(existing):
             with db.engine.connect() as conn:
                 for ddl in added:
                     conn.execute(text(ddl))
+                conn.commit()
+    dialect = db.engine.dialect.name
+    for table, names in _RELAXED_COLUMNS.items():
+        if table not in existing or dialect not in ('postgresql', 'mysql'):
+            continue  # SQLite (tests only) builds the tables from the models
+        info = {c['name']: c for c in sa_inspect(db.engine).get_columns(table)}
+        strict = [n for n in names if n in info and not info[n].get('nullable', True)]
+        if strict:
+            with db.engine.connect() as conn:
+                for name in strict:
+                    if dialect == 'postgresql':
+                        conn.execute(text(f'ALTER TABLE {table} ALTER COLUMN {name} DROP NOT NULL'))
+                    else:
+                        conn.execute(text(f'ALTER TABLE {table} MODIFY COLUMN {name} '
+                                          f'{info[name]["type"].compile(dialect=db.engine.dialect)} NULL'))
                 conn.commit()
 
 

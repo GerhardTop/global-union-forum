@@ -45,7 +45,7 @@ def world(db):
         return u
 
     def thread():
-        t = Thread(eyebrow_nl='T', eyebrow_en='T', title_prefix_nl='Fixes', title_prefix_en='Fixes')
+        t = Thread(eyebrow='T', title_prefix='Fixes')
         db.session.add(t)
         db.session.commit()
         made['threads'].append(t.id)

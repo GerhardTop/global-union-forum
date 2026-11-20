@@ -55,8 +55,7 @@ def world(db):
         return u
 
     def thread():
-        t = Thread(eyebrow_nl='Forum · gesprek', eyebrow_en='Forum · conversation',
-                   title_prefix_nl='Status', title_prefix_en='Status')
+        t = Thread(eyebrow='Forum · gesprek', title_prefix='Status')
         db.session.add(t)
         db.session.commit()
         made['threads'].append(t.id)

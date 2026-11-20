@@ -9,7 +9,7 @@
       <a href="{{ url_for('forum.forum') }}">{{ _('The conversation') }}</a>
       <span aria-hidden="true">›</span>
       <a href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}">
-        {% if lang == 'nl' %}{{ thread.title_prefix_nl }}{% else %}{{ thread.title_prefix_en }}{% endif %}
+        {{ thread.title(lang)[0] }}
       </a>
       <span aria-hidden="true">›</span>
       <span>{{ _('Edit') }}</span>

@@ -154,8 +154,7 @@ def test_proposal_reaching_the_support_threshold(app, db, make_user, mails):
 def test_old_public_proposal_is_mirrored(app, db, make_user, mails):
     host, fan = make_user(), make_user()
     title = f'Stelling {uuid.uuid4().hex[:6]}'
-    t = Thread(eyebrow_nl='Forum · voorstel', eyebrow_en='Forum · proposal', title_prefix_nl=title,
-               title_prefix_en=title)
+    t = Thread(eyebrow='Forum · voorstel', title_prefix=title)
     db.session.add(t)
     db.session.flush()
     db.session.add(Post(thread_id=t.id, user_id=host.id, author_name='', author_username=host.username,

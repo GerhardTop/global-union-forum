@@ -47,16 +47,8 @@ PATTERN = re.compile(
 # path -> (count, reason). Lower the count as branches are converted.
 EXCEPTIONS = {
     'app/content_migration.py': (1, 'data: de datamigratie van fase 0 stap 6 leest de oude kolommen per taal (nl, en)'),
-    'app/issues.py': (1, 'contentmodel, fase 0 stap 6: titel van een gesprek per taal (title_*_nl/_en)'),
-    'app/models.py': (1, 'contentmodel, fase 0 stap 6: Thread.title(lang)'),
-    'app/notifications.py': (1, 'contentmodel, fase 0 stap 6: de titel van een gesprek per taal in een melding'),
-    'app/routes/admin.py': (2, 'contentmodel, fase 0 stap 6: zoeken in de titels in beide talen (Thread.title(lang)); data: de taalmonitor filtert op taal'),
+    'app/routes/admin.py': (1, 'data: de taalmonitor filtert op taal (source_lang)'),
     'app/status.py': (4, 'data: de taalmonitor telt per taal (source_lang)'),
-    'app/templates/forum/closed.html': (2, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
-    'app/templates/forum/edit_thread.html': (1, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
-    'app/templates/forum/index.html': (2, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
-    'app/templates/forum/thread.html': (5, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
-    'app/templates/issues/show.html': (1, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),
     'app/templates/landenlijst.html': (7, 'contentmodel, fase 0 stap 6: landgegevens per taal (land_nl/_en, niveau_nl/_en, remarks_nl/_en) en de downloads (Excel, PDF) per taal'),
 }
 

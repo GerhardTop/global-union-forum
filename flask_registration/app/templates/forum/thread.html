@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-  {%- set tp = thread.title_prefix_nl if lang == 'nl' else thread.title_prefix_en -%}
-  {%- set ta = thread.title_accent_nl if lang == 'nl' else thread.title_accent_en -%}
-  {%- set ts = thread.title_suffix_nl if lang == 'nl' else thread.title_suffix_en -%}
+  {%- set tp, ta, ts = thread.title(lang) -%}
   {{ tp }}{% if ta %} {{ ta }}{% endif %}{{ ts }} · Global Union
 {% endblock %}
 
@@ -17,7 +15,8 @@
       <nav class="gu-forum__crumbs" aria-label="breadcrumb">
         <a href="{{ url_for('forum.forum') }}">{{ _('The conversation') }}</a>
         <span aria-hidden="true">›</span>
-        <span>{% if lang == 'nl' %}{{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} {{ thread.title_accent_nl }}{% endif %}{{ thread.title_suffix_nl }}{% else %}{{ thread.title_prefix_en }}{% if thread.title_accent_en %} {{ thread.title_accent_en }}{% endif %}{{ thread.title_suffix_en }}{% endif %}</span>
+        {% set tp, ta, ts = thread.title(lang) %}
+        <span>{{ tp }}{% if ta %} {{ ta }}{% endif %}{{ ts }}</span>
       </nav>
       {% if current_user.can_contribute() %}
       <a href="{{ url_for('forum.forum_nieuw') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
@@ -29,17 +28,11 @@
 
     {# Thread header #}
     <header class="gu-forum__threadhead">
-      {% if lang == 'nl' %}
-        <p class="gu-eyebrow">{{ thread.eyebrow_nl }}</p>
+      {% set tp, ta, ts = thread.title(lang) %}
+        <p class="gu-eyebrow">{{ thread.eyebrow_in(lang) }}</p>
         <h1 class="gu-forum__title">
-          {{ thread.title_prefix_nl }}{% if thread.title_accent_nl %} <em>{{ thread.title_accent_nl }}</em>{% endif %}{{ thread.title_suffix_nl }}
+          {{ tp }}{% if ta %} <em>{{ ta }}</em>{% endif %}{{ ts }}
         </h1>
-      {% else %}
-        <p class="gu-eyebrow">{{ thread.eyebrow_en }}</p>
-        <h1 class="gu-forum__title">
-          {{ thread.title_prefix_en }}{% if thread.title_accent_en %} <em>{{ thread.title_accent_en }}</em>{% endif %}{{ thread.title_suffix_en }}
-        </h1>
-      {% endif %}
 
       <div class="gu-forum__threadmeta">
         <span>{{ ngettext('%(num)d reply', '%(num)d replies', posts | length) }}</span>
@@ -109,7 +102,7 @@
               <label for="revise-statement">{{ _('Statement') }}</label>
               <input type="text" id="revise-statement" name="statement" maxlength="300" required
                      class="gu-input{% if rev_err %} gu-input--error{% endif %}"
-                     value="{{ (fact_data or {}).get('statement') or thread.title_prefix_nl }}">
+                     value="{{ (fact_data or {}).get('statement') or thread.title_prefix }}">
               <span class="gu-composer__hint">{{ _('You can revise the statement once. After that it is fixed.') }}</span>
               {% if rev_err %}<p class="gu-join__formError">{{ _('Enter a statement (at most 300 characters) that differs from the current one.') }}</p>{% endif %}
             </div>

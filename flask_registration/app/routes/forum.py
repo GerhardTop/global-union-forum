@@ -10,7 +10,7 @@ from sqlalchemy import func, or_
 from app import db, bcrypt, limiter, i18n
 from app.forms import ForumActionForm, ForumReplyForm
 from app.models import (FACT_DIRECTIONS, FACT_KIND, FACT_LEGACY_TYPES, FACT_TYPES, STANCES, QUALITY_CRITERIA, User, Thread, Post,
-                        PostLike, QualityAward, QualityReport, time_ago)
+                        PostLike, QualityAward, QualityReport, THREAD_EYEBROWS, time_ago)
 from app import conduct, content_i18n, quality
 from app.models import PostReport
 from app.utils import _pop_form_state, _stash_form_state, safe_next
@@ -184,6 +184,17 @@ def _demo_post(translations=None, **values):
     return post
 
 
+def _demo_thread(translations=None, **values):
+    """A demo conversation: the Dutch title as the original, plus handwritten
+    translations {(field, lang): text}."""
+    thread = Thread(**values)
+    db.session.add(thread)
+    db.session.flush()
+    for (field, lang), value in (translations or {}).items():
+        content_i18n.set_translation(thread, field, lang, value)
+    return thread
+
+
 def _seed_forum():
     """Seed 4 demo threads with demo users on first run. Alleen bij het
     opstarten (create_app), niet per verzoek: dat kostte op elke forumpagina
@@ -191,7 +202,7 @@ def _seed_forum():
     if Thread.query.filter_by(is_demo=True).first():
         return
 
-    old = Thread.query.filter_by(eyebrow_nl='Het idee · scorecard').first()
+    old = Thread.query.filter_by(eyebrow='Het idee · scorecard').first()
     if old:
         PostLike.query.filter(PostLike.post_id.in_(
             db.session.query(Post.id).filter_by(thread_id=old.id)
@@ -209,15 +220,18 @@ def _seed_forum():
     marcus  = _get_or_create_demo_user('Marcus', 'Osei (demo)',         DEMO_USER_EMAILS['marcus'], 'marcus_o')
 
     # ── Thread 1: Scorecard manipulatie ──────────────────────────────
-    t1 = Thread(
-        eyebrow_nl='Het idee · principe 1',
-        eyebrow_en='The idea · principle 1',
-        title_prefix_nl='Wat als landen de scorecard gaan',
-        title_accent_nl='manipuleren',
-        title_suffix_nl='?',
-        title_prefix_en='What if countries start',
-        title_accent_en='gaming the scorecard',
-        title_suffix_en='?',
+    t1 = _demo_thread(
+        translations={
+            ('eyebrow', 'en'): 'The idea · principle 1',
+            ('title_prefix', 'en'): 'What if countries start',
+            ('title_accent', 'en'): 'gaming the scorecard',
+            ('title_suffix', 'en'): '?',
+        },
+        source_lang='nl',
+        eyebrow='Het idee · principe 1',
+        title_prefix='Wat als landen de scorecard gaan',
+        title_accent='manipuleren',
+        title_suffix='?',
         is_demo=True,
         created_at=now - timedelta(days=6),
     )
@@ -295,15 +309,18 @@ def _seed_forum():
     db.session.add(p1_r2)
 
     # ── Thread 2: Handelszone, beperkt vrij personenverkeer ──────────
-    t2 = Thread(
-        eyebrow_nl='Het idee · principe 4',
-        eyebrow_en='The idea · principle 4',
-        title_prefix_nl='Eén handelszone, beperkt vrij verkeer van personen -',
-        title_accent_nl='is dat houdbaar',
-        title_suffix_nl='?',
-        title_prefix_en='A single trade zone, limited free movement of people -',
-        title_accent_en='is that sustainable',
-        title_suffix_en='?',
+    t2 = _demo_thread(
+        translations={
+            ('eyebrow', 'en'): 'The idea · principle 4',
+            ('title_prefix', 'en'): 'A single trade zone, limited free movement of people -',
+            ('title_accent', 'en'): 'is that sustainable',
+            ('title_suffix', 'en'): '?',
+        },
+        source_lang='nl',
+        eyebrow='Het idee · principe 4',
+        title_prefix='Eén handelszone, beperkt vrij verkeer van personen -',
+        title_accent='is dat houdbaar',
+        title_suffix='?',
         is_demo=True,
         created_at=now - timedelta(days=4),
     )
@@ -383,15 +400,18 @@ def _seed_forum():
     db.session.add(p2_r1)
 
     # ── Thread 3: Onafhankelijke media ───────────────────────────────
-    t3 = Thread(
-        eyebrow_nl='Het idee · principe 3',
-        eyebrow_en='The idea · principle 3',
-        title_prefix_nl='Onafhankelijke media als Global Union-instrument —',
-        title_accent_nl='werkt het BBC-model',
-        title_suffix_nl='?',
-        title_prefix_en='Independent media as a Global Union instrument —',
-        title_accent_en='does the BBC model work',
-        title_suffix_en='?',
+    t3 = _demo_thread(
+        translations={
+            ('eyebrow', 'en'): 'The idea · principle 3',
+            ('title_prefix', 'en'): 'Independent media as a Global Union instrument —',
+            ('title_accent', 'en'): 'does the BBC model work',
+            ('title_suffix', 'en'): '?',
+        },
+        source_lang='nl',
+        eyebrow='Het idee · principe 3',
+        title_prefix='Onafhankelijke media als Global Union-instrument —',
+        title_accent='werkt het BBC-model',
+        title_suffix='?',
         is_demo=True,
         created_at=now - timedelta(days=2),
     )
@@ -466,15 +486,18 @@ def _seed_forum():
     db.session.add(p3_r2)
 
     # ── Thread 4: Toetreding — wie beslist ───────────────────────────
-    t4 = Thread(
-        eyebrow_nl='Het idee · toetreding',
-        eyebrow_en='The idea · accession',
-        title_prefix_nl='Wie mogen er als eerste bij, en',
-        title_accent_nl='wie beslist dat',
-        title_suffix_nl='?',
-        title_prefix_en='Who gets in first, and',
-        title_accent_en='who decides',
-        title_suffix_en='?',
+    t4 = _demo_thread(
+        translations={
+            ('eyebrow', 'en'): 'The idea · accession',
+            ('title_prefix', 'en'): 'Who gets in first, and',
+            ('title_accent', 'en'): 'who decides',
+            ('title_suffix', 'en'): '?',
+        },
+        source_lang='nl',
+        eyebrow='Het idee · toetreding',
+        title_prefix='Wie mogen er als eerste bij, en',
+        title_accent='wie beslist dat',
+        title_suffix='?',
         is_demo=True,
         created_at=now - timedelta(hours=18),
     )
@@ -578,6 +601,8 @@ def _thread_list(closed=False):
                 .order_by(Post.created_at, Post.id)):
             if post_id not in removed:
                 visible_times.setdefault(thread_id, []).append(created_at)
+    # One query for the translated titles and eyebrows of the whole list.
+    content_i18n.preload([thread for thread, _ in rows], 'eyebrow', *Thread.TITLE_FIELDS)
     result = []
     for thread, _ in rows:
         if thread.id in hidden_threads:
@@ -1167,14 +1192,12 @@ def forum_nieuw():
             _stash_form_state('forum_nieuw', errors, data)
             return redirect(url_for('forum.forum_nieuw'), code=303)
         if title and body:
-            thread = Thread(
-                eyebrow_nl='Forum · voorstel' if is_proposal else 'Forum · gesprek',
-                eyebrow_en='Forum · proposal' if is_proposal else 'Forum · conversation',
-                title_prefix_nl=title,
-                title_prefix_en=title,
-            )
+            # The title as written, in the writer's language; the eyebrow is a
+            # fixed label in every enabled language.
+            thread = Thread(title_prefix=title, source_lang=i18n.normalize(session.get('lang')))
             db.session.add(thread)
             db.session.flush()
+            content_i18n.set_label(thread, 'eyebrow', THREAD_EYEBROWS['proposal' if is_proposal else 'conversation'])
             if is_proposal:
                 proposal = proposals.create(thread, kind, current_user, minutes=minutes,
                                             show_live_tally=request.form.get('live') == '1', threshold=threshold)
@@ -1288,15 +1311,10 @@ def forum_bewerken(thread_id):
         title = request.form.get('title', '').strip()
         body  = request.form.get('body', '').strip()
         if title and body:
-            thread.title_prefix_nl = title
-            thread.title_prefix_en = title
-            thread.title_accent_nl = None
-            thread.title_accent_en = None
-            thread.title_suffix_nl = ''
-            thread.title_suffix_en = ''
+            thread.set_title(title)  # the original; its translations go
             _apply_edit(op, body)
         return redirect(url_for('forum.forum_thread', thread_id=thread_id) + f'#post-{op.id}')
-    title = thread.title_prefix_nl or thread.title_prefix_en
+    title = thread.title_prefix
     return render_template('forum/edit_thread.html', thread=thread, op_body=op.body or '', title=title)
 
 
@@ -1959,7 +1977,7 @@ def proposal_revise(thread_id):
         abort(403)
     _require_csrf()
     statement = (request.form.get('statement') or '').strip()
-    current = ' '.join(p for p in (thread.title_prefix_nl, thread.title_accent_nl, thread.title_suffix_nl) if p)
+    current = thread.title_text()
     if not statement or len(statement) > proposals.STATEMENT_MAX or statement == current:
         # Zelfde sleutel als het feitenformulier: de pagina leest één formulierstatus.
         _stash_form_state(f'feit-{thread.id}', {'statement': True}, {'statement': statement})

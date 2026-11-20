@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from flask_babel import lazy_gettext
 from flask_login import AnonymousUserMixin, UserMixin
 from app import db, login_manager
 
@@ -237,28 +238,62 @@ def load_user(user_id):
     return None if user is None or user.is_deleted else user
 
 
+# The eyebrow above a conversation the site creates itself: a fixed label,
+# stored in every enabled language (content_i18n.set_label).
+THREAD_EYEBROWS = {
+    'conversation': lazy_gettext('Forum · conversation'),
+    'proposal': lazy_gettext('Forum · proposal'),
+    'issue': lazy_gettext('Issue'),
+}
+
+
 class Thread(db.Model):
     __tablename__ = "threads"
 
     id           = db.Column(db.Integer, primary_key=True)
-    eyebrow_nl   = db.Column(db.String(200), nullable=False)
-    eyebrow_en   = db.Column(db.String(200), nullable=False)
-    title_prefix_nl = db.Column(db.String(300), nullable=False, default='')
-    title_accent_nl = db.Column(db.String(200), nullable=True)
-    title_suffix_nl = db.Column(db.String(50),  nullable=False, default='')
-    title_prefix_en = db.Column(db.String(300), nullable=False, default='')
-    title_accent_en = db.Column(db.String(200), nullable=True)
-    title_suffix_en = db.Column(db.String(50),  nullable=False, default='')
+    # Multilingual step 6d: the eyebrow and the title (prefix, accent in
+    # italics, suffix) once, as the original in source_lang; translations in
+    # content_translations via app/content_i18n.py. The old columns
+    # eyebrow_*/title_*_nl/_en stay in the database, unused (and nullable).
+    eyebrow      = db.Column(db.String(200), nullable=True)
+    title_prefix = db.Column(db.String(300), nullable=True, default='')
+    title_accent = db.Column(db.String(200), nullable=True)
+    title_suffix = db.Column(db.String(50),  nullable=True, default='')
+    source_lang  = db.Column(db.String(5), nullable=True)   # NULL: the default language
     is_closed    = db.Column(db.Boolean, nullable=False, default=False)
     is_demo      = db.Column(db.Boolean, nullable=False, default=False)
     created_at   = db.Column(db.DateTime, default=datetime.utcnow)
     posts        = db.relationship('Post', backref='thread', lazy=True,
                                    order_by='Post.created_at')
 
+    TITLE_FIELDS = ('title_prefix', 'title_accent', 'title_suffix')
+
     def title(self, lang):
-        if lang == 'nl':
-            return (self.title_prefix_nl, self.title_accent_nl, self.title_suffix_nl)
-        return (self.title_prefix_en, self.title_accent_en, self.title_suffix_en)
+        """(prefix, accent, suffix) for a reader of `lang`: a translation when
+        there is one, else the original. Never calls the AI."""
+        from app import content_i18n
+        return tuple(content_i18n.display(self, field, lang) for field in self.TITLE_FIELDS)
+
+    def original_title(self):
+        """(prefix, accent, suffix) as written."""
+        return (self.title_prefix, self.title_accent, self.title_suffix)
+
+    def title_text(self, lang=None):
+        """The title as one line, in `lang` (None: the original)."""
+        parts = self.original_title() if lang is None else self.title(lang)
+        return ' '.join(p for p in parts if p)
+
+    def eyebrow_in(self, lang):
+        from app import content_i18n
+        return content_i18n.display(self, 'eyebrow', lang)
+
+    def set_title(self, title):
+        """A new title as written (no accent, no suffix); the translations of
+        the old title go. The caller commits."""
+        from app import content_i18n
+        self.title_prefix, self.title_accent, self.title_suffix = title, None, ''
+        for field in self.TITLE_FIELDS:
+            content_i18n.invalidate(self, field)
 
 
 class Post(db.Model):

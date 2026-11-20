@@ -22,7 +22,7 @@ XHR = {'X-Requested-With': 'XMLHttpRequest'}
 @pytest.fixture
 def setup(app):  # noqa: F811
     anna, bram, carla = _make_user('anna'), _make_user('bram'), _make_user('carla')
-    t = Thread(eyebrow_nl='T', eyebrow_en='T', title_prefix_nl='Signaal', title_prefix_en='Signal')
+    t = Thread(eyebrow='T', title_prefix='Signaal')
     db.session.add(t)
     db.session.flush()
     post = Post(thread_id=t.id, user_id=bram.id, author_name='', author_username='bram',

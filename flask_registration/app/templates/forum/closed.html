@@ -27,15 +27,12 @@
       <li class="gu-threadlist__row gu-threadlist__row--closed gu-threadlist__row--withaction">
         <a class="gu-threadlist__link" href="{{ url_for('forum.forum_thread', thread_id=t.id) }}">
           <span class="gu-threadlist__eyebrow">
-            {{ t.eyebrow_nl if lang == 'nl' else t.eyebrow_en }}
+            {{ t.eyebrow_in(lang) }}
             <span class="gu-forum__closed-badge">{{ _('Closed') }}</span>
           </span>
           <span class="gu-threadlist__title">
-            {%- if lang == 'nl' -%}
-              {{ t.title_prefix_nl }}{% if t.title_accent_nl %} <em>{{ t.title_accent_nl }}</em>{% endif %}{{ t.title_suffix_nl }}
-            {%- else -%}
-              {{ t.title_prefix_en }}{% if t.title_accent_en %} <em>{{ t.title_accent_en }}</em>{% endif %}{{ t.title_suffix_en }}
-            {%- endif -%}
+            {%- set tp, ta, ts = t.title(lang) -%}
+              {{ tp }}{% if ta %} <em>{{ ta }}</em>{% endif %}{{ ts }}
           </span>
           <span class="gu-threadlist__meta">
             <span>{{ ngettext('%(num)d reply', '%(num)d replies', item.reply_count) }}</span>

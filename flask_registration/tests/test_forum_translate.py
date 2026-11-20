@@ -42,7 +42,7 @@ def fake_anthropic(monkeypatch):
 
 @pytest.fixture
 def setup(app):  # noqa: F811
-    t = Thread(eyebrow_nl='T', eyebrow_en='T', title_prefix_nl='Vertalen', title_prefix_en='Translate')
+    t = Thread(eyebrow='T', title_prefix='Vertalen')
     db.session.add(t)
     db.session.flush()
     posts = [Post(thread_id=t.id, author_name='Bram', author_username='bram',

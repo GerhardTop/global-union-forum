@@ -40,7 +40,7 @@
       <li class="gu-threadlist__row{% if t.is_closed %} gu-threadlist__row--closed{% endif %}">
         <a class="gu-threadlist__link" href="{{ url_for('forum.forum_thread', thread_id=t.id) }}">
           <span class="gu-threadlist__eyebrow">
-            {{ t.eyebrow_nl if lang == 'nl' else t.eyebrow_en }}
+            {{ t.eyebrow_in(lang) }}
             {% if t.is_demo %}
               <span class="gu-forum__demo-badge">Demo</span>
             {% endif %}
@@ -50,11 +50,8 @@
             {% if t.proposal %}{% with proposal=t.proposal %}{% include 'forum/_proposal_status.html' %}{% endwith %}{% endif %}
           </span>
           <span class="gu-threadlist__title">
-            {%- if lang == 'nl' -%}
-              {{ t.title_prefix_nl }}{% if t.title_accent_nl %} <em>{{ t.title_accent_nl }}</em>{% endif %}{{ t.title_suffix_nl }}
-            {%- else -%}
-              {{ t.title_prefix_en }}{% if t.title_accent_en %} <em>{{ t.title_accent_en }}</em>{% endif %}{{ t.title_suffix_en }}
-            {%- endif -%}
+            {%- set tp, ta, ts = t.title(lang) -%}
+              {{ tp }}{% if ta %} <em>{{ ta }}</em>{% endif %}{{ ts }}
           </span>
           <span class="gu-threadlist__meta">
             <span>{{ ngettext('%(num)d reply', '%(num)d replies', item.reply_count) }}</span>

@@ -173,6 +173,42 @@ def migrate_objections(conn, counts):
     counts.update(writer.counts)
 
 
+_THREAD_FIELDS = ('eyebrow', 'title_prefix', 'title_accent', 'title_suffix')
+
+
+def migrate_threads(conn, counts):
+    """6d: the eyebrow and title of a conversation. The Dutch columns become
+    the original (source_lang nl), the English ones handwritten translations
+    where they differ."""
+    cols = _columns(conn, 'threads')
+    old = [f'{f}_{lang}' for f in _THREAD_FIELDS for lang in _OLD_LANGS if f'{f}_{lang}' in cols]
+    if not old or not all(f in cols for f in _THREAD_FIELDS + ('source_lang',)):
+        return
+    writer = _Writer(conn, 'threads')
+    rows = conn.execute(text(
+        f'SELECT id, source_lang, {", ".join(_THREAD_FIELDS)}, {", ".join(old)} FROM threads '
+        f'WHERE {" OR ".join(f"{c} IS NOT NULL" for c in old)}')).mappings().all()
+    filled = 0
+    for row in rows:
+        if row['source_lang'] is None:
+            # Not migrated yet: the Dutch columns are the original.
+            conn.execute(text(
+                'UPDATE threads SET source_lang = :l, eyebrow = :e, title_prefix = :p, title_accent = :a, '
+                'title_suffix = :s WHERE id = :i AND source_lang IS NULL'),
+                {'l': 'nl', 'e': row.get('eyebrow_nl'), 'p': row.get('title_prefix_nl') or '',
+                 'a': row.get('title_accent_nl'), 's': row.get('title_suffix_nl') or '', 'i': row['id']})
+            filled += 1
+            originals = {f: row.get(f'{f}_nl') for f in _THREAD_FIELDS}
+        else:
+            originals = {f: row[f] for f in _THREAD_FIELDS}
+        for field in _THREAD_FIELDS:
+            value = row.get(f'{field}_en')
+            if value != originals[field]:
+                writer.add(row['id'], field, 'en', value, originals[field], False)
+    counts['threads filled'] = filled
+    counts.update(writer.counts)
+
+
 def migrate(engine):
     """Run every content migration in one transaction; print what it added."""
     counts = {}
@@ -182,6 +218,7 @@ def migrate(engine):
         migrate_posts(conn, counts)
         migrate_awards(conn, counts)
         migrate_objections(conn, counts)
+        migrate_threads(conn, counts)
         conn.commit()
     summary = ', '.join(f'{k} {v}' for k, v in sorted(counts.items())) or 'nothing to migrate'
     print(f'Content migration (multilingual step 6): {summary}', flush=True)

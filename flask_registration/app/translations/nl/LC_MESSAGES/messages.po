@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-20 15:07+0100\n"
+"POT-Creation-Date: 2026-11-20 17:59+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:799
+#: app/__init__.py:858
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Te veel pogingen. Probeer het over een minuut opnieuw."
 
-#: app/__init__.py:829
+#: app/__init__.py:888
 msgid "Your session has expired. Please log in again."
 msgstr "Je sessie is verlopen. Log opnieuw in."
 
@@ -289,35 +289,50 @@ msgid "Your contributions stay, but are no longer linked to your name. That way,
 msgstr "Je bijdragen blijven staan, maar losgekoppeld van je naam. Zo houden de discussies en stemmingen waaraan anderen hebben meegedaan hun samenhang. Alleen de koppeling met jou verdwijnt."
 
 #: app/forms.py:12 app/templates/aanmelden/aanmelden.html:68
-#: app/templates/profile.html:255 app/templates/wachtwoord_reset.html:47
+#: app/templates/profile.html:254 app/templates/wachtwoord_reset.html:47
 msgid "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
 msgstr "Wachtwoord: 8 tot 72 tekens, met minstens een hoofdletter, een cijfer en een speciaal teken."
 
 #: app/forms.py:27 app/templates/aanmelden/aanmelden.html:87
-#: app/templates/profile.html:274 app/templates/wachtwoord_reset.html:67
+#: app/templates/profile.html:273 app/templates/wachtwoord_reset.html:67
 msgid "Passwords do not match."
 msgstr "Wachtwoorden komen niet overeen."
 
-#: app/models.py:363
+#: app/models.py:244
+msgid "Forum · conversation"
+msgstr "Forum · gesprek"
+
+#: app/models.py:245
+msgid "Forum · proposal"
+msgstr "Forum · voorstel"
+
+# Herontwerp stap 1: vraagstukken (Issue)
+#: app/models.py:246 app/templates/issues/new.html:23
+#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:91
+#: app/templates/moderator/melding_beoordelen.html:68
+msgid "Issue"
+msgstr "Vraagstuk"
+
+#: app/models.py:398
 #, python-format
 msgid "%(num)d day ago"
 msgid_plural "%(num)d days ago"
 msgstr[0] "%(num)d dag geleden"
 msgstr[1] "%(num)d dagen geleden"
 
-#: app/models.py:366
+#: app/models.py:401
 #, python-format
 msgid "%(num)d hour ago"
 msgid_plural "%(num)d hours ago"
 msgstr[0] "%(num)d uur geleden"
 msgstr[1] "%(num)d uur geleden"
 
-#: app/models.py:369
+#: app/models.py:404
 #, python-format
 msgid "%(num)d min ago"
 msgstr "%(num)d min geleden"
 
-#: app/models.py:370
+#: app/models.py:405
 msgid "just now"
 msgstr "zojuist"
 
@@ -414,142 +429,142 @@ msgctxt "notification phase"
 msgid "Follow-up"
 msgstr "Vervolg"
 
-#: app/notifications.py:429
+#: app/notifications.py:430
 msgctxt "notification subject"
 msgid "an issue"
 msgstr "een vraagstuk"
 
-#: app/notifications.py:431
+#: app/notifications.py:432
 msgctxt "notification subject"
 msgid "a proposal"
 msgstr "een voorstel"
 
-#: app/notifications.py:436
+#: app/notifications.py:437
 #, python-format
 msgid "Your proposal on %(title)s has enough support and is on the voting list."
 msgstr "Je voorstel bij %(title)s heeft genoeg steun en staat op de stemlijst."
 
-#: app/notifications.py:439
+#: app/notifications.py:440
 #, python-format
 msgid "The final vote on %(title)s has started."
 msgstr "De eindstemming over %(title)s is begonnen."
 
-#: app/notifications.py:441
+#: app/notifications.py:442
 #, python-format
 msgid "The final vote on %(title)s has concluded."
 msgstr "De eindstemming over %(title)s is afgerond."
 
-#: app/notifications.py:443
+#: app/notifications.py:444
 #, python-format
 msgid "Voting on %(title)s closes within 24 hours."
 msgstr "De stemming over %(title)s sluit binnen 24 uur."
 
-#: app/notifications.py:445
+#: app/notifications.py:446
 #, python-format
 msgid "The outcome of %(title)s is in."
 msgstr "De uitslag van %(title)s is bekend."
 
-#: app/notifications.py:449
+#: app/notifications.py:450
 #, python-format
 msgid "A new voting round on your proposal %(title)s has opened."
 msgstr "Er is een nieuwe stemronde over je voorstel %(title)s."
 
-#: app/notifications.py:450
+#: app/notifications.py:451
 #, python-format
 msgid "A new voting round on your issue %(title)s has opened."
 msgstr "Er is een nieuwe stemronde over je vraagstuk %(title)s."
 
-#: app/notifications.py:451
+#: app/notifications.py:452
 #, python-format
 msgid "A new voting round on %(title)s has opened."
 msgstr "Er is een nieuwe stemronde over %(title)s."
 
-#: app/notifications.py:456
+#: app/notifications.py:457
 #, python-format
 msgid "Your proposal %(title)s moves on to the next phase: %(phase)s."
 msgstr "Je voorstel %(title)s gaat een fase verder: %(phase)s."
 
-#: app/notifications.py:457
+#: app/notifications.py:458
 #, python-format
 msgid "Your issue %(title)s moves on to the next phase: %(phase)s."
 msgstr "Je vraagstuk %(title)s gaat een fase verder: %(phase)s."
 
-#: app/notifications.py:458
+#: app/notifications.py:459
 #, python-format
 msgid "%(title)s has moved to a new phase: %(phase)s."
 msgstr "%(title)s is in een nieuwe fase: %(phase)s."
 
-#: app/notifications.py:465
+#: app/notifications.py:466
 msgctxt "email subject"
 msgid "A reply to your contribution"
 msgstr "Er is op je bijdrage gereageerd"
 
-#: app/notifications.py:466
+#: app/notifications.py:467
 msgid "News about your proposal"
 msgstr "Nieuws over je voorstel"
 
-#: app/notifications.py:467
+#: app/notifications.py:468
 msgid "News about an issue you follow"
 msgstr "Nieuws over een vraagstuk dat je volgt"
 
-#: app/notifications.py:468
+#: app/notifications.py:469
 msgctxt "email subject"
 msgid "The outcome of an issue you follow"
 msgstr "De uitslag van een vraagstuk dat je volgt"
 
-#: app/notifications.py:469
+#: app/notifications.py:470
 msgid "News about your fact"
 msgstr "Nieuws over je feit"
 
-#: app/notifications.py:470
+#: app/notifications.py:471
 msgctxt "email subject"
 msgid "A new report to handle"
 msgstr "Een nieuwe melding om te behandelen"
 
-#: app/notifications.py:471
+#: app/notifications.py:472
 msgctxt "email subject"
 msgid "A new objection to a decision"
 msgstr "Een nieuw bezwaar tegen een beslissing"
 
-#: app/notifications.py:472
+#: app/notifications.py:473
 msgid "A fact is being challenged"
 msgstr "Een feit wordt betwist"
 
-#: app/notifications.py:517
+#: app/notifications.py:518
 msgid "You have received a warning"
 msgstr "Je hebt een waarschuwing gekregen"
 
-#: app/notifications.py:518
+#: app/notifications.py:519
 msgid "You have been suspended"
 msgstr "Je bent geschorst"
 
-#: app/notifications.py:521
+#: app/notifications.py:522
 msgid "This warning is about the forum rules."
 msgstr "Deze waarschuwing gaat over de spelregels van het forum."
 
-#: app/notifications.py:522
+#: app/notifications.py:523
 msgid "Until then you can still read, but not contribute or vote."
 msgstr "Tot dan kun je blijven lezen, maar niet bijdragen of stemmen."
 
-#: app/notifications.py:557
+#: app/notifications.py:558
 msgid "A moderator has sent you a warning."
 msgstr "Een moderator heeft je een waarschuwing gestuurd."
 
-#: app/notifications.py:558
+#: app/notifications.py:559
 #, python-format
 msgid "A moderator has sent you a warning: “%(message)s”"
 msgstr "Een moderator heeft je een waarschuwing gestuurd: “%(message)s”"
 
-#: app/notifications.py:561
+#: app/notifications.py:562
 msgid "You have been suspended."
 msgstr "Je bent geschorst."
 
-#: app/notifications.py:562
+#: app/notifications.py:563
 #, python-format
 msgid "Reason: %(reason)s"
 msgstr "Reden: %(reason)s"
 
-#: app/notifications.py:563
+#: app/notifications.py:564
 #, python-format
 msgid "You are suspended until %(until)s."
 msgstr "Je bent geschorst tot %(until)s."
@@ -616,49 +631,49 @@ msgstr "Moderator"
 msgid "Senior"
 msgstr "Senior"
 
-#: app/utils.py:222
+#: app/utils.py:223
 msgid "Global Union Forum: confirm your email"
 msgstr "Global Union Forum: bevestig je e-mailadres"
 
-#: app/routes/auth.py:51 app/utils.py:224
+#: app/routes/auth.py:51 app/utils.py:225
 #, python-format
 msgid "Hi %(name)s,"
 msgstr "Hoi %(name)s,"
 
-#: app/utils.py:225
+#: app/utils.py:226
 msgid "Please confirm your email address by clicking the link below:"
 msgstr "Bevestig je e-mailadres via de onderstaande link:"
 
-#: app/utils.py:226
+#: app/utils.py:227
 msgid "This link expires in 24 hours."
 msgstr "Deze link verloopt na 24 uur."
 
-#: app/utils.py:227
+#: app/utils.py:228
 msgid "If you did not create an account, you can ignore this email."
 msgstr "Als je geen account hebt aangemaakt, kun je deze e-mail negeren."
 
-#: app/routes/admin.py:101 app/templates/admin/proposal_limits.html:6
+#: app/routes/admin.py:103 app/templates/admin/proposal_limits.html:6
 #: app/templates/forum/_proposal_steps.html:9
-#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:124
+#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:117
 msgid "Facts and discussion"
 msgstr "Feiten en discussie"
 
-#: app/routes/admin.py:101 app/templates/admin/proposal_limits.html:6
+#: app/routes/admin.py:103 app/templates/admin/proposal_limits.html:6
 #: app/templates/forum/_proposal_steps.html:10
-#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:124
+#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:117
 msgid "Revise the proposal"
 msgstr "Voorstel bijstellen"
 
-#: app/routes/admin.py:102 app/routes/issues.py:56
+#: app/routes/admin.py:104 app/routes/issues.py:56
 #: app/templates/admin/proposal_limits.html:6
 #: app/templates/forum/_proposal_steps.html:11
-#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:124
+#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:117
 #: app/templates/issues/_steps.html:14
 msgid "Voting"
 msgstr "Stemmen"
 
 # Herontwerp stap 6: stemmen, uitslag en het samenvattende voorstel
-#: app/routes/admin.py:102 app/routes/issues.py:57
+#: app/routes/admin.py:104 app/routes/issues.py:57
 #: app/templates/issues/_ip_final.html:8 app/templates/issues/_ip_final.html:14
 #: app/templates/issues/_ip_final.html:19
 #: app/templates/issues/_proposals_big.html:42
@@ -668,127 +683,127 @@ msgstr "Stemmen"
 msgid "Summary proposal"
 msgstr "Samenvattend voorstel"
 
-#: app/routes/admin.py:103 app/routes/issues.py:58
+#: app/routes/admin.py:105 app/routes/issues.py:58
 #: app/templates/forum/_proposal_steps.html:12
-#: app/templates/forum/thread.html:124 app/templates/issues/_steps.html:16
+#: app/templates/forum/thread.html:117 app/templates/issues/_steps.html:16
 msgid "Follow-up"
 msgstr "Vervolg"
 
-#: app/routes/admin.py:323
+#: app/routes/admin.py:325
 msgid "Rights saved."
 msgstr "Rechten opgeslagen."
 
-#: app/routes/admin.py:332
+#: app/routes/admin.py:334
 msgctxt "month"
 msgid "Jan"
 msgstr "jan"
 
-#: app/routes/admin.py:332
+#: app/routes/admin.py:334
 msgctxt "month"
 msgid "Feb"
 msgstr "feb"
 
-#: app/routes/admin.py:332
+#: app/routes/admin.py:334
 msgctxt "month"
 msgid "Mar"
 msgstr "mrt"
 
-#: app/routes/admin.py:332
+#: app/routes/admin.py:334
 msgctxt "month"
 msgid "Apr"
 msgstr "apr"
 
-#: app/routes/admin.py:333
+#: app/routes/admin.py:335
 msgctxt "month"
 msgid "May"
 msgstr "mei"
 
-#: app/routes/admin.py:333
+#: app/routes/admin.py:335
 msgctxt "month"
 msgid "Jun"
 msgstr "jun"
 
-#: app/routes/admin.py:333
+#: app/routes/admin.py:335
 msgctxt "month"
 msgid "Jul"
 msgstr "jul"
 
-#: app/routes/admin.py:333
+#: app/routes/admin.py:335
 msgctxt "month"
 msgid "Aug"
 msgstr "aug"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:336
 msgctxt "month"
 msgid "Sep"
 msgstr "sep"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:336
 msgctxt "month"
 msgid "Oct"
 msgstr "okt"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:336
 msgctxt "month"
 msgid "Nov"
 msgstr "nov"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:336
 msgctxt "month"
 msgid "Dec"
 msgstr "dec"
 
-#: app/routes/admin.py:384
+#: app/routes/admin.py:386
 msgid "Write a message to the user first."
 msgstr "Schrijf eerst een bericht aan de gebruiker."
 
-#: app/routes/admin.py:393
+#: app/routes/admin.py:395
 msgid "The warning has been sent."
 msgstr "De waarschuwing is verstuurd."
 
-#: app/routes/admin.py:420
+#: app/routes/admin.py:422
 msgid "Choose 7 or 30 days."
 msgstr "Kies 7 of 30 dagen."
 
-#: app/routes/admin.py:422
+#: app/routes/admin.py:424
 msgid "Write the reason for the suspension first."
 msgstr "Schrijf eerst de reden van de schorsing."
 
-#: app/routes/admin.py:433
+#: app/routes/admin.py:435
 #, python-format
 msgid "@%(username)s has been suspended for %(days)s days."
 msgstr "@%(username)s is geschorst voor %(days)s dagen."
 
-#: app/routes/admin.py:463
+#: app/routes/admin.py:465
 msgid "The username does not match. Nothing was deleted."
 msgstr "De gebruikersnaam klopt niet. Er is niets verwijderd."
 
-#: app/routes/admin.py:468
+#: app/routes/admin.py:470
 #, python-format
 msgid "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
 msgstr "Het account @%(username)s is verwijderd. De bijdragen staan nu onder @verwijderd."
 
-#: app/routes/admin.py:515
+#: app/routes/admin.py:517
 msgid "Choose what to do with this report."
 msgstr "Kies wat je met deze melding doet."
 
-#: app/routes/admin.py:518
+#: app/routes/admin.py:520
 msgid "The report has been handled."
 msgstr "De melding is behandeld."
 
-#: app/routes/admin.py:635
+#: app/routes/admin.py:637
 msgid "Thresholds saved."
 msgstr "Drempels opgeslagen."
 
-#: app/routes/admin.py:666
+#: app/routes/admin.py:668
 msgid "Maximum durations saved."
 msgstr "Maximale doorlooptijden opgeslagen."
 
-#: app/routes/admin.py:688 app/templates/admin/proposal_limits.html:25
+#: app/routes/admin.py:690 app/templates/admin/proposal_limits.html:25
 msgid "Enter a whole number from 1 to 365."
 msgstr "Vul een geheel getal van 1 tot en met 365 in."
 
-#: app/routes/admin.py:691
+#: app/routes/admin.py:693
 msgid "Saved."
 msgstr "Opgeslagen."
 
@@ -873,53 +888,53 @@ msgstr "Je bent geschorst tot %(until)s. Je kunt lezen, maar niet bijdragen of s
 msgid "Accept the conduct rules first to take part."
 msgstr "Accepteer eerst de gedragsregels om mee te doen."
 
-#: app/routes/forum.py:614
+#: app/routes/forum.py:661
 msgid "The platform is not open for contributions to this issue right now."
 msgstr "Het platform is nu niet open voor bijdragen aan dit vraagstuk."
 
-#: app/routes/forum.py:636
+#: app/routes/forum.py:683
 msgid "You cannot reply to your own post."
 msgstr "Je kunt niet reageren op je eigen bericht."
 
-#: app/routes/forum.py:644
+#: app/routes/forum.py:691
 msgid "Invalid reply: the post you are replying to does not exist in this conversation."
 msgstr "Ongeldige reactie: het bericht waarop je reageert bestaat niet in dit gesprek."
 
-#: app/routes/forum.py:1228
+#: app/routes/forum.py:1260
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "De stelling van een voorstel kan alleen in de bijstelfase worden aangepast."
 
-#: app/routes/forum.py:1230
+#: app/routes/forum.py:1262
 msgid "This post already has replies, so it can no longer be edited."
 msgstr "Dit bericht heeft al reacties en kan daarom niet meer worden bewerkt."
 
-#: app/routes/forum.py:1231
+#: app/routes/forum.py:1263
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "Een verplaatst of verborgen bericht kun je niet bewerken. Je kunt wel bezwaar maken."
 
-#: app/routes/forum.py:1310 app/templates/forum/_post.html:72
+#: app/routes/forum.py:1337 app/templates/forum/_post.html:69
 #, python-format
 msgid "edited %(when)s"
 msgstr "bewerkt %(when)s"
 
 # Polijststap P7: volledige pagina vanuit de grote weergave
-#: app/routes/forum.py:1505 app/routes/issues.py:256
+#: app/routes/forum.py:1529 app/routes/issues.py:256
 msgid "Give a reason for your report."
 msgstr "Geef een reden voor je melding."
 
-#: app/routes/forum.py:1514 app/routes/issues.py:262
+#: app/routes/forum.py:1538 app/routes/issues.py:262
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Bedankt, je melding is doorgegeven aan een moderator."
 
-#: app/routes/forum.py:1892
+#: app/routes/forum.py:1917
 msgid "Choose a reason (and keep the note under 500 characters)."
 msgstr "Kies een reden (en houd de toelichting onder 500 tekens)."
 
-#: app/routes/forum.py:1894
+#: app/routes/forum.py:1919
 msgid "You already disputed this fact; a moderator will look at it."
 msgstr "Je hebt dit feit al betwist; een moderator kijkt ernaar."
 
-#: app/routes/forum.py:1898
+#: app/routes/forum.py:1923
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 msgstr "Dank je. Een moderator kijkt naar je bezwaar; het feit blijft zolang zichtbaar."
 
@@ -1725,8 +1740,8 @@ msgstr "Wachtwoord"
 
 #: app/templates/aanmelden/aanmelden.html:62
 #: app/templates/aanmelden/aanmelden.html:82 app/templates/login.html:36
-#: app/templates/profile.html:232 app/templates/profile.html:249
-#: app/templates/profile.html:269 app/templates/wachtwoord_reset.html:41
+#: app/templates/profile.html:231 app/templates/profile.html:248
+#: app/templates/profile.html:268 app/templates/wachtwoord_reset.html:41
 #: app/templates/wachtwoord_reset.html:62
 msgid "Show password"
 msgstr "Wachtwoord tonen"
@@ -2343,7 +2358,7 @@ msgstr "Dit is een schrijfoefening, een eerste aanzet. Geen blauwdruk, geen part
 
 #: app/templates/meldingen.html:9 app/templates/meldingen.html:15
 #: app/templates/notificaties.html:18 app/templates/notificaties.html:21
-#: app/templates/profile.html:214
+#: app/templates/profile.html:213
 msgid "Notifications"
 msgstr "Meldingen"
 
@@ -2515,7 +2530,7 @@ msgstr "Moderatie"
 msgid "for moderators"
 msgstr "voor moderators"
 
-#: app/templates/notificaties.html:63 app/templates/profile.html:212
+#: app/templates/notificaties.html:63 app/templates/profile.html:211
 msgid "Summary by email"
 msgstr "Samenvatting per e-mail"
 
@@ -2545,7 +2560,7 @@ msgstr "Wekelijks"
 #: app/templates/admin/proposal_limits.html:28
 #: app/templates/admin/proposal_limits.html:43
 #: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:59
-#: app/templates/forum/_post.html:242 app/templates/issues/_fact_card.html:52
+#: app/templates/forum/_post.html:238 app/templates/issues/_fact_card.html:52
 #: app/templates/issues/_lifecycle.html:49
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
@@ -2718,7 +2733,7 @@ msgstr "Senior bij meer dan %(senior_min)s kwaliteitsbijdragen."
 msgid "Status ladder"
 msgstr "Statusladder"
 
-#: app/templates/issues/show.html:206 app/templates/profile.html:60
+#: app/templates/issues/show.html:205 app/templates/profile.html:60
 msgid "You have the right to vote."
 msgstr "Je hebt stemrecht."
 
@@ -2727,7 +2742,7 @@ msgstr "Je hebt stemrecht."
 msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
 msgstr "Op weg naar stemrecht: %(quality_count)s van %(needed)s kwaliteitsbijdragen."
 
-#: app/templates/issues/show.html:210 app/templates/profile.html:65
+#: app/templates/issues/show.html:209 app/templates/profile.html:65
 msgid "Progress to the right to vote"
 msgstr "Voortgang naar stemrecht"
 
@@ -2817,82 +2832,82 @@ msgstr "Taal & Vertalingen"
 msgid "Language preference."
 msgstr "Taalvoorkeur."
 
-#: app/templates/profile.html:183
+#: app/templates/profile.html:182
 msgid "Automatic translation."
 msgstr "Automatisch vertalen."
 
-#: app/templates/profile.html:197
+#: app/templates/profile.html:196
 msgid "Automatically translate posts to English"
 msgstr "Vertaal berichten automatisch naar het Nederlands"
 
-#: app/templates/profile.html:204
+#: app/templates/profile.html:203
 msgid "Posts in another language are automatically translated when you open a conversation."
 msgstr "Berichten in een andere taal worden bij het openen van een gesprek automatisch vertaald."
 
-#: app/templates/profile.html:213
+#: app/templates/profile.html:212
 msgid "View your daily summaries"
 msgstr "Bekijk je dagelijkse samenvattingen"
 
-#: app/templates/profile.html:214
+#: app/templates/profile.html:213
 msgid "choose what you hear about, and where"
 msgstr "kies waarover je bericht krijgt, en waar"
 
-#: app/templates/profile.html:218
+#: app/templates/profile.html:217
 msgid "Change password"
 msgstr "Wachtwoord wijzigen"
 
-#: app/templates/profile.html:220
+#: app/templates/profile.html:219
 msgid "Update your password."
 msgstr "Werk je wachtwoord bij."
 
-#: app/templates/profile.html:230
+#: app/templates/profile.html:229
 msgid "Current password"
 msgstr "Huidig wachtwoord"
 
-#: app/templates/profile.html:238
+#: app/templates/profile.html:237
 msgid "Enter your current password."
 msgstr "Vul je huidige wachtwoord in."
 
-#: app/templates/profile.html:247 app/templates/wachtwoord_reset.html:27
+#: app/templates/profile.html:246 app/templates/wachtwoord_reset.html:27
 #: app/templates/wachtwoord_reset.html:35
 msgid "New password"
 msgstr "Nieuw wachtwoord"
 
-#: app/templates/profile.html:267 app/templates/wachtwoord_reset.html:56
+#: app/templates/profile.html:266 app/templates/wachtwoord_reset.html:56
 msgid "Confirm new password"
 msgstr "Bevestig nieuw wachtwoord"
 
-#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:280
+#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:279
 msgid "Save changes"
 msgstr "Wijzigingen opslaan"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:393
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:392
 #: app/templates/wachtwoord_reset.html:112
 msgid "Weak"
 msgstr "Zwak"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:393
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:392
 #: app/templates/wachtwoord_reset.html:112
 msgid "Fair"
 msgstr "Matig"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:393
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:392
 #: app/templates/wachtwoord_reset.html:112
 msgid "Strong"
 msgstr "Sterk"
 
-#: app/templates/profile.html:424
+#: app/templates/profile.html:423
 msgid "Danger zone"
 msgstr "Gevarenzone"
 
 #: app/templates/moderator/gebruiker.html:190
 #: app/templates/moderator/gebruiker.html:197
 #: app/templates/moderator/gebruiker_verwijderen.html:2
-#: app/templates/profile.html:427
+#: app/templates/profile.html:426
 msgid "Delete account"
 msgstr "Account verwijderen"
 
-#: app/templates/profile.html:431
+#: app/templates/profile.html:430
 msgid ""
 "This permanently deletes your account, all your forum posts, and all your likes.\n"
 "        This cannot be undone."
@@ -2900,13 +2915,13 @@ msgstr ""
 "Dit verwijdert je account, al je forumberichten en al je likes permanent.\n"
 "        Dit kan niet ongedaan worden gemaakt."
 
-#: app/templates/profile.html:437
+#: app/templates/profile.html:436
 msgid "Delete my account"
 msgstr "Verwijder mijn account"
 
 #: app/templates/admin/dashboard.html:169
-#: app/templates/admin/dashboard.html:176 app/templates/forum/_post.html:236
-#: app/templates/forum/_post.html:264 app/templates/forum/edit_thread.html:58
+#: app/templates/admin/dashboard.html:176 app/templates/forum/_post.html:232
+#: app/templates/forum/_post.html:260 app/templates/forum/edit_thread.html:58
 #: app/templates/forum/new_thread.html:128
 #: app/templates/issues/_facts_big.html:41
 #: app/templates/issues/final_new.html:57 app/templates/issues/new.html:190
@@ -2914,33 +2929,33 @@ msgstr "Verwijder mijn account"
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
-#: app/templates/profile.html:449 app/templates/profile.html:458
-#: app/templates/profile.html:554 app/templates/profile.html:576
+#: app/templates/profile.html:448 app/templates/profile.html:457
+#: app/templates/profile.html:553 app/templates/profile.html:575
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: app/templates/profile.html:451
+#: app/templates/profile.html:450
 msgid "Show your real name?"
 msgstr "Je echte naam tonen?"
 
-#: app/templates/profile.html:454
+#: app/templates/profile.html:453
 #, python-format
 msgid "Your real name (%(value)s) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym."
 msgstr "Je echte naam (%(value)s) wordt dan zichtbaar bij al je bijdragen in het forum, ook je eerdere. Je kunt dit altijd terugzetten naar je pseudoniem."
 
-#: app/templates/profile.html:461
+#: app/templates/profile.html:460
 msgid "Yes, show my name"
 msgstr "Ja, toon mijn naam"
 
-#: app/templates/profile.html:504 app/templates/profile.html:513
+#: app/templates/profile.html:503 app/templates/profile.html:512
 msgid "Saving failed, please try again."
 msgstr "Opslaan mislukt, probeer het opnieuw."
 
-#: app/templates/profile.html:563
+#: app/templates/profile.html:562
 msgid "Are you sure?"
 msgstr "Weet je het zeker?"
 
-#: app/templates/profile.html:567
+#: app/templates/profile.html:566
 msgid ""
 "This permanently deletes your account and all associated data.\n"
 "        This <strong>cannot</strong> be undone."
@@ -2948,7 +2963,7 @@ msgstr ""
 "Dit verwijdert je account en alle bijbehorende data permanent.\n"
 "        Dit kan <strong>niet</strong> ongedaan worden gemaakt."
 
-#: app/templates/profile.html:580
+#: app/templates/profile.html:579
 msgid "Yes, delete my account"
 msgstr "Ja, verwijder mijn account"
 
@@ -3539,8 +3554,8 @@ msgstr "Nieuwe reacties: %(n)s"
 msgid "New facts: %(n)s"
 msgstr "Nieuwe feiten: %(n)s"
 
-#: app/templates/forum/_discussion.html:21 app/templates/forum/closed.html:41
-#: app/templates/forum/index.html:60 app/templates/forum/thread.html:45
+#: app/templates/forum/_discussion.html:21 app/templates/forum/closed.html:38
+#: app/templates/forum/index.html:57 app/templates/forum/thread.html:38
 #, python-format
 msgid "%(num)d reply"
 msgid_plural "%(num)d replies"
@@ -3578,8 +3593,8 @@ msgstr "Dit gesprek is gesloten."
 msgid "Write your reply. Be concrete (a thought, a question, a pushback)."
 msgstr "Schrijf je reactie. Wees concreet (een gedachte, een vraag, een tegenwerping)."
 
-#: app/templates/forum/_discussion.html:68 app/templates/forum/_post.html:267
-#: app/templates/issues/proposal.html:289
+#: app/templates/forum/_discussion.html:68 app/templates/forum/_post.html:263
+#: app/templates/issues/proposal.html:288
 msgid "Post"
 msgstr "Posten"
 
@@ -3594,7 +3609,7 @@ msgstr "Je bent geschorst en kunt nu niet bijdragen"
 msgid "Accept the conduct rules to join in"
 msgstr "Accepteer de gedragsregels om mee te doen"
 
-#: app/templates/forum/_discussion.html:82 app/templates/forum/index.html:79
+#: app/templates/forum/_discussion.html:82 app/templates/forum/index.html:76
 #, python-format
 msgid "<a href=\"%(url)s\">Log in</a> to join the conversation."
 msgstr "<a href=\"%(url)s\">Log in</a> om mee te doen aan het gesprek."
@@ -3755,14 +3770,14 @@ msgstr "Feit verplaatst wegens de gedragsregels"
 msgid "View on the background page"
 msgstr "Bekijk op de achtergrondpagina"
 
-#: app/templates/forum/_facts.html:55 app/templates/forum/_post.html:144
+#: app/templates/forum/_facts.html:55 app/templates/forum/_post.html:140
 #: app/templates/forum/edit_thread.html:15
 #: app/templates/issues/_fact_card.html:45
 #: app/templates/issues/_lifecycle.html:45
 msgid "Edit"
 msgstr "Bewerken"
 
-#: app/templates/forum/_facts.html:65 app/templates/forum/_post.html:159
+#: app/templates/forum/_facts.html:65 app/templates/forum/_post.html:155
 #: app/templates/issues/_fact_card.html:61
 #: app/templates/issues/_lifecycle.html:55
 #: app/templates/issues/verwijderen.html:2
@@ -3793,95 +3808,87 @@ msgstr "Log in om een feit toe te voegen."
 msgid "The facts phase is over; the facts are fixed."
 msgstr "De feitenfase is voorbij; de feiten staan vast."
 
-#: app/templates/forum/_post.html:61
+#: app/templates/forum/_post.html:58
 #, python-format
 msgid "LinkedIn profile of %(name)s"
 msgstr "LinkedIn-profiel van %(name)s"
 
-#: app/templates/forum/_post.html:81
-msgid "English"
-msgstr "Engels"
-
-#: app/templates/forum/_post.html:81
-msgid "Dutch"
-msgstr "Nederlands"
-
-#: app/templates/forum/_post.html:82
+#: app/templates/forum/_post.html:78
 #, python-format
 msgid "Original in %(language)s"
 msgstr "Origineel in %(language)s"
 
-#: app/templates/forum/_post.html:126
+#: app/templates/forum/_post.html:122
 msgid "Agree or disagree"
 msgstr "Eens of oneens"
 
-#: app/templates/forum/_post.html:127
+#: app/templates/forum/_post.html:123
 msgid "Agree"
 msgstr "Eens"
 
-#: app/templates/forum/_post.html:127
+#: app/templates/forum/_post.html:123
 msgid "Disagree"
 msgstr "Oneens"
 
-#: app/templates/forum/_post.html:159
+#: app/templates/forum/_post.html:155
 msgid "Delete conversation"
 msgstr "Gesprek verwijderen"
 
-#: app/templates/forum/_post.html:174
+#: app/templates/forum/_post.html:170
 msgid "Reply"
 msgstr "Reageer"
 
-#: app/templates/forum/_post.html:183 app/templates/forum/_post.html:187
+#: app/templates/forum/_post.html:179 app/templates/forum/_post.html:183
 #: app/templates/forum/quality.html:31 app/templates/forum/quality.html:35
 msgid "Translate to English"
 msgstr "Vertaal naar Nederlands"
 
-#: app/templates/forum/_post.html:184 app/templates/forum/quality.html:32
+#: app/templates/forum/_post.html:180 app/templates/forum/quality.html:32
 msgid "Show original"
 msgstr "Toon origineel"
 
-#: app/templates/forum/_post.html:185 app/templates/forum/quality.html:33
+#: app/templates/forum/_post.html:181 app/templates/forum/quality.html:33
 msgid "Translating…"
 msgstr "Bezig…"
 
-#: app/templates/forum/_post.html:186 app/templates/forum/quality.html:34
+#: app/templates/forum/_post.html:182 app/templates/forum/quality.html:34
 msgid "Failed, try again"
 msgstr "Mislukt, probeer opnieuw"
 
-#: app/templates/forum/_post.html:200
+#: app/templates/forum/_post.html:196
 msgid "Don't always translate"
 msgstr "Vertaal niet altijd"
 
-#: app/templates/forum/_post.html:202
+#: app/templates/forum/_post.html:198
 msgid "Always translate to English"
 msgstr "Vertaal altijd naar Nederlands"
 
-#: app/templates/forum/_post.html:212 app/templates/issues/_fact_badges.html:40
+#: app/templates/forum/_post.html:208 app/templates/issues/_fact_badges.html:40
 #: app/templates/issues/_report_flag.html:9
 msgid "Reported"
 msgstr "Gemeld"
 
-#: app/templates/forum/_post.html:215 app/templates/issues/_fact_badges.html:45
+#: app/templates/forum/_post.html:211 app/templates/issues/_fact_badges.html:45
 #: app/templates/issues/_report_flag.html:14
 msgid "Report"
 msgstr "Melden"
 
-#: app/templates/forum/_post.html:219 app/templates/issues/_fact_badges.html:51
+#: app/templates/forum/_post.html:215 app/templates/issues/_fact_badges.html:51
 #: app/templates/issues/_report_flag.html:20
 msgid "Why are you reporting this?"
 msgstr "Waarom meld je dit?"
 
-#: app/templates/forum/_post.html:220 app/templates/issues/_fact_badges.html:52
+#: app/templates/forum/_post.html:216 app/templates/issues/_fact_badges.html:52
 #: app/templates/issues/_report_flag.html:21
 msgid "Briefly describe what is wrong."
 msgstr "Beschrijf kort wat er mis is."
 
-#: app/templates/forum/_post.html:221 app/templates/issues/_fact_badges.html:53
+#: app/templates/forum/_post.html:217 app/templates/issues/_fact_badges.html:53
 #: app/templates/issues/_report_flag.html:22
 msgid "Send report"
 msgstr "Melding versturen"
 
-#: app/templates/forum/_post.html:259
+#: app/templates/forum/_post.html:255
 msgid "Write your reply…"
 msgstr "Schrijf je reactie…"
 
@@ -3924,7 +3931,7 @@ msgstr "Verworpen"
 
 #: app/templates/forum/_proposal_status.html:15
 #: app/templates/forum/closed.html:13 app/templates/forum/closed.html:31
-#: app/templates/forum/index.html:48 app/templates/forum/thread.html:56
+#: app/templates/forum/index.html:48 app/templates/forum/thread.html:49
 #: app/templates/issues/index.html:55 app/templates/issues/show.html:23
 #: app/templates/moderator/beheer.html:34
 #: app/templates/moderator/dashboard.html:420
@@ -4265,7 +4272,7 @@ msgstr "Gesloten gesprekken"
 
 #: app/templates/forum/closed.html:11 app/templates/forum/edit_thread.html:9
 #: app/templates/forum/index.html:2 app/templates/forum/index.html:11
-#: app/templates/forum/new_thread.html:9 app/templates/forum/thread.html:18
+#: app/templates/forum/new_thread.html:9 app/templates/forum/thread.html:16
 msgid "The conversation"
 msgstr "Het gesprek"
 
@@ -4273,18 +4280,18 @@ msgstr "Het gesprek"
 msgid "← Back"
 msgstr "← Terug"
 
-#: app/templates/forum/closed.html:44 app/templates/forum/index.html:63
-#: app/templates/forum/thread.html:48
+#: app/templates/forum/closed.html:41 app/templates/forum/index.html:60
+#: app/templates/forum/thread.html:41
 msgid "last"
 msgstr "laatst"
 
-#: app/templates/forum/closed.html:52 app/templates/issues/_beheer.html:44
+#: app/templates/forum/closed.html:49 app/templates/issues/_beheer.html:44
 #: app/templates/moderator/dashboard.html:466
-#: app/templates/moderator/dashboard.html:496
+#: app/templates/moderator/dashboard.html:497
 msgid "Reopen"
 msgstr "Heropenen"
 
-#: app/templates/forum/closed.html:60
+#: app/templates/forum/closed.html:57
 msgid "No closed conversations."
 msgstr "Geen gesloten gesprekken."
 
@@ -4310,11 +4317,11 @@ msgid "Your post will be translated on request for other readers"
 msgstr "Je post wordt op verzoek vertaald voor andere lezers"
 
 #: app/templates/forum/index.html:18 app/templates/forum/new_thread.html:2
-#: app/templates/forum/new_thread.html:11 app/templates/forum/thread.html:25
+#: app/templates/forum/new_thread.html:11 app/templates/forum/thread.html:24
 msgid "New conversation"
 msgstr "Nieuw gesprek"
 
-#: app/templates/forum/index.html:72
+#: app/templates/forum/index.html:69
 msgid "No conversations yet. Start the first one."
 msgstr "Nog geen gesprekken. Start het eerste gesprek."
 
@@ -4342,7 +4349,7 @@ msgstr "Een voorstel"
 msgid "A statement that goes to a vote in four phases."
 msgstr "Een stelling die in vier fasen naar een stemming gaat."
 
-#: app/templates/forum/new_thread.html:43 app/templates/forum/thread.html:109
+#: app/templates/forum/new_thread.html:43 app/templates/forum/thread.html:102
 #: app/templates/issues/_ip_fields.html:9
 msgid "Statement"
 msgstr "Stelling"
@@ -4355,7 +4362,7 @@ msgstr "Formuleer je vraag of stelling…"
 msgid "Kind of proposal"
 msgstr "Soort voorstel"
 
-#: app/templates/forum/new_thread.html:62 app/templates/forum/thread.html:66
+#: app/templates/forum/new_thread.html:62 app/templates/forum/thread.html:59
 msgid "Public proposal"
 msgstr "Publiek voorstel"
 
@@ -4363,7 +4370,7 @@ msgstr "Publiek voorstel"
 msgid "Fixed schedule: you set a duration for each phase."
 msgstr "Vaste planning: je stelt per fase een doorlooptijd in."
 
-#: app/templates/forum/new_thread.html:66 app/templates/forum/thread.html:66
+#: app/templates/forum/new_thread.html:66 app/templates/forum/thread.html:59
 #: app/templates/issues/_kind.html:11 app/templates/issues/index.html:38
 #: app/templates/issues/new.html:49 app/templates/issues/new.html:97
 #: app/templates/moderator/beheer.html:35
@@ -4490,7 +4497,7 @@ msgstr "Taal van de bijdrage"
 msgid "The AI judges the English (translated) text and leaves style, spelling and fluency out of consideration."
 msgstr "De AI oordeelt op de Engelse (vertaalde) tekst en laat stijl, spelling en vlotheid buiten beschouwing."
 
-#: app/templates/forum/thread.html:63 app/templates/issues/proposal.html:43
+#: app/templates/forum/thread.html:56 app/templates/issues/proposal.html:43
 #: app/templates/issues/proposal.html:45 app/templates/issues/proposal.html:56
 #: app/templates/issues/proposal.html:58 app/templates/issues/proposal.html:173
 #: app/templates/issues/proposal.html:174
@@ -4498,94 +4505,94 @@ msgstr "De AI oordeelt op de Engelse (vertaalde) tekst en laat stijl, spelling e
 msgid "Proposal"
 msgstr "Voorstel"
 
-#: app/templates/forum/thread.html:70
+#: app/templates/forum/thread.html:63
 #, python-format
 msgid "Adopted with more than %(pct)s%% in favour"
 msgstr "Aangenomen bij meer dan %(pct)s%% voor"
 
-#: app/templates/forum/thread.html:71
+#: app/templates/forum/thread.html:64
 msgid "Running tally visible during voting"
 msgstr "Tussenstand zichtbaar tijdens het stemmen"
 
-#: app/templates/forum/thread.html:71
+#: app/templates/forum/thread.html:64
 msgid "Tally hidden until voting closes"
 msgstr "Tussenstand verborgen tot het stemmen sluit"
 
-#: app/templates/forum/thread.html:81
+#: app/templates/forum/thread.html:74
 msgid "You follow this proposal. You get at most one summary a day."
 msgstr "Je volgt dit voorstel. Je krijgt hoogstens één samenvatting per dag."
 
-#: app/templates/forum/thread.html:82
+#: app/templates/forum/thread.html:75
 msgid "Unfollow"
 msgstr "Ontvolgen"
 
-#: app/templates/forum/thread.html:84
+#: app/templates/forum/thread.html:77
 msgid "Follow this proposal"
 msgstr "Volg dit voorstel"
 
-#: app/templates/forum/thread.html:95
+#: app/templates/forum/thread.html:88
 msgid "Revised"
 msgstr "Bijgesteld"
 
-#: app/templates/forum/thread.html:96
+#: app/templates/forum/thread.html:89
 #, python-format
 msgid "The statement was revised on %(date)s."
 msgstr "De stelling is bijgesteld op %(date)s."
 
-#: app/templates/forum/thread.html:97
+#: app/templates/forum/thread.html:90
 msgid "Original statement:"
 msgstr "Oorspronkelijke stelling:"
 
-#: app/templates/forum/thread.html:105 app/templates/forum/thread.html:116
+#: app/templates/forum/thread.html:98 app/templates/forum/thread.html:109
 msgid "Revise the statement"
 msgstr "Stelling bijstellen"
 
-#: app/templates/forum/thread.html:113
+#: app/templates/forum/thread.html:106
 msgid "You can revise the statement once. After that it is fixed."
 msgstr "Je kunt de stelling één keer bijstellen. Daarna staat hij vast."
 
-#: app/templates/forum/thread.html:114
+#: app/templates/forum/thread.html:107
 msgid "Enter a statement (at most 300 characters) that differs from the current one."
 msgstr "Vul een stelling in (maximaal 300 tekens) die verschilt van de huidige."
 
-#: app/templates/forum/thread.html:123
+#: app/templates/forum/thread.html:116
 msgid "Close facts and open revision"
 msgstr "Feiten sluiten en bijstellen openen"
 
-#: app/templates/forum/thread.html:123
+#: app/templates/forum/thread.html:116
 msgid "Close revision and open voting"
 msgstr "Bijstellen sluiten en stemmen openen"
 
-#: app/templates/forum/thread.html:123
+#: app/templates/forum/thread.html:116
 msgid "Close voting and go to the follow-up"
 msgstr "Stemmen sluiten en naar vervolg"
 
-#: app/templates/forum/thread.html:126
+#: app/templates/forum/thread.html:119
 msgid "You host this event: you move it through the phases."
 msgstr "Jij bent host van dit event: jij stuurt de fasen."
 
-#: app/templates/forum/thread.html:139
+#: app/templates/forum/thread.html:132
 #, python-format
 msgid "Back to %(phase)s"
 msgstr "Terug naar %(phase)s"
 
-#: app/templates/forum/thread.html:155
+#: app/templates/forum/thread.html:148
 msgid "Reopen conversation"
 msgstr "Heropen gesprek"
 
-#: app/templates/forum/thread.html:162
+#: app/templates/forum/thread.html:155
 msgid "Close conversation"
 msgstr "Sluit gesprek"
 
-#: app/templates/forum/thread.html:173
+#: app/templates/forum/thread.html:166
 msgid "You are viewing part of this conversation."
 msgstr "Je bekijkt een deel van dit gesprek."
 
-#: app/templates/forum/thread.html:174
+#: app/templates/forum/thread.html:167
 msgid "Back to the previous level"
 msgstr "Terug naar het vorige niveau"
 
-#: app/templates/forum/thread.html:175
+#: app/templates/forum/thread.html:168
 msgid "To the whole conversation"
 msgstr "Naar het hele gesprek"
 
@@ -4744,7 +4751,7 @@ msgid "Write the statement in one sentence of at most 300 characters."
 msgstr "Schrijf de stelling in één zin van hooguit 300 tekens."
 
 #: app/templates/issues/_ip_fields.html:16 app/templates/issues/new.html:105
-#: app/templates/issues/proposal.html:265
+#: app/templates/issues/proposal.html:264
 #: app/templates/moderator/dashboard.html:198
 msgid "Explanation"
 msgstr "Toelichting"
@@ -4915,9 +4922,9 @@ msgid "Most support"
 msgstr "Meeste steun"
 
 #: app/templates/issues/_proposals_big.html:51
-#: app/templates/issues/proposal.html:243
-#: app/templates/issues/proposal.html:261
-#: app/templates/issues/proposal.html:326
+#: app/templates/issues/proposal.html:242
+#: app/templates/issues/proposal.html:260
+#: app/templates/issues/proposal.html:325
 #, python-format
 msgid "Version %(n)s"
 msgstr "Versie %(n)s"
@@ -4927,7 +4934,7 @@ msgid "No proposals with this status."
 msgstr "Geen voorstellen met deze status."
 
 #: app/templates/issues/_proposals_big.html:56
-#: app/templates/issues/show.html:183 app/templates/moderator/beheer.html:137
+#: app/templates/issues/show.html:182 app/templates/moderator/beheer.html:137
 msgid "No proposals yet."
 msgstr "Nog geen voorstellen."
 
@@ -5014,11 +5021,11 @@ msgid "'Less'"
 msgstr "'Minder'"
 
 #: app/templates/issues/final_new.html:19 app/templates/issues/proposal.html:42
-#: app/templates/issues/proposal.html:59 app/templates/issues/proposal.html:316
-#: app/templates/issues/proposal.html:318
+#: app/templates/issues/proposal.html:59 app/templates/issues/proposal.html:315
+#: app/templates/issues/proposal.html:317
 #: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:94
 #: app/templates/issues/show.html:145 app/templates/issues/show.html:147
-#: app/templates/issues/show.html:148 app/templates/issues/show.html:188
+#: app/templates/issues/show.html:148 app/templates/issues/show.html:187
 #: app/templates/moderator/beheer.html:84
 msgid "Proposals"
 msgstr "Voorstellen"
@@ -5100,13 +5107,6 @@ msgstr "Geen vraagstukken bij dit filter."
 #: app/templates/issues/index.html:67
 msgid "No issues yet. Start the first one."
 msgstr "Nog geen vraagstukken. Start het eerste vraagstuk."
-
-# Herontwerp stap 1: vraagstukken (Issue)
-#: app/templates/issues/new.html:23 app/templates/issues/proposal_new.html:16
-#: app/templates/issues/show.html:91
-#: app/templates/moderator/melding_beoordelen.html:68
-msgid "Issue"
-msgstr "Vraagstuk"
 
 #: app/templates/issues/new.html:24
 msgid "Start a new issue"
@@ -5325,9 +5325,9 @@ msgstr "Ontkoppelen"
 
 #: app/templates/issues/proposal.html:100
 #: app/templates/issues/proposal.html:134
-#: app/templates/issues/proposal.html:331 app/templates/issues/show.html:119
-#: app/templates/issues/show.html:120 app/templates/issues/show.html:188
-#: app/templates/issues/show.html:189
+#: app/templates/issues/proposal.html:330 app/templates/issues/show.html:119
+#: app/templates/issues/show.html:120 app/templates/issues/show.html:187
+#: app/templates/issues/show.html:188
 msgid "Show more"
 msgstr "Toon meer"
 
@@ -5406,62 +5406,62 @@ msgstr "Elke bijstelling wordt een nieuwe versie. Eerdere versies blijven zichtb
 msgid "Save the revision"
 msgstr "Bijstelling opslaan"
 
-#: app/templates/issues/proposal.html:237
+#: app/templates/issues/proposal.html:236
 msgid "Earlier versions"
 msgstr "Eerdere versies"
 
-#: app/templates/issues/proposal.html:246
+#: app/templates/issues/proposal.html:245
 msgid "Reactions"
 msgstr "Reacties"
 
-#: app/templates/issues/proposal.html:246
+#: app/templates/issues/proposal.html:245
 msgid "reactions"
 msgstr "reacties"
 
-#: app/templates/issues/proposal.html:251
+#: app/templates/issues/proposal.html:250
 #, python-format
 msgid "Reactions to version %(number)s"
 msgstr "Reacties op versie %(number)s"
 
-#: app/templates/issues/proposal.html:253
+#: app/templates/issues/proposal.html:252
 msgid "No reactions to this version."
 msgstr "Geen reacties op deze versie."
 
-#: app/templates/issues/proposal.html:261
+#: app/templates/issues/proposal.html:260
 msgid "Current version"
 msgstr "Huidige versie"
 
-#: app/templates/issues/proposal.html:269
+#: app/templates/issues/proposal.html:268
 msgid "No explanation."
 msgstr "Geen toelichting."
 
-#: app/templates/issues/proposal.html:280
+#: app/templates/issues/proposal.html:279
 #, python-format
 msgid "Reactions to version %(current_version)s"
 msgstr "Reacties op versie %(current_version)s"
 
-#: app/templates/issues/proposal.html:286
+#: app/templates/issues/proposal.html:285
 #, python-format
 msgid "Your reaction to version %(n)s"
 msgstr "Jouw reactie op versie %(n)s"
 
-#: app/templates/issues/proposal.html:287
+#: app/templates/issues/proposal.html:286
 msgid "Write a reaction…"
 msgstr "Schrijf een reactie…"
 
-#: app/templates/issues/proposal.html:296
+#: app/templates/issues/proposal.html:295
 msgid "No reactions to this version yet."
 msgstr "Nog geen reacties op deze versie."
 
-#: app/templates/issues/proposal.html:304
+#: app/templates/issues/proposal.html:303
 msgid "Withdraw proposal"
 msgstr "Voorstel intrekken"
 
-#: app/templates/issues/proposal.html:305
+#: app/templates/issues/proposal.html:304
 msgid "You can withdraw your own proposal as long as nobody has reacted yet."
 msgstr "Je kunt je eigen voorstel intrekken zolang er nog geen reacties zijn."
 
-#: app/templates/issues/proposal.html:317 app/templates/issues/show.html:146
+#: app/templates/issues/proposal.html:316 app/templates/issues/show.html:146
 msgid "New proposal"
 msgstr "Nieuw voorstel"
 
@@ -5555,20 +5555,20 @@ msgstr "Discussie"
 msgid "This issue has no discussion yet."
 msgstr "Dit vraagstuk heeft nog geen discussie."
 
-#: app/templates/issues/show.html:201
+#: app/templates/issues/show.html:200
 msgid "Your right to vote"
 msgstr "Jouw stemrecht"
 
-#: app/templates/issues/show.html:208
+#: app/templates/issues/show.html:207
 #, python-format
 msgid "%(count)s of %(needed)s quality marks for the right to vote"
 msgstr "%(count)s van %(needed)s keurmerken voor stemrecht"
 
-#: app/templates/issues/show.html:211
+#: app/templates/issues/show.html:210
 msgid "You earn a quality mark with a well argued contribution to a discussion."
 msgstr "Een keurmerk verdien je met een goed onderbouwde bijdrage aan een discussie."
 
-#: app/templates/issues/show.html:214
+#: app/templates/issues/show.html:213
 msgid "to see your right to vote."
 msgstr "om je stemrecht te zien."
 
@@ -6622,4 +6622,6 @@ msgstr "Verwijderen"
 #: app/templates/moderator/rechten.html:25
 msgid "An admin may always do everything. These settings apply as soon as you save, to all issues."
 msgstr "Een admin mag altijd alles. Deze instellingen gelden direct na het opslaan, voor alle vraagstukken."
+
+
 

@@ -103,11 +103,13 @@ def _issue(db, people, *, title, intro, author, created_at, phase, schedule,
     )
     db.session.add(issue)
     db.session.flush()
-    thread = Thread(eyebrow_nl='Vraagstuk', eyebrow_en='Issue',
-                    title_prefix_nl=title, title_prefix_en=title,
+    thread = Thread(title_prefix=title, source_lang=issue.lang,
                     is_closed=closed, is_demo=True, created_at=created_at)
     db.session.add(thread)
     db.session.flush()
+    from app import content_i18n
+    from app.models import THREAD_EYEBROWS
+    content_i18n.set_label(thread, 'eyebrow', THREAD_EYEBROWS['issue'])
     issue.thread_id = thread.id
     op = Post(thread_id=thread.id, user_id=user.id,
               author_name=f'{user.first_name} {user.last_name}'.strip(),

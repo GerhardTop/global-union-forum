@@ -111,8 +111,7 @@ def _delete_thread(db, t):
 
 @pytest.fixture
 def thread(db):
-    t = Thread(eyebrow_nl='Test', eyebrow_en='Test',
-               title_prefix_nl='Geneste test', title_prefix_en='Nested test')
+    t = Thread(eyebrow='Test', title_prefix='Geneste test')
     db.session.add(t)
     db.session.commit()
     yield t
@@ -167,7 +166,7 @@ class TestReplyToReply:
         assert resp.headers['Location'].endswith(f'/forum/{thread.id}#post-{new.id}')
 
     def test_parent_from_other_thread_still_rejected(self, app, db, forum_users, thread):
-        other = Thread(eyebrow_nl='x', eyebrow_en='x', title_prefix_nl='x', title_prefix_en='x')
+        other = Thread(eyebrow='x', title_prefix='x')
         db.session.add(other)
         db.session.commit()
         foreign = _chain(db, other, forum_users, 0)[0]

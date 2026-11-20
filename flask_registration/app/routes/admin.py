@@ -62,13 +62,15 @@ def _post_issue(post):
 
 def _context_title(issue, post=None):
     """The vraagstuk title an item belongs to (the issue, else its old-style
-    thread, both languages), or '' when there is none."""
+    thread: the original and every translation, so a search finds it in any
+    language), or '' when there is none."""
     if issue is not None:
         return issue.title or ''
     thread = post.thread if post is not None else None
     if thread is None:
         return ''
-    return ' '.join(p for lang in ('nl', 'en') for p in thread.title(lang) if p)
+    from app import content_i18n
+    return ' '.join(content_i18n.all_texts(thread, thread.TITLE_FIELDS))
 
 
 def _arrange(items, title_of, at_of, count_of=None, zoek='', sorteer='wachtend', show_all=False):

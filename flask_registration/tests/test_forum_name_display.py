@@ -54,7 +54,7 @@ def make_user(db):
 
 @pytest.fixture
 def thread(db):
-    t = Thread(eyebrow_nl='T', eyebrow_en='T', title_prefix_nl='Namen', title_prefix_en='Names')
+    t = Thread(eyebrow='T', title_prefix='Namen')
     db.session.add(t)
     db.session.commit()
     yield t

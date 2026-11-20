@@ -34,7 +34,7 @@ def _user(db):
 
 
 def _thread_with_post(db, author):
-    t = Thread(eyebrow_nl='T', eyebrow_en='T', title_prefix_nl='Vraag', title_prefix_en='Question')
+    t = Thread(eyebrow='T', title_prefix='Vraag')
     db.session.add(t)
     db.session.flush()
     op = Post(thread_id=t.id, user_id=author.id, author_name='', author_username=author.username,

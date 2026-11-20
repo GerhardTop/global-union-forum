@@ -52,8 +52,7 @@ def threads(db):
     made = []
 
     def _make(n_replies=2):
-        t = Thread(eyebrow_nl='Q', eyebrow_en='Q', title_prefix_nl=f'Query {uuid.uuid4().hex[:6]}',
-                   title_prefix_en='Query')
+        t = Thread(eyebrow='Q', title_prefix=f'Query {uuid.uuid4().hex[:6]}')
         db.session.add(t)
         db.session.flush()
         op = Post(thread_id=t.id, author_name='', author_username='op', body='Opening', is_op=True,
@@ -86,7 +85,10 @@ class TestForumOverview:
         with _count_queries() as many:
             html_many = _get(app, '/forum').get_data(as_text=True)
         assert len(many) == len(few), (len(few), len(many))
-        assert len(many) <= 3
+        # Threads, posts, conduct, and one query for the translated titles of the
+        # whole list (multilingual step 6d).
+        assert len(many) <= 4
+        assert sum(1 for q in many if 'FROM content_translations' in q) == 1
         # De berichten van alle gesprekken in één query.
         post_queries = [q for q in many if 'FROM posts' in q and 'GROUP BY' not in q]
         assert len(post_queries) == 1

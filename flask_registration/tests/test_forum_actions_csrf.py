@@ -22,7 +22,7 @@ def setup(app):  # noqa: F811
     bram = _make_user('bram')
     mod = _make_user('moddy')
     mod.is_moderator = True
-    t = Thread(eyebrow_nl='Test', eyebrow_en='Test', title_prefix_nl='Acties', title_prefix_en='Actions')
+    t = Thread(eyebrow='Test', title_prefix='Acties')
     db.session.add(t)
     db.session.flush()
     op = Post(thread_id=t.id, user_id=anna.id, author_name='Anna Test', author_username='anna',
@@ -37,7 +37,7 @@ def setup(app):  # noqa: F811
     db.session.add_all([reply, bram_post])
     # Een gesprek zonder reacties: alleen dan mag de auteur het openingsbericht
     # (en de titel) nog bewerken.
-    solo = Thread(eyebrow_nl='Test', eyebrow_en='Test', title_prefix_nl='Solo', title_prefix_en='Solo')
+    solo = Thread(eyebrow='Test', title_prefix='Solo')
     db.session.add(solo)
     db.session.flush()
     db.session.add(Post(thread_id=solo.id, user_id=anna.id, author_name='Anna Test', author_username='anna',
@@ -68,9 +68,9 @@ def _actions(s):
         'sluiten': (f'/forum/{t.id}/close', {}, 'mod',
                     lambda: db.session.get(Thread, t.id).is_closed is True),
         'draad_starten': ('/forum/nieuw', {'title': 'Nieuwe draad', 'body': 'Eerste bericht'}, 'anna',
-                          lambda: Thread.query.filter_by(title_prefix_nl='Nieuwe draad').count() == 1),
+                          lambda: Thread.query.filter_by(title_prefix='Nieuwe draad').count() == 1),
         'draad_bewerken': (f'/forum/{solo.id}/bewerken', {'title': 'Andere titel', 'body': 'Andere opening'}, 'anna',
-                           lambda: db.session.get(Thread, solo.id).title_prefix_nl == 'Andere titel'),
+                           lambda: db.session.get(Thread, solo.id).title_prefix == 'Andere titel'),
         'vertaalvoorkeur': ('/profiel/vertaalvoorkeur', {'auto_translate': '1'}, 'anna',
                             lambda: db.session.get(User, s['anna'].id).auto_translate is True),
     }

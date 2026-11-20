@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-20 15:07+0100\n"
+"POT-Creation-Date: 2026-11-20 17:59+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:799
+#: app/__init__.py:858
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Too many attempts. Please try again in a minute."
 
-#: app/__init__.py:829
+#: app/__init__.py:888
 msgid "Your session has expired. Please log in again."
 msgstr "Your session has expired. Please log in again."
 
@@ -289,35 +289,50 @@ msgid "Your contributions stay, but are no longer linked to your name. That way,
 msgstr "Your contributions stay, but are no longer linked to your name. That way, the discussions and votes others took part in keep their coherence. Only the link to you disappears."
 
 #: app/forms.py:12 app/templates/aanmelden/aanmelden.html:68
-#: app/templates/profile.html:255 app/templates/wachtwoord_reset.html:47
+#: app/templates/profile.html:254 app/templates/wachtwoord_reset.html:47
 msgid "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
 msgstr "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
 
 #: app/forms.py:27 app/templates/aanmelden/aanmelden.html:87
-#: app/templates/profile.html:274 app/templates/wachtwoord_reset.html:67
+#: app/templates/profile.html:273 app/templates/wachtwoord_reset.html:67
 msgid "Passwords do not match."
 msgstr "Passwords do not match."
 
-#: app/models.py:363
+#: app/models.py:244
+msgid "Forum · conversation"
+msgstr "Forum · conversation"
+
+#: app/models.py:245
+msgid "Forum · proposal"
+msgstr "Forum · proposal"
+
+# Herontwerp stap 1: vraagstukken (Issue)
+#: app/models.py:246 app/templates/issues/new.html:23
+#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:91
+#: app/templates/moderator/melding_beoordelen.html:68
+msgid "Issue"
+msgstr "Issue"
+
+#: app/models.py:398
 #, python-format
 msgid "%(num)d day ago"
 msgid_plural "%(num)d days ago"
 msgstr[0] "%(num)d day ago"
 msgstr[1] "%(num)d days ago"
 
-#: app/models.py:366
+#: app/models.py:401
 #, python-format
 msgid "%(num)d hour ago"
 msgid_plural "%(num)d hours ago"
 msgstr[0] "%(num)d hour ago"
 msgstr[1] "%(num)d hours ago"
 
-#: app/models.py:369
+#: app/models.py:404
 #, python-format
 msgid "%(num)d min ago"
 msgstr "%(num)d min ago"
 
-#: app/models.py:370
+#: app/models.py:405
 msgid "just now"
 msgstr "just now"
 
@@ -414,142 +429,142 @@ msgctxt "notification phase"
 msgid "Follow-up"
 msgstr "Follow-up"
 
-#: app/notifications.py:429
+#: app/notifications.py:430
 msgctxt "notification subject"
 msgid "an issue"
 msgstr "an issue"
 
-#: app/notifications.py:431
+#: app/notifications.py:432
 msgctxt "notification subject"
 msgid "a proposal"
 msgstr "a proposal"
 
-#: app/notifications.py:436
+#: app/notifications.py:437
 #, python-format
 msgid "Your proposal on %(title)s has enough support and is on the voting list."
 msgstr "Your proposal on %(title)s has enough support and is on the voting list."
 
-#: app/notifications.py:439
+#: app/notifications.py:440
 #, python-format
 msgid "The final vote on %(title)s has started."
 msgstr "The final vote on %(title)s has started."
 
-#: app/notifications.py:441
+#: app/notifications.py:442
 #, python-format
 msgid "The final vote on %(title)s has concluded."
 msgstr "The final vote on %(title)s has concluded."
 
-#: app/notifications.py:443
+#: app/notifications.py:444
 #, python-format
 msgid "Voting on %(title)s closes within 24 hours."
 msgstr "Voting on %(title)s closes within 24 hours."
 
-#: app/notifications.py:445
+#: app/notifications.py:446
 #, python-format
 msgid "The outcome of %(title)s is in."
 msgstr "The outcome of %(title)s is in."
 
-#: app/notifications.py:449
+#: app/notifications.py:450
 #, python-format
 msgid "A new voting round on your proposal %(title)s has opened."
 msgstr "A new voting round on your proposal %(title)s has opened."
 
-#: app/notifications.py:450
+#: app/notifications.py:451
 #, python-format
 msgid "A new voting round on your issue %(title)s has opened."
 msgstr "A new voting round on your issue %(title)s has opened."
 
-#: app/notifications.py:451
+#: app/notifications.py:452
 #, python-format
 msgid "A new voting round on %(title)s has opened."
 msgstr "A new voting round on %(title)s has opened."
 
-#: app/notifications.py:456
+#: app/notifications.py:457
 #, python-format
 msgid "Your proposal %(title)s moves on to the next phase: %(phase)s."
 msgstr "Your proposal %(title)s moves on to the next phase: %(phase)s."
 
-#: app/notifications.py:457
+#: app/notifications.py:458
 #, python-format
 msgid "Your issue %(title)s moves on to the next phase: %(phase)s."
 msgstr "Your issue %(title)s moves on to the next phase: %(phase)s."
 
-#: app/notifications.py:458
+#: app/notifications.py:459
 #, python-format
 msgid "%(title)s has moved to a new phase: %(phase)s."
 msgstr "%(title)s has moved to a new phase: %(phase)s."
 
-#: app/notifications.py:465
+#: app/notifications.py:466
 msgctxt "email subject"
 msgid "A reply to your contribution"
 msgstr "A reply to your contribution"
 
-#: app/notifications.py:466
+#: app/notifications.py:467
 msgid "News about your proposal"
 msgstr "News about your proposal"
 
-#: app/notifications.py:467
+#: app/notifications.py:468
 msgid "News about an issue you follow"
 msgstr "News about an issue you follow"
 
-#: app/notifications.py:468
+#: app/notifications.py:469
 msgctxt "email subject"
 msgid "The outcome of an issue you follow"
 msgstr "The outcome of an issue you follow"
 
-#: app/notifications.py:469
+#: app/notifications.py:470
 msgid "News about your fact"
 msgstr "News about your fact"
 
-#: app/notifications.py:470
+#: app/notifications.py:471
 msgctxt "email subject"
 msgid "A new report to handle"
 msgstr "A new report to handle"
 
-#: app/notifications.py:471
+#: app/notifications.py:472
 msgctxt "email subject"
 msgid "A new objection to a decision"
 msgstr "A new objection to a decision"
 
-#: app/notifications.py:472
+#: app/notifications.py:473
 msgid "A fact is being challenged"
 msgstr "A fact is being challenged"
 
-#: app/notifications.py:517
+#: app/notifications.py:518
 msgid "You have received a warning"
 msgstr "You have received a warning"
 
-#: app/notifications.py:518
+#: app/notifications.py:519
 msgid "You have been suspended"
 msgstr "You have been suspended"
 
-#: app/notifications.py:521
+#: app/notifications.py:522
 msgid "This warning is about the forum rules."
 msgstr "This warning is about the forum rules."
 
-#: app/notifications.py:522
+#: app/notifications.py:523
 msgid "Until then you can still read, but not contribute or vote."
 msgstr "Until then you can still read, but not contribute or vote."
 
-#: app/notifications.py:557
+#: app/notifications.py:558
 msgid "A moderator has sent you a warning."
 msgstr "A moderator has sent you a warning."
 
-#: app/notifications.py:558
+#: app/notifications.py:559
 #, python-format
 msgid "A moderator has sent you a warning: “%(message)s”"
 msgstr "A moderator has sent you a warning: “%(message)s”"
 
-#: app/notifications.py:561
+#: app/notifications.py:562
 msgid "You have been suspended."
 msgstr "You have been suspended."
 
-#: app/notifications.py:562
+#: app/notifications.py:563
 #, python-format
 msgid "Reason: %(reason)s"
 msgstr "Reason: %(reason)s"
 
-#: app/notifications.py:563
+#: app/notifications.py:564
 #, python-format
 msgid "You are suspended until %(until)s."
 msgstr "You are suspended until %(until)s."
@@ -616,49 +631,49 @@ msgstr "Moderator"
 msgid "Senior"
 msgstr "Senior"
 
-#: app/utils.py:222
+#: app/utils.py:223
 msgid "Global Union Forum: confirm your email"
 msgstr "Global Union Forum: confirm your email"
 
-#: app/routes/auth.py:51 app/utils.py:224
+#: app/routes/auth.py:51 app/utils.py:225
 #, python-format
 msgid "Hi %(name)s,"
 msgstr "Hi %(name)s,"
 
-#: app/utils.py:225
+#: app/utils.py:226
 msgid "Please confirm your email address by clicking the link below:"
 msgstr "Please confirm your email address by clicking the link below:"
 
-#: app/utils.py:226
+#: app/utils.py:227
 msgid "This link expires in 24 hours."
 msgstr "This link expires in 24 hours."
 
-#: app/utils.py:227
+#: app/utils.py:228
 msgid "If you did not create an account, you can ignore this email."
 msgstr "If you did not create an account, you can ignore this email."
 
-#: app/routes/admin.py:101 app/templates/admin/proposal_limits.html:6
+#: app/routes/admin.py:103 app/templates/admin/proposal_limits.html:6
 #: app/templates/forum/_proposal_steps.html:9
-#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:124
+#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:117
 msgid "Facts and discussion"
 msgstr "Facts and discussion"
 
-#: app/routes/admin.py:101 app/templates/admin/proposal_limits.html:6
+#: app/routes/admin.py:103 app/templates/admin/proposal_limits.html:6
 #: app/templates/forum/_proposal_steps.html:10
-#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:124
+#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:117
 msgid "Revise the proposal"
 msgstr "Revise the proposal"
 
-#: app/routes/admin.py:102 app/routes/issues.py:56
+#: app/routes/admin.py:104 app/routes/issues.py:56
 #: app/templates/admin/proposal_limits.html:6
 #: app/templates/forum/_proposal_steps.html:11
-#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:124
+#: app/templates/forum/new_thread.html:73 app/templates/forum/thread.html:117
 #: app/templates/issues/_steps.html:14
 msgid "Voting"
 msgstr "Voting"
 
 # Herontwerp stap 6: stemmen, uitslag en het samenvattende voorstel
-#: app/routes/admin.py:102 app/routes/issues.py:57
+#: app/routes/admin.py:104 app/routes/issues.py:57
 #: app/templates/issues/_ip_final.html:8 app/templates/issues/_ip_final.html:14
 #: app/templates/issues/_ip_final.html:19
 #: app/templates/issues/_proposals_big.html:42
@@ -668,127 +683,127 @@ msgstr "Voting"
 msgid "Summary proposal"
 msgstr "Summary proposal"
 
-#: app/routes/admin.py:103 app/routes/issues.py:58
+#: app/routes/admin.py:105 app/routes/issues.py:58
 #: app/templates/forum/_proposal_steps.html:12
-#: app/templates/forum/thread.html:124 app/templates/issues/_steps.html:16
+#: app/templates/forum/thread.html:117 app/templates/issues/_steps.html:16
 msgid "Follow-up"
 msgstr "Follow-up"
 
-#: app/routes/admin.py:323
+#: app/routes/admin.py:325
 msgid "Rights saved."
 msgstr "Rights saved."
 
-#: app/routes/admin.py:332
+#: app/routes/admin.py:334
 msgctxt "month"
 msgid "Jan"
 msgstr "Jan"
 
-#: app/routes/admin.py:332
+#: app/routes/admin.py:334
 msgctxt "month"
 msgid "Feb"
 msgstr "Feb"
 
-#: app/routes/admin.py:332
+#: app/routes/admin.py:334
 msgctxt "month"
 msgid "Mar"
 msgstr "Mar"
 
-#: app/routes/admin.py:332
+#: app/routes/admin.py:334
 msgctxt "month"
 msgid "Apr"
 msgstr "Apr"
 
-#: app/routes/admin.py:333
+#: app/routes/admin.py:335
 msgctxt "month"
 msgid "May"
 msgstr "May"
 
-#: app/routes/admin.py:333
+#: app/routes/admin.py:335
 msgctxt "month"
 msgid "Jun"
 msgstr "Jun"
 
-#: app/routes/admin.py:333
+#: app/routes/admin.py:335
 msgctxt "month"
 msgid "Jul"
 msgstr "Jul"
 
-#: app/routes/admin.py:333
+#: app/routes/admin.py:335
 msgctxt "month"
 msgid "Aug"
 msgstr "Aug"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:336
 msgctxt "month"
 msgid "Sep"
 msgstr "Sep"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:336
 msgctxt "month"
 msgid "Oct"
 msgstr "Oct"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:336
 msgctxt "month"
 msgid "Nov"
 msgstr "Nov"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:336
 msgctxt "month"
 msgid "Dec"
 msgstr "Dec"
 
-#: app/routes/admin.py:384
+#: app/routes/admin.py:386
 msgid "Write a message to the user first."
 msgstr "Write a message to the user first."
 
-#: app/routes/admin.py:393
+#: app/routes/admin.py:395
 msgid "The warning has been sent."
 msgstr "The warning has been sent."
 
-#: app/routes/admin.py:420
+#: app/routes/admin.py:422
 msgid "Choose 7 or 30 days."
 msgstr "Choose 7 or 30 days."
 
-#: app/routes/admin.py:422
+#: app/routes/admin.py:424
 msgid "Write the reason for the suspension first."
 msgstr "Write the reason for the suspension first."
 
-#: app/routes/admin.py:433
+#: app/routes/admin.py:435
 #, python-format
 msgid "@%(username)s has been suspended for %(days)s days."
 msgstr "@%(username)s has been suspended for %(days)s days."
 
-#: app/routes/admin.py:463
+#: app/routes/admin.py:465
 msgid "The username does not match. Nothing was deleted."
 msgstr "The username does not match. Nothing was deleted."
 
-#: app/routes/admin.py:468
+#: app/routes/admin.py:470
 #, python-format
 msgid "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
 msgstr "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
 
-#: app/routes/admin.py:515
+#: app/routes/admin.py:517
 msgid "Choose what to do with this report."
 msgstr "Choose what to do with this report."
 
-#: app/routes/admin.py:518
+#: app/routes/admin.py:520
 msgid "The report has been handled."
 msgstr "The report has been handled."
 
-#: app/routes/admin.py:635
+#: app/routes/admin.py:637
 msgid "Thresholds saved."
 msgstr "Thresholds saved."
 
-#: app/routes/admin.py:666
+#: app/routes/admin.py:668
 msgid "Maximum durations saved."
 msgstr "Maximum durations saved."
 
-#: app/routes/admin.py:688 app/templates/admin/proposal_limits.html:25
+#: app/routes/admin.py:690 app/templates/admin/proposal_limits.html:25
 msgid "Enter a whole number from 1 to 365."
 msgstr "Enter a whole number from 1 to 365."
 
-#: app/routes/admin.py:691
+#: app/routes/admin.py:693
 msgid "Saved."
 msgstr "Saved."
 
@@ -873,53 +888,53 @@ msgstr "You are suspended until %(until)s. You can read, but not contribute or v
 msgid "Accept the conduct rules first to take part."
 msgstr "Accept the conduct rules first to take part."
 
-#: app/routes/forum.py:614
+#: app/routes/forum.py:661
 msgid "The platform is not open for contributions to this issue right now."
 msgstr "The platform is not open for contributions to this issue right now."
 
-#: app/routes/forum.py:636
+#: app/routes/forum.py:683
 msgid "You cannot reply to your own post."
 msgstr "You cannot reply to your own post."
 
-#: app/routes/forum.py:644
+#: app/routes/forum.py:691
 msgid "Invalid reply: the post you are replying to does not exist in this conversation."
 msgstr "Invalid reply: the post you are replying to does not exist in this conversation."
 
-#: app/routes/forum.py:1228
+#: app/routes/forum.py:1260
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "The statement of a proposal can only be changed in the revision phase."
 
-#: app/routes/forum.py:1230
+#: app/routes/forum.py:1262
 msgid "This post already has replies, so it can no longer be edited."
 msgstr "This post already has replies, so it can no longer be edited."
 
-#: app/routes/forum.py:1231
+#: app/routes/forum.py:1263
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "A moved or hidden post cannot be edited. You can object instead."
 
-#: app/routes/forum.py:1310 app/templates/forum/_post.html:72
+#: app/routes/forum.py:1337 app/templates/forum/_post.html:69
 #, python-format
 msgid "edited %(when)s"
 msgstr "edited %(when)s"
 
 # Polijststap P7: volledige pagina vanuit de grote weergave
-#: app/routes/forum.py:1505 app/routes/issues.py:256
+#: app/routes/forum.py:1529 app/routes/issues.py:256
 msgid "Give a reason for your report."
 msgstr "Give a reason for your report."
 
-#: app/routes/forum.py:1514 app/routes/issues.py:262
+#: app/routes/forum.py:1538 app/routes/issues.py:262
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Thanks, your report has been sent to a moderator."
 
-#: app/routes/forum.py:1892
+#: app/routes/forum.py:1917
 msgid "Choose a reason (and keep the note under 500 characters)."
 msgstr "Choose a reason (and keep the note under 500 characters)."
 
-#: app/routes/forum.py:1894
+#: app/routes/forum.py:1919
 msgid "You already disputed this fact; a moderator will look at it."
 msgstr "You already disputed this fact; a moderator will look at it."
 
-#: app/routes/forum.py:1898
+#: app/routes/forum.py:1923
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 msgstr "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 
@@ -1725,8 +1740,8 @@ msgstr "Password"
 
 #: app/templates/aanmelden/aanmelden.html:62
 #: app/templates/aanmelden/aanmelden.html:82 app/templates/login.html:36
-#: app/templates/profile.html:232 app/templates/profile.html:249
-#: app/templates/profile.html:269 app/templates/wachtwoord_reset.html:41
+#: app/templates/profile.html:231 app/templates/profile.html:248
+#: app/templates/profile.html:268 app/templates/wachtwoord_reset.html:41
 #: app/templates/wachtwoord_reset.html:62
 msgid "Show password"
 msgstr "Show password"
@@ -2343,7 +2358,7 @@ msgstr "This is a writing exercise, a first attempt. Not a blueprint, not a part
 
 #: app/templates/meldingen.html:9 app/templates/meldingen.html:15
 #: app/templates/notificaties.html:18 app/templates/notificaties.html:21
-#: app/templates/profile.html:214
+#: app/templates/profile.html:213
 msgid "Notifications"
 msgstr "Notifications"
 
@@ -2515,7 +2530,7 @@ msgstr "Moderation"
 msgid "for moderators"
 msgstr "for moderators"
 
-#: app/templates/notificaties.html:63 app/templates/profile.html:212
+#: app/templates/notificaties.html:63 app/templates/profile.html:211
 msgid "Summary by email"
 msgstr "Summary by email"
 
@@ -2545,7 +2560,7 @@ msgstr "Weekly"
 #: app/templates/admin/proposal_limits.html:28
 #: app/templates/admin/proposal_limits.html:43
 #: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:59
-#: app/templates/forum/_post.html:242 app/templates/issues/_fact_card.html:52
+#: app/templates/forum/_post.html:238 app/templates/issues/_fact_card.html:52
 #: app/templates/issues/_lifecycle.html:49
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
@@ -2718,7 +2733,7 @@ msgstr "Senior with more than %(senior_min)s quality contributions."
 msgid "Status ladder"
 msgstr "Status ladder"
 
-#: app/templates/issues/show.html:206 app/templates/profile.html:60
+#: app/templates/issues/show.html:205 app/templates/profile.html:60
 msgid "You have the right to vote."
 msgstr "You have the right to vote."
 
@@ -2727,7 +2742,7 @@ msgstr "You have the right to vote."
 msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
 msgstr "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
 
-#: app/templates/issues/show.html:210 app/templates/profile.html:65
+#: app/templates/issues/show.html:209 app/templates/profile.html:65
 msgid "Progress to the right to vote"
 msgstr "Progress to the right to vote"
 
@@ -2817,82 +2832,82 @@ msgstr "Language & Translations"
 msgid "Language preference."
 msgstr "Language preference."
 
-#: app/templates/profile.html:183
+#: app/templates/profile.html:182
 msgid "Automatic translation."
 msgstr "Automatic translation."
 
-#: app/templates/profile.html:197
+#: app/templates/profile.html:196
 msgid "Automatically translate posts to English"
 msgstr "Automatically translate posts to English"
 
-#: app/templates/profile.html:204
+#: app/templates/profile.html:203
 msgid "Posts in another language are automatically translated when you open a conversation."
 msgstr "Posts in another language are automatically translated when you open a conversation."
 
-#: app/templates/profile.html:213
+#: app/templates/profile.html:212
 msgid "View your daily summaries"
 msgstr "View your daily summaries"
 
-#: app/templates/profile.html:214
+#: app/templates/profile.html:213
 msgid "choose what you hear about, and where"
 msgstr "choose what you hear about, and where"
 
-#: app/templates/profile.html:218
+#: app/templates/profile.html:217
 msgid "Change password"
 msgstr "Change password"
 
-#: app/templates/profile.html:220
+#: app/templates/profile.html:219
 msgid "Update your password."
 msgstr "Update your password."
 
-#: app/templates/profile.html:230
+#: app/templates/profile.html:229
 msgid "Current password"
 msgstr "Current password"
 
-#: app/templates/profile.html:238
+#: app/templates/profile.html:237
 msgid "Enter your current password."
 msgstr "Enter your current password."
 
-#: app/templates/profile.html:247 app/templates/wachtwoord_reset.html:27
+#: app/templates/profile.html:246 app/templates/wachtwoord_reset.html:27
 #: app/templates/wachtwoord_reset.html:35
 msgid "New password"
 msgstr "New password"
 
-#: app/templates/profile.html:267 app/templates/wachtwoord_reset.html:56
+#: app/templates/profile.html:266 app/templates/wachtwoord_reset.html:56
 msgid "Confirm new password"
 msgstr "Confirm new password"
 
-#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:280
+#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:279
 msgid "Save changes"
 msgstr "Save changes"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:393
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:392
 #: app/templates/wachtwoord_reset.html:112
 msgid "Weak"
 msgstr "Weak"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:393
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:392
 #: app/templates/wachtwoord_reset.html:112
 msgid "Fair"
 msgstr "Fair"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:393
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:392
 #: app/templates/wachtwoord_reset.html:112
 msgid "Strong"
 msgstr "Strong"
 
-#: app/templates/profile.html:424
+#: app/templates/profile.html:423
 msgid "Danger zone"
 msgstr "Danger zone"
 
 #: app/templates/moderator/gebruiker.html:190
 #: app/templates/moderator/gebruiker.html:197
 #: app/templates/moderator/gebruiker_verwijderen.html:2
-#: app/templates/profile.html:427
+#: app/templates/profile.html:426
 msgid "Delete account"
 msgstr "Delete account"
 
-#: app/templates/profile.html:431
+#: app/templates/profile.html:430
 msgid ""
 "This permanently deletes your account, all your forum posts, and all your likes.\n"
 "        This cannot be undone."
@@ -2900,13 +2915,13 @@ msgstr ""
 "This permanently deletes your account, all your forum posts, and all your likes.\n"
 "        This cannot be undone."
 
-#: app/templates/profile.html:437
+#: app/templates/profile.html:436
 msgid "Delete my account"
 msgstr "Delete my account"
 
 #: app/templates/admin/dashboard.html:169
-#: app/templates/admin/dashboard.html:176 app/templates/forum/_post.html:236
-#: app/templates/forum/_post.html:264 app/templates/forum/edit_thread.html:58
+#: app/templates/admin/dashboard.html:176 app/templates/forum/_post.html:232
+#: app/templates/forum/_post.html:260 app/templates/forum/edit_thread.html:58
 #: app/templates/forum/new_thread.html:128
 #: app/templates/issues/_facts_big.html:41
 #: app/templates/issues/final_new.html:57 app/templates/issues/new.html:190
@@ -2914,33 +2929,33 @@ msgstr "Delete my account"
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
-#: app/templates/profile.html:449 app/templates/profile.html:458
-#: app/templates/profile.html:554 app/templates/profile.html:576
+#: app/templates/profile.html:448 app/templates/profile.html:457
+#: app/templates/profile.html:553 app/templates/profile.html:575
 msgid "Cancel"
 msgstr "Cancel"
 
-#: app/templates/profile.html:451
+#: app/templates/profile.html:450
 msgid "Show your real name?"
 msgstr "Show your real name?"
 
-#: app/templates/profile.html:454
+#: app/templates/profile.html:453
 #, python-format
 msgid "Your real name (%(value)s) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym."
 msgstr "Your real name (%(value)s) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym."
 
-#: app/templates/profile.html:461
+#: app/templates/profile.html:460
 msgid "Yes, show my name"
 msgstr "Yes, show my name"
 
-#: app/templates/profile.html:504 app/templates/profile.html:513
+#: app/templates/profile.html:503 app/templates/profile.html:512
 msgid "Saving failed, please try again."
 msgstr "Saving failed, please try again."
 
-#: app/templates/profile.html:563
+#: app/templates/profile.html:562
 msgid "Are you sure?"
 msgstr "Are you sure?"
 
-#: app/templates/profile.html:567
+#: app/templates/profile.html:566
 msgid ""
 "This permanently deletes your account and all associated data.\n"
 "        This <strong>cannot</strong> be undone."
@@ -2948,7 +2963,7 @@ msgstr ""
 "This permanently deletes your account and all associated data.\n"
 "        This <strong>cannot</strong> be undone."
 
-#: app/templates/profile.html:580
+#: app/templates/profile.html:579
 msgid "Yes, delete my account"
 msgstr "Yes, delete my account"
 
@@ -3539,8 +3554,8 @@ msgstr "New replies: %(n)s"
 msgid "New facts: %(n)s"
 msgstr "New facts: %(n)s"
 
-#: app/templates/forum/_discussion.html:21 app/templates/forum/closed.html:41
-#: app/templates/forum/index.html:60 app/templates/forum/thread.html:45
+#: app/templates/forum/_discussion.html:21 app/templates/forum/closed.html:38
+#: app/templates/forum/index.html:57 app/templates/forum/thread.html:38
 #, python-format
 msgid "%(num)d reply"
 msgid_plural "%(num)d replies"
@@ -3578,8 +3593,8 @@ msgstr "This conversation is closed."
 msgid "Write your reply. Be concrete (a thought, a question, a pushback)."
 msgstr "Write your reply. Be concrete (a thought, a question, a pushback)."
 
-#: app/templates/forum/_discussion.html:68 app/templates/forum/_post.html:267
-#: app/templates/issues/proposal.html:289
+#: app/templates/forum/_discussion.html:68 app/templates/forum/_post.html:263
+#: app/templates/issues/proposal.html:288
 msgid "Post"
 msgstr "Post"
 
@@ -3594,7 +3609,7 @@ msgstr "You are suspended and cannot contribute right now"
 msgid "Accept the conduct rules to join in"
 msgstr "Accept the conduct rules to join in"
 
-#: app/templates/forum/_discussion.html:82 app/templates/forum/index.html:79
+#: app/templates/forum/_discussion.html:82 app/templates/forum/index.html:76
 #, python-format
 msgid "<a href=\"%(url)s\">Log in</a> to join the conversation."
 msgstr "<a href=\"%(url)s\">Log in</a> to join the conversation."
@@ -3755,14 +3770,14 @@ msgstr "Fact moved because of the conduct rules"
 msgid "View on the background page"
 msgstr "View on the background page"
 
-#: app/templates/forum/_facts.html:55 app/templates/forum/_post.html:144
+#: app/templates/forum/_facts.html:55 app/templates/forum/_post.html:140
 #: app/templates/forum/edit_thread.html:15
 #: app/templates/issues/_fact_card.html:45
 #: app/templates/issues/_lifecycle.html:45
 msgid "Edit"
 msgstr "Edit"
 
-#: app/templates/forum/_facts.html:65 app/templates/forum/_post.html:159
+#: app/templates/forum/_facts.html:65 app/templates/forum/_post.html:155
 #: app/templates/issues/_fact_card.html:61
 #: app/templates/issues/_lifecycle.html:55
 #: app/templates/issues/verwijderen.html:2
@@ -3793,95 +3808,87 @@ msgstr "Log in to add a fact."
 msgid "The facts phase is over; the facts are fixed."
 msgstr "The facts phase is over; the facts are fixed."
 
-#: app/templates/forum/_post.html:61
+#: app/templates/forum/_post.html:58
 #, python-format
 msgid "LinkedIn profile of %(name)s"
 msgstr "LinkedIn profile of %(name)s"
 
-#: app/templates/forum/_post.html:81
-msgid "English"
-msgstr "English"
-
-#: app/templates/forum/_post.html:81
-msgid "Dutch"
-msgstr "Dutch"
-
-#: app/templates/forum/_post.html:82
+#: app/templates/forum/_post.html:78
 #, python-format
 msgid "Original in %(language)s"
 msgstr "Original in %(language)s"
 
-#: app/templates/forum/_post.html:126
+#: app/templates/forum/_post.html:122
 msgid "Agree or disagree"
 msgstr "Agree or disagree"
 
-#: app/templates/forum/_post.html:127
+#: app/templates/forum/_post.html:123
 msgid "Agree"
 msgstr "Agree"
 
-#: app/templates/forum/_post.html:127
+#: app/templates/forum/_post.html:123
 msgid "Disagree"
 msgstr "Disagree"
 
-#: app/templates/forum/_post.html:159
+#: app/templates/forum/_post.html:155
 msgid "Delete conversation"
 msgstr "Delete conversation"
 
-#: app/templates/forum/_post.html:174
+#: app/templates/forum/_post.html:170
 msgid "Reply"
 msgstr "Reply"
 
-#: app/templates/forum/_post.html:183 app/templates/forum/_post.html:187
+#: app/templates/forum/_post.html:179 app/templates/forum/_post.html:183
 #: app/templates/forum/quality.html:31 app/templates/forum/quality.html:35
 msgid "Translate to English"
 msgstr "Translate to English"
 
-#: app/templates/forum/_post.html:184 app/templates/forum/quality.html:32
+#: app/templates/forum/_post.html:180 app/templates/forum/quality.html:32
 msgid "Show original"
 msgstr "Show original"
 
-#: app/templates/forum/_post.html:185 app/templates/forum/quality.html:33
+#: app/templates/forum/_post.html:181 app/templates/forum/quality.html:33
 msgid "Translating…"
 msgstr "Translating…"
 
-#: app/templates/forum/_post.html:186 app/templates/forum/quality.html:34
+#: app/templates/forum/_post.html:182 app/templates/forum/quality.html:34
 msgid "Failed, try again"
 msgstr "Failed, try again"
 
-#: app/templates/forum/_post.html:200
+#: app/templates/forum/_post.html:196
 msgid "Don't always translate"
 msgstr "Don't always translate"
 
-#: app/templates/forum/_post.html:202
+#: app/templates/forum/_post.html:198
 msgid "Always translate to English"
 msgstr "Always translate to English"
 
-#: app/templates/forum/_post.html:212 app/templates/issues/_fact_badges.html:40
+#: app/templates/forum/_post.html:208 app/templates/issues/_fact_badges.html:40
 #: app/templates/issues/_report_flag.html:9
 msgid "Reported"
 msgstr "Reported"
 
-#: app/templates/forum/_post.html:215 app/templates/issues/_fact_badges.html:45
+#: app/templates/forum/_post.html:211 app/templates/issues/_fact_badges.html:45
 #: app/templates/issues/_report_flag.html:14
 msgid "Report"
 msgstr "Report"
 
-#: app/templates/forum/_post.html:219 app/templates/issues/_fact_badges.html:51
+#: app/templates/forum/_post.html:215 app/templates/issues/_fact_badges.html:51
 #: app/templates/issues/_report_flag.html:20
 msgid "Why are you reporting this?"
 msgstr "Why are you reporting this?"
 
-#: app/templates/forum/_post.html:220 app/templates/issues/_fact_badges.html:52
+#: app/templates/forum/_post.html:216 app/templates/issues/_fact_badges.html:52
 #: app/templates/issues/_report_flag.html:21
 msgid "Briefly describe what is wrong."
 msgstr "Briefly describe what is wrong."
 
-#: app/templates/forum/_post.html:221 app/templates/issues/_fact_badges.html:53
+#: app/templates/forum/_post.html:217 app/templates/issues/_fact_badges.html:53
 #: app/templates/issues/_report_flag.html:22
 msgid "Send report"
 msgstr "Send report"
 
-#: app/templates/forum/_post.html:259
+#: app/templates/forum/_post.html:255
 msgid "Write your reply…"
 msgstr "Write your reply…"
 
@@ -3924,7 +3931,7 @@ msgstr "Rejected"
 
 #: app/templates/forum/_proposal_status.html:15
 #: app/templates/forum/closed.html:13 app/templates/forum/closed.html:31
-#: app/templates/forum/index.html:48 app/templates/forum/thread.html:56
+#: app/templates/forum/index.html:48 app/templates/forum/thread.html:49
 #: app/templates/issues/index.html:55 app/templates/issues/show.html:23
 #: app/templates/moderator/beheer.html:34
 #: app/templates/moderator/dashboard.html:420
@@ -4265,7 +4272,7 @@ msgstr "Closed conversations"
 
 #: app/templates/forum/closed.html:11 app/templates/forum/edit_thread.html:9
 #: app/templates/forum/index.html:2 app/templates/forum/index.html:11
-#: app/templates/forum/new_thread.html:9 app/templates/forum/thread.html:18
+#: app/templates/forum/new_thread.html:9 app/templates/forum/thread.html:16
 msgid "The conversation"
 msgstr "The conversation"
 
@@ -4273,18 +4280,18 @@ msgstr "The conversation"
 msgid "← Back"
 msgstr "← Back"
 
-#: app/templates/forum/closed.html:44 app/templates/forum/index.html:63
-#: app/templates/forum/thread.html:48
+#: app/templates/forum/closed.html:41 app/templates/forum/index.html:60
+#: app/templates/forum/thread.html:41
 msgid "last"
 msgstr "last"
 
-#: app/templates/forum/closed.html:52 app/templates/issues/_beheer.html:44
+#: app/templates/forum/closed.html:49 app/templates/issues/_beheer.html:44
 #: app/templates/moderator/dashboard.html:466
-#: app/templates/moderator/dashboard.html:496
+#: app/templates/moderator/dashboard.html:497
 msgid "Reopen"
 msgstr "Reopen"
 
-#: app/templates/forum/closed.html:60
+#: app/templates/forum/closed.html:57
 msgid "No closed conversations."
 msgstr "No closed conversations."
 
@@ -4310,11 +4317,11 @@ msgid "Your post will be translated on request for other readers"
 msgstr "Your post will be translated on request for other readers"
 
 #: app/templates/forum/index.html:18 app/templates/forum/new_thread.html:2
-#: app/templates/forum/new_thread.html:11 app/templates/forum/thread.html:25
+#: app/templates/forum/new_thread.html:11 app/templates/forum/thread.html:24
 msgid "New conversation"
 msgstr "New conversation"
 
-#: app/templates/forum/index.html:72
+#: app/templates/forum/index.html:69
 msgid "No conversations yet. Start the first one."
 msgstr "No conversations yet. Start the first one."
 
@@ -4342,7 +4349,7 @@ msgstr "A proposal"
 msgid "A statement that goes to a vote in four phases."
 msgstr "A statement that goes to a vote in four phases."
 
-#: app/templates/forum/new_thread.html:43 app/templates/forum/thread.html:109
+#: app/templates/forum/new_thread.html:43 app/templates/forum/thread.html:102
 #: app/templates/issues/_ip_fields.html:9
 msgid "Statement"
 msgstr "Statement"
@@ -4355,7 +4362,7 @@ msgstr "Phrase your question or statement…"
 msgid "Kind of proposal"
 msgstr "Kind of proposal"
 
-#: app/templates/forum/new_thread.html:62 app/templates/forum/thread.html:66
+#: app/templates/forum/new_thread.html:62 app/templates/forum/thread.html:59
 msgid "Public proposal"
 msgstr "Public proposal"
 
@@ -4363,7 +4370,7 @@ msgstr "Public proposal"
 msgid "Fixed schedule: you set a duration for each phase."
 msgstr "Fixed schedule: you set a duration for each phase."
 
-#: app/templates/forum/new_thread.html:66 app/templates/forum/thread.html:66
+#: app/templates/forum/new_thread.html:66 app/templates/forum/thread.html:59
 #: app/templates/issues/_kind.html:11 app/templates/issues/index.html:38
 #: app/templates/issues/new.html:49 app/templates/issues/new.html:97
 #: app/templates/moderator/beheer.html:35
@@ -4490,7 +4497,7 @@ msgstr "Language of the contribution"
 msgid "The AI judges the English (translated) text and leaves style, spelling and fluency out of consideration."
 msgstr "The AI judges the English (translated) text and leaves style, spelling and fluency out of consideration."
 
-#: app/templates/forum/thread.html:63 app/templates/issues/proposal.html:43
+#: app/templates/forum/thread.html:56 app/templates/issues/proposal.html:43
 #: app/templates/issues/proposal.html:45 app/templates/issues/proposal.html:56
 #: app/templates/issues/proposal.html:58 app/templates/issues/proposal.html:173
 #: app/templates/issues/proposal.html:174
@@ -4498,94 +4505,94 @@ msgstr "The AI judges the English (translated) text and leaves style, spelling a
 msgid "Proposal"
 msgstr "Proposal"
 
-#: app/templates/forum/thread.html:70
+#: app/templates/forum/thread.html:63
 #, python-format
 msgid "Adopted with more than %(pct)s%% in favour"
 msgstr "Adopted with more than %(pct)s%% in favour"
 
-#: app/templates/forum/thread.html:71
+#: app/templates/forum/thread.html:64
 msgid "Running tally visible during voting"
 msgstr "Running tally visible during voting"
 
-#: app/templates/forum/thread.html:71
+#: app/templates/forum/thread.html:64
 msgid "Tally hidden until voting closes"
 msgstr "Tally hidden until voting closes"
 
-#: app/templates/forum/thread.html:81
+#: app/templates/forum/thread.html:74
 msgid "You follow this proposal. You get at most one summary a day."
 msgstr "You follow this proposal. You get at most one summary a day."
 
-#: app/templates/forum/thread.html:82
+#: app/templates/forum/thread.html:75
 msgid "Unfollow"
 msgstr "Unfollow"
 
-#: app/templates/forum/thread.html:84
+#: app/templates/forum/thread.html:77
 msgid "Follow this proposal"
 msgstr "Follow this proposal"
 
-#: app/templates/forum/thread.html:95
+#: app/templates/forum/thread.html:88
 msgid "Revised"
 msgstr "Revised"
 
-#: app/templates/forum/thread.html:96
+#: app/templates/forum/thread.html:89
 #, python-format
 msgid "The statement was revised on %(date)s."
 msgstr "The statement was revised on %(date)s."
 
-#: app/templates/forum/thread.html:97
+#: app/templates/forum/thread.html:90
 msgid "Original statement:"
 msgstr "Original statement:"
 
-#: app/templates/forum/thread.html:105 app/templates/forum/thread.html:116
+#: app/templates/forum/thread.html:98 app/templates/forum/thread.html:109
 msgid "Revise the statement"
 msgstr "Revise the statement"
 
-#: app/templates/forum/thread.html:113
+#: app/templates/forum/thread.html:106
 msgid "You can revise the statement once. After that it is fixed."
 msgstr "You can revise the statement once. After that it is fixed."
 
-#: app/templates/forum/thread.html:114
+#: app/templates/forum/thread.html:107
 msgid "Enter a statement (at most 300 characters) that differs from the current one."
 msgstr "Enter a statement (at most 300 characters) that differs from the current one."
 
-#: app/templates/forum/thread.html:123
+#: app/templates/forum/thread.html:116
 msgid "Close facts and open revision"
 msgstr "Close facts and open revision"
 
-#: app/templates/forum/thread.html:123
+#: app/templates/forum/thread.html:116
 msgid "Close revision and open voting"
 msgstr "Close revision and open voting"
 
-#: app/templates/forum/thread.html:123
+#: app/templates/forum/thread.html:116
 msgid "Close voting and go to the follow-up"
 msgstr "Close voting and go to the follow-up"
 
-#: app/templates/forum/thread.html:126
+#: app/templates/forum/thread.html:119
 msgid "You host this event: you move it through the phases."
 msgstr "You host this event: you move it through the phases."
 
-#: app/templates/forum/thread.html:139
+#: app/templates/forum/thread.html:132
 #, python-format
 msgid "Back to %(phase)s"
 msgstr "Back to %(phase)s"
 
-#: app/templates/forum/thread.html:155
+#: app/templates/forum/thread.html:148
 msgid "Reopen conversation"
 msgstr "Reopen conversation"
 
-#: app/templates/forum/thread.html:162
+#: app/templates/forum/thread.html:155
 msgid "Close conversation"
 msgstr "Close conversation"
 
-#: app/templates/forum/thread.html:173
+#: app/templates/forum/thread.html:166
 msgid "You are viewing part of this conversation."
 msgstr "You are viewing part of this conversation."
 
-#: app/templates/forum/thread.html:174
+#: app/templates/forum/thread.html:167
 msgid "Back to the previous level"
 msgstr "Back to the previous level"
 
-#: app/templates/forum/thread.html:175
+#: app/templates/forum/thread.html:168
 msgid "To the whole conversation"
 msgstr "To the whole conversation"
 
@@ -4744,7 +4751,7 @@ msgid "Write the statement in one sentence of at most 300 characters."
 msgstr "Write the statement in one sentence of at most 300 characters."
 
 #: app/templates/issues/_ip_fields.html:16 app/templates/issues/new.html:105
-#: app/templates/issues/proposal.html:265
+#: app/templates/issues/proposal.html:264
 #: app/templates/moderator/dashboard.html:198
 msgid "Explanation"
 msgstr "Explanation"
@@ -4915,9 +4922,9 @@ msgid "Most support"
 msgstr "Most support"
 
 #: app/templates/issues/_proposals_big.html:51
-#: app/templates/issues/proposal.html:243
-#: app/templates/issues/proposal.html:261
-#: app/templates/issues/proposal.html:326
+#: app/templates/issues/proposal.html:242
+#: app/templates/issues/proposal.html:260
+#: app/templates/issues/proposal.html:325
 #, python-format
 msgid "Version %(n)s"
 msgstr "Version %(n)s"
@@ -4927,7 +4934,7 @@ msgid "No proposals with this status."
 msgstr "No proposals with this status."
 
 #: app/templates/issues/_proposals_big.html:56
-#: app/templates/issues/show.html:183 app/templates/moderator/beheer.html:137
+#: app/templates/issues/show.html:182 app/templates/moderator/beheer.html:137
 msgid "No proposals yet."
 msgstr "No proposals yet."
 
@@ -5014,11 +5021,11 @@ msgid "'Less'"
 msgstr "'Less'"
 
 #: app/templates/issues/final_new.html:19 app/templates/issues/proposal.html:42
-#: app/templates/issues/proposal.html:59 app/templates/issues/proposal.html:316
-#: app/templates/issues/proposal.html:318
+#: app/templates/issues/proposal.html:59 app/templates/issues/proposal.html:315
+#: app/templates/issues/proposal.html:317
 #: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:94
 #: app/templates/issues/show.html:145 app/templates/issues/show.html:147
-#: app/templates/issues/show.html:148 app/templates/issues/show.html:188
+#: app/templates/issues/show.html:148 app/templates/issues/show.html:187
 #: app/templates/moderator/beheer.html:84
 msgid "Proposals"
 msgstr "Proposals"
@@ -5100,13 +5107,6 @@ msgstr "No issues match this filter."
 #: app/templates/issues/index.html:67
 msgid "No issues yet. Start the first one."
 msgstr "No issues yet. Start the first one."
-
-# Herontwerp stap 1: vraagstukken (Issue)
-#: app/templates/issues/new.html:23 app/templates/issues/proposal_new.html:16
-#: app/templates/issues/show.html:91
-#: app/templates/moderator/melding_beoordelen.html:68
-msgid "Issue"
-msgstr "Issue"
 
 #: app/templates/issues/new.html:24
 msgid "Start a new issue"
@@ -5325,9 +5325,9 @@ msgstr "Unlink"
 
 #: app/templates/issues/proposal.html:100
 #: app/templates/issues/proposal.html:134
-#: app/templates/issues/proposal.html:331 app/templates/issues/show.html:119
-#: app/templates/issues/show.html:120 app/templates/issues/show.html:188
-#: app/templates/issues/show.html:189
+#: app/templates/issues/proposal.html:330 app/templates/issues/show.html:119
+#: app/templates/issues/show.html:120 app/templates/issues/show.html:187
+#: app/templates/issues/show.html:188
 msgid "Show more"
 msgstr "Show more"
 
@@ -5406,62 +5406,62 @@ msgstr "Each revision becomes a new version. Earlier versions stay visible."
 msgid "Save the revision"
 msgstr "Save the revision"
 
-#: app/templates/issues/proposal.html:237
+#: app/templates/issues/proposal.html:236
 msgid "Earlier versions"
 msgstr "Earlier versions"
 
-#: app/templates/issues/proposal.html:246
+#: app/templates/issues/proposal.html:245
 msgid "Reactions"
 msgstr "Reactions"
 
-#: app/templates/issues/proposal.html:246
+#: app/templates/issues/proposal.html:245
 msgid "reactions"
 msgstr "reactions"
 
-#: app/templates/issues/proposal.html:251
+#: app/templates/issues/proposal.html:250
 #, python-format
 msgid "Reactions to version %(number)s"
 msgstr "Reactions to version %(number)s"
 
-#: app/templates/issues/proposal.html:253
+#: app/templates/issues/proposal.html:252
 msgid "No reactions to this version."
 msgstr "No reactions to this version."
 
-#: app/templates/issues/proposal.html:261
+#: app/templates/issues/proposal.html:260
 msgid "Current version"
 msgstr "Current version"
 
-#: app/templates/issues/proposal.html:269
+#: app/templates/issues/proposal.html:268
 msgid "No explanation."
 msgstr "No explanation."
 
-#: app/templates/issues/proposal.html:280
+#: app/templates/issues/proposal.html:279
 #, python-format
 msgid "Reactions to version %(current_version)s"
 msgstr "Reactions to version %(current_version)s"
 
-#: app/templates/issues/proposal.html:286
+#: app/templates/issues/proposal.html:285
 #, python-format
 msgid "Your reaction to version %(n)s"
 msgstr "Your reaction to version %(n)s"
 
-#: app/templates/issues/proposal.html:287
+#: app/templates/issues/proposal.html:286
 msgid "Write a reaction…"
 msgstr "Write a reaction…"
 
-#: app/templates/issues/proposal.html:296
+#: app/templates/issues/proposal.html:295
 msgid "No reactions to this version yet."
 msgstr "No reactions to this version yet."
 
-#: app/templates/issues/proposal.html:304
+#: app/templates/issues/proposal.html:303
 msgid "Withdraw proposal"
 msgstr "Withdraw proposal"
 
-#: app/templates/issues/proposal.html:305
+#: app/templates/issues/proposal.html:304
 msgid "You can withdraw your own proposal as long as nobody has reacted yet."
 msgstr "You can withdraw your own proposal as long as nobody has reacted yet."
 
-#: app/templates/issues/proposal.html:317 app/templates/issues/show.html:146
+#: app/templates/issues/proposal.html:316 app/templates/issues/show.html:146
 msgid "New proposal"
 msgstr "New proposal"
 
@@ -5555,20 +5555,20 @@ msgstr "Discussion"
 msgid "This issue has no discussion yet."
 msgstr "This issue has no discussion yet."
 
-#: app/templates/issues/show.html:201
+#: app/templates/issues/show.html:200
 msgid "Your right to vote"
 msgstr "Your right to vote"
 
-#: app/templates/issues/show.html:208
+#: app/templates/issues/show.html:207
 #, python-format
 msgid "%(count)s of %(needed)s quality marks for the right to vote"
 msgstr "%(count)s of %(needed)s quality marks for the right to vote"
 
-#: app/templates/issues/show.html:211
+#: app/templates/issues/show.html:210
 msgid "You earn a quality mark with a well argued contribution to a discussion."
 msgstr "You earn a quality mark with a well argued contribution to a discussion."
 
-#: app/templates/issues/show.html:214
+#: app/templates/issues/show.html:213
 msgid "to see your right to vote."
 msgstr "to see your right to vote."
 
@@ -6622,4 +6622,6 @@ msgstr "Deleting"
 #: app/templates/moderator/rechten.html:25
 msgid "An admin may always do everything. These settings apply as soon as you save, to all issues."
 msgstr "An admin may always do everything. These settings apply as soon as you save, to all issues."
+
+
 

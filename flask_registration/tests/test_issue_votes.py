@@ -241,7 +241,7 @@ def test_final_proposal_by_initiator_in_summary_phase(app, db, make_user):
     assert r.headers['Location'].endswith(_detail(issue, final))
     db.session.refresh(issue)
     assert (issue.title, issue.intro) == ('Hoe richten we het plein in?', 'Aangescherpte vraag.')
-    assert issue.thread.title_prefix_nl == 'Hoe richten we het plein in?'
+    assert issue.thread.title_prefix == 'Hoe richten we het plein in?'
     assert _req(_client(app, author), 'POST', url, data=data).status_code == 403  # maar één
     assert final not in [p for p, _n in ip.listing(issue)]  # niet tussen de gewone voorstellen
 

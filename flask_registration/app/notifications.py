@@ -25,7 +25,7 @@ import json
 from flask_babel import force_locale, gettext, lazy_gettext, lazy_pgettext, pgettext
 from datetime import datetime, timedelta
 
-from app import db, i18n
+from app import content_i18n, db, i18n
 
 SUMMARY_FREQUENCIES = ('off', 'daily', 'weekly')
 DEFAULT_SUMMARY_FREQUENCY = 'weekly'
@@ -420,8 +420,9 @@ def _tick_line(n, lang):
         title = issue.title
         url = url_for('issues.show', issue_id=issue.id)
     elif n.thread_id is not None and (thread := db.session.get(Thread, n.thread_id)) is not None:
-        # Content model (phase 0 step 6): the stored title per language.
-        title = thread.title_prefix_nl if lang == 'nl' else (thread.title_prefix_en or thread.title_prefix_nl)
+        # Content model (phase 0 step 6): the title in the reader's language
+        # when translated, else the original.
+        title = content_i18n.display(thread, 'title_prefix', i18n.normalize(lang))
         url = url_for('forum.forum_thread', thread_id=thread.id)
     if title:
         t = f'‘{title}’'

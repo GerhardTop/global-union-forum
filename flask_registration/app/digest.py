@@ -176,8 +176,7 @@ def build(user, now=None, issue_participants=None):
             continue
         important = important or bool(changes)
         items.append({'thread_id': thread.id,
-                      'title': ' '.join(p for p in (thread.title_prefix_nl, thread.title_accent_nl,
-                                                    thread.title_suffix_nl) if p),
+                      'title': thread.title_text(),
                       'changes': changes, 'new_posts': posts, 'new_facts': facts})
     # Stap 7: de vraagstukken waarbij deze gebruiker betrokken is.
     from app import issue_lifecycle

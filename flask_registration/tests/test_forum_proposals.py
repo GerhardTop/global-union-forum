@@ -86,7 +86,7 @@ PUBLIC = {'type': 'voorstel', 'kind': 'publiek',
 
 
 def _thread(title):
-    return Thread.query.filter_by(title_prefix_nl=title).one()
+    return Thread.query.filter_by(title_prefix=title).one()
 
 
 class TestCreate:
@@ -106,7 +106,7 @@ class TestCreate:
         assert p.bijstellen_start == p.feiten_end and p.bijstellen_end == p.feiten_end + timedelta(hours=48)
         assert p.stemmen_start == p.bijstellen_end and p.stemmen_end == p.bijstellen_end + timedelta(days=5)
         assert p.window('vervolg') == (p.stemmen_end, None)
-        assert t.eyebrow_nl == 'Forum · voorstel' and t.eyebrow_en == 'Forum · proposal'
+        assert t.eyebrow == 'Forum · voorstel' and t.eyebrow_in('en') == 'Forum · proposal'
         assert Post.query.filter_by(thread_id=t.id, is_op=True).one().body == 'Toelichting bij het voorstel.'
 
     def test_event_without_durations(self, app, db, make_user):
@@ -139,7 +139,7 @@ class TestMaximums:
         client = _client(app, anna)
         resp = _req(client, 'POST', '/forum/nieuw', data={'title': 'Te lang', 'body': 'Uitleg.', **data})
         assert resp.status_code == 303 and resp.headers['Location'].endswith('/forum/nieuw')
-        assert Thread.query.filter_by(title_prefix_nl='Te lang').count() == 0
+        assert Thread.query.filter_by(title_prefix='Te lang').count() == 0
         html = _req(client, 'GET', '/forum/nieuw').get_data(as_text=True)
         assert message in html and 'value="Te lang"' in html and 'Uitleg.</textarea>' in html
         assert 'name="type" value="voorstel" checked' in html
@@ -229,7 +229,7 @@ class TestRegularConversation:
         assert 'name="type" value="gesprek" checked' in form
         assert _start(app, anna, 'Gewoon gesprek').status_code == 302
         t = _thread('Gewoon gesprek')
-        assert t.proposal is None and t.eyebrow_nl == 'Forum · gesprek'
+        assert t.proposal is None and t.eyebrow == 'Forum · gesprek'
         assert Proposal.query.filter_by(thread_id=t.id).count() == 0
         html = _req(_client(app), 'GET', f'/forum/{t.id}').get_data(as_text=True)
         assert 'gu-proposal' not in html and 'In discussie' not in html

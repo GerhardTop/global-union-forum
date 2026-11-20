@@ -171,8 +171,7 @@
           {% for proposal in issue.proposals %}
           <li class="gu-cockpit__proposal">
             <a href="{{ url_for('forum.forum_thread', thread_id=proposal.thread_id) }}#voorstel">
-              {%- if lang == 'nl' -%}{{ proposal.thread.title_prefix_nl }}{% if proposal.thread.title_accent_nl %} {{ proposal.thread.title_accent_nl }}{% endif %}{{ proposal.thread.title_suffix_nl }}
-              {%- else -%}{{ proposal.thread.title_prefix_en }}{% if proposal.thread.title_accent_en %} {{ proposal.thread.title_accent_en }}{% endif %}{{ proposal.thread.title_suffix_en }}{%- endif -%}
+              {%- set tp, ta, ts = proposal.thread.title(lang) -%}{{ tp }}{% if ta %} {{ ta }}{% endif %}{{ ts }}
             </a>
             {% include 'forum/_proposal_status.html' %}
           </li>

@@ -20,7 +20,7 @@ def test_existing_likes_become_agree_and_rerun_is_safe(app, db):
                  password_hash=bcrypt.generate_password_hash('Sterk1!ww').decode('utf-8'))
         db.session.add(u)
         users.append(u)
-    t = Thread(eyebrow_nl='M', eyebrow_en='M', title_prefix_nl='Mig', title_prefix_en='Mig')
+    t = Thread(eyebrow='M', title_prefix='Mig')
     db.session.add(t)
     db.session.flush()
     post = Post(thread_id=t.id, author_name='', author_username='x', body='b')

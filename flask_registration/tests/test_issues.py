@@ -70,8 +70,7 @@ def _old_proposal(db, user, title, kind='publiek', minutes=None):
     """Een voorstel zoals het vóór het herontwerp bestond: zonder vraagstuk."""
     if kind == 'publiek' and minutes is None:
         minutes = {'feiten': 1440, 'bijstellen': 1440, 'stemmen': 1440}
-    thread = Thread(eyebrow_nl='Forum · voorstel', eyebrow_en='Forum · proposal',
-                    title_prefix_nl=title, title_prefix_en=title)
+    thread = Thread(eyebrow='Forum · voorstel', title_prefix=title)
     db.session.add(thread)
     db.session.flush()
     proposal = proposals.create(thread, kind, user, minutes=minutes, threshold=60, show_live_tally=True)
@@ -123,7 +122,7 @@ def test_old_start_form_wraps_new_proposal(app, db, make_user):
     r = _req(_client(app, user), 'POST', '/forum/nieuw',
              data={'title': 'Nieuw voorstel', 'body': 'Toelichting.', 'type': 'voorstel', 'kind': 'event'})
     assert r.status_code == 302
-    proposal = Proposal.query.join(Thread).filter(Thread.title_prefix_nl == 'Nieuw voorstel').one()
+    proposal = Proposal.query.join(Thread).filter(Thread.title_prefix == 'Nieuw voorstel').one()
     assert proposal.issue is not None
     assert proposal.issue.title == 'Nieuw voorstel'
     assert proposal.issue.intro == 'Toelichting.'
@@ -293,10 +292,10 @@ def test_backfill_gives_a_threadless_issue_its_own_thread(db, make_user):
     issues.backfill()
     db.session.refresh(issue)
     op = issues.opening_post(issue)
-    assert issue.thread is not None and issue.thread.title_prefix_nl == 'Uit stap 1'
+    assert issue.thread is not None and issue.thread.title_prefix == 'Uit stap 1'
     assert op.body == 'Toelichting uit stap 1.' and op.user_id == user.id and op.source_lang == 'en'
     issues.backfill()
-    assert Thread.query.filter_by(title_prefix_nl='Uit stap 1').count() == 1
+    assert Thread.query.filter_by(title_prefix='Uit stap 1').count() == 1
 
 
 def test_new_issue_gets_its_own_thread(app, db, make_user):

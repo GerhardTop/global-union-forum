@@ -28,8 +28,7 @@ def make_proposal(db, make_user):
     def _make(kind='publiek', started_minutes_ago=0, host=None, title=None):
         host = host or make_user()
         title = title or f'Stelling {uuid.uuid4().hex[:6]}'
-        t = Thread(eyebrow_nl='Forum · voorstel', eyebrow_en='Forum · proposal',
-                   title_prefix_nl=title, title_prefix_en=title)
+        t = Thread(eyebrow='Forum · voorstel', title_prefix=title)
         db.session.add(t)
         db.session.flush()
         db.session.add(Post(thread_id=t.id, user_id=host.id, author_name='', author_username=host.username,
@@ -163,7 +162,7 @@ class TestRevision:
         db.session.expire_all()
         thread = db.session.get(Thread, t.id)
         p = thread.proposal
-        assert (thread.title_prefix_nl, thread.title_prefix_en) == ('Bijgestelde stelling', 'Bijgestelde stelling')
+        assert (thread.title_prefix, thread.title('en')[0]) == ('Bijgestelde stelling', 'Bijgestelde stelling')
         assert p.original_statement == 'Oorspronkelijke stelling' and p.revised_at is not None
         page = _page(app, None, t)
         assert 'Bijgestelde stelling' in page and '<del>Oorspronkelijke stelling</del>' in page
@@ -185,7 +184,7 @@ class TestRevision:
         for user in (other, mod):
             assert self._revise(app, user, t2, 'Door een ander').status_code == 403
             assert 'Stelling bijstellen' not in _page(app, user, t2)
-        assert db.session.get(Thread, t2.id).title_prefix_nl != 'Door een ander'
+        assert db.session.get(Thread, t2.id).title_prefix != 'Door een ander'
 
     def test_invalid_statement_and_discussion_keeps_working(self, app, db, make_user, make_proposal):
         host = make_user()
@@ -209,7 +208,7 @@ class TestRevision:
         _page(app, None, t)
         resp = _req(_client(app, host), 'POST', f'/forum/{t.id}/bewerken', data={'title': 'Via bewerken', 'body': 'x'})
         assert resp.status_code == 302
-        assert db.session.get(Thread, t.id).title_prefix_nl == 'Vaste stelling'
+        assert db.session.get(Thread, t.id).title_prefix == 'Vaste stelling'
         fresh = make_proposal(host=host, title='Nog in feitenfase')
         assert _req(_client(app, host), 'GET', f'/forum/{fresh.id}/bewerken').status_code == 200
 

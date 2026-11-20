@@ -77,7 +77,7 @@ class TestThreshold:
         client = _client(app, anna)
         resp = _req(client, 'POST', '/forum/nieuw', data={'title': 'Lage drempel', 'body': 'x',
                                                            'drempel': value, **PUBLIC})
-        assert resp.status_code == 303 and Thread.query.filter_by(title_prefix_nl='Lage drempel').count() == 0
+        assert resp.status_code == 303 and Thread.query.filter_by(title_prefix='Lage drempel').count() == 0
         html = _req(client, 'GET', '/forum/nieuw').get_data(as_text=True)
         assert 'Kies een drempel van 50 tot en met 99 procent.' in html and f'value="{value}"' in html
 

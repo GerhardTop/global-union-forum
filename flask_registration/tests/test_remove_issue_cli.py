@@ -40,7 +40,7 @@ def test_execute_removes_backfilled_issue_with_old_proposal(app, db, verified_us
     from app import issues, proposals
     from app.models import Issue, Proposal, Thread
     user = verified_user
-    thread = Thread(eyebrow_nl='Forum', eyebrow_en='Forum', title_prefix_nl='TEST oud', title_prefix_en='TEST oud')
+    thread = Thread(eyebrow='Forum', title_prefix='TEST oud')
     db.session.add(thread)
     db.session.flush()
     old = proposals.create(thread, 'publiek', user, minutes={'feiten': 1440, 'bijstellen': 1440, 'stemmen': 1440},

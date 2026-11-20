@@ -192,7 +192,7 @@ def english_text(post, client=None):
 
 
 def _thread_title(thread):
-    return ' '.join(p for p in (thread.title_prefix_en, thread.title_accent_en, thread.title_suffix_en) if p)
+    return thread.title_text(JUDGE_LANG)
 
 
 def judge_post(post_id):
