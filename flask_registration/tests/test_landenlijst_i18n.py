@@ -1,7 +1,8 @@
 """Multilingual phase 0 step 6e: the country list from ISO codes.
 
-Names come from Babel per language (with the site's own names where it
-uses one), the level and 'invite' are codes with gettext labels, remarks
+Names come from Babel per language, except for the politically sensitive
+territories (PS, HK, TW, XK), which have the site's own name in every enabled
+language, the level and 'invite' are codes with gettext labels, remarks
 per language with English as the fallback, downloads per language with the
 English files as the fallback.
 """
@@ -10,6 +11,9 @@ import json
 import os
 
 from babel import Locale
+
+import config
+from app import i18n
 
 # The module (app.routes.main as an attribute is the blueprint).
 main_routes = importlib.import_module('app.routes.main')
@@ -38,8 +42,40 @@ def test_names_per_language():
     assert main_routes.country_name(by_iso['NO'], 'de') == 'Norwegen'      # any language via Babel
     assert main_routes.country_name(by_iso['PS'], 'nl') == 'Palestina'      # the site's own name
     assert main_routes.country_name(by_iso['PS'], 'en') == 'Palestine'
-    assert main_routes.country_name(by_iso['CZ'], 'en') == 'Czech Republic'
+    assert main_routes.country_name(by_iso['PS'], 'de') == 'Palestine'      # not enabled: own English name
+    assert main_routes.country_name(by_iso['CZ'], 'en') == Locale('en').territories['CZ']   # Babel
+    assert main_routes.country_name(by_iso['CZ'], 'nl') == Locale('nl').territories['CZ']
     assert main_routes.country_name(by_iso['NO'], 'xx') == 'Norway'         # unknown: English
+
+
+SENSITIVE = {'PS', 'HK', 'TW', 'XK'}
+
+
+def test_only_the_sensitive_territories_have_own_names():
+    rows = _rows()
+    assert {r['iso'] for r in rows if r.get('sensitive')} == SENSITIVE
+    assert not any('names' in r for r in rows if not r.get('sensitive'))
+    by_iso = {r['iso']: r for r in rows}
+    # The current names stay.
+    assert {iso: by_iso[iso]['names'] for iso in SENSITIVE} == {
+        'PS': {'en': 'Palestine', 'nl': 'Palestina'}, 'HK': {'en': 'Hong Kong', 'nl': 'Hongkong'},
+        'TW': {'en': 'Taiwan', 'nl': 'Taiwan'}, 'XK': {'en': 'Kosovo', 'nl': 'Kosovo'}}
+
+
+def _missing_sensitive_names():
+    return sorted((r['iso'], lang) for r in _rows() if r.get('sensitive')
+                  for lang in i18n.enabled_codes() if not (r['names'].get(lang) or '').strip())
+
+
+def test_every_enabled_language_has_an_own_name_for_the_sensitive_territories():
+    """Never Babel for these four: enabling a language means writing their
+    names into app/data/landenlijst_data.json first."""
+    assert _missing_sensitive_names() == []
+
+
+def test_the_guard_fails_for_a_language_without_own_names(monkeypatch):
+    monkeypatch.setattr(config, 'ENABLED_LANGUAGES', ['nl', 'en', 'de'])
+    assert _missing_sensitive_names() == [('HK', 'de'), ('PS', 'de'), ('TW', 'de'), ('XK', 'de')]
 
 
 def test_remarks_and_downloads_fall_back_to_english():
