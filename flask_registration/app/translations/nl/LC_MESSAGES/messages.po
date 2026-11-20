@@ -4282,7 +4282,7 @@ msgstr "laatst"
 #: app/templates/moderator/dashboard.html:466
 #: app/templates/moderator/dashboard.html:496
 msgid "Reopen"
-msgstr "Opnieuw openstellen"
+msgstr "Heropenen"
 
 #: app/templates/forum/closed.html:60
 msgid "No closed conversations."
