@@ -1388,7 +1388,8 @@ def forum_quality_decide(post_id):
         if award.source == 'ai':
             award.moderator_note = note
         else:
-            award.explanation_nl = award.explanation_en = note
+            award.explanation = note
+            content_i18n.invalidate(award, 'explanation')
     award.decided_by_id = current_user.id
     award.decided_at = datetime.utcnow()
     db.session.commit()
@@ -1420,27 +1421,24 @@ def forum_quality_page(post_id):
                            auto_translate=_auto_translate())
 
 
-def _translate_ai_text(obj, prefix, src_lang):
+def _translate_ai_text(obj, field, src_lang):
     """Vertaal een AI-tekst (uitleg of reactie) naar de taal van de lezer, op
     verzoek en precies zoals forum_translate een bericht vertaalt: dezelfde
     vertaalhelper, alleen echte API-aanroepen tellen voor de rate limit, en de
-    vertaling gecachet in het veld van die taal (het origineel blijft staan)."""
-    user_lang = session.get('lang', 'nl')
+    vertaling gecachet in content_translations (het origineel blijft staan)."""
+    user_lang = i18n.normalize(session.get('lang'))
     if src_lang is None or user_lang == src_lang:
         return jsonify({'error': 'no translation needed'}), 400
-    field = f'{prefix}_{user_lang}'
-    if getattr(obj, field):
-        return jsonify({'translation': getattr(obj, field)})
-    source = getattr(obj, f'{prefix}_{src_lang}') or ''
-    if not source.strip():
+    cached = content_i18n.text_for(obj, field, user_lang)
+    if cached is not None:
+        return jsonify({'translation': cached})
+    if not (content_i18n.original(obj, field) or '').strip():
         return jsonify({'error': 'no content'}), 400
     if not current_app.config.get('ANTHROPIC_API_KEY', ''):
         return jsonify({'error': 'translation unavailable'}), 503
     g.translation_api_called = True  # telt mee voor de rate limit
     try:
-        translation = quality.translate_text(source, user_lang)
-        setattr(obj, field, translation)
-        db.session.commit()
+        translation = content_i18n.translate(obj, field, user_lang)
         return jsonify({'translation': translation})
     except Exception as e:
         current_app.logger.error('Translation error: %s', e)

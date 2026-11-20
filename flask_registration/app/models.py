@@ -457,8 +457,10 @@ class QualityAward(db.Model):
     post_id          = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False, unique=True)
     criterion        = db.Column(db.String(2), nullable=True)      # K1/K2/K3, None = geen
     status           = db.Column(db.String(12), nullable=False, default='voorgesteld')
-    explanation_nl   = db.Column(db.String(400), nullable=True)
-    explanation_en   = db.Column(db.String(400), nullable=True)
+    # Multilingual step 6c: one original explanation, in post_lang (the AI
+    # writes in the language of the post); translations in
+    # content_translations. explanation_nl/_en stay in the database, unused.
+    explanation      = db.Column(db.String(400), nullable=True)
     source           = db.Column(db.String(10), nullable=False, default='ai')  # ai/moderator/demo
     post_lang        = db.Column(db.String(5), nullable=True)      # voor C2: percentage per taal
     # Wat de AI vond (alleen bij source 'ai'), voor de moderator en voor C2.
@@ -475,7 +477,7 @@ class QualityAward(db.Model):
     prompt_text      = db.Column(db.Text, nullable=True)
     model            = db.Column(db.String(40), nullable=True)
     # Toelichting van de moderator bij een aanpassing. Het oorspronkelijke
-    # AI-oordeel (ai_criterion + explanation_*) blijft zo onveranderd in de
+    # AI-oordeel (ai_criterion + explanation) blijft zo onveranderd in de
     # discussie staan; de huidige stand is criterion/status + deze notitie.
     moderator_note   = db.Column(db.String(400), nullable=True)
     # Fase D: het handhavingsoordeel uit dezelfde AI-aanroep, zoals de AI het
@@ -500,9 +502,11 @@ class QualityAward(db.Model):
     post       = db.relationship('Post', backref=db.backref('quality_award', uselist=False))
     decided_by = db.relationship('User', foreign_keys=[decided_by_id])
 
-    def explanation(self, lang):
-        return (self.explanation_nl if lang == 'nl' else self.explanation_en) or \
-               self.explanation_en or self.explanation_nl or ''
+    def explanation_for(self, lang):
+        """The explanation for a reader of `lang`: a translation when there is
+        one, else the original (app/content_i18n.py)."""
+        from app import content_i18n
+        return content_i18n.display(self, 'explanation', lang) or ''
 
     @property
     def text_lang(self):
@@ -511,20 +515,17 @@ class QualityAward(db.Model):
         vertaald, net zoals vooraf vertaalde demo-posts."""
         if self.source != 'ai':
             return None
-        return self.post_lang if self.post_lang in ('nl', 'en') else 'en'
+        from app import content_i18n
+        return content_i18n.source_lang(self)
 
     def original_explanation(self):
-        """De uitleg zoals de AI hem schreef; een vertaling in de andere taal
-        is alleen een cache (zelfde aanpak als body_nl/body_en bij posts)."""
-        lang = self.text_lang
-        if lang is None:
-            return self.explanation('nl')
-        return (self.explanation_nl if lang == 'nl' else self.explanation_en) or self.explanation(lang)
+        """De uitleg zoals de AI hem schreef; een vertaling is alleen een cache."""
+        return self.explanation or ''
 
     def current_explanation(self, lang):
         """De uitleg bij de huidige stand: de notitie van de moderator als die
         het oordeel aanpaste, anders de oorspronkelijke uitleg."""
-        return self.moderator_note or self.explanation(lang)
+        return self.moderator_note or self.explanation_for(lang)
 
     @property
     def ai_status(self):
@@ -611,8 +612,10 @@ class QualityObjection(db.Model):
     text            = db.Column(db.Text, nullable=False)
     created_at      = db.Column(db.DateTime, default=datetime.utcnow)
     ai_stance       = db.Column(db.String(12), nullable=True)      # verdedigt/geeft_toe
-    ai_response_nl  = db.Column(db.Text, nullable=True)
-    ai_response_en  = db.Column(db.Text, nullable=True)
+    # Multilingual step 6c: one original AI response in ai_response_lang;
+    # translations in content_translations (ai_response_nl/_en stay, unused).
+    ai_response      = db.Column(db.Text, nullable=True)
+    ai_response_lang = db.Column(db.String(5), nullable=True)
     ai_prompt_text  = db.Column(db.Text, nullable=True)
     ai_responded_at = db.Column(db.DateTime, nullable=True)
     decision        = db.Column(db.String(12), nullable=True)      # handhaven/aanpassen/intrekken, None = open

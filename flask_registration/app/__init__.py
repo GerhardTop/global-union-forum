@@ -363,6 +363,8 @@ _POLISH_COLUMNS = {
 # db.create_all(). The old columns stay in the database (unused by the code).
 _CONTENT_COLUMNS = {
     'posts': (('author_badge', 'VARCHAR(200) NULL'),),
+    'quality_awards': (('explanation', 'VARCHAR(400) NULL'),),
+    'quality_objections': (('ai_response', 'TEXT NULL'), ('ai_response_lang', 'VARCHAR(5) NULL')),
 }
 
 

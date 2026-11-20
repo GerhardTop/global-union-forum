@@ -18,7 +18,7 @@
       · {{ _('source') }}: {{ (_('yes')) if qa.ai_has_source else (_('no')) }}{% if qa.ai_has_source %} ({{ (_('new')) if qa.ai_source_is_new else (_('not new')) }}){% endif %}
       · {{ _('language') }}: {{ (qa.post_lang or '?') | upper }}
     </p>
-    {% if qa.explanation(lang) %}<p class="gu-quality__meta">{{ qa.explanation(lang) }}</p>{% endif %}
+    {% if qa.explanation_for(lang) %}<p class="gu-quality__meta">{{ qa.explanation_for(lang) }}</p>{% endif %}
     {% endif %}
     <form method="POST" action="{{ url_for('forum.forum_quality_decide', post_id=post.id) }}" class="gu-quality-mod__form">
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}

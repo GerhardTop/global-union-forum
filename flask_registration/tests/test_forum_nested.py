@@ -342,7 +342,7 @@ class TestMedal:
         posts = _chain(db, thread, forum_users, 2)
         p, plain = posts[1], posts[2]
         db.session.add(QualityAward(post_id=p.id, source='ai', status='toegekend', criterion='K1',
-                                    ai_criterion='K1', post_lang='nl', explanation_nl='Nieuw argument over handel.'))
+                                    ai_criterion='K1', post_lang='nl', explanation='Nieuw argument over handel.'))
         db.session.commit()
         try:
             html = _get(client, f'/forum/{thread.id}', lang)

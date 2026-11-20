@@ -104,6 +104,75 @@ def migrate_posts(conn, counts):
     counts.update(writer.counts)
 
 
+def _pick(row, prefix, src):
+    """(original, language) from the old columns: the source language first."""
+    if row.get(f'{prefix}_{src}'):
+        return row[f'{prefix}_{src}'], src
+    for lang in _OLD_LANGS:
+        if row.get(f'{prefix}_{lang}'):
+            return row[f'{prefix}_{lang}'], lang
+    return None, src
+
+
+def migrate_awards(conn, counts):
+    """6c: QualityAward.explanation, in post_lang (the AI writes in the
+    language of the post). The other language was a machine cache for AI
+    awards and handwritten for demo and moderator awards."""
+    cols = _columns(conn, 'quality_awards')
+    old = [c for c in ('explanation_nl', 'explanation_en') if c in cols]
+    if not old or 'explanation' not in cols:
+        return
+    writer = _Writer(conn, 'quality_awards')
+    rows = conn.execute(text(
+        f'SELECT id, explanation, post_lang, source, {", ".join(old)} FROM quality_awards '
+        f'WHERE {" OR ".join(f"{c} IS NOT NULL" for c in old)}')).mappings().all()
+    filled = 0
+    for row in rows:
+        src = row['post_lang'] or 'nl'
+        original = row['explanation']
+        if not original:
+            original, _lang = _pick(row, 'explanation', src)
+            if original:
+                _fill(conn, 'quality_awards', 'explanation', row['id'], original)
+                filled += 1
+        for lang in _OLD_LANGS:
+            value = row.get(f'explanation_{lang}')
+            if lang != src and value != original:
+                writer.add(row['id'], 'explanation', lang, value, original, row['source'] == 'ai')
+    counts['quality_awards.explanation filled'] = filled
+    counts.update(writer.counts)
+
+
+def migrate_objections(conn, counts):
+    """6c: QualityObjection.ai_response with its language (new column): the
+    language of the post, like the explanation; the other one is a cache."""
+    cols = _columns(conn, 'quality_objections')
+    old = [c for c in ('ai_response_nl', 'ai_response_en') if c in cols]
+    if not old or 'ai_response' not in cols:
+        return
+    writer = _Writer(conn, 'quality_objections')
+    rows = conn.execute(text(
+        f'SELECT o.id, o.ai_response, o.ai_response_lang, a.post_lang, {", ".join("o." + c for c in old)} '
+        f'FROM quality_objections o LEFT JOIN quality_awards a ON a.id = o.award_id '
+        f'WHERE {" OR ".join(f"o.{c} IS NOT NULL" for c in old)}')).mappings().all()
+    filled = 0
+    for row in rows:
+        original, src = row['ai_response'], row['ai_response_lang']
+        if not original:
+            original, src = _pick(row, 'ai_response', row['post_lang'] or 'nl')
+            if original:
+                conn.execute(text("UPDATE quality_objections SET ai_response = :v, ai_response_lang = :l "
+                                  "WHERE id = :i AND (ai_response IS NULL OR ai_response = '')"),
+                             {'v': original, 'l': src, 'i': row['id']})
+                filled += 1
+        for lang in _OLD_LANGS:
+            value = row.get(f'ai_response_{lang}')
+            if lang != src and value != original:
+                writer.add(row['id'], 'ai_response', lang, value, original, True)
+    counts['quality_objections.ai_response filled'] = filled
+    counts.update(writer.counts)
+
+
 def migrate(engine):
     """Run every content migration in one transaction; print what it added."""
     counts = {}
@@ -111,6 +180,8 @@ def migrate(engine):
         if 'content_translations' not in sa_inspect(conn).get_table_names():
             return counts
         migrate_posts(conn, counts)
+        migrate_awards(conn, counts)
+        migrate_objections(conn, counts)
         conn.commit()
     summary = ', '.join(f'{k} {v}' for k, v in sorted(counts.items())) or 'nothing to migrate'
     print(f'Content migration (multilingual step 6): {summary}', flush=True)

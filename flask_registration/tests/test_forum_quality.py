@@ -24,7 +24,7 @@ from flask import g
 from flask_babel import refresh
 from sqlalchemy import text
 
-from app import bcrypt, quality
+from app import bcrypt, content_i18n, quality
 from app.models import Post, PostLike, QualityAward, QualityObjection, QualityReport, Thread, User
 
 
@@ -240,7 +240,7 @@ class TestAutomaticJudgement:
 # ── Taal: volledig in de taal van de bijdrage ────────────────────────────
 
 NL_RULE = 'Schrijf je volledige antwoord in het Nederlands. Gebruik geen Engelse woorden of zinsdelen. Meng geen talen.'
-EN_RULE = 'Write your entire response in English. Do not use Dutch words or phrases. Do not mix languages.'
+EN_RULE = 'Write your entire response in English. Do not use words or phrases from another language. Do not mix languages.'
 
 
 def _reply_in(app, user, thread, body, lang):
@@ -257,7 +257,8 @@ class TestResponseLanguage:
         assert NL_RULE in judge['messages'][0]['content'] and 'in Dutch' in judge['messages'][0]['content']
         assert 'explanation_en' not in json.dumps(judge['output_config'])
         award = _award(post.id)
-        assert (award.explanation_nl, award.explanation_en) == ('Voegt een nieuw argument toe.', None)
+        assert (award.explanation, award.post_lang) == ('Voegt een nieuw argument toe.', 'nl')
+        assert content_i18n.text_for(award, 'explanation', 'en') is None
         assert award.prompt_text.startswith('[system]\n' + NL_RULE)  # regel ook in de getoonde prompt
 
     def test_english_post_gets_english_rule_and_english_explanation(self, app, db, make_user, thread, fake_ai):
@@ -267,7 +268,8 @@ class TestResponseLanguage:
         assert judge['system'].startswith(EN_RULE) and NL_RULE not in judge['system']
         assert 'in English' in judge['messages'][0]['content']
         award = _award(post.id)
-        assert (award.explanation_nl, award.explanation_en, award.post_lang) == (None, 'Adds a new argument.', 'en')
+        assert (award.explanation, award.post_lang) == ('Adds a new argument.', 'en')
+        assert content_i18n.text_for(award, 'explanation', 'nl') is None
 
 
 # ── Vertaalknop op de discussiepagina (zelfde patroon als bij posts) ─────
@@ -307,8 +309,8 @@ class TestTranslateButtons:
         assert len(fake_ai['translate']) == n_calls
         db.session.expire_all()
         award = _award(post.id)
-        assert award.explanation_nl == 'Voegt een nieuw argument toe.'  # origineel blijft
-        assert award.explanation_en == 'EN: Voegt een nieuw argument toe.'  # alleen cache
+        assert award.explanation == 'Voegt een nieuw argument toe.'  # origineel blijft
+        assert content_i18n.text_for(award, 'explanation', 'en') == 'EN: Voegt een nieuw argument toe.'  # alleen cache
         # De pagina toont nog steeds het origineel, met de knop.
         page = _req(reader, 'GET', f'/forum/kwaliteit/{post.id}').get_data(as_text=True)
         assert self._buttons(page) == {f'expl-{award.id}'}

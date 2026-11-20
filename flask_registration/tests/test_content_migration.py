@@ -72,3 +72,46 @@ def test_a_second_run_changes_nothing(old_db):
     with old_db.connect() as conn:
         assert conn.execute(text('SELECT body FROM posts WHERE id = 1')).scalar() == 'Hallo, bewerkt.'
     assert counts == {'posts.body filled': 0}
+
+
+@pytest.fixture
+def old_awards(old_db):
+    with old_db.begin() as conn:
+        conn.execute(text(
+            'CREATE TABLE quality_awards (id INTEGER PRIMARY KEY, explanation VARCHAR(400), post_lang VARCHAR(5), '
+            'source VARCHAR(10), explanation_nl VARCHAR(400), explanation_en VARCHAR(400))'))
+        conn.execute(text("INSERT INTO quality_awards VALUES "
+                          # 1: AI, English post, with a machine translation into Dutch
+                          "(1, NULL, 'en', 'ai', '[nl] Een nieuw argument.', 'A new argument.'),"
+                          # 2: AI, Dutch post, not translated
+                          "(2, NULL, 'nl', 'ai', 'Nieuw argument.', NULL),"
+                          # 3: demo, handwritten in both languages
+                          "(3, NULL, 'nl', 'demo', 'Neemt het serieus.', 'Takes it seriously.'),"
+                          # 4: moderator note, the same text in both
+                          "(4, NULL, 'nl', 'moderator', 'Notitie.', 'Notitie.')"))
+        conn.execute(text(
+            'CREATE TABLE quality_objections (id INTEGER PRIMARY KEY, award_id INTEGER, ai_response TEXT, '
+            'ai_response_lang VARCHAR(5), ai_response_nl TEXT, ai_response_en TEXT)'))
+        conn.execute(text("INSERT INTO quality_objections VALUES "
+                          "(1, 1, NULL, NULL, '[nl] Het oordeel blijft.', 'The judgement stands.')"))
+    return old_db
+
+
+def test_awards_and_objections_are_migrated(old_awards):
+    counts = content_migration.migrate(old_awards)
+    with old_awards.connect() as conn:
+        awards = dict(tuple(r) for r in conn.execute(text('SELECT id, explanation FROM quality_awards')))
+        objection = tuple(conn.execute(text('SELECT ai_response, ai_response_lang FROM quality_objections')).one())
+    assert awards == {1: 'A new argument.', 2: 'Nieuw argument.', 3: 'Neemt het serieus.', 4: 'Notitie.'}
+    assert objection == ('The judgement stands.', 'en')
+    rows = [r for r in _translations(old_awards) if r[0] != 'posts']
+    assert rows == [
+        ('quality_awards', 1, 'explanation', 'nl', '[nl] Een nieuw argument.', True, _h('A new argument.')),
+        ('quality_awards', 3, 'explanation', 'en', 'Takes it seriously.', False, _h('Neemt het serieus.')),
+        ('quality_objections', 1, 'ai_response', 'nl', '[nl] Het oordeel blijft.', True, _h('The judgement stands.')),
+    ]
+    assert counts['quality_awards.explanation filled'] == 4
+    assert counts['quality_objections.ai_response filled'] == 1
+    again = content_migration.migrate(old_awards)
+    assert [r for r in _translations(old_awards) if r[0] != 'posts'] == rows
+    assert again['quality_awards.explanation filled'] == again['quality_objections.ai_response filled'] == 0

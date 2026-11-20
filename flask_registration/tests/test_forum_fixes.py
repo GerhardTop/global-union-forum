@@ -61,7 +61,7 @@ def world(db):
             db.session.add(QualityAward(post_id=p.id, source='ai', status=status, post_lang='nl',
                                         criterion='K1' if status == 'toegekend' else None,
                                         ai_criterion='K1' if status == 'toegekend' else None,
-                                        explanation_nl=reason))
+                                        explanation=reason))
         db.session.commit()
         return p
 
@@ -251,7 +251,7 @@ class TestStatusPoll:
         client = _client(app, anna)
         assert _req(client, 'GET', f'/forum/kwaliteit/{p.id}/status').get_json() == {'status': 'pending'}
         db.session.add(QualityAward(post_id=p.id, source='ai', status='toegekend', criterion='K1',
-                                    ai_criterion='K1', post_lang='nl', explanation_nl='Nieuw argument.'))
+                                    ai_criterion='K1', post_lang='nl', explanation='Nieuw argument.'))
         db.session.commit()
         data = _req(client, 'GET', f'/forum/kwaliteit/{p.id}/status').get_json()
         assert data['status'] == 'toegekend' and data['criterion'] == 'K1' and 'reason' not in data

@@ -89,7 +89,7 @@
         </p>
         {% if award.text_lang %}
           {% if award.original_explanation() %}{{ translatable(award.original_explanation(), award.text_lang, 'expl-' ~ award.id, url_for('forum.forum_quality_translate', post_id=post.id)) }}{% endif %}
-        {% elif award.explanation(lang) %}<p>{{ award.explanation(lang) }}</p>{% endif %}
+        {% elif award.explanation_for(lang) %}<p>{{ award.explanation_for(lang) }}</p>{% endif %}
         {% if award.source == 'ai' %}
         <ul class="gu-qthread__findings">
           <li>{{ _('Source present') }}: {{ yesno(award.ai_has_source) }}{% if award.ai_has_source %} ({% if award.ai_source_is_new %}{{ _('new in this conversation') }}{% else %}{{ _('used before') }}{% endif %}){% endif %}</li>

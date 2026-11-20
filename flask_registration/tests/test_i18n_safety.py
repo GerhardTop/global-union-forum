@@ -48,9 +48,8 @@ PATTERN = re.compile(
 EXCEPTIONS = {
     'app/content_migration.py': (1, 'data: de datamigratie van fase 0 stap 6 leest de oude kolommen per taal (nl, en)'),
     'app/issues.py': (1, 'contentmodel, fase 0 stap 6: titel van een gesprek per taal (title_*_nl/_en)'),
-    'app/models.py': (4, 'contentmodel, fase 0 stap 6: Thread.title(lang), de AI-uitleg (explanation_nl/_en) en post_lang'),
+    'app/models.py': (1, 'contentmodel, fase 0 stap 6: Thread.title(lang)'),
     'app/notifications.py': (1, 'contentmodel, fase 0 stap 6: de titel van een gesprek per taal in een melding'),
-    'app/quality.py': (8, 'contentmodel, fase 0 stap 6: AI-vertaal- en kwaliteitscode (taalregels voor de prompt, explanation_nl/_en, body_nl)'),
     'app/routes/admin.py': (2, 'contentmodel, fase 0 stap 6: zoeken in de titels in beide talen (Thread.title(lang)); data: de taalmonitor filtert op taal'),
     'app/status.py': (4, 'data: de taalmonitor telt per taal (source_lang)'),
     'app/templates/forum/closed.html': (2, 'contentmodel, fase 0 stap 6: titel en eyebrow van een gesprek (title_*_nl/_en, eyebrow_nl/_en)'),

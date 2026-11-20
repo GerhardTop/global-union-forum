@@ -23,7 +23,7 @@ from datetime import datetime
 from flask import current_app
 from flask_babel import lazy_gettext
 
-from app import db
+from app import db, i18n
 from app.models import Post, QualityAward, QualityReport
 
 # Vertaling: zelfde model en opzet als de vertaalknop (zie forum_translate).
@@ -105,13 +105,23 @@ _MAX_EARLIER_POSTS = 25
 _MAX_CHARS = 1500
 
 # Dwingende taalregel: het model antwoordt volledig in de taal van de
-# bijdrage (Post.source_lang), om gemengde taal te voorkomen.
-_LANGUAGE_RULES = {
-    'nl': 'Schrijf je volledige antwoord in het Nederlands. Gebruik geen Engelse woorden of zinsdelen. '
-          'Meng geen talen. Spreek de auteur aan met je en jij, nooit met u.',
-    'en': 'Write your entire response in English. Do not use Dutch words or phrases. Do not mix languages.',
-}
-_LANGUAGE_NAMES = {'nl': 'Dutch', 'en': 'English'}
+# bijdrage (Post.source_lang), om gemengde taal te voorkomen. One rule for
+# every enabled language, from the language register; Dutch keeps its own
+# wording in Dutch, with the informal form of address.
+# Languages whose rule is written in the language itself (code, rule).
+_OWN_LANGUAGE_RULES = (
+    ('nl', 'Schrijf je volledige antwoord in het Nederlands. Gebruik geen Engelse woorden of zinsdelen. '
+           'Meng geen talen. Spreek de auteur aan met je en jij, nooit met u.'),
+)
+
+
+def language_rule(code):
+    """The language rule for the judging prompt: answer entirely in `code`."""
+    own = dict(_OWN_LANGUAGE_RULES).get(code)
+    if own:
+        return own
+    return (f'Write your entire response in {i18n.english_name(code)}. Do not use words or phrases '
+            'from another language. Do not mix languages.')
 
 
 # The kind of a fact as the contributor marked it, for the judging prompt.
@@ -124,12 +134,13 @@ _FACT_KIND_PROMPT = {
 }
 
 def target_lang(post):
-    """De taal waarin de AI antwoordt: de oorspronkelijke taal van de bijdrage."""
-    return post.source_lang if post.source_lang in _LANGUAGE_RULES else 'en'
+    """De taal waarin de AI antwoordt: de oorspronkelijke taal van de bijdrage
+    als die taal aanstaat, anders Engels."""
+    return post.source_lang if i18n.is_enabled(post.source_lang) else JUDGE_LANG
 
 
 def _with_language_rule(system, lang):
-    return f'{_LANGUAGE_RULES[lang]}\n\n{system}'
+    return f'{language_rule(lang)}\n\n{system}'
 
 
 def _client():
@@ -144,7 +155,6 @@ def _client():
 def translate_text(source, target_lang, client=None):
     """Translate a forum text into the language with code `target_lang` (a
     code from the language register, e.g. 'nl' or 'de'). Raises on failure."""
-    from app import i18n
     language = i18n.english_name(target_lang)
     client = client or _client()
     if client is None:
@@ -246,14 +256,14 @@ def judge_post(post_id):
             f'{fact_block}'
             'Assess the new contribution. Set suggested_criterion to K2 if it adds a new fact with a '
             'new source, otherwise K1 if it makes a new argument, otherwise none. Write one short '
-            f'sentence of explanation (explanation) in {_LANGUAGE_NAMES[lang]}, addressed to the '
+            f'sentence of explanation (explanation) in {i18n.english_name(lang)}, addressed to the '
             'author informally, without dashes.\n'
             'Then give the conduct verdict (conduct_verdict, and conduct_rule: respect or on_topic, '
             'or none for no violation or spam). Write one or two short sentences (conduct_explanation) '
-            f'in {_LANGUAGE_NAMES[lang]}, addressed to the author informally, without dashes: for '
+            f'in {i18n.english_name(lang)}, addressed to the author informally, without dashes: for '
             'none just say that the contribution keeps to the conduct rules, otherwise explain what '
             'in the text the verdict is based on.\n\n'
-            f'{_LANGUAGE_RULES[lang]}'
+            f'{language_rule(lang)}'
         )
         system = _with_language_rule(_JUDGE_SYSTEM, lang)
         response = client.messages.create(
@@ -277,10 +287,9 @@ def judge_post(post_id):
             post_lang=post.source_lang, criterion=criterion, ai_criterion=criterion,
             ai_k3_possible=bool(data['k3_possible']) and not post.is_fact, ai_has_source=bool(data['has_source']),
             ai_source_is_new=bool(data['source_is_new']), ai_argument_is_new=bool(data['argument_is_new']),
-            # Alleen in de taal van de bijdrage; lezers in de andere taal zien
-            # via QualityAward.explanation() dezelfde tekst.
-            explanation_nl=data['explanation'][:400] if lang == 'nl' else None,
-            explanation_en=data['explanation'][:400] if lang == 'en' else None,
+            # Alleen in de taal van de bijdrage (het origineel); lezers in een
+            # andere taal zien dezelfde tekst, of een vertaling op verzoek.
+            explanation=data['explanation'][:400],
             prompt_text=_prompt_record(system, user_msg), model=JUDGE_MODEL,
             decided_at=datetime.utcnow(),
         )
@@ -476,11 +485,19 @@ def seed_demo_awards():
         post = Post.query.filter(Post.is_demo.is_(True), Post.body.like(prefix + '%')).first()
         if post is None or post.quality_award is not None:
             continue
-        db.session.add(QualityAward(
+        # Handwritten in both languages: the original in the post's language,
+        # the other one as a handwritten translation.
+        texts = dict(nl=nl, en=en)  # the demo text per language, as written
+        award = QualityAward(
             post_id=post.id, criterion=criterion, status='toegekend', source='demo',
-            post_lang=post.source_lang, explanation_nl=nl, explanation_en=en,
+            post_lang=post.source_lang, explanation=texts.pop(post.source_lang, nl),
             decided_at=datetime.utcnow(),
-        ))
+        )
+        db.session.add(award)
+        db.session.flush()
+        from app import content_i18n
+        for lang, value in texts.items():
+            content_i18n.set_translation(award, 'explanation', lang, value)
         db.session.commit()
         _recalc_author(post)
     db.session.commit()
