@@ -123,7 +123,7 @@ def uitnodiging():
         subject = gettext('Invitation: join the Global Union Forum conversation')
         body = (
             gettext('Hi,') + "\n\n"
-            + gettext('%(sender)s invites you to join Global Union Forum — a think tank exploring whether the '
+            + gettext('%(sender)s invites you to join Global Union Forum, a think tank exploring whether the '
                       'success of the European Union can be replicated worldwide.', sender=sender_name) + "\n\n"
         )
         if invite_message:

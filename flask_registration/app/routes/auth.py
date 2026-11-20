@@ -46,7 +46,7 @@ def _verify_reset_token(token):
 def _send_reset_email(user, reset_url, lang):
     # In the language of the request (lang), Dutch when unknown.
     with force_locale(lang or 'nl'):
-        subject = gettext('Reset your password — Global Union Forum')
+        subject = gettext('Global Union Forum: reset your password')
         # gettext outside the f-strings, so pybabel extract finds the msgids.
         lines = (gettext('Hi %(name)s,', name=user.first_name),
                  gettext('You requested a password reset. Click the link below to choose a new password:'),
@@ -443,7 +443,7 @@ def verify_resend():
         return redirect(url_for('main.index'))
     _send_verify_email(current_user, lang, current_app.config['SECRET_KEY'])
     flash(
-        gettext('Verification email resent — check your inbox.'),
+        gettext('Verification email resent: check your inbox.'),
         "success"
     )
     return redirect(request.referrer or url_for('main.index'))

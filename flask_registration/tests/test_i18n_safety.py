@@ -244,3 +244,15 @@ def test_nl_translation_differs_from_the_msgid_unless_allowed():
             same.append(message.id)
     assert not same, f'NL equals the msgid (translate it, or add it to SAME_IN_DUTCH with a reason): {same}'
     assert all(SAME_IN_DUTCH.values())
+
+
+def test_no_long_or_short_dashes_in_msgids_or_dutch():
+    """App text has no en dash (U+2013) or em dash (U+2014)."""
+    bad = []
+    for message in _po('nl'):
+        if not message.id:
+            continue
+        ids, strs = _all_texts(message)
+        if any(dash in text for text in ids + strs for dash in ('–', '—')):
+            bad.append(message.id)
+    assert not bad, bad

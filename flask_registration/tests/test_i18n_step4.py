@@ -85,8 +85,8 @@ def _user(make_user, lang):
 
 
 @pytest.mark.parametrize('lang, subject, line', [
-    ('nl', 'Wachtwoord opnieuw instellen — Global Union Forum', 'Deze link verloopt na 1 uur.'),
-    ('en', 'Reset your password — Global Union Forum', 'This link expires in 1 hour.'),
+    ('nl', 'Global Union Forum: wachtwoord opnieuw instellen', 'Deze link verloopt na 1 uur.'),
+    ('en', 'Global Union Forum: reset your password', 'This link expires in 1 hour.'),
 ])
 def test_reset_email(app, db, make_user, outbox, lang, subject, line):
     from app.routes.auth import _send_reset_email
@@ -98,8 +98,8 @@ def test_reset_email(app, db, make_user, outbox, lang, subject, line):
 
 
 @pytest.mark.parametrize('lang, subject, line', [
-    ('nl', 'Bevestig je e-mailadres — Global Union Forum', 'Deze link verloopt na 24 uur.'),
-    ('en', 'Confirm your email — Global Union Forum', 'This link expires in 24 hours.'),
+    ('nl', 'Global Union Forum: bevestig je e-mailadres', 'Deze link verloopt na 24 uur.'),
+    ('en', 'Global Union Forum: confirm your email', 'This link expires in 24 hours.'),
 ])
 def test_verify_email(app, db, make_user, outbox, lang, subject, line):
     from app.utils import _send_verify_email

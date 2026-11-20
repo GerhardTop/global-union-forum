@@ -4743,9 +4743,6 @@ msgstr "This verification link has expired. Request a new one."
 msgid "Invalid verification link."
 msgstr "Invalid verification link."
 
-msgid "Verification email resent — check your inbox."
-msgstr "Verification email resent — check your inbox."
-
 msgid "Admin accounts cannot be deleted."
 msgstr "Admin accounts cannot be deleted."
 
@@ -4809,9 +4806,6 @@ msgstr "Thresholds saved."
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Too many attempts. Please try again in a minute."
 
-msgid "Reset your password — Global Union Forum"
-msgstr "Reset your password — Global Union Forum"
-
 #, python-format
 msgid "Hi %(name)s,"
 msgstr "Hi %(name)s,"
@@ -4824,9 +4818,6 @@ msgstr "This link expires in 1 hour."
 
 msgid "If you did not request this, you can safely ignore this email."
 msgstr "If you did not request this, you can safely ignore this email."
-
-msgid "Confirm your email — Global Union Forum"
-msgstr "Confirm your email — Global Union Forum"
 
 msgid "Please confirm your email address by clicking the link below:"
 msgstr "Please confirm your email address by clicking the link below:"
@@ -4842,10 +4833,6 @@ msgstr "Invitation: join the Global Union Forum conversation"
 
 msgid "Hi,"
 msgstr "Hi,"
-
-#, python-format
-msgid "%(sender)s invites you to join Global Union Forum — a think tank exploring whether the success of the European Union can be replicated worldwide."
-msgstr "%(sender)s invites you to join Global Union Forum — a think tank exploring whether the success of the European Union can be replicated worldwide."
 
 #, python-format
 msgid "Personal message from %(sender)s:"
@@ -5296,3 +5283,16 @@ msgid "One person has voted so far."
 msgid_plural "%(num)d people have voted so far."
 msgstr[0] "One person has voted so far."
 msgstr[1] "%(num)d people have voted so far."
+
+msgid "Verification email resent: check your inbox."
+msgstr "Verification email resent: check your inbox."
+
+msgid "Global Union Forum: reset your password"
+msgstr "Global Union Forum: reset your password"
+
+msgid "Global Union Forum: confirm your email"
+msgstr "Global Union Forum: confirm your email"
+
+#, python-format
+msgid "%(sender)s invites you to join Global Union Forum, a think tank exploring whether the success of the European Union can be replicated worldwide."
+msgstr "%(sender)s invites you to join Global Union Forum, a think tank exploring whether the success of the European Union can be replicated worldwide."

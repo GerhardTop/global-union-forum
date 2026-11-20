@@ -219,7 +219,7 @@ def _send_verify_email(user, lang, secret_key):
     from flask_babel import force_locale, gettext
     # In the language of the request (lang), Dutch when unknown.
     with force_locale(lang or 'nl'):
-        subject = gettext('Confirm your email — Global Union Forum')
+        subject = gettext('Global Union Forum: confirm your email')
         # gettext outside the f-strings, so pybabel extract finds the msgids.
         lines = (gettext('Hi %(name)s,', name=user.first_name),
                  gettext('Please confirm your email address by clicking the link below:'),
