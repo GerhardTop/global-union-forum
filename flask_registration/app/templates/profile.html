@@ -15,11 +15,11 @@
     <div class="gu-profile__info">
       <div class="gu-profile__info-row">
         <span class="gu-profile__info-label">{{ _('Username') }}</span>
-        <span class="gu-profile__info-value">{{ current_user.username }}</span>
+        <span class="gu-profile__info-value gu-profile__info-value--literal">{{ current_user.username }}</span>
       </div>
       <div class="gu-profile__info-row">
         <span class="gu-profile__info-label">{{ _('Email address') }}</span>
-        <span class="gu-profile__info-value">{{ current_user.email }}</span>
+        <span class="gu-profile__info-value gu-profile__info-value--literal">{{ current_user.email }}</span>
       </div>
       {# Fase C2: status, verdiend met kwaliteitsbijdragen (alleen omhoog). #}
       {% set st = current_user.effective_status %}

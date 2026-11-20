@@ -1238,7 +1238,12 @@ body {
   font-size: 0.9375rem;
   color: var(--gu-fg-1);
   font-weight: 500;
+  min-width: 0;               /* may shrink next to the 140px label */
+  overflow-wrap: anywhere;    /* a long e-mail address breaks instead of widening the page */
+  hyphens: auto;              /* long words break with a hyphen first */
 }
+/* A username or e-mail address never gets a hyphen that is not part of it. */
+.gu-profile__info-value--literal { hyphens: manual; }
 
 .gu-lang-switch {
   display: inline-flex;
@@ -3172,6 +3177,9 @@ body {
     gap: 32px;
   }
   .gu-hero__symbol { display: none; }
+  /* A long word in the big heading (nl: "functionerende" at 48px) is wider
+     than a 320px screen; hyphenate instead of widening the page. */
+  .gu-hero .gu-display { hyphens: auto; }
   .gu-hero__cta { flex-wrap: wrap; }
   .gu-hero__quote { padding: 20px; }
   .gu-hero__quote blockquote { font-size: 1.0625rem; }
@@ -3799,7 +3807,7 @@ body {
 .gu-statusladder__step.is-done .gu-statusladder__dot { background: var(--gu-globe-deep); border-color: var(--gu-globe-deep); }
 .gu-statusladder__step.is-current .gu-statusladder__dot { background: var(--gu-globe); border-color: var(--gu-globe); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gu-globe) 25%, transparent); }
 .gu-statusladder__step.is-current .gu-statusladder__label { color: var(--gu-fg-1); font-weight: 700; }
-.gu-statusladder__label { overflow-wrap: anywhere; }
+.gu-statusladder__label { overflow-wrap: anywhere; hyphens: auto; }  /* hyphenate long role names on narrow screens */
 .gu-statusladder__note { margin: 0 0 6px; font-size: 0.875rem; color: var(--gu-fg-2); }
 [data-more-list] > [hidden] { display: none !important; }
 
