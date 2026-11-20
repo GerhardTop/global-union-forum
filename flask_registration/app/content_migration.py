@@ -217,6 +217,60 @@ def migrate_threads(conn, counts):
     counts.update(writer.counts)
 
 
+def migrate_issue_threads(conn, counts):
+    """Step 6 after-care: a conversation that belongs to an issue is in the
+    issue's language. migrate_threads gave every existing conversation
+    source_lang nl; here the conversations of an issue (issues.thread_id) get
+    the issue's language where it differs. Editorial conversations stay nl.
+
+    Per field, a handwritten translation into the new source language
+    becomes the original and the old original becomes the translation into
+    the old language (the eyebrow 'Vraagstuk' / 'Issue'). A field without
+    such a translation keeps its original (an issue title was written once,
+    the same in both old columns). Idempotent: a second run finds no
+    conversation whose language differs from its issue."""
+    from app import i18n
+    if not {'lang', 'thread_id'} <= _columns(conn, 'issues') or 'source_lang' not in _columns(conn, 'threads'):
+        return
+    rows = conn.execute(text(
+        'SELECT t.id, t.source_lang, i.lang, t.eyebrow, t.title_prefix, t.title_accent, t.title_suffix '
+        'FROM threads t JOIN issues i ON i.thread_id = t.id '
+        'WHERE i.id = (SELECT MIN(i2.id) FROM issues i2 WHERE i2.thread_id = t.id) '
+        'ORDER BY t.id')).mappings().all()
+    changed = 0
+    for row in rows:
+        old, new = i18n.normalize(row['source_lang']), i18n.normalize(row['lang'])
+        if old == new:
+            continue
+        values = {}
+        for field in _THREAD_FIELDS:
+            swap = conn.execute(text(
+                "SELECT text, is_machine FROM content_translations WHERE object_type = 'threads' "
+                'AND object_id = :i AND field = :f AND lang = :l'),
+                {'i': row['id'], 'f': field, 'l': new}).first()
+            if swap is None or swap.is_machine or not swap.text:
+                values[field] = row[field]
+                continue
+            values[field] = swap.text
+            conn.execute(text(
+                "DELETE FROM content_translations WHERE object_type = 'threads' AND object_id = :i "
+                'AND field = :f AND lang IN (:new, :old)'),
+                {'i': row['id'], 'f': field, 'new': new, 'old': old})
+            if row[field] and row[field] != swap.text:
+                conn.execute(text(
+                    'INSERT INTO content_translations (object_type, object_id, field, lang, text, is_machine, '
+                    "source_hash, created_at) VALUES ('threads', :i, :f, :l, :x, :m, :h, :c)"),
+                    {'i': row['id'], 'f': field, 'l': old, 'x': row[field], 'm': False,
+                     'h': _hash(swap.text), 'c': datetime.utcnow()})
+        conn.execute(text(
+            'UPDATE threads SET source_lang = :l, eyebrow = :e, title_prefix = :p, title_accent = :a, '
+            'title_suffix = :s WHERE id = :i'),
+            {'l': new, 'e': values['eyebrow'], 'p': values['title_prefix'], 'a': values['title_accent'],
+             's': values['title_suffix'], 'i': row['id']})
+        changed += 1
+    counts['threads.source_lang from issue'] = changed
+
+
 def migrate(engine):
     """Run every content migration in one transaction; print what it added."""
     counts = {}
@@ -227,6 +281,7 @@ def migrate(engine):
         migrate_awards(conn, counts)
         migrate_objections(conn, counts)
         migrate_threads(conn, counts)
+        migrate_issue_threads(conn, counts)
         conn.commit()
     summary = ', '.join(f'{k} {v}' for k, v in sorted(counts.items())) or 'nothing to migrate'
     print(f'Content migration (multilingual step 6): {summary}', flush=True)

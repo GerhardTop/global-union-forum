@@ -9,6 +9,7 @@ from sqlalchemy import create_engine, text
 
 from app import content_migration
 from app.models import ContentTranslation
+from tests.test_issue_polish import make_user  # noqa: F401  (fixture)
 
 
 def _h(value):
@@ -148,3 +149,78 @@ def test_threads_are_migrated(old_db):
     assert counts['threads filled'] == 2
     again = content_migration.migrate(old_db)
     assert [r[1:5] for r in _translations(old_db) if r[0] == 'threads'] == rows and again['threads filled'] == 0
+
+
+def test_issue_conversations_take_the_issue_language(old_db):
+    """After-care: a conversation of an issue is in the issue's language; the
+    handwritten translation into that language becomes the original."""
+    with old_db.begin() as conn:
+        conn.execute(text(
+            'CREATE TABLE threads (id INTEGER PRIMARY KEY, source_lang VARCHAR(5), eyebrow VARCHAR(200), '
+            'title_prefix VARCHAR(300), title_accent VARCHAR(200), title_suffix VARCHAR(50))'))
+        conn.execute(text("INSERT INTO threads VALUES "
+                          "(1, 'nl', 'Vraagstuk', 'Fair trade rules', NULL, ''),"     # English issue
+                          "(2, 'nl', 'Vraagstuk', 'Eerlijke regels', NULL, ''),"      # Dutch issue
+                          "(3, 'nl', 'Forum · gesprek', 'Editorial', NULL, ''),"      # no issue
+                          "(4, 'en', 'Issue', 'Made after step 6', NULL, '')"))       # already right
+        conn.execute(text('CREATE TABLE issues (id INTEGER PRIMARY KEY, lang VARCHAR(5), thread_id INTEGER)'))
+        conn.execute(text("INSERT INTO issues VALUES (1, 'en', 1), (2, 'nl', 2), (3, 'en', 4)"))
+        for tid, label in ((1, 'Issue'), (2, 'Issue'), (3, 'Forum · conversation')):
+            conn.execute(text(
+                "INSERT INTO content_translations (object_type, object_id, field, lang, text, is_machine, "
+                "source_hash) VALUES ('threads', :i, 'eyebrow', 'en', :x, 0, :h)"),
+                {'i': tid, 'x': label, 'h': _h({1: 'Vraagstuk', 2: 'Vraagstuk', 3: 'Forum · gesprek'}[tid])})
+        conn.execute(text(
+            "INSERT INTO content_translations (object_type, object_id, field, lang, text, is_machine, "
+            "source_hash) VALUES ('threads', 4, 'eyebrow', 'nl', 'Vraagstuk', 0, :h)"), {'h': _h('Issue')})
+    before = {r for r in _translations(old_db) if r[0] == 'threads' and r[1] != 1}
+
+    counts = content_migration.migrate(old_db)
+    with old_db.connect() as conn:
+        threads = {r[0]: tuple(r[1:]) for r in conn.execute(text(
+            'SELECT id, source_lang, eyebrow, title_prefix FROM threads'))}
+    assert threads == {1: ('en', 'Issue', 'Fair trade rules'), 2: ('nl', 'Vraagstuk', 'Eerlijke regels'),
+                       3: ('nl', 'Forum · gesprek', 'Editorial'), 4: ('en', 'Issue', 'Made after step 6')}
+    assert [r for r in _translations(old_db) if r[0] == 'threads' and r[1] == 1] == [
+        ('threads', 1, 'eyebrow', 'nl', 'Vraagstuk', False, _h('Issue'))]
+    assert {r for r in _translations(old_db) if r[0] == 'threads' and r[1] != 1} == before
+    assert counts['threads.source_lang from issue'] == 1
+
+    after = _translations(old_db)
+    again = content_migration.migrate(old_db)
+    assert _translations(old_db) == after and again['threads.source_lang from issue'] == 0
+
+
+def test_an_issue_conversation_reads_right_after_the_migration(app, db, make_user):
+    """On the app's own database: an English issue whose conversation still
+    says nl shows the right eyebrow and title to both readers afterwards, and
+    its opening post keeps its own language (the 'Original in' banner and
+    the translate button follow the post)."""
+    from app import content_i18n
+    from app.models import Issue, Post, Thread
+    user = make_user()
+    thread = Thread(source_lang='nl', eyebrow='Vraagstuk', title_prefix='Fair trade rules', title_suffix='')
+    db.session.add(thread)
+    db.session.flush()
+    content_i18n.set_translation(thread, 'eyebrow', 'en', 'Issue')
+    issue = Issue(title='Fair trade rules', lang='en', thread_id=thread.id)
+    op = Post(thread_id=thread.id, user_id=user.id, author_name='', author_username=user.username,
+              body='Why fair trade?', source_lang='en', is_op=True)
+    db.session.add_all([issue, op])
+    db.session.commit()
+    try:
+        counts = content_migration.migrate(db.engine)
+        assert counts['threads.source_lang from issue'] == 1
+        db.session.expire_all()
+        content_i18n.clear_cache()
+        assert thread.source_lang == 'en'
+        assert (thread.eyebrow_in('en'), thread.eyebrow_in('nl')) == ('Issue', 'Vraagstuk')
+        assert thread.title_text('en') == thread.title_text('nl') == 'Fair trade rules'
+        assert content_i18n.reader_view(op, 'body', 'en') == ('Why fair trade?', False)
+        assert content_i18n.source_lang(op) == 'en'
+    finally:
+        content_i18n.invalidate(thread)
+        db.session.delete(issue)
+        db.session.delete(op)
+        db.session.delete(thread)
+        db.session.commit()
