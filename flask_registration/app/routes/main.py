@@ -49,20 +49,24 @@ def landen_downloads(lang):
 
 
 def country_name(row, lang):
-    """The country's name in `lang`. A politically sensitive territory
-    ("sensitive" in the data: PS, HK, TW, XK) always has the site's own name
-    in every enabled language and never falls back to Babel (a test guards
-    that); for a language that is not enabled it shows the site's English
-    name. Every other country takes Babel's name, else the English one."""
+    """The country's name in `lang`: the site's own name for that language
+    (every country has one in nl and en), else Babel's, else the site's
+    English name. A politically sensitive territory ("sensitive" in the
+    data: PS, HK, TW, XK) never falls back to Babel: it has an own name in
+    every enabled language (a test guards that) and otherwise shows the
+    site's English name."""
     from babel import Locale, UnknownLocaleError
+    names = row.get("names") or {}
+    own = names.get(lang)
+    if own:
+        return own
     if row.get("sensitive"):
-        names = row["names"]
-        return names.get(lang) or names["en"]
+        return names["en"]
     try:
         name = Locale.parse(lang).territories.get(row["iso"])
     except (UnknownLocaleError, ValueError, TypeError):
         name = None
-    return name or Locale("en").territories.get(row["iso"], row["iso"])
+    return name or names.get("en") or Locale("en").territories.get(row["iso"], row["iso"])
 
 
 def country_remark(row, lang):

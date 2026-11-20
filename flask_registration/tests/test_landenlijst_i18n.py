@@ -1,8 +1,9 @@
 """Multilingual phase 0 step 6e: the country list from ISO codes.
 
-Names come from Babel per language, except for the politically sensitive
-territories (PS, HK, TW, XK), which have the site's own name in every enabled
-language, the level and 'invite' are codes with gettext labels, remarks
+Every country has the site's own name in nl and en; Babel is only the
+fallback for a language without an own name, and never for the politically
+sensitive territories (PS, HK, TW, XK), which have an own name in every
+enabled language. The level and 'invite' are codes with gettext labels, remarks
 per language with English as the fallback, downloads per language with the
 English files as the fallback.
 """
@@ -43,23 +44,30 @@ def test_names_per_language():
     assert main_routes.country_name(by_iso['PS'], 'nl') == 'Palestina'      # the site's own name
     assert main_routes.country_name(by_iso['PS'], 'en') == 'Palestine'
     assert main_routes.country_name(by_iso['PS'], 'de') == 'Palestine'      # not enabled: own English name
-    assert main_routes.country_name(by_iso['CZ'], 'en') == Locale('en').territories['CZ']   # Babel
-    assert main_routes.country_name(by_iso['CZ'], 'nl') == Locale('nl').territories['CZ']
+    assert main_routes.country_name(by_iso['CZ'], 'en') == 'Czech Republic'     # own name, not Babel's
+    assert main_routes.country_name(by_iso['MV'], 'nl') == 'Malediven'
+    assert main_routes.country_name(by_iso['CZ'], 'de') == Locale('de').territories['CZ']   # Babel fallback
     assert main_routes.country_name(by_iso['NO'], 'xx') == 'Norway'         # unknown: English
 
 
 SENSITIVE = {'PS', 'HK', 'TW', 'XK'}
 
 
-def test_only_the_sensitive_territories_have_own_names():
+def test_the_sensitive_territories_keep_their_names():
     rows = _rows()
     assert {r['iso'] for r in rows if r.get('sensitive')} == SENSITIVE
-    assert not any('names' in r for r in rows if not r.get('sensitive'))
     by_iso = {r['iso']: r for r in rows}
     # The current names stay.
     assert {iso: by_iso[iso]['names'] for iso in SENSITIVE} == {
         'PS': {'en': 'Palestine', 'nl': 'Palestina'}, 'HK': {'en': 'Hong Kong', 'nl': 'Hongkong'},
         'TW': {'en': 'Taiwan', 'nl': 'Taiwan'}, 'XK': {'en': 'Kosovo', 'nl': 'Kosovo'}}
+
+
+def test_every_country_has_an_own_name_in_dutch_and_english():
+    """So a Babel update never changes a name on the site silently."""
+    missing = sorted((r['iso'], lang) for r in _rows() for lang in ('nl', 'en')
+                     if not ((r.get('names') or {}).get(lang) or '').strip())
+    assert missing == []
 
 
 def _missing_sensitive_names():
