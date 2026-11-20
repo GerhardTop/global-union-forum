@@ -3335,22 +3335,6 @@ msgstr "Verwijderen"
 msgid "An admin may always do everything. These settings apply as soon as you save, to all issues."
 msgstr "Een admin mag altijd alles. Deze instellingen gelden direct na het opslaan, voor alle vraagstukken."
 
-msgctxt "reported item"
-msgid "proposal"
-msgstr "voorstel"
-
-msgctxt "reported item"
-msgid "fact"
-msgstr "feit"
-
-msgctxt "reported item"
-msgid "contribution"
-msgstr "bijdrage"
-
-#, python-format
-msgid "%(kind)s · reason"
-msgstr "%(kind)s · reden"
-
 #, python-format
 msgid "%(num)d report"
 msgid_plural "%(num)d reports"
@@ -3393,33 +3377,9 @@ msgstr "%(n)s ontvangen"
 msgid "(%(n)s upheld)"
 msgstr "(waarvan %(n)s gegrond)"
 
-#, python-format
-msgid "Reported %(kind)s"
-msgstr "Gemelde %(kind)s"
-
 msgctxt "issue kind"
 msgid "Event"
 msgstr "Evenement"
-
-#, python-format
-msgid "The %(kind)s in the conversation"
-msgstr "De %(kind)s in het gesprek"
-
-#, python-format
-msgid "Reports on this %(kind)s"
-msgstr "Meldingen bij deze %(kind)s"
-
-#, python-format
-msgid "This is your own %(kind)s: another moderator decides."
-msgstr "Dit is je eigen %(kind)s: een andere moderator beslist."
-
-#, python-format
-msgid "Choose what happens to the %(kind)s. The author is notified and can object."
-msgstr "Kies wat er met de %(kind)s gebeurt. De auteur krijgt bericht en kan bezwaar maken."
-
-#, python-format
-msgid "Do nothing, the %(kind)s stays"
-msgstr "Niets doen, %(kind)s blijft staan"
 
 msgctxt "issue pill"
 msgid "Archived"
@@ -5274,3 +5234,66 @@ msgstr "Je krijgt deze e-mail omdat je hiervoor e-mail hebt aangezet. Je kunt da
 
 msgid "Adjust the proposals"
 msgstr "Voorstellen aanpassen"
+
+msgid "Proposal · reason"
+msgstr "Voorstel · reden"
+
+msgid "Fact · reason"
+msgstr "Feit · reden"
+
+msgid "Contribution · reason"
+msgstr "Bijdrage · reden"
+
+msgid "Reported proposal"
+msgstr "Gemeld voorstel"
+
+msgid "Reported fact"
+msgstr "Gemeld feit"
+
+msgid "Reported contribution"
+msgstr "Gemelde bijdrage"
+
+msgid "The proposal in the conversation"
+msgstr "Het voorstel in het gesprek"
+
+msgid "The fact in the conversation"
+msgstr "Het feit in het gesprek"
+
+msgid "The contribution in the conversation"
+msgstr "De bijdrage in het gesprek"
+
+msgid "Reports on this proposal"
+msgstr "Meldingen bij dit voorstel"
+
+msgid "Reports on this fact"
+msgstr "Meldingen bij dit feit"
+
+msgid "Reports on this contribution"
+msgstr "Meldingen bij deze bijdrage"
+
+msgid "This is your own proposal: another moderator decides."
+msgstr "Dit is je eigen voorstel: een andere moderator beslist."
+
+msgid "This is your own fact: another moderator decides."
+msgstr "Dit is je eigen feit: een andere moderator beslist."
+
+msgid "This is your own contribution: another moderator decides."
+msgstr "Dit is je eigen bijdrage: een andere moderator beslist."
+
+msgid "Choose what happens to the proposal. The author is notified and can object."
+msgstr "Kies wat er met het voorstel gebeurt. De auteur krijgt bericht en kan bezwaar maken."
+
+msgid "Choose what happens to the fact. The author is notified and can object."
+msgstr "Kies wat er met het feit gebeurt. De auteur krijgt bericht en kan bezwaar maken."
+
+msgid "Choose what happens to the contribution. The author is notified and can object."
+msgstr "Kies wat er met de bijdrage gebeurt. De auteur krijgt bericht en kan bezwaar maken."
+
+msgid "Do nothing, the proposal stays"
+msgstr "Niets doen, het voorstel blijft staan"
+
+msgid "Do nothing, the fact stays"
+msgstr "Niets doen, het feit blijft staan"
+
+msgid "Do nothing, the contribution stays"
+msgstr "Niets doen, de bijdrage blijft staan"

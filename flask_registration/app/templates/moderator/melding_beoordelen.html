@@ -12,7 +12,25 @@
 
 {% block content_outer %}{% block content %}
 {# Fase 2c: volgt het artboard Beoordelen.dc.html (docs/design/README.md). #}
-{% set soort = pgettext('reported item', 'proposal') if m.kind == 'proposal' else (pgettext('reported item', 'fact') if m.is_fact else pgettext('reported item', 'contribution')) %}
+{% set kind_code = 'proposal' if m.kind == 'proposal' else ('fact' if m.is_fact else 'post') %}
+{# A full sentence per kind, so every language can inflect it (no loose noun in a sentence). #}
+{% set say = {
+  'proposal': {'reported': _('Reported proposal'), 'title': _('Proposal'),
+               'in_conversation': _('The proposal in the conversation'), 'reports_on': _('Reports on this proposal'),
+               'own': _('This is your own proposal: another moderator decides.'),
+               'choose': _('Choose what happens to the proposal. The author is notified and can object.'),
+               'nothing': _('Do nothing, the proposal stays')},
+  'fact': {'reported': _('Reported fact'), 'title': _('Fact'),
+           'in_conversation': _('The fact in the conversation'), 'reports_on': _('Reports on this fact'),
+           'own': _('This is your own fact: another moderator decides.'),
+           'choose': _('Choose what happens to the fact. The author is notified and can object.'),
+           'nothing': _('Do nothing, the fact stays')},
+  'post': {'reported': _('Reported contribution'), 'title': _('Contribution'),
+           'in_conversation': _('The contribution in the conversation'), 'reports_on': _('Reports on this contribution'),
+           'own': _('This is your own contribution: another moderator decides.'),
+           'choose': _('Choose what happens to the contribution. The author is notified and can object.'),
+           'nothing': _('Do nothing, the contribution stays')},
+}[kind_code] %}
 {% set is_own = (m.kind == 'post' and m.item.user_id == current_user.id) or (m.kind == 'proposal' and m.item.created_by_id == current_user.id) %}
 {% set body = m.item.body if m.kind == 'post' else m.item.statement %}
 {% set parent = m.item.parent if m.kind == 'post' else None %}
@@ -23,11 +41,11 @@
       <nav class="gu-modrev__crumbs" aria-label="{{ _('Breadcrumb') }}">
         <a href="{{ url_for('admin.moderator_dashboard') }}"><span class="gu-modrev__chev" aria-hidden="true">&lsaquo;</span> Moderator</a>
         {% if m.issue %}<span class="gu-modrev__sep">/</span> <a href="{{ url_for('issues.show', issue_id=m.issue.id) }}" lang="{{ m.issue.lang or lang }}">{{ m.issue.title }}</a>{% endif %}
-        <span class="gu-modrev__sep">/</span> <span>{% trans kind=soort %}Reported {{ kind }}{% endtrans %}</span>
+        <span class="gu-modrev__sep">/</span> <span>{{ say.reported }}</span>
       </nav>
       <p class="gu-eyebrow">{{ _('Review report') }}</p>
       <h1 class="gu-mod__title">
-        {{- soort|capitalize }}
+        {{- say.title }}
         {%- if m.issue %} in <span class="gu-modrev__accent" lang="{{ m.issue.lang or lang }}">{{ m.issue.title }}</span>{% endif -%}
       </h1>
       <div class="gu-modrev__pills">
@@ -43,7 +61,7 @@
 
         {# ── De bijdrage in het gesprek ─────────────────────────── #}
         <section class="gu-mod-card gu-modrev__card">
-          <div class="gu-modrev__cardhead"><h2>{% trans kind=soort %}The {{ kind }} in the conversation{% endtrans %}</h2>
+          <div class="gu-modrev__cardhead"><h2>{{ say.in_conversation }}</h2>
             <a class="gu-mod-card__link" href="{{ context_url }}">{{ _('view in context') }}</a></div>
           {% if m.issue %}
           <div class="gu-modrev__ctxbar">
@@ -81,7 +99,7 @@
         {# ── De meldingen bij deze bijdrage ─────────────────────── #}
         <section class="gu-mod-card gu-modrev__card">
           <div class="gu-modrev__cardhead">
-            <h2>{% trans kind=soort %}Reports on this {{ kind }}{% endtrans %}</h2>
+            <h2>{{ say.reports_on }}</h2>
             <span class="gu-pill gu-pill--count">{{ m.count }}</span>
           </div>
           <div class="gu-modrev__reports">
@@ -103,15 +121,15 @@
         <section class="gu-mod-card gu-modrev__card">
           <div class="gu-modrev__cardhead"><h2>{{ _('Decision') }}</h2></div>
           {% if is_own %}
-          <p class="gu-mrow__note">{% trans kind=soort %}This is your own {{ kind }}: another moderator decides.{% endtrans %}</p>
+          <p class="gu-mrow__note">{{ say.own }}</p>
           {% else %}
-          <p class="gu-modrev__intro">{% trans kind=soort %}Choose what happens to the {{ kind }}. The author is notified and can object.{% endtrans %}</p>
+          <p class="gu-modrev__intro">{{ say.choose }}</p>
           <form method="POST" action="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}" class="gu-mod-decide">
             {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
             <div class="gu-modrev__choices">
               <button type="submit" name="action" value="handhaven" class="gu-modrev__choice gu-modrev__choice--keep">
                 <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                {% trans kind=soort %}Do nothing, the {{ kind }} stays{% endtrans %}
+                {{ say.nothing }}
               </button>
               {% if m.kind == 'post' %}
               <button type="submit" name="action" value="verplaatsen" class="gu-modrev__choice gu-modrev__choice--move">

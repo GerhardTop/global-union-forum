@@ -45,7 +45,9 @@
 {%- endmacro %}
 
 {% macro melding_row(m) %}
-{% set soort = pgettext('reported item', 'proposal') if m.kind == 'proposal' else (pgettext('reported item', 'fact') if m.is_fact else pgettext('reported item', 'contribution')) %}
+{% set kind_code = 'proposal' if m.kind == 'proposal' else ('fact' if m.is_fact else 'post') %}
+{# A full sentence per kind, so every language can inflect it (no loose noun in a sentence). #}
+{% set reason_label = {'proposal': _('Proposal · reason'), 'fact': _('Fact · reason'), 'post': _('Contribution · reason')}[kind_code] %}
 <div class="gu-mrow">
   <div class="gu-mrow__body">
     <div class="gu-mrow__line">
@@ -53,7 +55,7 @@
       <span class="gu-mrow__dot">·</span> {{ ctx_pill(m.issue) }}
       {{ excerpt(m.snippet, post_url(m.item) if m.kind == 'post' else (url_for('issues.proposal', issue_id=m.issue.id, proposal_id=m.id) if m.issue else None)) }}
     </div>
-    <p class="gu-mrow__reason">{% trans kind=soort|capitalize %}{{ kind }} · reason{% endtrans %}: "{{ m.reports[0].reason }}"{% if m.count > 1 %} <a href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% trans count=m.count %}show all {{ count }}{% endtrans %}</a>{% endif %}</p>
+    <p class="gu-mrow__reason">{{ reason_label }}: "{{ m.reports[0].reason }}"{% if m.count > 1 %} <a href="{{ url_for('admin.melding_beoordelen', kind='voorstel' if m.kind == 'proposal' else 'bijdrage', item_id=m.id) }}">{% trans count=m.count %}show all {{ count }}{% endtrans %}</a>{% endif %}</p>
   </div>
   <div class="gu-mrow__side">
     <span class="gu-pill gu-pill--count">{{ ngettext('%(num)d report', '%(num)d reports', m.count) }}</span>

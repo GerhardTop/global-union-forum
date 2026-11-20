@@ -3329,22 +3329,6 @@ msgstr "Deleting"
 msgid "An admin may always do everything. These settings apply as soon as you save, to all issues."
 msgstr "An admin may always do everything. These settings apply as soon as you save, to all issues."
 
-msgctxt "reported item"
-msgid "proposal"
-msgstr "proposal"
-
-msgctxt "reported item"
-msgid "fact"
-msgstr "fact"
-
-msgctxt "reported item"
-msgid "contribution"
-msgstr "contribution"
-
-#, python-format
-msgid "%(kind)s · reason"
-msgstr "%(kind)s · reason"
-
 #, python-format
 msgid "%(num)d report"
 msgid_plural "%(num)d reports"
@@ -3387,33 +3371,9 @@ msgstr "%(n)s received"
 msgid "(%(n)s upheld)"
 msgstr "(%(n)s upheld)"
 
-#, python-format
-msgid "Reported %(kind)s"
-msgstr "Reported %(kind)s"
-
 msgctxt "issue kind"
 msgid "Event"
 msgstr "Event"
-
-#, python-format
-msgid "The %(kind)s in the conversation"
-msgstr "The %(kind)s in the conversation"
-
-#, python-format
-msgid "Reports on this %(kind)s"
-msgstr "Reports on this %(kind)s"
-
-#, python-format
-msgid "This is your own %(kind)s: another moderator decides."
-msgstr "This is your own item: another moderator decides."
-
-#, python-format
-msgid "Choose what happens to the %(kind)s. The author is notified and can object."
-msgstr "Choose what happens to the %(kind)s. The author is notified and can object."
-
-#, python-format
-msgid "Do nothing, the %(kind)s stays"
-msgstr "Do nothing, the %(kind)s stays"
 
 msgctxt "issue pill"
 msgid "Archived"
@@ -5268,3 +5228,66 @@ msgstr "You receive this email because you turned on email for this. You can tur
 
 msgid "Adjust the proposals"
 msgstr "Adjust the proposals"
+
+msgid "Proposal · reason"
+msgstr "Proposal · reason"
+
+msgid "Fact · reason"
+msgstr "Fact · reason"
+
+msgid "Contribution · reason"
+msgstr "Contribution · reason"
+
+msgid "Reported proposal"
+msgstr "Reported proposal"
+
+msgid "Reported fact"
+msgstr "Reported fact"
+
+msgid "Reported contribution"
+msgstr "Reported contribution"
+
+msgid "The proposal in the conversation"
+msgstr "The proposal in the conversation"
+
+msgid "The fact in the conversation"
+msgstr "The fact in the conversation"
+
+msgid "The contribution in the conversation"
+msgstr "The contribution in the conversation"
+
+msgid "Reports on this proposal"
+msgstr "Reports on this proposal"
+
+msgid "Reports on this fact"
+msgstr "Reports on this fact"
+
+msgid "Reports on this contribution"
+msgstr "Reports on this contribution"
+
+msgid "This is your own proposal: another moderator decides."
+msgstr "This is your own proposal: another moderator decides."
+
+msgid "This is your own fact: another moderator decides."
+msgstr "This is your own fact: another moderator decides."
+
+msgid "This is your own contribution: another moderator decides."
+msgstr "This is your own contribution: another moderator decides."
+
+msgid "Choose what happens to the proposal. The author is notified and can object."
+msgstr "Choose what happens to the proposal. The author is notified and can object."
+
+msgid "Choose what happens to the fact. The author is notified and can object."
+msgstr "Choose what happens to the fact. The author is notified and can object."
+
+msgid "Choose what happens to the contribution. The author is notified and can object."
+msgstr "Choose what happens to the contribution. The author is notified and can object."
+
+msgid "Do nothing, the proposal stays"
+msgstr "Do nothing, the proposal stays"
+
+msgid "Do nothing, the fact stays"
+msgstr "Do nothing, the fact stays"
+
+msgid "Do nothing, the contribution stays"
+msgstr "Do nothing, the contribution stays"
