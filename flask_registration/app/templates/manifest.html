@@ -117,7 +117,7 @@
             
           </ul>
           
-            <p>{# TRANSLATORS: manifest, alinea 10 #}{{ _('Countries that fully comply pay 0% import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs.') }}</p>
+            <p>{# TRANSLATORS: manifest, alinea 10 #}{{ _('Countries that fully comply pay %(rate)s import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs.', rate='0%') }}</p>
           
 
           <div class="gu-manifest__numbered">
@@ -198,7 +198,7 @@
                   <th class="gu-wet-table__phase" scope="row">{# TRANSLATORS: manifest, tabelkop 29 #}{% trans %}Politically sensitive{% endtrans %}</th>
                   <td data-label="{{ _('Examples') }}">{# TRANSLATORS: manifest, tabelcel 30 #}{% trans %}Rule-of-law conditionality; environmental and labour standards; tax coordination; sanctions against aggressive states{% endtrans %}</td>
                   <td data-label="{{ _('Criterion') }}">{# TRANSLATORS: manifest, tabelcel 31 #}{% trans %}Politically sensitive, high sovereignty cost{% endtrans %}</td>
-                  <td data-label="{{ _('Threshold') }}">{# TRANSLATORS: manifest, tabelcel 32 #}{{ _('80% threshold') }}</td>
+                  <td data-label="{{ _('Threshold') }}">{# TRANSLATORS: manifest, tabelcel 32 #}{{ _('%(pct)s threshold', pct='80%') }}</td>
                 </tr>
               </tbody>
               

@@ -205,6 +205,23 @@ def test_no_template_syntax_in_msgids_or_translations():
     assert not bad, bad
 
 
+# A loose % in a msgid ("0% import duties") is read by Babel as a placeholder
+# ("% i"), so every translation is forced to carry the same fake placeholder.
+# Percentages go in through a named placeholder: _('%(rate)s import duties', rate='0%').
+LOOSE_PERCENT_ALLOWED = {
+    '%d %B %Y': 'strftime format, not a gettext placeholder',
+    'Global%20Union%20motion': 'URL-encoded mail subject',
+}
+
+
+def test_no_loose_percent_sign_in_msgids():
+    placeholder = re.compile(r'%\([a-z_]+\)[sd]|%%')
+    bad = sorted({message for _context, message in _extracted()
+                  for text in ([message] if isinstance(message, str) else list(message))
+                  if '%' in placeholder.sub('', text) and text not in LOOSE_PERCENT_ALLOWED}, key=str)
+    assert not bad, bad
+
+
 @pytest.mark.parametrize('lang', TRANSLATED)
 def test_every_extracted_msgid_is_in_the_catalog(lang):
     """A msgid without an entry shows in English to readers of that language."""

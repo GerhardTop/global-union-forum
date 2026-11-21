@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-20 23:14+0100\n"
+"POT-Creation-Date: 2026-11-21 07:53+0100\n"
 "PO-Revision-Date: 2026-11-20 22:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -1482,8 +1482,8 @@ msgstr "Nach Verhalten handeln"
 
 #: app/templates/index.html:125
 #, python-format
-msgid "A single tariff system per country, based on values we share: for freedom, anti-corruption, the international rule of law, human rights and sustainability. Full compliance? 0% import duties. Commit aggression? Excluded."
-msgstr "Ein einziges Zollsystem pro Land, nach Werten, die wir teilen: für Freiheit, Korruptionsbekämpfung, die internationale Rechtsordnung, Menschenrechte und Nachhaltigkeit. Hältst du alles ein? Dann zahlst du 0% der Einfuhrzölle. Übst du Aggression aus? Ausgeschlossen."
+msgid "A single tariff system per country, based on values we share: for freedom, anti-corruption, the international rule of law, human rights and sustainability. Full compliance? %(rate)s import duties. Commit aggression? Excluded."
+msgstr "Ein einziges Zollsystem pro Land, nach Werten, die wir teilen: für Freiheit, Korruptionsbekämpfung, die internationale Rechtsordnung, Menschenrechte und Nachhaltigkeit. Hältst du alles ein? Dann zahlst du %(rate)s Einfuhrzölle. Übst du Aggression aus? Ausgeschlossen."
 
 #: app/templates/index.html:134
 msgid "Peaceful, but not naive"
@@ -1960,8 +1960,8 @@ msgstr "Verhalten in der internationalen Rechtsordnung: Schutz geistigen Eigentu
 #. manifest, alinea 10
 #: app/templates/manifest.html:120
 #, python-format
-msgid "Countries that fully comply pay 0% import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs."
-msgstr "Länder, die alles erfüllen, zahlen 0% der Einfuhrzölle. Länder, die teilweise erfüllen, zahlen nach ihrer Punktzahl, mit jährlicher Messung und Anpassung. Länder, die Aggression ausüben oder ihre eigene Bevölkerung ermorden, werden ganz ausgeschlossen, und Länder, die weiter mit ihnen handeln, zahlen höhere Zölle."
+msgid "Countries that fully comply pay %(rate)s import duties. Countries that partially comply pay based on their score, with yearly measurement and adjustment. Countries that commit aggression or murder their own people are fully excluded, and countries that continue to trade with them face higher tariffs."
+msgstr "Länder, die alles erfüllen, zahlen %(rate)s Einfuhrzölle. Länder, die teilweise erfüllen, zahlen nach ihrer Punktzahl, mit jährlicher Messung und Anpassung. Länder, die Aggression ausüben oder ihre eigene Bevölkerung ermorden, werden ganz ausgeschlossen, und Länder, die weiter mit ihnen handeln, zahlen höhere Zölle."
 
 #. manifest, tekst 19
 #: app/templates/manifest.html:125
@@ -2111,8 +2111,9 @@ msgid "Politically sensitive, high sovereignty cost"
 msgstr "Politisch heikel, hohe Kosten an Souveränität"
 
 #: app/templates/manifest.html:201
-msgid "80% threshold"
-msgstr "Schwelle von 80 Prozent"
+#, python-format
+msgid "%(pct)s threshold"
+msgstr "Schwelle von %(pct)s"
 
 #. manifest, alinea 33
 #: app/templates/manifest.html:209
