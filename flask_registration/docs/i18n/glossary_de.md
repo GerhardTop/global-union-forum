@@ -2,7 +2,11 @@
 
 De vaste Duitse vertaling van de kernbegrippen van het platform. Elke Duitse tekst (catalogus, mails, AI-prompt, landnamen) volgt deze lijst, zodat een begrip overal hetzelfde heet. Wie een begrip wil wijzigen, wijzigt het hier en daarna overal in `app/translations/de/LC_MESSAGES/messages.po`.
 
-De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` is het naleesbestand voor een Duitstalige; `python i18n_review.py apply de` zet correcties daaruit terug in de catalogus.
+De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` is het naleesbestand voor een Duitstalige (lees eerst "Eerst voor de nalezer" hieronder); `python i18n_review.py apply de` zet correcties daaruit terug in de catalogus.
+
+## Eerst voor de nalezer
+
+1. **Rolnamen.** De rolnamen zijn nu generiek mannelijk: Leser, Mitwirkender, Stimmberechtigter (ook Moderator, Senior-Moderator, Initiator). Graag per rol een neutrale en korte vorm voorstellen die op de statusladder in het profiel past (daar staan ze naast elkaar, op 320px breed nu al afgebroken als "Mitwir-kender" en "Stimm-berech-tigter"). Zonder genderster of Binnen-I; een korte zelfstandige vorm als "Mitglied" of een deelwoordvorm als "Mitwirkende" mag. Pas daarna deze tabel en de catalogus aan (zie de rijen "role:" hieronder).
 
 ## Stijlregels
 
