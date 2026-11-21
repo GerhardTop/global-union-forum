@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-21 08:04+0100\n"
+"POT-Creation-Date: 2026-11-21 08:17+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -1549,6 +1549,11 @@ msgstr "Invite someone"
 msgid "Email address"
 msgstr "Email address"
 
+#: app/templates/aanmelden/aanmelden.html:49 app/templates/index.html:255
+#: app/templates/index.html:321
+msgid "name@example.com"
+msgstr "name@example.com"
+
 #: app/templates/index.html:259
 msgid "Personal message (optional)"
 msgstr "Personal message (optional)"
@@ -2851,6 +2856,10 @@ msgstr "LinkedIn profile URL"
 #: app/templates/issues/proposal_new.html:31 app/templates/profile.html:147
 msgid "optional"
 msgstr "optional"
+
+#: app/templates/aanmelden/aanmelden.html:125 app/templates/profile.html:152
+msgid "https://www.linkedin.com/in/your-name"
+msgstr "https://www.linkedin.com/in/your-name"
 
 #: app/templates/aanmelden/aanmelden.html:133 app/templates/profile.html:154
 msgid "Enter a valid LinkedIn URL (https://www.linkedin.com/in/…)."

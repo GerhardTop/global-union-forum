@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-21 08:04+0100\n"
+"POT-Creation-Date: 2026-11-21 08:17+0100\n"
 "PO-Revision-Date: 2026-11-20 22:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -1545,6 +1545,11 @@ msgstr "Jemanden einladen"
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
+#: app/templates/aanmelden/aanmelden.html:49 app/templates/index.html:255
+#: app/templates/index.html:321
+msgid "name@example.com"
+msgstr "name@beispiel.de"
+
 #: app/templates/index.html:259
 msgid "Personal message (optional)"
 msgstr "Persönliche Nachricht (optional)"
@@ -2846,6 +2851,10 @@ msgstr "URL deines LinkedIn-Profils"
 #: app/templates/issues/proposal_new.html:31 app/templates/profile.html:147
 msgid "optional"
 msgstr "optional"
+
+#: app/templates/aanmelden/aanmelden.html:125 app/templates/profile.html:152
+msgid "https://www.linkedin.com/in/your-name"
+msgstr "https://www.linkedin.com/in/dein-name"
 
 #: app/templates/aanmelden/aanmelden.html:133 app/templates/profile.html:154
 msgid "Enter a valid LinkedIn URL (https://www.linkedin.com/in/…)."
