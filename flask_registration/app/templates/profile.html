@@ -24,7 +24,7 @@
       {# Fase C2: status, verdiend met kwaliteitsbijdragen (alleen omhoog). #}
       {% set st = current_user.effective_status %}
       <div class="gu-profile__info-row" id="guStatus">
-        <span class="gu-profile__info-label">Status</span>
+        <span class="gu-profile__info-label">{{ _('Status') }}</span>
         <span class="gu-profile__info-value">
           <span class="gu-status-badge gu-status-badge--{{ st }}">{{ status_labels[st] }}</span>
           {% if current_user.can_vote() %}<span class="gu-quality__meta">· {{ _('right to vote') }}</span>{% endif %}

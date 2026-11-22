@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-21 08:17+0100\n"
+"POT-Creation-Date: 2026-11-22 15:02+0100\n"
 "PO-Revision-Date: 2026-11-20 22:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -107,7 +107,7 @@ msgid "Create an account and read the ground rules. Then you can start: add fact
 msgstr "Leg ein Konto an und lies die Spielregeln. Dann kannst du loslegen: Fakten hinzufügen, deine Meinung sagen oder selbst eine Fragestellung starten. Was daraus wird, entscheiden die Menschen, die mitmachen."
 
 #. TRANSLATORS: faq, thema 2
-#: app/faq.py:51
+#: app/faq.py:51 app/templates/_footer.html:18 app/templates/_header.html:13
 msgid "Manifesto"
 msgstr "Manifest"
 
@@ -622,7 +622,10 @@ msgstr "Mitwirkender"
 msgid "Voter"
 msgstr "Stimmberechtigter"
 
-#: app/status.py:51 app/templates/admin/dashboard.html:74
+#: app/status.py:51 app/templates/_header.html:46
+#: app/templates/admin/dashboard.html:74 app/templates/moderator/beheer.html:25
+#: app/templates/moderator/dashboard.html:75
+#: app/templates/moderator/rechten.html:19
 msgid "Moderator"
 msgstr "Moderator"
 
@@ -1176,6 +1179,10 @@ msgstr "eine Bewegung im Aufbau"
 msgid "This page was translated by machine."
 msgstr "Diese Seite wurde maschinell übersetzt."
 
+#: app/templates/_header.html:9
+msgid "Navigation"
+msgstr "Navigation"
+
 #: app/templates/_header.html:11 app/templates/issues/_crumbs.html:10
 #: app/templates/issues/index.html:2 app/templates/issues/index.html:17
 #: app/templates/issues/proposal.html:41
@@ -1191,6 +1198,14 @@ msgstr "Über uns"
 msgid "Profile"
 msgstr "Profil"
 
+#: app/templates/_header.html:49 app/templates/admin/dashboard.html:76
+#: app/templates/admin/dashboard.html:121
+#: app/templates/admin/proposal_limits.html:10
+#: app/templates/admin/thresholds.html:9
+#: app/templates/issues/verwijderen.html:39
+msgid "Admin"
+msgstr "Admin"
+
 #: app/templates/_header.html:52
 msgid "Log out"
 msgstr "Abmelden"
@@ -1200,6 +1215,10 @@ msgstr "Abmelden"
 #: app/templates/success.html:11
 msgid "Log in"
 msgstr "Anmelden"
+
+#: app/templates/_header.html:73
+msgid "Menu"
+msgstr "Menü"
 
 #: app/templates/_rules_list.html:14 app/templates/moderator/dashboard.html:294
 #: app/templates/moderator/dashboard.html:328
@@ -2721,6 +2740,10 @@ msgstr "Wir können diese Erklärung ändern. Das Datum oben zeigt, wann wir das
 msgid "My profile"
 msgstr "Mein Profil"
 
+#: app/templates/profile.html:27
+msgid "Status"
+msgstr "Status"
+
 #: app/templates/profile.html:30
 msgid "right to vote"
 msgstr "Stimmrecht"
@@ -3205,6 +3228,12 @@ msgstr "Benutzer insgesamt"
 msgid "New this week"
 msgstr "Neu diese Woche"
 
+#: app/templates/admin/dashboard.html:36 app/templates/forum/closed.html:15
+#: app/templates/forum/edit_thread.html:19 app/templates/forum/index.html:10
+#: app/templates/forum/new_thread.html:15
+msgid "Forum"
+msgstr "Forum"
+
 #: app/templates/admin/dashboard.html:40
 msgid "Active conversations"
 msgstr "Aktive Gespräche"
@@ -3242,10 +3271,6 @@ msgstr "Aktionen"
 #: app/templates/admin/dashboard.html:74
 msgid "Senior moderator"
 msgstr "Senior-Moderator"
-
-#: app/templates/admin/dashboard.html:76 app/templates/admin/dashboard.html:121
-msgid "Admin"
-msgstr "Admin"
 
 #: app/templates/admin/dashboard.html:76
 msgid "No conduct rules acceptance yet"

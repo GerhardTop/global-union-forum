@@ -114,6 +114,8 @@ _OWN_LANGUAGE_RULES = (
            'Meng geen talen. Spreek de auteur aan met je en jij, nooit met u.'),
     ('de', 'Schreibe deine gesamte Antwort auf Deutsch. Verwende keine englischen Wörter oder Wendungen. '
            'Mische keine Sprachen. Sprich die Person mit du an, nie mit Sie.'),
+    ('es', 'Escribe toda tu respuesta en español. No uses palabras ni expresiones en inglés. '
+           'No mezcles idiomas. Trata a la persona de tú, nunca de usted.'),
 )
 
 

@@ -6,11 +6,11 @@
          alt="Global Union" height="60">
   </a>
 
-  <nav class="gu-header__nav" id="siteNav" aria-label="Navigatie">
+  <nav class="gu-header__nav" id="siteNav" aria-label="{{ _('Navigation') }}">
     <a href="{{ url_for('issues.index') }}"
        {% if request.endpoint and request.endpoint.startswith('issues.') %}class="is-active"{% endif %}>{{ _('Have your say') }}</a>
     <a href="{{ url_for('main.manifest') }}"
-       {% if request.endpoint == 'main.manifest' %}class="is-active"{% endif %}>Manifest</a>
+       {% if request.endpoint == 'main.manifest' %}class="is-active"{% endif %}>{{ _('Manifesto') }}</a>
     <a href="{{ url_for('main.faq') }}"
        {% if request.endpoint == 'main.faq' %}class="is-active"{% endif %}>FAQ</a>
     <a href="{{ url_for('main.about') }}"
@@ -43,10 +43,10 @@
         <p class="gu-header__dropdown-name">{{ gu_display_name }}</p>
         <a href="{{ url_for('profile.profile') }}" class="gu-header__dropdown-item">{{ _('Profile') }}</a>
         {% if current_user.can_moderate() %}
-        <a href="{{ url_for('admin.moderator_dashboard') }}" class="gu-header__dropdown-item">Moderator</a>
+        <a href="{{ url_for('admin.moderator_dashboard') }}" class="gu-header__dropdown-item">{{ _('Moderator') }}</a>
         {% endif %}
         {% if current_user.is_admin %}
-        <a href="{{ url_for('admin.admin_dashboard') }}" class="gu-header__dropdown-item">Admin</a>
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="gu-header__dropdown-item">{{ _('Admin') }}</a>
         {% endif %}
         <hr class="gu-header__dropdown-divider">
         <a href="{{ url_for('auth.logout') }}" class="gu-header__dropdown-item">{{ _('Log out') }}</a>
@@ -70,7 +70,7 @@
     {% endif %}
 
     <button class="gu-header__burger" id="navBurger"
-            aria-expanded="false" aria-controls="siteNav" aria-label="Menu">
+            aria-expanded="false" aria-controls="siteNav" aria-label="{{ _('Menu') }}">
       <span></span><span></span><span></span>
     </button>
   </div>

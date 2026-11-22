@@ -36,7 +36,7 @@
     <section class="gu-del__card" aria-labelledby="delTitle">
       <div class="gu-del__top">
         <span class="gu-del__chip" aria-hidden="true"><svg viewBox="0 0 16 16" width="20" height="20"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.8 6.5v4.5M9.2 6.5v4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span class="gu-pill gu-del__admin">Admin</span>
+        <span class="gu-pill gu-del__admin">{{ _('Admin') }}</span>
       </div>
       <h1 class="gu-del__title" id="delTitle">{% if is_prop %}{{ _('Permanently delete proposal') }}{% else %}{{ _('Permanently delete issue') }}{% endif %}</h1>
       <p class="gu-del__sub">{% trans what_lang=what_lang, what=what %}You are about to delete <strong lang="{{ what_lang }}">"{{ what }}"</strong>, with everything attached to it.{% endtrans %}{% if is_prop %} {{ _('The issue itself stays.') }}{% endif %}</p>

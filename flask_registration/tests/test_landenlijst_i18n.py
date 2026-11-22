@@ -49,6 +49,8 @@ def test_names_per_language():
     assert main_routes.country_name(by_iso['MV'], 'nl') == 'Malediven'
     assert main_routes.country_name(by_iso['CZ'], 'de') == Locale('de').territories['CZ']   # Babel fallback
     assert main_routes.country_name(by_iso['LC'], 'de') == 'Saint Lucia'    # own name: Babel abbreviates
+    assert main_routes.country_name(by_iso['CI'], 'es') == 'Costa de Marfil'    # own name: Babel has the French name
+    assert main_routes.country_name(by_iso['HK'], 'es') == 'Hong Kong'      # own name, not 'RAE de Hong Kong (China)'
     assert main_routes.country_name(by_iso['NO'], 'xx') == 'Norway'         # unknown: English
 
 
@@ -61,10 +63,10 @@ def test_the_sensitive_territories_keep_their_names():
     by_iso = {r['iso']: r for r in rows}
     # The current names stay.
     assert {iso: by_iso[iso]['names'] for iso in SENSITIVE} == {
-        'PS': {'en': 'Palestine', 'nl': 'Palestina', 'de': 'Palästina'},
-        'HK': {'en': 'Hong Kong', 'nl': 'Hongkong', 'de': 'Hongkong'},
-        'TW': {'en': 'Taiwan', 'nl': 'Taiwan', 'de': 'Taiwan'},
-        'XK': {'en': 'Kosovo', 'nl': 'Kosovo', 'de': 'Kosovo'}}
+        'PS': {'en': 'Palestine', 'nl': 'Palestina', 'de': 'Palästina', 'es': 'Palestina'},
+        'HK': {'en': 'Hong Kong', 'nl': 'Hongkong', 'de': 'Hongkong', 'es': 'Hong Kong'},
+        'TW': {'en': 'Taiwan', 'nl': 'Taiwan', 'de': 'Taiwan', 'es': 'Taiwán'},
+        'XK': {'en': 'Kosovo', 'nl': 'Kosovo', 'de': 'Kosovo', 'es': 'Kosovo'}}
 
 
 def test_every_country_has_an_own_name_in_dutch_and_english():
@@ -86,7 +88,7 @@ def test_every_enabled_language_has_an_own_name_for_the_sensitive_territories():
 
 
 def test_the_guard_fails_for_a_language_without_own_names(monkeypatch):
-    monkeypatch.setattr(config, 'ENABLED_LANGUAGES', ['nl', 'en', 'de', 'fr'])
+    monkeypatch.setattr(config, 'ENABLED_LANGUAGES', ['nl', 'en', 'de', 'es', 'fr'])
     assert _missing_sensitive_names() == [('HK', 'fr'), ('PS', 'fr'), ('TW', 'fr'), ('XK', 'fr')]
 
 

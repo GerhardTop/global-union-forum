@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 14:10+0100\n"
+"POT-Creation-Date: 2026-11-22 15:02+0100\n"
 "PO-Revision-Date: 2026-11-22 14:15+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -107,7 +107,7 @@ msgid "Create an account and read the ground rules. Then you can start: add fact
 msgstr "Crea una cuenta y lee las reglas del juego. Después ya puedes empezar: añade hechos, da tu opinión o inicia tú una cuestión. Lo que llegue a ser esto lo deciden las personas que participan."
 
 #. TRANSLATORS: faq, thema 2
-#: app/faq.py:51
+#: app/faq.py:51 app/templates/_footer.html:18 app/templates/_header.html:13
 msgid "Manifesto"
 msgstr "Manifiesto"
 
@@ -441,7 +441,7 @@ msgstr "una propuesta"
 #: app/notifications.py:437
 #, python-format
 msgid "Your proposal on %(title)s has enough support and is on the voting list."
-msgstr "Tu propuesta en %(title)s tiene suficiente apoyo y está en la lista de votación."
+msgstr "Tu propuesta sobre %(title)s tiene suficiente apoyo y está en la lista de votación."
 
 #: app/notifications.py:440
 #, python-format
@@ -622,7 +622,10 @@ msgstr "Participante"
 msgid "Voter"
 msgstr "Votante"
 
-#: app/status.py:51 app/templates/admin/dashboard.html:74
+#: app/status.py:51 app/templates/_header.html:46
+#: app/templates/admin/dashboard.html:74 app/templates/moderator/beheer.html:25
+#: app/templates/moderator/dashboard.html:75
+#: app/templates/moderator/rechten.html:19
 msgid "Moderator"
 msgstr "Moderador"
 
@@ -1176,6 +1179,10 @@ msgstr "un movimiento en construcción"
 msgid "This page was translated by machine."
 msgstr "Esta página se tradujo automáticamente."
 
+#: app/templates/_header.html:9
+msgid "Navigation"
+msgstr "Navegación"
+
 #: app/templates/_header.html:11 app/templates/issues/_crumbs.html:10
 #: app/templates/issues/index.html:2 app/templates/issues/index.html:17
 #: app/templates/issues/proposal.html:41
@@ -1191,6 +1198,14 @@ msgstr "Quiénes somos"
 msgid "Profile"
 msgstr "Perfil"
 
+#: app/templates/_header.html:49 app/templates/admin/dashboard.html:76
+#: app/templates/admin/dashboard.html:121
+#: app/templates/admin/proposal_limits.html:10
+#: app/templates/admin/thresholds.html:9
+#: app/templates/issues/verwijderen.html:39
+msgid "Admin"
+msgstr "Administrador"
+
 #: app/templates/_header.html:52
 msgid "Log out"
 msgstr "Cerrar sesión"
@@ -1200,6 +1215,10 @@ msgstr "Cerrar sesión"
 #: app/templates/success.html:11
 msgid "Log in"
 msgstr "Iniciar sesión"
+
+#: app/templates/_header.html:73
+msgid "Menu"
+msgstr "Menú"
 
 #: app/templates/_rules_list.html:14 app/templates/moderator/dashboard.html:294
 #: app/templates/moderator/dashboard.html:328
@@ -2721,6 +2740,10 @@ msgstr "Podemos actualizar esta declaración. La fecha de arriba indica cuándo 
 msgid "My profile"
 msgstr "Mi perfil"
 
+#: app/templates/profile.html:27
+msgid "Status"
+msgstr "Estado"
+
 #: app/templates/profile.html:30
 msgid "right to vote"
 msgstr "derecho a voto"
@@ -3205,6 +3228,12 @@ msgstr "Total de usuarios"
 msgid "New this week"
 msgstr "Nuevos esta semana"
 
+#: app/templates/admin/dashboard.html:36 app/templates/forum/closed.html:15
+#: app/templates/forum/edit_thread.html:19 app/templates/forum/index.html:10
+#: app/templates/forum/new_thread.html:15
+msgid "Forum"
+msgstr "Foro"
+
 #: app/templates/admin/dashboard.html:40
 msgid "Active conversations"
 msgstr "Conversaciones activas"
@@ -3242,10 +3271,6 @@ msgstr "Acciones"
 #: app/templates/admin/dashboard.html:74
 msgid "Senior moderator"
 msgstr "Moderador sénior"
-
-#: app/templates/admin/dashboard.html:76 app/templates/admin/dashboard.html:121
-msgid "Admin"
-msgstr "Administrador"
 
 #: app/templates/admin/dashboard.html:76
 msgid "No conduct rules acceptance yet"

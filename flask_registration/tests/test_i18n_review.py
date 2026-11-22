@@ -8,7 +8,9 @@ import shutil
 
 import pytest
 
+import config
 import i18n_review
+from app import i18n
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LANG = 'de'
@@ -39,10 +41,14 @@ def _po_bytes(root):
         return f.read()
 
 
-def test_the_committed_review_file_is_current():
-    """docs/i18n/review_de.csv matches the catalog (re-export after a change)."""
-    assert _rows(i18n_review.review_path(LANG, ROOT)) == [
-        {k: v for k, v in r.items()} for r in i18n_review.rows(LANG, ROOT)]
+MACHINE_TRANSLATED = [code for code in config.ENABLED_LANGUAGES if not i18n.is_reviewed(code)]
+
+
+@pytest.mark.parametrize('lang', MACHINE_TRANSLATED)
+def test_the_committed_review_file_is_current(lang):
+    """docs/i18n/review_<lang>.csv matches the catalog (re-export after a change)."""
+    assert _rows(i18n_review.review_path(lang, ROOT)) == [
+        {k: v for k, v in r.items()} for r in i18n_review.rows(lang, ROOT)]
 
 
 def test_manifest_and_ground_rules_come_first(root):

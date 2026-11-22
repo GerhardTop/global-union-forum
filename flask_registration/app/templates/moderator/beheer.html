@@ -22,7 +22,7 @@
 
     <header class="gu-mgmt__head">
       <nav class="gu-mgmt__crumb" aria-label="{{ _('Breadcrumb') }}">
-        <a href="{{ url_for('admin.moderator_dashboard') }}">Moderator</a>
+        <a href="{{ url_for('admin.moderator_dashboard') }}">{{ _('Moderator') }}</a>
         {{ icon('<path d="M9 6l6 6-6 6"/>', 13) }}
         <a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title | truncate(60) }}</a>
         {{ icon('<path d="M9 6l6 6-6 6"/>', 13) }}

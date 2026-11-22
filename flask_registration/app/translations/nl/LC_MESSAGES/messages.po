@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-21 08:17+0100\n"
+"POT-Creation-Date: 2026-11-22 15:02+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -107,7 +107,7 @@ msgid "Create an account and read the ground rules. Then you can start: add fact
 msgstr "Maak een account aan en lees de spelregels. Daarna kun je beginnen: voeg feiten toe, geef je mening of start zelf een vraagstuk. Wat dit wordt, bepalen de mensen die meedoen."
 
 #. TRANSLATORS: faq, thema 2
-#: app/faq.py:51
+#: app/faq.py:51 app/templates/_footer.html:18 app/templates/_header.html:13
 msgid "Manifesto"
 msgstr "Manifest"
 
@@ -623,7 +623,10 @@ msgstr "Bijdrager"
 msgid "Voter"
 msgstr "Stemmer"
 
-#: app/status.py:51 app/templates/admin/dashboard.html:74
+#: app/status.py:51 app/templates/_header.html:46
+#: app/templates/admin/dashboard.html:74 app/templates/moderator/beheer.html:25
+#: app/templates/moderator/dashboard.html:75
+#: app/templates/moderator/rechten.html:19
 msgid "Moderator"
 msgstr "Moderator"
 
@@ -1179,6 +1182,10 @@ msgstr "een beweging in opbouw"
 msgid "This page was translated by machine."
 msgstr "Deze pagina is automatisch vertaald."
 
+#: app/templates/_header.html:9
+msgid "Navigation"
+msgstr "Navigatie"
+
 # Polijstronde P1: Denk mee, overzicht, kruimelpad, termen
 #: app/templates/_header.html:11 app/templates/issues/_crumbs.html:10
 #: app/templates/issues/index.html:2 app/templates/issues/index.html:17
@@ -1195,6 +1202,14 @@ msgstr "Over ons"
 msgid "Profile"
 msgstr "Profiel"
 
+#: app/templates/_header.html:49 app/templates/admin/dashboard.html:76
+#: app/templates/admin/dashboard.html:121
+#: app/templates/admin/proposal_limits.html:10
+#: app/templates/admin/thresholds.html:9
+#: app/templates/issues/verwijderen.html:39
+msgid "Admin"
+msgstr "Admin"
+
 #: app/templates/_header.html:52
 msgid "Log out"
 msgstr "Uitloggen"
@@ -1204,6 +1219,10 @@ msgstr "Uitloggen"
 #: app/templates/success.html:11
 msgid "Log in"
 msgstr "Inloggen"
+
+#: app/templates/_header.html:73
+msgid "Menu"
+msgstr "Menu"
 
 #: app/templates/_rules_list.html:14 app/templates/moderator/dashboard.html:294
 #: app/templates/moderator/dashboard.html:328
@@ -2725,6 +2744,10 @@ msgstr "We kunnen deze verklaring aanpassen. De datum bovenaan laat zien wanneer
 msgid "My profile"
 msgstr "Mijn profiel"
 
+#: app/templates/profile.html:27
+msgid "Status"
+msgstr "Status"
+
 #: app/templates/profile.html:30
 msgid "right to vote"
 msgstr "stemrecht"
@@ -3210,6 +3233,12 @@ msgstr "Totaal gebruikers"
 msgid "New this week"
 msgstr "Nieuw deze week"
 
+#: app/templates/admin/dashboard.html:36 app/templates/forum/closed.html:15
+#: app/templates/forum/edit_thread.html:19 app/templates/forum/index.html:10
+#: app/templates/forum/new_thread.html:15
+msgid "Forum"
+msgstr "Forum"
+
 #: app/templates/admin/dashboard.html:40
 msgid "Active conversations"
 msgstr "Actieve gesprekken"
@@ -3247,10 +3276,6 @@ msgstr "Acties"
 #: app/templates/admin/dashboard.html:74
 msgid "Senior moderator"
 msgstr "Senior moderator"
-
-#: app/templates/admin/dashboard.html:76 app/templates/admin/dashboard.html:121
-msgid "Admin"
-msgstr "Admin"
 
 #: app/templates/admin/dashboard.html:76
 msgid "No conduct rules acceptance yet"

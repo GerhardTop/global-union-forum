@@ -1,6 +1,6 @@
 """No horizontal overflow at 320px on the nine pages of the step 7 set (home,
 forum, a conversation, an issue with its cockpit, a proposal, profile,
-moderator overview, manifest, country list), in nl, en and de (long German compounds).
+moderator overview, manifest, country list), in nl, en, de and es (long German compounds, longer Spanish phrases).
 
 A real browser lays the pages out: Playwright for Node, against the app on
 its own SQLite database with the demo content (tests/browser/). The check:
@@ -66,7 +66,7 @@ def demo_server(tmp_path_factory):
         proc.wait(timeout=10)
 
 
-@pytest.mark.parametrize('lang', ['nl', 'en', 'de'])
+@pytest.mark.parametrize('lang', ['nl', 'en', 'de', 'es'])
 def test_no_horizontal_overflow_at_320px(demo_server, lang):
     base, node_path = demo_server
     run = subprocess.run(['node', os.path.join(HERE, 'browser', 'overflow.js'), base, lang, *PAGES],
