@@ -221,6 +221,11 @@ def moderator_dashboard():
                     'meldingen': ('meldingen', 'kwaliteit', 'betwist'), 'bezwaren': ('bezwaren',),
                     'ai': ('twijfel', 'ai-verwijderd'), 'zonder': ('zonder',)}[stroom]
     bin_matches = sum(section_total[k] for k in shown_groups)
+    phase_issues = _phase_issues()
+    # Multilingual phase 2c: the translated titles of every issue on this page
+    # (rows, management list, phases) in one query.
+    from app import content_i18n
+    content_i18n.preload([obj for obj in list(db.session.identity_map.values()) if isinstance(obj, Issue)], 'title')
 
     return render_template(
         'moderator/dashboard.html',
@@ -247,7 +252,7 @@ def moderator_dashboard():
         fact_disputes=fact_disputes,
         fact_can_resolve=lambda row: facts.can_resolve(row, current_user),
         # Polijststap P7: de fasen van vraagstukken beheren moderators hier.
-        phase_issues=_phase_issues(),
+        phase_issues=phase_issues,
         phase_labels_all=_phase_labels(),
         active_threads=active_threads,
         posts_today=posts_today,

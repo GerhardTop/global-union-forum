@@ -10,8 +10,9 @@
   <a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a>
   {% if issue %}
   <span aria-hidden="true">›</span>
-  {% if trail %}<a href="{{ url_for('issues.show', issue_id=issue.id) }}" class="gu-issue-crumbs__issue" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
-  {% else %}<span class="gu-issue-crumbs__issue" aria-current="page" lang="{{ issue.lang or lang }}">{{ issue.title }}</span>{% endif %}
+  {% from '_mt.html' import mt_inline with context %}
+  {% if trail %}<a href="{{ url_for('issues.show', issue_id=issue.id) }}" class="gu-issue-crumbs__issue">{{ mt_inline(issue, 'title') }}</a>
+  {% else %}<span class="gu-issue-crumbs__issue" aria-current="page">{{ mt_inline(issue, 'title') }}</span>{% endif %}
   {% endif %}
   {% for label, url in trail %}
   <span aria-hidden="true">›</span>

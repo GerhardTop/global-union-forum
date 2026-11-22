@@ -192,3 +192,39 @@ def test_dutch_words_hit_no_english_or_german_translation(lang):
         strings = [message.string] if isinstance(message.string, str) else list(message.string)
         hits += [(s, WORD.findall(s)) for s in strings if WORD.search(re.sub(r'<[^>]+>', ' ', s))]
     assert hits == []
+
+
+@pytest.mark.parametrize('lang', ['en', 'de', 'es', 'fr'])
+def test_no_dutch_on_the_label_and_the_vote_block(app, db, make_user, lang):
+    """Multilingual phase 2: an issue in the voting phase whose title, intro and
+    proposal are machine-translated (the label) and a proposal page with the
+    vote block ("you vote on the original text")."""
+    from app import content_i18n, issue_proposals as ip, issues
+    author, voter = make_user(), make_user('voter')
+    issue = issues.create({'title': f'Q{uuid.uuid4().hex[:6]}', 'intro': f'I{uuid.uuid4().hex[:6]}',
+                           'kind': 'online', 'support_threshold': 1}, author, lang='nl')
+    db.session.flush()
+    proposal = ip.create(issue, author, f'S{uuid.uuid4().hex[:6]}', f'E{uuid.uuid4().hex[:6]}', lang='nl')
+    db.session.flush()
+    ip.support(proposal, voter)
+    issue.phase = 'stemmen'
+    for obj, field in ((issue, 'title'), (issue, 'intro'), (proposal, 'statement'), (proposal, 'explanation')):
+        content_i18n.set_translation(obj, field, lang, f'T{uuid.uuid4().hex[:6]}', is_machine=True)
+    db.session.commit()
+    try:
+        content = _content(db)
+        found = {}
+        client = _client(app, voter, lang)
+        for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}'):
+            resp = _req(client, 'GET', path)
+            assert resp.status_code == 200, (lang, path)
+            page = resp.get_data(as_text=True)
+            assert 'gu-mt__note' in page
+            if '/voorstel/' in path:
+                assert 'gu-vote__official' in page
+            for text in _interface_texts(page, content):
+                if WORD.search(text):
+                    found.setdefault(path, []).append(text)
+        assert found == {}, found
+    finally:
+        _cleanup(issue.id)

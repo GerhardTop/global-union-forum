@@ -385,9 +385,15 @@ def _iso(moment):
     return moment.isoformat() if moment else None
 
 
-def changes(issue, since, now=None):
-    """De belangrijke veranderingen van een vraagstuk sinds `since`."""
+def changes(issue, since, now=None, lang=None):
+    """De belangrijke veranderingen van een vraagstuk sinds `since`. Met `lang`
+    staan de stellingen in die taal als de vertaling er is (meertaligheid
+    fase 2c: het digest van een ontvanger), anders het origineel."""
+    from app import content_i18n
     from app import issue_proposals as ip
+
+    def statement(proposal):
+        return content_i18n.display(proposal, 'statement', lang) if lang else proposal.statement
     now = now or datetime.utcnow()
     out = []
     started = issue.phase_started_at
@@ -405,7 +411,7 @@ def changes(issue, since, now=None):
             for proposal, count in ip.listing(issue, order='stemlijst'):
                 if ip.on_list(proposal, count):
                     res = ip.result(proposal)
-                    results.append({'statement': proposal.statement, 'adopted': res['adopted'], 'pct': res['pct_for']})
+                    results.append({'statement': statement(proposal), 'adopted': res['adopted'], 'pct': res['pct_for']})
             out.append({'type': 'issue_uitslag', 'results': results})
             if issue.phase == 'samenvatten':
                 out.append({'type': 'issue_samenvatten'})
@@ -418,10 +424,10 @@ def changes(issue, since, now=None):
     if final is not None:
         end = ip.final_voting_end(final)
         if final.created_at and since < final.created_at <= now:
-            out.append({'type': 'ultiem_open', 'statement': final.statement, 'until': _iso(end)})
+            out.append({'type': 'ultiem_open', 'statement': statement(final), 'until': _iso(end)})
         if since < end <= now:
             res = ip.result(final)
-            out.append({'type': 'ultiem_uitslag', 'statement': final.statement, 'adopted': res['adopted'],
+            out.append({'type': 'ultiem_uitslag', 'statement': statement(final), 'adopted': res['adopted'],
                         'pct': res['pct_for']})
     latest = issue.followups[0] if issue.followups else None
     if latest is not None and since < latest.created_at <= now:

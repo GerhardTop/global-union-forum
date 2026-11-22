@@ -190,12 +190,15 @@ def build(user, now=None, issue_participants=None):
         if op is not None and conduct.is_removed_for(op, user):
             continue
         since = user.last_digest_at or issue.created_at or now
-        changes = issue_lifecycle.changes(issue, since, now)
+        changes = issue_lifecycle.changes(issue, since, now, lang=lang_for(user))
         posts, facts = _thread_activity(issue.thread_id, user, since) if issue.thread_id else (0, 0)
         if not changes and not posts and not facts:
             continue
         important = important or bool(changes)
-        items.append({'issue_id': issue.id, 'thread_id': issue.thread_id, 'title': issue.title,
+        # Multilingual phase 2c: the title in the recipient's language when translated.
+        from app import content_i18n
+        items.append({'issue_id': issue.id, 'thread_id': issue.thread_id,
+                      'title': content_i18n.display(issue, 'title', lang_for(user)),
                       'changes': changes, 'new_posts': posts, 'new_facts': facts})
     if not important:
         return []

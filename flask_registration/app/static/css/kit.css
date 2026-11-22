@@ -4755,9 +4755,17 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-mt__note { font-size: 12px; line-height: 1.4; color: var(--gu-fg-3); margin: 4px 0 0; }
 .gu-mt { min-width: 0; }
 .gu-cockpit__titlerow > .gu-mt { flex: 1 1 20rem; }
-.gu-mt__note .gu-mt__toggle {
-  background: none; border: 0; padding: 0; margin: 0;
+.gu-mt__note .gu-mt__toggle, .gu-vote__official .gu-mt__toggle {
+  background: none; border: 0; padding: 0; margin: 0; white-space: nowrap;
   font: inherit; color: var(--gu-globe-deep); text-decoration: underline; cursor: pointer;
 }
-.gu-mt__note .gu-mt__toggle:disabled { color: var(--gu-fg-3); cursor: default; }
-.gu-mt__note .gu-mt__toggle:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; border-radius: 2px; }
+.gu-mt__toggle:disabled { color: var(--gu-fg-3); cursor: default; }
+.gu-mt__toggle:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; border-radius: 2px; }
+.gu-mt__code {
+  display: inline-block; margin-inline-start: 6px; padding: 0 5px; border: 1px solid var(--gu-border);
+  border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: .04em; line-height: 16px;
+  color: var(--gu-fg-3); text-decoration: none; vertical-align: middle; white-space: nowrap;
+}
+.gu-vote__statement { font-weight: 600; margin: 0 0 4px; }
+.gu-vote__official { font-size: 13px; color: var(--gu-fg-2); margin: 6px 0 0; }
+.gu-vote__original { font-size: 14px; margin: 6px 0 0; padding-inline-start: 10px; border-inline-start: 2px solid var(--gu-border); }

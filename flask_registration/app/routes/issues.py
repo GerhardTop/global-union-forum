@@ -27,7 +27,7 @@ from flask import Blueprint, abort, flash, jsonify, redirect, render_template, r
 from flask_babel import gettext
 from flask_login import current_user, login_required
 
-from app import conduct, db, issues, limiter
+from app import conduct, content_i18n, db, issues, limiter
 from app import facts as fact_signals
 from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
@@ -98,13 +98,27 @@ def _new_issue_facts(form):
     return facts, errors, rows
 
 
+def _preload_translations(issue, proposal=None):
+    """Multilingual phase 2c: the translations an issue page or a proposal
+    page shows (titles, statements, versions, follow-up) in a fixed number of
+    queries, however many proposals there are."""
+    proposals = IssueProposal.query.filter_by(issue_id=issue.id).all()
+    content_i18n.preload([issue], 'title', 'intro')
+    content_i18n.preload(proposals, 'statement', 'explanation')
+    content_i18n.preload(list(issue.followups), 'body')
+    if proposal is not None:
+        content_i18n.preload(list(proposal.version_rows), 'statement', 'explanation')
+
+
 @issues_bp.route('/gesprekken')
 def index():
     """Het overzicht achter "Denk mee": alle vraagstukken met hun fase en
     aantallen, te filteren op soort (online, event) en op lopend of afgerond."""
     which = request.args.get('filter')
     which = which if which in issues.OVERVIEW_FILTERS else 'alle'
-    return render_template('issues/index.html', rows=issues.overview(which), which=which)
+    rows = issues.overview(which)
+    content_i18n.preload([row[0] for row in rows], 'title')  # the translated titles in one query
+    return render_template('issues/index.html', rows=rows, which=which)
 
 
 @issues_bp.route('/gesprekken/nieuw', methods=['GET', 'POST'])
@@ -155,6 +169,7 @@ def show(issue_id):
     my_reported_proposal_ids = _reported_proposal_ids([p.id for p, _c in proposal_rows])
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in proposal_rows])
     big = _enlarged_proposals(issue, {p.id: ip.current_version(p) for p, _c in proposal_rows})
+    _preload_translations(issue)
     # The enlarged facts column (add form, card actions) overrides the
     # discussion's fact context: same facts, plus the edit state.
     discussion.update(_fact_box(issue, visible))
@@ -355,6 +370,7 @@ def proposal(issue_id, proposal_id):
         db.session.commit()
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in rail_proposals])
     rail_versions = {p.id: ip.current_version(p) for p, _c in rail_proposals}
+    _preload_translations(issue, proposal)  # after the last commit (a commit empties the cache)
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
                            auto_translate=_auto_translate(),
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),

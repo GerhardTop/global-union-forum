@@ -75,3 +75,18 @@
 </div>
 {%- endif %}
 {%- endmacro %}
+
+{#
+  mt_inline(obj, field, length=none): a title or statement in a list (the
+  issues overview, the proposals in the cockpit and on the proposal screen,
+  conversations, the moderator overview). The translation when there is one;
+  else the original with a small language code (title "Original in Dutch").
+  No label and no button: the page itself carries the label. Translations are
+  preloaded per list (content_i18n.preload); never an AI call.
+#}
+{% macro mt_inline(obj, field, length=none) -%}
+{%- set v = content_i18n.view(obj, field, lang) -%}
+{%- set text = v.text | truncate(length) if length else v.text -%}
+<span lang="{{ lang if v.kind in ('machine', 'handwritten') else (v.source or lang) }}">{{ text }}</span>
+{%- if v.kind == 'pending' and v.source %} <abbr class="gu-mt__code" title="{{ _('Original in %(language)s', language=language_name_in(v.source, lang)) }}">{{ v.source | upper }}</abbr>{% endif %}
+{%- endmacro %}

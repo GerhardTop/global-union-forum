@@ -8,6 +8,7 @@
   afgerond. Klikken opent de cockpit.
 #}
 {% block content_outer %}{% block content %}
+{% from '_mt.html' import mt_inline with context %}
 <main class="gu-forum gu-forum--soft" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
@@ -48,7 +49,7 @@
       <li class="gu-threadlist__row">
         <a class="gu-threadlist__link" href="{{ url_for('issues.show', issue_id=issue.id) }}">
           <span class="gu-threadlist__eyebrow">{% include 'issues/_kind.html' %}</span>
-          <span class="gu-threadlist__title" lang="{{ issue.lang or lang }}">{{ issue.title }}</span>
+          <span class="gu-threadlist__title">{{ mt_inline(issue, 'title') }}</span>
           {% if issue.created_by %}<span class="gu-issuelist__by">{{ _('submitted by') }} {{ issue.created_by.public_name }}</span>{% endif %}
           <span class="gu-threadlist__meta gu-issuelist__meta">
             <span class="gu-issuelist__phase{% if issue.is_closed %} is-closed{% endif %}">

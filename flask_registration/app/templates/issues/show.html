@@ -12,7 +12,7 @@
   elkaar in beeld.
 #}
 {% block content_outer %}{% block content %}
-{% from '_mt.html' import mt with context %}
+{% from '_mt.html' import mt, mt_inline with context %}
 {% if has_discussion %}<template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>{% endif %}
 <main class="gu-forum gu-cockpit{% if big.expanded %} gu-cockpit--expanded{% endif %}" lang="{{ lang }}" id="cockpit"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
   <div class="gu-cockpit__inner">
@@ -156,7 +156,7 @@
         <ul class="gu-cockpit__proposallist" data-more-list data-step="{{ proposals_shown }}">
           {% for proposal, count in proposal_rows %}
           <li class="gu-cockpit__proposal{% if loop.index > proposals_shown %} gu-cockpit__extra{% endif %}">
-            <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</a>
+            <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) }}">{{ mt_inline(proposal, 'statement') }}</a>
             <span class="gu-reportrow">
               {% include 'issues/_ip_status.html' %}
               {% with n=reaction_counts.get(proposal.id, 0), active=new_discussion.get(proposal.id, False) %}{% include 'issues/_reaction_count.html' %}{% endwith %}

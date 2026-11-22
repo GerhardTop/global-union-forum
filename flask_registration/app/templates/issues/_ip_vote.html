@@ -30,6 +30,20 @@
     <p class="gu-composer__hint">{{ _('Votes cast: %(n)s', n=res.total) }} · {{ _('Threshold: more than %(pct)s%% in favour', pct=res.threshold) }}</p>
     {% if vote.mine %}<p class="gu-composer__hint">{{ _('Your vote: %(choice)s.', choice=choice_labels[vote.mine]) }}</p>{% endif %}
   {% elif vote.open %}
+    {# Multilingual phase 2c: the statement in the reader's language (with the
+       label); the original is the official text, one click away. #}
+    {% from '_mt.html' import mt with context %}
+    {% set sv = content_i18n.view(proposal, 'statement', lang) %}
+    {{ mt(proposal, 'statement', 'p', 'gu-vote__statement') }}
+    {% if sv.kind in ('machine', 'handwritten') %}
+    <p class="gu-vote__official">
+      {# TRANSLATORS: in the vote block, under a proposal statement shown in a translation. %(language)s is the original language in its base form, e.g. "Dutch". #}
+      {{ _('You vote on the original text (%(language)s).', language=language_name_in(sv.source, lang)) }}
+      <button type="button" class="gu-mt__toggle" aria-expanded="false" aria-controls="voteOriginal-{{ proposal.id }}"
+              data-mt-disclose data-btn-open="{{ _('Show original') }}" data-btn-close="{{ _('Hide original') }}">{{ _('Show original') }}</button>
+    </p>
+    <p class="gu-vote__original" id="voteOriginal-{{ proposal.id }}" lang="{{ sv.source }}" hidden>{{ sv.original }}</p>
+    {% endif %}
     {% if proposal.is_final %}<p class="gu-composer__hint">{{ _('Voting open until %(date)s', date=vote.final_end | datetimeformat('d MMMM y HH:mm')) }}</p>{% endif %}
     {% if vote.can_vote %}
     <form method="POST" action="{{ url_for('issues.proposal_vote', issue_id=issue.id, proposal_id=proposal.id) }}" class="gu-vote__choices">

@@ -6,7 +6,8 @@
 {% if final %}
 <div class="gu-ip-finalbox">
   <p class="gu-eyebrow">{{ _('Summary proposal') }}</p>
-  <a class="gu-ip-finalbox__statement" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=final.id) }}" lang="{{ final.lang or lang }}">{{ final.statement }}</a>
+  {% from '_mt.html' import mt_inline with context %}
+  <a class="gu-ip-finalbox__statement" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=final.id) }}">{{ mt_inline(final, 'statement') }}</a>
   {% with proposal=final, count=0 %}{% include 'issues/_ip_status.html' %}{% endwith %}
 </div>
 {% elif issue.phase == 'samenvatten' and not can_make_final and not issue.is_closed %}

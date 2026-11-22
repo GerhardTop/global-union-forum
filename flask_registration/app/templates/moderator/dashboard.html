@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% from 'moderator/_userlink.html' import user_link with context %}
-{% block title %}Moderator Dashboard · Global Union{% endblock %}
+{% from '_mt.html' import mt_inline with context %}
+{% block title %}{{ _('Moderator') }} · Global Union{% endblock %}
 
 {# ── Fase 2c: compacte rijen (mrow) volgens Main.dc.html (docs/design/README.md) ── #}
 {% macro ctx_pill(issue=None, thread=None) -%}
 {%- if issue -%}
 {#- Delete rights step 2: to the manage screen when this viewer may open it, else the public page. -#}
-<a class="gu-pill gu-pill--ctx" href="{{ url_for('admin.issue_manage', issue_id=issue.id) if can_manage(issue) else url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}"><span class="gu-arrow" aria-hidden="true"></span>{{ issue.title }}</a>
+<a class="gu-pill gu-pill--ctx" href="{{ url_for('admin.issue_manage', issue_id=issue.id) if can_manage(issue) else url_for('issues.show', issue_id=issue.id) }}" ><span class="gu-arrow" aria-hidden="true"></span>{{ mt_inline(issue, 'title') }}</a>
 {%- elif thread -%}
 <a class="gu-pill gu-pill--ctx" href="{{ url_for('forum.forum_thread', thread_id=thread.id) }}"><span class="gu-arrow" aria-hidden="true"></span>{{ thread.title(lang)|select|join(' ') }}</a>
 {%- endif -%}
@@ -412,7 +413,7 @@
             {% set n_open = manage_open.get(issue.id, 0) %}
             <div class="gu-mod-list__item gu-mgmt-entry__item">
               <div class="gu-mgmt-entry__body">
-                <a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
+                <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ mt_inline(issue, 'title') }}</a>
                 <div class="gu-mod-list__meta">
                   {% if n_open %}<span class="gu-pill gu-pill--count">{{ ngettext('%(num)d open report', '%(num)d open reports', n_open) }}</span>{% endif %}
                   {% if issue.created_by_id == current_user.id %}<span>{{ _('your issue') }}</span>
@@ -444,7 +445,7 @@
             {% for issue, next_key, can_step, can_reopen in phase_issues %}
             <div class="gu-mod-list__item gu-modissue">
               <div>
-                <a href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
+                <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ mt_inline(issue, 'title') }}</a>
               </div>
               <div class="gu-mod-list__meta">
                 {{ _('Closed') if issue.is_closed else phase_labels_all.get(issue.phase, issue.phase) }}

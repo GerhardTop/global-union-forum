@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 17:06+0100\n"
+"POT-Creation-Date: 2026-11-22 17:37+0100\n"
 "PO-Revision-Date: 2026-11-22 14:15+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -46,11 +46,11 @@ msgstr "Sobre la idea, no sobre la persona"
 msgid "Spam or abuse"
 msgstr "Spam o abuso"
 
-#: app/digest.py:219
+#: app/digest.py:222
 msgid "Your weekly summary"
 msgstr "Tu resumen semanal"
 
-#: app/digest.py:219 app/templates/email/digest.html:3
+#: app/digest.py:222 app/templates/email/digest.html:3
 msgid "Your daily summary"
 msgstr "Tu resumen diario"
 
@@ -428,142 +428,142 @@ msgctxt "notification phase"
 msgid "Follow-up"
 msgstr "Seguimiento"
 
-#: app/notifications.py:430
+#: app/notifications.py:431
 msgctxt "notification subject"
 msgid "an issue"
 msgstr "una cuestión"
 
-#: app/notifications.py:432
+#: app/notifications.py:433
 msgctxt "notification subject"
 msgid "a proposal"
 msgstr "una propuesta"
 
-#: app/notifications.py:437
+#: app/notifications.py:438
 #, python-format
 msgid "Your proposal on %(title)s has enough support and is on the voting list."
 msgstr "Tu propuesta sobre %(title)s tiene suficiente apoyo y está en la lista de votación."
 
-#: app/notifications.py:440
+#: app/notifications.py:441
 #, python-format
 msgid "The final vote on %(title)s has started."
 msgstr "Ha empezado la votación final sobre %(title)s."
 
-#: app/notifications.py:442
+#: app/notifications.py:443
 #, python-format
 msgid "The final vote on %(title)s has concluded."
 msgstr "Ha terminado la votación final sobre %(title)s."
 
-#: app/notifications.py:444
+#: app/notifications.py:445
 #, python-format
 msgid "Voting on %(title)s closes within 24 hours."
 msgstr "La votación sobre %(title)s se cierra en menos de 24 horas."
 
-#: app/notifications.py:446
+#: app/notifications.py:447
 #, python-format
 msgid "The outcome of %(title)s is in."
 msgstr "Ya se conoce el resultado de %(title)s."
 
-#: app/notifications.py:450
+#: app/notifications.py:451
 #, python-format
 msgid "A new voting round on your proposal %(title)s has opened."
 msgstr "Se ha abierto una nueva ronda de votación sobre tu propuesta %(title)s."
 
-#: app/notifications.py:451
+#: app/notifications.py:452
 #, python-format
 msgid "A new voting round on your issue %(title)s has opened."
 msgstr "Se ha abierto una nueva ronda de votación sobre tu cuestión %(title)s."
 
-#: app/notifications.py:452
+#: app/notifications.py:453
 #, python-format
 msgid "A new voting round on %(title)s has opened."
 msgstr "Se ha abierto una nueva ronda de votación sobre %(title)s."
 
-#: app/notifications.py:457
+#: app/notifications.py:458
 #, python-format
 msgid "Your proposal %(title)s moves on to the next phase: %(phase)s."
 msgstr "Tu propuesta %(title)s pasa a la siguiente fase: %(phase)s."
 
-#: app/notifications.py:458
+#: app/notifications.py:459
 #, python-format
 msgid "Your issue %(title)s moves on to the next phase: %(phase)s."
 msgstr "Tu cuestión %(title)s pasa a la siguiente fase: %(phase)s."
 
-#: app/notifications.py:459
+#: app/notifications.py:460
 #, python-format
 msgid "%(title)s has moved to a new phase: %(phase)s."
 msgstr "%(title)s ha pasado a una nueva fase: %(phase)s."
 
-#: app/notifications.py:466
+#: app/notifications.py:467
 msgctxt "email subject"
 msgid "A reply to your contribution"
 msgstr "Alguien ha respondido a tu contribución"
 
-#: app/notifications.py:467
+#: app/notifications.py:468
 msgid "News about your proposal"
 msgstr "Novedades sobre tu propuesta"
 
-#: app/notifications.py:468
+#: app/notifications.py:469
 msgid "News about an issue you follow"
 msgstr "Novedades sobre una cuestión que sigues"
 
-#: app/notifications.py:469
+#: app/notifications.py:470
 msgctxt "email subject"
 msgid "The outcome of an issue you follow"
 msgstr "El resultado de una cuestión que sigues"
 
-#: app/notifications.py:470
+#: app/notifications.py:471
 msgid "News about your fact"
 msgstr "Novedades sobre tu hecho"
 
-#: app/notifications.py:471
+#: app/notifications.py:472
 msgctxt "email subject"
 msgid "A new report to handle"
 msgstr "Una nueva denuncia que gestionar"
 
-#: app/notifications.py:472
+#: app/notifications.py:473
 msgctxt "email subject"
 msgid "A new objection to a decision"
 msgstr "Una nueva objeción a una decisión"
 
-#: app/notifications.py:473
+#: app/notifications.py:474
 msgid "A fact is being challenged"
 msgstr "Se está poniendo en duda un hecho"
 
-#: app/notifications.py:518
+#: app/notifications.py:519
 msgid "You have received a warning"
 msgstr "Has recibido una advertencia"
 
-#: app/notifications.py:519
+#: app/notifications.py:520
 msgid "You have been suspended"
 msgstr "Se te ha suspendido"
 
-#: app/notifications.py:522
+#: app/notifications.py:523
 msgid "This warning is about the forum rules."
 msgstr "Esta advertencia tiene que ver con las reglas del foro."
 
-#: app/notifications.py:523
+#: app/notifications.py:524
 msgid "Until then you can still read, but not contribute or vote."
 msgstr "Hasta entonces puedes seguir leyendo, pero no contribuir ni votar."
 
-#: app/notifications.py:558
+#: app/notifications.py:559
 msgid "A moderator has sent you a warning."
 msgstr "Un moderador te ha enviado una advertencia."
 
-#: app/notifications.py:559
+#: app/notifications.py:560
 #, python-format
 msgid "A moderator has sent you a warning: “%(message)s”"
 msgstr "Un moderador te ha enviado una advertencia: “%(message)s”"
 
-#: app/notifications.py:562
+#: app/notifications.py:563
 msgid "You have been suspended."
 msgstr "Se te ha suspendido."
 
-#: app/notifications.py:563
+#: app/notifications.py:564
 #, python-format
 msgid "Reason: %(reason)s"
 msgstr "Motivo: %(reason)s"
 
-#: app/notifications.py:564
+#: app/notifications.py:565
 #, python-format
 msgid "You are suspended until %(until)s."
 msgstr "Tu cuenta está suspendida hasta el %(until)s."
@@ -624,7 +624,8 @@ msgstr "Votante"
 
 #: app/status.py:51 app/templates/_header.html:46
 #: app/templates/admin/dashboard.html:74 app/templates/moderator/beheer.html:25
-#: app/templates/moderator/dashboard.html:75
+#: app/templates/moderator/dashboard.html:4
+#: app/templates/moderator/dashboard.html:76
 #: app/templates/moderator/rechten.html:19
 msgid "Moderator"
 msgstr "Moderador"
@@ -675,9 +676,9 @@ msgid "Voting"
 msgstr "Votación"
 
 #: app/routes/admin.py:104 app/routes/issues.py:57
-#: app/templates/issues/_ip_final.html:8 app/templates/issues/_ip_final.html:14
-#: app/templates/issues/_ip_final.html:19
-#: app/templates/issues/_proposals_big.html:42
+#: app/templates/issues/_ip_final.html:8 app/templates/issues/_ip_final.html:15
+#: app/templates/issues/_ip_final.html:20
+#: app/templates/issues/_proposals_big.html:43
 #: app/templates/issues/_steps.html:15 app/templates/issues/final_new.html:19
 #: app/templates/issues/proposal.html:46
 #: app/templates/moderator/beheer.html:104
@@ -690,121 +691,121 @@ msgstr "Propuesta de síntesis"
 msgid "Follow-up"
 msgstr "Seguimiento"
 
-#: app/routes/admin.py:325
+#: app/routes/admin.py:330
 msgid "Rights saved."
 msgstr "Permisos guardados."
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:339
 msgctxt "month"
 msgid "Jan"
 msgstr "ene"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:339
 msgctxt "month"
 msgid "Feb"
 msgstr "feb"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:339
 msgctxt "month"
 msgid "Mar"
 msgstr "mar"
 
-#: app/routes/admin.py:334
+#: app/routes/admin.py:339
 msgctxt "month"
 msgid "Apr"
 msgstr "abr"
 
-#: app/routes/admin.py:335
+#: app/routes/admin.py:340
 msgctxt "month"
 msgid "May"
 msgstr "may"
 
-#: app/routes/admin.py:335
+#: app/routes/admin.py:340
 msgctxt "month"
 msgid "Jun"
 msgstr "jun"
 
-#: app/routes/admin.py:335
+#: app/routes/admin.py:340
 msgctxt "month"
 msgid "Jul"
 msgstr "jul"
 
-#: app/routes/admin.py:335
+#: app/routes/admin.py:340
 msgctxt "month"
 msgid "Aug"
 msgstr "ago"
 
-#: app/routes/admin.py:336
+#: app/routes/admin.py:341
 msgctxt "month"
 msgid "Sep"
 msgstr "sept"
 
-#: app/routes/admin.py:336
+#: app/routes/admin.py:341
 msgctxt "month"
 msgid "Oct"
 msgstr "oct"
 
-#: app/routes/admin.py:336
+#: app/routes/admin.py:341
 msgctxt "month"
 msgid "Nov"
 msgstr "nov"
 
-#: app/routes/admin.py:336
+#: app/routes/admin.py:341
 msgctxt "month"
 msgid "Dec"
 msgstr "dic"
 
-#: app/routes/admin.py:386
+#: app/routes/admin.py:391
 msgid "Write a message to the user first."
 msgstr "Primero escribe un mensaje a esta persona."
 
-#: app/routes/admin.py:395
+#: app/routes/admin.py:400
 msgid "The warning has been sent."
 msgstr "La advertencia se ha enviado."
 
-#: app/routes/admin.py:422
+#: app/routes/admin.py:427
 msgid "Choose 7 or 30 days."
 msgstr "Elige 7 o 30 días."
 
-#: app/routes/admin.py:424
+#: app/routes/admin.py:429
 msgid "Write the reason for the suspension first."
 msgstr "Primero escribe el motivo de la suspensión."
 
-#: app/routes/admin.py:435
+#: app/routes/admin.py:440
 #, python-format
 msgid "@%(username)s has been suspended for %(days)s days."
 msgstr "La cuenta @%(username)s queda suspendida durante %(days)s días."
 
-#: app/routes/admin.py:465
+#: app/routes/admin.py:470
 msgid "The username does not match. Nothing was deleted."
 msgstr "El nombre de usuario no coincide. No se ha eliminado nada."
 
-#: app/routes/admin.py:470
+#: app/routes/admin.py:475
 #, python-format
 msgid "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
 msgstr "La cuenta @%(username)s se ha eliminado. Sus contribuciones aparecen ahora como @verwijderd."
 
-#: app/routes/admin.py:517
+#: app/routes/admin.py:522
 msgid "Choose what to do with this report."
 msgstr "Elige qué hacer con esta denuncia."
 
-#: app/routes/admin.py:520
+#: app/routes/admin.py:525
 msgid "The report has been handled."
 msgstr "La denuncia se ha gestionado."
 
-#: app/routes/admin.py:637
+#: app/routes/admin.py:642
 msgid "Thresholds saved."
 msgstr "Umbrales guardados."
 
-#: app/routes/admin.py:668
+#: app/routes/admin.py:673
 msgid "Maximum durations saved."
 msgstr "Duraciones máximas guardadas."
 
-#: app/routes/admin.py:690 app/templates/admin/proposal_limits.html:25
+#: app/routes/admin.py:695 app/templates/admin/proposal_limits.html:25
 msgid "Enter a whole number from 1 to 365."
 msgstr "Introduce un número entero del 1 al 365."
 
-#: app/routes/admin.py:693
+#: app/routes/admin.py:698
 msgid "Saved."
 msgstr "Guardado."
 
@@ -918,11 +919,11 @@ msgstr "Un mensaje movido u oculto no se puede editar. Lo que sí puedes es pres
 msgid "edited %(when)s"
 msgstr "editado %(when)s"
 
-#: app/routes/forum.py:1529 app/routes/issues.py:256
+#: app/routes/forum.py:1529 app/routes/issues.py:271
 msgid "Give a reason for your report."
 msgstr "Indica un motivo para tu denuncia."
 
-#: app/routes/forum.py:1538 app/routes/issues.py:262
+#: app/routes/forum.py:1538 app/routes/issues.py:277
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Gracias, tu denuncia se ha enviado a un moderador."
 
@@ -946,60 +947,60 @@ msgstr "Hacer propuestas"
 msgid "Adjust the proposals"
 msgstr "Ajustar las propuestas"
 
-#: app/routes/issues.py:453
+#: app/routes/issues.py:470
 msgid "You already support this proposal."
 msgstr "Ya apoyas esta propuesta."
 
-#: app/routes/issues.py:506
+#: app/routes/issues.py:523
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Elige al menos un hecho que aún no esté vinculado."
 
-#: app/routes/issues.py:635
+#: app/routes/issues.py:652
 msgid "The issue is now in the next phase."
 msgstr "La cuestión ya está en la siguiente fase."
 
-#: app/routes/issues.py:651 app/routes/issues.py:671
+#: app/routes/issues.py:668 app/routes/issues.py:688
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "El texto puede tener como máximo %(n)s caracteres."
 
-#: app/routes/issues.py:703
+#: app/routes/issues.py:720
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Marca la casilla para confirmar que quieres volver a abrir la cuestión."
 
-#: app/routes/issues.py:708
+#: app/routes/issues.py:725
 msgid "The issue is open again for discussion."
 msgstr "La cuestión vuelve a estar abierta al debate."
 
-#: app/routes/issues.py:730
+#: app/routes/issues.py:747
 msgid "The issue has been archived."
 msgstr "La cuestión se ha archivado."
 
-#: app/routes/issues.py:745
+#: app/routes/issues.py:762
 msgid "The issue is back from the archive."
 msgstr "La cuestión ha salido del archivo."
 
-#: app/routes/issues.py:764
+#: app/routes/issues.py:781
 msgid "Type the exact title to confirm."
 msgstr "Escribe el título exacto para confirmar."
 
-#: app/routes/issues.py:770
+#: app/routes/issues.py:787
 msgid "The issue has been deleted."
 msgstr "La cuestión se ha eliminado."
 
-#: app/routes/issues.py:792
+#: app/routes/issues.py:809
 msgid "Type the exact text to confirm."
 msgstr "Escribe el texto exacto para confirmar."
 
-#: app/routes/issues.py:799
+#: app/routes/issues.py:816
 msgid "The proposal has been deleted."
 msgstr "La propuesta se ha eliminado."
 
-#: app/routes/issues.py:919
+#: app/routes/issues.py:936
 msgid "The proposal is hidden."
 msgstr "La propuesta está oculta."
 
-#: app/routes/issues.py:919
+#: app/routes/issues.py:936
 msgid "The proposal is visible again."
 msgstr "La propuesta vuelve a estar visible."
 
@@ -1184,7 +1185,7 @@ msgid "Navigation"
 msgstr "Navegación"
 
 #: app/templates/_header.html:11 app/templates/issues/_crumbs.html:10
-#: app/templates/issues/index.html:2 app/templates/issues/index.html:17
+#: app/templates/issues/index.html:2 app/templates/issues/index.html:18
 #: app/templates/issues/proposal.html:42
 msgid "Have your say"
 msgstr "Piensa con nosotros"
@@ -1228,13 +1229,14 @@ msgstr "Menú"
 msgid "Machine-translated from %(language)s"
 msgstr "Traducido automáticamente del %(language)s"
 
-#: app/templates/_mt.html:51
+#: app/templates/_mt.html:51 app/templates/_mt.html:91
+#: app/templates/forum/closed.html:37 app/templates/forum/index.html:56
 #, python-format
 msgid "Original in %(language)s"
 msgstr "Original en %(language)s"
 
 #: app/templates/_mt.html:55 app/templates/_mt.html:66
-#: app/templates/forum/quality.html:32
+#: app/templates/forum/quality.html:32 app/templates/issues/_ip_vote.html:43
 msgid "Show original"
 msgstr "Ver original"
 
@@ -1261,8 +1263,8 @@ msgstr "Traducir al español"
 msgid "Translation pending"
 msgstr "Traducción pendiente"
 
-#: app/templates/_rules_list.html:14 app/templates/moderator/dashboard.html:294
-#: app/templates/moderator/dashboard.html:328
+#: app/templates/_rules_list.html:14 app/templates/moderator/dashboard.html:295
+#: app/templates/moderator/dashboard.html:329
 msgid "Conduct rules"
 msgstr "Normas de conducta"
 
@@ -1287,7 +1289,7 @@ msgid "Everyone speaks with one voice. More than one account per person is not a
 msgstr "Cada persona habla con una sola voz. No se permite más de una cuenta por persona, tampoco con otro seudónimo."
 
 #: app/templates/_rules_list.html:41 app/templates/forum/_proposal_vote.html:58
-#: app/templates/issues/_ip_vote.html:50
+#: app/templates/issues/_ip_vote.html:64
 msgid "Quality guidelines"
 msgstr "Pautas de calidad"
 
@@ -3236,7 +3238,7 @@ msgstr "Panel de administración"
 
 #: app/templates/admin/dashboard.html:9
 #: app/templates/admin/language_monitor.html:14
-#: app/templates/moderator/dashboard.html:74
+#: app/templates/moderator/dashboard.html:75
 msgid "Management"
 msgstr "Gestión"
 
@@ -3289,7 +3291,7 @@ msgstr "Conversaciones activas"
 
 #: app/templates/admin/dashboard.html:44 app/templates/forum/closed.html:2
 #: app/templates/forum/closed.html:16 app/templates/forum/index.html:29
-#: app/templates/moderator/dashboard.html:481
+#: app/templates/moderator/dashboard.html:482
 msgid "Closed conversations"
 msgstr "Conversaciones cerradas"
 
@@ -3510,13 +3512,13 @@ msgstr "Recibes este correo porque activaste el correo para esto. Puedes desacti
 
 #: app/templates/forum/_conduct_mod.html:18
 #: app/templates/forum/_conduct_mod.html:58
-#: app/templates/moderator/dashboard.html:263
+#: app/templates/moderator/dashboard.html:264
 #: app/templates/moderator/melding_beoordelen.html:155
 msgid "Note (optional)"
 msgstr "Explicación (opcional)"
 
 #: app/templates/forum/_conduct_mod.html:22
-#: app/templates/moderator/dashboard.html:268
+#: app/templates/moderator/dashboard.html:269
 msgid "Restore to the conversation"
 msgstr "Devolver a la conversación"
 
@@ -3568,13 +3570,13 @@ msgstr "Norma de conducta: %(rule)s."
 
 #: app/templates/forum/_conduct_notice.html:31
 #: app/templates/forum/achtergrond.html:40
-#: app/templates/moderator/dashboard.html:244
+#: app/templates/moderator/dashboard.html:245
 msgid "Automatically by the AI"
 msgstr "Automáticamente por la IA"
 
 #: app/templates/forum/_conduct_notice.html:31
 #: app/templates/forum/achtergrond.html:40
-#: app/templates/moderator/dashboard.html:244
+#: app/templates/moderator/dashboard.html:245
 msgid "By a moderator"
 msgstr "Por un moderador"
 
@@ -3743,8 +3745,8 @@ msgstr "Respuestas nuevas: %(n)s"
 msgid "New facts: %(n)s"
 msgstr "Hechos nuevos: %(n)s"
 
-#: app/templates/forum/_discussion.html:21 app/templates/forum/closed.html:38
-#: app/templates/forum/index.html:57 app/templates/forum/thread.html:38
+#: app/templates/forum/_discussion.html:21 app/templates/forum/closed.html:40
+#: app/templates/forum/index.html:59 app/templates/forum/thread.html:38
 #, python-format
 msgid "%(num)d reply"
 msgid_plural "%(num)d replies"
@@ -3783,22 +3785,22 @@ msgid "Write your reply. Be concrete (a thought, a question, a pushback)."
 msgstr "Escribe tu respuesta. Sé concreto (una idea, una pregunta, una objeción)."
 
 #: app/templates/forum/_discussion.html:68 app/templates/forum/_post.html:249
-#: app/templates/issues/proposal.html:290
+#: app/templates/issues/proposal.html:291
 msgid "Post"
 msgstr "Publicar"
 
 #: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:91
 #: app/templates/forum/index.html:21 app/templates/issues/_propose_hint.html:11
-#: app/templates/issues/index.html:26
+#: app/templates/issues/index.html:27
 msgid "You are suspended and cannot contribute right now"
 msgstr "Estás suspendido y ahora no puedes contribuir"
 
 #: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:91
-#: app/templates/forum/index.html:24 app/templates/issues/index.html:29
+#: app/templates/forum/index.html:24 app/templates/issues/index.html:30
 msgid "Accept the conduct rules to join in"
 msgstr "Acepta las normas de conducta para participar"
 
-#: app/templates/forum/_discussion.html:82 app/templates/forum/index.html:76
+#: app/templates/forum/_discussion.html:82 app/templates/forum/index.html:78
 #, python-format
 msgid "<a href=\"%(url)s\">Log in</a> to join the conversation."
 msgstr "<a href=\"%(url)s\">Inicia sesión</a> para unirte a la conversación."
@@ -3887,7 +3889,7 @@ msgstr "Vídeo"
 
 #: app/templates/forum/_fact_fields.html:47 app/templates/forum/_facts.html:40
 #: app/templates/issues/_fact_card.html:31
-#: app/templates/moderator/dashboard.html:208
+#: app/templates/moderator/dashboard.html:209
 msgid "Source"
 msgstr "Fuente"
 
@@ -3912,22 +3914,22 @@ msgid "What is wrong with this fact?"
 msgstr "¿Qué falla en este hecho?"
 
 #: app/templates/forum/_fact_signals.html:24
-#: app/templates/moderator/dashboard.html:190
+#: app/templates/moderator/dashboard.html:191
 msgid "No source"
 msgstr "Sin fuente"
 
 #: app/templates/forum/_fact_signals.html:24
-#: app/templates/moderator/dashboard.html:190
+#: app/templates/moderator/dashboard.html:191
 msgid "Not correct"
 msgstr "No es correcto"
 
 #: app/templates/forum/_fact_signals.html:24
-#: app/templates/moderator/dashboard.html:190
+#: app/templates/moderator/dashboard.html:191
 msgid "Not relevant"
 msgstr "No es pertinente"
 
 #: app/templates/forum/_fact_signals.html:24
-#: app/templates/moderator/dashboard.html:190
+#: app/templates/moderator/dashboard.html:191
 msgid "Misleading"
 msgstr "Engañoso"
 
@@ -4071,7 +4073,7 @@ msgstr "Contribución movida por las normas de conducta"
 #: app/templates/forum/_proposal_status.html:10
 #: app/templates/forum/_proposal_vote.html:40
 #: app/templates/issues/_ip_status.html:16
-#: app/templates/issues/_ip_vote.html:33
+#: app/templates/issues/_ip_vote.html:47
 #, python-format
 msgid "Voting open until %(date)s"
 msgstr "Votación abierta hasta el %(date)s"
@@ -4099,10 +4101,10 @@ msgstr "Rechazada"
 #: app/templates/forum/_proposal_status.html:15
 #: app/templates/forum/closed.html:13 app/templates/forum/closed.html:31
 #: app/templates/forum/index.html:48 app/templates/forum/thread.html:49
-#: app/templates/issues/index.html:55 app/templates/issues/show.html:24
+#: app/templates/issues/index.html:56 app/templates/issues/show.html:24
 #: app/templates/moderator/beheer.html:34
-#: app/templates/moderator/dashboard.html:420
-#: app/templates/moderator/dashboard.html:450
+#: app/templates/moderator/dashboard.html:421
+#: app/templates/moderator/dashboard.html:451
 msgid "Closed"
 msgstr "Cerrado"
 
@@ -4203,18 +4205,18 @@ msgid "Round %(n)s (%(kind)s)"
 msgstr "Ronda %(n)s (%(kind)s)"
 
 #: app/templates/forum/_proposal_vote.html:51
-#: app/templates/issues/_ip_vote.html:43
+#: app/templates/issues/_ip_vote.html:57
 #, python-format
 msgid "Your vote: %(choice)s. You can change it until voting closes."
 msgstr "Tu voto: %(choice)s. Puedes cambiarlo hasta que cierre la votación."
 
 #: app/templates/forum/_proposal_vote.html:52
-#: app/templates/issues/_ip_vote.html:44
+#: app/templates/issues/_ip_vote.html:58
 msgid "You can change your vote until voting closes."
 msgstr "Puedes cambiar tu voto hasta que cierre la votación."
 
 #: app/templates/forum/_proposal_vote.html:56
-#: app/templates/issues/_ip_vote.html:48
+#: app/templates/issues/_ip_vote.html:62
 msgid "You do not have voting rights yet"
 msgstr "Todavía no tienes derecho a voto"
 
@@ -4223,28 +4225,28 @@ msgid "You earn voting rights with quality contributions: contributions that rec
 msgstr "Obtienes derecho a voto con contribuciones de calidad: contribuciones que reciben el sello de calidad."
 
 #: app/templates/forum/_proposal_vote.html:61
-#: app/templates/issues/_ip_vote.html:53
+#: app/templates/issues/_ip_vote.html:67
 msgid "Log in to vote."
 msgstr "Inicia sesión para votar."
 
 #: app/templates/forum/_proposal_vote.html:67
-#: app/templates/issues/_ip_vote.html:58
+#: app/templates/issues/_ip_vote.html:72
 msgid "Running tally"
 msgstr "Recuento provisional"
 
 #: app/templates/forum/_proposal_vote.html:74
-#: app/templates/issues/_ip_vote.html:64
+#: app/templates/issues/_ip_vote.html:78
 #, python-format
 msgid "%(pct)s%% in favour of the valid votes"
 msgstr "%(pct)s%% a favor de los votos válidos"
 
 #: app/templates/forum/_proposal_vote.html:77
-#: app/templates/issues/_ip_vote.html:67
+#: app/templates/issues/_ip_vote.html:81
 msgid "Nobody has voted yet."
 msgstr "Nadie ha votado todavía."
 
 #: app/templates/forum/_proposal_vote.html:78
-#: app/templates/issues/_ip_vote.html:68
+#: app/templates/issues/_ip_vote.html:82
 #, python-format
 msgid "One person has voted so far."
 msgid_plural "%(num)d people have voted so far."
@@ -4252,7 +4254,7 @@ msgstr[0] "Hasta ahora ha votado una persona."
 msgstr[1] "Hasta ahora han votado %(num)d personas."
 
 #: app/templates/forum/_proposal_vote.html:79
-#: app/templates/issues/_ip_vote.html:69
+#: app/templates/issues/_ip_vote.html:83
 msgid "The tally is shown when voting closes."
 msgstr "El recuento se muestra cuando cierra la votación."
 
@@ -4416,7 +4418,7 @@ msgid "Restored by a moderator"
 msgstr "Restaurada por un moderador"
 
 #: app/templates/forum/achtergrond.html:46
-#: app/templates/moderator/dashboard.html:244
+#: app/templates/moderator/dashboard.html:245
 msgid "Why it was moved"
 msgstr "Por qué se movió"
 
@@ -4442,19 +4444,19 @@ msgstr "La conversación"
 msgid "← Back"
 msgstr "← Volver"
 
-#: app/templates/forum/closed.html:41 app/templates/forum/index.html:60
+#: app/templates/forum/closed.html:43 app/templates/forum/index.html:62
 #: app/templates/forum/thread.html:41
 msgid "last"
 msgstr "última"
 
-#: app/templates/forum/closed.html:49 app/templates/issues/_beheer.html:44
-#: app/templates/moderator/dashboard.html:466
-#: app/templates/moderator/dashboard.html:497
+#: app/templates/forum/closed.html:51 app/templates/issues/_beheer.html:44
+#: app/templates/moderator/dashboard.html:467
+#: app/templates/moderator/dashboard.html:498
 msgid "Reopen"
 msgstr "Reabrir"
 
-#: app/templates/forum/closed.html:57
-#: app/templates/moderator/dashboard.html:503
+#: app/templates/forum/closed.html:59
+#: app/templates/moderator/dashboard.html:504
 msgid "No closed conversations."
 msgstr "No hay conversaciones cerradas."
 
@@ -4484,7 +4486,7 @@ msgstr "Tu publicación se traducirá a petición para otros lectores"
 msgid "New conversation"
 msgstr "Nueva conversación"
 
-#: app/templates/forum/index.html:69
+#: app/templates/forum/index.html:71
 msgid "No conversations yet. Start the first one."
 msgstr "Todavía no hay conversaciones. Inicia la primera."
 
@@ -4534,10 +4536,10 @@ msgid "Fixed schedule: you set a duration for each phase."
 msgstr "Calendario fijo: fijas una duración para cada fase."
 
 #: app/templates/forum/new_thread.html:66 app/templates/forum/thread.html:59
-#: app/templates/issues/_kind.html:11 app/templates/issues/index.html:38
+#: app/templates/issues/_kind.html:11 app/templates/issues/index.html:39
 #: app/templates/issues/new.html:49 app/templates/issues/new.html:97
 #: app/templates/moderator/beheer.html:35
-#: app/templates/moderator/dashboard.html:451
+#: app/templates/moderator/dashboard.html:452
 #: app/templates/moderator/melding_beoordelen.html:53
 msgid "Event"
 msgstr "Evento"
@@ -4781,7 +4783,7 @@ msgid "Next phase: %(phase)s."
 msgstr "Siguiente fase: %(phase)s."
 
 #: app/templates/issues/_beheer.html:30
-#: app/templates/moderator/dashboard.html:458
+#: app/templates/moderator/dashboard.html:459
 msgid "To the next phase"
 msgstr "A la siguiente fase"
 
@@ -4790,7 +4792,7 @@ msgid "Reopening takes the issue back to the facts phase with a new schedule. Pr
 msgstr "Al reabrir, la cuestión vuelve a la fase de hechos con un nuevo calendario. Las propuestas, los apoyos y los votos se conservan, y los resultados dejan de ser definitivos."
 
 #: app/templates/issues/_beheer.html:40
-#: app/templates/moderator/dashboard.html:465
+#: app/templates/moderator/dashboard.html:466
 msgid "Yes, reopen this issue for discussion"
 msgstr "Sí, reabrir esta cuestión para el debate"
 
@@ -4869,9 +4871,9 @@ msgid "Add"
 msgstr "Añadir"
 
 #: app/templates/issues/_facts_big.html:47
-#: app/templates/issues/_proposals_big.html:21
-#: app/templates/issues/index.html:38 app/templates/issues/proposal.html:79
-#: app/templates/moderator/dashboard.html:96
+#: app/templates/issues/_proposals_big.html:22
+#: app/templates/issues/index.html:39 app/templates/issues/proposal.html:79
+#: app/templates/moderator/dashboard.html:97
 msgid "All"
 msgstr "Todos"
 
@@ -4880,8 +4882,8 @@ msgid "Filter on direction"
 msgstr "Filtrar por dirección"
 
 #: app/templates/issues/_facts_big.html:58
-#: app/templates/issues/_proposals_big.html:28
-#: app/templates/moderator/dashboard.html:115
+#: app/templates/issues/_proposals_big.html:29
+#: app/templates/moderator/dashboard.html:116
 msgid "Sort"
 msgstr "Ordenar"
 
@@ -4890,7 +4892,7 @@ msgid "Quality first"
 msgstr "Calidad primero"
 
 #: app/templates/issues/_facts_big.html:61
-#: app/templates/issues/_proposals_big.html:32
+#: app/templates/issues/_proposals_big.html:33
 msgid "Newest"
 msgstr "Más recientes"
 
@@ -4912,8 +4914,8 @@ msgid "Write the statement in one sentence of at most 300 characters."
 msgstr "Escribe el enunciado en una frase de máximo 300 caracteres."
 
 #: app/templates/issues/_ip_fields.html:16 app/templates/issues/new.html:105
-#: app/templates/issues/proposal.html:266
-#: app/templates/moderator/dashboard.html:198
+#: app/templates/issues/proposal.html:267
+#: app/templates/moderator/dashboard.html:199
 msgid "Explanation"
 msgstr "Explicación"
 
@@ -4925,15 +4927,15 @@ msgstr "¿Por qué esta propuesta? Remite al debate y a los hechos."
 msgid "The explanation can be at most 5000 characters."
 msgstr "La explicación puede tener como máximo 5000 caracteres."
 
-#: app/templates/issues/_ip_final.html:15
+#: app/templates/issues/_ip_final.html:16
 msgid "The initiator is now making a summary proposal based on all proposals and the discussion. The participants then vote on it again."
 msgstr "El promotor está preparando ahora una propuesta de síntesis basada en todas las propuestas y el debate. Después, quienes participan vuelven a votarla."
 
-#: app/templates/issues/_ip_final.html:20
+#: app/templates/issues/_ip_final.html:21
 msgid "As the initiator, you can now make a summary proposal based on all proposals and the discussion."
 msgstr "Como promotor, ahora puedes preparar una propuesta de síntesis basada en todas las propuestas y el debate."
 
-#: app/templates/issues/_ip_final.html:21 app/templates/issues/final_new.html:2
+#: app/templates/issues/_ip_final.html:22 app/templates/issues/final_new.html:2
 #: app/templates/issues/final_new.html:23
 msgid "Make the summary proposal"
 msgstr "Preparar la propuesta de síntesis"
@@ -4953,7 +4955,7 @@ msgid "Rejected with %(pct)s%% in favour"
 msgstr "Rechazada con un %(pct)s%% a favor"
 
 #: app/templates/issues/_ip_status.html:18
-#: app/templates/issues/_proposals_big.html:21
+#: app/templates/issues/_proposals_big.html:22
 #: app/templates/moderator/beheer.html:111
 msgid "On the voting list"
 msgstr "En la lista de votación"
@@ -4993,12 +4995,23 @@ msgstr "Esta propuesta no está en la lista de votación. Solo se votan las prop
 msgid "Your vote: %(choice)s."
 msgstr "Tu voto: %(choice)s."
 
-#: app/templates/issues/_ip_vote.html:49 app/templates/issues/_ip_vote.html:53
+#. in the vote block, under a proposal statement shown in a translation.
+#. %(language)s is the original language in its base form, e.g. "Dutch".
+#: app/templates/issues/_ip_vote.html:41
+#, python-format
+msgid "You vote on the original text (%(language)s)."
+msgstr "Votas sobre el texto original (%(language)s)."
+
+#: app/templates/issues/_ip_vote.html:43
+msgid "Hide original"
+msgstr "Ocultar original"
+
+#: app/templates/issues/_ip_vote.html:63 app/templates/issues/_ip_vote.html:67
 #, python-format
 msgid "You may vote after %(n)s quality contributions: contributions that receive the quality mark."
 msgstr "Puedes votar después de %(n)s contribuciones de calidad: contribuciones que reciben el sello de calidad."
 
-#: app/templates/issues/_ip_vote.html:74
+#: app/templates/issues/_ip_vote.html:88
 msgid "Voting on proposals on the voting list opens in the voting phase."
 msgstr "La votación de las propuestas de la lista de votación se abre en la fase de votación."
 
@@ -5007,9 +5020,9 @@ msgstr "La votación de las propuestas de la lista de votación se abre en la fa
 msgid "%(num)s days"
 msgstr "%(num)s días"
 
-#: app/templates/issues/_kind.html:13 app/templates/issues/index.html:38
+#: app/templates/issues/_kind.html:13 app/templates/issues/index.html:39
 #: app/templates/issues/new.html:45 app/templates/moderator/beheer.html:35
-#: app/templates/moderator/dashboard.html:451
+#: app/templates/moderator/dashboard.html:452
 msgid "Online"
 msgstr "En línea"
 
@@ -5060,39 +5073,39 @@ msgstr "por %(name)s"
 msgid "Delete this update?"
 msgstr "¿Eliminar esta actualización?"
 
-#: app/templates/issues/_proposals_big.html:18
+#: app/templates/issues/_proposals_big.html:19
 msgid "Collecting support"
 msgstr "Reuniendo apoyos"
 
-#: app/templates/issues/_proposals_big.html:18
+#: app/templates/issues/_proposals_big.html:19
 msgid "Not on the voting list"
 msgstr "No está en la lista de votación"
 
-#: app/templates/issues/_proposals_big.html:20
+#: app/templates/issues/_proposals_big.html:21
 msgid "Filter proposals"
 msgstr "Filtrar propuestas"
 
-#: app/templates/issues/_proposals_big.html:30
+#: app/templates/issues/_proposals_big.html:31
 msgid "Voting list first"
 msgstr "Primero la lista de votación"
 
-#: app/templates/issues/_proposals_big.html:31
+#: app/templates/issues/_proposals_big.html:32
 msgid "Most support"
 msgstr "Más apoyos"
 
-#: app/templates/issues/_proposals_big.html:51
-#: app/templates/issues/proposal.html:243
-#: app/templates/issues/proposal.html:262
-#: app/templates/issues/proposal.html:327
+#: app/templates/issues/_proposals_big.html:52
+#: app/templates/issues/proposal.html:244
+#: app/templates/issues/proposal.html:263
+#: app/templates/issues/proposal.html:328
 #, python-format
 msgid "Version %(n)s"
 msgstr "Versión %(n)s"
 
-#: app/templates/issues/_proposals_big.html:56
+#: app/templates/issues/_proposals_big.html:57
 msgid "No proposals with this status."
 msgstr "No hay propuestas con este estado."
 
-#: app/templates/issues/_proposals_big.html:56
+#: app/templates/issues/_proposals_big.html:57
 #: app/templates/issues/show.html:183 app/templates/moderator/beheer.html:137
 msgid "No proposals yet."
 msgstr "Todavía no hay propuestas."
@@ -5180,8 +5193,8 @@ msgid "'Less'"
 msgstr "'Menos'"
 
 #: app/templates/issues/final_new.html:19 app/templates/issues/proposal.html:43
-#: app/templates/issues/proposal.html:60 app/templates/issues/proposal.html:317
-#: app/templates/issues/proposal.html:319
+#: app/templates/issues/proposal.html:60 app/templates/issues/proposal.html:318
+#: app/templates/issues/proposal.html:320
 #: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:95
 #: app/templates/issues/show.html:146 app/templates/issues/show.html:148
 #: app/templates/issues/show.html:149 app/templates/issues/show.html:188
@@ -5218,51 +5231,51 @@ msgstr "De qué se trata"
 msgid "Submit the summary proposal"
 msgstr "Enviar la propuesta de síntesis"
 
-#: app/templates/issues/index.html:16 app/templates/issues/show.html:22
+#: app/templates/issues/index.html:17 app/templates/issues/show.html:22
 #: app/templates/issues/verwijderen.html:29
 msgid "Issues"
 msgstr "Cuestiones"
 
-#: app/templates/issues/index.html:23 app/templates/issues/new.html:2
+#: app/templates/issues/index.html:24 app/templates/issues/new.html:2
 #: app/templates/issues/new.html:20
 msgid "New issue"
 msgstr "Nueva cuestión"
 
-#: app/templates/issues/index.html:37
+#: app/templates/issues/index.html:38
 msgid "Filter issues"
 msgstr "Filtrar cuestiones"
 
-#: app/templates/issues/index.html:38
+#: app/templates/issues/index.html:39
 msgid "Ongoing"
 msgstr "En curso"
 
-#: app/templates/issues/index.html:38
+#: app/templates/issues/index.html:39
 msgid "Finished"
 msgstr "Terminadas"
 
-#: app/templates/issues/index.html:52
+#: app/templates/issues/index.html:53
 msgid "submitted by"
 msgstr "presentada por"
 
-#: app/templates/issues/index.html:57 app/templates/moderator/beheer.html:53
+#: app/templates/issues/index.html:58 app/templates/moderator/beheer.html:53
 #, python-format
 msgid "%(num)d proposal"
 msgid_plural "%(num)d proposals"
 msgstr[0] "%(num)d propuesta"
 msgstr[1] "%(num)d propuestas"
 
-#: app/templates/issues/index.html:58
+#: app/templates/issues/index.html:59
 #, python-format
 msgid "%(num)d participant"
 msgid_plural "%(num)d participants"
 msgstr[0] "%(num)d participante"
 msgstr[1] "%(num)d participantes"
 
-#: app/templates/issues/index.html:65
+#: app/templates/issues/index.html:66
 msgid "No issues match this filter."
 msgstr "Ninguna cuestión coincide con este filtro."
 
-#: app/templates/issues/index.html:67
+#: app/templates/issues/index.html:68
 msgid "No issues yet. Start the first one."
 msgstr "Todavía no hay cuestiones. Inicia la primera."
 
@@ -5481,7 +5494,7 @@ msgstr "Desvincular"
 
 #: app/templates/issues/proposal.html:101
 #: app/templates/issues/proposal.html:135
-#: app/templates/issues/proposal.html:332 app/templates/issues/show.html:120
+#: app/templates/issues/proposal.html:333 app/templates/issues/show.html:120
 #: app/templates/issues/show.html:121 app/templates/issues/show.html:188
 #: app/templates/issues/show.html:189
 msgid "Show more"
@@ -5538,7 +5551,7 @@ msgid "Adjust proposal"
 msgstr "Ajustar la propuesta"
 
 #: app/templates/issues/proposal.html:193
-#: app/templates/moderator/dashboard.html:198
+#: app/templates/moderator/dashboard.html:199
 #: app/templates/moderator/gebruiker.html:95
 msgid "by"
 msgstr "por"
@@ -5562,62 +5575,62 @@ msgstr "Cada revisión es una nueva versión. Las versiones anteriores siguen vi
 msgid "Save the revision"
 msgstr "Guardar la revisión"
 
-#: app/templates/issues/proposal.html:237
+#: app/templates/issues/proposal.html:238
 msgid "Earlier versions"
 msgstr "Versiones anteriores"
 
-#: app/templates/issues/proposal.html:247
+#: app/templates/issues/proposal.html:248
 msgid "Reactions"
 msgstr "Reacciones"
 
-#: app/templates/issues/proposal.html:247
+#: app/templates/issues/proposal.html:248
 msgid "reactions"
 msgstr "reacciones"
 
-#: app/templates/issues/proposal.html:252
+#: app/templates/issues/proposal.html:253
 #, python-format
 msgid "Reactions to version %(number)s"
 msgstr "Reacciones a la versión %(number)s"
 
-#: app/templates/issues/proposal.html:254
+#: app/templates/issues/proposal.html:255
 msgid "No reactions to this version."
 msgstr "No hay reacciones a esta versión."
 
-#: app/templates/issues/proposal.html:262
+#: app/templates/issues/proposal.html:263
 msgid "Current version"
 msgstr "Versión actual"
 
-#: app/templates/issues/proposal.html:270
+#: app/templates/issues/proposal.html:271
 msgid "No explanation."
 msgstr "Sin explicación."
 
-#: app/templates/issues/proposal.html:281
+#: app/templates/issues/proposal.html:282
 #, python-format
 msgid "Reactions to version %(current_version)s"
 msgstr "Reacciones a la versión %(current_version)s"
 
-#: app/templates/issues/proposal.html:287
+#: app/templates/issues/proposal.html:288
 #, python-format
 msgid "Your reaction to version %(n)s"
 msgstr "Tu reacción a la versión %(n)s"
 
-#: app/templates/issues/proposal.html:288
+#: app/templates/issues/proposal.html:289
 msgid "Write a reaction…"
 msgstr "Escribe una reacción…"
 
-#: app/templates/issues/proposal.html:297
+#: app/templates/issues/proposal.html:298
 msgid "No reactions to this version yet."
 msgstr "Todavía no hay reacciones a esta versión."
 
-#: app/templates/issues/proposal.html:305
+#: app/templates/issues/proposal.html:306
 msgid "Withdraw proposal"
 msgstr "Retirar la propuesta"
 
-#: app/templates/issues/proposal.html:306
+#: app/templates/issues/proposal.html:307
 msgid "You can withdraw your own proposal as long as nobody has reacted yet."
 msgstr "Puedes retirar tu propia propuesta mientras nadie haya reaccionado."
 
-#: app/templates/issues/proposal.html:318 app/templates/issues/show.html:147
+#: app/templates/issues/proposal.html:319 app/templates/issues/show.html:147
 msgid "New proposal"
 msgstr "Nueva propuesta"
 
@@ -5842,7 +5855,7 @@ msgid "The button only becomes active when the title matches exactly."
 msgstr "El botón solo se activa cuando el título coincide exactamente."
 
 #: app/templates/moderator/beheer.html:2 app/templates/moderator/beheer.html:29
-#: app/templates/moderator/dashboard.html:423
+#: app/templates/moderator/dashboard.html:424
 msgid "Manage"
 msgstr "Gestionar"
 
@@ -5855,7 +5868,7 @@ msgid "Your issue"
 msgstr "Tu cuestión"
 
 #: app/templates/moderator/beheer.html:37
-#: app/templates/moderator/dashboard.html:417
+#: app/templates/moderator/dashboard.html:418
 #, python-format
 msgid "%(num)d open report"
 msgid_plural "%(num)d open reports"
@@ -6032,44 +6045,44 @@ msgstr "· cuestión eliminada: \"%(snap)s\""
 msgid "Nothing hidden or deleted yet."
 msgstr "Todavía no se ha ocultado ni eliminado nada."
 
-#: app/templates/moderator/dashboard.html:32
-#: app/templates/moderator/dashboard.html:63
+#: app/templates/moderator/dashboard.html:33
+#: app/templates/moderator/dashboard.html:64
 msgid "Review"
 msgstr "Revisar"
 
-#: app/templates/moderator/dashboard.html:38
+#: app/templates/moderator/dashboard.html:39
 #, python-format
 msgid "Show all %(value)s"
 msgstr "Ver todas (%(value)s)"
 
-#: app/templates/moderator/dashboard.html:44
+#: app/templates/moderator/dashboard.html:45
 #, python-format
 msgid "Nothing in this section for \"%(zoek)s\"."
 msgstr "No hay nada en esta sección para \"%(zoek)s\"."
 
-#: app/templates/moderator/dashboard.html:50
+#: app/templates/moderator/dashboard.html:51
 msgid "Proposal · reason"
 msgstr "Propuesta · motivo"
 
-#: app/templates/moderator/dashboard.html:50
+#: app/templates/moderator/dashboard.html:51
 msgid "Fact · reason"
 msgstr "Hecho · motivo"
 
-#: app/templates/moderator/dashboard.html:50
+#: app/templates/moderator/dashboard.html:51
 msgid "Contribution · reason"
 msgstr "Contribución · motivo"
 
-#: app/templates/moderator/dashboard.html:54
+#: app/templates/moderator/dashboard.html:55
 #: app/templates/moderator/melding_beoordelen.html:84
 msgid "anonymous"
 msgstr "persona anónima"
 
-#: app/templates/moderator/dashboard.html:58
+#: app/templates/moderator/dashboard.html:59
 #, python-format
 msgid "show all %(count)s"
 msgstr "ver todas (%(count)s)"
 
-#: app/templates/moderator/dashboard.html:61
+#: app/templates/moderator/dashboard.html:62
 #: app/templates/moderator/melding_beoordelen.html:85
 #, python-format
 msgid "%(num)d report"
@@ -6077,243 +6090,243 @@ msgid_plural "%(num)d reports"
 msgstr[0] "%(num)d denuncia"
 msgstr[1] "%(num)d denuncias"
 
-#: app/templates/moderator/dashboard.html:80
-#: app/templates/moderator/dashboard.html:97
+#: app/templates/moderator/dashboard.html:81
+#: app/templates/moderator/dashboard.html:98
 msgid "Reports"
 msgstr "Denuncias"
 
-#: app/templates/moderator/dashboard.html:81
-#: app/templates/moderator/dashboard.html:98
+#: app/templates/moderator/dashboard.html:82
+#: app/templates/moderator/dashboard.html:99
 msgid "Objections"
 msgstr "Objeciones"
 
-#: app/templates/moderator/dashboard.html:82
-#: app/templates/moderator/dashboard.html:99
+#: app/templates/moderator/dashboard.html:83
+#: app/templates/moderator/dashboard.html:100
 msgid "By the AI"
 msgstr "Por la IA"
 
-#: app/templates/moderator/dashboard.html:83
-#: app/templates/moderator/dashboard.html:100
+#: app/templates/moderator/dashboard.html:84
+#: app/templates/moderator/dashboard.html:101
 msgid "Without AI judgement"
 msgstr "Sin juicio de la IA"
 
-#: app/templates/moderator/dashboard.html:84
+#: app/templates/moderator/dashboard.html:85
 msgid "Handled total"
 msgstr "Total gestionado"
 
-#: app/templates/moderator/dashboard.html:85
+#: app/templates/moderator/dashboard.html:86
 msgid "Handled by you"
 msgstr "Gestionado por ti"
 
-#: app/templates/moderator/dashboard.html:92
+#: app/templates/moderator/dashboard.html:93
 msgid "Moderation streams"
 msgstr "Flujos de moderación"
 
-#: app/templates/moderator/dashboard.html:106
+#: app/templates/moderator/dashboard.html:107
 msgid "reports, by participants"
 msgstr "denuncias, de participantes"
 
-#: app/templates/moderator/dashboard.html:112
 #: app/templates/moderator/dashboard.html:113
+#: app/templates/moderator/dashboard.html:114
 msgid "Search by issue"
 msgstr "Buscar por cuestión"
 
-#: app/templates/moderator/dashboard.html:117
+#: app/templates/moderator/dashboard.html:118
 msgid "Longest waiting"
 msgstr "Más tiempo en espera"
 
-#: app/templates/moderator/dashboard.html:117
+#: app/templates/moderator/dashboard.html:118
 msgid "Newest first"
 msgstr "Más recientes primero"
 
-#: app/templates/moderator/dashboard.html:117
+#: app/templates/moderator/dashboard.html:118
 msgid "Most reports"
 msgstr "Más denuncias"
 
-#: app/templates/moderator/dashboard.html:117
+#: app/templates/moderator/dashboard.html:118
 msgid "By issue"
 msgstr "Por cuestión"
 
-#: app/templates/moderator/dashboard.html:122
+#: app/templates/moderator/dashboard.html:123
 msgid "Apply"
 msgstr "Aplicar"
 
-#: app/templates/moderator/dashboard.html:123
+#: app/templates/moderator/dashboard.html:124
 msgid "Clear search"
 msgstr "Borrar búsqueda"
 
-#: app/templates/moderator/dashboard.html:129
+#: app/templates/moderator/dashboard.html:130
 #, python-format
 msgid "No issue containing \"%(zoek)s\" in this stream."
 msgstr "No hay ninguna cuestión que contenga \"%(zoek)s\" en este flujo."
 
-#: app/templates/moderator/dashboard.html:133
+#: app/templates/moderator/dashboard.html:134
 msgid "Reports, by participants"
 msgstr "Denuncias, de participantes"
 
-#: app/templates/moderator/dashboard.html:140
-#: app/templates/moderator/dashboard.html:182
+#: app/templates/moderator/dashboard.html:141
+#: app/templates/moderator/dashboard.html:183
 msgid "No open reports."
 msgstr "No hay denuncias abiertas."
 
-#: app/templates/moderator/dashboard.html:145
+#: app/templates/moderator/dashboard.html:146
 msgid "Reports: not quality"
 msgstr "Denuncias: sin calidad"
 
-#: app/templates/moderator/dashboard.html:153
+#: app/templates/moderator/dashboard.html:154
 msgid "Reported by"
 msgstr "Denunciado por"
 
-#: app/templates/moderator/dashboard.html:155
-#: app/templates/moderator/dashboard.html:200
-#: app/templates/moderator/dashboard.html:248
-#: app/templates/moderator/dashboard.html:296
-#: app/templates/moderator/dashboard.html:330
+#: app/templates/moderator/dashboard.html:156
+#: app/templates/moderator/dashboard.html:201
+#: app/templates/moderator/dashboard.html:249
+#: app/templates/moderator/dashboard.html:297
+#: app/templates/moderator/dashboard.html:331
 msgid "Your own contribution: another moderator decides."
 msgstr "Es tu propia contribución: decide otro moderador."
 
-#: app/templates/moderator/dashboard.html:166
+#: app/templates/moderator/dashboard.html:167
 msgid "Note (optional, for moderators only)"
 msgstr "Nota (opcional, solo para moderadores)"
 
-#: app/templates/moderator/dashboard.html:170
+#: app/templates/moderator/dashboard.html:171
 msgid "Keep"
 msgstr "Mantener"
 
-#: app/templates/moderator/dashboard.html:171
+#: app/templates/moderator/dashboard.html:172
 msgid "Withdraw"
 msgstr "Retirar"
 
-#: app/templates/moderator/dashboard.html:187
+#: app/templates/moderator/dashboard.html:188
 msgid "Disputed facts"
 msgstr "Hechos cuestionados"
 
-#: app/templates/moderator/dashboard.html:188
+#: app/templates/moderator/dashboard.html:189
 msgid "The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled."
 msgstr "El hecho sigue visible. Revísalo, actúa según las normas de conducta si hace falta y marca la objeción como gestionada."
 
-#: app/templates/moderator/dashboard.html:216
+#: app/templates/moderator/dashboard.html:217
 msgid "Mark as handled"
 msgstr "Marcar como gestionada"
 
-#: app/templates/moderator/dashboard.html:227
+#: app/templates/moderator/dashboard.html:228
 msgid "No disputed facts."
 msgstr "No hay hechos cuestionados."
 
-#: app/templates/moderator/dashboard.html:234
+#: app/templates/moderator/dashboard.html:235
 msgid "Conduct rules: open objections"
 msgstr "Normas de conducta: objeciones abiertas"
 
-#: app/templates/moderator/dashboard.html:235
+#: app/templates/moderator/dashboard.html:236
 msgid "A senior moderator or the admin decides, not the moderator who took the decision."
 msgstr "Decide un Moderador sénior o el admin, no el moderador que tomó la decisión."
 
-#: app/templates/moderator/dashboard.html:245
+#: app/templates/moderator/dashboard.html:246
 msgid "Objection:"
 msgstr "Objeción:"
 
-#: app/templates/moderator/dashboard.html:249
+#: app/templates/moderator/dashboard.html:250
 msgid "You took this decision: another senior moderator decides."
 msgstr "Tú tomaste esta decisión: decide otro Moderador sénior."
 
-#: app/templates/moderator/dashboard.html:250
+#: app/templates/moderator/dashboard.html:251
 msgid "A senior moderator or the admin decides."
 msgstr "Decide un Moderador sénior o el admin."
 
-#: app/templates/moderator/dashboard.html:267
+#: app/templates/moderator/dashboard.html:268
 msgid "Keep the decision"
 msgstr "Mantener la decisión"
 
-#: app/templates/moderator/dashboard.html:279
+#: app/templates/moderator/dashboard.html:280
 msgid "No open objections."
 msgstr "No hay objeciones abiertas."
 
-#: app/templates/moderator/dashboard.html:286
+#: app/templates/moderator/dashboard.html:287
 msgid "Conduct rules: doubtful cases"
 msgstr "Normas de conducta: casos dudosos"
 
-#: app/templates/moderator/dashboard.html:294
-#: app/templates/moderator/dashboard.html:328
+#: app/templates/moderator/dashboard.html:295
+#: app/templates/moderator/dashboard.html:329
 msgid "AI:"
 msgstr "IA:"
 
-#: app/templates/moderator/dashboard.html:315
+#: app/templates/moderator/dashboard.html:316
 msgid "No doubtful cases."
 msgstr "No hay casos dudosos."
 
-#: app/templates/moderator/dashboard.html:320
+#: app/templates/moderator/dashboard.html:321
 msgid "Conduct rules: removed by the AI"
 msgstr "Normas de conducta: eliminado por la IA"
 
-#: app/templates/moderator/dashboard.html:349
+#: app/templates/moderator/dashboard.html:350
 msgid "No posts removed by the AI."
 msgstr "La IA no ha eliminado nada."
 
-#: app/templates/moderator/dashboard.html:356
+#: app/templates/moderator/dashboard.html:357
 msgid "Without judgement"
 msgstr "Sin juicio"
 
-#: app/templates/moderator/dashboard.html:357
+#: app/templates/moderator/dashboard.html:358
 msgid "Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually."
 msgstr "Contribuciones recientes sin juicio (o todavía sin juicio), por ejemplo porque la IA no estaba disponible. Puedes evaluarlas a mano."
 
-#: app/templates/moderator/dashboard.html:364
+#: app/templates/moderator/dashboard.html:365
 msgid "No quality judgement"
 msgstr "Sin juicio de calidad"
 
-#: app/templates/moderator/dashboard.html:366
+#: app/templates/moderator/dashboard.html:367
 msgid "Your own contribution: another moderator assesses it."
 msgstr "Es tu propia contribución: la evalúa otro moderador."
 
-#: app/templates/moderator/dashboard.html:386
+#: app/templates/moderator/dashboard.html:387
 msgid "No contributions without a judgement."
 msgstr "No hay contribuciones sin juicio."
 
-#: app/templates/moderator/dashboard.html:397
+#: app/templates/moderator/dashboard.html:398
 msgid "Longest wait"
 msgstr "Espera más larga"
 
-#: app/templates/moderator/dashboard.html:401
+#: app/templates/moderator/dashboard.html:402
 msgid "Open issues"
 msgstr "Cuestiones en curso"
 
-#: app/templates/moderator/dashboard.html:409
+#: app/templates/moderator/dashboard.html:410
 msgid "Manage issues"
 msgstr "Gestionar cuestiones"
 
-#: app/templates/moderator/dashboard.html:418
+#: app/templates/moderator/dashboard.html:419
 msgid "your issue"
 msgstr "tu cuestión"
 
-#: app/templates/moderator/dashboard.html:419
+#: app/templates/moderator/dashboard.html:420
 msgid "archived"
 msgstr "archivada"
 
-#: app/templates/moderator/dashboard.html:426
+#: app/templates/moderator/dashboard.html:427
 msgid "No open issues to manage."
 msgstr "No hay cuestiones en curso que gestionar."
 
-#: app/templates/moderator/dashboard.html:429
+#: app/templates/moderator/dashboard.html:430
 msgid "All issues"
 msgstr "Todas las cuestiones"
 
-#: app/templates/moderator/dashboard.html:430
+#: app/templates/moderator/dashboard.html:431
 msgid "Set the rights"
 msgstr "Definir los derechos"
 
-#: app/templates/moderator/dashboard.html:433
+#: app/templates/moderator/dashboard.html:434
 msgid "Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page."
 msgstr "Haz clic en <strong>Gestionar</strong> junto a una cuestión para ocultar o eliminar propuestas y gestionar la cuestión. La etiqueta de la cuestión en una denuncia lleva a la misma página."
 
-#: app/templates/moderator/dashboard.html:442
+#: app/templates/moderator/dashboard.html:443
 msgid "Phase management"
 msgstr "Gestión de fases"
 
-#: app/templates/moderator/dashboard.html:442
+#: app/templates/moderator/dashboard.html:443
 msgid "ready"
 msgstr "lista"
 
-#: app/templates/moderator/dashboard.html:472
+#: app/templates/moderator/dashboard.html:473
 msgid "No issues."
 msgstr "No hay cuestiones."
 

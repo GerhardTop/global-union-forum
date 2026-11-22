@@ -1,7 +1,8 @@
 """Multilingual phase 2a: issues and proposals are translated right away.
 
-Issues (title, intro), proposals (statement, explanation), every version of a
-proposal and the follow-up updates are machine-translated into every enabled
+Issues (title, intro, and the title of their conversation), proposals
+(statement, explanation), every version of a proposal and the follow-up
+updates are machine-translated into every enabled
 language (except their own) as soon as they are saved, without making the
 save wait:
 
@@ -56,14 +57,26 @@ def targets(obj):
     return [lang for lang in i18n.enabled_codes() if lang != src]
 
 
+def _parts(obj):
+    """(object, field) pairs to translate for obj: its own fields and, for an
+    issue, the title of its conversation (the same text, so the translation
+    is reused: the conversations list shows it without an extra AI call)."""
+    parts = [(obj, field) for field in fields_of(obj)]
+    thread = getattr(obj, 'thread', None) if content_i18n.object_type(obj) == 'issues' else None
+    if thread is not None and thread.title_prefix == obj.title and not thread.title_accent:
+        parts.append((thread, 'title_prefix'))
+    return parts
+
+
 def missing(obj):
-    """(field, lang) pairs without a current translation (a field without text
-    needs none)."""
+    """(object, field, lang) without a current translation (a field without
+    text needs none)."""
     out = []
-    for field in fields_of(obj):
-        if not (content_i18n.original(obj, field) or '').strip():
+    for target, field in _parts(obj):
+        if not (content_i18n.original(target, field) or '').strip():
             continue
-        out.extend((field, lang) for lang in targets(obj) if content_i18n.text_for(obj, field, lang) is None)
+        out.extend((target, field, lang) for lang in targets(target)
+                   if content_i18n.text_for(target, field, lang) is None)
     return out
 
 
@@ -71,16 +84,16 @@ def translate_missing(obj, client=None, limit=None):
     """Translate what obj is missing; returns the number of fields translated.
     A failure is logged and skipped (the tick tries again)."""
     done = 0
-    for field, lang in missing(obj):
+    for target, field, lang in missing(obj):
         if limit is not None and done >= limit:
             break
         try:
-            content_i18n.translate(obj, field, lang, client=client)
+            content_i18n.translate(target, field, lang, client=client)
             done += 1
         except Exception as exc:  # the AI is down or refuses: the tick retries
             db.session.rollback()
             log.warning('translation of %s %s.%s to %s failed: %s',
-                        content_i18n.object_type(obj), obj.id, field, lang, exc)
+                        content_i18n.object_type(target), target.id, field, lang, exc)
     return done
 
 

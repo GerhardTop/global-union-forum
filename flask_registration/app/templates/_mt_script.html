@@ -55,6 +55,14 @@
   document.addEventListener('click', function (e) {
     var btn = e.target.closest('.gu-mt__toggle');
     if (!btn) return;
+    if (btn.hasAttribute('data-mt-disclose')) {   // the vote block: show the original below
+      var target = document.getElementById(btn.getAttribute('aria-controls'));
+      var open = btn.getAttribute('aria-expanded') !== 'true';
+      target.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.textContent = open ? btn.dataset.btnClose : btn.dataset.btnOpen;
+      return;
+    }
     var box = btn.closest('[data-mt]');
     if (part(box, 'translation')) {
       show(box, part(box, 'translation').hidden ? 'translation' : 'original');

@@ -127,7 +127,8 @@ def test_enlarged_proposals_filter_bar_above_ten_and_same_result_as_voorstellen(
     issue, proposals = _many(db, host, ip.FILTER_MIN + 1)
     try:
         assert ip.FILTER_MIN == 10
-        statements = lambda html, cls: re.findall(rf'class="{cls}"[^>]*>([^<]+)<', html)  # noqa: E731
+        # The text may sit in an inner <span lang> (multilingual phase 2c, mt_inline).
+        statements = lambda html, cls: re.findall(rf'class="{cls}"[^>]*>(?:<span[^>]*>)?([^<]+)<', html)  # noqa: E731
         for key, path in _pages(issue, proposals[0]).items():
             big = _bigbox(_get(app, path, host))
             assert 'gu-bigp__bar' in big and 'name="sorteer"' in big, key
@@ -156,7 +157,8 @@ def test_enlarged_defaults_to_voting_list_first_and_applies_without_a_button(app
     host = make_user_direct(db)
     issue, proposals = _many(db, host, ip.FILTER_MIN + 1)
     try:
-        statements = lambda html, cls: re.findall(rf'class="{cls}"[^>]*>([^<]+)<', html)  # noqa: E731
+        # The text may sit in an inner <span lang> (multilingual phase 2c, mt_inline).
+        statements = lambda html, cls: re.findall(rf'class="{cls}"[^>]*>(?:<span[^>]*>)?([^<]+)<', html)  # noqa: E731
         compact = [p.statement for p, _c in ip.listing(issue, order='stemlijst')]
         for key, path in _pages(issue, proposals[0]).items():
             # No sort chosen: the same order as the compact column, "Voting list first" selected.

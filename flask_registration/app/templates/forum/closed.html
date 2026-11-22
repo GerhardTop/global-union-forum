@@ -32,7 +32,9 @@
           </span>
           <span class="gu-threadlist__title">
             {%- set tp, ta, ts = t.title(lang) -%}
-              {{ tp }}{% if ta %} <em>{{ ta }}</em>{% endif %}{{ ts }}
+            {%- set tv = content_i18n.view(t, 'title_prefix', lang) -%}
+              <span lang="{{ lang if tv.kind in ('machine', 'handwritten') else tv.source }}">{{ tp }}{% if ta %} <em>{{ ta }}</em>{% endif %}{{ ts }}</span>
+              {%- if tv.kind == 'pending' %} <abbr class="gu-mt__code" title="{{ _('Original in %(language)s', language=language_name_in(tv.source, lang)) }}">{{ tv.source | upper }}</abbr>{% endif %}
           </span>
           <span class="gu-threadlist__meta">
             <span>{{ ngettext('%(num)d reply', '%(num)d replies', item.reply_count) }}</span>

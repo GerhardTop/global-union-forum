@@ -23,7 +23,7 @@
 #}
 {% block content_outer %}{% block content %}
 {% from 'issues/_ip_fields.html' import ip_fields with context %}
-{% from '_mt.html' import mt with context %}
+{% from '_mt.html' import mt, mt_inline with context %}
 {% set by_name = proposal.created_by.public_name if proposal.created_by else '@deleted_user' %}
 {% set current = versions[-1] %}
 {% set older = versions[:-1] %}
@@ -44,7 +44,7 @@
         <span aria-current="page">{{ _('Proposal') }}</span>
       </nav>
       <p class="gu-eyebrow">{{ _('Proposal') }}{% if proposal.is_final %} · <span class="gu-ip-final">{{ _('Summary proposal') }}</span>{% endif %}</p>
-      <a class="gu-pv__question" href="{{ url_for('issues.show', issue_id=issue.id) }}" lang="{{ issue.lang or lang }}">{{ issue.title }}</a>
+      <a class="gu-pv__question" href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ mt_inline(issue, 'title') }}</a>
 
       <section class="gu-pv__phase" aria-label="{{ _('Phases of the issue') }}">
         {% include 'issues/_steps.html' %}
@@ -324,7 +324,7 @@
             {% for p, c in rail_proposals %}
             <li>
               <a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=p.id) }}" class="gu-pv__pitem{% if p.id == proposal.id %} is-current{% endif %}"{% if p.id == proposal.id %} aria-current="page"{% endif %}>
-                <span class="gu-pv__pitemtxt" lang="{{ p.lang or lang }}">{{ p.statement }}</span>
+                <span class="gu-pv__pitemtxt">{{ mt_inline(p, 'statement') }}</span>
                 <span class="gu-pv__pitemmeta">{% with proposal=p, count=c %}{% include 'issues/_ip_status.html' %}{% endwith %}<span class="gu-pv__dot" aria-hidden="true"></span><span title="{{ _('Version %(n)s', n=rail_versions[p.id]) }}">v{{ rail_versions[p.id] }}</span><span class="gu-pv__dot" aria-hidden="true"></span>{% with n=reaction_counts.get(p.id, 0), active=new_discussion.get(p.id, False) %}{% include 'issues/_reaction_count.html' %}{% endwith %}</span>
               </a>
             </li>

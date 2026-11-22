@@ -417,7 +417,8 @@ def _tick_line(n, lang):
     url = url_for('profile.meldingen')
     title = None
     if n.issue_id is not None and (issue := db.session.get(Issue, n.issue_id)) is not None:
-        title = issue.title
+        # Multilingual phase 2c: in the recipient's language when translated.
+        title = content_i18n.display(issue, 'title', i18n.normalize(lang))
         url = url_for('issues.show', issue_id=issue.id)
     elif n.thread_id is not None and (thread := db.session.get(Thread, n.thread_id)) is not None:
         # Content model (phase 0 step 6): the title in the reader's language

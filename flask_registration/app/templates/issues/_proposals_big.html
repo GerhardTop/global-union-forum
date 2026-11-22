@@ -1,3 +1,4 @@
+{% from '_mt.html' import mt_inline with context %}
 {#-
   Partial: issues/_proposals_big.html (docs/design/voorstel-vergroot.html)
   The proposals column enlarged in the page, on the issue page and the
@@ -38,7 +39,7 @@
     {% if big.final %}
     <a class="gu-bigp__row{% if proposal is defined and proposal.id == big.final.id %} is-current{% endif %}" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=big.final.id) }}">
       <span class="gu-bigp__body">
-        <span class="gu-bigp__txt" lang="{{ big.final.lang or lang }}">{{ big.final.statement }}</span>
+        <span class="gu-bigp__txt">{{ mt_inline(big.final, 'statement') }}</span>
         <span class="gu-bigp__meta"><span class="gu-ip-final">{{ _('Summary proposal') }}</span>{% with proposal=big.final, count=0 %}{% include 'issues/_ip_status.html' %}{% endwith %}</span>
       </span>
       <svg class="gu-bigp__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"/></svg>
@@ -47,7 +48,7 @@
     {% for p, c in big.rows %}
     <a class="gu-bigp__row{% if proposal is defined and proposal.id == p.id %} is-current{% endif %}" href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=p.id) }}"{% if proposal is defined and proposal.id == p.id %} aria-current="page"{% endif %}>
       <span class="gu-bigp__body">
-        <span class="gu-bigp__txt" lang="{{ p.lang or lang }}">{{ p.statement }}</span>
+        <span class="gu-bigp__txt">{{ mt_inline(p, 'statement') }}</span>
         <span class="gu-bigp__meta">{% with proposal=p, count=c %}{% include 'issues/_ip_status.html' %}{% endwith %}<span class="gu-bigp__dot" aria-hidden="true"></span><span title="{{ _('Version %(n)s', n=big.versions[p.id]) }}">v{{ big.versions[p.id] }}</span><span class="gu-bigp__dot" aria-hidden="true"></span>{% with n=reaction_counts.get(p.id, 0), active=new_discussion.get(p.id, False) %}{% include 'issues/_reaction_count.html' %}{% endwith %}</span>
       </span>
       <svg class="gu-bigp__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"/></svg>
