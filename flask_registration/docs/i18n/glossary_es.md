@@ -12,6 +12,9 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 4. **"Denuncia" / "denunciar" voor een melding aan de moderatie.** Zo heet het bij de grote platforms in neutraal Spaans; in Latijns-Amerika is "reportar" ook gangbaar. Klinkt "denuncia" te juridisch?
 5. **"Promotor" voor initiatiefnemer.** De gangbare term voor wie een burgerinitiatief start. Alternatief: "iniciador".
 6. **"Contribución" voor bijdrage.** Gekozen omdat het in Spanje en Latijns-Amerika even gewoon is ("aportación" is Spaans, "aporte" Latijns-Amerikaans).
+7. **Afkortingen van organisaties** staan in de Spaanse vorm (OMC, OMA, GAFI, OIT, OMS, UIT, OACI, OMI, NIIF, CNUCC, CMNUCC; ONU, OCDE), behalve IASB en Codex Alimentarius. Klopt dat overal in het manifest?
+8. **Losse woordkeuzes om na te lopen:** "Juego limpio" (fairness, een kwaliteitscriterium), "cabildeo" (lobby), "Recuento provisional" (tussenstand van een stemming), "Prompt utilizado", "Afiliación" (lidmaatschap), "Quiénes somos" (menu Over ons), maandafkortingen zonder punt ("ene", "sept").
+9. **Generiek mannelijk waar het lastig was:** onder meer "denunciado", "movido", "oculto" in statuslabels, "el autor" in moderatieteksten. Waar mogelijk is de zin om het account of de persoon heen gebouwd ("Tu cuenta está suspendida").
 
 ## Stijlregels
 
