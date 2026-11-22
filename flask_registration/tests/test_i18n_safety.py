@@ -118,34 +118,43 @@ CORE = {
     '/': {'nl': ('Een unie van functionerende democratieën', 'Global Union Forum is een open denktank.'),
           'en': ('A union of functioning democracies', 'Global Union Forum is an open think tank.'),
           'de': ('Eine Union funktionierender Demokratien', 'Global Union Forum ist eine offene Denkfabrik.'),
-          'es': ('Una unión de democracias que funcionan', 'Global Union Forum es un laboratorio de ideas abierto.')},
+          'es': ('Una unión de democracias que funcionan', 'Global Union Forum es un laboratorio de ideas abierto.'),
+          'fr': ('Une union de démocraties qui fonctionnent', "Global Union Forum est un laboratoire d'idées ouvert.")},
     '/forum': {'nl': ('Het gesprek', 'reacties · laatst'), 'en': ('The conversation', 'replies · last'),
-               'de': ('Das Gespräch', 'Antworten · zuletzt'), 'es': ('La conversación', 'respuestas · última')},
+               'de': ('Das Gespräch', 'Antworten · zuletzt'), 'es': ('La conversación', 'respuestas · última'),
+               'fr': ('La conversation', 'réponses · dernier message')},
     'thread': {'nl': ('Het gesprek ›', 'reacties · laatst'), 'en': ('The conversation ›', 'replies · last'),
-               'de': ('Das Gespräch ›', 'Antworten · zuletzt'), 'es': ('La conversación ›', 'respuestas · última')},
+               'de': ('Das Gespräch ›', 'Antworten · zuletzt'), 'es': ('La conversación ›', 'respuestas · última'),
+               'fr': ('La conversation ›', 'réponses · dernier message')},
     'issue': {'nl': ('Feiten en achtergrond', 'Discussie', 'Voorstellen'),
               'en': ('Facts and background', 'Discussion', 'Proposals'),
               'de': ('Fakten und Hintergrund', 'Diskussion', 'Vorschläge'),
-              'es': ('Hechos y contexto', 'Debate', 'Propuestas')},
+              'es': ('Hechos y contexto', 'Debate', 'Propuestas'),
+              'fr': ('Faits et contexte', 'Débat', 'Propositions')},
     '/profile': {'nl': ('Mijn profiel', 'Hoe verschijn je in het forum?'),
                  'en': ('My profile', 'How do you appear in the forum?'),
                  'de': ('Mein Profil', 'Wie erscheinst du im Forum?'),
-                 'es': ('Mi perfil', '¿Cómo apareces en el foro?')},
+                 'es': ('Mi perfil', '¿Cómo apareces en el foro?'),
+                 'fr': ('Mon profil', 'Comment apparaissez-vous dans le forum ?')},
     '/moderator': {'nl': ('Betwiste feiten', 'Geen open meldingen.'), 'en': ('Disputed facts', 'No open reports.'),
                    'de': ('Angezweifelte Fakten', 'Keine offenen Meldungen.'),
-                   'es': ('Hechos cuestionados', 'No hay denuncias abiertas.')},
+                   'es': ('Hechos cuestionados', 'No hay denuncias abiertas.'),
+                   'fr': ('Faits contestés', 'Aucun signalement ouvert.')},
     '/manifest': {'nl': ('Gelijkgezinde landen als positieve kracht', 'In dit manifest'),
                   'en': ('Like-minded countries as a positive force', 'In this manifesto'),
                   'de': ('Gleichgesinnte Länder als positive Kraft', 'In diesem Manifest'),
-                  'es': ('Países afines como fuerza positiva', 'En este manifiesto')},
+                  'es': ('Países afines como fuerza positiva', 'En este manifiesto'),
+                  'fr': ('Des pays partageant les mêmes valeurs, une force positive', 'Dans ce manifeste')},
     '/about': {'nl': ('Een denktank met sterke intentie', 'Geen lidmaatschap. Geen contributie.'),
                'en': ('A think tank with strong intent', 'No membership. No fees.'),
                'de': ('Eine Denkfabrik mit starker Absicht', 'Keine Mitgliedschaft. Keine Beiträge.'),
-               'es': ('Un laboratorio de ideas con un propósito firme', 'Sin afiliación. Sin cuotas.')},
+               'es': ('Un laboratorio de ideas con un propósito firme', 'Sin afiliación. Sin cuotas.'),
+               'fr': ("Un laboratoire d'idées animé d'une ferme intention", "Pas d'adhésion. Pas de cotisation.")},
     '/faq': {'nl': ('Veelgestelde vragen', 'Wat is Global Union?'),
              'en': ('What is Global Union?', 'What is the difference between Global Union and the Global Union Forum?'),
              'de': ('Häufige Fragen', 'Was ist der Unterschied zwischen Global Union und dem Global Union Forum?'),
-             'es': ('Preguntas frecuentes', '¿Qué diferencia hay entre Global Union y el Global Union Forum?')},
+             'es': ('Preguntas frecuentes', '¿Qué diferencia hay entre Global Union y el Global Union Forum?'),
+             'fr': ('Questions fréquentes', 'Quelle est la différence entre Global Union et le Global Union Forum ?')},
 }
 
 
@@ -164,7 +173,7 @@ def smoke(db, make_user):
     _cleanup(issue.id)
 
 
-@pytest.mark.parametrize('lang', ['nl', 'en', 'de', 'es'])
+@pytest.mark.parametrize('lang', ['nl', 'en', 'de', 'es', 'fr'])
 def test_core_pages_render_with_their_core_sentences(app, db, smoke, lang):
     for key, sentences in CORE.items():
         path = smoke.get(key, key)
@@ -245,6 +254,7 @@ SAME_IN_DUTCH = {
     'Respect': 'leenwoord', 'Media': 'leenwoord', 'Podcast': 'leenwoord', 'Video': 'leenwoord',
     'Online': 'leenwoord', 'Experts': 'leenwoord', 'Event': 'leenwoord', 'event': 'leenwoord',
     'Contact': 'leenwoord', 'Forum': 'leenwoord', 'Status': 'leenwoord', 'Menu': 'leenwoord',
+    'Download Excel': 'leenwoord en merknaam', 'Download PDF': 'leenwoord en merknaam',
     'Admin': 'rolnaam', 'Moderator': 'rolnaam', 'Moderators': 'rolnaam', 'Senior': 'rolnaam',
     'Senior moderator': 'rolnaam', 'Senior moderators': 'rolnaam',
     'AI:': 'afkorting',
@@ -287,12 +297,36 @@ SAME_IN_SPANISH = {
 }
 
 
+# French translations identical to their msgid, on purpose (phase 1, see
+# docs/i18n/glossary_fr.md).
+SAME_IN_FRENCH = {
+    'Freedom for all': 'slogan, non traduit',
+    'Spam': 'emprunt', 'Cookies': 'emprunt', 'Podcast': 'emprunt',
+    'Respect': 'identique en français', 'Forum · conversation': 'identique en français',
+    'Senior': 'identique en français', 'Contact': 'identique en français', 'Navigation': 'identique en français',
+    'Menu': 'identique en français', 'Experts': 'identique en français', 'Message': 'identique en français',
+    'Organisation': 'identique en français', 'Phase': 'identique en français', 'phase': 'identique en français',
+    'Phases': 'identique en français', 'Notifications': 'identique en français', 'Forum': 'identique en français',
+    'Actions': 'identique en français', 'Contribution': 'identique en français',
+    'Contributions': 'identique en français', 'Date': 'identique en français', 'Source': 'identique en français',
+    'source': 'identique en français', 'public': 'identique en français', 'Version %(n)s': 'identique en français',
+    'version': 'identique en français', 'vote': 'identique en français', 'Introduction': 'identique en français',
+    'Visible': 'identique en français', '%(num)d participant': 'identique en français',
+    '%(num)d suspension': 'identique en français',
+    'Motion · Global Union': 'identique en français, nom propre',
+    '%d %B %Y': 'format de date identique en français',
+    'Codex Alimentarius': "nom d'une norme", 'IFRS': "sigle d'une norme", 'IASB': "sigle d'une organisation",
+    'Convention 108+': "nom d'une convention",
+}
+
+
 # Per language: the msgids whose translation may equal the msgid, with the
 # reason. A newly enabled language gets its own entry here.
 SAME_AS_MSGID = {
     'nl': SAME_IN_DUTCH,
     'de': SAME_IN_GERMAN,
     'es': SAME_IN_SPANISH,
+    'fr': SAME_IN_FRENCH,
 }
 
 

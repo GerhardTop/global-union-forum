@@ -72,7 +72,7 @@ LANGUAGES = [
 
 # The languages that are switched on. Switching a language on is adding its
 # code here (after its catalog is translated and compiled, see CLAUDE.md).
-ENABLED_LANGUAGES = ["nl", "en", "de", "es"]
+ENABLED_LANGUAGES = ["nl", "en", "de", "es", "fr"]
 
 # The language for visitors without a preference, and the fallback everywhere.
 DEFAULT_LANGUAGE = "nl"

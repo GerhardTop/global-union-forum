@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 15:13+0100\n"
+"POT-Creation-Date: 2026-11-22 16:01+0100\n"
 "PO-Revision-Date: 2026-11-22 15:18+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -1187,7 +1187,7 @@ msgstr "Navigation"
 #: app/templates/issues/index.html:2 app/templates/issues/index.html:17
 #: app/templates/issues/proposal.html:41
 msgid "Have your say"
-msgstr "Donnez votre avis"
+msgstr "Réfléchissez avec nous"
 
 #. about, tekst 1
 #: app/templates/_header.html:17 app/templates/about.html:2
@@ -1705,6 +1705,14 @@ msgstr "Aperçu des pays"
 #: app/templates/landenlijst.html:8 app/templates/manifest.html:2
 msgid "The manifesto"
 msgstr "Le manifeste"
+
+#: app/templates/landenlijst.html:15
+msgid "Download Excel"
+msgstr "Télécharger Excel"
+
+#: app/templates/landenlijst.html:18
+msgid "Download PDF"
+msgstr "Télécharger PDF"
 
 #. landenlijst, tekst 4
 #: app/templates/landenlijst.html:30

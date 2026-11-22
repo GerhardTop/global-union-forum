@@ -10,7 +10,10 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 2. **Rolnamen.** Lecteur, Contributeur, Votant, Modérateur, Modérateur senior en Initiateur zijn generiek mannelijk. Graag een neutrale en korte vorm voorstellen die op de statusladder in het profiel past, zonder punt médian.
 3. **"Contestation" / "contester" voor bezwaar** tegen een beslissing van de moderatie ("objection" klinkt juridisch). Past dat?
 4. **"Énoncé" voor stelling** (de korte stelling van een voorstel waarover gestemd wordt). Alternatieven: "affirmation", "thèse".
-5. **Typografie.** Franse aanhalingstekens « » (met vaste spatie binnen) en een vaste spatie voor ; : ! ?, overal consequent. Graag melden als het ergens niet klopt.
+5. **Typografie.** Franse aanhalingstekens « » (met vaste spatie binnen) en een vaste spatie voor ; : ! ? en %, overal consequent. Graag melden als het ergens niet klopt.
+6. **Neutraal geformuleerd waar een vorm anders mannelijk of vrouwelijk zou zijn:** "Connexion réussie" (in plaats van "Vous êtes connecté"), "Votre compte est suspendu", "Vous confirmez ?". Klinkt dat natuurlijk?
+7. **Losse woordkeuzes om na te lopen:** "Moniteur des langues" (taalmonitor), "grille d'évaluation" (scorecard), "Socle" en "Approfondissement" (fasen in de wetgevingstabel), "droits humains" (niet "droits de l'homme"), "Participants" voor co-thinkers, "abonné retiré" (een volger die bij het verwijderen loskomt), "Au niveau" (voldoet aan de norm), "s.o." voor n/a, "cockpit".
+8. **"Signaler" in twee betekenissen:** een melding door een gebruiker, en een markering door het systeem ("Signalé à un modérateur"). Is een ander woord voor de tweede beter?
 
 ## Stijlregels
 

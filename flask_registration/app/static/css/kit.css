@@ -695,6 +695,7 @@ body {
   padding: 2px 8px;
   margin-inline-start: 6px;
   text-transform: none;
+  white-space: nowrap;  /* one piece: a long label ("par défaut") moves to the next line instead of breaking inside its border */
 }
 .gu-join__divider {
   border: none;

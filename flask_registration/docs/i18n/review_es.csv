@@ -1095,6 +1095,8 @@ app/templates/kies_gebruikersnaam.html:15,,,Choose your username.,,Kies je gebru
 app/templates/kies_gebruikersnaam.html:18,,,This is how other participants will see you in the conversation.,,Zo zien andere deelnemers je in het gesprek.,,Así te verán los demás participantes en la conversación.,
 app/templates/kies_gebruikersnaam.html:61,,,Save and continue,,Opslaan en doorgaan,,Guardar y continuar,
 app/templates/landenlijst.html:2 app/templates/landenlijst.html:9,"landenlijst, tekst 1 landenlijst, tekst 3",,Country overview,,Landenoverzicht,,Panorama de países,
+app/templates/landenlijst.html:15,,,Download Excel,,Download Excel,,Descargar Excel,
+app/templates/landenlijst.html:18,,,Download PDF,,Download PDF,,Descargar PDF,
 app/templates/landenlijst.html:30,"landenlijst, tekst 4",,Level,,Niveau,,Nivel,
 app/templates/landenlijst.html:39,"landenlijst, tekst 6",,≥ 8.0,,"≥ 8,0",,"≥ 8,0",
 app/templates/landenlijst.html:41,"landenlijst, tekst 7",,≥ 0.75,,"≥ 0,75",,"≥ 0,75",

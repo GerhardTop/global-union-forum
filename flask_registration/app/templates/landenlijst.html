@@ -12,10 +12,10 @@
   <div class="gu-landen__downloads">
     {# The files in the reader's language, else the English ones (main.landen_downloads). #}
     <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename=download_xlsx) }}" download>
-      Download Excel <span class="gu-arrow"></span>
+      {{ _('Download Excel') }} <span class="gu-arrow"></span>
     </a>
     <a class="gu-btn gu-btn--ghost" href="{{ url_for('static', filename=download_pdf) }}" download>
-      Download PDF <span class="gu-arrow"></span>
+      {{ _('Download PDF') }} <span class="gu-arrow"></span>
     </a>
   </div>
 

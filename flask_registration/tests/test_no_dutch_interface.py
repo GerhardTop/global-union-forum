@@ -1,5 +1,5 @@
 """Safety net against fixed interface text outside gettext: a fixed set of
-pages, opened in English, German and Spanish as a user with the right role, may
+pages, opened in English, German, Spanish and French as a user with the right role, may
 not show a typical Dutch word.
 
 What counts is the visible text: text nodes, the attributes a reader sees or
@@ -9,7 +9,7 @@ demo content is left out: every text that is literally a value in the
 database (post bodies, titles, names, translations) is skipped, so what is
 left is the interface.
 
-DUTCH_WORDS is checked against every English, German and Spanish translation in the
+DUTCH_WORDS is checked against every English, German, Spanish and French translation in the
 catalogs (no false hits there); deliberate exceptions are on ALLOWED, with
 the reason.
 """
@@ -26,10 +26,11 @@ from app.models import IssueProposal, PostReport, ProposalReport
 from tests.test_delete_issue import _clean_session, _cleanup  # noqa: F401  (autouse fixture)
 from tests.test_issue_polish import _client, _fact, _issue, _req, make_user  # noqa: F401  (fixture)
 
-# Typical Dutch words that are no word in English, German or Spanish. Not on it, on
-# purpose: alle, je, worden, bericht(en), week, juni, juli, oktober, Name.
+# Typical Dutch words that are no word in English, German, Spanish or French. Not on it, on
+# purpose: alle, je, worden, bericht(en), week, juni, juli, oktober, Name
+# (German or English), dit (French).
 DUTCH_WORDS = {
-    'het', 'een', 'geen', 'niet', 'ook', 'nog', 'maar', 'naar', 'deze', 'dit', 'jouw', 'wilt', 'zijn', 'wordt',
+    'het', 'een', 'geen', 'niet', 'ook', 'nog', 'maar', 'naar', 'deze', 'jouw', 'wilt', 'zijn', 'wordt',
     'kunnen', 'moet', 'alleen', 'terug', 'nieuw', 'nieuwe', 'totaal', 'naam', 'acties', 'aangemeld',
     'gesprek', 'gesprekken', 'gebruiker', 'gebruikers', 'verwijderen', 'verwijder', 'bekijken', 'bekijk',
     'opslaan', 'annuleren', 'wijzigen', 'bewerken', 'toevoegen', 'zoeken', 'sluiten', 'gesloten', 'beheer',
@@ -163,7 +164,7 @@ def world(db, make_user):
     _cleanup(issue.id)
 
 
-@pytest.mark.parametrize('lang', ['en', 'de', 'es'])
+@pytest.mark.parametrize('lang', ['en', 'de', 'es', 'fr'])
 def test_no_dutch_interface_text(app, db, world, lang):
     admin, pages = world
     content = _content(db)
@@ -179,7 +180,7 @@ def test_no_dutch_interface_text(app, db, world, lang):
     assert found == {}, found
 
 
-@pytest.mark.parametrize('lang', ['en', 'de', 'es'])
+@pytest.mark.parametrize('lang', ['en', 'de', 'es', 'fr'])
 def test_dutch_words_hit_no_english_or_german_translation(lang):
     """The word list gives no false hits: no translation in the language contains one."""
     with open(os.path.join(TRANSLATIONS, lang, 'LC_MESSAGES', 'messages.po'), 'rb') as f:

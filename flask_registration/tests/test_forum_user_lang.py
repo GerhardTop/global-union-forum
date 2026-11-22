@@ -54,7 +54,7 @@ class TestSwitch:
         assert _user(db, anna.id).lang == 'en' and _session_lang(client) == 'en'
         _req(client, 'GET', '/lang/nl')
         assert _user(db, anna.id).lang == 'nl' and _session_lang(client) == 'nl'
-        _req(client, 'GET', '/lang/fr')  # a language that is not enabled: no change
+        _req(client, 'GET', '/lang/it')  # a language that is not enabled: no change
         assert _user(db, anna.id).lang == 'nl'
 
     def test_anonymous_switch_changes_only_the_session(self, app, db):

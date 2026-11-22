@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-22 15:02+0100\n"
+"POT-Creation-Date: 2026-11-22 16:01+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -1709,6 +1709,14 @@ msgstr "Landenoverzicht"
 #: app/templates/landenlijst.html:8 app/templates/manifest.html:2
 msgid "The manifesto"
 msgstr "Het manifest"
+
+#: app/templates/landenlijst.html:15
+msgid "Download Excel"
+msgstr "Download Excel"
+
+#: app/templates/landenlijst.html:18
+msgid "Download PDF"
+msgstr "Download PDF"
 
 #. landenlijst, tekst 4
 #: app/templates/landenlijst.html:30

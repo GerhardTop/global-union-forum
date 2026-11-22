@@ -116,6 +116,8 @@ _OWN_LANGUAGE_RULES = (
            'Mische keine Sprachen. Sprich die Person mit du an, nie mit Sie.'),
     ('es', 'Escribe toda tu respuesta en español. No uses palabras ni expresiones en inglés. '
            'No mezcles idiomas. Trata a la persona de tú, nunca de usted.'),
+    ('fr', "Rédigez toute votre réponse en français. N'utilisez pas de mots ni d'expressions en anglais. "
+           "Ne mélangez pas les langues. Vouvoyez la personne, ne la tutoyez jamais."),
 )
 
 
