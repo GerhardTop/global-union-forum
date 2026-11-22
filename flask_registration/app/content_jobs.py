@@ -15,6 +15,18 @@ own) as soon as they are saved, without making the save wait:
                         the safety net of the hourly tick (/intern/tik): what
                         is still missing or outdated, newest first, at most
                         `limit` AI calls per tick
+    backlog()           per type of content and language, the number of
+                        fields still missing or outdated (the admin page
+                        /admin/vertalingen)
+    start_backlog_run(app)
+                        the button on that page: the backlog in one go, in a
+                        background thread, in small batches with a pause; one
+                        run at a time
+
+Every run (the background job, a tick, a backlog run) logs one INFO line with
+the number done and failed, with the first error in full (a wrong key or
+model shows up in the Render log at once). The failures since the process
+started are counted in memory (stats()).
 
 The thread has its own app context and database session (we run on one
 gunicorn worker). Without an AI key nothing is started; the tick fills the
@@ -26,6 +38,8 @@ translate button, "always translate"). The design: docs/i18n/machinevertaling.md
 """
 import logging
 import threading
+import time
+from datetime import datetime
 
 from flask import current_app
 from sqlalchemy import event
@@ -33,9 +47,18 @@ from sqlalchemy import event
 from app import content_i18n, db, i18n
 
 log = logging.getLogger(__name__)
+# Production logs at WARNING (app/__init__.py); the run lines must reach the log.
+log.setLevel(logging.INFO)
 
-# The safety net translates at most this many fields per tick.
-MAX_PER_TICK = 40
+# The safety net translates at most this many fields per tick (once an hour).
+MAX_PER_TICK = 200
+# The backlog button: at most this many fields per run, in batches with a pause
+# in between so the site stays responsive (one gunicorn worker).
+BACKLOG_LIMIT = 2000
+BACKLOG_BATCH = 20
+BACKLOG_PAUSE = 1.0  # seconds
+# A run stops after this many failures (a wrong key fails every call).
+MAX_FAILED = 20
 
 
 def _models():
@@ -95,20 +118,66 @@ def missing(obj):
     return out
 
 
-def translate_missing(obj, client=None, limit=None):
+# ── Counting a run ────────────────────────────────────────────────────────
+
+class Tally:
+    """What one run did: fields done, fields failed, the first error."""
+
+    def __init__(self):
+        self.done = 0
+        self.failed = 0
+        self.first_error = None   # (what, exception)
+
+    def fail(self, what, exc):
+        self.failed += 1
+        if self.first_error is None:
+            self.first_error = (what, exc)
+        with _LOCK:
+            _STATS['failed'] += 1
+            _STATS['last_error'] = f'{what}: {type(exc).__name__}: {exc}'
+
+    def log(self, name):
+        """One INFO line for the run; on a failure the first error in full."""
+        if self.first_error is None:
+            log.info('content translations (%s): %d done, %d failed', name, self.done, self.failed)
+            return
+        what, exc = self.first_error
+        log.info('content translations (%s): %d done, %d failed; first error, %s: %s: %s',
+                 name, self.done, self.failed, what, type(exc).__name__, exc,
+                 exc_info=(type(exc), exc, exc.__traceback__))
+
+
+_LOCK = threading.Lock()
+# Since the process started: failed attempts and the last error.
+_STATS = {'failed': 0, 'last_error': None}
+# The backlog run of the admin page (one at a time).
+_RUN = {'running': False, 'done': 0, 'failed': 0, 'limit': 0, 'started': None, 'finished': None}
+
+
+def stats():
+    """The failures since the process started and the state of the backlog run."""
+    with _LOCK:
+        return {**_STATS, 'run': dict(_RUN)}
+
+
+def translate_missing(obj, client=None, limit=None, tally=None):
     """Translate what obj is missing; returns the number of fields translated.
-    A failure is logged and skipped (the tick tries again)."""
+    A failure is counted in `tally` (and in stats()) and skipped (the tick
+    tries again)."""
+    tally = tally if tally is not None else Tally()
     done = 0
     for target, field, lang in missing(obj):
         if limit is not None and done >= limit:
             break
+        what = f'{content_i18n.object_type(target)} {target.id}.{field} to {lang}'
         try:
             content_i18n.translate(target, field, lang, client=client)
             done += 1
+            tally.done += 1
         except Exception as exc:  # the AI is down or refuses: the tick retries
             db.session.rollback()
-            log.warning('translation of %s %s.%s to %s failed: %s',
-                        content_i18n.object_type(target), target.id, field, lang, exc)
+            log.debug('translation of %s failed: %s', what, exc)
+            tally.fail(what, exc)
     return done
 
 
@@ -153,32 +222,128 @@ def _start(app, keys):
 def run(app, keys, client=None):
     """The background work: its own app context and database session."""
     with app.app_context():
+        tally = Tally()
         try:
             models = _models()
             for kind, oid in keys:
                 obj = db.session.get(models[kind][0], oid)
                 if obj is not None:
-                    translate_missing(obj, client=client)
+                    translate_missing(obj, client=client, tally=tally)
         finally:
+            tally.log('after saving')
             db.session.remove()
 
 
 # ── The safety net of the hourly tick ─────────────────────────────────────
 
-def backfill(limit=MAX_PER_TICK, client=None):
-    """Translate what is still missing or outdated, newest content first, at
-    most `limit` fields. Without an AI key (and no client) it does nothing."""
-    if client is None and not ai_available():
-        return 0
-    done = 0
-    for _kind, (model, fields) in _models().items():
+def _scan():
+    """Every object translated right away, newest first per type, with its
+    translations preloaded (and those of the conversation titles of issues)."""
+    for kind, (model, fields) in _models().items():
         objs = _only(model, model.query).order_by(model.id.desc()).all()
         content_i18n.preload(objs, *fields)
+        if kind == 'issues':
+            threads = [o.thread for o in objs if getattr(o, 'thread', None) is not None]
+            if threads:
+                content_i18n.preload(threads, 'title_prefix')
+        yield kind, objs
+
+
+def backfill(limit=MAX_PER_TICK, client=None, tally=None, name='tick', max_failed=MAX_FAILED):
+    """Translate what is still missing or outdated, newest content first, at
+    most `limit` fields; stop after `max_failed` failures. Without an AI key
+    (and no client) it does nothing. Logs one line, unless the caller passes
+    its own tally (and logs it)."""
+    if client is None and not ai_available():
+        return 0
+    own = tally is None
+    tally = Tally() if own else tally
+    failed_before = tally.failed
+    done = 0
+    try:
+        for _kind, objs in _scan():
+            for obj in objs:
+                if done >= limit or tally.failed - failed_before >= max_failed:
+                    return done
+                done += translate_missing(obj, client=client, limit=limit - done, tally=tally)
+        return done
+    finally:
+        if own:
+            tally.log(name)
+
+
+# ── The backlog: what is missing, and the button to translate it now ──────
+
+# The types of content on the admin page, in this order (the conversation
+# title of an issue counts with the issue).
+BACKLOG_KINDS = ('issues', 'issue_proposals', 'issue_proposal_versions', 'issue_followups', 'posts')
+
+
+def backlog():
+    """{kind: {lang: n}}: per type of content and target language, the number
+    of fields with a text but no current translation. Reads only."""
+    langs = i18n.enabled_codes()
+    out = {kind: dict.fromkeys(langs, 0) for kind in BACKLOG_KINDS}
+    for kind, objs in _scan():
         for obj in objs:
-            if done >= limit:
-                return done
-            done += translate_missing(obj, client=client, limit=limit - done)
-    return done
+            for _target, _field, lang in missing(obj):
+                out[kind][lang] += 1
+    return out
+
+
+def backlog_running():
+    with _LOCK:
+        return _RUN['running']
+
+
+def _spawn(target, args):
+    """Start a daemon thread. Tests replace this to run it in line."""
+    threading.Thread(target=target, args=args, daemon=True, name='content-translations-backlog').start()
+
+
+def start_backlog_run(app, limit=BACKLOG_LIMIT):
+    """Start translating the backlog in the background. Returns False (and
+    starts nothing) when a run is already busy or there is no AI key."""
+    if not ai_available(app):
+        return False
+    with _LOCK:
+        if _RUN['running']:
+            return False
+        _RUN.update(running=True, done=0, failed=0, limit=limit,
+                    started=datetime.utcnow(), finished=None)
+    try:
+        _spawn(backlog_run, (app, limit))
+    except Exception:
+        with _LOCK:
+            _RUN.update(running=False, finished=datetime.utcnow())
+        raise
+    return True
+
+
+def backlog_run(app, limit=BACKLOG_LIMIT, client=None):
+    """The backlog run itself: batches of BACKLOG_BATCH fields with a short
+    pause, until `limit` is reached or a batch translates nothing (nothing
+    left, or everything fails: the next tick tries again)."""
+    with app.app_context():
+        tally = Tally()
+        try:
+            while tally.done < limit:
+                before = tally.done
+                backfill(limit=min(BACKLOG_BATCH, limit - tally.done), client=client, tally=tally)
+                with _LOCK:
+                    _RUN.update(done=tally.done, failed=tally.failed)
+                if tally.done == before:
+                    break
+                db.session.remove()   # a fresh session per batch: nothing held in between
+                time.sleep(BACKLOG_PAUSE)
+        except Exception as exc:
+            tally.fail('backlog run', exc)
+        finally:
+            tally.log('backlog run')
+            with _LOCK:
+                _RUN.update(running=False, done=tally.done, failed=tally.failed,
+                            finished=datetime.utcnow())
+            db.session.remove()
 
 
 def _register():

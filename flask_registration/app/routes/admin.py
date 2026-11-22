@@ -723,3 +723,54 @@ def language_monitor():
     return render_template('admin/language_monitor.html', period=period,
                            stats=status.language_monitor(period),
                            sample=status.monitor_sample(sample_lang), sample_lang=sample_lang)
+
+
+# ── Multilingual phase 2: the translation backlog ─────────────────────────
+
+_BACKLOG_KIND_LABELS = {
+    'issues': lambda: gettext('Issues'),
+    'issue_proposals': lambda: gettext('Proposals'),
+    'issue_proposal_versions': lambda: gettext('Versions of a proposal'),
+    'issue_followups': lambda: gettext('Follow-up updates'),
+    'posts': lambda: gettext('Facts'),
+}
+
+
+@admin_bp.route('/admin/vertalingen')
+@login_required
+def translations_backlog():
+    """Per type of content and language the fields still missing or outdated,
+    the failures since the last start, and the button that translates the
+    backlog now (app/content_jobs.py)."""
+    from app import content_jobs, i18n
+    if not current_user.is_admin:
+        abort(403)
+    counts = content_jobs.backlog()
+    langs = i18n.enabled_codes()
+    rows = [(_BACKLOG_KIND_LABELS[kind](), kind, counts[kind], sum(counts[kind].values()))
+            for kind in content_jobs.BACKLOG_KINDS]
+    totals = {lang: sum(counts[kind][lang] for kind in counts) for lang in langs}
+    names = {code: i18n.language_name_in(code, get_locale()) for code in langs}
+    return render_template('admin/translations.html', rows=rows, langs=langs, names=names, totals=totals,
+                           total=sum(totals.values()), stats=content_jobs.stats(),
+                           ai_available=content_jobs.ai_available(),
+                           per_tick=content_jobs.MAX_PER_TICK, limit=content_jobs.BACKLOG_LIMIT,
+                           admin_action_form=AdminActionForm())
+
+
+@admin_bp.route('/admin/vertalingen/achterstand', methods=['POST'])
+@login_required
+def translations_backlog_run():
+    from flask import current_app
+    from app import content_jobs
+    if not current_user.is_admin:
+        abort(403)
+    if not AdminActionForm().validate_on_submit():
+        abort(400)
+    if not content_jobs.ai_available():
+        flash(gettext('There is no AI key here, so nothing can be translated.'), 'error')
+    elif content_jobs.start_backlog_run(current_app._get_current_object()):
+        flash(gettext('Started: the backlog is being translated in the background.'), 'success')
+    else:
+        flash(gettext('A run is already busy.'), 'error')
+    return redirect(url_for('admin.translations_backlog'))

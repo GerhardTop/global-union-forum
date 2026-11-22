@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{#
+  Multilingual phase 2: the translation backlog, for the admin. Per type of
+  content and language the fields still missing or outdated (content from
+  before phase 2, or what the background job missed), the failures since the
+  last start, and the button that translates the backlog now in the
+  background. Context: routes/admin.py translations_backlog().
+#}
+{% block title %}{{ _('Translations') }} · Global Union{% endblock %}
+
+{% block content_outer %}{% block content %}
+{% set run = stats.run %}
+<div class="gu-admin" lang="{{ lang }}">
+  <div class="gu-admin__inner">
+    <div class="gu-admin__head">
+      <p class="gu-eyebrow"><a href="{{ url_for('admin.admin_dashboard') }}" class="gu-admin-table__threadlink">{{ _('Admin') }}</a></p>
+      <h1 class="gu-admin__title">{{ _('Translations') }}</h1>
+      <p class="gu-quality__meta">{{ _('Issues, proposals, their versions, the follow-up updates and facts are translated into every language right after saving. Below: the fields that still have no current translation. The hourly tick translates at most %(num)d of them; the button translates the backlog now, in the background.', num=per_tick) }}</p>
+    </div>
+
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">{{ _('Missing or outdated') }}</p>
+      <div class="gu-admin-table-wrap">
+        <table class="gu-admin-table" data-backlog>
+          <thead>
+            <tr>
+              <th>{{ _('Type of content') }}</th>
+              {% for code in langs %}<th><abbr title="{{ names[code] }}">{{ code | upper }}</abbr></th>{% endfor %}
+              <th>{{ _('Total') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for label, kind, counts, row_total in rows %}
+            <tr>
+              <td>{{ label }}</td>
+              {% for code in langs %}<td data-backlog="{{ kind }}-{{ code }}">{{ counts[code] }}</td>{% endfor %}
+              <td data-backlog="{{ kind }}-total"><strong>{{ row_total }}</strong></td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td><strong>{{ _('Total') }}</strong></td>
+              {% for code in langs %}<td data-backlog="total-{{ code }}"><strong>{{ totals[code] }}</strong></td>{% endfor %}
+              <td data-backlog="total"><strong>{{ total }}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="gu-monitor__diff" data-backlog="failed">{{ _('Failed attempts since the last start: %(num)d', num=stats.failed) }}</p>
+      {% if stats.last_error %}<p class="gu-quality__meta" data-backlog="last-error">{{ _('Last error:') }} <code>{{ stats.last_error }}</code></p>{% endif %}
+    </section>
+
+    <section class="gu-admin__section">
+      <p class="gu-eyebrow gu-eyebrow--section">{{ _('Translate the backlog now') }}</p>
+      {% if run.running %}
+      <p class="gu-monitor__diff" data-backlog="run">{{ _('Busy: %(done)d of at most %(limit)d fields done, %(failed)d failed. Refresh the page to follow it.', done=run.done, limit=run.limit, failed=run.failed) }}</p>
+      {% elif run.finished %}
+      <p class="gu-monitor__diff" data-backlog="run">{{ _('Last run: %(done)d fields done, %(failed)d failed.', done=run.done, failed=run.failed) }}</p>
+      {% endif %}
+      {% if not ai_available %}
+      <p class="gu-quality__meta">{{ _('There is no AI key here, so nothing can be translated.') }}</p>
+      {% elif not run.running %}
+      <form method="POST" action="{{ url_for('admin.translations_backlog_run') }}" class="gu-thresholds">
+        {{ admin_action_form.hidden_tag() }}
+        <p class="gu-join__hint">{{ _('At most %(num)d fields, in small batches with a short pause, so the site stays responsive.', num=limit) }}</p>
+        <button type="submit" class="gu-btn gu-btn--primary"{% if not total %} disabled{% endif %}>{{ _('Translate the backlog now') }} <span class="gu-arrow"></span></button>
+      </form>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}{% endblock %}

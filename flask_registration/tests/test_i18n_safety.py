@@ -294,6 +294,7 @@ SAME_IN_SPANISH = {
     'No': 'igual en español', 'no': 'igual en español', 'Neutral': 'igual en español',
     'Visible': 'igual en español',
     'Codex Alimentarius': 'nombre de una norma', 'IASB': 'nombre de una organización',
+    'Total': 'igual en español',
 }
 
 
@@ -312,6 +313,7 @@ SAME_IN_FRENCH = {
     'source': 'identique en français', 'public': 'identique en français', 'Version %(n)s': 'identique en français',
     'version': 'identique en français', 'vote': 'identique en français', 'Introduction': 'identique en français',
     'Visible': 'identique en français', '%(num)d participant': 'identique en français',
+    'Total': 'identique en français',
     '%(num)d suspension': 'identique en français',
     'Motion · Global Union': 'identique en français, nom propre',
     '%d %B %Y': 'format de date identique en français',

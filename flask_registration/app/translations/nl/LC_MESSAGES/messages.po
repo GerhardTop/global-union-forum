@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-22 20:51+0100\n"
+"POT-Creation-Date: 2026-11-22 22:18+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -615,16 +615,16 @@ msgstr "Senior: meer dan dit aantal kwaliteitsbijdragen"
 msgid "Reader"
 msgstr "Lezer"
 
-#: app/status.py:49 app/templates/admin/dashboard.html:74
+#: app/status.py:49 app/templates/admin/dashboard.html:75
 msgid "Contributor"
 msgstr "Bijdrager"
 
-#: app/status.py:50 app/templates/admin/dashboard.html:74
+#: app/status.py:50 app/templates/admin/dashboard.html:75
 msgid "Voter"
 msgstr "Stemmer"
 
 #: app/status.py:51 app/templates/_header.html:46
-#: app/templates/admin/dashboard.html:74 app/templates/moderator/beheer.html:25
+#: app/templates/admin/dashboard.html:75 app/templates/moderator/beheer.html:25
 #: app/templates/moderator/dashboard.html:4
 #: app/templates/moderator/dashboard.html:76
 #: app/templates/moderator/rechten.html:19
@@ -810,6 +810,47 @@ msgstr "Vul een geheel getal van 1 tot en met 365 in."
 #: app/routes/admin.py:705
 msgid "Saved."
 msgstr "Opgeslagen."
+
+#: app/routes/admin.py:731 app/templates/issues/index.html:17
+#: app/templates/issues/show.html:22 app/templates/issues/verwijderen.html:29
+msgid "Issues"
+msgstr "Vraagstukken"
+
+#: app/routes/admin.py:732 app/templates/issues/final_new.html:19
+#: app/templates/issues/proposal.html:43 app/templates/issues/proposal.html:60
+#: app/templates/issues/proposal.html:318
+#: app/templates/issues/proposal.html:320
+#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:95
+#: app/templates/issues/show.html:146 app/templates/issues/show.html:148
+#: app/templates/issues/show.html:149 app/templates/issues/show.html:188
+#: app/templates/moderator/beheer.html:84
+msgid "Proposals"
+msgstr "Voorstellen"
+
+#: app/routes/admin.py:733
+msgid "Versions of a proposal"
+msgstr "Versies van een voorstel"
+
+#: app/routes/admin.py:734
+msgid "Follow-up updates"
+msgstr "Vervolgupdates"
+
+#: app/routes/admin.py:735 app/templates/forum/_facts.html:19
+#: app/templates/moderator/gebruiker.html:71
+msgid "Facts"
+msgstr "Feiten"
+
+#: app/routes/admin.py:771 app/templates/admin/translations.html:60
+msgid "There is no AI key here, so nothing can be translated."
+msgstr "Er is hier geen AI-sleutel, dus er kan niets vertaald worden."
+
+#: app/routes/admin.py:773
+msgid "Started: the backlog is being translated in the background."
+msgstr "Gestart: de achterstand wordt op de achtergrond vertaald."
+
+#: app/routes/admin.py:775
+msgid "A run is already busy."
+msgstr "Er loopt al een run."
 
 #: app/routes/auth.py:49
 msgid "Global Union Forum: reset your password"
@@ -1203,10 +1244,11 @@ msgstr "Over ons"
 msgid "Profile"
 msgstr "Profiel"
 
-#: app/templates/_header.html:49 app/templates/admin/dashboard.html:76
-#: app/templates/admin/dashboard.html:121
+#: app/templates/_header.html:49 app/templates/admin/dashboard.html:77
+#: app/templates/admin/dashboard.html:122
 #: app/templates/admin/proposal_limits.html:10
 #: app/templates/admin/thresholds.html:9
+#: app/templates/admin/translations.html:16
 #: app/templates/issues/verwijderen.html:39
 msgid "Admin"
 msgstr "Admin"
@@ -1631,7 +1673,7 @@ msgstr "Schrijf een kort bericht…"
 msgid "Send invitation"
 msgstr "Verstuur uitnodiging"
 
-#: app/templates/admin/dashboard.html:64 app/templates/index.html:311
+#: app/templates/admin/dashboard.html:65 app/templates/index.html:311
 msgid "Name"
 msgstr "Naam"
 
@@ -2623,7 +2665,7 @@ msgstr "Waarover"
 msgid "In the app"
 msgstr "In de app"
 
-#: app/templates/admin/dashboard.html:65 app/templates/notificaties.html:31
+#: app/templates/admin/dashboard.html:66 app/templates/notificaties.html:31
 #: app/templates/notificaties.html:48
 msgid "Email"
 msgstr "E-mail"
@@ -3018,7 +3060,7 @@ msgstr "Sterk"
 msgid "Danger zone"
 msgstr "Gevarenzone"
 
-#: app/templates/admin/dashboard.html:170
+#: app/templates/admin/dashboard.html:171
 #: app/templates/moderator/gebruiker.html:200
 #: app/templates/moderator/gebruiker.html:207
 #: app/templates/moderator/gebruiker_verwijderen.html:2
@@ -3038,8 +3080,8 @@ msgstr ""
 msgid "Delete my account"
 msgstr "Verwijder mijn account"
 
-#: app/templates/admin/dashboard.html:169
-#: app/templates/admin/dashboard.html:177 app/templates/forum/_post.html:218
+#: app/templates/admin/dashboard.html:170
+#: app/templates/admin/dashboard.html:178 app/templates/forum/_post.html:218
 #: app/templates/forum/_post.html:246 app/templates/forum/edit_thread.html:58
 #: app/templates/forum/new_thread.html:128
 #: app/templates/issues/_facts_big.html:41
@@ -3275,94 +3317,100 @@ msgstr "Voorstellen: maximale doorlooptijd per fase"
 msgid "Rights"
 msgstr "Rechten"
 
-#: app/templates/admin/dashboard.html:21
+#: app/templates/admin/dashboard.html:16
+#: app/templates/admin/translations.html:9
+#: app/templates/admin/translations.html:17
+msgid "Translations"
+msgstr "Vertalingen"
+
+#: app/templates/admin/dashboard.html:22
 msgid "Users"
 msgstr "Gebruikers"
 
-#: app/templates/admin/dashboard.html:25
+#: app/templates/admin/dashboard.html:26
 msgid "Total users"
 msgstr "Totaal gebruikers"
 
-#: app/templates/admin/dashboard.html:29
+#: app/templates/admin/dashboard.html:30
 msgid "New this week"
 msgstr "Nieuw deze week"
 
-#: app/templates/admin/dashboard.html:36 app/templates/forum/closed.html:15
+#: app/templates/admin/dashboard.html:37 app/templates/forum/closed.html:15
 #: app/templates/forum/edit_thread.html:19 app/templates/forum/index.html:10
 #: app/templates/forum/new_thread.html:15
 msgid "Forum"
 msgstr "Forum"
 
-#: app/templates/admin/dashboard.html:40
+#: app/templates/admin/dashboard.html:41
 msgid "Active conversations"
 msgstr "Actieve gesprekken"
 
-#: app/templates/admin/dashboard.html:44 app/templates/forum/closed.html:2
+#: app/templates/admin/dashboard.html:45 app/templates/forum/closed.html:2
 #: app/templates/forum/closed.html:16 app/templates/forum/index.html:29
 #: app/templates/moderator/dashboard.html:488
 msgid "Closed conversations"
 msgstr "Gesloten gesprekken"
 
-#: app/templates/admin/dashboard.html:48
+#: app/templates/admin/dashboard.html:49
 msgid "Total posts"
 msgstr "Totaal berichten"
 
-#: app/templates/admin/dashboard.html:52
+#: app/templates/admin/dashboard.html:53
 msgid "Demo posts"
 msgstr "Demo berichten"
 
-#: app/templates/admin/dashboard.html:59
+#: app/templates/admin/dashboard.html:60
 msgid "User list"
 msgstr "Gebruikerslijst"
 
-#: app/templates/admin/dashboard.html:66
+#: app/templates/admin/dashboard.html:67
 msgid "Role"
 msgstr "Rol"
 
-#: app/templates/admin/dashboard.html:67
+#: app/templates/admin/dashboard.html:68
 msgid "Signed up"
 msgstr "Aangemeld"
 
-#: app/templates/admin/dashboard.html:68
+#: app/templates/admin/dashboard.html:69
 msgid "Actions"
 msgstr "Acties"
 
-#: app/templates/admin/dashboard.html:74
+#: app/templates/admin/dashboard.html:75
 msgid "Senior moderator"
 msgstr "Senior moderator"
 
-#: app/templates/admin/dashboard.html:76
+#: app/templates/admin/dashboard.html:77
 msgid "No conduct rules acceptance yet"
 msgstr "Nog geen akkoord op de gedragsregels"
 
-#: app/templates/admin/dashboard.html:86
+#: app/templates/admin/dashboard.html:87
 msgid "LinkedIn profile"
 msgstr "LinkedIn profiel"
 
-#: app/templates/admin/dashboard.html:106
+#: app/templates/admin/dashboard.html:107
 msgid "Change role"
 msgstr "Rol wijzigen"
 
-#: app/templates/admin/dashboard.html:127
+#: app/templates/admin/dashboard.html:128
 msgid "Conduct rules not accepted yet"
 msgstr "Gedragsregels nog niet geaccepteerd"
 
-#: app/templates/admin/dashboard.html:141
+#: app/templates/admin/dashboard.html:142
 #, python-format
 msgid "Delete the account of %(name)s"
 msgstr "Verwijder account van %(name)s"
 
-#: app/templates/admin/dashboard.html:142
-#: app/templates/admin/dashboard.html:178
+#: app/templates/admin/dashboard.html:143
+#: app/templates/admin/dashboard.html:179
 msgid "Delete this account"
 msgstr "Verwijder account"
 
-#: app/templates/admin/dashboard.html:172
+#: app/templates/admin/dashboard.html:173
 #, python-format
 msgid "Are you sure you want to delete the account of %(name)s? This cannot be undone."
 msgstr "Weet je zeker dat je het account van %(name)s wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
 
-#: app/templates/admin/dashboard.html:173
+#: app/templates/admin/dashboard.html:174
 msgid "Are you sure you want to delete this account? This cannot be undone."
 msgstr "Weet je zeker dat je dit account wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
 
@@ -3496,6 +3544,53 @@ msgstr "Standaard"
 #: app/templates/admin/thresholds.html:27
 msgid "Enter a whole number of at least 1."
 msgstr "Vul een geheel getal van minimaal 1 in."
+
+#: app/templates/admin/translations.html:18
+#, python-format
+msgid "Issues, proposals, their versions, the follow-up updates and facts are translated into every language right after saving. Below: the fields that still have no current translation. The hourly tick translates at most %(num)d of them; the button translates the backlog now, in the background."
+msgstr "Vraagstukken, voorstellen, hun versies, de vervolgupdates en feiten worden direct na het opslaan in elke taal vertaald. Hieronder: de velden die nog geen actuele vertaling hebben. De uurtik vertaalt er maximaal %(num)d; de knop vertaalt de achterstand nu, op de achtergrond."
+
+#: app/templates/admin/translations.html:22
+msgid "Missing or outdated"
+msgstr "Ontbreekt of verouderd"
+
+#: app/templates/admin/translations.html:27
+msgid "Type of content"
+msgstr "Soort inhoud"
+
+#: app/templates/admin/translations.html:29
+#: app/templates/admin/translations.html:41
+msgid "Total"
+msgstr "Totaal"
+
+#: app/templates/admin/translations.html:48
+#, python-format
+msgid "Failed attempts since the last start: %(num)d"
+msgstr "Mislukte pogingen sinds de laatste start: %(num)d"
+
+#: app/templates/admin/translations.html:49
+msgid "Last error:"
+msgstr "Laatste fout:"
+
+#: app/templates/admin/translations.html:53
+#: app/templates/admin/translations.html:65
+msgid "Translate the backlog now"
+msgstr "Achterstand nu vertalen"
+
+#: app/templates/admin/translations.html:55
+#, python-format
+msgid "Busy: %(done)d of at most %(limit)d fields done, %(failed)d failed. Refresh the page to follow it."
+msgstr "Bezig: %(done)d van maximaal %(limit)d velden gedaan, %(failed)d mislukt. Ververs de pagina om het te volgen."
+
+#: app/templates/admin/translations.html:57
+#, python-format
+msgid "Last run: %(done)d fields done, %(failed)d failed."
+msgstr "Laatste run: %(done)d velden gedaan, %(failed)d mislukt."
+
+#: app/templates/admin/translations.html:64
+#, python-format
+msgid "At most %(num)d fields, in small batches with a short pause, so the site stays responsive."
+msgstr "Maximaal %(num)d velden, in kleine porties met een korte pauze, zodat de site bereikbaar blijft."
 
 #: app/templates/email/digest.html:4
 msgid "What changed in the proposals you follow:"
@@ -3953,10 +4048,6 @@ msgstr "Een moderator beoordeelt je bezwaar. Het feit blijft zolang zichtbaar."
 #: app/templates/forum/_fact_signals.html:33
 msgid "Send to a moderator"
 msgstr "Naar een moderator sturen"
-
-#: app/templates/forum/_facts.html:19 app/templates/moderator/gebruiker.html:71
-msgid "Facts"
-msgstr "Feiten"
 
 #: app/templates/forum/_facts.html:20
 msgid "Facts that are relevant to the statement, each with a direction and a source."
@@ -5206,16 +5297,6 @@ msgstr "Alle fasen"
 msgid "'Less'"
 msgstr "'Minder'"
 
-#: app/templates/issues/final_new.html:19 app/templates/issues/proposal.html:43
-#: app/templates/issues/proposal.html:60 app/templates/issues/proposal.html:318
-#: app/templates/issues/proposal.html:320
-#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:95
-#: app/templates/issues/show.html:146 app/templates/issues/show.html:148
-#: app/templates/issues/show.html:149 app/templates/issues/show.html:188
-#: app/templates/moderator/beheer.html:84
-msgid "Proposals"
-msgstr "Voorstellen"
-
 #: app/templates/issues/final_new.html:24
 #, python-format
 msgid "Based on all proposals and the discussion, you make one summary proposal. The participants vote on it again, for %(days)s days, with the same threshold."
@@ -5245,11 +5326,6 @@ msgstr "Waar gaat dit over"
 #: app/templates/issues/final_new.html:58
 msgid "Submit the summary proposal"
 msgstr "Samenvattend voorstel indienen"
-
-#: app/templates/issues/index.html:17 app/templates/issues/show.html:22
-#: app/templates/issues/verwijderen.html:29
-msgid "Issues"
-msgstr "Vraagstukken"
 
 #: app/templates/issues/index.html:24 app/templates/issues/new.html:2
 #: app/templates/issues/new.html:20
