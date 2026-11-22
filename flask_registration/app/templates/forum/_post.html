@@ -1,4 +1,5 @@
 {% from 'moderator/_userlink.html' import user_link with context %}
+{% from '_mt.html' import mt with context %}
 {#
   Partial: forum/_post.html
   Context: post, level (1 = bovenkant), thread, reply_form, tree_children,
@@ -72,27 +73,22 @@
     </div>
   </header>
 
-  {% if is_foreign and not is_deleted %}
-  <div class="gu-post__foreignbanner">
-    <span class="gu-arrow" style="background:var(--gu-fg-3)"></span>
-    <span>{% trans language=language_name_in(post.source_lang, lang) %}Original in {{ language }}{% endtrans %}</span>
-  </div>
-  {% endif %}
-
   {# Kwaliteitskeurmerk: alleen het medaille-icoon direct vóór de tekst; een
      klik opent het paneel met de onderbouwing (onder de bijdrage). Leeg
      zonder keurmerk; de statuspoll vult het als het keurmerk later komt. #}
   <div class="gu-post__content">
   <span class="gu-post__qmark" id="qmark-{{ post.id }}">{% if q_awarded %}{% include 'forum/_quality_mark.html' %}{% endif %}</span>
-  <div class="gu-post__body{% if is_deleted %} gu-post__body--deleted{% endif %}"
-       id="body-{{ post.id }}"
-       lang="{{ lang if is_pretranslated else post.source_lang }}">
-    {% if display_body %}
-      {% for para in display_body.split('\n\n') %}
-        <p>{{ para | linkify }}</p>
-      {% endfor %}
-    {% endif %}
+  {% if is_deleted or not display_body %}
+  <div class="gu-post__body{% if is_deleted %} gu-post__body--deleted{% endif %}" id="body-{{ post.id }}" lang="{{ lang }}">
+    {% if display_body %}<p>{{ display_body }}</p>{% endif %}
   </div>
+  {% else %}
+  {# The text, with the machine-translation label when it is shown in (or can
+     be translated to) the reader's language (_mt.html). #}
+  {{ mt(post, 'body', 'div', 'gu-post__body', paras=true, on_request=true,
+        request_url=url_for('forum.forum_translate', post_id=post.id) if current_user.is_authenticated else none,
+        auto=auto_translate, id='body-' ~ post.id) }}
+  {% endif %}
   </div>
 
   {% if post.image_url and not is_deleted %}
@@ -171,18 +167,8 @@
     </button>
     {% endif %}
 
-    {# Translate button — subtiel, alleen voor ingelogde gebruikers (zie forum_translate: @login_required) #}
+    {# "Always translate": the reader's preference, for logged-in readers of a post in another language. #}
     {% if is_foreign and current_user.is_authenticated %}
-    <button class="gu-post__action gu-post__action--ghost gu-post__translate-btn"
-            data-post-id="{{ post.id }}"
-            data-translate-url="{{ url_for('forum.forum_translate', post_id=post.id) }}"
-            data-label-translate="{{ _('Translate to English') }}"
-            data-label-original="{{ _('Show original') }}"
-            data-label-loading="{{ _('Translating…') }}"
-            data-label-error="{{ _('Failed, try again') }}">
-      {{ _('Translate to English') }}
-    </button>
-
     {# Always-translate toggle — alleen voor ingelogde gebruikers #}
     {% if current_user.is_authenticated %}
     <form method="POST" action="{{ url_for('profile.profiel_vertaalvoorkeur') }}" style="display:inline;">

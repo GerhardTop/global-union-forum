@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-22 16:48+0100\n"
+"POT-Creation-Date: 2026-11-22 17:06+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -915,7 +915,7 @@ msgstr "This post already has replies, so it can no longer be edited."
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "A moved or hidden post cannot be edited. You can object instead."
 
-#: app/routes/forum.py:1337 app/templates/forum/_post.html:69
+#: app/routes/forum.py:1337 app/templates/forum/_post.html:70
 #, python-format
 msgid "edited %(when)s"
 msgstr "edited %(when)s"
@@ -1224,9 +1224,44 @@ msgstr "Log in"
 msgid "Menu"
 msgstr "Menu"
 
+#. under a text shown in a machine translation. %(language)s is the name of the
+#. original language in the reader's language, in its base form (as in a
+#. language list), e.g. "English", so build the sentence around that form.
+#: app/templates/_mt.html:50
+#, python-format
+msgid "Machine-translated from %(language)s"
+msgstr "Machine-translated from %(language)s"
+
+#: app/templates/_mt.html:51
+#, python-format
+msgid "Original in %(language)s"
+msgstr "Original in %(language)s"
+
+#: app/templates/_mt.html:55 app/templates/_mt.html:66
+#: app/templates/forum/quality.html:32
+msgid "Show original"
+msgstr "Show original"
+
+#: app/templates/_mt.html:55 app/templates/_mt.html:66
+msgid "Show translation"
+msgstr "Show translation"
+
+#: app/templates/_mt.html:56 app/templates/forum/quality.html:33
+msgid "Translating…"
+msgstr "Translating…"
+
+#: app/templates/_mt.html:56 app/templates/forum/quality.html:34
+msgid "Failed, try again"
+msgstr "Failed, try again"
+
+#: app/templates/_mt.html:68 app/templates/forum/quality.html:31
+#: app/templates/forum/quality.html:35
+msgid "Translate to English"
+msgstr "Translate to English"
+
 #. under an issue or proposal text shown in its original language because the
 #. machine translation is not ready yet.
-#: app/templates/_mt.html:22
+#: app/templates/_mt.html:73
 msgid "Translation pending"
 msgstr "Translation pending"
 
@@ -2630,7 +2665,7 @@ msgstr "Weekly"
 #: app/templates/admin/proposal_limits.html:28
 #: app/templates/admin/proposal_limits.html:43
 #: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:59
-#: app/templates/forum/_post.html:238 app/templates/issues/_fact_card.html:52
+#: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:55
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
@@ -2999,8 +3034,8 @@ msgid "Delete my account"
 msgstr "Delete my account"
 
 #: app/templates/admin/dashboard.html:169
-#: app/templates/admin/dashboard.html:177 app/templates/forum/_post.html:232
-#: app/templates/forum/_post.html:260 app/templates/forum/edit_thread.html:58
+#: app/templates/admin/dashboard.html:177 app/templates/forum/_post.html:218
+#: app/templates/forum/_post.html:246 app/templates/forum/edit_thread.html:58
 #: app/templates/forum/new_thread.html:128
 #: app/templates/issues/_facts_big.html:41
 #: app/templates/issues/final_new.html:57 app/templates/issues/new.html:190
@@ -3753,7 +3788,7 @@ msgstr "This conversation is closed."
 msgid "Write your reply. Be concrete (a thought, a question, a pushback)."
 msgstr "Write your reply. Be concrete (a thought, a question, a pushback)."
 
-#: app/templates/forum/_discussion.html:68 app/templates/forum/_post.html:263
+#: app/templates/forum/_discussion.html:68 app/templates/forum/_post.html:249
 #: app/templates/issues/proposal.html:290
 msgid "Post"
 msgstr "Post"
@@ -3857,7 +3892,7 @@ msgid "Video"
 msgstr "Video"
 
 #: app/templates/forum/_fact_fields.html:47 app/templates/forum/_facts.html:40
-#: app/templates/issues/_fact_card.html:28
+#: app/templates/issues/_fact_card.html:31
 #: app/templates/moderator/dashboard.html:208
 msgid "Source"
 msgstr "Source"
@@ -3930,15 +3965,15 @@ msgstr "Fact moved because of the conduct rules"
 msgid "View on the background page"
 msgstr "View on the background page"
 
-#: app/templates/forum/_facts.html:55 app/templates/forum/_post.html:140
+#: app/templates/forum/_facts.html:55 app/templates/forum/_post.html:136
 #: app/templates/forum/edit_thread.html:15
-#: app/templates/issues/_fact_card.html:45
+#: app/templates/issues/_fact_card.html:48
 #: app/templates/issues/_lifecycle.html:46
 msgid "Edit"
 msgstr "Edit"
 
-#: app/templates/forum/_facts.html:65 app/templates/forum/_post.html:155
-#: app/templates/issues/_fact_card.html:61
+#: app/templates/forum/_facts.html:65 app/templates/forum/_post.html:151
+#: app/templates/issues/_fact_card.html:64
 #: app/templates/issues/_lifecycle.html:56
 #: app/templates/issues/verwijderen.html:2
 #: app/templates/issues/verwijderen.html:33
@@ -3968,87 +4003,65 @@ msgstr "Log in to add a fact."
 msgid "The facts phase is over; the facts are fixed."
 msgstr "The facts phase is over; the facts are fixed."
 
-#: app/templates/forum/_post.html:58
+#: app/templates/forum/_post.html:59
 #, python-format
 msgid "LinkedIn profile of %(name)s"
 msgstr "LinkedIn profile of %(name)s"
 
-#: app/templates/forum/_post.html:78
-#, python-format
-msgid "Original in %(language)s"
-msgstr "Original in %(language)s"
-
-#: app/templates/forum/_post.html:122
+#: app/templates/forum/_post.html:118
 msgid "Agree or disagree"
 msgstr "Agree or disagree"
 
-#: app/templates/forum/_post.html:123
+#: app/templates/forum/_post.html:119
 msgid "Agree"
 msgstr "Agree"
 
-#: app/templates/forum/_post.html:123
+#: app/templates/forum/_post.html:119
 msgid "Disagree"
 msgstr "Disagree"
 
-#: app/templates/forum/_post.html:155
+#: app/templates/forum/_post.html:151
 msgid "Delete conversation"
 msgstr "Delete conversation"
 
-#: app/templates/forum/_post.html:170
+#: app/templates/forum/_post.html:166
 msgid "Reply"
 msgstr "Reply"
 
-#: app/templates/forum/_post.html:179 app/templates/forum/_post.html:183
-#: app/templates/forum/quality.html:31 app/templates/forum/quality.html:35
-msgid "Translate to English"
-msgstr "Translate to English"
-
-#: app/templates/forum/_post.html:180 app/templates/forum/quality.html:32
-msgid "Show original"
-msgstr "Show original"
-
-#: app/templates/forum/_post.html:181 app/templates/forum/quality.html:33
-msgid "Translating…"
-msgstr "Translating…"
-
-#: app/templates/forum/_post.html:182 app/templates/forum/quality.html:34
-msgid "Failed, try again"
-msgstr "Failed, try again"
-
-#: app/templates/forum/_post.html:196
+#: app/templates/forum/_post.html:182
 msgid "Don't always translate"
 msgstr "Don't always translate"
 
-#: app/templates/forum/_post.html:198
+#: app/templates/forum/_post.html:184
 msgid "Always translate to English"
 msgstr "Always translate to English"
 
-#: app/templates/forum/_post.html:208 app/templates/issues/_fact_badges.html:40
+#: app/templates/forum/_post.html:194 app/templates/issues/_fact_badges.html:40
 #: app/templates/issues/_report_flag.html:9
 msgid "Reported"
 msgstr "Reported"
 
-#: app/templates/forum/_post.html:211 app/templates/issues/_fact_badges.html:45
+#: app/templates/forum/_post.html:197 app/templates/issues/_fact_badges.html:45
 #: app/templates/issues/_report_flag.html:14
 msgid "Report"
 msgstr "Report"
 
-#: app/templates/forum/_post.html:215 app/templates/issues/_fact_badges.html:51
+#: app/templates/forum/_post.html:201 app/templates/issues/_fact_badges.html:51
 #: app/templates/issues/_report_flag.html:20
 msgid "Why are you reporting this?"
 msgstr "Why are you reporting this?"
 
-#: app/templates/forum/_post.html:216 app/templates/issues/_fact_badges.html:52
+#: app/templates/forum/_post.html:202 app/templates/issues/_fact_badges.html:52
 #: app/templates/issues/_report_flag.html:21
 msgid "Briefly describe what is wrong."
 msgstr "Briefly describe what is wrong."
 
-#: app/templates/forum/_post.html:217 app/templates/issues/_fact_badges.html:53
+#: app/templates/forum/_post.html:203 app/templates/issues/_fact_badges.html:53
 #: app/templates/issues/_report_flag.html:22
 msgid "Send report"
 msgstr "Send report"
 
-#: app/templates/forum/_post.html:255
+#: app/templates/forum/_post.html:241
 msgid "Write your reply…"
 msgstr "Write your reply…"
 
@@ -4825,15 +4838,15 @@ msgstr "it is a new fact"
 msgid "The mark does not judge how reliable the source is."
 msgstr "The mark does not judge how reliable the source is."
 
-#: app/templates/issues/_fact_card.html:21
+#: app/templates/issues/_fact_card.html:22
 msgid "Your fact"
 msgstr "Your fact"
 
-#: app/templates/issues/_fact_card.html:34
+#: app/templates/issues/_fact_card.html:37
 msgid "more"
 msgstr "more"
 
-#: app/templates/issues/_fact_card.html:34
+#: app/templates/issues/_fact_card.html:37
 msgid "less"
 msgstr "less"
 

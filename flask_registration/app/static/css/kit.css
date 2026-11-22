@@ -4753,3 +4753,11 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 
 /* ── Multilingual phase 2: a text in a machine translation (_mt.html) ── */
 .gu-mt__note { font-size: 12px; line-height: 1.4; color: var(--gu-fg-3); margin: 4px 0 0; }
+.gu-mt { min-width: 0; }
+.gu-cockpit__titlerow > .gu-mt { flex: 1 1 20rem; }
+.gu-mt__note .gu-mt__toggle {
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; color: var(--gu-globe-deep); text-decoration: underline; cursor: pointer;
+}
+.gu-mt__note .gu-mt__toggle:disabled { color: var(--gu-fg-3); cursor: default; }
+.gu-mt__note .gu-mt__toggle:focus-visible { outline: 2px solid var(--gu-globe); outline-offset: 2px; border-radius: 2px; }

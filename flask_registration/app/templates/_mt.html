@@ -1,24 +1,77 @@
 {#
-  Multilingual phase 2: one place for a text that may be shown in a machine
-  translation (an issue's title and intro, a proposal's statement and
-  explanation, a version, a follow-up update).
-  Import with context: {% from "_mt.html" import mt with context %}
+  Multilingual phase 2: the one component for a text that may be shown in a
+  machine translation. Import with context:
+      {% from "_mt.html" import mt with context %}
 
-  mt(obj, field, el='div', cls='', rich=false)
-    el, cls  the element and its class(es) around the text
-    rich     run the text through linkify (multi-line prose)
+  mt(obj, field, el='div', cls='', rich=false, paras=false,
+     on_request=false, request_url=none, auto=true, id=none)
+    el, cls      the element and its class(es) around the text
+    rich         run the text through linkify (prose)
+    paras        one <p> per paragraph (posts), each through linkify
+    on_request   posts and facts: translated on request; false for issues
+                 and proposals, which are translated right away
+                 (app/content_jobs.py)
+    request_url  the forum translate route (POST) for a logged-in reader;
+                 none: no translate button (visitors)
+    auto         posts: the reader's "always translate" preference
+    id           an id for the original's element (the edit script uses it)
   A {% call %} block adds content after the text inside the element (a badge).
-  The kind of text comes from content_i18n.view: the reader's own language
-  or a handwritten translation shows as is; no translation yet shows the
-  original with "Translation pending" (the page never calls the AI).
+
+  What the reader sees (content_i18n.view):
+  - the reader's language, or a handwritten translation: the text, no label;
+  - a machine translation: the translation with "Machine-translated from
+    <language> · Show original"; the button swaps to the original (with the
+    source language in its lang attribute) and back. Both texts are in the
+    page, no request. A post without "always translate" starts on the
+    original ("Original in <language> · Show translation");
+  - no translation yet: issues and proposals show the original with
+    "Translation pending" (never an AI call on a page load); a post shows
+    "Original in <language> · Translate", which fetches the translation
+    (static script in base.html) and then behaves as above.
 #}
-{% macro mt(obj, field, el='div', cls='', rich=false) -%}
-{%- set v = content_i18n.view(obj, field, lang) -%}
-<{{ el }}{% if cls %} class="{{ cls }}"{% endif %} lang="{{ lang if v.kind in ('machine', 'handwritten') else (v.source or lang) }}">
-  {%- if rich %}{{ v.text | linkify }}{% else %}{{ v.text }}{% endif %}{% if caller is defined %}{{ caller() }}{% endif -%}
+
+{% macro _text(el, cls, text_lang, text, rich, paras, extra, id=none, role=none, hidden=false) -%}
+<{{ el }}{% if cls %} class="{{ cls }}"{% endif %}{% if id %} id="{{ id }}"{% endif %} lang="{{ text_lang }}"{% if role %} data-mt-{{ role }}{% endif %}{% if hidden %} hidden{% endif %}>
+  {%- if paras %}{% for para in (text or '').split('\n\n') %}<p>{{ para | linkify }}</p>{% endfor %}
+  {%- elif rich %}{{ (text or '') | linkify }}{% else %}{{ text or '' }}{% endif %}{{ extra -}}
 </{{ el }}>
-{%- if v.kind == 'pending' %}
-{# TRANSLATORS: under an issue or proposal text shown in its original language because the machine translation is not ready yet. #}
-<p class="gu-mt__note gu-mt__note--pending">{{ _('Translation pending') }}</p>
+{%- endmacro %}
+
+{% macro mt(obj, field, el='div', cls='', rich=false, paras=false, on_request=false, request_url=none, auto=true, id=none) -%}
+{%- set v = content_i18n.view(obj, field, lang) -%}
+{%- set extra = caller() if caller is defined else '' -%}
+{%- if v.kind in ('own', 'handwritten') or v.source is none -%}
+{{ _text(el, cls, lang if v.kind == 'handwritten' else (v.source or lang), v.text, rich, paras, extra, id) }}
+{%- else -%}
+{%- set source_name = language_name_in(v.source, lang) -%}
+{%- set has_translation = v.kind == 'machine' -%}
+{%- set show_translation = has_translation and (not on_request or auto) -%}
+{# TRANSLATORS: under a text shown in a machine translation. %(language)s is the name of the original language in the reader's language, in its base form (as in a language list), e.g. "English", so build the sentence around that form. #}
+{%- set label_machine = _('Machine-translated from %(language)s', language=source_name) -%}
+{%- set label_original = _('Original in %(language)s', language=source_name) -%}
+<div class="gu-mt" data-mt
+     data-mt-reader="{{ lang }}"
+     data-label-machine="{{ label_machine }}" data-label-original="{{ label_original }}"
+     data-btn-original="{{ _('Show original') }}" data-btn-translation="{{ _('Show translation') }}"
+     data-btn-loading="{{ _('Translating…') }}" data-btn-error="{{ _('Failed, try again') }}"
+     {%- if request_url and not has_translation %} data-mt-url="{{ request_url }}" data-mt-csrf="{{ forum_action_form.csrf_token.current_token if forum_action_form.meta.csrf else '' }}"{% if auto %} data-mt-auto{% endif %}{% endif %}>
+  {%- if has_translation %}
+  {{ _text(el, cls, lang, v.text, rich, paras, extra, role='translation', hidden=not show_translation) }}
+  {%- endif %}
+  {{ _text(el, cls, v.source, v.original, rich, paras, extra, id, role='original', hidden=show_translation) }}
+  {%- if has_translation or on_request %}
+  <p class="gu-mt__note">
+    <span class="gu-mt__label" data-mt-label>{{ label_machine if show_translation else label_original }}</span>
+    {%- if has_translation %}
+    <span aria-hidden="true">·</span> <button type="button" class="gu-mt__toggle" aria-pressed="{{ 'false' if show_translation else 'true' }}">{{ _('Show original') if show_translation else _('Show translation') }}</button>
+    {%- elif request_url %}
+    <span aria-hidden="true">·</span> <button type="button" class="gu-mt__toggle">{{ _('Translate to English') }}</button>
+    {%- endif %}
+  </p>
+  {%- else %}
+  {# TRANSLATORS: under an issue or proposal text shown in its original language because the machine translation is not ready yet. #}
+  <p class="gu-mt__note gu-mt__note--pending">{{ _('Translation pending') }}</p>
+  {%- endif %}
+</div>
 {%- endif %}
 {%- endmacro %}

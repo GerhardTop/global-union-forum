@@ -305,7 +305,7 @@ class TestNoTranslateHint:
         html = _page(app, anna, t)
         assert 'Reacties in andere talen kun je vertalen' not in html
         assert 'Je post wordt op verzoek vertaald voor andere lezers' not in html
-        assert 'gu-post__translate-btn' in html
+        assert 'class="gu-mt__toggle"' in html and 'data-mt-url="/forum/translate/' in html  # phase 2b: the label
 
 
 # ── (2), (3), (4) Registratie ────────────────────────────────────────────

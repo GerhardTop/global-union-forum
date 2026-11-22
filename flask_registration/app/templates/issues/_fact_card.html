@@ -13,6 +13,7 @@
   fact_my_disputed, fact_phase_open, fact_removed_ids, fact_errors, fact_data,
   fact_back (this page, enlarged), optional fact_return_proposal.
 #}
+{% from '_mt.html' import mt with context %}
 {% set own_actions = with_actions and current_user.is_authenticated and fact.user_id == current_user.id
                      and fact_phase_open and fact.id not in (fact_removed_ids or ()) %}
 <div class="gu-fact__topline">
@@ -21,9 +22,11 @@
   {% if own_actions %}<span class="gu-fact__mine">{{ _('Your fact') }}</span>{% endif %}
 </div>
 <div class="gu-fact__main">
-  {% if fact.fact_title %}<p class="gu-fact__title" lang="{{ fact.source_lang }}">{{ fact.fact_title }}</p>{% endif %}
+  {% if fact.fact_title %}{% set ft = content_i18n.view(fact, 'fact_title', lang) %}<p class="gu-fact__title" lang="{{ lang if ft.kind in ('machine', 'handwritten') else ft.source }}">{{ ft.text }}</p>{% endif %}
   <div class="gu-fact__detail">
-    <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+    {{ mt(fact, 'body', 'p', 'gu-fact__text', on_request=true,
+          request_url=url_for('forum.forum_translate', post_id=fact.id) if current_user.is_authenticated else none,
+          auto=auto_translate | default(false)) }}
     {% if fact.fact_source %}
     <p class="gu-fact__source">{{ _('Source') }}:
       {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>

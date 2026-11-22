@@ -1,5 +1,7 @@
 """Serve the app on its own SQLite database with the demo content and one
-logged-in admin/moderator, for the browser checks in tests/test_mobile_overflow.py.
+logged-in admin/moderator, for the browser checks in tests/test_mobile_overflow.py
+and tests/test_mt_toggle.py. The demo issues and proposals get fake machine
+translations ("[EN] ...") in every language, so the pages carry the label.
 
 Usage: python tests/browser/serve_demo.py DB_FILE PORT (from flask_registration/).
 GET /_as_admin logs the browser in. Only for tests: never imported by the app.
@@ -38,6 +40,24 @@ with app.app_context():
     admin.accept_rules()
     db.session.add(admin)
     db.session.commit()
+
+    # Multilingual phase 2: machine translations of the demo issues and
+    # proposals, so the pages carry the label. A fake translator ("[EN] ..."),
+    # never the AI.
+    from types import SimpleNamespace
+    from app import content_jobs
+
+    class _FakeTranslator:
+        def __init__(self):
+            self.messages = self
+
+        def create(self, **kw):
+            prompt = kw['messages'][0]['content']
+            language = prompt.split(' to ', 1)[1].split('.', 1)[0]
+            code = {'English': 'EN', 'Dutch': 'NL', 'German': 'DE', 'Spanish': 'ES', 'French': 'FR'}[language]
+            return SimpleNamespace(content=[SimpleNamespace(text=f'[{code}] ' + prompt.split('\n\n', 1)[1])])
+
+    content_jobs.backfill(limit=100000, client=_FakeTranslator())
 
 
 @app.route('/_as_admin')

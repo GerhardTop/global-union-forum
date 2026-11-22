@@ -32,7 +32,7 @@ from app import facts as fact_signals
 from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
 from app.models import FACT_DIRECTIONS, Issue, IssueFollowup, IssueProposal, Post
-from app.routes.forum import (_fact_form, _fact_phase_open, _new_fact, _require_csrf,
+from app.routes.forum import (_auto_translate, _fact_form, _fact_phase_open, _new_fact, _require_csrf,
                               _rules_first_redirect, _thread_context, refuse_if_suspended)
 from app.utils import _pop_form_state, _pop_form_state_if, _stash_form_state, safe_next
 
@@ -356,6 +356,7 @@ def proposal(issue_id, proposal_id):
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in rail_proposals])
     rail_versions = {p.id: ip.current_version(p) for p, _c in rail_proposals}
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
+                           auto_translate=_auto_translate(),
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),
                            can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data,
                            can_withdraw=_can_withdraw(proposal),

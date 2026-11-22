@@ -90,11 +90,13 @@ class TestTranslateSuccess:
 
     def test_page_renders_button_and_fetch_sends_token_and_xhr_header(self, app, setup):  # noqa: F811
         _, token, html = _nl_client(app, setup['anna'], setup['thread'])
-        assert 'class="gu-post__action gu-post__action--ghost gu-post__translate-btn"' in html
-        assert "trFd.append('csrf_token', csrfToken);" in html
+        # Multilingual phase 2b: the translate button is part of the label (_mt.html).
+        assert '<button type="button" class="gu-mt__toggle">' in html
+        assert f'data-mt-csrf="{token}"' in html
+        assert "fd.append('csrf_token', box.dataset.mtCsrf || '');" in html
         assert "headers: { 'X-Requested-With': 'XMLHttpRequest' }" in html
         # De vertaling wordt als platte tekst ingevoegd (geen ruwe HTML).
-        assert 'el.textContent = p;' in html
+        assert 'p.textContent = text;' in html
 
 
 class TestTranslateCsrf:
