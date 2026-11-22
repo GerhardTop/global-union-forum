@@ -1273,94 +1273,94 @@ msgstr "Formulez votre idée de façon aussi précise que possible : un exemple
 #. about, tekst 2
 #: app/templates/about.html:11
 msgid "About Global Union Forum"
-msgstr ""
+msgstr "À propos du Global Union Forum"
 
 #. about, titel
 #: app/templates/about.html:13
 msgid "A think tank<br><em>with strong intent</em>"
-msgstr ""
+msgstr "Un laboratoire d'idées<br><em>animé d'une ferme intention</em>"
 
 #. about, tekst 3
 #: app/templates/about.html:17
 msgid "The goal is clear. The idea exists in broad strokes. We want to work it out further. We're looking for experts and other enthusiasts. Everyone who wants to contribute to wellbeing and prospects for people in Europe and beyond is welcome. Young or retired, heart surgeon or plumber, supporter or opponent. Everyone who holds the conversation with respect."
-msgstr ""
+msgstr "L'objectif est clair. L'idée existe dans ses grandes lignes. Nous voulons la développer. Nous cherchons des experts et d'autres passionnés. Toute personne qui veut contribuer au bien-être et aux perspectives des gens, en Europe et au-delà, est la bienvenue. Jeune ou à la retraite, chirurgien cardiaque ou plombier, partisan ou opposant. Toute personne qui mène la conversation avec respect."
 
 #. about, tekst 4
 #: app/templates/about.html:22
 #, python-format
 msgid "No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href=\"%(value)s\" style=\"color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;\">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed."
-msgstr ""
+msgstr "Pas d'adhésion. Pas de cotisation. Simplement un espace en ligne où la réflexion a lieu. Le premier site a été créé par <a href=\"%(value)s\" style=\"color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;\">Gerhard Top</a>. La prochaine étape consiste à recueillir les avis de quelques utilisateurs bêta et à associer quelques co-initiateurs, experts comme autres passionnés. Ensuite, nous poursuivrons le débat avec une version améliorée, nous inviterons beaucoup plus de personnes à y participer et nous créerons une fondation, avec pour objectif de devenir un mouvement qui fasse naître la Global Union, et qui la fasse réussir."
 
 #. about, tekst 5
 #: app/templates/about.html:31
 msgid "Co-thinkers"
-msgstr ""
+msgstr "Participants"
 
 #. about, tekst 6
 #: app/templates/about.html:33
 msgid "Everyone who wants to join in, even without expertise, every argument can matter."
-msgstr ""
+msgstr "Toute personne qui veut participer, même sans expertise : chaque argument peut compter."
 
 #. about, tekst 7
 #: app/templates/about.html:39
 msgid "Experts"
-msgstr ""
+msgstr "Experts"
 
 #. about, tekst 8
 #: app/templates/about.html:41
 msgid "Share knowledge, highlight interesting developments, proposals and critical questions."
-msgstr ""
+msgstr "Partager des connaissances, mettre en avant des évolutions intéressantes, des propositions et des questions critiques."
 
 #. about, tekst 9
 #: app/templates/about.html:47
 msgid "Moderators"
-msgstr ""
+msgstr "Modérateurs"
 
 #. about, tekst 10
 #: app/templates/about.html:49
 #, python-format
 msgid "Keep the conversation flowing and oversee the conduct rules. A violation is not deleted but moved to the public <a href=\"%(value)s\">background page</a>; spam or abuse is hidden completely. The author can object, and a moderator decides."
-msgstr ""
+msgstr "Faire en sorte que la conversation avance et veiller au respect des règles de conduite. Une infraction n'est pas supprimée, mais déplacée vers la <a href=\"%(value)s\">page de contexte</a> publique ; le spam et les abus sont entièrement masqués. L'auteur peut contester, et un modérateur décide."
 
 #. about, tekst 11
 #: app/templates/about.html:62
 msgid "By mutual agreement"
-msgstr ""
+msgstr "D'un commun accord"
 
 #. about, tekst 12
 #: app/templates/about.html:63
 msgid "The conversation is held with respect."
-msgstr ""
+msgstr "La conversation se déroule dans le respect."
 
 #. about, tekst 13
 #: app/templates/about.html:69
 msgid "The conversation is held with respect, with the aim of arriving at proposals that are broadly supported. Following the example of Wikipedia, we'll work out our '4 pillars' further together and add functionality."
-msgstr ""
+msgstr "La conversation se déroule dans le respect, avec pour objectif d'aboutir à des propositions largement soutenues. À l'exemple de Wikipedia, nous développerons ensemble nos « 4 piliers » et ajouterons des fonctionnalités."
 
 #. about, tekst 14
 #: app/templates/about.html:75
 msgid "Our four pillars"
-msgstr ""
+msgstr "Nos quatre piliers"
 
 #. about, tekst 15
 #: app/templates/about.html:79
 msgid "A democratic force for everyone."
-msgstr ""
+msgstr "Une force démocratique pour tous."
 
 #. about, tekst 16
 #: app/templates/about.html:83
 msgid "We treat each other with respect."
-msgstr ""
+msgstr "Nous nous traitons avec respect."
 
 #. about, tekst 17
 #: app/templates/about.html:87
 msgid "Facts from a neutral point of view."
-msgstr ""
+msgstr "Des faits, d'un point de vue neutre."
 
 #. about, tekst 18
 #: app/templates/about.html:91
 msgid "Content freely available to everyone."
-msgstr ""
+msgstr "Un contenu librement accessible à tous."
 
 #: app/templates/base.html:30 app/templates/index.html:72
 #: app/templates/index.html:235 app/templates/index.html:291
@@ -1593,42 +1593,42 @@ msgstr "Message"
 #. initiatiefnemer, tekst 2
 #: app/templates/initiatiefnemer.html:2 app/templates/initiatiefnemer.html:18
 msgid "The initiator"
-msgstr ""
+msgstr "L'initiateur"
 
 #. initiatiefnemer, tekst 3
 #: app/templates/initiatiefnemer.html:20
 msgid "Initiator · Global Union Forum"
-msgstr ""
+msgstr "Initiateur · Global Union Forum"
 
 #. initiatiefnemer, alinea 1
 #: app/templates/initiatiefnemer.html:23
 msgid "At the end of my student years the Wall fell. At the moment of the breakthrough I was working on a Land Rover. Over the radio I heard the jubilant East Germans, and then a German version of a song by the Dutch singer Boudewijn de Groot: 'Nur die Vögel fliegen von Ost nach West Berlin...'. Goosebumps! Unexpected, unimaginable, that dictatorship simply collapsed."
-msgstr ""
+msgstr "À la fin de mes études, le Mur est tombé. Au moment où il a cédé, je bricolais un Land Rover. À la radio, j'ai entendu les Allemands de l'Est en liesse, puis une version allemande d'une chanson du chanteur néerlandais Boudewijn de Groot : « Nur die Vögel fliegen von Ost nach West Berlin... ». La chair de poule ! Inattendu, inimaginable : cette dictature s'est tout simplement effondrée."
 
 #. initiatiefnemer, alinea 2
 #: app/templates/initiatiefnemer.html:24
 msgid "With that Land Rover the four of us drove to Cape Town. Straight through Africa. I saw the beauty and the poverty. The cheerfulness and the enormous corruption and political repression."
-msgstr ""
+msgstr "Avec ce Land Rover, nous sommes partis à quatre jusqu'au Cap. En traversant toute l'Afrique. J'ai vu la beauté et la pauvreté. La gaieté, mais aussi l'énorme corruption et la répression politique."
 
 #. initiatiefnemer, alinea 3
 #: app/templates/initiatiefnemer.html:25
 msgid "Ten years after that Africa trip I took part in a meeting of the D66 Business Club. We discussed the misuse of development funds, the difficulties for businesses that refused to participate in corruption, clientelism and how deeply it was embedded in the culture. The atmosphere turned somewhat hopeless, but no one had a solution."
-msgstr ""
+msgstr "Dix ans après ce voyage en Afrique, j'ai participé à une réunion du Business Club de D66. Nous avons parlé du détournement de l'aide au développement, des difficultés des entreprises qui refusaient de participer à la corruption, du clientélisme et de son ancrage profond dans la culture. L'ambiance est devenue un peu désespérée, mais personne n'avait de solution."
 
 #. initiatiefnemer, alinea 4
 #: app/templates/initiatiefnemer.html:26
 msgid "This spring I attended a member meeting of Transparency International. The all-corrupting rot is still widespread in Africa and in many other countries. This lack of development, and the negative trend in the growing number of countries that undermine the rule of law, including the United States, means that a counterforce is needed. A powerful cooperation between functioning democracies, a geopolitical force that can also serve as a magnet for other countries. With the Global Union Forum I want to make a contribution by facilitating a meaningful conversation, enriching the idea along the way, and broadening support for it."
-msgstr ""
+msgstr "Ce printemps, j'ai assisté à une assemblée des membres de Transparency International. La corruption, qui ronge tout, reste très répandue en Afrique et dans beaucoup d'autres pays. Ce manque de développement, et la tendance négative que montre le nombre croissant de pays qui sapent l'État de droit, dont les États-Unis, rendent nécessaire un contrepoids. Une coopération forte entre démocraties qui fonctionnent, une puissance géopolitique qui puisse aussi servir d'aimant pour d'autres pays. Avec le Global Union Forum, je veux y contribuer en facilitant une conversation de qualité, en enrichissant l'idée au passage et en élargissant le soutien dont elle bénéficie."
 
 #. initiatiefnemer, alinea 5
 #: app/templates/initiatiefnemer.html:27
 msgid "Since Covid I have been a lecturer at the University of Applied Sciences in Amsterdam. After years in leadership roles in software and telecom I wanted a more socially engaged role. I succeeded, I work with students from all kinds of backgrounds, including refugees. Sometimes I have conversations with them that move me. They make me want more and more countries to be places where young people grow up in freedom, with prospects for growth in prosperity and wellbeing."
-msgstr ""
+msgstr "Depuis le Covid, j'enseigne à la Hogeschool van Amsterdam, une université des sciences appliquées. Après des années à des postes de direction dans le logiciel et les télécoms, je voulais un rôle plus engagé dans la société. J'y suis parvenu : je travaille avec des étudiants de tous horizons, dont des réfugiés. Parfois, j'ai avec eux des conversations qui me touchent. Elles me donnent envie que de plus en plus de pays soient des lieux où les jeunes grandissent en liberté, avec des perspectives de prospérité et de bien-être."
 
 #. initiatiefnemer, tekst 4
 #: app/templates/initiatiefnemer.html:31
 msgid "Absurdly grand, many people will think. I believe we can work it out together."
-msgstr ""
+msgstr "Démesuré, penseront beaucoup de gens. Je crois que nous pouvons le construire ensemble."
 
 #: app/templates/kies_gebruikersnaam.html:2
 msgid "Choose your username"
@@ -1698,7 +1698,7 @@ msgstr "Enregistrer et continuer"
 #. landenlijst, tekst 3
 #: app/templates/landenlijst.html:2 app/templates/landenlijst.html:9
 msgid "Country overview"
-msgstr ""
+msgstr "Aperçu des pays"
 
 #. landenlijst, tekst 2
 #. manifest, tekst 1
@@ -1709,37 +1709,37 @@ msgstr "Le manifeste"
 #. landenlijst, tekst 4
 #: app/templates/landenlijst.html:30
 msgid "Level"
-msgstr ""
+msgstr "Niveau"
 
 #. landenlijst, tekst 6
 #: app/templates/landenlijst.html:39
 msgid "≥ 8.0"
-msgstr ""
+msgstr "≥ 8,0"
 
 #. landenlijst, tekst 7
 #: app/templates/landenlijst.html:41
 msgid "≥ 0.75"
-msgstr ""
+msgstr "≥ 0,75"
 
 #. landenlijst, tekst 9
 #: app/templates/landenlijst.html:45
 msgid "≥ 6.0"
-msgstr ""
+msgstr "≥ 6,0"
 
 #. landenlijst, tekst 10
 #: app/templates/landenlijst.html:47
 msgid "≥ 0.70"
-msgstr ""
+msgstr "≥ 0,70"
 
 #. landenlijst, tekst 11
 #: app/templates/landenlijst.html:64
 msgid "Country"
-msgstr ""
+msgstr "Pays"
 
 #. landenlijst, tekst 12
 #: app/templates/landenlijst.html:68
 msgid "Global Union level"
-msgstr ""
+msgstr "Niveau Global Union"
 
 #: app/templates/landing.html:3
 msgid "Dashboard"
@@ -2436,107 +2436,107 @@ msgstr "Pas encore de notifications. Vous verrez ici quand quelqu'un répond à 
 #. motie_d66, tekst 1
 #: app/templates/motie_d66.html:2
 msgid "Motion · Global Union"
-msgstr ""
+msgstr "Motion · Global Union"
 
 #. motie_d66, tekst 2
 #: app/templates/motie_d66.html:11
 msgid "Political motion · D66"
-msgstr ""
+msgstr "Motion politique · D66"
 
 #. motie_d66, titel
 #: app/templates/motie_d66.html:13
 msgid "The EU and Canada as<br><em>initiators of a global coalition of democracies</em>"
-msgstr ""
+msgstr "L'UE et le Canada en tant que<br><em>initiateurs d'une coalition mondiale de démocraties</em>"
 
 #. motie_d66, tekst 3
 #: app/templates/motie_d66.html:16
 msgid "The General Assembly of D66,"
-msgstr ""
+msgstr "L'Assemblée générale de D66,"
 
 #. motie_d66, tekst 4
 #: app/templates/motie_d66.html:25
 msgid "Noting that"
-msgstr ""
+msgstr "Constatant que"
 
 #. motie_d66, tekst 5
 #: app/templates/motie_d66.html:30
 msgid "the US is undermining the trust of its allies by acting unilaterally and ignoring international agreements;"
-msgstr ""
+msgstr "les États-Unis sapent la confiance de leurs alliés en agissant de manière unilatérale et en ignorant les accords internationaux ;"
 
 #. motie_d66, tekst 6
 #: app/templates/motie_d66.html:34
 msgid "Russia threatens the European security order and China backs Russia and regularly disregards international norms;"
-msgstr ""
+msgstr "la Russie menace l'ordre de sécurité européen, et la Chine soutient la Russie et s'affranchit régulièrement des normes internationales ;"
 
 #. motie_d66, tekst 7
 #: app/templates/motie_d66.html:38
 msgid "Europe is heavily dependent on American technology and AI infrastructure, and on China for raw materials;"
-msgstr ""
+msgstr "l'Europe dépend fortement de la technologie et de l'infrastructure d'IA américaines, et de la Chine pour les matières premières ;"
 
 #. motie_d66, tekst 8
 #: app/templates/motie_d66.html:42
 msgid "Prime Minister Carney, in Davos (January 2026), called for cooperation between \"middle powers\", countries large enough to matter that respect the international rule of law;"
-msgstr ""
+msgstr "le Premier ministre Carney, à Davos (janvier 2026), a appelé à une coopération entre « puissances moyennes », des pays assez grands pour peser et qui respectent l'ordre juridique international ;"
 
 #. motie_d66, tekst 9
 #: app/templates/motie_d66.html:46
 msgid "Canada was announced on 16 September 2026 as the EU's first associated member;"
-msgstr ""
+msgstr "le Canada a été annoncé le 16 septembre 2026 comme premier membre associé de l'UE ;"
 
 #. motie_d66, tekst 10
 #: app/templates/motie_d66.html:56
 msgid "Considering that"
-msgstr ""
+msgstr "Considérant que"
 
 #. motie_d66, tekst 11
 #: app/templates/motie_d66.html:61
 msgid "this momentum must be used for a <strong>permanent structure of cooperation</strong> between democracies, not as a replacement for but a complement to the UN;"
-msgstr ""
+msgstr "cette dynamique doit être mise à profit pour une <strong>structure de coopération permanente</strong> entre démocraties, non pas pour remplacer l'ONU, mais pour la compléter ;"
 
 #. motie_d66, tekst 12
 #: app/templates/motie_d66.html:65
 msgid "this structure should be open <strong>to all countries</strong> that meet criteria for democracy, the rule of law, anti-corruption and human rights, alongside Canada, the UK, South Korea, Japan, New Zealand and Australia, also countries beyond the wealthy West, such as Costa Rica, Botswana and Cape Verde;"
-msgstr ""
+msgstr "cette structure doit être ouverte <strong>à tous les pays</strong> qui répondent à des critères de démocratie, d'État de droit, de lutte contre la corruption et de droits humains : outre le Canada, le Royaume-Uni, la Corée du Sud, le Japon, la Nouvelle-Zélande et l'Australie, aussi des pays au-delà de l'Occident riche, comme le Costa Rica, le Botswana et le Cap-Vert ;"
 
 #. motie_d66, tekst 13
 #: app/templates/motie_d66.html:69
 msgid "with its enlargement into Eastern Europe, the EU has shown that joining a bloc of prosperous democracies exerts a powerful pull, leading countries with formerly autocratic regimes to carry out reforms in order to join;"
-msgstr ""
+msgstr "avec son élargissement à l'Europe de l'Est, l'UE a montré que rejoindre un bloc de démocraties prospères exerce une forte attraction, qui a conduit des pays aux régimes autrefois autocratiques à mener des réformes pour y adhérer ;"
 
 #. motie_d66, tekst 14
 #: app/templates/motie_d66.html:73
 msgid "that pull can be scaled up to the global level, with, in the long term, the <strong>prospect of a Global Union</strong> of functioning democracies;"
-msgstr ""
+msgstr "cette attraction peut être étendue à l'échelle mondiale, avec, à long terme, la <strong>perspective d'une Global Union</strong> de démocraties qui fonctionnent ;"
 
 #. motie_d66, tekst 15
 #: app/templates/motie_d66.html:83
 msgid "Requests the EP delegation"
-msgstr ""
+msgstr "Demande à la délégation au PE"
 
 #. motie_d66, tekst 16
 #: app/templates/motie_d66.html:86
 msgid "to work towards the establishment of a permanent structure of cooperation between the EU, Canada and other democratic countries that meet criteria for the rule of law, anti-corruption and human rights, with the aim of strengthening the strategic autonomy of democracies and attracting more countries that embrace democratic values,"
-msgstr ""
+msgstr "d'œuvrer à la mise en place d'une structure de coopération permanente entre l'UE, le Canada et d'autres pays démocratiques qui répondent à des critères d'État de droit, de lutte contre la corruption et de droits humains, dans le but de renforcer l'autonomie stratégique des démocraties et d'attirer davantage de pays qui adhèrent aux valeurs démocratiques,"
 
 #. motie_d66, tekst 17
 #: app/templates/motie_d66.html:90
 msgid "and proceeds to the order of the day."
-msgstr ""
+msgstr "et passe à l'ordre du jour."
 
 #. motie_d66, tekst 18
 #: app/templates/motie_d66.html:100
 msgid "Would you like to co-submit or support this motion?"
-msgstr ""
+msgstr "Souhaitez-vous cosigner ou soutenir cette motion ?"
 
 #. motie_d66, tekst 19
 #: app/templates/motie_d66.html:102
 msgid "Global%20Union%20motion"
-msgstr ""
+msgstr "Motion%20Global%20Union"
 
 #. motie_d66, tekst 20
 #: app/templates/motie_d66.html:103
 msgid "Co-submit or support"
-msgstr ""
+msgstr "Cosigner ou soutenir"
 
 #: app/templates/notificaties.html:2
 msgid "Notification settings"
