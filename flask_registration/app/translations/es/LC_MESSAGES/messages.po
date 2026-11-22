@@ -58,235 +58,235 @@ msgstr "Tu resumen diario"
 #: app/faq.py:18
 #, python-format
 msgid "As little as possible. Your pseudonym, your email address for recovery and what you post yourself. Extra profile details only if you fill them in yourself. The details are on the <a href=\"%(url)s\">privacy page</a>."
-msgstr ""
+msgstr "Lo mínimo posible. Tu seudónimo, tu correo electrónico para recuperar la cuenta y lo que publicas tú. Otros datos del perfil, solo si los rellenas tú. Los detalles están en la <a href=\"%(url)s\">página de privacidad</a>."
 
 #. TRANSLATORS: faq, thema 1
 #. TRANSLATORS: faq, vraag 1.1 en antwoord 1.1
 #: app/faq.py:26
 msgid "What is Global Union?"
-msgstr ""
+msgstr "¿Qué es Global Union?"
 
 #: app/faq.py:27
 msgid "Global Union is the idea of a partnership of functioning democracies worldwide. It is built on attraction instead of force, following the example of the European Union. It is open to countries that respect the rule of law, human rights, the fight against corruption, sustainability and the international legal order."
-msgstr ""
+msgstr "Global Union es la idea de una alianza de democracias que funcionan, en todo el mundo. Se basa en la atracción y no en la imposición, siguiendo el ejemplo de la Unión Europea. Está abierta a los países que respetan el Estado de derecho, los derechos humanos, la lucha contra la corrupción, la sostenibilidad y el orden jurídico internacional."
 
 #. TRANSLATORS: faq, vraag 1.2 en antwoord 1.2
 #: app/faq.py:32
 msgid "What is the difference between Global Union and the Global Union Forum?"
-msgstr ""
+msgstr "¿Qué diferencia hay entre Global Union y el Global Union Forum?"
 
 #: app/faq.py:33
 msgid "Global Union is the idea and the movement. The Global Union Forum is the place where that idea is developed and discussed. Here you think along, bring in facts and vote. Experts and beginners do this side by side."
-msgstr ""
+msgstr "Global Union es la idea y el movimiento. El Global Union Forum es el lugar donde esa idea se desarrolla y se debate. Aquí piensas con los demás, aportas hechos y votas. Personas expertas y principiantes lo hacen codo con codo."
 
 #. TRANSLATORS: faq, vraag 1.3 en antwoord 1.3
 #: app/faq.py:37
 msgid "Who is behind the platform?"
-msgstr ""
+msgstr "¿Quién está detrás de la plataforma?"
 
 #: app/faq.py:38
 msgid "It is an independent initiative, set up by founder Gerhard Top. With enough momentum, this initiative will be placed in a foundation. The idea is to involve co-initiators first, and then a growing group of participants and experts, to develop it further together."
-msgstr ""
+msgstr "Es una iniciativa independiente, creada por su fundador, Gerhard Top. Cuando tenga suficiente impulso, la iniciativa pasará a una fundación. La idea es sumar primero a otros promotores y después a un grupo creciente de participantes y personas expertas, para seguir desarrollándola juntos."
 
 #. TRANSLATORS: faq, vraag 1.4 en antwoord 1.4
 #: app/faq.py:42
 msgid "Is this linked to a political party or a government?"
-msgstr ""
+msgstr "¿Está vinculado a un partido político o a un gobierno?"
 
 #: app/faq.py:43
 msgid "No. The forum is independent and not linked to a party, a government or a company. It is reformist and it is not tied to a political colour."
-msgstr ""
+msgstr "No. El foro es independiente y no está vinculado a ningún partido, gobierno ni empresa. Es reformista y no está atado a ningún color político."
 
 #. TRANSLATORS: faq, vraag 1.5 en antwoord 1.5
 #: app/faq.py:46
 msgid "How can I take part or contribute?"
-msgstr ""
+msgstr "¿Cómo puedo participar o contribuir?"
 
 #: app/faq.py:47
 msgid "Create an account and read the ground rules. Then you can start: add facts, give your opinion or start an issue yourself. What this becomes is decided by the people who take part."
-msgstr ""
+msgstr "Crea una cuenta y lee las reglas del juego. Después ya puedes empezar: añade hechos, da tu opinión o inicia tú una cuestión. Lo que llegue a ser esto lo deciden las personas que participan."
 
 #. TRANSLATORS: faq, thema 2
 #: app/faq.py:51
 msgid "Manifesto"
-msgstr ""
+msgstr "Manifiesto"
 
 #. TRANSLATORS: faq, vraag 2.1 en antwoord 2.1
 #: app/faq.py:53
 msgid "What is in the manifesto?"
-msgstr ""
+msgstr "¿Qué dice el manifiesto?"
 
 #: app/faq.py:54
 msgid "The manifesto from March 2026 is a personal essay by the founder. In it he sets out the idea of a global union of functioning democracies: why it is needed, how it could work and why it is worth trying. See it as the start of the discussion."
-msgstr ""
+msgstr "El manifiesto de marzo de 2026 es un ensayo personal del fundador. En él expone la idea de una unión global de democracias que funcionan: por qué hace falta, cómo podría funcionar y por qué vale la pena intentarlo. Tómalo como el comienzo del debate."
 
 #. TRANSLATORS: faq, vraag 2.2 en antwoord 2.2
 #: app/faq.py:58
 msgid "What does \"a union of functioning democracies\" mean?"
-msgstr ""
+msgstr "¿Qué significa \"una unión de democracias que funcionan\"?"
 
 #: app/faq.py:59
 msgid "A partnership of countries that truly uphold democracy and the rule of law. Countries from all over the world can join. What counts is whether a country meets those values."
-msgstr ""
+msgstr "Una alianza de países que de verdad respetan la democracia y el Estado de derecho. Pueden sumarse países de todo el mundo. Lo que cuenta es si un país cumple esos valores."
 
 #. TRANSLATORS: faq, vraag 2.3 en antwoord 2.3
 #: app/faq.py:62
 msgid "Why the example of the European Union?"
-msgstr ""
+msgstr "¿Por qué el ejemplo de la Unión Europea?"
 
 #: app/faq.py:63
 msgid "The EU shows that countries can work together voluntarily, based on shared rules. They attract each other instead of forcing each other. We want to apply that principle on a world scale."
-msgstr ""
+msgstr "La UE demuestra que los países pueden colaborar de forma voluntaria, con reglas comunes. Se atraen en lugar de imponerse unos a otros. Queremos aplicar ese principio a escala mundial."
 
 #. TRANSLATORS: faq, vraag 2.4 en antwoord 2.4
 #: app/faq.py:66
 msgid "Which countries could join, and on what basis?"
-msgstr ""
+msgstr "¿Qué países podrían sumarse, y con qué criterio?"
 
 #: app/faq.py:67
 msgid "Countries that meet standards such as the rule of law, human rights, the fight against corruption and the international legal order. Membership is based on democratic performance. Not only wealthy Western countries, but also, and especially, model countries from Africa and South America."
-msgstr ""
+msgstr "Los países que cumplen criterios como el Estado de derecho, los derechos humanos, la lucha contra la corrupción y el orden jurídico internacional. La adhesión depende del desempeño democrático. No solo los países ricos de Occidente, sino también, y sobre todo, países modelo de África y Sudamérica."
 
 #. TRANSLATORS: faq, vraag 2.5 en antwoord 2.5
 #: app/faq.py:72
 msgid "Is this not too grand or too idealistic?"
-msgstr ""
+msgstr "¿No es demasiado ambicioso o demasiado idealista?"
 
 #: app/faq.py:73
 msgid "It is a grand idea. Perhaps hard to achieve, but worth it. You start small and build it up together, step by step."
-msgstr ""
+msgstr "Es una idea ambiciosa. Quizá difícil de lograr, pero vale la pena. Se empieza en pequeño y se construye entre todos, paso a paso."
 
 #. TRANSLATORS: faq, thema 3
 #: app/faq.py:77
 msgid "How it works"
-msgstr ""
+msgstr "Cómo funciona"
 
 #. TRANSLATORS: faq, vraag 3.1 en antwoord 3.1
 #: app/faq.py:79
 msgid "How does an issue go, from discussion to vote?"
-msgstr ""
+msgstr "¿Cómo avanza una cuestión, del debate a la votación?"
 
 #: app/faq.py:80
 msgid "Someone starts an issue with a question or problem. In the first phase, facts and discussion, you bring in facts, research and media and discuss it together. Proposals come out of that. After that, the proposer can revise a proposal. Then there is a vote. If the initiator chose so, a summary proposal follows, with a new vote. Finally there is the follow-up phase: what happens with it, such as lobbying, media or implementation."
-msgstr ""
+msgstr "Alguien inicia una cuestión con una pregunta o un problema. En la primera fase, Hechos y debate, aportas hechos, estudios y medios, y se debate entre todos. De ahí salen propuestas. Después, quien presentó una propuesta puede revisarla. Luego se vota. Si el promotor así lo eligió, sigue una propuesta de síntesis, con una nueva votación. Por último llega la fase de Seguimiento: qué se hace con el resultado, por ejemplo cabildeo, medios o puesta en práctica."
 
 #. TRANSLATORS: faq, vraag 3.2 en antwoord 3.2
 #: app/faq.py:86
 msgid "What are facts, research and media, and how do they count?"
-msgstr ""
+msgstr "¿Qué son los hechos, los estudios y los medios, y cómo cuentan?"
 
 #: app/faq.py:87
 msgid "Facts, research and media are well-founded contributions with a source. Media are news items, podcasts or videos. Each fact has a direction: argues for, argues against or neutral. A fact gets a green quality mark when the AI finds a source, a findable link, where in the source it is, that it is on the topic and that it is new. The mark does not judge how reliable the source is."
-msgstr ""
+msgstr "Los hechos, los estudios y los medios son contribuciones fundamentadas con una fuente. Los medios son noticias, pódcasts o vídeos. Cada hecho tiene una dirección: a favor, en contra o neutral. Un hecho recibe un sello de calidad verde cuando la IA encuentra una fuente, un enlace que se puede abrir, el lugar de la fuente donde aparece, que trata del tema y que es nuevo. El sello no dice nada sobre lo fiable que es la fuente."
 
 #. TRANSLATORS: faq, vraag 3.3 en antwoord 3.3
 #: app/faq.py:93
 msgid "How do proposals come about, and how is the vote held?"
-msgstr ""
+msgstr "¿Cómo surgen las propuestas y cómo se vota?"
 
 #: app/faq.py:94
 msgid "Proposals come out of the discussion. A proposal goes on the voting list as soon as enough people support it. Each proposal is voted on with for, against or abstain. Based on all proposals and the discussion, the initiator can adjust the issue and make a summary proposal. The participants can then vote on that again."
-msgstr ""
+msgstr "Las propuestas surgen del debate. Una propuesta entra en la lista de votación en cuanto suficientes personas la apoyan. Cada propuesta se vota a favor, en contra o con abstención. A partir de todas las propuestas y del debate, el promotor puede ajustar la cuestión y hacer una propuesta de síntesis. Quienes participan pueden volver a votar sobre ella."
 
 #. TRANSLATORS: faq, vraag 3.4 en antwoord 3.4
 #: app/faq.py:99
 msgid "What is the quality mark?"
-msgstr ""
+msgstr "¿Qué es el sello de calidad?"
 
 #: app/faq.py:100
 msgid "A medal that is given automatically to a contribution that moves the discussion forward. That can be a new argument or support with a source. No quality mark is not a punishment. Style and language skills do not count."
-msgstr ""
+msgstr "Una medalla que se da automáticamente a una contribución que hace avanzar el debate. Puede ser un argumento nuevo o un respaldo con una fuente. No tener sello de calidad no es un castigo. El estilo y el dominio del idioma no cuentan."
 
 #. TRANSLATORS: faq, vraag 3.5 en antwoord 3.5
 #: app/faq.py:104
 msgid "How do I earn the right to vote?"
-msgstr ""
+msgstr "¿Cómo consigo el derecho a voto?"
 
 #: app/faq.py:105
 msgid "By contributing quality. After three contributions with a quality mark, you may vote. That way, what you bring in counts, not just having an account."
-msgstr ""
+msgstr "Contribuyendo con calidad. Después de tres contribuciones con sello de calidad, puedes votar. Así cuenta lo que aportas, y no solo tener una cuenta."
 
 #. TRANSLATORS: faq, vraag 3.6 en antwoord 3.6
 #: app/faq.py:108
 msgid "Which ground rules apply, and what happens when they are broken?"
-msgstr ""
+msgstr "¿Qué reglas del juego se aplican y qué pasa si alguien las incumple?"
 
 #: app/faq.py:109
 msgid "There are conduct rules: stay respectful, stay on topic and one account per person. These are enforced. There are also quality guidelines, such as well-founded and concrete. These are rewarded and not enforced. When a rule is clearly broken, a contribution moves to a public background page with an explanation. You can object to that there. Nothing is removed for good. Only pure spam and gross abuse are hidden completely."
-msgstr ""
+msgstr "Hay normas de conducta: mantener el respeto, no salirse del tema y una cuenta por persona. Estas se hacen cumplir. También hay pautas de calidad, como estar fundamentado y ser concreto. Estas se premian, pero no se imponen. Cuando una norma se incumple claramente, la contribución pasa a una página de contexto pública con una explicación. Allí puedes presentar una objeción. Nada se elimina para siempre. Solo el spam puro y el abuso grave se ocultan por completo."
 
 #. TRANSLATORS: faq, vraag 3.7 en antwoord 3.7
 #: app/faq.py:115
 msgid "How do you prevent double voting or fake accounts?"
-msgstr ""
+msgstr "¿Cómo evitan los votos dobles o las cuentas falsas?"
 
 #: app/faq.py:116
 msgid "It cannot be prevented completely. A new account starts at zero and has to earn the right to vote first, with quality contributions. One account per person is a rule, and moderation steps in when there is abuse. This makes mass fake voting a lot of work for little gain."
-msgstr ""
+msgstr "No se puede evitar del todo. Una cuenta nueva empieza de cero y primero tiene que ganarse el derecho a voto con contribuciones de calidad. Una cuenta por persona es una norma, y la moderación interviene cuando hay abuso. Así, votar en masa con cuentas falsas da mucho trabajo y sirve de poco."
 
 #. TRANSLATORS: faq, thema 4
 #: app/faq.py:121
 msgid "Account and privacy"
-msgstr ""
+msgstr "Cuenta y privacidad"
 
 #. TRANSLATORS: faq, vraag 4.1 en antwoord 4.1
 #: app/faq.py:123
 msgid "How do I create an account?"
-msgstr ""
+msgstr "¿Cómo creo una cuenta?"
 
 #: app/faq.py:124
 msgid "Choose a name and enter an email address. That email address is only for recovery and is never shown. Accept the ground rules and you can start. You do not have to pay and you do not need to show any ID."
-msgstr ""
+msgstr "Elige un nombre y escribe un correo electrónico. Ese correo solo sirve para recuperar la cuenta y nunca se muestra. Acepta las reglas del juego y ya puedes empezar. No tienes que pagar ni mostrar ningún documento de identidad."
 
 #. TRANSLATORS: faq, vraag 4.2 en antwoord 4.2
 #: app/faq.py:128
 msgid "Why is a pseudonym the default?"
-msgstr ""
+msgstr "¿Por qué se usa un seudónimo por defecto?"
 
 #: app/faq.py:129
 msgid "We want you to be able to join the discussion freely, without having to answer to anyone here. A pseudonym makes that possible. In many countries, political participation can bring risks. An identity barrier would shut out exactly the people we want to reach."
-msgstr ""
+msgstr "Queremos que puedas participar en el debate con libertad, sin tener que rendir cuentas aquí ante nadie. Un seudónimo lo hace posible. En muchos países, participar en política puede traer riesgos. Exigir la identidad dejaría fuera justo a las personas que queremos alcanzar."
 
 #. TRANSLATORS: faq, vraag 4.3 en antwoord 4.3
 #: app/faq.py:133
 msgid "Which data do you keep, and what for?"
-msgstr ""
+msgstr "¿Qué datos guardan y para qué?"
 
 #. TRANSLATORS: faq, vraag 4.4 en antwoord 4.4
 #: app/faq.py:136
 msgid "Who can see what I write?"
-msgstr ""
+msgstr "¿Quién puede ver lo que escribo?"
 
 #: app/faq.py:137
 msgid "Your contributions are public and visible under your pseudonym. Anyone can read them. Your email address and any private details stay private."
-msgstr ""
+msgstr "Tus contribuciones son públicas y se ven con tu seudónimo. Cualquiera puede leerlas. Tu correo electrónico y tus datos privados siguen siendo privados."
 
 #. TRANSLATORS: faq, vraag 4.5 en antwoord 4.5
 #: app/faq.py:140
 msgid "What is the minimum age?"
-msgstr ""
+msgstr "¿Cuál es la edad mínima?"
 
 #: app/faq.py:141
 msgid "Sixteen."
-msgstr ""
+msgstr "Dieciséis años."
 
 #. TRANSLATORS: faq, vraag 4.6 en antwoord 4.6
 #: app/faq.py:143
 msgid "How do I delete my account or my data?"
-msgstr ""
+msgstr "¿Cómo elimino mi cuenta o mis datos?"
 
 #: app/faq.py:144
 msgid "You can do that in your account settings or on request. Your personal data, such as your email address and profile, is then erased."
-msgstr ""
+msgstr "Puedes hacerlo en la configuración de tu cuenta o pedirlo. Entonces se borran tus datos personales, como tu correo electrónico y tu perfil."
 
 #. TRANSLATORS: faq, vraag 4.7 en antwoord 4.7
 #: app/faq.py:147
 msgid "What happens to my contributions after I delete my account?"
-msgstr ""
+msgstr "¿Qué pasa con mis contribuciones cuando elimino mi cuenta?"
 
 #: app/faq.py:148
 msgid "Your contributions stay, but are no longer linked to your name. That way, the discussions and votes others took part in keep their coherence. Only the link to you disappears."
-msgstr ""
+msgstr "Tus contribuciones se quedan, pero ya no están vinculadas a tu nombre. Así, los debates y las votaciones en los que participaron otras personas siguen teniendo sentido. Solo desaparece el vínculo contigo."
 
 #: app/forms.py:12 app/templates/aanmelden/aanmelden.html:68
 #: app/templates/profile.html:254 app/templates/wachtwoord_reset.html:47
@@ -1394,7 +1394,7 @@ msgstr "Cerrar"
 
 #: app/templates/faq.html:7 app/templates/faq.html:14
 msgid "FAQ"
-msgstr ""
+msgstr "Preguntas frecuentes"
 
 #: app/templates/index.html:12
 msgid "A union of"
@@ -2603,119 +2603,119 @@ msgstr "Guardar"
 #. privacy, tekst 1
 #: app/templates/privacy.html:7
 msgid "Privacy statement"
-msgstr ""
+msgstr "Declaración de privacidad"
 
 #. privacy, tekst 2
 #: app/templates/privacy.html:15
 msgid "Privacy statement Global Union Forum"
-msgstr ""
+msgstr "Declaración de privacidad de Global Union Forum"
 
 #. privacy, tekst 3
 #: app/templates/privacy.html:16
 msgid "Last updated: 24 October 2026"
-msgstr ""
+msgstr "Última actualización: 24 de octubre de 2026"
 
 #. privacy, kop 1
 #: app/templates/privacy.html:24
 msgid "Who we are"
-msgstr ""
+msgstr "Quiénes somos"
 
 #. privacy, alinea 2
 #: app/templates/privacy.html:25
 #, python-format
 msgid "Global Union Forum is run by Stichting Global Union Forum (in formation). If you have a question about your data, email %(mail)s."
-msgstr ""
+msgstr "Global Union Forum está gestionado por la Stichting Global Union Forum (en constitución). Si tienes una pregunta sobre tus datos, escribe a %(mail)s."
 
 #. privacy, kop 3
 #: app/templates/privacy.html:29
 msgid "What data we collect"
-msgstr ""
+msgstr "Qué datos recogemos"
 
 #. privacy, alinea 4
 #: app/templates/privacy.html:30
 msgid "Your username (pseudonym), which is public. Your email address, which is private and not visible to other users. Your password, which we store encrypted. If you fill them in yourself: your first and last name and your LinkedIn address, which stay private unless you choose in your profile to show your real name. What you write on the forum, your replies, and your agree and disagree votes; your contributions are public under your pseudonym. And your IP address and technical log data, which we use to prevent abuse."
-msgstr ""
+msgstr "Tu nombre de usuario (seudónimo), que es público. Tu correo electrónico, que es privado y no lo ven otras personas usuarias. Tu contraseña, que guardamos cifrada. Si los rellenas tú: tu nombre y apellidos y tu dirección de LinkedIn, que siguen siendo privados salvo que elijas en tu perfil mostrar tu nombre real. Lo que escribes en el foro, tus respuestas y tus votos de acuerdo y desacuerdo; tus contribuciones son públicas con tu seudónimo. Y tu dirección IP y los datos técnicos de registro, que usamos para evitar abusos."
 
 #. privacy, kop 5
 #: app/templates/privacy.html:34
 msgid "What we use it for"
-msgstr ""
+msgstr "Para qué los usamos"
 
 #. privacy, alinea 6
 #: app/templates/privacy.html:35
 msgid "To make your account work and sign you in, to run the forum, to prevent abuse and overload, to translate your contributions and give them a quality assessment, and to send you emails that relate to your account."
-msgstr ""
+msgstr "Para que tu cuenta funcione y puedas iniciar sesión, para que el foro funcione, para evitar abusos y sobrecargas, para traducir tus contribuciones y darles una valoración de calidad, y para enviarte correos relacionados con tu cuenta."
 
 #. privacy, kop 7
 #: app/templates/privacy.html:39
 msgid "Who we share data with"
-msgstr ""
+msgstr "Con quién compartimos datos"
 
 #. privacy, alinea 8
 #: app/templates/privacy.html:40
 msgid "We do not sell your data. We do use service providers that process data on our behalf: Neon (database), Render (hosting), Cloudflare (traffic and security), Resend (email) and Anthropic (automatic translation and the quality assessment). For the latter, the text of your contribution is sent to Anthropic to translate and assess. Some of these services may process data outside the European Union; in that case we ensure appropriate safeguards, such as the European Commission's standard contractual clauses. Your public contributions are visible to everyone; your real name and LinkedIn only if you choose so."
-msgstr ""
+msgstr "No vendemos tus datos. Sí usamos proveedores de servicios que tratan datos en nuestro nombre: Neon (base de datos), Render (alojamiento), Cloudflare (tráfico y seguridad), Resend (correo electrónico) y Anthropic (traducción automática y valoración de calidad). Para esto último, el texto de tu contribución se envía a Anthropic para traducirlo y valorarlo. Algunos de estos servicios pueden tratar datos fuera de la Unión Europea; en ese caso aplicamos garantías adecuadas, como las cláusulas contractuales tipo de la Comisión Europea. Tus contribuciones públicas las ve todo el mundo; tu nombre real y tu LinkedIn, solo si tú lo eliges."
 
 #. privacy, kop 9
 #: app/templates/privacy.html:44
 msgid "How long we keep it"
-msgstr ""
+msgstr "Cuánto tiempo los guardamos"
 
 #. privacy, alinea 10
 #: app/templates/privacy.html:45
 msgid "We keep your account data as long as your account exists. If you ask for deletion, we delete your personal data; your public contributions we anonymise, so the conversation stays readable. We keep technical log data for six months."
-msgstr ""
+msgstr "Guardamos los datos de tu cuenta mientras exista tu cuenta. Si pides que la eliminemos, borramos tus datos personales; tus contribuciones públicas las anonimizamos, para que la conversación siga siendo legible. Los datos técnicos de registro los guardamos seis meses."
 
 #. privacy, kop 11
 #: app/templates/privacy.html:49
 msgid "Minimum age"
-msgstr ""
+msgstr "Edad mínima"
 
 #. privacy, alinea 12
 #: app/templates/privacy.html:50
 msgid "You must be at least 16 years old to create an account."
-msgstr ""
+msgstr "Debes tener al menos 16 años para crear una cuenta."
 
 #. privacy, kop 13
 #: app/templates/privacy.html:54
 msgid "Cookies"
-msgstr ""
+msgstr "Cookies"
 
 #. privacy, alinea 14
 #: app/templates/privacy.html:55
 msgid "We use only functional cookies, for example to keep you signed in and to remember your language choice. We do not use cookies to track you or for advertising."
-msgstr ""
+msgstr "Solo usamos cookies funcionales, por ejemplo para mantener tu sesión iniciada y recordar el idioma que elegiste. No usamos cookies para rastrearte ni para publicidad."
 
 #. privacy, kop 15
 #: app/templates/privacy.html:59
 msgid "Security"
-msgstr ""
+msgstr "Seguridad"
 
 #. privacy, alinea 16
 #: app/templates/privacy.html:60
 msgid "We store passwords encrypted, use a secure connection (https) and limit the number of attempts to prevent abuse."
-msgstr ""
+msgstr "Guardamos las contraseñas cifradas, usamos una conexión segura (https) y limitamos el número de intentos para evitar abusos."
 
 #. privacy, kop 17
 #: app/templates/privacy.html:64
 msgid "Your rights"
-msgstr ""
+msgstr "Tus derechos"
 
 #. privacy, alinea 18
 #: app/templates/privacy.html:65
 #, python-format
 msgid "You may access, correct or delete your data, object to its use, and withdraw your consent. Email %(mail)s for this. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens)."
-msgstr ""
+msgstr "Puedes consultar, corregir o eliminar tus datos, oponerte a su uso y retirar tu consentimiento. Para ello, escribe a %(mail)s. Si no estás de acuerdo con cómo tratamos tus datos, puedes presentar una reclamación ante la autoridad neerlandesa de protección de datos (Autoriteit Persoonsgegevens)."
 
 #. privacy, kop 19
 #: app/templates/privacy.html:69
 msgid "Changes"
-msgstr ""
+msgstr "Cambios"
 
 #. privacy, alinea 20
 #: app/templates/privacy.html:70
 msgid "We may update this statement. The date at the top shows when we last did so."
-msgstr ""
+msgstr "Podemos actualizar esta declaración. La fecha de arriba indica cuándo lo hicimos por última vez."
 
 #: app/templates/profile.html:3 app/templates/profile.html:10
 msgid "My profile"
@@ -3007,25 +3007,25 @@ msgstr "Sí, eliminar mi cuenta"
 #: app/templates/spelregels.html:19
 #, python-format
 msgid "Moderators oversee the conduct rules. A contribution that breaks a conduct rule is not deleted but moved to the public <a href=\"%(value)s\">background page</a>, with the rule and the explanation. Spam or gross abuse is hidden completely. The author can object within seven days, and a moderator decides. Moderators can also close a conversation."
-msgstr ""
+msgstr "Los moderadores supervisan las normas de conducta. Una contribución que incumple una norma de conducta no se elimina, sino que pasa a la <a href=\"%(value)s\">página de contexto</a> pública, con la norma y la explicación. El spam o el abuso grave se ocultan por completo. Quien la escribió puede presentar una objeción en un plazo de siete días, y decide un moderador. Los moderadores también pueden cerrar una conversación."
 
 #: app/templates/spelregels.html:25
 msgid "When you sign up, you agree to the conduct rules."
-msgstr ""
+msgstr "Al registrarte, aceptas las normas de conducta."
 
 #: app/templates/spelregels.html:29
 #, python-format
 msgid "You accepted the conduct rules on %(date)s."
-msgstr ""
+msgstr "Aceptaste las normas de conducta el %(date)s."
 
 #: app/templates/spelregels.html:29
 #, python-format
 msgid "%d %B %Y"
-msgstr ""
+msgstr "%d de %B de %Y"
 
 #: app/templates/spelregels.html:35
 msgid "To join the conversation, first agree to the conduct rules."
-msgstr ""
+msgstr "Para participar en la conversación, primero acepta las normas de conducta."
 
 #: app/templates/success.html:3 app/templates/success.html:8
 msgid "Welcome,"
@@ -3041,27 +3041,27 @@ msgstr "Crear otra cuenta"
 
 #: app/templates/wachtwoord_reset.html:2
 msgid "Choose new password"
-msgstr ""
+msgstr "Elegir nueva contraseña"
 
 #: app/templates/wachtwoord_reset.html:15
 msgid "Link expired"
-msgstr ""
+msgstr "Enlace caducado"
 
 #: app/templates/wachtwoord_reset.html:16
 msgid "This link is no longer valid."
-msgstr ""
+msgstr "Este enlace ya no es válido."
 
 #: app/templates/wachtwoord_reset.html:18
 msgid "The reset link has expired or is invalid. Request a new one below."
-msgstr ""
+msgstr "El enlace para restablecer la contraseña ha caducado o no es válido. Pide uno nuevo aquí abajo."
 
 #: app/templates/wachtwoord_reset.html:22
 msgid "Request new link"
-msgstr ""
+msgstr "Pedir nuevo enlace"
 
 #: app/templates/wachtwoord_reset.html:28
 msgid "Choose a new password."
-msgstr ""
+msgstr "Elige una nueva contraseña."
 
 #: app/templates/aanmelden/aanmelden.html:61
 #: app/templates/wachtwoord_reset.html:39
@@ -3075,28 +3075,28 @@ msgstr "Repite tu contraseña"
 
 #: app/templates/wachtwoord_reset.html:72
 msgid "Save new password"
-msgstr ""
+msgstr "Guardar nueva contraseña"
 
 #: app/templates/wachtwoord_vergeten.html:2
 #: app/templates/wachtwoord_vergeten.html:13
 msgid "Forgot password"
-msgstr ""
+msgstr "Contraseña olvidada"
 
 #: app/templates/wachtwoord_vergeten.html:14
 msgid "Reset your password."
-msgstr ""
+msgstr "Restablece tu contraseña."
 
 #: app/templates/wachtwoord_vergeten.html:16
 msgid "Enter your email address and we'll send you a reset link."
-msgstr ""
+msgstr "Escribe tu correo electrónico y te enviaremos un enlace para restablecer la contraseña."
 
 #: app/templates/wachtwoord_vergeten.html:42
 msgid "Send reset link"
-msgstr ""
+msgstr "Enviar enlace"
 
 #: app/templates/wachtwoord_vergeten.html:49
 msgid "Back to log in"
-msgstr ""
+msgstr "Volver a iniciar sesión"
 
 #: app/templates/aanmelden/aanmelden.html:2
 msgid "Join us"
