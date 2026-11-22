@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ proposal.statement }} · Global Union{% endblock %}
+{% block title %}{{ content_i18n.display(proposal, 'statement', lang) }} · Global Union{% endblock %}
 
 {#
   The proposal screen, built to docs/design/voorstel.html. Same shell as the
@@ -23,6 +23,7 @@
 #}
 {% block content_outer %}{% block content %}
 {% from 'issues/_ip_fields.html' import ip_fields with context %}
+{% from '_mt.html' import mt with context %}
 {% set by_name = proposal.created_by.public_name if proposal.created_by else '@deleted_user' %}
 {% set current = versions[-1] %}
 {% set older = versions[:-1] %}
@@ -241,12 +242,13 @@
               <svg class="gu-pv__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"/></svg>
               <span class="gu-pv__vn">{{ _('Version %(n)s', n=v.number) }}</span>
               {% if v.created_at %}<span class="gu-pv__vdate">{{ v.created_at | local | datetimeformat('d MMM y') }}</span>{% endif %}
-              <span class="gu-pv__vsum" lang="{{ proposal.lang or lang }}">{{ v.statement }}</span>
+              {% set vsum = content_i18n.view(v, 'statement', lang) %}
+              <span class="gu-pv__vsum" lang="{{ lang if vsum.kind in ('machine', 'handwritten') else (vsum.source or proposal.lang or lang) }}">{{ vsum.text }}</span>
               <span class="gu-pv__vrc" title="{{ _('Reactions') }}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>{{ row.reactions | length }}<span class="gu-sr-only"> {{ _('reactions') }}</span></span>
             </summary>
             <div class="gu-pv__vbody">
-              <p class="gu-pv__vstatement" lang="{{ proposal.lang or lang }}">{{ v.statement }}</p>
-              {% if v.explanation %}<div class="gu-pv__prose" lang="{{ proposal.lang or lang }}">{{ v.explanation | linkify }}</div>{% endif %}
+              {{ mt(v, 'statement', 'p', 'gu-pv__vstatement') }}
+              {% if v.explanation %}{{ mt(v, 'explanation', 'div', 'gu-pv__prose', rich=true) }}{% endif %}
               <h3 class="gu-pv__h gu-pv__h--sub">{% trans number=v.number %}Reactions to version {{ number }}{% endtrans %} <span class="gu-pv__n">({{ row.reactions | length }})</span></h3>
               {% if row.reactions %}{{ reaction_list(row.reactions) }}
               {% else %}<p class="gu-composer__hint">{{ _('No reactions to this version.') }}</p>{% endif %}
@@ -258,12 +260,12 @@
 
         {# ── The current version ────────────────────────────────────── #}
         <p class="gu-pv__curhead"><span class="gu-pv__vcur">{{ _('Current version') }}</span> {{ _('Version %(n)s', n=current_version) }}{% if current.version.created_at %} &middot; {{ current.version.created_at | local | datetimeformat('d MMM y') }}{% endif %}</p>
-        <h1 class="gu-pv__statement" lang="{{ proposal.lang or lang }}">{{ proposal.statement }}</h1>
+        {{ mt(proposal, 'statement', 'h1', 'gu-pv__statement') }}
 
         <section class="gu-pv__section" aria-labelledby="explTitle">
           <h2 class="gu-pv__h" id="explTitle">{{ _('Explanation') }}</h2>
           {% if proposal.explanation %}
-          <div class="gu-pv__prose" lang="{{ proposal.lang or lang }}">{{ proposal.explanation | linkify }}</div>
+          {{ mt(proposal, 'explanation', 'div', 'gu-pv__prose', rich=true) }}
           {% else %}
           <p class="gu-composer__hint">{{ _('No explanation.') }}</p>
           {% endif %}

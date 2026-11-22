@@ -18,6 +18,7 @@ The rest of the code goes through these functions only:
     set_translation(obj, field, lang, text, is_machine=False)
     invalidate(obj, field=None)          drop the translations (after an edit)
     reader_view(obj, field, lang)        (text, written for the reader) for the post views
+    view(obj, field, lang)               View(text, original, source, kind) for the label
     preload(objs, *fields)               one query for a page full of objects
     set_label(obj, field, label)         a gettext label in every enabled language
     all_texts(obj, fields)               originals and translations (search)
@@ -40,6 +41,12 @@ _SOURCE_ATTR = {
     'threads': 'source_lang',
     'quality_awards': 'post_lang',          # the AI writes in the post's language
     'quality_objections': 'ai_response_lang',
+    # Multilingual phase 2a: issues, proposals and the follow-up have their
+    # own lang field; a version is in the language of its proposal.
+    'issues': 'lang',
+    'issue_proposals': 'lang',
+    'issue_proposal_versions': lambda version: version.proposal.lang if version.proposal else None,
+    'issue_followups': 'lang',
 }
 
 
@@ -49,7 +56,11 @@ def object_type(obj):
 
 def source_lang(obj):
     attr = _SOURCE_ATTR.get(object_type(obj))
-    return (getattr(obj, attr, None) if attr else None) or config.DEFAULT_LANGUAGE
+    if callable(attr):
+        lang = attr(obj)
+    else:
+        lang = getattr(obj, attr, None) if attr else None
+    return lang or config.DEFAULT_LANGUAGE
 
 
 def original(obj, field):
@@ -181,6 +192,29 @@ def all_texts(obj, fields):
     return out
 
 
+# What a reader sees of a field: the text, the original and its language, and
+# what kind of text it is: 'own' (the reader's language is the original's),
+# 'handwritten' or 'machine' (a current translation), or 'pending' (no
+# translation yet: the original is shown, with "Translation pending").
+View = namedtuple('View', 'text original source kind')
+
+
+def view(obj, field, lang):
+    """The View of a field for a reader of `lang`. Never calls the AI. An
+    object outside the database (a derived old version) shows as is."""
+    if not hasattr(obj, '__tablename__'):
+        text = getattr(obj, field)
+        return View(text, text, None, 'own')
+    orig = original(obj, field)
+    src = source_lang(obj)
+    if lang == src:
+        return View(orig, orig, src, 'own')
+    row = _current(obj, field, lang)
+    if row is None:
+        return View(orig, orig, src, 'pending')
+    return View(row.text, orig, src, 'machine' if row.is_machine else 'handwritten')
+
+
 def reader_view(obj, field, lang):
     """(text, written_for_reader) as a reader of `lang` sees it. Content
     written for several languages (handwritten translations) shows in the
@@ -238,12 +272,23 @@ def translate(obj, field, lang, client=None):
     existing = text_for(obj, field, lang)
     if existing is not None:
         return existing
-    from app import quality
     source = original(obj, field) or ''
+    reused = _same_text_translated(source, lang)
+    if reused is not None:  # the same text was translated before (a proposal and its version)
+        set_translation(obj, field, lang, reused.text, is_machine=reused.is_machine)
+        db.session.commit()
+        return reused.text
+    from app import quality
     translated = quality.translate_text(source, lang, client=client)
     set_translation(obj, field, lang, translated, is_machine=True)
     db.session.commit()
     return translated
+
+
+def _same_text_translated(source, lang):
+    """A current translation into `lang` of exactly this text, of any object."""
+    return (ContentTranslation.query.filter_by(source_hash=source_hash(source), lang=lang)
+            .order_by(ContentTranslation.is_machine).first())
 
 
 def invalidate(obj, field=None):
@@ -261,6 +306,15 @@ def invalidate(obj, field=None):
         cache[key] = {}
 
 
+def delete_for(kind, ids):
+    """Drop the translations of objects of one table (`kind`, e.g. 'issues')
+    that are deleted in bulk (a query delete passes the ORM listener below)."""
+    ids = [i for i in ids if i is not None]
+    if ids:
+        ContentTranslation.query.filter(ContentTranslation.object_type == kind,
+                                        ContentTranslation.object_id.in_(ids)).delete(synchronize_session=False)
+
+
 # A deleted object takes its translations along (ORM deletes; bulk query
 # deletes clean up themselves where they matter).
 def _delete_translations(mapper, connection, target):
@@ -275,8 +329,10 @@ def register_cleanup(*models):
 
 
 def _register_models():
-    from app.models import Post, QualityAward, QualityObjection, Thread
-    register_cleanup(Post, Thread, QualityAward, QualityObjection)
+    from app.models import (Issue, IssueFollowup, IssueProposal, IssueProposalVersion, Post, QualityAward,
+                            QualityObjection, Thread)
+    register_cleanup(Post, Thread, QualityAward, QualityObjection,
+                     Issue, IssueProposal, IssueProposalVersion, IssueFollowup)
     event.listen(db.session, 'after_commit', clear_cache)
     event.listen(db.session, 'after_rollback', clear_cache)
 

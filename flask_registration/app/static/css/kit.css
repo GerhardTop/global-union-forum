@@ -4750,3 +4750,6 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 [dir="rtl"] .gu-node__toggle[aria-expanded="false"] svg { transform: rotate(90deg); }
 [dir="rtl"] .gu-pv__chev { transform: scaleX(-1); }
 [dir="rtl"] .gu-pv__version[open] .gu-pv__chev { transform: rotate(90deg); }
+
+/* ── Multilingual phase 2: a text in a machine translation (_mt.html) ── */
+.gu-mt__note { font-size: 12px; line-height: 1.4; color: var(--gu-fg-3); margin: 4px 0 0; }

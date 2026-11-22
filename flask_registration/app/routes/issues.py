@@ -650,7 +650,7 @@ def followup(issue_id):
     if len(text) > FOLLOWUP_MAX:
         flash(gettext('The text can be at most %(n)s characters.', n=FOLLOWUP_MAX), 'error')
         return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg', code=303)
-    lifecycle.add_followup(issue, text, current_user)
+    lifecycle.add_followup(issue, text, current_user, lang=session.get('lang', 'nl'))
     db.session.commit()
     return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg')
 

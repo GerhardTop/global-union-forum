@@ -5,6 +5,7 @@
   of te verwijderen, oudere blijven staan. Bouw naar docs/design/vervolg.html.
   Context: issue, can_add_followup, forum_action_form.
 #}
+{% from '_mt.html' import mt with context %}
 {% if issue.phase == 'vervolg' and (issue.followups or can_add_followup) %}
 <section class="gu-followup" id="vervolg" aria-labelledby="followupTitle">
   <span class="gu-followup__eyebrow" id="followupTitle">{{ _('What happens next') }}</span>
@@ -35,7 +36,7 @@
         {% if loop.first %}<span class="gu-followup__now">{{ _('Latest') }}</span>{% endif %}
         {% if u.edited_at %}<span class="gu-followup__edited">· {{ _('edited %(date)s', date=u.edited_at | datetimeformat('d MMM y HH:mm')) }}</span>{% endif %}
       </p>
-      <div class="gu-followup__body">{{ u.body | linkify }}</div>
+      {{ mt(u, 'body', 'div', 'gu-followup__body', rich=true) }}
       <p class="gu-followup__meta">
         {% if u.author %}{{ _('by %(name)s', name=u.author.public_name) }}{% endif %}
       </p>

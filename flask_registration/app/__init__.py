@@ -368,6 +368,8 @@ _CONTENT_COLUMNS = {
     'threads': (('eyebrow', 'VARCHAR(200) NULL'), ('title_prefix', "VARCHAR(300) NULL DEFAULT ''"),
                 ('title_accent', 'VARCHAR(200) NULL'), ('title_suffix', "VARCHAR(50) NULL DEFAULT ''"),
                 ('source_lang', 'VARCHAR(5) NULL')),
+    # Multilingual phase 2: the language of a follow-up update (its issue's).
+    'issue_followups': (('lang', 'VARCHAR(5) NULL'),),
 }
 
 
@@ -383,6 +385,12 @@ def _migrate_content_columns(existing):
                 for ddl in added:
                     conn.execute(text(ddl))
                 conn.commit()
+    if 'issue_followups' in existing:
+        # An update without a language takes its issue's (idempotent).
+        with db.engine.connect() as conn:
+            conn.execute(text('UPDATE issue_followups SET lang = (SELECT issues.lang FROM issues '
+                              'WHERE issues.id = issue_followups.issue_id) WHERE lang IS NULL'))
+            conn.commit()
     from app.content_migration import RELAXED_COLUMNS
     dialect = db.engine.dialect.name
     for table, names in RELAXED_COLUMNS.items():

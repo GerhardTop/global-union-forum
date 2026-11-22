@@ -101,7 +101,16 @@ def create(issue, user, statement, explanation=None, lang=None):
     proposal.version_rows.append(IssueProposalVersion(number=1, statement=statement, explanation=explanation,
                                                       created_at=proposal.created_at))
     db.session.add(proposal)
+    _translate_after_commit(proposal, *proposal.version_rows)
     return proposal
+
+
+def _translate_after_commit(*objs):
+    """Multilingual phase 2a: a proposal and its versions are translated into
+    the other languages right after the commit (app/content_jobs.py)."""
+    from app import content_jobs
+    for obj in objs:
+        content_jobs.schedule(obj)
 
 
 # ── Steun en status ──────────────────────────────────────────────────────
@@ -198,8 +207,14 @@ def revise(proposal, statement, explanation, now=None):
         proposal.original_explanation = proposal.explanation
     proposal.statement, proposal.explanation = statement, explanation
     proposal.revised_at = now
-    proposal.version_rows.append(IssueProposalVersion(number=len(proposal.version_rows) + 1, statement=statement,
-                                                      explanation=explanation, created_at=now))
+    new_version = IssueProposalVersion(number=len(proposal.version_rows) + 1, statement=statement,
+                                       explanation=explanation, created_at=now)
+    proposal.version_rows.append(new_version)
+    # The proposal's text changed: its translations go and are made again;
+    # the earlier versions keep their own.
+    from app import content_i18n
+    content_i18n.invalidate(proposal)
+    _translate_after_commit(proposal, new_version)
 
 
 # ── Reacties bij een voorstel (polijstronde P5) ──────────────────────────
@@ -431,6 +446,14 @@ def create_final(issue, user, statement, explanation=None, lang=None, title=None
     proposal = IssueProposal(issue_id=issue.id, statement=statement, explanation=explanation,
                              created_by_id=user.id, lang=lang, is_final=True)
     db.session.add(proposal)
+    if title or intro:
+        from app import content_i18n
+        if title:
+            content_i18n.invalidate(issue, 'title')
+        if intro:
+            content_i18n.invalidate(issue, 'intro')
+        _translate_after_commit(issue)
+    _translate_after_commit(proposal)
     return proposal
 
 

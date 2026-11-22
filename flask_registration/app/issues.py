@@ -329,6 +329,8 @@ def create(values, user, lang=None, now=None):
     for begin, end in event_days:
         issue.event_days.append(IssueEventDay(starts_at=begin, ends_at=end))
     _open_thread(issue, user)
+    from app import content_jobs
+    content_jobs.schedule(issue)  # translated into the other languages after the commit
     return issue
 
 
@@ -645,7 +647,11 @@ def purge(issue):
         PostLike.query.filter(PostLike.post_id.in_(post_ids)).delete(synchronize_session=False)
         Post.query.filter(Post.parent_id.in_(post_ids)).update({Post.parent_id: None}, synchronize_session=False)
         Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
+    from app import content_i18n
     if prop_ids:
+        version_ids = [v.id for v in IssueProposalVersion.query.filter(IssueProposalVersion.proposal_id.in_(prop_ids))]
+        content_i18n.delete_for('issue_proposal_versions', version_ids)
+        content_i18n.delete_for('issue_proposals', prop_ids)
         for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
             model.query.filter(model.proposal_id.in_(prop_ids)).delete(synchronize_session=False)
         from app import issue_proposals
@@ -655,6 +661,7 @@ def purge(issue):
     from app import notifications
     notifications.delete_for_issues([issue.id])
     IssueEventDay.query.filter_by(issue_id=issue.id).delete(synchronize_session=False)
+    content_i18n.delete_for('issues', [issue.id])
     issue_lifecycle.delete_followups([issue.id])  # the follow-up timeline
     # Een oud voorstel met een eigen gesprek wordt alleen losgekoppeld; het oude
     # voorstel dat dit gesprek deelt, gaat via delete_for_threads mee weg.
@@ -685,6 +692,10 @@ def purge_proposal(proposal):
         PostLike.query.filter(PostLike.post_id.in_(reply_ids)).delete(synchronize_session=False)
         Post.query.filter(Post.parent_id.in_(reply_ids)).update({Post.parent_id: None}, synchronize_session=False)
         Post.query.filter(Post.id.in_(reply_ids)).delete(synchronize_session=False)
+    from app import content_i18n
+    content_i18n.delete_for('issue_proposal_versions',
+                            [v.id for v in IssueProposalVersion.query.filter_by(proposal_id=pid)])
+    content_i18n.delete_for('issue_proposals', [pid])
     for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
         model.query.filter(model.proposal_id == pid).delete(synchronize_session=False)
     from app import issue_proposals

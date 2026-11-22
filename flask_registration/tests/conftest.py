@@ -39,6 +39,17 @@ os.environ.setdefault("GOOGLE_CLIENT_ID", "fake-client-id")
 os.environ.setdefault("GOOGLE_CLIENT_SECRET", "fake-client-secret")
 
 
+@pytest.fixture(autouse=True)
+def _no_background_translations(monkeypatch):
+    """Multilingual phase 2a: the suite runs with ANTHROPIC_API_KEY=fake, so
+    without this every new issue or proposal would start a background thread
+    that calls the real AI, and the tick's safety net would too. Off for every
+    test; tests/test_content_jobs.py runs the jobs itself with a fake client."""
+    from app import content_jobs
+    monkeypatch.setattr(content_jobs, '_start', lambda app, keys: None)
+    monkeypatch.setattr(content_jobs, 'ai_available', lambda app=None: False)
+
+
 @pytest.fixture(scope="session")
 def app():
     """Maak één Flask-app voor de hele testsessie, met een losse SQLite-file."""

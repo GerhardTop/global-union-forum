@@ -2,7 +2,9 @@
 Interne endpoints voor periodieke taken (fase E, stap 5b).
 
 POST /intern/tik draait elk uur (GitHub Actions, .github/workflows/tik.yml):
-de faseovergangen van publieke voorstellen en de dagelijkse samenvatting.
+de faseovergangen van publieke voorstellen en de dagelijkse samenvatting, en
+het vangnet voor de vertalingen van vraagstukken en voorstellen
+(content_jobs.backfill).
 Alleen met het juiste geheim: de omgevingsvariabele TICK_SECRET, meegestuurd
 als "Authorization: Bearer <geheim>". Is TICK_SECRET niet gezet, dan staat
 het endpoint uit (403), zodat het nooit onbeschermd open staat.
@@ -28,5 +30,9 @@ def _authorized():
 def tik():
     if not _authorized():
         abort(403)
-    from app import digest
-    return jsonify(digest.tick())
+    from app import content_jobs, digest
+    result = digest.tick()
+    # Multilingual phase 2a: the safety net for the translations of issues,
+    # proposals and the follow-up (what the background thread missed).
+    result['translations'] = content_jobs.backfill()
+    return jsonify(result)

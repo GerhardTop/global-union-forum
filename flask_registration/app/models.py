@@ -974,6 +974,9 @@ class IssueFollowup(db.Model):
     body       = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     edited_at  = db.Column(db.DateTime, nullable=True)
+    # Multilingual phase 2: the language the update is written in (the
+    # source of its translations); filled with the issue's language.
+    lang       = db.Column(db.String(5), nullable=True)
 
     issue  = db.relationship('Issue', backref=db.backref(
         'followups', lazy=True, cascade='all, delete-orphan',

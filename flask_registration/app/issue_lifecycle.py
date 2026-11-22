@@ -236,16 +236,22 @@ def can_add_followup(issue, user):
     return _is_host(issue, user) and issue.phase == 'vervolg'
 
 
-def add_followup(issue, text, author, now=None):
-    """A new dated update; the earlier ones stay. Does not commit."""
+def add_followup(issue, text, author, now=None, lang=None):
+    """A new dated update, in `lang` (the writer's language; default the
+    issue's); the earlier ones stay. Does not commit."""
+    from app import content_jobs
     from app.models import IssueFollowup
-    db.session.add(IssueFollowup(
+    update = IssueFollowup(
         issue_id=issue.id,
         author_id=getattr(author, 'id', None),
         body=text,
         created_at=now or datetime.utcnow(),
-    ))
-    db.session.expire(issue, ['followups'])  # reload the timeline with the new update
+        lang=lang or issue.lang,
+    )
+    db.session.add(update)
+    content_jobs.schedule(update)  # translated after the commit
+    db.session.expire(issue, ['followups'])
+    return update  # reload the timeline with the new update
 
 
 def latest_followup(issue):
@@ -262,8 +268,11 @@ def can_manage_followup(update, user):
 
 
 def edit_followup(update, text, now=None):
+    from app import content_i18n, content_jobs
     update.body = text
     update.edited_at = now or datetime.utcnow()
+    content_i18n.invalidate(update)
+    content_jobs.schedule(update)
 
 
 def delete_followup(update):
@@ -276,6 +285,9 @@ def delete_followups(issue_ids):
     from app.models import IssueFollowup
     issue_ids = list(issue_ids)
     if issue_ids:
+        from app import content_i18n
+        content_i18n.delete_for('issue_followups',
+                                [f.id for f in IssueFollowup.query.filter(IssueFollowup.issue_id.in_(issue_ids))])
         IssueFollowup.query.filter(IssueFollowup.issue_id.in_(issue_ids)).delete(synchronize_session=False)
 
 
@@ -289,7 +301,7 @@ def migrate_followup_log():
         has = IssueFollowup.query.filter_by(issue_id=issue.id).first()
         if has is None:
             db.session.add(IssueFollowup(
-                issue_id=issue.id, author_id=None,
+                issue_id=issue.id, author_id=None, lang=issue.lang,
                 body=issue.followup_text, created_at=issue.followup_at or now))
         issue.followup_text = None
         issue.followup_at = None

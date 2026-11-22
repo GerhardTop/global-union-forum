@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ issue.title }} · Global Union{% endblock %}
+{% block title %}{{ content_i18n.display(issue, 'title', lang) }} · Global Union{% endblock %}
 
 {#
   De cockpit van een vraagstuk (herontwerp stap 2, polijstronde P3). Breed:
@@ -12,6 +12,7 @@
   elkaar in beeld.
 #}
 {% block content_outer %}{% block content %}
+{% from '_mt.html' import mt with context %}
 {% if has_discussion %}<template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>{% endif %}
 <main class="gu-forum gu-cockpit{% if big.expanded %} gu-cockpit--expanded{% endif %}" lang="{{ lang }}" id="cockpit"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
   <div class="gu-cockpit__inner">
@@ -20,7 +21,7 @@
     <header class="gu-cockpit__head">
       <a class="gu-backlink" href="{{ url_for('issues.index') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6"/></svg>{{ _('Issues') }}</a>
       <div class="gu-cockpit__titlerow">
-        <h1 class="gu-forum__title" lang="{{ issue.lang or lang }}">{{ issue.title }}{% if issue.is_closed %} <span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}</h1>
+        {% call mt(issue, 'title', 'h1', 'gu-forum__title') %}{% if issue.is_closed %} <span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}{% endcall %}
         <div class="gu-cockpit__actions">
         {% if current_user.is_authenticated %}
         <form method="POST" action="{{ url_for('issues.follow', issue_id=issue.id) }}" class="gu-cockpit__followform">
@@ -53,7 +54,7 @@
                 title="{{ _('Show or hide the introduction') }}" aria-label="{{ _('Show or hide the introduction') }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="gu-cockpit__aboutbody" id="aboutBody">
         {% if issue.intro %}
-        <div class="gu-cockpit__intro" lang="{{ issue.lang or lang }}">{{ issue.intro | linkify }}</div>
+        {{ mt(issue, 'intro', 'div', 'gu-cockpit__intro', rich=true) }}
         {% else %}
         <p class="gu-composer__hint">{{ _('No introduction yet.') }}</p>
         {% endif %}

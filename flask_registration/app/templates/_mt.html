@@ -1,0 +1,24 @@
+{#
+  Multilingual phase 2: one place for a text that may be shown in a machine
+  translation (an issue's title and intro, a proposal's statement and
+  explanation, a version, a follow-up update).
+  Import with context: {% from "_mt.html" import mt with context %}
+
+  mt(obj, field, el='div', cls='', rich=false)
+    el, cls  the element and its class(es) around the text
+    rich     run the text through linkify (multi-line prose)
+  A {% call %} block adds content after the text inside the element (a badge).
+  The kind of text comes from content_i18n.view: the reader's own language
+  or a handwritten translation shows as is; no translation yet shows the
+  original with "Translation pending" (the page never calls the AI).
+#}
+{% macro mt(obj, field, el='div', cls='', rich=false) -%}
+{%- set v = content_i18n.view(obj, field, lang) -%}
+<{{ el }}{% if cls %} class="{{ cls }}"{% endif %} lang="{{ lang if v.kind in ('machine', 'handwritten') else (v.source or lang) }}">
+  {%- if rich %}{{ v.text | linkify }}{% else %}{{ v.text }}{% endif %}{% if caller is defined %}{{ caller() }}{% endif -%}
+</{{ el }}>
+{%- if v.kind == 'pending' %}
+{# TRANSLATORS: under an issue or proposal text shown in its original language because the machine translation is not ready yet. #}
+<p class="gu-mt__note gu-mt__note--pending">{{ _('Translation pending') }}</p>
+{%- endif %}
+{%- endmacro %}
