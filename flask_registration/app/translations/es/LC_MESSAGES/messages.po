@@ -360,7 +360,7 @@ msgstr "Tu hecho se pone en duda o se resuelve"
 #: app/notifications.py:42
 msgctxt "notification setting"
 msgid "A new report to handle"
-msgstr "Una nueva denuncia que gestionar"
+msgstr "Un nuevo reporte que gestionar"
 
 #: app/notifications.py:43
 msgctxt "notification setting"
@@ -389,7 +389,7 @@ msgstr "Tu hecho puesto en duda ya está resuelto."
 
 #: app/notifications.py:230
 msgid "A new report to handle."
-msgstr "Hay una nueva denuncia que gestionar."
+msgstr "Hay un nuevo reporte que gestionar."
 
 #: app/notifications.py:231
 msgid "A new objection to a decision."
@@ -518,7 +518,7 @@ msgstr "Novedades sobre tu hecho"
 #: app/notifications.py:472
 msgctxt "email subject"
 msgid "A new report to handle"
-msgstr "Una nueva denuncia que gestionar"
+msgstr "Un nuevo reporte que gestionar"
 
 #: app/notifications.py:473
 msgctxt "email subject"
@@ -787,11 +787,11 @@ msgstr "La cuenta @%(username)s se ha eliminado. Sus contribuciones aparecen aho
 
 #: app/routes/admin.py:522
 msgid "Choose what to do with this report."
-msgstr "Elige qué hacer con esta denuncia."
+msgstr "Elige qué hacer con este reporte."
 
 #: app/routes/admin.py:525
 msgid "The report has been handled."
-msgstr "La denuncia se ha gestionado."
+msgstr "El reporte se ha gestionado."
 
 #: app/routes/admin.py:642
 msgid "Thresholds saved."
@@ -904,7 +904,7 @@ msgstr "Respuesta no válida: el mensaje al que respondes no existe en esta conv
 
 #: app/routes/forum.py:1260
 msgid "The statement of a proposal can only be changed in the revision phase."
-msgstr "El enunciado de una propuesta solo se puede cambiar en la fase de revisión."
+msgstr "La afirmación de una propuesta solo se puede cambiar en la fase de revisión."
 
 #: app/routes/forum.py:1262
 msgid "This post already has replies, so it can no longer be edited."
@@ -921,11 +921,11 @@ msgstr "editado %(when)s"
 
 #: app/routes/forum.py:1529 app/routes/issues.py:271
 msgid "Give a reason for your report."
-msgstr "Indica un motivo para tu denuncia."
+msgstr "Indica un motivo para tu reporte."
 
 #: app/routes/forum.py:1538 app/routes/issues.py:277
 msgid "Thanks, your report has been sent to a moderator."
-msgstr "Gracias, tu denuncia se ha enviado a un moderador."
+msgstr "Gracias, tu reporte se ha enviado a un moderador."
 
 #: app/routes/forum.py:1917
 msgid "Choose a reason (and keep the note under 500 characters)."
@@ -3851,7 +3851,7 @@ msgstr "Describe el hecho (1000 caracteres como máximo)."
 
 #: app/templates/forum/_fact_fields.html:23
 msgid "Direction relative to the statement"
-msgstr "Dirección respecto al enunciado"
+msgstr "Dirección respecto a la afirmación"
 
 #: app/templates/forum/_fact_fields.html:30
 msgid "Choose a direction."
@@ -3951,7 +3951,7 @@ msgstr "Hechos"
 
 #: app/templates/forum/_facts.html:19
 msgid "Facts that are relevant to the statement, each with a direction and a source."
-msgstr "Hechos relevantes para el enunciado, cada uno con una dirección y una fuente."
+msgstr "Hechos relevantes para la afirmación, cada uno con una dirección y una fuente."
 
 #: app/templates/forum/_facts.html:28
 msgid "Fact moved because of the conduct rules"
@@ -4035,17 +4035,17 @@ msgstr "Traducir siempre al español"
 #: app/templates/forum/_post.html:194 app/templates/issues/_fact_badges.html:40
 #: app/templates/issues/_report_flag.html:9
 msgid "Reported"
-msgstr "Denunciado"
+msgstr "Reportado"
 
 #: app/templates/forum/_post.html:197 app/templates/issues/_fact_badges.html:45
 #: app/templates/issues/_report_flag.html:14
 msgid "Report"
-msgstr "Denunciar"
+msgstr "Reportar"
 
 #: app/templates/forum/_post.html:201 app/templates/issues/_fact_badges.html:51
 #: app/templates/issues/_report_flag.html:20
 msgid "Why are you reporting this?"
-msgstr "¿Por qué lo denuncias?"
+msgstr "¿Por qué lo reportas?"
 
 #: app/templates/forum/_post.html:202 app/templates/issues/_fact_badges.html:52
 #: app/templates/issues/_report_flag.html:21
@@ -4055,7 +4055,7 @@ msgstr "Describe brevemente qué está mal."
 #: app/templates/forum/_post.html:203 app/templates/issues/_fact_badges.html:53
 #: app/templates/issues/_report_flag.html:22
 msgid "Send report"
-msgstr "Enviar denuncia"
+msgstr "Enviar reporte"
 
 #: app/templates/forum/_post.html:241
 msgid "Write your reply…"
@@ -4272,7 +4272,7 @@ msgstr "Abrir una nueva ronda de votación pública"
 
 #: app/templates/forum/_proposal_vote.html:121
 msgid "Lay the proposal before the public again: a new voting period on the same statement. Facts and discussion stay."
-msgstr "Vuelve a presentar la propuesta al público: un nuevo período de votación sobre el mismo enunciado. Los hechos y el debate se mantienen."
+msgstr "Vuelve a presentar la propuesta al público: un nuevo período de votación sobre la misma afirmación. Los hechos y el debate se mantienen."
 
 #: app/templates/forum/_proposal_vote.html:123
 #: app/templates/forum/_proposal_vote.html:126
@@ -4328,11 +4328,11 @@ msgstr "Evaluado automáticamente por la IA"
 
 #: app/templates/forum/_quality_block.html:18
 msgid "Your report has been received. A moderator will look at it."
-msgstr "Hemos recibido tu denuncia. Un moderador la revisará."
+msgstr "Hemos recibido tu reporte. Un moderador lo revisará."
 
 #: app/templates/forum/_quality_block.html:23
 msgid "Report: not a quality contribution"
-msgstr "Denunciar: no es una contribución de calidad"
+msgstr "Reportar: no es una contribución de calidad"
 
 #: app/templates/forum/_quality_block.html:27
 msgid "View the full reasoning"
@@ -4504,7 +4504,7 @@ msgstr "Una conversación"
 
 #: app/templates/forum/new_thread.html:32
 msgid "An open conversation about a question or statement."
-msgstr "Una conversación abierta sobre una pregunta o un enunciado."
+msgstr "Una conversación abierta sobre una pregunta o una afirmación."
 
 #: app/templates/forum/new_thread.html:36
 msgid "A proposal"
@@ -4512,16 +4512,16 @@ msgstr "Una propuesta"
 
 #: app/templates/forum/new_thread.html:36
 msgid "A statement that goes to a vote in four phases."
-msgstr "Un enunciado que se somete a votación en cuatro fases."
+msgstr "Una afirmación que se somete a votación en cuatro fases."
 
 #: app/templates/forum/new_thread.html:43 app/templates/forum/thread.html:102
 #: app/templates/issues/_ip_fields.html:9
 msgid "Statement"
-msgstr "Enunciado"
+msgstr "Afirmación"
 
 #: app/templates/forum/new_thread.html:52
 msgid "Phrase your question or statement…"
-msgstr "Formula tu pregunta o enunciado…"
+msgstr "Formula tu pregunta o afirmación…"
 
 #: app/templates/forum/new_thread.html:59
 msgid "Kind of proposal"
@@ -4702,23 +4702,23 @@ msgstr "Revisado"
 #: app/templates/forum/thread.html:89
 #, python-format
 msgid "The statement was revised on %(date)s."
-msgstr "El enunciado se revisó el %(date)s."
+msgstr "La afirmación se revisó el %(date)s."
 
 #: app/templates/forum/thread.html:90
 msgid "Original statement:"
-msgstr "Enunciado original:"
+msgstr "Afirmación original:"
 
 #: app/templates/forum/thread.html:98 app/templates/forum/thread.html:109
 msgid "Revise the statement"
-msgstr "Revisar el enunciado"
+msgstr "Revisar la afirmación"
 
 #: app/templates/forum/thread.html:106
 msgid "You can revise the statement once. After that it is fixed."
-msgstr "Puedes revisar el enunciado una vez. Después queda fijo."
+msgstr "Puedes revisar la afirmación una vez. Después queda fija."
 
 #: app/templates/forum/thread.html:107
 msgid "Enter a statement (at most 300 characters) that differs from the current one."
-msgstr "Escribe un enunciado (máximo 300 caracteres) distinto del actual."
+msgstr "Escribe una afirmación (máximo 300 caracteres) distinta de la actual."
 
 #: app/templates/forum/thread.html:116
 msgid "Close facts and open revision"
@@ -4911,7 +4911,7 @@ msgstr "Una frase: ¿qué propones?"
 
 #: app/templates/issues/_ip_fields.html:13
 msgid "Write the statement in one sentence of at most 300 characters."
-msgstr "Escribe el enunciado en una frase de máximo 300 caracteres."
+msgstr "Escribe la afirmación en una frase de máximo 300 caracteres."
 
 #: app/templates/issues/_ip_fields.html:16 app/templates/issues/new.html:105
 #: app/templates/issues/proposal.html:267
@@ -5565,7 +5565,7 @@ msgstr[1] "%(num)d apoyos"
 
 #: app/templates/issues/proposal.html:208
 msgid "Change the statement or the explanation."
-msgstr "Cambia el enunciado o la explicación."
+msgstr "Cambia la afirmación o la explicación."
 
 #: app/templates/issues/proposal.html:209
 msgid "Each revision becomes a new version. Earlier versions stay visible."
@@ -5827,8 +5827,8 @@ msgstr[1] "reacciones a la propuesta"
 msgctxt "delete count"
 msgid "report"
 msgid_plural "reports"
-msgstr[0] "denuncia"
-msgstr[1] "denuncias"
+msgstr[0] "reporte"
+msgstr[1] "reportes"
 
 #: app/templates/issues/verwijderen.html:69
 msgid "<strong>This cannot be undone.</strong> If you only want to remove one contribution or fact, use hide or move instead; that can be reversed."
@@ -5836,7 +5836,7 @@ msgstr "<strong>Esto no se puede deshacer.</strong> Si solo quieres quitar una c
 
 #: app/templates/issues/verwijderen.html:76
 msgid "Type the statement to confirm:"
-msgstr "Escribe el enunciado para confirmar:"
+msgstr "Escribe la afirmación para confirmar:"
 
 #: app/templates/issues/verwijderen.html:76
 msgid "Type the title to confirm:"
@@ -5848,7 +5848,7 @@ msgstr "Eliminar definitivamente"
 
 #: app/templates/issues/verwijderen.html:84
 msgid "The button only becomes active when the statement matches exactly."
-msgstr "El botón solo se activa cuando el enunciado coincide exactamente."
+msgstr "El botón solo se activa cuando la afirmación coincide exactamente."
 
 #: app/templates/issues/verwijderen.html:84
 msgid "The button only becomes active when the title matches exactly."
@@ -5872,8 +5872,8 @@ msgstr "Tu cuestión"
 #, python-format
 msgid "%(num)d open report"
 msgid_plural "%(num)d open reports"
-msgstr[0] "%(num)d denuncia abierta"
-msgstr[1] "%(num)d denuncias abiertas"
+msgstr[0] "%(num)d reporte abierto"
+msgstr[1] "%(num)d reportes abiertos"
 
 #: app/templates/moderator/beheer.html:39
 msgid "The delete and hide actions are here, no longer on the public page. Hiding can be undone. Deleting cannot be undone and also removes the reactions. What you may do depends on your role and whether this is your issue."
@@ -6087,13 +6087,13 @@ msgstr "ver todas (%(count)s)"
 #, python-format
 msgid "%(num)d report"
 msgid_plural "%(num)d reports"
-msgstr[0] "%(num)d denuncia"
-msgstr[1] "%(num)d denuncias"
+msgstr[0] "%(num)d reporte"
+msgstr[1] "%(num)d reportes"
 
 #: app/templates/moderator/dashboard.html:81
 #: app/templates/moderator/dashboard.html:98
 msgid "Reports"
-msgstr "Denuncias"
+msgstr "Reportes"
 
 #: app/templates/moderator/dashboard.html:82
 #: app/templates/moderator/dashboard.html:99
@@ -6124,7 +6124,7 @@ msgstr "Flujos de moderación"
 
 #: app/templates/moderator/dashboard.html:107
 msgid "reports, by participants"
-msgstr "denuncias, de participantes"
+msgstr "reportes, de participantes"
 
 #: app/templates/moderator/dashboard.html:113
 #: app/templates/moderator/dashboard.html:114
@@ -6141,7 +6141,7 @@ msgstr "Más recientes primero"
 
 #: app/templates/moderator/dashboard.html:118
 msgid "Most reports"
-msgstr "Más denuncias"
+msgstr "Más reportes"
 
 #: app/templates/moderator/dashboard.html:118
 msgid "By issue"
@@ -6162,20 +6162,20 @@ msgstr "No hay ninguna cuestión que contenga \"%(zoek)s\" en este flujo."
 
 #: app/templates/moderator/dashboard.html:134
 msgid "Reports, by participants"
-msgstr "Denuncias, de participantes"
+msgstr "Reportes, de participantes"
 
 #: app/templates/moderator/dashboard.html:141
 #: app/templates/moderator/dashboard.html:183
 msgid "No open reports."
-msgstr "No hay denuncias abiertas."
+msgstr "No hay reportes abiertos."
 
 #: app/templates/moderator/dashboard.html:146
 msgid "Reports: not quality"
-msgstr "Denuncias: sin calidad"
+msgstr "Reportes: sin calidad"
 
 #: app/templates/moderator/dashboard.html:154
 msgid "Reported by"
-msgstr "Denunciado por"
+msgstr "Reportado por"
 
 #: app/templates/moderator/dashboard.html:156
 #: app/templates/moderator/dashboard.html:201
@@ -6316,7 +6316,7 @@ msgstr "Definir los derechos"
 
 #: app/templates/moderator/dashboard.html:434
 msgid "Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page."
-msgstr "Haz clic en <strong>Gestionar</strong> junto a una cuestión para ocultar o eliminar propuestas y gestionar la cuestión. La etiqueta de la cuestión en una denuncia lleva a la misma página."
+msgstr "Haz clic en <strong>Gestionar</strong> junto a una cuestión para ocultar o eliminar propuestas y gestionar la cuestión. La etiqueta de la cuestión en un reporte lleva a la misma página."
 
 #: app/templates/moderator/dashboard.html:443
 msgid "Phase management"
@@ -6355,7 +6355,7 @@ msgstr "hecho"
 #: app/templates/moderator/gebruiker.html:33
 msgctxt "user status"
 msgid "reported"
-msgstr "denunciado"
+msgstr "reportado"
 
 #: app/templates/moderator/gebruiker.html:33
 msgctxt "user status"
@@ -6411,7 +6411,7 @@ msgstr "Sellos de calidad"
 
 #: app/templates/moderator/gebruiker.html:72
 msgid "Reports received"
-msgstr "Denuncias recibidas"
+msgstr "Reportes recibidos"
 
 #: app/templates/moderator/gebruiker.html:72
 msgid "upheld"
@@ -6419,7 +6419,7 @@ msgstr "fundadas"
 
 #: app/templates/moderator/gebruiker.html:73
 msgid "Reports made"
-msgstr "Denuncias hechas"
+msgstr "Reportes hechos"
 
 #: app/templates/moderator/gebruiker.html:81
 msgid "Enforcement history"
@@ -6611,14 +6611,14 @@ msgstr "El botón solo se activa cuando el nombre de usuario coincide exactament
 #: app/templates/moderator/melding_beoordelen.html:3
 #: app/templates/moderator/melding_beoordelen.html:46
 msgid "Review report"
-msgstr "Revisar denuncia"
+msgstr "Revisar reporte"
 
 #: app/templates/moderator/melding_beoordelen.html:8
 #, python-format
 msgid "%(num)d report made"
 msgid_plural "%(num)d reports made"
-msgstr[0] "%(num)d denuncia hecha"
-msgstr[1] "%(num)d denuncias hechas"
+msgstr[0] "%(num)d reporte hecho"
+msgstr[1] "%(num)d reportes hechos"
 
 #: app/templates/moderator/melding_beoordelen.html:8
 #, python-format
@@ -6632,7 +6632,7 @@ msgstr "(%(n)s fundadas)"
 
 #: app/templates/moderator/melding_beoordelen.html:18
 msgid "Reported proposal"
-msgstr "Propuesta denunciada"
+msgstr "Propuesta reportada"
 
 #: app/templates/moderator/melding_beoordelen.html:19
 msgid "The proposal in the conversation"
@@ -6640,7 +6640,7 @@ msgstr "La propuesta en la conversación"
 
 #: app/templates/moderator/melding_beoordelen.html:19
 msgid "Reports on this proposal"
-msgstr "Denuncias sobre esta propuesta"
+msgstr "Reportes sobre esta propuesta"
 
 #: app/templates/moderator/melding_beoordelen.html:20
 msgid "This is your own proposal: another moderator decides."
@@ -6656,7 +6656,7 @@ msgstr "No hacer nada, la propuesta se mantiene"
 
 #: app/templates/moderator/melding_beoordelen.html:23
 msgid "Reported fact"
-msgstr "Hecho denunciado"
+msgstr "Hecho reportado"
 
 #: app/templates/moderator/melding_beoordelen.html:24
 msgid "The fact in the conversation"
@@ -6664,7 +6664,7 @@ msgstr "El hecho en la conversación"
 
 #: app/templates/moderator/melding_beoordelen.html:24
 msgid "Reports on this fact"
-msgstr "Denuncias sobre este hecho"
+msgstr "Reportes sobre este hecho"
 
 #: app/templates/moderator/melding_beoordelen.html:25
 msgid "This is your own fact: another moderator decides."
@@ -6680,7 +6680,7 @@ msgstr "No hacer nada, el hecho se mantiene"
 
 #: app/templates/moderator/melding_beoordelen.html:28
 msgid "Reported contribution"
-msgstr "Contribución denunciada"
+msgstr "Contribución reportada"
 
 #: app/templates/moderator/melding_beoordelen.html:29
 msgid "The contribution in the conversation"
@@ -6688,7 +6688,7 @@ msgstr "La contribución en la conversación"
 
 #: app/templates/moderator/melding_beoordelen.html:29
 msgid "Reports on this contribution"
-msgstr "Denuncias sobre esta contribución"
+msgstr "Reportes sobre esta contribución"
 
 #: app/templates/moderator/melding_beoordelen.html:30
 msgid "This is your own contribution: another moderator decides."
@@ -6764,7 +6764,7 @@ msgstr "Mover pone la contribución en la página de contexto pública, junto co
 
 #: app/templates/moderator/melding_beoordelen.html:169
 msgid "many reports do not automatically mean a violation. The numbers next to a name are context, not a verdict; you decide."
-msgstr "muchas denuncias no significan automáticamente una infracción. Las cifras junto a un nombre son contexto, no un veredicto; tú decides."
+msgstr "muchos reportes no significan automáticamente una infracción. Las cifras junto a un nombre son contexto, no un veredicto; tú decides."
 
 #: app/templates/moderator/rechten.html:10
 msgid "Senior moderators may also delete issues"

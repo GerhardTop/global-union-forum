@@ -213,7 +213,7 @@ msgstr "Quelles règles du jeu s'appliquent, et que se passe-t-il en cas d'infra
 
 #: app/faq.py:109
 msgid "There are conduct rules: stay respectful, stay on topic and one account per person. These are enforced. There are also quality guidelines, such as well-founded and concrete. These are rewarded and not enforced. When a rule is clearly broken, a contribution moves to a public background page with an explanation. You can object to that there. Nothing is removed for good. Only pure spam and gross abuse are hidden completely."
-msgstr "Il y a des règles de conduite : faire preuve de respect, rester dans le sujet et un seul compte par personne. Elles sont appliquées. Il y a aussi des lignes directrices de qualité, comme être étayé et concret. Elles sont récompensées, pas imposées. En cas d'infraction manifeste à une règle, une contribution est déplacée vers une page de contexte publique, avec une explication. Vous pouvez la contester à cet endroit. Rien n'est supprimé définitivement. Seuls le spam pur et les abus graves sont entièrement masqués."
+msgstr "Il y a des règles de conduite : faire preuve de respect, rester dans le sujet et un seul compte par personne. Elles sont appliquées. Il y a aussi des lignes directrices de qualité, comme être étayé et concret. Elles sont récompensées, pas imposées. En cas d'infraction manifeste à une règle, une contribution est déplacée vers une page de contexte publique, avec une explication. Vous pouvez y déposer un recours. Rien n'est supprimé définitivement. Seuls le spam pur et les abus graves sont entièrement masqués."
 
 #. TRANSLATORS: faq, vraag 3.7 en antwoord 3.7
 #: app/faq.py:115
@@ -365,7 +365,7 @@ msgstr "Un nouveau signalement à traiter"
 #: app/notifications.py:43
 msgctxt "notification setting"
 msgid "A new objection to a decision"
-msgstr "Une nouvelle contestation d'une décision"
+msgstr "Un nouveau recours contre une décision"
 
 #: app/notifications.py:44 app/notifications.py:45
 msgid "Senior moderators"
@@ -393,7 +393,7 @@ msgstr "Un nouveau signalement est à traiter."
 
 #: app/notifications.py:231
 msgid "A new objection to a decision."
-msgstr "Une nouvelle contestation d'une décision est arrivée."
+msgstr "Un nouveau recours contre une décision est arrivé."
 
 #: app/notifications.py:232
 msgid "A fact is being challenged."
@@ -523,7 +523,7 @@ msgstr "Un nouveau signalement à traiter"
 #: app/notifications.py:473
 msgctxt "email subject"
 msgid "A new objection to a decision"
-msgstr "Une nouvelle contestation d'une décision"
+msgstr "Un nouveau recours contre une décision"
 
 #: app/notifications.py:474
 msgid "A fact is being challenged"
@@ -904,7 +904,7 @@ msgstr "Réponse non valide : le message auquel vous répondez n'existe pas dan
 
 #: app/routes/forum.py:1260
 msgid "The statement of a proposal can only be changed in the revision phase."
-msgstr "L'énoncé d'une proposition ne peut être modifié que pendant la phase de révision."
+msgstr "L'affirmation d'une proposition ne peut être modifiée que pendant la phase de révision."
 
 #: app/routes/forum.py:1262
 msgid "This post already has replies, so it can no longer be edited."
@@ -912,7 +912,7 @@ msgstr "Ce message a déjà des réponses, il ne peut donc plus être modifié."
 
 #: app/routes/forum.py:1263
 msgid "A moved or hidden post cannot be edited. You can object instead."
-msgstr "Un message déplacé ou masqué ne peut pas être modifié. Vous pouvez en revanche le contester."
+msgstr "Un message déplacé ou masqué ne peut pas être modifié. Vous pouvez en revanche faire un recours."
 
 #: app/routes/forum.py:1337 app/templates/forum/_post.html:70
 #, python-format
@@ -937,7 +937,7 @@ msgstr "Vous avez déjà contesté ce fait ; un modérateur va l'examiner."
 
 #: app/routes/forum.py:1923
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
-msgstr "Merci. Un modérateur va examiner votre contestation ; le fait reste visible en attendant."
+msgstr "Merci. Un modérateur va examiner votre recours ; le fait reste visible en attendant."
 
 #: app/routes/issues.py:54 app/templates/issues/_steps.html:12
 msgid "Making proposals"
@@ -1363,7 +1363,7 @@ msgstr "Modérateurs"
 #: app/templates/about.html:49
 #, python-format
 msgid "Keep the conversation flowing and oversee the conduct rules. A violation is not deleted but moved to the public <a href=\"%(value)s\">background page</a>; spam or abuse is hidden completely. The author can object, and a moderator decides."
-msgstr "Faire en sorte que la conversation avance et veiller au respect des règles de conduite. Une infraction n'est pas supprimée, mais déplacée vers la <a href=\"%(value)s\">page de contexte</a> publique ; le spam et les abus sont entièrement masqués. L'auteur peut contester, et un modérateur décide."
+msgstr "Faire en sorte que la conversation avance et veiller au respect des règles de conduite. Une infraction n'est pas supprimée, mais déplacée vers la <a href=\"%(value)s\">page de contexte</a> publique ; le spam et les abus sont entièrement masqués. L'auteur peut faire un recours, et un modérateur décide."
 
 #. about, tekst 11
 #: app/templates/about.html:62
@@ -3081,7 +3081,7 @@ msgstr "Oui, supprimer mon compte"
 #: app/templates/spelregels.html:19
 #, python-format
 msgid "Moderators oversee the conduct rules. A contribution that breaks a conduct rule is not deleted but moved to the public <a href=\"%(value)s\">background page</a>, with the rule and the explanation. Spam or gross abuse is hidden completely. The author can object within seven days, and a moderator decides. Moderators can also close a conversation."
-msgstr "Les modérateurs veillent au respect des règles de conduite. Une contribution qui enfreint une règle de conduite n'est pas supprimée, mais déplacée vers la <a href=\"%(value)s\">page de contexte</a> publique, avec la règle et l'explication. Le spam et les abus graves sont entièrement masqués. L'auteur peut contester dans un délai de sept jours, et un modérateur décide. Les modérateurs peuvent aussi fermer une conversation."
+msgstr "Les modérateurs veillent au respect des règles de conduite. Une contribution qui enfreint une règle de conduite n'est pas supprimée, mais déplacée vers la <a href=\"%(value)s\">page de contexte</a> publique, avec la règle et l'explication. Le spam et les abus graves sont entièrement masqués. L'auteur peut faire un recours dans un délai de sept jours, et un modérateur décide. Les modérateurs peuvent aussi fermer une conversation."
 
 #: app/templates/spelregels.html:25
 msgid "When you sign up, you agree to the conduct rules."
@@ -3583,15 +3583,15 @@ msgstr "Par un modérateur"
 #: app/templates/forum/_conduct_notice.html:36
 #: app/templates/forum/achtergrond.html:33
 msgid "Objection submitted, a moderator decides"
-msgstr "Contestation déposée, un modérateur décide"
+msgstr "Recours déposé, un modérateur décide"
 
 #: app/templates/forum/_conduct_notice.html:38
 msgid "Objection rejected, the decision stands."
-msgstr "Contestation rejetée, la décision est maintenue."
+msgstr "Recours rejeté, la décision est maintenue."
 
 #: app/templates/forum/_conduct_notice.html:43
 msgid "Object to this decision"
-msgstr "Contester cette décision"
+msgstr "Faire un recours contre cette décision"
 
 #: app/templates/forum/_conduct_notice.html:45
 msgid "Briefly explain why you disagree."
@@ -3600,11 +3600,11 @@ msgstr "Expliquez brièvement pourquoi vous n'êtes pas d'accord."
 #: app/templates/forum/_conduct_notice.html:47
 #, python-format
 msgid "You can object until %(date)s. A moderator decides."
-msgstr "Vous pouvez contester jusqu'au %(date)s. Un modérateur décide."
+msgstr "Vous pouvez faire un recours jusqu'au %(date)s. Un modérateur décide."
 
 #: app/templates/forum/_conduct_notice.html:48
 msgid "Submit objection"
-msgstr "Envoyer la contestation"
+msgstr "Déposer le recours"
 
 #: app/templates/forum/_conduct_notice.html:52
 #: app/templates/forum/achtergrond.html:34
@@ -3614,7 +3614,7 @@ msgstr "Décision confirmée par un modérateur"
 #: app/templates/forum/_conduct_notice.html:54
 #: app/templates/forum/achtergrond.html:37
 msgid "Objection period ended"
-msgstr "Délai de contestation expiré"
+msgstr "Délai de recours expiré"
 
 #: app/templates/forum/_digest_cards.html:10
 #, python-format
@@ -3851,7 +3851,7 @@ msgstr "Décrivez le fait (1000 caractères au maximum)."
 
 #: app/templates/forum/_fact_fields.html:23
 msgid "Direction relative to the statement"
-msgstr "Orientation par rapport à l'énoncé"
+msgstr "Orientation par rapport à l'affirmation"
 
 #: app/templates/forum/_fact_fields.html:30
 msgid "Choose a direction."
@@ -3939,7 +3939,7 @@ msgstr "Explication (facultatif)"
 
 #: app/templates/forum/_fact_signals.html:32
 msgid "A moderator assesses your objection. The fact stays visible meanwhile."
-msgstr "Un modérateur examine votre contestation. Le fait reste visible en attendant."
+msgstr "Un modérateur examine votre recours. Le fait reste visible en attendant."
 
 #: app/templates/forum/_fact_signals.html:33
 msgid "Send to a moderator"
@@ -3951,7 +3951,7 @@ msgstr "Faits"
 
 #: app/templates/forum/_facts.html:19
 msgid "Facts that are relevant to the statement, each with a direction and a source."
-msgstr "Des faits pertinents pour l'énoncé, chacun avec une orientation et une source."
+msgstr "Des faits pertinents pour l'affirmation, chacun avec une orientation et une source."
 
 #: app/templates/forum/_facts.html:28
 msgid "Fact moved because of the conduct rules"
@@ -4272,7 +4272,7 @@ msgstr "Ouvrir un nouveau tour de vote public"
 
 #: app/templates/forum/_proposal_vote.html:121
 msgid "Lay the proposal before the public again: a new voting period on the same statement. Facts and discussion stay."
-msgstr "Soumettez à nouveau la proposition au public : une nouvelle période de vote sur le même énoncé. Les faits et le débat sont conservés."
+msgstr "Soumettez à nouveau la proposition au public : une nouvelle période de vote sur la même affirmation. Les faits et le débat sont conservés."
 
 #: app/templates/forum/_proposal_vote.html:123
 #: app/templates/forum/_proposal_vote.html:126
@@ -4402,16 +4402,16 @@ msgstr "Supprimer ce message ?"
 #: app/templates/forum/achtergrond.html:19
 #, python-format
 msgid "This page lists contributions that were moved out of a conversation because they broke a <a href=\"%(value)s#gedragsregels\">conduct rule</a>. We delete nothing: every move is listed here with the rule, the explanation and the status, so anyone can check how moderation works. The author stays anonymous and can object within seven days; a moderator decides."
-msgstr "Cette page liste les contributions déplacées hors d'une conversation parce qu'elles enfreignaient une <a href=\"%(value)s#gedragsregels\">règle de conduite</a>. Nous ne supprimons rien : chaque déplacement figure ici avec la règle, l'explication et le statut, pour que tout le monde puisse vérifier comment fonctionne la modération. La personne qui a écrit la contribution reste anonyme et peut contester dans un délai de sept jours ; un modérateur décide."
+msgstr "Cette page liste les contributions déplacées hors d'une conversation parce qu'elles enfreignaient une <a href=\"%(value)s#gedragsregels\">règle de conduite</a>. Nous ne supprimons rien : chaque déplacement figure ici avec la règle, l'explication et le statut, pour que tout le monde puisse vérifier comment fonctionne la modération. La personne qui a écrit la contribution reste anonyme et peut faire un recours dans un délai de sept jours ; un modérateur décide."
 
 #: app/templates/forum/achtergrond.html:32
 #, python-format
 msgid "Objection possible until %(date)s"
-msgstr "Contestation possible jusqu'au %(date)s"
+msgstr "Recours possible jusqu'au %(date)s"
 
 #: app/templates/forum/achtergrond.html:35
 msgid "Objection upheld, restored"
-msgstr "Contestation acceptée, contribution rétablie"
+msgstr "Recours accepté, contribution rétablie"
 
 #: app/templates/forum/achtergrond.html:36
 msgid "Restored by a moderator"
@@ -4504,7 +4504,7 @@ msgstr "Une conversation"
 
 #: app/templates/forum/new_thread.html:32
 msgid "An open conversation about a question or statement."
-msgstr "Une conversation ouverte sur une question ou un énoncé."
+msgstr "Une conversation ouverte sur une question ou une affirmation."
 
 #: app/templates/forum/new_thread.html:36
 msgid "A proposal"
@@ -4512,16 +4512,16 @@ msgstr "Une proposition"
 
 #: app/templates/forum/new_thread.html:36
 msgid "A statement that goes to a vote in four phases."
-msgstr "Un énoncé soumis au vote en quatre phases."
+msgstr "Une affirmation soumise au vote en quatre phases."
 
 #: app/templates/forum/new_thread.html:43 app/templates/forum/thread.html:102
 #: app/templates/issues/_ip_fields.html:9
 msgid "Statement"
-msgstr "Énoncé"
+msgstr "Affirmation"
 
 #: app/templates/forum/new_thread.html:52
 msgid "Phrase your question or statement…"
-msgstr "Formulez votre question ou votre énoncé…"
+msgstr "Formulez votre question ou votre affirmation…"
 
 #: app/templates/forum/new_thread.html:59
 msgid "Kind of proposal"
@@ -4702,23 +4702,23 @@ msgstr "Révisé"
 #: app/templates/forum/thread.html:89
 #, python-format
 msgid "The statement was revised on %(date)s."
-msgstr "L'énoncé a été révisé le %(date)s."
+msgstr "L'affirmation a été révisée le %(date)s."
 
 #: app/templates/forum/thread.html:90
 msgid "Original statement:"
-msgstr "Énoncé initial :"
+msgstr "Affirmation initiale :"
 
 #: app/templates/forum/thread.html:98 app/templates/forum/thread.html:109
 msgid "Revise the statement"
-msgstr "Réviser l'énoncé"
+msgstr "Réviser l'affirmation"
 
 #: app/templates/forum/thread.html:106
 msgid "You can revise the statement once. After that it is fixed."
-msgstr "Vous pouvez réviser l'énoncé une seule fois. Ensuite, il est définitif."
+msgstr "Vous pouvez réviser l'affirmation une seule fois. Ensuite, elle est définitive."
 
 #: app/templates/forum/thread.html:107
 msgid "Enter a statement (at most 300 characters) that differs from the current one."
-msgstr "Saisissez un énoncé (300 caractères maximum) différent de l'énoncé actuel."
+msgstr "Saisissez une affirmation (300 caractères maximum) différente de l'affirmation actuelle."
 
 #: app/templates/forum/thread.html:116
 msgid "Close facts and open revision"
@@ -4911,7 +4911,7 @@ msgstr "En une phrase : que proposez-vous ?"
 
 #: app/templates/issues/_ip_fields.html:13
 msgid "Write the statement in one sentence of at most 300 characters."
-msgstr "Rédigez l'énoncé en une phrase de 300 caractères maximum."
+msgstr "Rédigez l'affirmation en une phrase de 300 caractères maximum."
 
 #: app/templates/issues/_ip_fields.html:16 app/templates/issues/new.html:105
 #: app/templates/issues/proposal.html:267
@@ -5565,7 +5565,7 @@ msgstr[1] "%(num)d soutiens"
 
 #: app/templates/issues/proposal.html:208
 msgid "Change the statement or the explanation."
-msgstr "Modifiez l'énoncé ou l'explication."
+msgstr "Modifiez l'affirmation ou l'explication."
 
 #: app/templates/issues/proposal.html:209
 msgid "Each revision becomes a new version. Earlier versions stay visible."
@@ -5836,7 +5836,7 @@ msgstr "<strong>Cette action est irréversible.</strong> Si vous voulez seulemen
 
 #: app/templates/issues/verwijderen.html:76
 msgid "Type the statement to confirm:"
-msgstr "Saisissez l'énoncé pour confirmer :"
+msgstr "Saisissez l'affirmation pour confirmer :"
 
 #: app/templates/issues/verwijderen.html:76
 msgid "Type the title to confirm:"
@@ -5848,7 +5848,7 @@ msgstr "Supprimer définitivement"
 
 #: app/templates/issues/verwijderen.html:84
 msgid "The button only becomes active when the statement matches exactly."
-msgstr "Le bouton ne devient actif que si l'énoncé correspond exactement."
+msgstr "Le bouton ne devient actif que si l'affirmation correspond exactement."
 
 #: app/templates/issues/verwijderen.html:84
 msgid "The button only becomes active when the title matches exactly."
@@ -6098,7 +6098,7 @@ msgstr "Signalements"
 #: app/templates/moderator/dashboard.html:82
 #: app/templates/moderator/dashboard.html:99
 msgid "Objections"
-msgstr "Contestations"
+msgstr "Recours"
 
 #: app/templates/moderator/dashboard.html:83
 #: app/templates/moderator/dashboard.html:100
@@ -6203,7 +6203,7 @@ msgstr "Faits contestés"
 
 #: app/templates/moderator/dashboard.html:189
 msgid "The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled."
-msgstr "Le fait reste visible. Vérifiez-le, agissez selon les règles de conduite si nécessaire, puis marquez la contestation comme traitée."
+msgstr "Le fait reste visible. Vérifiez-le, agissez selon les règles de conduite si nécessaire, puis marquez le recours comme traité."
 
 #: app/templates/moderator/dashboard.html:217
 msgid "Mark as handled"
@@ -6215,7 +6215,7 @@ msgstr "Aucun fait contesté."
 
 #: app/templates/moderator/dashboard.html:235
 msgid "Conduct rules: open objections"
-msgstr "Règles de conduite : contestations ouvertes"
+msgstr "Règles de conduite : recours ouverts"
 
 #: app/templates/moderator/dashboard.html:236
 msgid "A senior moderator or the admin decides, not the moderator who took the decision."
@@ -6223,7 +6223,7 @@ msgstr "Un modérateur senior ou l'admin décide, pas le modérateur qui a pris 
 
 #: app/templates/moderator/dashboard.html:246
 msgid "Objection:"
-msgstr "Contestation :"
+msgstr "Recours :"
 
 #: app/templates/moderator/dashboard.html:250
 msgid "You took this decision: another senior moderator decides."
@@ -6239,7 +6239,7 @@ msgstr "Maintenir la décision"
 
 #: app/templates/moderator/dashboard.html:280
 msgid "No open objections."
-msgstr "Aucune contestation ouverte."
+msgstr "Aucun recours ouvert."
 
 #: app/templates/moderator/dashboard.html:287
 msgid "Conduct rules: doubtful cases"
@@ -6648,7 +6648,7 @@ msgstr "C'est votre propre proposition : un autre modérateur décide."
 
 #: app/templates/moderator/melding_beoordelen.html:21
 msgid "Choose what happens to the proposal. The author is notified and can object."
-msgstr "Choisissez ce qu'il advient de la proposition. La personne qui l'a écrite reçoit une notification et peut contester."
+msgstr "Choisissez ce qu'il advient de la proposition. La personne qui l'a écrite reçoit une notification et peut faire un recours."
 
 #: app/templates/moderator/melding_beoordelen.html:22
 msgid "Do nothing, the proposal stays"
@@ -6672,7 +6672,7 @@ msgstr "C'est votre propre fait : un autre modérateur décide."
 
 #: app/templates/moderator/melding_beoordelen.html:26
 msgid "Choose what happens to the fact. The author is notified and can object."
-msgstr "Choisissez ce qu'il advient du fait. La personne qui l'a ajouté reçoit une notification et peut contester."
+msgstr "Choisissez ce qu'il advient du fait. La personne qui l'a ajouté reçoit une notification et peut faire un recours."
 
 #: app/templates/moderator/melding_beoordelen.html:27
 msgid "Do nothing, the fact stays"
@@ -6696,7 +6696,7 @@ msgstr "C'est votre propre contribution : un autre modérateur décide."
 
 #: app/templates/moderator/melding_beoordelen.html:31
 msgid "Choose what happens to the contribution. The author is notified and can object."
-msgstr "Choisissez ce qu'il advient de la contribution. La personne qui l'a écrite reçoit une notification et peut contester."
+msgstr "Choisissez ce qu'il advient de la contribution. La personne qui l'a écrite reçoit une notification et peut faire un recours."
 
 #: app/templates/moderator/melding_beoordelen.html:32
 msgid "Do nothing, the contribution stays"

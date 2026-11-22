@@ -8,12 +8,10 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 
 1. **"Dossier" voor vraagstuk.** Een vraagstuk is een open vraag waarover deelnemers samen nadenken. "Question" botst met de gewone vraag (een vraagstuk begint "met een vraag of probleem") en met de FAQ, "sujet" is te vaag, "problématique" te zwaar. "Dossier" is in de politiek gangbaar voor een onderwerp waaraan gewerkt wordt ("le dossier des retraites"). Is "Lancer un dossier" natuurlijk?
 2. **Rolnamen.** Lecteur, Contributeur, Votant, Modérateur, Modérateur senior en Initiateur zijn generiek mannelijk. Graag een neutrale en korte vorm voorstellen die op de statusladder in het profiel past, zonder punt médian.
-3. **"Contestation" / "contester" voor bezwaar** tegen een beslissing van de moderatie ("objection" klinkt juridisch). Past dat?
-4. **"Énoncé" voor stelling** (de korte stelling van een voorstel waarover gestemd wordt). Alternatieven: "affirmation", "thèse".
-5. **Typografie.** Franse aanhalingstekens « » (met vaste spatie binnen) en een vaste spatie voor ; : ! ? en %, overal consequent. Graag melden als het ergens niet klopt.
-6. **Neutraal geformuleerd waar een vorm anders mannelijk of vrouwelijk zou zijn:** "Connexion réussie" (in plaats van "Vous êtes connecté"), "Votre compte est suspendu", "Vous confirmez ?". Klinkt dat natuurlijk?
-7. **Losse woordkeuzes om na te lopen:** "Moniteur des langues" (taalmonitor), "grille d'évaluation" (scorecard), "Socle" en "Approfondissement" (fasen in de wetgevingstabel), "droits humains" (niet "droits de l'homme"), "Participants" voor co-thinkers, "abonné retiré" (een volger die bij het verwijderen loskomt), "Au niveau" (voldoet aan de norm), "s.o." voor n/a, "cockpit".
-8. **"Signaler" in twee betekenissen:** een melding door een gebruiker, en een markering door het systeem ("Signalé à un modérateur"). Is een ander woord voor de tweede beter?
+3. **Typografie.** Franse aanhalingstekens « » (met vaste spatie binnen) en een vaste spatie voor ; : ! ? en %, overal consequent. Graag melden als het ergens niet klopt.
+4. **Neutraal geformuleerd waar een vorm anders mannelijk of vrouwelijk zou zijn:** "Connexion réussie" (in plaats van "Vous êtes connecté"), "Votre compte est suspendu", "Vous confirmez ?". Klinkt dat natuurlijk?
+5. **Losse woordkeuzes om na te lopen:** "Moniteur des langues" (taalmonitor), "grille d'évaluation" (scorecard), "Socle" en "Approfondissement" (fasen in de wetgevingstabel), "droits humains" (niet "droits de l'homme"), "Participants" voor co-thinkers, "abonné retiré" (een volger die bij het verwijderen loskomt), "Au niveau" (voldoet aan de norm), "s.o." voor n/a, "cockpit".
+6. **"Signaler" in twee betekenissen:** een melding door een gebruiker, en een markering door het systeem ("Signalé à un modérateur"). Is een ander woord voor de tweede beter?
 
 ## Stijlregels
 
@@ -34,7 +32,7 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 | issue | vraagstuk | dossier (mv. dossiers) | Een onderwerp waaraan samen gewerkt wordt; "question" botst met de gewone vraag en de FAQ. |
 | proposal | voorstel | proposition | Het gewone woord in burgerparticipatie ("déposer une proposition"). |
 | summary proposal | samenvattend voorstel | proposition de synthèse | Het voorstel dat de uitkomst samenvat. |
-| statement | stelling | énoncé | De korte stelling van een voorstel waarover gestemd wordt; neutraal en duidelijk. |
+| statement | stelling | affirmation (v.) | De korte stelling van een voorstel waarover gestemd wordt; neutraal en duidelijk. Vrouwelijk: "l'affirmation initiale", "révisée". |
 | explanation | toelichting | explication | Standaardwoord voor een toelichting bij een voorstel. |
 | conversation | gesprek | conversation | Volgt het Nederlands; "débat" is gereserveerd voor discussion (de discussiekolom). |
 | discussion | discussie | débat | De gewone term voor een inhoudelijke discussie. |
@@ -48,7 +46,7 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 | ground rules (de pagina "Spelregels") | spelregels | règles du jeu | Zelfde beeld als in het Nederlands, in het Frans even gewoon. |
 | conduct rules | gedragsregels | règles de conduite | De regels over gedrag in het forum (moderatie); onderscheiden van règles du jeu. |
 | background page | achtergrondpagina | page de contexte | "Contexte" is het gewone woord voor achtergrond bij een onderwerp. |
-| objection | bezwaar | contestation, contester | Bezwaar tegen een beslissing van de moderatie; "recours" is juridisch. |
+| objection | bezwaar | recours (m.), faire un recours / déposer un recours | Bezwaar tegen een beslissing van de moderatie. Mannelijk, onveranderlijk in het meervoud: "un recours", "recours ouverts", "Recours rejeté". Werkwoord naar wat in de zin past: "faire un recours" (kunnen), "déposer un recours" (indienen). Betwisten van een feit blijft "contester" ("Faits contestés"). |
 | report (melding) | melding | signalement, signaler | Zo heet het bij de grote platforms. |
 | notification | melding (notificatie) | notification | In het Nederlands heet dit ook "melding"; het Frans houdt de twee uit elkaar. |
 | summary (dagelijks/wekelijks) | samenvatting | résumé | Gangbaar voor een digest-mail. |

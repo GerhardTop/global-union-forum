@@ -8,13 +8,11 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 
 1. **Rolnamen.** Waar het kon, is de rolnaam een vorm die voor iedereen gelijk is: Participante (Bijdrager) en Votante (Stemmer). Lector, Moderador, Moderador sénior en Promotor zijn generiek mannelijk. Graag een neutrale en korte vorm voorstellen die op de statusladder in het profiel past, zonder @, x of e.
 2. **"Cuestión" voor vraagstuk.** Gekozen omdat het een open vraag is waarover men samen nadenkt; "tema" is te vaag, "problema" te negatief. Is "cuestión" (mv. "cuestiones") natuurlijk als naam van een onderdeel van het platform ("Iniciar una cuestión")?
-3. **"Enunciado" voor stelling.** De korte stelling van een voorstel waarover gestemd wordt. "Tesis" en "afirmación" zijn alternatieven.
-4. **"Denuncia" / "denunciar" voor een melding aan de moderatie.** Zo heet het bij de grote platforms in neutraal Spaans; in Latijns-Amerika is "reportar" ook gangbaar. Klinkt "denuncia" te juridisch?
-5. **"Promotor" voor initiatiefnemer.** De gangbare term voor wie een burgerinitiatief start. Alternatief: "iniciador".
-6. **"Contribución" voor bijdrage.** Gekozen omdat het in Spanje en Latijns-Amerika even gewoon is ("aportación" is Spaans, "aporte" Latijns-Amerikaans).
-7. **Afkortingen van organisaties** staan in de Spaanse vorm (OMC, OMA, GAFI, OIT, OMS, UIT, OACI, OMI, NIIF, CNUCC, CMNUCC; ONU, OCDE), behalve IASB en Codex Alimentarius. Klopt dat overal in het manifest?
-8. **Losse woordkeuzes om na te lopen:** "Juego limpio" (fairness, een kwaliteitscriterium), "cabildeo" (lobby), "Recuento provisional" (tussenstand van een stemming), "Prompt utilizado", "Afiliación" (lidmaatschap), "Quiénes somos" (menu Over ons), maandafkortingen zonder punt ("ene", "sept").
-9. **Generiek mannelijk waar het lastig was:** onder meer "denunciado", "movido", "oculto" in statuslabels, "el autor" in moderatieteksten. Waar mogelijk is de zin om het account of de persoon heen gebouwd ("Tu cuenta está suspendida").
+3. **"Promotor" voor initiatiefnemer.** De gangbare term voor wie een burgerinitiatief start. Alternatief: "iniciador".
+4. **"Contribución" voor bijdrage.** Gekozen omdat het in Spanje en Latijns-Amerika even gewoon is ("aportación" is Spaans, "aporte" Latijns-Amerikaans).
+5. **Afkortingen van organisaties** staan in de Spaanse vorm (OMC, OMA, GAFI, OIT, OMS, UIT, OACI, OMI, NIIF, CNUCC, CMNUCC; ONU, OCDE), behalve IASB en Codex Alimentarius. Klopt dat overal in het manifest?
+6. **Losse woordkeuzes om na te lopen:** "Juego limpio" (fairness, een kwaliteitscriterium), "cabildeo" (lobby), "Recuento provisional" (tussenstand van een stemming), "Prompt utilizado", "Afiliación" (lidmaatschap), "Quiénes somos" (menu Over ons), maandafkortingen zonder punt ("ene", "sept").
+7. **Generiek mannelijk waar het lastig was:** onder meer "reportado", "movido", "oculto" in statuslabels, "el autor" in moderatieteksten. Waar mogelijk is de zin om het account of de persoon heen gebouwd ("Tu cuenta está suspendida").
 
 ## Stijlregels
 
@@ -35,7 +33,7 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 | issue | vraagstuk | cuestión (mv. cuestiones) | Een open vraag waarover deelnemers samen nadenken; "tema" is te vaag, "problema" te negatief. |
 | proposal | voorstel | propuesta | Het gewone woord in burgerparticipatie ("presentar propuestas"). |
 | summary proposal | samenvattend voorstel | propuesta de síntesis | Het voorstel dat de uitkomst samenvat; "síntesis" is daarvoor het gangbare woord. |
-| statement | stelling | enunciado | De korte stelling van een voorstel waarover gestemd wordt; neutraal en duidelijk. |
+| statement | stelling | afirmación (v.) | De korte stelling van een voorstel waarover gestemd wordt; neutraal en duidelijk. Vrouwelijk: "la afirmación", "revisada", "fija". |
 | explanation | toelichting | explicación | Standaardwoord voor een toelichting bij een voorstel. |
 | conversation | gesprek | conversación | Volgt het Nederlands; "debate" is gereserveerd voor discussion (de discussiekolom). |
 | discussion | discussie | debate | "Discusión" kan als ruzie klinken; "debate" is de gewone term voor een inhoudelijke discussie. |
@@ -50,7 +48,7 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 | conduct rules | gedragsregels | normas de conducta | De regels over gedrag in het forum (moderatie); onderscheiden van reglas del juego. |
 | background page | achtergrondpagina | página de contexto | "Contexto" is het gewone woord voor achtergrond bij een onderwerp. |
 | objection | bezwaar | objeción | Bezwaar tegen een beslissing van de moderatie; "recurso" is juridisch. |
-| report (melding) | melding | denuncia, denunciar | Een melding van een bijdrage aan de moderatie, zoals bij de grote platforms. |
+| report (melding) | melding | reporte (m.), reportar | Een melding van een bijdrage aan de moderatie. Mannelijk: "el reporte", "reportes abiertos"; status "reportado". Niet "denuncia" (te juridisch). |
 | notification | melding (notificatie) | notificación | In het Nederlands heet dit ook "melding"; het Spaans houdt de twee uit elkaar. |
 | summary (dagelijks/wekelijks) | samenvatting | resumen | Gangbaar voor een digest-mail. |
 | decision (moderatie) | beslissing, besluit | decisión | Gangbaar en neutraal. |

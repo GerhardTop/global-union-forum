@@ -138,7 +138,7 @@ CORE = {
                  'fr': ('Mon profil', 'Comment apparaissez-vous dans le forum ?')},
     '/moderator': {'nl': ('Betwiste feiten', 'Geen open meldingen.'), 'en': ('Disputed facts', 'No open reports.'),
                    'de': ('Angezweifelte Fakten', 'Keine offenen Meldungen.'),
-                   'es': ('Hechos cuestionados', 'No hay denuncias abiertas.'),
+                   'es': ('Hechos cuestionados', 'No hay reportes abiertos.'),
                    'fr': ('Faits contestés', 'Aucun signalement ouvert.')},
     '/manifest': {'nl': ('Gelijkgezinde landen als positieve kracht', 'In dit manifest'),
                   'en': ('Like-minded countries as a positive force', 'In this manifesto'),
