@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ user.handle }} · Moderator · Global Union{% endblock %}
+{% from '_mt.html' import mt_inline with context %}
 
 {#
   User moderation dossier, built to docs/design/gebruiker.html: identity,
@@ -110,12 +111,21 @@
             {% for c, href in contributions %}
             {% set p = c.post %}
             {% set case = p.conduct_case %}
-            {% set text = ((case.body_snapshot if case and case.body_snapshot and c.status in ('verplaatst', 'verborgen') else None) or (p.fact_title if p.is_fact and p.fact_title else p.body) or '')|replace('\n', ' ') %}
+            {% set snapshot = case.body_snapshot if case and case.body_snapshot and c.status in ('verplaatst', 'verborgen') else None %}
+            {% set text = (snapshot or (p.fact_title if p.is_fact and p.fact_title else p.body) or '')|replace('\n', ' ') %}
             {% set text = text[:120] ~ ('…' if text|length > 120 else '') %}
             {% set label = (((_('Fact: ')) if p.is_fact else '') ~ '"' ~ text ~ '"') %}
+            {#- Multilingual phase 2: a fact is translated right away, so it shows in the moderator's language (or with its language code). -#}
+            {% if p.is_fact and not snapshot %}
+            {% set inner %}{{ _('Fact: ') }}"{{ mt_inline(p, 'fact_title' if p.fact_title else 'body', 120) }}"{% endset %}
+            {% set label_lang = none %}
+            {% else %}
+            {% set inner = label %}
+            {% set label_lang = p.source_lang or lang %}
+            {% endif %}
             <div class="gu-user__brow" data-status="{{ c.status or '' }}">
               <div class="gu-user__browbody">
-                {% if href %}<a class="gu-user__browtitle" href="{{ href }}" lang="{{ p.source_lang or lang }}">{{ label }}</a>{% else %}<span class="gu-user__browtitle" lang="{{ p.source_lang or lang }}">{{ label }}</span>{% endif %}
+                {% if href %}<a class="gu-user__browtitle" href="{{ href }}"{% if label_lang %} lang="{{ label_lang }}"{% endif %}>{{ inner }}</a>{% else %}<span class="gu-user__browtitle"{% if label_lang %} lang="{{ label_lang }}"{% endif %}>{{ inner }}</span>{% endif %}
                 <div class="gu-user__browmeta">
                   {{ ctx_pill(c.issue, p.thread if not c.issue else None) }}
                   <span>{{ p.time_ago }}</span>

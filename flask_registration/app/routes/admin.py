@@ -226,9 +226,14 @@ def moderator_dashboard():
     # (rows, management list, phases) in one query.
     from app import content_i18n
     content_i18n.preload([obj for obj in list(db.session.identity_map.values()) if isinstance(obj, Issue)], 'title')
+    # Disputed facts in the moderator's language, and the notes (on request).
+    content_i18n.preload([row.fact for row, _url in fact_disputes], 'fact_title', 'body')
+    content_i18n.preload([row for row, _url in fact_disputes], 'note')
 
+    from app.routes.forum import _auto_translate
     return render_template(
         'moderator/dashboard.html',
+        auto_translate=_auto_translate(),  # the dispute notes: "always translate"
         meldingen=meldingen,
         stroom=stroom,
         stream_counts=stream_counts,
@@ -352,7 +357,7 @@ def gebruiker(user_id):
     user = db.session.get(User, user_id)
     if user is None:
         abort(404)
-    from app import facts, users
+    from app import content_i18n, facts, users
     from app.models import time_ago
     from app.routes.forum import post_url
 
@@ -363,6 +368,8 @@ def gebruiker(user_id):
         return facts.fact_url(c.post) if c.post.is_fact else post_url(c.post)
 
     contributions = [(c, item_url(c)) for c in users.recent_contributions(user)]
+    # Facts show in the moderator's language: their translations in one query.
+    content_i18n.preload([c.post for c, _url in contributions if c.post.is_fact], 'fact_title', 'body')
     since = None
     if user.created_at:
         since = f'{_month(user.created_at.month)} {user.created_at.year}'

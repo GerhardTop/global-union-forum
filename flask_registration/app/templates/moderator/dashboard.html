@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% from 'moderator/_userlink.html' import user_link with context %}
-{% from '_mt.html' import mt_inline with context %}
+{% from '_mt.html' import mt, mt_fact, mt_inline with context %}
 {% block title %}{{ _('Moderator') }} · Global Union{% endblock %}
 
 {# ── Fase 2c: compacte rijen (mrow) volgens Main.dc.html (docs/design/README.md) ── #}
@@ -195,8 +195,14 @@
               {% set case = post.conduct_case %}
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
-                  <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, url) }}</div>
-                  <p class="gu-mrow__reason">{{ reason_labels.get(row.reason, row.reason) }} · {{ _('by') }} {{ row.user.public_name if row.user else '@deleted_user' }}{% if row.note %} · {{ _('Explanation') }}: {{ row.note }}{% endif %}</p>
+                  <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }}{% if url %} <a class="gu-mrow__open" href="{{ url }}">{{ _('View in context') }}</a>{% endif %}</div>
+                  {#- Multilingual phase 2: the fact in the moderator's language with the label, the original one click away. -#}
+                  <div class="gu-mrow__fact">{{ mt_fact(post) }}</div>
+                  <p class="gu-mrow__reason">{{ reason_labels.get(row.reason, row.reason) }} · {{ _('by') }} {{ row.user.public_name if row.user else '@deleted_user' }}{% if row.note %} · {{ _('Explanation') }}:{% endif %}</p>
+                  {#- The note is ordinary user text: translated on request, with the same label. -#}
+                  {% if row.note %}{{ mt(row, 'note', 'p', 'gu-mrow__notetext', on_request=true,
+                                       request_url=url_for('forum.fact_dispute_translate', dispute_id=row.id),
+                                       auto=auto_translate | default(false)) }}{% endif %}
                   {% if not fact_can_resolve(row) %}
                   <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
                   {% endif %}

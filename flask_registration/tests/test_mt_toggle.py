@@ -26,6 +26,15 @@ def test_the_label_swaps_between_translation_and_original(demo_server):  # noqa:
     assert (original['button'], original['pressed']) == ('Show translation', 'true')
     assert back == shown
 
+    # A fact: title and text swap together; the hidden parts stay hidden (the clamp).
+    fact_shown, fact_original = out['fact']
+    assert fact_shown['translation'][0] == 'en:gu-fact__title' and fact_shown['original'] == []
+    assert fact_shown['label'] == 'Machine-translated from Dutch'
+    assert fact_original['translation'] == []
+    assert fact_original['original'] == [part.replace('en:', 'nl:') for part in fact_shown['translation']]
+    assert out['factClamped']['original'] == [] and 'en:gu-fact__text' in out['factClamped']['translation']
+    assert fact_original['label'] == 'Original in Dutch'
+
     fetched, post_original = out['post']
     assert fetched['hasTranslation'] and fetched['visibleLang'] == 'de'
     assert fetched['visibleText'].startswith('Erster Absatz.') and out['postParagraphs'] == 2

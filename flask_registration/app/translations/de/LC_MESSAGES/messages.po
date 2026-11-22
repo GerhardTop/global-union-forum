@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 17:37+0100\n"
+"POT-Creation-Date: 2026-11-22 20:51+0100\n"
 "PO-Revision-Date: 2026-11-20 22:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:861
+#: app/__init__.py:863
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Zu viele Versuche. Bitte versuche es in einer Minute noch einmal."
 
-#: app/__init__.py:891
+#: app/__init__.py:893
 msgid "Your session has expired. Please log in again."
 msgstr "Deine Sitzung ist abgelaufen. Bitte melde dich neu an."
 
@@ -691,121 +691,121 @@ msgstr "Zusammenfassender Vorschlag"
 msgid "Follow-up"
 msgstr "Weiteres Vorgehen"
 
-#: app/routes/admin.py:330
+#: app/routes/admin.py:335
 msgid "Rights saved."
 msgstr "Rechte gespeichert."
 
-#: app/routes/admin.py:339
+#: app/routes/admin.py:344
 msgctxt "month"
 msgid "Jan"
 msgstr "Jan."
 
-#: app/routes/admin.py:339
+#: app/routes/admin.py:344
 msgctxt "month"
 msgid "Feb"
 msgstr "Feb."
 
-#: app/routes/admin.py:339
+#: app/routes/admin.py:344
 msgctxt "month"
 msgid "Mar"
 msgstr "März"
 
-#: app/routes/admin.py:339
+#: app/routes/admin.py:344
 msgctxt "month"
 msgid "Apr"
 msgstr "Apr."
 
-#: app/routes/admin.py:340
+#: app/routes/admin.py:345
 msgctxt "month"
 msgid "May"
 msgstr "Mai"
 
-#: app/routes/admin.py:340
+#: app/routes/admin.py:345
 msgctxt "month"
 msgid "Jun"
 msgstr "Juni"
 
-#: app/routes/admin.py:340
+#: app/routes/admin.py:345
 msgctxt "month"
 msgid "Jul"
 msgstr "Juli"
 
-#: app/routes/admin.py:340
+#: app/routes/admin.py:345
 msgctxt "month"
 msgid "Aug"
 msgstr "Aug."
 
-#: app/routes/admin.py:341
+#: app/routes/admin.py:346
 msgctxt "month"
 msgid "Sep"
 msgstr "Sept."
 
-#: app/routes/admin.py:341
+#: app/routes/admin.py:346
 msgctxt "month"
 msgid "Oct"
 msgstr "Okt."
 
-#: app/routes/admin.py:341
+#: app/routes/admin.py:346
 msgctxt "month"
 msgid "Nov"
 msgstr "Nov."
 
-#: app/routes/admin.py:341
+#: app/routes/admin.py:346
 msgctxt "month"
 msgid "Dec"
 msgstr "Dez."
 
-#: app/routes/admin.py:391
+#: app/routes/admin.py:398
 msgid "Write a message to the user first."
 msgstr "Schreib zuerst eine Nachricht an die Person."
 
-#: app/routes/admin.py:400
+#: app/routes/admin.py:407
 msgid "The warning has been sent."
 msgstr "Die Verwarnung wurde verschickt."
 
-#: app/routes/admin.py:427
+#: app/routes/admin.py:434
 msgid "Choose 7 or 30 days."
 msgstr "Wähle 7 oder 30 Tage."
 
-#: app/routes/admin.py:429
+#: app/routes/admin.py:436
 msgid "Write the reason for the suspension first."
 msgstr "Schreib zuerst den Grund für die Sperre."
 
-#: app/routes/admin.py:440
+#: app/routes/admin.py:447
 #, python-format
 msgid "@%(username)s has been suspended for %(days)s days."
 msgstr "@%(username)s ist für %(days)s Tage gesperrt."
 
-#: app/routes/admin.py:470
+#: app/routes/admin.py:477
 msgid "The username does not match. Nothing was deleted."
 msgstr "Der Benutzername stimmt nicht. Es wurde nichts gelöscht."
 
-#: app/routes/admin.py:475
+#: app/routes/admin.py:482
 #, python-format
 msgid "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
 msgstr "Das Konto @%(username)s wurde gelöscht. Die Beiträge stehen jetzt unter @verwijderd."
 
-#: app/routes/admin.py:522
+#: app/routes/admin.py:529
 msgid "Choose what to do with this report."
 msgstr "Wähle, was du mit dieser Meldung machst."
 
-#: app/routes/admin.py:525
+#: app/routes/admin.py:532
 msgid "The report has been handled."
 msgstr "Die Meldung wurde bearbeitet."
 
-#: app/routes/admin.py:642
+#: app/routes/admin.py:649
 msgid "Thresholds saved."
 msgstr "Schwellen gespeichert."
 
-#: app/routes/admin.py:673
+#: app/routes/admin.py:680
 msgid "Maximum durations saved."
 msgstr "Maximale Laufzeiten gespeichert."
 
-#: app/routes/admin.py:695 app/templates/admin/proposal_limits.html:25
+#: app/routes/admin.py:702 app/templates/admin/proposal_limits.html:25
 msgid "Enter a whole number from 1 to 365."
 msgstr "Gib eine ganze Zahl von 1 bis 365 ein."
 
-#: app/routes/admin.py:698
+#: app/routes/admin.py:705
 msgid "Saved."
 msgstr "Gespeichert."
 
@@ -902,40 +902,40 @@ msgstr "Du kannst nicht auf deinen eigenen Beitrag antworten."
 msgid "Invalid reply: the post you are replying to does not exist in this conversation."
 msgstr "Ungültige Antwort: Den Beitrag, auf den du antwortest, gibt es in diesem Gespräch nicht."
 
-#: app/routes/forum.py:1260
+#: app/routes/forum.py:1267
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "Die These eines Vorschlags kann nur in der Überarbeitungsphase geändert werden."
 
-#: app/routes/forum.py:1262
+#: app/routes/forum.py:1269
 msgid "This post already has replies, so it can no longer be edited."
 msgstr "Dieser Beitrag hat schon Antworten und kann deshalb nicht mehr bearbeitet werden."
 
-#: app/routes/forum.py:1263
+#: app/routes/forum.py:1270
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "Einen verschobenen oder verborgenen Beitrag kannst du nicht bearbeiten. Du kannst aber Einspruch einlegen."
 
-#: app/routes/forum.py:1337 app/templates/forum/_post.html:70
+#: app/routes/forum.py:1346 app/templates/forum/_post.html:70
 #, python-format
 msgid "edited %(when)s"
 msgstr "bearbeitet %(when)s"
 
-#: app/routes/forum.py:1529 app/routes/issues.py:271
+#: app/routes/forum.py:1538 app/routes/issues.py:280
 msgid "Give a reason for your report."
 msgstr "Gib einen Grund für deine Meldung an."
 
-#: app/routes/forum.py:1538 app/routes/issues.py:277
+#: app/routes/forum.py:1547 app/routes/issues.py:286
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Danke, deine Meldung wurde an einen Moderator weitergegeben."
 
-#: app/routes/forum.py:1917
+#: app/routes/forum.py:1928
 msgid "Choose a reason (and keep the note under 500 characters)."
 msgstr "Wähle einen Grund (und halte die Erläuterung unter 500 Zeichen)."
 
-#: app/routes/forum.py:1919
+#: app/routes/forum.py:1930
 msgid "You already disputed this fact; a moderator will look at it."
 msgstr "Du hast diesen Fakt schon angezweifelt; ein Moderator schaut ihn sich an."
 
-#: app/routes/forum.py:1923
+#: app/routes/forum.py:1934
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 msgstr "Danke. Ein Moderator schaut sich deinen Einspruch an; der Fakt bleibt so lange sichtbar."
 
@@ -947,60 +947,60 @@ msgstr "Vorschläge machen"
 msgid "Adjust the proposals"
 msgstr "Vorschläge anpassen"
 
-#: app/routes/issues.py:470
+#: app/routes/issues.py:480
 msgid "You already support this proposal."
 msgstr "Du unterstützt diesen Vorschlag schon."
 
-#: app/routes/issues.py:523
+#: app/routes/issues.py:533
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Wähle mindestens einen Fakt, der noch nicht verknüpft ist."
 
-#: app/routes/issues.py:652
+#: app/routes/issues.py:662
 msgid "The issue is now in the next phase."
 msgstr "Die Fragestellung ist jetzt in der nächsten Phase."
 
-#: app/routes/issues.py:668 app/routes/issues.py:688
+#: app/routes/issues.py:678 app/routes/issues.py:698
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "Der Text darf höchstens %(n)s Zeichen lang sein."
 
-#: app/routes/issues.py:720
+#: app/routes/issues.py:730
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Setz das Häkchen, um zu bestätigen, dass du die Fragestellung wieder öffnen willst."
 
-#: app/routes/issues.py:725
+#: app/routes/issues.py:735
 msgid "The issue is open again for discussion."
 msgstr "Die Fragestellung ist wieder offen für die Diskussion."
 
-#: app/routes/issues.py:747
+#: app/routes/issues.py:757
 msgid "The issue has been archived."
 msgstr "Die Fragestellung wurde archiviert."
 
-#: app/routes/issues.py:762
+#: app/routes/issues.py:772
 msgid "The issue is back from the archive."
 msgstr "Die Fragestellung ist zurück aus dem Archiv."
 
-#: app/routes/issues.py:781
+#: app/routes/issues.py:791
 msgid "Type the exact title to confirm."
 msgstr "Gib den Titel genau ein, um zu bestätigen."
 
-#: app/routes/issues.py:787
+#: app/routes/issues.py:797
 msgid "The issue has been deleted."
 msgstr "Die Fragestellung wurde gelöscht."
 
-#: app/routes/issues.py:809
+#: app/routes/issues.py:819
 msgid "Type the exact text to confirm."
 msgstr "Gib den Text genau ein, um zu bestätigen."
 
-#: app/routes/issues.py:816
+#: app/routes/issues.py:826
 msgid "The proposal has been deleted."
 msgstr "Der Vorschlag wurde gelöscht."
 
-#: app/routes/issues.py:936
+#: app/routes/issues.py:946
 msgid "The proposal is hidden."
 msgstr "Der Vorschlag ist verborgen."
 
-#: app/routes/issues.py:936
+#: app/routes/issues.py:946
 msgid "The proposal is visible again."
 msgstr "Der Vorschlag ist wieder sichtbar."
 
@@ -1224,23 +1224,26 @@ msgstr "Menü"
 #. under a text shown in a machine translation. %(language)s is the name of the
 #. original language in the reader's language, in its base form (as in a
 #. language list), e.g. "English", so build the sentence around that form.
-#: app/templates/_mt.html:50
+#: app/templates/_mt.html:50 app/templates/_mt.html:108
 #, python-format
 msgid "Machine-translated from %(language)s"
 msgstr "Maschinell übersetzt, Originalsprache: %(language)s"
 
-#: app/templates/_mt.html:51 app/templates/_mt.html:91
-#: app/templates/forum/closed.html:37 app/templates/forum/index.html:56
+#: app/templates/_mt.html:51 app/templates/_mt.html:109
+#: app/templates/_mt.html:148 app/templates/forum/closed.html:37
+#: app/templates/forum/index.html:56
 #, python-format
 msgid "Original in %(language)s"
 msgstr "Original auf %(language)s"
 
 #: app/templates/_mt.html:55 app/templates/_mt.html:66
+#: app/templates/_mt.html:113 app/templates/_mt.html:126
 #: app/templates/forum/quality.html:32 app/templates/issues/_ip_vote.html:43
 msgid "Show original"
 msgstr "Original zeigen"
 
 #: app/templates/_mt.html:55 app/templates/_mt.html:66
+#: app/templates/_mt.html:113
 msgid "Show translation"
 msgstr "Übersetzung zeigen"
 
@@ -1257,14 +1260,14 @@ msgstr "Fehlgeschlagen, versuch es noch einmal"
 msgid "Translate to English"
 msgstr "Ins Deutsche übersetzen"
 
-#. under an issue or proposal text shown in its original language because the
-#. machine translation is not ready yet.
-#: app/templates/_mt.html:73
+#. under a text (an issue, a proposal, a fact) shown in its original language
+#. because the machine translation is not ready yet.
+#: app/templates/_mt.html:73 app/templates/_mt.html:130
 msgid "Translation pending"
 msgstr "Übersetzung folgt"
 
-#: app/templates/_rules_list.html:14 app/templates/moderator/dashboard.html:295
-#: app/templates/moderator/dashboard.html:329
+#: app/templates/_rules_list.html:14 app/templates/moderator/dashboard.html:301
+#: app/templates/moderator/dashboard.html:335
 msgid "Conduct rules"
 msgstr "Verhaltensregeln"
 
@@ -2596,7 +2599,7 @@ msgstr "Benachrichtigungen einstellen"
 #: app/templates/issues/_crumbs.html:9 app/templates/issues/proposal.html:39
 #: app/templates/issues/verwijderen.html:28
 #: app/templates/moderator/beheer.html:24
-#: app/templates/moderator/gebruiker.html:40
+#: app/templates/moderator/gebruiker.html:41
 #: app/templates/moderator/gebruiker_verwijderen.html:21
 #: app/templates/moderator/melding_beoordelen.html:41
 #: app/templates/notificaties.html:15
@@ -2662,8 +2665,8 @@ msgstr "Wöchentlich"
 
 #: app/templates/admin/proposal_limits.html:28
 #: app/templates/admin/proposal_limits.html:43
-#: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:59
-#: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:55
+#: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:62
+#: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:52
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
@@ -3011,8 +3014,8 @@ msgid "Danger zone"
 msgstr "Gefahrenzone"
 
 #: app/templates/admin/dashboard.html:170
-#: app/templates/moderator/gebruiker.html:190
-#: app/templates/moderator/gebruiker.html:197
+#: app/templates/moderator/gebruiker.html:200
+#: app/templates/moderator/gebruiker.html:207
 #: app/templates/moderator/gebruiker_verwijderen.html:2
 #: app/templates/profile.html:426
 msgid "Delete account"
@@ -3291,7 +3294,7 @@ msgstr "Aktive Gespräche"
 
 #: app/templates/admin/dashboard.html:44 app/templates/forum/closed.html:2
 #: app/templates/forum/closed.html:16 app/templates/forum/index.html:29
-#: app/templates/moderator/dashboard.html:482
+#: app/templates/moderator/dashboard.html:488
 msgid "Closed conversations"
 msgstr "Geschlossene Gespräche"
 
@@ -3512,13 +3515,13 @@ msgstr "Du bekommst diese E-Mail, weil du E-Mails dafür eingeschaltet hast. Du 
 
 #: app/templates/forum/_conduct_mod.html:18
 #: app/templates/forum/_conduct_mod.html:58
-#: app/templates/moderator/dashboard.html:264
+#: app/templates/moderator/dashboard.html:270
 #: app/templates/moderator/melding_beoordelen.html:155
 msgid "Note (optional)"
 msgstr "Erläuterung (optional)"
 
 #: app/templates/forum/_conduct_mod.html:22
-#: app/templates/moderator/dashboard.html:269
+#: app/templates/moderator/dashboard.html:275
 msgid "Restore to the conversation"
 msgstr "Wieder ins Gespräch stellen"
 
@@ -3570,13 +3573,13 @@ msgstr "Verhaltensregel: %(rule)s."
 
 #: app/templates/forum/_conduct_notice.html:31
 #: app/templates/forum/achtergrond.html:40
-#: app/templates/moderator/dashboard.html:245
+#: app/templates/moderator/dashboard.html:251
 msgid "Automatically by the AI"
 msgstr "Automatisch durch die KI"
 
 #: app/templates/forum/_conduct_notice.html:31
 #: app/templates/forum/achtergrond.html:40
-#: app/templates/moderator/dashboard.html:245
+#: app/templates/moderator/dashboard.html:251
 msgid "By a moderator"
 msgstr "Durch einen Moderator"
 
@@ -3789,13 +3792,13 @@ msgstr "Schreib deine Antwort. Sei konkret (ein Gedanke, eine Frage, ein Einwand
 msgid "Post"
 msgstr "Senden"
 
-#: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:91
+#: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:94
 #: app/templates/forum/index.html:21 app/templates/issues/_propose_hint.html:11
 #: app/templates/issues/index.html:27
 msgid "You are suspended and cannot contribute right now"
 msgstr "Du bist gesperrt und kannst gerade nichts beitragen"
 
-#: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:91
+#: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:94
 #: app/templates/forum/index.html:24 app/templates/issues/index.html:30
 msgid "Accept the conduct rules to join in"
 msgstr "Akzeptiere die Verhaltensregeln, um mitzumachen"
@@ -3818,7 +3821,7 @@ msgid "Against"
 msgstr "Dagegen"
 
 #: app/templates/forum/_fact_fields.html:7 app/templates/forum/_facts.html:14
-#: app/templates/issues/_fact_choices.html:7
+#: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:48
 #: app/templates/issues/proposal.html:72 app/templates/issues/show.html:106
@@ -3887,9 +3890,9 @@ msgstr "Podcast"
 msgid "Video"
 msgstr "Video"
 
-#: app/templates/forum/_fact_fields.html:47 app/templates/forum/_facts.html:40
-#: app/templates/issues/_fact_card.html:31
-#: app/templates/moderator/dashboard.html:209
+#: app/templates/forum/_fact_fields.html:47 app/templates/forum/_facts.html:42
+#: app/templates/issues/_fact_card.html:28
+#: app/templates/moderator/dashboard.html:215
 msgid "Source"
 msgstr "Quelle"
 
@@ -3945,31 +3948,31 @@ msgstr "Ein Moderator prüft deinen Einspruch. Der Fakt bleibt so lange sichtbar
 msgid "Send to a moderator"
 msgstr "An einen Moderator schicken"
 
-#: app/templates/forum/_facts.html:18 app/templates/moderator/gebruiker.html:70
+#: app/templates/forum/_facts.html:19 app/templates/moderator/gebruiker.html:71
 msgid "Facts"
 msgstr "Fakten"
 
-#: app/templates/forum/_facts.html:19
+#: app/templates/forum/_facts.html:20
 msgid "Facts that are relevant to the statement, each with a direction and a source."
 msgstr "Fakten, die für die These wichtig sind, jeweils mit einer Richtung und einer Quelle."
 
-#: app/templates/forum/_facts.html:28
+#: app/templates/forum/_facts.html:29
 msgid "Fact moved because of the conduct rules"
 msgstr "Fakt wegen der Verhaltensregeln verschoben"
 
-#: app/templates/forum/_facts.html:29 app/templates/forum/_post_moved.html:10
+#: app/templates/forum/_facts.html:30 app/templates/forum/_post_moved.html:10
 msgid "View on the background page"
 msgstr "Auf der Hintergrundseite ansehen"
 
-#: app/templates/forum/_facts.html:55 app/templates/forum/_post.html:136
+#: app/templates/forum/_facts.html:58 app/templates/forum/_post.html:136
 #: app/templates/forum/edit_thread.html:15
-#: app/templates/issues/_fact_card.html:48
+#: app/templates/issues/_fact_card.html:45
 #: app/templates/issues/_lifecycle.html:46
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: app/templates/forum/_facts.html:65 app/templates/forum/_post.html:151
-#: app/templates/issues/_fact_card.html:64
+#: app/templates/forum/_facts.html:68 app/templates/forum/_post.html:151
+#: app/templates/issues/_fact_card.html:61
 #: app/templates/issues/_lifecycle.html:56
 #: app/templates/issues/verwijderen.html:2
 #: app/templates/issues/verwijderen.html:33
@@ -3978,24 +3981,24 @@ msgstr "Bearbeiten"
 msgid "Delete"
 msgstr "Löschen"
 
-#: app/templates/forum/_facts.html:75
+#: app/templates/forum/_facts.html:78
 msgid "No facts yet. Add the first one."
 msgstr "Noch keine Fakten. Bring den ersten ein."
 
-#: app/templates/forum/_facts.html:75
+#: app/templates/forum/_facts.html:78
 msgid "No facts were added."
 msgstr "Es wurden keine Fakten eingebracht."
 
-#: app/templates/forum/_facts.html:82 app/templates/forum/_facts.html:88
+#: app/templates/forum/_facts.html:85 app/templates/forum/_facts.html:91
 #: app/templates/issues/_fact_add_plus.html:13
 msgid "Add a fact"
 msgstr "Fakt hinzufügen"
 
-#: app/templates/forum/_facts.html:93
+#: app/templates/forum/_facts.html:96
 msgid "Log in to add a fact."
 msgstr "Melde dich an, um einen Fakt hinzuzufügen."
 
-#: app/templates/forum/_facts.html:96
+#: app/templates/forum/_facts.html:99
 msgid "The facts phase is over; the facts are fixed."
 msgstr "Die Faktenphase ist vorbei; die Fakten stehen fest."
 
@@ -4062,7 +4065,7 @@ msgid "Write your reply…"
 msgstr "Schreib deine Antwort…"
 
 #: app/templates/forum/_post_hidden.html:7
-#: app/templates/moderator/gebruiker.html:27
+#: app/templates/moderator/gebruiker.html:28
 msgid "Contribution hidden"
 msgstr "Beitrag verborgen"
 
@@ -4103,8 +4106,8 @@ msgstr "Abgelehnt"
 #: app/templates/forum/index.html:48 app/templates/forum/thread.html:49
 #: app/templates/issues/index.html:56 app/templates/issues/show.html:24
 #: app/templates/moderator/beheer.html:34
-#: app/templates/moderator/dashboard.html:421
-#: app/templates/moderator/dashboard.html:451
+#: app/templates/moderator/dashboard.html:427
+#: app/templates/moderator/dashboard.html:457
 msgid "Closed"
 msgstr "Geschlossen"
 
@@ -4281,7 +4284,7 @@ msgstr "Abstimmungszeitraum"
 
 #: app/templates/forum/_proposal_vote.html:127
 #: app/templates/forum/new_thread.html:81
-#: app/templates/moderator/gebruiker.html:175
+#: app/templates/moderator/gebruiker.html:185
 msgid "days"
 msgstr "Tage"
 
@@ -4418,11 +4421,12 @@ msgid "Restored by a moderator"
 msgstr "Von einem Moderator wieder eingestellt"
 
 #: app/templates/forum/achtergrond.html:46
-#: app/templates/moderator/dashboard.html:245
+#: app/templates/moderator/dashboard.html:251
 msgid "Why it was moved"
 msgstr "Warum verschoben"
 
 #: app/templates/forum/achtergrond.html:51
+#: app/templates/moderator/dashboard.html:198
 msgid "View in context"
 msgstr "Im Zusammenhang ansehen"
 
@@ -4450,13 +4454,13 @@ msgid "last"
 msgstr "zuletzt"
 
 #: app/templates/forum/closed.html:51 app/templates/issues/_beheer.html:44
-#: app/templates/moderator/dashboard.html:467
-#: app/templates/moderator/dashboard.html:498
+#: app/templates/moderator/dashboard.html:473
+#: app/templates/moderator/dashboard.html:504
 msgid "Reopen"
 msgstr "Wieder öffnen"
 
 #: app/templates/forum/closed.html:59
-#: app/templates/moderator/dashboard.html:504
+#: app/templates/moderator/dashboard.html:510
 msgid "No closed conversations."
 msgstr "Keine geschlossenen Gespräche."
 
@@ -4539,7 +4543,7 @@ msgstr "Fester Zeitplan: Du legst für jede Phase eine Laufzeit fest."
 #: app/templates/issues/_kind.html:11 app/templates/issues/index.html:39
 #: app/templates/issues/new.html:49 app/templates/issues/new.html:97
 #: app/templates/moderator/beheer.html:35
-#: app/templates/moderator/dashboard.html:452
+#: app/templates/moderator/dashboard.html:458
 #: app/templates/moderator/melding_beoordelen.html:53
 msgid "Event"
 msgstr "Veranstaltung"
@@ -4783,7 +4787,7 @@ msgid "Next phase: %(phase)s."
 msgstr "Nächste Phase: %(phase)s."
 
 #: app/templates/issues/_beheer.html:30
-#: app/templates/moderator/dashboard.html:459
+#: app/templates/moderator/dashboard.html:465
 msgid "To the next phase"
 msgstr "Zur nächsten Phase"
 
@@ -4792,7 +4796,7 @@ msgid "Reopening takes the issue back to the facts phase with a new schedule. Pr
 msgstr "Beim erneuten Öffnen geht die Fragestellung mit einem neuen Zeitplan zurück in die Faktenphase. Vorschläge, Unterstützungen und Stimmen bleiben erhalten, und die Ergebnisse stehen nicht mehr fest."
 
 #: app/templates/issues/_beheer.html:40
-#: app/templates/moderator/dashboard.html:466
+#: app/templates/moderator/dashboard.html:472
 msgid "Yes, reopen this issue for discussion"
 msgstr "Ja, diese Fragestellung wieder für die Diskussion öffnen"
 
@@ -4837,28 +4841,28 @@ msgstr "Das Siegel sagt nichts darüber, wie zuverlässig die Quelle ist."
 msgid "Your fact"
 msgstr "Dein Fakt"
 
-#: app/templates/issues/_fact_card.html:37
+#: app/templates/issues/_fact_card.html:34
 msgid "more"
 msgstr "mehr"
 
-#: app/templates/issues/_fact_card.html:37
+#: app/templates/issues/_fact_card.html:34
 msgid "less"
 msgstr "weniger"
 
-#: app/templates/issues/_fact_choices.html:7
+#: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:47
 #: app/templates/issues/proposal.html:72 app/templates/issues/show.html:106
 msgid "Argues for"
 msgstr "Spricht dafür"
 
-#: app/templates/issues/_fact_choices.html:7
+#: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/proposal.html:72 app/templates/issues/show.html:106
 msgid "Argues against"
 msgstr "Spricht dagegen"
 
-#: app/templates/issues/_fact_choices.html:9
+#: app/templates/issues/_fact_choices.html:11
 msgid "Choose from the facts of this issue"
 msgstr "Aus den Fakten dieser Fragestellung wählen"
 
@@ -4915,7 +4919,7 @@ msgstr "Schreib die These in einem Satz mit höchstens 300 Zeichen."
 
 #: app/templates/issues/_ip_fields.html:16 app/templates/issues/new.html:105
 #: app/templates/issues/proposal.html:267
-#: app/templates/moderator/dashboard.html:199
+#: app/templates/moderator/dashboard.html:201
 msgid "Explanation"
 msgstr "Erläuterung"
 
@@ -5022,7 +5026,7 @@ msgstr "%(num)s Tage"
 
 #: app/templates/issues/_kind.html:13 app/templates/issues/index.html:39
 #: app/templates/issues/new.html:45 app/templates/moderator/beheer.html:35
-#: app/templates/moderator/dashboard.html:452
+#: app/templates/moderator/dashboard.html:458
 msgid "Online"
 msgstr "Online"
 
@@ -5551,8 +5555,8 @@ msgid "Adjust proposal"
 msgstr "Vorschlag anpassen"
 
 #: app/templates/issues/proposal.html:193
-#: app/templates/moderator/dashboard.html:199
-#: app/templates/moderator/gebruiker.html:95
+#: app/templates/moderator/dashboard.html:201
+#: app/templates/moderator/gebruiker.html:96
 msgid "by"
 msgstr "von"
 
@@ -5855,7 +5859,7 @@ msgid "The button only becomes active when the title matches exactly."
 msgstr "Die Schaltfläche wird erst aktiv, wenn der Titel genau übereinstimmt."
 
 #: app/templates/moderator/beheer.html:2 app/templates/moderator/beheer.html:29
-#: app/templates/moderator/dashboard.html:424
+#: app/templates/moderator/dashboard.html:430
 msgid "Manage"
 msgstr "Verwalten"
 
@@ -5868,7 +5872,7 @@ msgid "Your issue"
 msgstr "Deine Fragestellung"
 
 #: app/templates/moderator/beheer.html:37
-#: app/templates/moderator/dashboard.html:418
+#: app/templates/moderator/dashboard.html:424
 #, python-format
 msgid "%(num)d open report"
 msgid_plural "%(num)d open reports"
@@ -6178,10 +6182,10 @@ msgid "Reported by"
 msgstr "Gemeldet von"
 
 #: app/templates/moderator/dashboard.html:156
-#: app/templates/moderator/dashboard.html:201
-#: app/templates/moderator/dashboard.html:249
-#: app/templates/moderator/dashboard.html:297
-#: app/templates/moderator/dashboard.html:331
+#: app/templates/moderator/dashboard.html:207
+#: app/templates/moderator/dashboard.html:255
+#: app/templates/moderator/dashboard.html:303
+#: app/templates/moderator/dashboard.html:337
 msgid "Your own contribution: another moderator decides."
 msgstr "Dein eigener Beitrag: Ein anderer Moderator entscheidet."
 
@@ -6205,341 +6209,342 @@ msgstr "Angezweifelte Fakten"
 msgid "The fact stays visible. Check it, act with the conduct rules if needed, and mark the objection as handled."
 msgstr "Der Fakt bleibt sichtbar. Prüf ihn, greif wenn nötig über die Verhaltensregeln ein und markier den Einspruch als erledigt."
 
-#: app/templates/moderator/dashboard.html:217
+#: app/templates/moderator/dashboard.html:223
 msgid "Mark as handled"
 msgstr "Als erledigt markieren"
 
-#: app/templates/moderator/dashboard.html:228
+#: app/templates/moderator/dashboard.html:234
 msgid "No disputed facts."
 msgstr "Keine angezweifelten Fakten."
 
-#: app/templates/moderator/dashboard.html:235
+#: app/templates/moderator/dashboard.html:241
 msgid "Conduct rules: open objections"
 msgstr "Verhaltensregeln: offene Einsprüche"
 
-#: app/templates/moderator/dashboard.html:236
+#: app/templates/moderator/dashboard.html:242
 msgid "A senior moderator or the admin decides, not the moderator who took the decision."
 msgstr "Ein Senior-Moderator oder der Admin entscheidet, nicht der Moderator, der die Entscheidung getroffen hat."
 
-#: app/templates/moderator/dashboard.html:246
+#: app/templates/moderator/dashboard.html:252
 msgid "Objection:"
 msgstr "Einspruch:"
 
-#: app/templates/moderator/dashboard.html:250
+#: app/templates/moderator/dashboard.html:256
 msgid "You took this decision: another senior moderator decides."
 msgstr "Du hast diese Entscheidung getroffen: Ein anderer Senior-Moderator entscheidet."
 
-#: app/templates/moderator/dashboard.html:251
+#: app/templates/moderator/dashboard.html:257
 msgid "A senior moderator or the admin decides."
 msgstr "Ein Senior-Moderator oder der Admin entscheidet."
 
-#: app/templates/moderator/dashboard.html:268
+#: app/templates/moderator/dashboard.html:274
 msgid "Keep the decision"
 msgstr "Entscheidung beibehalten"
 
-#: app/templates/moderator/dashboard.html:280
+#: app/templates/moderator/dashboard.html:286
 msgid "No open objections."
 msgstr "Keine offenen Einsprüche."
 
-#: app/templates/moderator/dashboard.html:287
+#: app/templates/moderator/dashboard.html:293
 msgid "Conduct rules: doubtful cases"
 msgstr "Verhaltensregeln: Zweifelsfälle"
 
-#: app/templates/moderator/dashboard.html:295
-#: app/templates/moderator/dashboard.html:329
+#: app/templates/moderator/dashboard.html:301
+#: app/templates/moderator/dashboard.html:335
 msgid "AI:"
 msgstr "KI:"
 
-#: app/templates/moderator/dashboard.html:316
+#: app/templates/moderator/dashboard.html:322
 msgid "No doubtful cases."
 msgstr "Keine Zweifelsfälle."
 
-#: app/templates/moderator/dashboard.html:321
+#: app/templates/moderator/dashboard.html:327
 msgid "Conduct rules: removed by the AI"
 msgstr "Verhaltensregeln: von der KI entfernt"
 
-#: app/templates/moderator/dashboard.html:350
+#: app/templates/moderator/dashboard.html:356
 msgid "No posts removed by the AI."
 msgstr "Nichts von der KI entfernt."
 
-#: app/templates/moderator/dashboard.html:357
+#: app/templates/moderator/dashboard.html:363
 msgid "Without judgement"
 msgstr "Ohne Urteil"
 
-#: app/templates/moderator/dashboard.html:358
+#: app/templates/moderator/dashboard.html:364
 msgid "Recent contributions without a judgement (yet), for example because the AI was unavailable. You can assess them manually."
 msgstr "Neue Beiträge ohne (oder noch ohne) Urteil, zum Beispiel weil die KI nicht verfügbar war. Du kannst sie von Hand beurteilen."
 
-#: app/templates/moderator/dashboard.html:365
+#: app/templates/moderator/dashboard.html:371
 msgid "No quality judgement"
 msgstr "Kein Qualitätsurteil"
 
-#: app/templates/moderator/dashboard.html:367
+#: app/templates/moderator/dashboard.html:373
 msgid "Your own contribution: another moderator assesses it."
 msgstr "Dein eigener Beitrag: Ein anderer Moderator beurteilt ihn."
 
-#: app/templates/moderator/dashboard.html:387
+#: app/templates/moderator/dashboard.html:393
 msgid "No contributions without a judgement."
 msgstr "Keine Beiträge ohne Urteil."
 
-#: app/templates/moderator/dashboard.html:398
+#: app/templates/moderator/dashboard.html:404
 msgid "Longest wait"
 msgstr "Längste Wartezeit"
 
-#: app/templates/moderator/dashboard.html:402
+#: app/templates/moderator/dashboard.html:408
 msgid "Open issues"
 msgstr "Laufende Fragestellungen"
 
-#: app/templates/moderator/dashboard.html:410
+#: app/templates/moderator/dashboard.html:416
 msgid "Manage issues"
 msgstr "Fragestellungen verwalten"
 
-#: app/templates/moderator/dashboard.html:419
+#: app/templates/moderator/dashboard.html:425
 msgid "your issue"
 msgstr "deine Fragestellung"
 
-#: app/templates/moderator/dashboard.html:420
+#: app/templates/moderator/dashboard.html:426
 msgid "archived"
 msgstr "archiviert"
 
-#: app/templates/moderator/dashboard.html:427
+#: app/templates/moderator/dashboard.html:433
 msgid "No open issues to manage."
 msgstr "Keine laufenden Fragestellungen zu verwalten."
 
-#: app/templates/moderator/dashboard.html:430
+#: app/templates/moderator/dashboard.html:436
 msgid "All issues"
 msgstr "Alle Fragestellungen"
 
-#: app/templates/moderator/dashboard.html:431
+#: app/templates/moderator/dashboard.html:437
 msgid "Set the rights"
 msgstr "Rechte festlegen"
 
-#: app/templates/moderator/dashboard.html:434
+#: app/templates/moderator/dashboard.html:440
 msgid "Click <strong>Manage</strong> next to an issue to hide or delete proposals and to manage the issue. The issue label on a report leads to the same page."
 msgstr "Klick bei einer Fragestellung auf <strong>Verwalten</strong>, um Vorschläge zu verbergen oder zu löschen und die Fragestellung zu verwalten. Das Label der Fragestellung bei einer Meldung führt zur selben Seite."
 
-#: app/templates/moderator/dashboard.html:443
+#: app/templates/moderator/dashboard.html:449
 msgid "Phase management"
 msgstr "Phasenverwaltung"
 
-#: app/templates/moderator/dashboard.html:443
+#: app/templates/moderator/dashboard.html:449
 msgid "ready"
 msgstr "bereit"
 
-#: app/templates/moderator/dashboard.html:473
+#: app/templates/moderator/dashboard.html:479
 msgid "No issues."
 msgstr "Keine Fragestellungen."
 
-#: app/templates/moderator/gebruiker.html:26
+#: app/templates/moderator/gebruiker.html:27
 msgid "Contribution moved to the background"
 msgstr "Beitrag in den Hintergrund verschoben"
 
-#: app/templates/moderator/gebruiker.html:28
+#: app/templates/moderator/gebruiker.html:29
 msgid "Warning sent"
 msgstr "Verwarnung verschickt"
 
-#: app/templates/moderator/gebruiker.html:29
+#: app/templates/moderator/gebruiker.html:30
 msgid "Suspended"
 msgstr "Gesperrt"
 
-#: app/templates/moderator/gebruiker.html:32
+#: app/templates/moderator/gebruiker.html:33
 msgctxt "user status"
 msgid "quality mark"
 msgstr "Gütesiegel"
 
-#: app/templates/moderator/gebruiker.html:32
+#: app/templates/moderator/gebruiker.html:33
 msgctxt "user status"
 msgid "fact"
 msgstr "Fakt"
 
-#: app/templates/moderator/gebruiker.html:33
+#: app/templates/moderator/gebruiker.html:34
 msgctxt "user status"
 msgid "reported"
 msgstr "gemeldet"
 
-#: app/templates/moderator/gebruiker.html:33
+#: app/templates/moderator/gebruiker.html:34
 msgctxt "user status"
 msgid "moved"
 msgstr "verschoben"
 
-#: app/templates/moderator/gebruiker.html:34
+#: app/templates/moderator/gebruiker.html:35
 msgctxt "user status"
 msgid "hidden"
 msgstr "verborgen"
 
-#: app/templates/moderator/gebruiker.html:43
+#: app/templates/moderator/gebruiker.html:44
 msgid "User"
 msgstr "Person"
 
-#: app/templates/moderator/gebruiker.html:54
+#: app/templates/moderator/gebruiker.html:55
 msgid "Member since"
 msgstr "Mitglied seit"
 
-#: app/templates/moderator/gebruiker.html:55
+#: app/templates/moderator/gebruiker.html:56
 msgid "Verified"
 msgstr "Bestätigt"
 
-#: app/templates/moderator/gebruiker.html:56
+#: app/templates/moderator/gebruiker.html:57
 msgid "Deleted on"
 msgstr "Gelöscht am"
 
-#: app/templates/moderator/gebruiker.html:57
+#: app/templates/moderator/gebruiker.html:58
 msgid "Suspended until"
 msgstr "Gesperrt bis"
 
-#: app/templates/moderator/gebruiker.html:62
+#: app/templates/moderator/gebruiker.html:63
 #, python-format
 msgid "%(num)d warning"
 msgid_plural "%(num)d warnings"
 msgstr[0] "%(num)d Verwarnung"
 msgstr[1] "%(num)d Verwarnungen"
 
-#: app/templates/moderator/gebruiker.html:63
+#: app/templates/moderator/gebruiker.html:64
 #, python-format
 msgid "%(num)d suspension"
 msgid_plural "%(num)d suspensions"
 msgstr[0] "%(num)d Sperre"
 msgstr[1] "%(num)d Sperren"
 
-#: app/templates/moderator/gebruiker.html:69
+#: app/templates/moderator/gebruiker.html:70
 msgid "Contributions"
 msgstr "Beiträge"
 
-#: app/templates/moderator/gebruiker.html:71
+#: app/templates/moderator/gebruiker.html:72
 msgid "Quality marks"
 msgstr "Gütesiegel"
 
-#: app/templates/moderator/gebruiker.html:72
+#: app/templates/moderator/gebruiker.html:73
 msgid "Reports received"
 msgstr "Erhaltene Meldungen"
 
-#: app/templates/moderator/gebruiker.html:72
+#: app/templates/moderator/gebruiker.html:73
 msgid "upheld"
 msgstr "berechtigt"
 
-#: app/templates/moderator/gebruiker.html:73
+#: app/templates/moderator/gebruiker.html:74
 msgid "Reports made"
 msgstr "Gemachte Meldungen"
 
-#: app/templates/moderator/gebruiker.html:81
+#: app/templates/moderator/gebruiker.html:82
 msgid "Enforcement history"
 msgstr "Verlauf der Maßnahmen"
 
-#: app/templates/moderator/gebruiker.html:88
+#: app/templates/moderator/gebruiker.html:89
 msgid "until"
 msgstr "bis"
 
-#: app/templates/moderator/gebruiker.html:93
+#: app/templates/moderator/gebruiker.html:94
 msgid "by the AI"
 msgstr "durch die KI"
 
-#: app/templates/moderator/gebruiker.html:94
+#: app/templates/moderator/gebruiker.html:95
 msgid "by you"
 msgstr "durch dich"
 
-#: app/templates/moderator/gebruiker.html:96
+#: app/templates/moderator/gebruiker.html:97
 msgid "by a deleted account"
 msgstr "durch ein gelöschtes Konto"
 
-#: app/templates/moderator/gebruiker.html:101
+#: app/templates/moderator/gebruiker.html:102
 msgid "No measures yet. Nothing was moved or hidden and there are no warnings or suspensions."
 msgstr "Noch keine Maßnahmen. Es wurde nichts verschoben oder verborgen, und es gibt keine Verwarnungen oder Sperren."
 
-#: app/templates/moderator/gebruiker.html:108
+#: app/templates/moderator/gebruiker.html:109
 msgid "Contributions by this user"
 msgstr "Beiträge dieser Person"
 
-#: app/templates/moderator/gebruiker.html:115
+#: app/templates/moderator/gebruiker.html:117
+#: app/templates/moderator/gebruiker.html:120
 msgid "Fact: "
 msgstr "Fakt: "
 
-#: app/templates/moderator/gebruiker.html:127
+#: app/templates/moderator/gebruiker.html:137
 msgid "This user has not contributed anything yet."
 msgstr "Diese Person hat noch nichts beigetragen."
 
-#: app/templates/moderator/gebruiker.html:132
+#: app/templates/moderator/gebruiker.html:142
 msgid "The aim is constructive: start by steering with a warning. Suspending and deleting are heavy steps for those who carry on despite warnings."
 msgstr "Das Ziel ist aufbauend: Fang mit einer Verwarnung an, um gegenzusteuern. Sperren und Löschen sind schwere Schritte für alle, die trotz Verwarnungen weitermachen."
 
-#: app/templates/moderator/gebruiker.html:137
+#: app/templates/moderator/gebruiker.html:147
 msgid "Measure"
 msgstr "Maßnahme"
 
-#: app/templates/moderator/gebruiker.html:140
+#: app/templates/moderator/gebruiker.html:150
 msgid "This account has been deleted"
 msgstr "Dieses Konto wurde gelöscht"
 
-#: app/templates/moderator/gebruiker.html:145
+#: app/templates/moderator/gebruiker.html:155
 msgid "Send a warning"
 msgstr "Verwarnung schicken"
 
-#: app/templates/moderator/gebruiker.html:147
+#: app/templates/moderator/gebruiker.html:157
 msgid "The lightest, constructive step. Added to the history."
 msgstr "Der leichteste, aufbauende Schritt. Kommt in den Verlauf."
 
-#: app/templates/moderator/gebruiker.html:149
+#: app/templates/moderator/gebruiker.html:159
 msgid "You cannot send yourself a warning."
 msgstr "Du kannst dir selbst keine Verwarnung schicken."
 
-#: app/templates/moderator/gebruiker.html:153
+#: app/templates/moderator/gebruiker.html:163
 msgid "Message to the user"
 msgstr "Nachricht an die Person"
 
-#: app/templates/moderator/gebruiker.html:155
+#: app/templates/moderator/gebruiker.html:165
 msgid "Stick to the substance, not the person."
 msgstr "Bleib bei der Sache, nicht bei der Person."
 
-#: app/templates/moderator/gebruiker.html:156
+#: app/templates/moderator/gebruiker.html:166
 msgid "Send warning"
 msgstr "Verwarnung schicken"
 
-#: app/templates/moderator/gebruiker.html:164
+#: app/templates/moderator/gebruiker.html:174
 msgid "Suspend temporarily"
 msgstr "Vorübergehend sperren"
 
-#: app/templates/moderator/gebruiker.html:166
+#: app/templates/moderator/gebruiker.html:176
 msgid "The user cannot contribute or vote for a while, but stays a member."
 msgstr "Die Person kann eine Zeit lang nichts beitragen und nicht abstimmen, bleibt aber Mitglied."
 
-#: app/templates/moderator/gebruiker.html:168
+#: app/templates/moderator/gebruiker.html:178
 msgid "Suspended now until"
 msgstr "Jetzt gesperrt bis"
 
-#: app/templates/moderator/gebruiker.html:168
+#: app/templates/moderator/gebruiker.html:178
 msgid "A new suspension counts from now."
 msgstr "Eine neue Sperre zählt ab jetzt."
 
-#: app/templates/moderator/gebruiker.html:173
+#: app/templates/moderator/gebruiker.html:183
 msgid "Duration"
 msgstr "Dauer"
 
-#: app/templates/moderator/gebruiker.html:178
+#: app/templates/moderator/gebruiker.html:188
 msgid "Reason for the suspension"
 msgstr "Grund für die Sperre"
 
-#: app/templates/moderator/gebruiker.html:180
+#: app/templates/moderator/gebruiker.html:190
 msgid "For example: repeated insults after an earlier warning."
 msgstr "Zum Beispiel: wiederholte Beleidigungen nach einer früheren Verwarnung."
 
-#: app/templates/moderator/gebruiker.html:182
+#: app/templates/moderator/gebruiker.html:192
 #, python-brace-format
 msgid "Suspend for {n} days"
 msgstr "Für {n} Tage sperren"
 
-#: app/templates/moderator/gebruiker.html:182
+#: app/templates/moderator/gebruiker.html:192
 msgid "Suspend for 7 days"
 msgstr "Für 7 Tage sperren"
 
-#: app/templates/moderator/gebruiker.html:192
+#: app/templates/moderator/gebruiker.html:202
 msgid "The heaviest step, for those who carry on after a warning and a suspension. Opens a confirmation screen. Senior moderator or admin only."
 msgstr "Der schwerste Schritt, für alle, die nach Verwarnung und Sperre weitermachen. Öffnet eine Bestätigungsseite. Nur Senior-Moderator oder Admin."
 
-#: app/templates/moderator/gebruiker.html:194
+#: app/templates/moderator/gebruiker.html:204
 #: app/templates/moderator/gebruiker_verwijderen.html:70
 msgid "Reason (goes into the history)"
 msgstr "Grund (kommt in den Verlauf)"
 
-#: app/templates/moderator/gebruiker.html:196
+#: app/templates/moderator/gebruiker.html:206
 msgid "For example: persistent behaviour that makes the conversation unsafe."
 msgstr "Zum Beispiel: anhaltendes Verhalten, das das Gespräch unsicher macht."
 

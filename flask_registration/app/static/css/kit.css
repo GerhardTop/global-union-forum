@@ -4068,6 +4068,12 @@ body {
 .gu-mrow__tags { display:flex; align-items:center; gap:8px; margin-top:7px; flex-wrap:wrap; }
 .gu-mrow__who { font-size:12.5px; color:var(--mod-n500); }
 .gu-mrow__reason { margin:8px 0 0; font-size:12.5px; color:var(--mod-n600); }
+/* Multilingual phase 2: a disputed fact in the moderator's language, and the note. */
+.gu-mrow__open { font-size:12.5px; color:var(--mod-n600); white-space:nowrap; }
+.gu-mrow__fact { margin:6px 0 0; font-size:14px; line-height:1.45; }
+.gu-mrow__fact .gu-fact__title { font-weight:500; font-size:14px; }
+.gu-mrow__fact .gu-fact__text { font-size:14px; }
+.gu-mrow__notetext { margin:2px 0 0; font-size:12.5px; color:var(--mod-n600); overflow-wrap:anywhere; }
 .gu-mrow__note { margin:8px 0 0; font-size:12.5px; color:var(--mod-n500); font-style:italic; }
 .gu-mrow__form { display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
 
@@ -4754,6 +4760,8 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 /* ── Multilingual phase 2: a text in a machine translation (_mt.html) ── */
 .gu-mt__note { font-size: 12px; line-height: 1.4; color: var(--gu-fg-3); margin: 4px 0 0; }
 .gu-mt { min-width: 0; }
+/* A fact carries its original, hidden: the clamp of the compact list must not show it. */
+.gu-mt--fact [hidden] { display: none !important; }
 .gu-cockpit__titlerow > .gu-mt { flex: 1 1 20rem; }
 .gu-mt__note .gu-mt__toggle, .gu-vote__official .gu-mt__toggle {
   background: none; border: 0; padding: 0; margin: 0; white-space: nowrap;

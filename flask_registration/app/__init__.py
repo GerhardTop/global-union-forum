@@ -370,6 +370,8 @@ _CONTENT_COLUMNS = {
                 ('source_lang', 'VARCHAR(5) NULL')),
     # Multilingual phase 2: the language of a follow-up update (its issue's).
     'issue_followups': (('lang', 'VARCHAR(5) NULL'),),
+    # The language of the note with a fact dispute (translated on request).
+    'fact_disputes': (('lang', 'VARCHAR(5) NULL'),),
 }
 
 

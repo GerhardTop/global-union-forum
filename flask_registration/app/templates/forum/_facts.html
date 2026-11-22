@@ -13,6 +13,7 @@
 {% set phase_open = proposal.phase == 'feiten' and not thread.is_closed %}
 {% set dir_labels = {'voor': _('For'), 'tegen': _('Against'), 'neutraal': _('Neutral')} %}
 {% from 'forum/_fact_fields.html' import fact_fields with context %}
+{% from '_mt.html' import mt_fact with context %}
 
 <section class="gu-facts" id="feiten" aria-labelledby="feiten-title">
   <h2 class="gu-facts__title" id="feiten-title">{{ _('Facts') }} <span class="gu-facts__count">({{ visible_fact_count }})</span></h2>
@@ -36,11 +37,13 @@
         <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ dir_labels.get(fact.fact_direction, '') }}</span>
         <div class="gu-fact__main">
           {% include 'issues/_fact_badges.html' %}
-          <p class="gu-fact__text" lang="{{ fact.source_lang }}">{{ fact.body }}</p>
+          {#- Multilingual phase 2: in the reader's language, with the label (_mt.html). -#}
+          {% call mt_fact(fact) %}
           <p class="gu-fact__source">{{ _('Source') }}:
             {% if fact.fact_source_is_url %}<a href="{{ fact.fact_source }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ fact.fact_source }}</a>
             {% else %}{{ fact.fact_source }}{% endif %}
           </p>
+          {% endcall %}
           {% include 'forum/_fact_signals.html' %}
           {# Handhaving (fase D) voor de inbrenger en moderators, ook via de statuspoll. #}
           <div class="gu-conduct-slot" id="conduct-{{ fact.id }}">

@@ -442,6 +442,7 @@ class FactDispute(db.Model):
     user_id        = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
     reason         = db.Column(db.String(16), nullable=False)               # FACT_DISPUTE_REASONS
     note           = db.Column(db.String(500), nullable=True)
+    lang           = db.Column(db.String(5), nullable=True)   # the note's language (translated on request)
     status         = db.Column(db.String(10), nullable=False, default='open')  # open/resolved
     created_at     = db.Column(db.DateTime, default=datetime.utcnow)
     resolved_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)

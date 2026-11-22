@@ -8,13 +8,15 @@
 <script nonce="{{ csp_nonce() }}">
 (function () {
   function part(box, role) { return box.querySelector('[data-mt-' + role + ']'); }
+  function parts(box, role) { return box.querySelectorAll('[data-mt-' + role + ']'); }
 
+  // A fact has two parts per role (title and text); they swap together.
   function show(box, which) {
-    var tr = part(box, 'translation'), orig = part(box, 'original');
+    var tr = part(box, 'translation');
     var btn = box.querySelector('.gu-mt__toggle'), label = part(box, 'label');
     var showTr = which === 'translation' && tr;
-    if (tr) tr.hidden = !showTr;
-    orig.hidden = !!showTr;
+    parts(box, 'translation').forEach(function (el) { el.hidden = !showTr; });
+    parts(box, 'original').forEach(function (el) { el.hidden = !!showTr; });
     label.textContent = showTr ? box.dataset.labelMachine : box.dataset.labelOriginal;
     if (btn) {
       btn.textContent = showTr ? box.dataset.btnOriginal : box.dataset.btnTranslation;

@@ -31,7 +31,7 @@ from app import conduct, content_i18n, db, issues, limiter
 from app import facts as fact_signals
 from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
-from app.models import FACT_DIRECTIONS, Issue, IssueFollowup, IssueProposal, Post
+from app.models import FACT_DIRECTIONS, FACT_KIND, Issue, IssueFollowup, IssueProposal, Post
 from app.routes.forum import (_auto_translate, _fact_form, _fact_phase_open, _new_fact, _require_csrf,
                               _rules_first_redirect, _thread_context, refuse_if_suspended)
 from app.utils import _pop_form_state, _pop_form_state_if, _stash_form_state, safe_next
@@ -101,13 +101,22 @@ def _new_issue_facts(form):
 def _preload_translations(issue, proposal=None):
     """Multilingual phase 2c: the translations an issue page or a proposal
     page shows (titles, statements, versions, follow-up) in a fixed number of
-    queries, however many proposals there are."""
+    queries, however many proposals there are. The facts of the issue (in its
+    conversation) too: they are translated right away."""
     proposals = IssueProposal.query.filter_by(issue_id=issue.id).all()
+    _preload_facts(issue)
     content_i18n.preload([issue], 'title', 'intro')
     content_i18n.preload(proposals, 'statement', 'explanation')
     content_i18n.preload(list(issue.followups), 'body')
     if proposal is not None:
         content_i18n.preload(list(proposal.version_rows), 'statement', 'explanation')
+
+
+def _preload_facts(issue):
+    """The translations of every fact of the issue (title and text), in one query."""
+    if issue.thread_id is not None:
+        facts = Post.query.filter_by(thread_id=issue.thread_id, kind=FACT_KIND).all()
+        content_i18n.preload(facts, 'fact_title', 'body')
 
 
 @issues_bp.route('/gesprekken')
@@ -330,6 +339,7 @@ def proposal_new(issue_id):
             quality.schedule_judgement(fact.id)
         return redirect(url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id))
     errors, data = _pop_form_state(form_key)
+    _preload_facts(issue)  # the facts to link, in the reader's language
     return render_template('issues/proposal_new.html', issue=issue, errors=errors, form_data=data,
                            can_propose=ip.can_propose(issue, current_user),
                            issue_facts=ip.visible_issue_facts(issue, current_user),

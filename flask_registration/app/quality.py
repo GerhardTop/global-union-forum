@@ -469,6 +469,10 @@ def delete_for_posts(post_ids):
         QualityAward.query.filter(QualityAward.id.in_(award_ids)).delete(synchronize_session='evaluate')
     from app.models import PostReport
     PostReport.query.filter(PostReport.post_id.in_(post_ids)).delete(synchronize_session='evaluate')
+    # Their translations (a fact is translated right away into every language);
+    # a bulk delete of the posts afterwards passes the ORM cleanup listener.
+    from app import content_i18n
+    content_i18n.delete_for('posts', post_ids)
 
 
 # ── Democontent ──────────────────────────────────────────────────────────

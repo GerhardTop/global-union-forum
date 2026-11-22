@@ -66,7 +66,7 @@
         if (fact.dataset.clampReady) return;
         var titled = fact.classList.contains('gu-fact--titled');
         if (!titled && (fact.hidden || !fact.offsetParent)) return;  // measuring needs it visible
-        var text = fact.querySelector('.gu-fact__text');
+        var text = fact.querySelector('.gu-fact__text:not([hidden])');  // a translated fact also carries its original, hidden
         var btn = fact.querySelector('[data-fact-more]');
         if (!text || !btn) return;
         fact.classList.add('is-clamped');

@@ -47,6 +47,7 @@ _SOURCE_ATTR = {
     'issue_proposals': 'lang',
     'issue_proposal_versions': lambda version: version.proposal.lang if version.proposal else None,
     'issue_followups': 'lang',
+    'fact_disputes': 'lang',                # the note, translated on request
 }
 
 
@@ -329,10 +330,10 @@ def register_cleanup(*models):
 
 
 def _register_models():
-    from app.models import (Issue, IssueFollowup, IssueProposal, IssueProposalVersion, Post, QualityAward,
-                            QualityObjection, Thread)
+    from app.models import (FactDispute, Issue, IssueFollowup, IssueProposal, IssueProposalVersion, Post,
+                            QualityAward, QualityObjection, Thread)
     register_cleanup(Post, Thread, QualityAward, QualityObjection,
-                     Issue, IssueProposal, IssueProposalVersion, IssueFollowup)
+                     Issue, IssueProposal, IssueProposalVersion, IssueFollowup, FactDispute)
     event.listen(db.session, 'after_commit', clear_cache)
     event.listen(db.session, 'after_rollback', clear_cache)
 

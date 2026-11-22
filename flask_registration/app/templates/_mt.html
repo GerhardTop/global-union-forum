@@ -8,9 +8,9 @@
     el, cls      the element and its class(es) around the text
     rich         run the text through linkify (prose)
     paras        one <p> per paragraph (posts), each through linkify
-    on_request   posts and facts: translated on request; false for issues
-                 and proposals, which are translated right away
-                 (app/content_jobs.py)
+    on_request   posts, reactions and dispute notes: translated on request;
+                 false for issues, proposals and facts, which are
+                 translated right away (app/content_jobs.py)
     request_url  the forum translate route (POST) for a logged-in reader;
                  none: no translate button (visitors)
     auto         posts: the reader's "always translate" preference
@@ -24,7 +24,7 @@
     source language in its lang attribute) and back. Both texts are in the
     page, no request. A post without "always translate" starts on the
     original ("Original in <language> · Show translation");
-  - no translation yet: issues and proposals show the original with
+  - no translation yet: issues, proposals and facts show the original with
     "Translation pending" (never an AI call on a page load); a post shows
     "Original in <language> · Translate", which fetches the translation
     (static script in base.html) and then behaves as above.
@@ -69,7 +69,64 @@
     {%- endif %}
   </p>
   {%- else %}
-  {# TRANSLATORS: under an issue or proposal text shown in its original language because the machine translation is not ready yet. #}
+  {# TRANSLATORS: under a text (an issue, a proposal, a fact) shown in its original language because the machine translation is not ready yet. #}
+  <p class="gu-mt__note gu-mt__note--pending">{{ _('Translation pending') }}</p>
+  {%- endif %}
+</div>
+{%- endif %}
+{%- endmacro %}
+
+{#
+  mt_fact(fact): a fact (title and text) as one component, translated right
+  away (app/content_jobs.py), with one label under it for both: the swap
+  turns title and text together. The text sits in .gu-fact__detail (the
+  compact list hides that for a titled fact); a {% call %} block adds the
+  source inside it, after the text. The label stays outside the detail, so
+  the compact list shows it too. The fact's source is never translated.
+#}
+{% macro _fact_title(vt, role, hidden) -%}
+{%- if vt %}
+  <p class="gu-fact__title" lang="{{ (lang if vt.kind in ('machine', 'handwritten') else vt.source) if role == 'translation' else vt.source }}" data-mt-{{ role }}{% if hidden %} hidden{% endif %}>{{ vt.text if role == 'translation' else vt.original }}</p>
+{%- endif %}
+{%- endmacro %}
+
+{% macro mt_fact(fact) -%}
+{%- set vb = content_i18n.view(fact, 'body', lang) -%}
+{%- set vt = content_i18n.view(fact, 'fact_title', lang) if fact.fact_title else none -%}
+{%- set extra = caller() if caller is defined else '' -%}
+{%- if vb.kind in ('own', 'handwritten') or vb.source is none -%}
+{%- if vt %}
+<p class="gu-fact__title" lang="{{ lang if vt.kind == 'handwritten' else (vt.source or lang) }}">{{ vt.text }}</p>
+{%- endif %}
+<div class="gu-fact__detail">
+  <p class="gu-fact__text" lang="{{ lang if vb.kind == 'handwritten' else (vb.source or lang) }}">{{ vb.text }}</p>
+  {{- extra }}
+</div>
+{%- else -%}
+{%- set source_name = language_name_in(vb.source, lang) -%}
+{%- set has_translation = vb.kind == 'machine' -%}
+{%- set label_machine = _('Machine-translated from %(language)s', language=source_name) -%}
+{%- set label_original = _('Original in %(language)s', language=source_name) -%}
+<div class="gu-mt gu-mt--fact" data-mt
+     data-mt-reader="{{ lang }}"
+     data-label-machine="{{ label_machine }}" data-label-original="{{ label_original }}"
+     data-btn-original="{{ _('Show original') }}" data-btn-translation="{{ _('Show translation') }}">
+  {%- if has_translation %}{{ _fact_title(vt, 'translation', false) }}{% endif %}
+  {{- _fact_title(vt, 'original', has_translation) }}
+  <div class="gu-fact__detail">
+    {%- if has_translation %}
+    <p class="gu-fact__text" lang="{{ lang }}" data-mt-translation>{{ vb.text }}</p>
+    {%- endif %}
+    <p class="gu-fact__text" lang="{{ vb.source }}" data-mt-original{% if has_translation %} hidden{% endif %}>{{ vb.original }}</p>
+    {{- extra }}
+  </div>
+  {%- if has_translation %}
+  <p class="gu-mt__note">
+    <span class="gu-mt__label" data-mt-label>{{ label_machine }}</span>
+    <span aria-hidden="true">·</span> <button type="button" class="gu-mt__toggle" aria-pressed="false">{{ _('Show original') }}</button>
+  </p>
+  {%- else %}
+  {# TRANSLATORS: under a text (an issue, a proposal, a fact) shown in its original language because the machine translation is not ready yet. #}
   <p class="gu-mt__note gu-mt__note--pending">{{ _('Translation pending') }}</p>
   {%- endif %}
 </div>

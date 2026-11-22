@@ -2,8 +2,10 @@
   Partial: issues/_fact_choices.html (herontwerp stap 5)
   Een keuzelijst van feiten van het vraagstuk (vinkjes, name="fact_ids"),
   met het richtinglabel, voor het koppelen aan een voorstel.
-  Context: choices (feiten), chosen (gekozen id's).
+  Context: choices (feiten), chosen (gekozen id's). The text in the reader's
+  language (multilingual phase 2), else the original with its language code.
 #}
+{% from '_mt.html' import mt_inline with context %}
 {% set choice_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
 <fieldset class="gu-factchoices">
   <legend>{{ _('Choose from the facts of this issue') }}</legend>
@@ -13,7 +15,7 @@
       <label class="gu-factchoices__item">
         <input type="checkbox" name="fact_ids" value="{{ fact.id }}"{% if fact.id in chosen %} checked{% endif %}>
         <span class="gu-fact__dir gu-fact__dir--{{ fact.fact_direction }}">{{ choice_labels.get(fact.fact_direction, '') }}</span>
-        <span class="gu-factchoices__text" lang="{{ fact.source_lang }}">{{ fact.body | truncate(180) }}</span>
+        <span class="gu-factchoices__text">{{ mt_inline(fact, 'body', 180) }}</span>
         {% with hide_report=true %}{% include 'issues/_fact_badges.html' %}{% endwith %}
       </label>
     </li>

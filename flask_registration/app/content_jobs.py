@@ -1,10 +1,10 @@
-"""Multilingual phase 2a: issues and proposals are translated right away.
+"""Multilingual phase 2: issues, proposals and facts are translated right away.
 
 Issues (title, intro, and the title of their conversation), proposals
-(statement, explanation), every version of a proposal and the follow-up
-updates are machine-translated into every enabled
-language (except their own) as soon as they are saved, without making the
-save wait:
+(statement, explanation), every version of a proposal, the follow-up
+updates and facts (Post with kind 'feit': fact_title and body, not the
+source) are machine-translated into every enabled language (except their
+own) as soon as they are saved, without making the save wait:
 
     schedule(obj)       after creating or editing: translate obj once the
                         current transaction commits, in a background thread
@@ -20,8 +20,9 @@ The thread has its own app context and database session (we run on one
 gunicorn worker). Without an AI key nothing is started; the tick fills the
 gaps later. Reading never calls the AI: a page shows the original with the
 label "Translation pending" until the translation is there
-(content_i18n.view). Posts and facts are not here: they are translated on
-request (the translate button, "always translate").
+(content_i18n.view). Ordinary posts, reactions to a proposal and the note
+of a fact dispute are not here: they are translated on request (the
+translate button, "always translate"). The design: docs/i18n/machinevertaling.md.
 """
 import logging
 import threading
@@ -38,13 +39,25 @@ MAX_PER_TICK = 40
 
 
 def _models():
-    from app.models import Issue, IssueFollowup, IssueProposal, IssueProposalVersion
+    from app.models import Issue, IssueFollowup, IssueProposal, IssueProposalVersion, Post
     return {
+        # Only facts among the posts (see _only): ordinary posts are translated on request.
+        'posts': (Post, ('fact_title', 'body')),
         'issues': (Issue, ('title', 'intro')),
         'issue_proposals': (IssueProposal, ('statement', 'explanation')),
         'issue_proposal_versions': (IssueProposalVersion, ('statement', 'explanation')),
         'issue_followups': (IssueFollowup, ('body',)),
     }
+
+
+def _only(model, query):
+    """Narrow the safety net's query to what is translated right away."""
+    from app.models import FACT_KIND, Post
+    return query.filter(Post.kind == FACT_KIND) if model is Post else query
+
+
+def _wanted(obj):
+    return content_i18n.object_type(obj) != 'posts' or obj.is_fact
 
 
 def fields_of(obj):
@@ -61,6 +74,8 @@ def _parts(obj):
     """(object, field) pairs to translate for obj: its own fields and, for an
     issue, the title of its conversation (the same text, so the translation
     is reused: the conversations list shows it without an extra AI call)."""
+    if not _wanted(obj):
+        return []
     parts = [(obj, field) for field in fields_of(obj)]
     thread = getattr(obj, 'thread', None) if content_i18n.object_type(obj) == 'issues' else None
     if thread is not None and thread.title_prefix == obj.title and not thread.title_accent:
@@ -104,7 +119,10 @@ _PENDING = 'content_jobs_pending'
 
 def schedule(obj):
     """Translate obj after the current transaction commits. Call it where obj is
-    created or edited (after invalidate for an edit). Flushes to get an id."""
+    created or edited (after invalidate for an edit). Flushes to get an id.
+    An ordinary post is skipped (translated on request)."""
+    if not _wanted(obj):
+        return
     if obj.id is None:
         db.session.flush()
     db.session.info.setdefault(_PENDING, set()).add((content_i18n.object_type(obj), obj.id))
@@ -154,7 +172,7 @@ def backfill(limit=MAX_PER_TICK, client=None):
         return 0
     done = 0
     for _kind, (model, fields) in _models().items():
-        objs = model.query.order_by(model.id.desc()).all()
+        objs = _only(model, model.query).order_by(model.id.desc()).all()
         content_i18n.preload(objs, *fields)
         for obj in objs:
             if done >= limit:

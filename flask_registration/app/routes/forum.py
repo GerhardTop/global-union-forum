@@ -898,7 +898,7 @@ def _thread_context(thread, branch_root_id=None):
     # Eén query voor alle bijdragen; de feiten (fase E) staan in een eigen
     # blok en buiten de discussieboom, de tellingen en eens/oneens.
     everything = Post.query.filter_by(thread_id=thread.id).order_by(Post.created_at).all()
-    content_i18n.preload(everything, 'body')  # one query for the translations on this page
+    content_i18n.preload(everything, 'body', 'fact_title')  # one query for the translations on this page
     # Discussie stap 2: reacties bij een voorstel (en wat eronder hangt) staan
     # alleen bij dat voorstel, niet in de gedeelde discussie van het vraagstuk.
     everything = without_proposal_branches(everything)
@@ -1059,16 +1059,23 @@ def forum_translate(post_id):
     post = Post.query.get_or_404(post_id)
     if conduct.is_removed_for(post, current_user):
         abort(404)
+    return _translate_json(post, 'body')
+
+
+def _translate_json(obj, field):
+    """The translation on request of one field into the reader's language, as
+    JSON for the label script (_mt_script.html): from the cache, else one AI
+    call (counted for the rate limit of the route)."""
     user_lang = i18n.normalize(session.get('lang'))
 
-    if user_lang == content_i18n.source_lang(post):
+    if user_lang == content_i18n.source_lang(obj):
         return jsonify({'error': 'no translation needed'}), 400
 
-    cached = content_i18n.text_for(post, 'body', user_lang)
+    cached = content_i18n.text_for(obj, field, user_lang)
     if cached is not None:
         return jsonify({'translation': cached})
 
-    if not (post.body or '').strip():
+    if not (content_i18n.original(obj, field) or '').strip():
         return jsonify({'error': 'no content'}), 400
 
     api_key = current_app.config.get('ANTHROPIC_API_KEY', '')
@@ -1077,7 +1084,7 @@ def forum_translate(post_id):
 
     g.translation_api_called = True  # telt mee voor de rate limit hierboven
     try:
-        translation = content_i18n.translate(post, 'body', user_lang)
+        translation = content_i18n.translate(obj, field, user_lang)
         return jsonify({'translation': translation})
     except Exception as e:
         current_app.logger.error('Translation error: %s', e)
@@ -1280,9 +1287,11 @@ def _delete_thread(thread):
 
 
 def _apply_edit(post, body):
+    from app import content_jobs
     post.body = body
     post.edited_at = datetime.utcnow()
-    quality.reset_for_edit(post)
+    quality.reset_for_edit(post)  # drops the translations of the body
+    content_jobs.schedule(post)   # a fact: new translations right away (an ordinary post is skipped)
     db.session.commit()
     quality.schedule_judgement(post.id)
 
@@ -1835,6 +1844,8 @@ def _new_fact(thread, data):
                 kind=FACT_KIND, fact_direction=data['direction'], fact_source=data['source'],
                 fact_type=data.get('type') or 'feit', fact_title=data.get('title'))
     db.session.add(fact)
+    from app import content_jobs
+    content_jobs.schedule(fact)  # multilingual phase 2: a fact is translated right away
     if thread.proposal is not None:
         from app import digest
         digest.auto_follow(thread.proposal, current_user)  # meedoen is volgen (fase E, stap 5b)
@@ -1918,11 +1929,27 @@ def fact_dispute(post_id):
     elif facts.has_open_dispute(fact, current_user):
         flash(gettext('You already disputed this fact; a moderator will look at it.'), 'info')
     else:
-        facts.dispute(fact, current_user, reason, note)
+        facts.dispute(fact, current_user, reason, note, lang=i18n.normalize(session.get('lang')))
         db.session.commit()
         flash(gettext('Thank you. A moderator will look at your objection; the fact stays visible meanwhile.'),
               'success')
     return redirect(_fact_next(fact))
+
+
+@forum_bp.route('/forum/feit/betwisting/<int:dispute_id>/vertalen', methods=['POST'])
+@login_required
+@limiter.limit("30 per hour",
+               key_func=lambda: f"forum-translate-user-{current_user.get_id()}",
+               deduct_when=lambda response: g.get('translation_api_called', False))
+def fact_dispute_translate(dispute_id):
+    """The note with a fact dispute, translated on request for a moderator
+    (the same label as a post; multilingual phase 2)."""
+    from app.models import FactDispute
+    _require_csrf()
+    if not current_user.can_moderate():
+        abort(403)
+    row = FactDispute.query.get_or_404(dispute_id)
+    return _translate_json(row, 'note')
 
 
 @forum_bp.route('/forum/feit/betwisting/<int:dispute_id>/afhandelen', methods=['POST'])

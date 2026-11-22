@@ -1,6 +1,6 @@
 """Multilingual phase 2b: the label for a text in a machine translation
-(app/templates/_mt.html), on issues, proposals, versions, the follow-up,
-posts and facts. The swapping itself runs in a real browser in
+(app/templates/_mt.html), on issues, proposals, versions, the follow-up and
+posts. Facts: tests/test_mt_facts.py. The swapping itself runs in a real browser in
 tests/test_mt_toggle.py.
 """
 import html
@@ -24,7 +24,7 @@ def _page(app, user, lang, path):
 
 def _box(page, text):
     """The component (div.gu-mt) that holds `text`."""
-    for match in re.finditer(r'<div class="gu-mt" data-mt.*?</p>\s*</div>', page, re.S):
+    for match in re.finditer(r'<div class="gu-mt[^"]*" data-mt.*?class="gu-mt__note.*?</p>\s*</div>', page, re.S):
         box = html.unescape(match.group(0))
         if text in box:
             return box
@@ -100,29 +100,40 @@ def test_proposal_versions_and_follow_up_carry_the_label(app, world):
     assert LABEL['en'] in _box(page, 'We submitted the proposal.')
 
 
+def _post(db, issue, user, body):
+    """An ordinary contribution in the issue's conversation (translated on request)."""
+    from app.models import Post
+    post = Post(thread_id=issue.thread_id, user_id=user.id, author_name='', author_username=user.username,
+                body=body, source_lang='nl')
+    db.session.add(post)
+    db.session.commit()
+    return post
+
+
 def test_a_post_offers_translation_on_request_and_shows_the_label_once_translated(app, world, make_user):
     user, issue = world
     reader = make_user()
     reader.auto_translate = False
-    fact = _fact(db, issue, user, body='Het water is schoner dan in 2010.')
-    page = _page(app, reader, 'en', f'/vraagstuk/{issue.id}')
+    post = _post(db, issue, user, 'Het water is schoner dan in 2010.')
+    path = f'/forum/{issue.thread_id}'
+    page = _page(app, reader, 'en', path)
     box = _box(page, 'Het water is schoner dan in 2010.')
     # Not translated yet: the original, "Original in Dutch" and a translate button (no banner, no loose button).
     assert 'Original in Dutch' in box and 'data-mt-url="/forum/translate/' in box
     assert '<button type="button" class="gu-mt__toggle">' in box and 'data-mt-auto' not in box
     assert 'class="gu-post__foreignbanner"' not in page and 'gu-post__translate-btn"' not in page
     # A visitor sees where it comes from, without a button.
-    visitor = _page(app, None, 'en', f'/vraagstuk/{issue.id}')
+    visitor = _page(app, None, 'en', path)
     assert 'gu-mt__toggle' not in _box(visitor, 'Het water is schoner dan in 2010.')
 
-    content_i18n.set_translation(fact, 'body', 'en', 'The water is cleaner than in 2010.', is_machine=True)
+    content_i18n.set_translation(post, 'body', 'en', 'The water is cleaner than in 2010.', is_machine=True)
     db.session.commit()
-    box = _box(_page(app, reader, 'en', f'/vraagstuk/{issue.id}'), 'The water is cleaner than in 2010.')
+    box = _box(_page(app, reader, 'en', path), 'The water is cleaner than in 2010.')
     # Translated before, "always translate" off: it starts on the original; the swap needs no request.
     assert 'data-mt-url' not in box and 'aria-pressed="true">Show translation</button>' in box
     reader.auto_translate = True
     db.session.commit()
-    box = _box(_page(app, reader, 'en', f'/vraagstuk/{issue.id}'), 'The water is cleaner than in 2010.')
+    box = _box(_page(app, reader, 'en', path), 'The water is cleaner than in 2010.')
     assert LABEL['en'] in box and 'aria-pressed="false">Show original</button>' in box
 
 
@@ -131,6 +142,16 @@ def test_a_post_with_always_translate_fetches_at_once(app, world, make_user):
     reader = make_user()
     reader.auto_translate = True
     db.session.commit()
-    _fact(db, issue, user, body='Een feit zonder vertaling.')
-    box = _box(_page(app, reader, 'en', f'/vraagstuk/{issue.id}'), 'Een feit zonder vertaling.')
+    _post(db, issue, user, 'Een bijdrage zonder vertaling.')
+    box = _box(_page(app, reader, 'en', f'/forum/{issue.thread_id}'), 'Een bijdrage zonder vertaling.')
     assert 'data-mt-auto' in box and 'data-mt-url' in box
+
+
+def test_a_fact_is_not_translated_on_request(app, world, make_user):
+    """Facts are translated right away (tests/test_mt_facts.py): no translate
+    button, "Translation pending" until the background job is done."""
+    user, issue = world
+    fact = _fact(db, issue, user, body='Een feit zonder vertaling.')
+    page = _page(app, make_user(), 'en', f'/vraagstuk/{issue.id}')
+    assert f'/forum/translate/{fact.id}"' not in page
+    assert 'Translation pending' in _box(page, 'Een feit zonder vertaling.')

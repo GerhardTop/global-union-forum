@@ -67,9 +67,10 @@ def has_open_dispute(fact, user):
     return FactDispute.query.filter_by(fact_post_id=fact.id, user_id=user.id, status='open').first() is not None
 
 
-def dispute(fact, user, reason, note=None):
-    """Een nieuw bezwaar. Commit niet zelf."""
-    row = FactDispute(fact_post_id=fact.id, user_id=user.id, reason=reason, note=note, status='open')
+def dispute(fact, user, reason, note=None, lang=None):
+    """Een nieuw bezwaar. Commit niet zelf. lang: de taal van de toelichting
+    (op verzoek vertaalbaar voor de moderator)."""
+    row = FactDispute(fact_post_id=fact.id, user_id=user.id, reason=reason, note=note, status='open', lang=lang)
     db.session.add(row)
     # Notifications step 3a-1: the fact's author hears it is challenged, senior
     # moderators that there is a challenged fact. Never the disputer.
@@ -164,7 +165,10 @@ def delete_for_posts(post_ids):
         from app import issue_proposals
         issue_proposals.delete_links_for_facts(post_ids)  # stap 5: koppelingen aan voorstellen
         FactUsefulVote.query.filter(FactUsefulVote.fact_post_id.in_(post_ids)).delete(synchronize_session='evaluate')
-        FactDispute.query.filter(FactDispute.fact_post_id.in_(post_ids)).delete(synchronize_session='evaluate')
+        from app import content_i18n
+        disputes = FactDispute.query.filter(FactDispute.fact_post_id.in_(post_ids))
+        content_i18n.delete_for('fact_disputes', [row.id for row in disputes.with_entities(FactDispute.id)])
+        disputes.delete(synchronize_session='evaluate')
 
 
 def detach_user(user_id):
