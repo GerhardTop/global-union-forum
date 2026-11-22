@@ -749,7 +749,7 @@ def translations_backlog():
     langs = i18n.enabled_codes()
     rows = [(_BACKLOG_KIND_LABELS[kind](), kind, counts[kind], sum(counts[kind].values()))
             for kind in content_jobs.BACKLOG_KINDS]
-    totals = {lang: sum(counts[kind][lang] for kind in counts) for lang in langs}
+    totals = {code: sum(counts[kind][code] for kind in counts) for code in langs}
     names = {code: i18n.language_name_in(code, get_locale()) for code in langs}
     return render_template('admin/translations.html', rows=rows, langs=langs, names=names, totals=totals,
                            total=sum(totals.values()), stats=content_jobs.stats(),

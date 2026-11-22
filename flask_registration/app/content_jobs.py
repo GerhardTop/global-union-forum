@@ -160,14 +160,16 @@ def stats():
         return {**_STATS, 'run': dict(_RUN)}
 
 
-def translate_missing(obj, client=None, limit=None, tally=None):
+def translate_missing(obj, client=None, limit=None, tally=None, fail_limit=None):
     """Translate what obj is missing; returns the number of fields translated.
     A failure is counted in `tally` (and in stats()) and skipped (the tick
-    tries again)."""
+    tries again); it stops once tally.failed reaches `fail_limit`."""
     tally = tally if tally is not None else Tally()
     done = 0
     for target, field, lang in missing(obj):
         if limit is not None and done >= limit:
+            break
+        if fail_limit is not None and tally.failed >= fail_limit:
             break
         what = f'{content_i18n.object_type(target)} {target.id}.{field} to {lang}'
         try:
@@ -258,14 +260,15 @@ def backfill(limit=MAX_PER_TICK, client=None, tally=None, name='tick', max_faile
         return 0
     own = tally is None
     tally = Tally() if own else tally
-    failed_before = tally.failed
+    fail_limit = tally.failed + max_failed
     done = 0
     try:
         for _kind, objs in _scan():
             for obj in objs:
-                if done >= limit or tally.failed - failed_before >= max_failed:
+                if done >= limit or tally.failed >= fail_limit:
                     return done
-                done += translate_missing(obj, client=client, limit=limit - done, tally=tally)
+                done += translate_missing(obj, client=client, limit=limit - done, tally=tally,
+                                          fail_limit=fail_limit)
         return done
     finally:
         if own:
@@ -286,8 +289,8 @@ def backlog():
     out = {kind: dict.fromkeys(langs, 0) for kind in BACKLOG_KINDS}
     for kind, objs in _scan():
         for obj in objs:
-            for _target, _field, lang in missing(obj):
-                out[kind][lang] += 1
+            for _target, _field, code in missing(obj):
+                out[kind][code] += 1
     return out
 
 
@@ -322,17 +325,19 @@ def start_backlog_run(app, limit=BACKLOG_LIMIT):
 
 def backlog_run(app, limit=BACKLOG_LIMIT, client=None):
     """The backlog run itself: batches of BACKLOG_BATCH fields with a short
-    pause, until `limit` is reached or a batch translates nothing (nothing
-    left, or everything fails: the next tick tries again)."""
+    pause, until `limit` is reached, a batch translates nothing (nothing left)
+    or a batch reaches MAX_FAILED failures (a wrong key: the reuse of an
+    existing translation still succeeds, so done alone does not show it). The
+    next tick tries again."""
     with app.app_context():
         tally = Tally()
         try:
             while tally.done < limit:
-                before = tally.done
+                before, failed_before = tally.done, tally.failed
                 backfill(limit=min(BACKLOG_BATCH, limit - tally.done), client=client, tally=tally)
                 with _LOCK:
                     _RUN.update(done=tally.done, failed=tally.failed)
-                if tally.done == before:
+                if tally.done == before or tally.failed - failed_before >= MAX_FAILED:
                     break
                 db.session.remove()   # a fresh session per batch: nothing held in between
                 time.sleep(BACKLOG_PAUSE)

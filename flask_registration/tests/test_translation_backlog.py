@@ -224,7 +224,8 @@ def test_a_failure_is_counted_and_logged_in_full(app, db, make_user, jobs, backl
         _cleanup(issue.id)
 
 
-def test_a_wrong_key_stops_the_run_early(app, db, make_user, jobs, backlog_env, caplog):
+def test_a_wrong_key_stops_the_run_early(app, db, make_user, jobs, backlog_env, caplog, monkeypatch):
+    monkeypatch.setattr(content_jobs, 'BACKLOG_BATCH', 1000)   # one batch, whatever the shared database holds
     admin = make_user(admin=True)
     issue, _proposal = _content(db, admin)
     try:
@@ -232,8 +233,10 @@ def test_a_wrong_key_stops_the_run_early(app, db, make_user, jobs, backlog_env, 
         client = BrokenClient()
         content_jobs.backlog_run(app, client=client)
         run = content_jobs.stats()['run']
-        assert run['done'] == 0 and 0 < run['failed'] <= content_jobs.MAX_FAILED
-        assert len(client.calls) <= content_jobs.MAX_FAILED
+        # The run stops at MAX_FAILED: exactly that many calls, all failed
+        # (done only counts reused translations of the same text, no AI call).
+        assert run['failed'] == content_jobs.MAX_FAILED
+        assert len(client.calls) == content_jobs.MAX_FAILED
         assert any('invalid x-api-key' in r.getMessage() for r in caplog.records)
     finally:
         _cleanup(issue.id)
