@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Run the full test suite on exactly the committed code and push only when it
+# is green (the working rule in CLAUDE.md). Run from anywhere:
+#
+#     scripts/check_and_push.sh
+#
+# Stops without pushing when:
+#   - flask_registration/ has uncommitted changes to tracked files (the suite
+#     would not test exactly what gets pushed);
+#   - pytest exits with anything but 0;
+#   - the commit or the tracked files changed while the suite was running.
+# The full pytest output goes to .check_and_push.log; only the last lines
+# are shown.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+LOG=.check_and_push.log
+PY=.venv/bin/python
+TAIL_LINES=15
+
+dirty() {
+    git status --porcelain --untracked-files=no -- .
+}
+
+if [ -n "$(dirty)" ]; then
+    echo "Stopped: uncommitted changes in flask_registration/; commit them first:" >&2
+    dirty >&2
+    exit 1
+fi
+
+HEAD_BEFORE=$(git rev-parse HEAD)
+BRANCH=$(git branch --show-current)
+echo "Running the full suite on $(git log --oneline -1) (log: $LOG) ..."
+
+# pytest's own exit code, not that of a pipe: no pipe at all.
+status=0
+"$PY" -m pytest -q -p no:cacheprovider >"$LOG" 2>&1 || status=$?
+
+tail -n "$TAIL_LINES" "$LOG"
+
+if [ "$status" -ne 0 ]; then
+    echo "Stopped: pytest exited with $status; nothing pushed. Failures:" >&2
+    grep '^FAILED\|^ERROR' "$LOG" >&2 || true
+    exit "$status"
+fi
+
+if [ "$(git rev-parse HEAD)" != "$HEAD_BEFORE" ] || [ -n "$(dirty)" ]; then
+    echo "Stopped: the code changed while the suite was running; nothing pushed. Run again." >&2
+    exit 1
+fi
+
+echo "Green on $HEAD_BEFORE; pushing $BRANCH."
+git push origin "$BRANCH"

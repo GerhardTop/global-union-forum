@@ -12,6 +12,8 @@ Wanneer een taak vereist dat de gebruiker zelf iets buiten de chat doet (een wac
 
 Wijzig geen code terwijl de volledige suite draait. Commit alleen als de laatste volledige run op precies de te committen code groen is; bij een rode run eerst de oorzaak vinden, ook als die buiten de wijziging lijkt te liggen.
 
+Pushen gaat altijd via `scripts/check_and_push.sh`, nooit met een losse `git push`. Het script draait de volledige suite op de gecommitte code (het stopt bij niet-gecommitte wijzigingen in `flask_registration/`), schrijft de uitvoer naar `.check_and_push.log`, toont de laatste regels en pusht alleen als pytest met 0 eindigt en de code tijdens de run niet veranderde. Draai pytest nooit via een pipe zonder `set -o pipefail` (zoals `pytest | tail`): dan is de afsluitcode die van het laatste commando en lijkt een rode run groen. Lees bij een losse run de afsluitcode van pytest zelf, of schrijf naar een bestand en lees dat.
+
 ## Ontwerp
 
 Afgeronde design-artboards zijn leidend voor de vormgeving. De artboards staan als statische referentie-HTML in `docs/design/` (bijvoorbeeld `docs/design/gebruiker.html`), met `docs/design/README.md` als overzicht (artboard per scherm, tokens, componenten). Bouw elk UI-scherm visueel conform het betreffende artboardbestand in `docs/design/`; hergebruik niet standaard de bestaande code-markup. De schermopdracht noemt het artboardbestand waar naartoe gebouwd wordt.
