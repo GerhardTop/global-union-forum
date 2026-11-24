@@ -27,7 +27,7 @@ social_module = importlib.import_module("app.routes.social")
 
 
 @pytest.fixture
-def app():
+def app(monkeypatch):
     """
     Maak test-app via de ECHTE app-factory (create_app), niet via een
     handmatig samengestelde Flask-app. Een handmatige app registreerde eerder
@@ -42,21 +42,20 @@ def app():
     overrides moeten er dan al staan): SQLite in-memory, geen CSRF, geen
     rate-limiting (anders lopen herhaalde test-POSTs binnen dezelfde
     pytest-sessie tegen flask-limiter se gedeelde in-memory storage aan).
+    Via monkeypatch, so every class attribute comes back after the test: the
+    session app (conftest) built later in the same run must not get these
+    (RATELIMIT_ENABLED False left the limiter without storage).
     """
-    orig_db_uri = config_module.Config.SQLALCHEMY_DATABASE_URI
-    config_module.Config.SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
-    config_module.Config.TESTING = True
-    config_module.Config.WTF_CSRF_ENABLED = False
-    config_module.Config.RATELIMIT_ENABLED = False
+    monkeypatch.setattr(config_module.Config, 'SQLALCHEMY_DATABASE_URI', 'sqlite:///:memory:')
+    monkeypatch.setattr(config_module.Config, 'TESTING', True, raising=False)
+    monkeypatch.setattr(config_module.Config, 'WTF_CSRF_ENABLED', False, raising=False)
+    monkeypatch.setattr(config_module.Config, 'RATELIMIT_ENABLED', False, raising=False)
 
-    try:
-        flask_app = create_app()
-        with flask_app.app_context():
-            yield flask_app
-            db.session.remove()
-            db.drop_all()
-    finally:
-        config_module.Config.SQLALCHEMY_DATABASE_URI = orig_db_uri
+    flask_app = create_app()
+    with flask_app.app_context():
+        yield flask_app
+        db.session.remove()
+        db.drop_all()
 
 
 @pytest.fixture

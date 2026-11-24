@@ -25,6 +25,18 @@ from tests.test_forum_proposals import PUBLIC, _client, _req, _start, _thread, m
 SECRET = 'tik-geheim-voor-tests'
 
 
+def _not_just_before_midnight():
+    """Now (naive UTC), unless the local day (Europe/Amsterdam) ends within
+    15 minutes: then just after that midnight. A test that ticks "10 minutes
+    later, the same day" otherwise crossed into the next day when it ran at
+    23:50 (and got a second summary, rightly)."""
+    now = datetime.utcnow()
+    next_midnight = digest.start_of_local_day_utc(now + timedelta(days=1))
+    if next_midnight - now < timedelta(minutes=15):
+        return next_midnight + timedelta(minutes=1)
+    return now
+
+
 @pytest.fixture
 def mails(monkeypatch):
     sent = []
@@ -210,7 +222,7 @@ class TestDigest:
 
     def test_at_most_once_per_calendar_day(self, app, db, make_user, make_proposal, mails):
         anna, t = self._setup(db, make_user, make_proposal, minutes_ago=90)  # bijstellen
-        now = datetime.utcnow()
+        now = _not_just_before_midnight()
         with app.test_request_context():
             digest.tick(now)
             first = Digest.query.filter_by(user_id=anna.id).count()

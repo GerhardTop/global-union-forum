@@ -148,7 +148,15 @@ def create_app_for_tests(test_config_cls):
     correct tegen het sqlite-testbestand, dus we hoeven hier alleen nog de
     overige TestConfig-vlaggen (CSRF, rate-limiting) na te zetten.
     """
-    from app import create_app
+    from app import create_app, limiter
+    # The limiter is one object for the process, and init_app keeps its
+    # previous `enabled` when the app's config does not say
+    # (config.setdefault(ENABLED, self.enabled)). A test with an app of its
+    # own and RATELIMIT_ENABLED False (test_auth, test_verify_bypass,
+    # test_username) that ran before this one left it disabled, without
+    # storage: limiter.reset() then failed in every later test. The session
+    # app starts from the constructor's default.
+    limiter.enabled = True
     flask_app = create_app()
     flask_app.config.from_object(test_config_cls)
     return flask_app
