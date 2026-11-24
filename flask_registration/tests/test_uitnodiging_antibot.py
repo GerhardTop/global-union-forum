@@ -79,7 +79,9 @@ def app():
 
 @pytest.fixture
 def client(app):
-    return app.test_client()
+    c = app.test_client()
+    c.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'nl'  # a Dutch browser: without a choice a visitor gets English (VISITOR_FALLBACK_LANGUAGE)
+    return c
 
 
 @pytest.fixture

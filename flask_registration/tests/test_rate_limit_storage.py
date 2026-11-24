@@ -254,6 +254,7 @@ class TestAppRebuildEndToEnd:
             db.session.commit()
 
             client1 = flask_app1.test_client()
+            client1.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'nl'  # a Dutch browser: without a choice a visitor gets English (VISITOR_FALLBACK_LANGUAGE)
             client1.post("/login", data={"email": "uitnodiger@example.com",
                                           "password": "Sterk1!ww"})
             ip = "192.0.2.50"
@@ -285,6 +286,7 @@ class TestAppRebuildEndToEnd:
             # Nieuwe app-instantie = nieuwe test_client = geen sessie-cookie
             # van client1 — apart inloggen, zelfde account (zelfde appdata-DB).
             client2 = flask_app2.test_client()
+            client2.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'nl'  # a Dutch browser: without a choice a visitor gets English (VISITOR_FALLBACK_LANGUAGE)
             client2.post("/login", data={"email": "uitnodiger@example.com",
                                           "password": "Sterk1!ww"})
             # Nog 2 pogingen vanaf hetzelfde IP: 3 (van 'container 1') + 2 = 5

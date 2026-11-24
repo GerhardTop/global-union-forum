@@ -92,6 +92,7 @@ class TestWhoMayVote:
         db.session.add(PostLike(post_id=post.id, user_id=setup['anna'].id, stance='eens'))
         db.session.commit()
         client = app.test_client()
+        client.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'nl'  # a Dutch browser: without a choice a visitor gets English (VISITOR_FALLBACK_LANGUAGE)
         resp = _req(client, 'POST', f'/forum/stance/{post.id}', data={'stance': 'oneens'})
         assert resp.status_code == 302 and '/login' in resp.headers['Location']
         html = _req(client, 'GET', f'/forum/{setup["thread"].id}').get_data(as_text=True)

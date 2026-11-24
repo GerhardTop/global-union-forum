@@ -73,6 +73,7 @@ def thread(app):
 
 def _client_for(app, user):
     client = app.test_client()
+    client.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'nl'  # a Dutch browser: without a choice a visitor gets English (VISITOR_FALLBACK_LANGUAGE)
     with client.session_transaction() as sess:
         sess['_user_id'] = str(user.id)
         sess['_fresh'] = True
@@ -179,6 +180,7 @@ class TestRateLimit:
 
     def test_anonymous_post_and_page_views_are_not_limited(self, app, thread):
         client = app.test_client()
+        client.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'nl'  # a Dutch browser: without a choice a visitor gets English (VISITOR_FALLBACK_LANGUAGE)
         for _ in range(8):
             assert _req(client, 'GET', f'/forum/{thread.id}').status_code == 200
             # Anonieme POST doet niets (zoals voorheen) en raakt de limiter niet.

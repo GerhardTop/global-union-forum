@@ -82,13 +82,14 @@ def test_every_enabled_language_is_in_the_register():
 
 
 def test_a_disabled_language_is_ignored(app):
-    """/lang/it does nothing while Italian is off; the browser's Italian falls back."""
+    """/lang/it does nothing while Italian is off; the browser's Italian falls back
+    to the visitor fallback (English)."""
     client = app.test_client()
     _req(client, 'GET', '/lang/it')
     with client.session_transaction() as s:
         assert 'lang' not in s
     page = _req(client, 'GET', '/', headers={'Accept-Language': 'it'}).get_data(as_text=True)
-    assert '<html lang="nl" dir="ltr">' in page
+    assert '<html lang="en" dir="ltr">' in page
 
 
 def test_the_switcher_shows_the_enabled_languages(app):
@@ -135,7 +136,7 @@ def test_get_locale_with_german_on(app):
         assert str(get_locale()) == 'de'
     with app.test_request_context('/', headers={'Accept-Language': 'it'}):
         refresh()
-        assert str(get_locale()) == 'nl'
+        assert str(get_locale()) == 'en'   # VISITOR_FALLBACK_LANGUAGE, not nl
     with app.test_request_context('/'):
         session['lang'] = 'de'
         refresh()

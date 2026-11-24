@@ -83,6 +83,7 @@ def thread(db):
 
 def _client_for(app, user=None):
     client = app.test_client()
+    client.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'nl'  # a Dutch browser: without a choice a visitor gets English (VISITOR_FALLBACK_LANGUAGE)
     if user is not None:
         with client.session_transaction() as sess:
             sess['_user_id'] = str(user.id)

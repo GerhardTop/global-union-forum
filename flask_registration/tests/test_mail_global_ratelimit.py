@@ -76,6 +76,7 @@ def logged_in_client(app):
         ))
         db.session.commit()
     client = app.test_client()
+    client.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'nl'  # a Dutch browser: without a choice a visitor gets English (VISITOR_FALLBACK_LANGUAGE)
     client.post("/login", data={"email": "mailtester@example.com",
                                  "password": "Sterk1!ww"})
     with client.session_transaction() as sess:
@@ -212,6 +213,7 @@ class TestFeedbackLoginRequired:
 
     def test_login_required_stuurt_anonieme_aanvraag_naar_login(self, app):
         client = app.test_client()
+        client.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'nl'  # a Dutch browser: without a choice a visitor gets English (VISITOR_FALLBACK_LANGUAGE)
         resp = client.post(
             "/feedback",
             data={"lang": "nl", "feedback_message": "hoi", "website": ""},
