@@ -360,14 +360,14 @@ def test_no_long_or_short_dashes_in_msgids_or_translations(lang):
     assert not bad, bad
 
 
-# ── Phase 0 step 6: the old per-language content columns are unused ─────────
+# ── Phase 0 step 6: the old per-language content columns are gone ──────────
 
 OLD_COLUMNS = re.compile(
     r"\b(?:body|author_badge|explanation|ai_response|eyebrow|title_prefix|title_accent|title_suffix"
     r"|land|niveau|uitnodigen|remarks)_(?:nl|en)\b"
     r"|\bfact_title_en\b"
     r"|\b(?:body|explanation|ai_response|eyebrow|title_prefix|title_accent|title_suffix)_\{")  # f'{field}_{lang}'
-# Only the data migration reads them (and names them to relax NOT NULL).
+# Only the data migration names them (it migrates what is left, then drops them).
 OLD_COLUMNS_ALLOWED = {'app/content_migration.py'}
 
 
@@ -375,6 +375,23 @@ def _without_comments(path, source):
     if path.endswith('.py'):
         return '\n'.join(line.split('#', 1)[0] for line in source.splitlines())
     return re.sub(r'\{#.*?#\}', '', source, flags=re.S)
+
+
+def test_the_old_content_columns_are_gone_from_the_models_and_the_database(app, db):
+    """Dropped at start-up (content_migration.drop_old_columns): no model has
+    them, and the database (built from the models, then migrated) neither."""
+    from sqlalchemy import inspect as sa_inspect
+    from app import content_migration
+    for table, names in content_migration.DROPPED_COLUMNS.items():
+        model_columns = set(db.metadata.tables[table].columns.keys())
+        db_columns = {c['name'] for c in sa_inspect(db.engine).get_columns(table)}
+        for name in names:
+            assert name not in model_columns, f'{table}.{name} is still in models.py'
+            assert name not in db_columns, f'{table}.{name} is still in the database'
+        old = {c for c in model_columns | db_columns if OLD_COLUMNS.search(c)}
+        assert not old, (table, old)
+    # A start on this database drops nothing more.
+    assert content_migration.drop_old_columns(db.engine) == []
 
 
 def test_no_code_uses_the_old_content_columns():

@@ -1,13 +1,21 @@
 """Multilingual phase 0 step 6: copy the old per-language columns into the
-originals and content_translations. The only code that still reads the old
-columns (body_nl/_en, author_badge_nl/_en, fact_title_en, explanation_nl/_en,
-ai_response_nl/_en, eyebrow_*/title_*_nl/_en); the models no longer have them.
+originals and content_translations, then drop those columns. The only code
+that still names the old columns (body_nl/_en, author_badge_nl/_en,
+fact_title_en, explanation_nl/_en, ai_response_nl/_en, eyebrow_*/title_*_nl/_en);
+the models no longer have them.
 
 Runs at every start (app/__init__.py:_migrate_columns) and is idempotent:
-an original is only filled when it is still empty, and a translation row is
-only added when there is none yet for that object, field and language. A
-second start therefore creates and overwrites nothing. Every start prints one
-line with what it added, so the deploy log shows the counts.
+    migrate(engine)       an original is only filled when it is still empty,
+                          and a translation row is only added when there is
+                          none yet for that object, field and language. Every
+                          part skips a table whose old columns are gone.
+    drop_old_columns(engine)
+                          after migrate, in the same start: drops the old
+                          columns (and author_badge, which no page shows) that
+                          still exist. A database where migrate never ran
+                          (an old local copy) is migrated first, so nothing is
+                          lost; on every later start both do nothing.
+Every start prints one line per step with what it did (the deploy log).
 """
 import hashlib
 from datetime import datetime
@@ -17,12 +25,14 @@ from sqlalchemy import text
 
 _OLD_LANGS = ('nl', 'en')
 
-# The old NOT NULL columns of threads: the code no longer writes them, so new
-# rows need them nullable (app/__init__.py relaxes them at start-up; they stay
-# in the database until a later step).
-RELAXED_COLUMNS = {
-    'threads': ('eyebrow_nl', 'eyebrow_en', 'title_prefix_nl', 'title_suffix_nl',
-                'title_prefix_en', 'title_suffix_en'),
+# Dropped by drop_old_columns: the old per-language columns, and
+# posts.author_badge (the original of step 6b; no page shows it).
+DROPPED_COLUMNS = {
+    'posts': ('body_nl', 'body_en', 'author_badge_nl', 'author_badge_en', 'fact_title_en', 'author_badge'),
+    'threads': ('eyebrow_nl', 'eyebrow_en', 'title_prefix_nl', 'title_prefix_en',
+                'title_accent_nl', 'title_accent_en', 'title_suffix_nl', 'title_suffix_en'),
+    'quality_awards': ('explanation_nl', 'explanation_en'),
+    'quality_objections': ('ai_response_nl', 'ai_response_en'),
 }
 
 
@@ -67,14 +77,15 @@ def _fill(conn, table, column, object_id, value):
 
 
 def migrate_posts(conn, counts):
-    """6b: body, author_badge and fact_title of posts."""
+    """6b: body and fact_title of posts (the author's badge is not migrated:
+    no page shows it, drop_old_columns removes it)."""
     cols = _columns(conn, 'posts')
-    old = [c for c in ('body_nl', 'body_en', 'author_badge_nl', 'author_badge_en', 'fact_title_en') if c in cols]
-    if not old or 'author_badge' not in cols:
+    old = [c for c in ('body_nl', 'body_en', 'fact_title_en') if c in cols]
+    if not old:
         return
     writer = _Writer(conn, 'posts')
     rows = conn.execute(text(
-        f'SELECT id, body, source_lang, is_demo, author_badge, fact_title, {", ".join(old)} FROM posts '
+        f'SELECT id, body, source_lang, is_demo, fact_title, {", ".join(old)} FROM posts '
         f'WHERE {" OR ".join(f"{c} IS NOT NULL" for c in old)}')).mappings().all()
     filled = 0
     for row in rows:
@@ -89,18 +100,6 @@ def migrate_posts(conn, counts):
         for lang in _OLD_LANGS:
             if lang != src:
                 writer.add(row['id'], 'body', lang, row.get(f'body_{lang}'), body, machine)
-        # The author's badge: one original in the post's language, the other
-        # language as a handwritten translation when it differs.
-        badge = row['author_badge']
-        if not badge:
-            badge = row.get(f'author_badge_{src}') or next(
-                (row.get(f'author_badge_{lang}') for lang in _OLD_LANGS if row.get(f'author_badge_{lang}')), None)
-            if badge:
-                _fill(conn, 'posts', 'author_badge', row['id'], badge)
-        for lang in _OLD_LANGS:
-            value = row.get(f'author_badge_{lang}')
-            if lang != src and value != badge:
-                writer.add(row['id'], 'author_badge', lang, value, badge, False)
         # The fact title: fact_title is the original, fact_title_en the English cache.
         title = row['fact_title']
         if not title and row.get('fact_title_en'):
@@ -286,3 +285,30 @@ def migrate(engine):
     summary = ', '.join(f'{k} {v}' for k, v in sorted(counts.items())) or 'nothing to migrate'
     print(f'Content migration (multilingual step 6): {summary}', flush=True)
     return counts
+
+
+def drop_old_columns(engine):
+    """Drop the columns of DROPPED_COLUMNS that still exist, and the
+    translations of posts.author_badge. Call it after migrate. Returns the
+    dropped columns as ['table.column']; a second start drops nothing."""
+    dropped = []
+    with engine.connect() as conn:
+        dialect = conn.dialect.name
+        for table, names in DROPPED_COLUMNS.items():
+            present = _columns(conn, table)
+            for name in names:
+                if name not in present:
+                    continue
+                if dialect == 'postgresql':
+                    conn.execute(text(f'ALTER TABLE {table} DROP COLUMN IF EXISTS {name}'))
+                else:  # SQLite (3.35 and later) and MySQL have no IF EXISTS here: checked above
+                    conn.execute(text(f'ALTER TABLE {table} DROP COLUMN {name}'))
+                dropped.append(f'{table}.{name}')
+        if 'content_translations' in sa_inspect(conn).get_table_names():
+            gone = conn.execute(text("DELETE FROM content_translations "
+                                     "WHERE object_type = 'posts' AND field = 'author_badge'")).rowcount
+            if gone:
+                dropped.append(f'content_translations author_badge {gone}')
+        conn.commit()
+    print(f'Old language columns: {"dropped " + ", ".join(dropped) if dropped else "none left"}', flush=True)
+    return dropped

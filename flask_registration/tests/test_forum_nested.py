@@ -313,7 +313,7 @@ class TestCollapse:
 class TestAuthorLine:
     def test_no_role_status_badge_or_age(self, client, db, forum_users, thread):
         p = Post(thread_id=thread.id, user_id=forum_users[0].id, author_name='', author_username='anna_nest',
-                 author_role='founder', author_badge='Handelsrecht · Universiteit Leiden', author_age=52,
+                 author_role='founder', author_age=52,
                  body='met rollen', source_lang='nl', is_op=True)
         q = Post(thread_id=thread.id, user_id=forum_users[1].id, author_name='', author_username='bram_nest',
                  author_role='expert', body='expert', source_lang='nl')

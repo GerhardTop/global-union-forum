@@ -3,9 +3,10 @@ columns (app/content_migration.py), on a separate database that still has
 those columns. Idempotent: a second run adds and overwrites nothing.
 """
 import hashlib
+import re
 
 import pytest
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 
 from app import content_migration
 from app.models import ContentTranslation
@@ -48,18 +49,57 @@ def _translations(engine):
 def test_posts_are_migrated(old_db):
     counts = content_migration.migrate(old_db)
     with old_db.connect() as conn:
-        posts = {r[0]: tuple(r[1:]) for r in conn.execute(text('SELECT id, body, author_badge, fact_title FROM posts'))}
-    assert posts[1] == ('Hallo.', 'Handelsrecht', None)       # filled from body_nl / author_badge_nl
-    assert posts[2] == ('An English post.', None, None)
-    assert posts[3] == ('Een feit.', None, 'Kern')
-    assert posts[4] == ('Tekst.', 'LSE', None)
-    assert _translations(old_db) == [
-        ('posts', 1, 'author_badge', 'en', 'Trade law', False, _h('Handelsrecht')),
+        posts = {r[0]: tuple(r[1:]) for r in conn.execute(text('SELECT id, body, fact_title FROM posts'))}
+    assert posts[1] == ('Hallo.', None)       # filled from body_nl
+    assert posts[2] == ('An English post.', None)
+    assert posts[3] == ('Een feit.', 'Kern')
+    assert posts[4] == ('Tekst.', None)
+    assert _translations(old_db) == [        # no author_badge: no page shows it, it is dropped
         ('posts', 1, 'body', 'en', 'Hello.', False, _h('Hallo.')),                 # demo: handwritten
         ('posts', 2, 'body', 'nl', '[nl] Een Engels bericht.', True, _h('An English post.')),  # machine
         ('posts', 3, 'fact_title', 'en', 'Core', True, _h('Kern')),
     ]
-    assert counts == {'posts.body filled': 1, 'posts.body': 2, 'posts.author_badge': 1, 'posts.fact_title': 1}
+    assert counts == {'posts.body filled': 1, 'posts.body': 2, 'posts.fact_title': 1}
+
+
+def _post_columns(engine):
+    with engine.connect() as conn:
+        return {c['name'] for c in inspect(conn).get_columns('posts')}
+
+
+def test_three_starts_migrate_then_drop_once(old_db):
+    """A start runs migrate, then drop_old_columns (app/__init__.py). The first
+    start copies what is left and drops the old columns (and author_badge
+    with its translations); the second and third start do nothing."""
+    with old_db.begin() as conn:
+        conn.execute(text("INSERT INTO content_translations (object_type, object_id, field, lang, text, "
+                          "is_machine, source_hash, created_at) VALUES "
+                          "('posts', 4, 'author_badge', 'en', 'LSE', 0, 'x', '2026-01-01')"))
+    results = []
+    for _start in range(3):
+        counts = content_migration.migrate(old_db)
+        results.append((counts, content_migration.drop_old_columns(old_db)))
+    (first_counts, first_dropped), second, third = results
+    assert first_counts['posts.body'] == 2                     # migrated before the drop
+    assert set(first_dropped) == {'posts.body_nl', 'posts.body_en', 'posts.author_badge_nl',
+                                  'posts.author_badge_en', 'posts.fact_title_en', 'posts.author_badge',
+                                  'content_translations author_badge 1'}
+    assert second == third == ({}, [])                         # nothing left to migrate or drop
+    assert _post_columns(old_db) == {'id', 'body', 'source_lang', 'is_demo', 'fact_title'}
+    assert _translations(old_db) == [
+        ('posts', 1, 'body', 'en', 'Hello.', False, _h('Hallo.')),
+        ('posts', 2, 'body', 'nl', '[nl] Een Engels bericht.', True, _h('An English post.')),
+        ('posts', 3, 'fact_title', 'en', 'Core', True, _h('Kern')),
+    ]
+    with old_db.connect() as conn:
+        assert conn.execute(text('SELECT body FROM posts WHERE id = 1')).scalar() == 'Hallo.'
+
+
+def test_the_drop_covers_every_old_column_and_nothing_else():
+    old = re.compile(r'_(nl|en)$')
+    for table, names in content_migration.DROPPED_COLUMNS.items():
+        assert all(old.search(n) or n == 'author_badge' for n in names), table
+    assert sum(len(n) for n in content_migration.DROPPED_COLUMNS.values()) == 18   # 17 old + author_badge
 
 
 def test_a_second_run_changes_nothing(old_db):

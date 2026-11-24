@@ -22,16 +22,16 @@ staat.
 from datetime import datetime, timedelta
 
 
-# (sleutel -> voornaam, achternaam, gebruikersnaam, rol, badge, leeftijd).
+# (sleutel -> voornaam, achternaam, gebruikersnaam, rol, leeftijd).
 # De e-mails komen uit DEMO_USER_EMAILS (app/routes/forum.py); _get_or_create
 # vindt de bestaande accounts terug op e-mail.
 SPECS = {
-    'jan':    ('Jan',    'Hofman (demo)',     'jan_h',    'member', None, 52),
-    'fatima': ('Fatima', 'El Idrissi (demo)', 'fatima_e', 'member', None, 38),
-    'sarah':  ('Sarah',  'Chen (demo)',       'sarah_c',  'expert', 'Internationale betrekkingen · LSE', 34),
-    'marcus': ('Marcus', 'Osei (demo)',       'marcus_o', 'member', None, 31),
-    'henk':   ('Henk',   'Veenstra (demo)',   'henk_v',   'member', None, 67),
-    'noa':    ('Noa',    'de Wit (demo)',     'noa_w',    'member', None, 23),
+    'jan':    ('Jan',    'Hofman (demo)',     'jan_h',    'member', 52),
+    'fatima': ('Fatima', 'El Idrissi (demo)', 'fatima_e', 'member', 38),
+    'sarah':  ('Sarah',  'Chen (demo)',       'sarah_c',  'expert', 34),
+    'marcus': ('Marcus', 'Osei (demo)',       'marcus_o', 'member', 31),
+    'henk':   ('Henk',   'Veenstra (demo)',   'henk_v',   'member', 67),
+    'noa':    ('Noa',    'de Wit (demo)',     'noa_w',    'member', 23),
 }
 
 DEMO_SUPPORT_THRESHOLD = 3
@@ -42,13 +42,13 @@ _TITLE_B_OLD = 'Hoe maken we de lokale democratie toegankelijker voor jongeren?'
 
 
 def _people():
-    """De demo-personages als {sleutel: (user, rol, badge, leeftijd)}."""
+    """De demo-personages als {sleutel: (user, rol, leeftijd)}."""
     from app.routes.forum import DEMO_USER_EMAILS, _get_or_create_demo_user
     out = {}
-    for key, (first, last, username, role, badge, age) in SPECS.items():
+    for key, (first, last, username, role, age) in SPECS.items():
         user = _get_or_create_demo_user(first, last, DEMO_USER_EMAILS[key], username)
         user.digest_email = False  # geen e-mailsamenvattingen naar de demo-accounts
-        out[key] = (user, role, badge, age)
+        out[key] = (user, role, age)
     return out
 
 
@@ -56,13 +56,13 @@ def _post(db, thread, who, created_at, *, body=None, source_lang='nl', is_op=Fal
           parent=None, kind=None, fact_direction=None, fact_source=None, fact_type=None,
           fact_title=None, issue_proposal_id=None, proposal_version=None):
     from app.models import Post
-    user, role, badge, age = who
+    user, role, age = who
     post = Post(
         thread_id=thread.id, user_id=user.id,
         parent_id=parent.id if parent is not None else None,
         author_name=f'{user.first_name} {user.last_name}'.strip(),
         author_username=user.username, author_role=role,
-        author_badge=badge, author_age=age,
+        author_age=age,
         body=body, source_lang=source_lang, is_op=is_op, is_demo=True, vote_count=0,
         kind=kind, fact_direction=fact_direction, fact_source=fact_source, fact_type=fact_type, fact_title=fact_title,
         issue_proposal_id=issue_proposal_id, proposal_version=proposal_version,

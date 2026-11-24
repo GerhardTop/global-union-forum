@@ -174,7 +174,7 @@ def _get_or_create_demo_user(first_name, last_name, email, username):
 
 
 def _demo_post(translations=None, **values):
-    """A demo post: the original in body (and author_badge) in its source
+    """A demo post: the original in body in its source
     language, plus handwritten translations {(field, lang): text}."""
     post = Post(**values)
     db.session.add(post)
@@ -271,12 +271,10 @@ def _seed_forum():
 
     p1_r1 = _demo_post(
         translations={
-            ('author_badge', 'nl'): 'Internationale betrekkingen · LSE',
         },
         thread_id=t1.id, user_id=sarah.id, parent_id=p1_op.id,
         author_name='Sarah Chen (demo)', author_username='sarah_c', author_role='expert', author_age=34,
         source_lang='en', vote_count=31, is_demo=True,
-        author_badge='International relations · LSE',
         body=(
             "Jan raises exactly the right concern. The technical term is 'metric gaming' "
             "and it's endemic to any scoring system.\n\n"
@@ -329,7 +327,6 @@ def _seed_forum():
 
     p2_op = _demo_post(
         translations={
-            ('author_badge', 'en'): 'Trade law · Leiden University',
             ('body', 'en'): (
                 "Principle 4 introduces an interesting hybrid: no full free movement of people, "
                 "but no closed borders either. Temporary work visas for scarce talent — from GU "
@@ -351,7 +348,6 @@ def _seed_forum():
         thread_id=t2.id, user_id=fatima.id,
         author_name='Fatima El Idrissi (demo)', author_username='fatima_e', author_role='expert', author_age=38,
         source_lang='nl', is_op=True, vote_count=0, is_demo=True,
-        author_badge='Handelsrecht · Universiteit Leiden',
         body=(
             "Principe 4 introduceert een interessante hybride: geen volledig vrij "
             "personenverkeer, maar ook geen gesloten grenzen. Tijdelijke werkvisa voor schaars "
@@ -420,12 +416,10 @@ def _seed_forum():
 
     p3_op = _demo_post(
         translations={
-            ('author_badge', 'nl'): 'Internationale betrekkingen · LSE',
         },
         thread_id=t3.id, user_id=sarah.id,
         author_name='Sarah Chen (demo)', author_username='sarah_c', author_role='expert', author_age=34,
         source_lang='en', is_op=True, vote_count=0, is_demo=True,
-        author_badge='International relations · LSE',
         body=(
             "Principle 3 proposes independent journalism in local languages, modelled on the "
             "BBC. I work in media policy and I find this the most promising — and the most "
@@ -466,12 +460,10 @@ def _seed_forum():
 
     p3_r2 = _demo_post(
         translations={
-            ('author_badge', 'en'): 'Trade law · Leiden University',
         },
         thread_id=t3.id, user_id=fatima.id, parent_id=p3_r1.id,
         author_name='Fatima El Idrissi (demo)', author_username='fatima_e', author_role='expert', author_age=38,
         source_lang='nl', vote_count=22, is_demo=True,
-        author_badge='Handelsrecht · Universiteit Leiden',
         body=(
             "Jan's suggestie is pragmatisch, maar die bestaande organisaties zijn niet "
             "neutraal — ze worden gesponsord door nationale overheden met eigen geopolitieke "
@@ -529,12 +521,10 @@ def _seed_forum():
 
     p4_r1 = _demo_post(
         translations={
-            ('author_badge', 'en'): 'Trade law · Leiden University',
         },
         thread_id=t4.id, user_id=fatima.id, parent_id=p4_op.id,
         author_name='Fatima El Idrissi (demo)', author_username='fatima_e', author_role='expert', author_age=38,
         source_lang='nl', vote_count=19, is_demo=True,
-        author_badge='Handelsrecht · Universiteit Leiden',
         body=(
             "De vergelijking met de EU-uitbreidingsprocedure is treffend maar ook een "
             "waarschuwing. De EU heeft 'kopenhaagencriteria' — democratie, rechtsstaat, "

@@ -159,6 +159,9 @@ def _migrate_columns():
     # originals and content_translations (raw SQL, idempotent).
     from app import content_migration
     content_migration.migrate(db.engine)
+    # Then drop the old per-language columns (and posts.author_badge): after
+    # the migration above, in the same start, so nothing is lost (idempotent).
+    content_migration.drop_old_columns(db.engine)
     _migrate_username_and_backfill(insp, existing, is_pg)
     # Na alle kolommigraties: de backfill gebruikt de ORM op Proposal en Thread.
     from app import issues
@@ -360,9 +363,9 @@ _POLISH_COLUMNS = {
 
 # Multilingual step 6: the originals of content that used to have a column
 # per language. Additive and nullable; a fresh database gets them from
-# db.create_all(). The old columns stay in the database (unused by the code).
+# db.create_all(). The old columns are dropped after the content migration
+# (content_migration.drop_old_columns).
 _CONTENT_COLUMNS = {
-    'posts': (('author_badge', 'VARCHAR(200) NULL'),),
     'quality_awards': (('explanation', 'VARCHAR(400) NULL'),),
     'quality_objections': (('ai_response', 'TEXT NULL'), ('ai_response_lang', 'VARCHAR(5) NULL')),
     'threads': (('eyebrow', 'VARCHAR(200) NULL'), ('title_prefix', "VARCHAR(300) NULL DEFAULT ''"),
@@ -393,22 +396,6 @@ def _migrate_content_columns(existing):
             conn.execute(text('UPDATE issue_followups SET lang = (SELECT issues.lang FROM issues '
                               'WHERE issues.id = issue_followups.issue_id) WHERE lang IS NULL'))
             conn.commit()
-    from app.content_migration import RELAXED_COLUMNS
-    dialect = db.engine.dialect.name
-    for table, names in RELAXED_COLUMNS.items():
-        if table not in existing or dialect not in ('postgresql', 'mysql'):
-            continue  # SQLite (tests only) builds the tables from the models
-        info = {c['name']: c for c in sa_inspect(db.engine).get_columns(table)}
-        strict = [n for n in names if n in info and not info[n].get('nullable', True)]
-        if strict:
-            with db.engine.connect() as conn:
-                for name in strict:
-                    if dialect == 'postgresql':
-                        conn.execute(text(f'ALTER TABLE {table} ALTER COLUMN {name} DROP NOT NULL'))
-                    else:
-                        conn.execute(text(f'ALTER TABLE {table} MODIFY COLUMN {name} '
-                                          f'{info[name]["type"].compile(dialect=db.engine.dialect)} NULL'))
-                conn.commit()
 
 
 def _migrate_polish(existing):

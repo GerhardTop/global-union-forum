@@ -253,8 +253,8 @@ class Thread(db.Model):
     id           = db.Column(db.Integer, primary_key=True)
     # Multilingual step 6d: the eyebrow and the title (prefix, accent in
     # italics, suffix) once, as the original in source_lang; translations in
-    # content_translations via app/content_i18n.py. The old columns
-    # eyebrow_*/title_*_nl/_en stay in the database, unused (and nullable).
+    # content_translations via app/content_i18n.py. The old per-language
+    # columns are dropped at start-up (content_migration.drop_old_columns).
     eyebrow      = db.Column(db.String(200), nullable=True)
     title_prefix = db.Column(db.String(300), nullable=True, default='')
     title_accent = db.Column(db.String(200), nullable=True)
@@ -308,11 +308,10 @@ class Post(db.Model):
     author_name    = db.Column(db.String(100), nullable=False)
     author_username = db.Column(db.String(30), nullable=False)
     author_role    = db.Column(db.String(20),  nullable=False, default='member')
-    # Multilingual step 6b: one original per text (body, author_badge,
-    # fact_title) in source_lang; translations in content_translations via
-    # app/content_i18n.py. The old columns body_nl/_en, author_badge_nl/_en
-    # and fact_title_en stay in the database but the code no longer uses them.
-    author_badge   = db.Column(db.String(200), nullable=True)
+    # Multilingual step 6b: one original per text (body, fact_title) in
+    # source_lang; translations in content_translations via
+    # app/content_i18n.py. The old per-language columns are dropped at
+    # start-up (content_migration.drop_old_columns).
     author_age     = db.Column(db.Integer, nullable=True)
     body           = db.Column(db.Text, nullable=True)
     source_lang    = db.Column(db.String(5), nullable=False, default='nl')
@@ -495,7 +494,7 @@ class QualityAward(db.Model):
     status           = db.Column(db.String(12), nullable=False, default='voorgesteld')
     # Multilingual step 6c: one original explanation, in post_lang (the AI
     # writes in the language of the post); translations in
-    # content_translations. explanation_nl/_en stay in the database, unused.
+    # content_translations (the old per-language columns are dropped).
     explanation      = db.Column(db.String(400), nullable=True)
     source           = db.Column(db.String(10), nullable=False, default='ai')  # ai/moderator/demo
     post_lang        = db.Column(db.String(5), nullable=True)      # voor C2: percentage per taal
@@ -649,7 +648,7 @@ class QualityObjection(db.Model):
     created_at      = db.Column(db.DateTime, default=datetime.utcnow)
     ai_stance       = db.Column(db.String(12), nullable=True)      # verdedigt/geeft_toe
     # Multilingual step 6c: one original AI response in ai_response_lang;
-    # translations in content_translations (ai_response_nl/_en stay, unused).
+    # translations in content_translations (the old per-language columns are dropped).
     ai_response      = db.Column(db.Text, nullable=True)
     ai_response_lang = db.Column(db.String(5), nullable=True)
     ai_prompt_text  = db.Column(db.Text, nullable=True)
