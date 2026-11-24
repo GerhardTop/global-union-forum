@@ -3,12 +3,29 @@ beoordeelscherm. Een melding beoordelen sluit alle open meldingen van dat item
 en kan de bijdrage verplaatsen of verbergen."""
 import uuid
 
+import pytest
 from flask import g
 from flask_babel import refresh
 
 from app import bcrypt
-from app.models import (ConductCase, IssueProposal, Post, PostReport,
+from app.models import (ConductCase, Issue, IssueProposal, Post, PostReport,
                         ProposalReport, User)
+
+
+@pytest.fixture(autouse=True)
+def _purge_new_issues(db):
+    """The test database is shared by the whole session and our routes commit.
+    The issues made here (each with its conversation and old-style forum
+    proposal, see _issue_with_fact) are purged after every test, so a later
+    test does not see them: /forum then loads the proposal rounds of a
+    conversation that test never made (tests/test_forum_queries.py)."""
+    from tests.test_delete_issue import _cleanup
+    db.session.rollback()
+    before = db.session.query(db.func.max(Issue.id)).scalar() or 0
+    yield
+    db.session.rollback()
+    for (issue_id,) in db.session.query(Issue.id).filter(Issue.id > before).all():
+        _cleanup(issue_id)
 
 
 def _user(db, role='contributor'):
