@@ -220,7 +220,7 @@ def _email(items, lang, freq='daily'):
     from flask_babel import gettext
     with force_locale(lang):
         subject = gettext('Your weekly summary') if freq == 'weekly' else gettext('Your daily summary')
-        html = render_template('email/digest.html', items=items, lang=lang,
+        html = render_template('email/digest.html', items=items, lang=lang, freq=freq,
                                base=url_for('main.index', _external=True).rstrip('/'),
                                profile_url=url_for('profile.profile', _external=True))
     return subject, html

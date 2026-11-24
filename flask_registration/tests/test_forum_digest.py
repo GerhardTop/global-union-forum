@@ -193,6 +193,21 @@ class TestDigest:
         assert f'/forum/{t.id}"' in mail['html'] and 'href="https://' in mail['html']
         assert d.emailed_at is not None
 
+    @pytest.mark.parametrize('freq,word,other', [('weekly', 'wekelijkse', 'dagelijkse'),
+                                                  ('daily', 'dagelijkse', 'wekelijkse')])
+    def test_subject_and_title_follow_the_frequency(self, app, db, make_user, make_proposal, mails,
+                                                    freq, word, other):
+        anna, t = self._setup(db, make_user, make_proposal, minutes_ago=90, lang='nl', freq=freq)
+        anna.last_digest_at = datetime.utcnow() - timedelta(days=8)   # outside the weekly window too
+        db.session.commit()
+        with app.test_request_context(base_url='https://globalunionforum.org'):
+            digest.tick()   # the phase transitions, then the summaries
+        mail = next(m for m in mails if m['to'] == anna.email)
+        title = f'Je {word} samenvatting'
+        assert mail['subject'] == title
+        assert f'font-weight:600;">{title}</p>' in mail['html']    # the title in the body
+        assert other not in mail['subject'] + mail['html']
+
     def test_at_most_once_per_calendar_day(self, app, db, make_user, make_proposal, mails):
         anna, t = self._setup(db, make_user, make_proposal, minutes_ago=90)  # bijstellen
         now = datetime.utcnow()
