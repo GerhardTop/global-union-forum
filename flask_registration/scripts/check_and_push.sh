@@ -7,6 +7,9 @@
 # Stops without pushing when:
 #   - flask_registration/ has uncommitted changes to tracked files (the suite
 #     would not test exactly what gets pushed);
+#   - app/ or tests/ hold new files that are not committed (pytest would
+#     collect or import them, but they would not be pushed); files that
+#     .gitignore covers do not count;
 #   - pytest exits with anything but 0;
 #   - the commit or the tracked files changed while the suite was running.
 # The full pytest output goes to .check_and_push.log; only the last lines
@@ -22,9 +25,21 @@ dirty() {
     git status --porcelain --untracked-files=no -- .
 }
 
+# New files in app/ or tests/ that git does not track (ignored files are left out).
+untracked() {
+    git status --porcelain --untracked-files=all -- app tests | grep '^??' || true
+}
+
 if [ -n "$(dirty)" ]; then
     echo "Stopped: uncommitted changes in flask_registration/; commit them first:" >&2
     dirty >&2
+    exit 1
+fi
+
+if [ -n "$(untracked)" ]; then
+    echo "Stopped: new files in app/ or tests/ that are not committed; the suite would run them" >&2
+    echo "but they would not be pushed. Commit, move or delete them first:" >&2
+    untracked >&2
     exit 1
 fi
 
@@ -44,7 +59,7 @@ if [ "$status" -ne 0 ]; then
     exit "$status"
 fi
 
-if [ "$(git rev-parse HEAD)" != "$HEAD_BEFORE" ] || [ -n "$(dirty)" ]; then
+if [ "$(git rev-parse HEAD)" != "$HEAD_BEFORE" ] || [ -n "$(dirty)" ] || [ -n "$(untracked)" ]; then
     echo "Stopped: the code changed while the suite was running; nothing pushed. Run again." >&2
     exit 1
 fi
