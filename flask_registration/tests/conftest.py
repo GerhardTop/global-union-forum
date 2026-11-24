@@ -50,6 +50,69 @@ def _no_background_translations(monkeypatch):
     monkeypatch.setattr(content_jobs, 'ai_available', lambda app=None: False)
 
 
+@pytest.fixture(autouse=True)
+def _fresh_request_state():
+    """Every test starts as a new request would: an empty flask.g and an empty
+    database session.
+
+    The whole session runs in one app context (the app fixture), and a test
+    client request reuses it, so flask.g and the scoped database session
+    outlive requests and tests:
+    - g: what a request leaves there (Flask-Login's user in g._login_user,
+      Flask-Babel's locale, the translation cache of content_i18n) leaked into
+      the next test; a user that test deleted or expunged then broke it
+      (DetachedInstanceError), a cached locale or translation was stale.
+    - the identity map: bulk deletes (synchronize_session=False, raw SQL in
+      purge and cleanup) leave the objects of deleted rows in it, and SQLite
+      hands their ids out again: a new QualityAward or User then collides
+      with a stale one ("Identity map already had an identity", followed by a
+      DetachedInstanceError). Some files cleared it themselves
+      (test_delete_issue._clean_session); now every test does."""
+    from flask import g, has_app_context
+    if has_app_context():
+        for key in list(vars(g)):
+            g.pop(key, None)
+        from app import db as _db
+        _db.session.rollback()
+        _db.session.expunge_all()
+    yield
+
+
+# The limiter as the session app left it (set by the app fixture).
+_LIMITER_STATE = {}
+
+
+@pytest.fixture(autouse=True)
+def _fresh_rate_limits_for_every_test(request):
+    """Every test starts with the session's limiter and empty counters.
+
+    - The limiter is one object for the whole process, and create_app()
+      binds it to the new app's storage. Tests that build an app of their
+      own (test_auth, test_verify_bypass, test_rate_limit_storage and
+      others) left it pointing at their database, deleted afterwards: later
+      tests failed with "no such table: rate_limit_counters". For a test on
+      the session app it is put back as it was after that app was built
+      (_LIMITER_STATE); a test with its own app keeps the limiter its app set.
+    - The counters count per IP (every test request comes from 127.0.0.1)
+      or per user, across tests: a test that adds a sixth fact within a
+      minute of other tests got the 429 handler's flash and redirect instead
+      of its action. Several files reset them themselves; now every test does.
+    Only for tests that use the app (no app is built for the others)."""
+    if 'app' in request.fixturenames:
+        test_app = request.getfixturevalue('app')
+        from sqlalchemy.exc import OperationalError
+        from app import limiter
+        if _LIMITER_STATE and test_app is _LIMITER_STATE.get('_session_app'):
+            state = {k: v for k, v in _LIMITER_STATE.items() if k != '_session_app'}
+            vars(limiter).clear()
+            vars(limiter).update(state)
+        try:
+            limiter.reset()
+        except (AssertionError, OperationalError):
+            pass   # a limiter without storage (RATELIMIT_ENABLED off): nothing to reset
+    yield
+
+
 @pytest.fixture(scope="session")
 def app():
     """Maak één Flask-app voor de hele testsessie, met een losse SQLite-file."""
@@ -63,6 +126,8 @@ def app():
         SERVER_NAME = "localhost"
 
     flask_app = create_app_for_tests(TestConfig)
+    from app import limiter
+    _LIMITER_STATE.update(vars(limiter), _session_app=flask_app)
 
     with flask_app.app_context():
         yield flask_app

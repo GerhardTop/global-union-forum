@@ -674,6 +674,7 @@ def purge(issue):
         proposals.delete_for_threads([thread_id])
     Issue.query.filter_by(id=issue_id).delete(synchronize_session=False)
     if thread_id:
+        content_i18n.delete_for('threads', [thread_id])   # a bulk delete passes the ORM cleanup
         Thread.query.filter_by(id=thread_id).delete(synchronize_session=False)
     db.session.commit()
 

@@ -457,5 +457,7 @@ def _remove_demo(db):
     db.session.flush()
     Issue.query.filter(Issue.id.in_([i.id for i in issues])).delete(synchronize_session=False)
     if thread_ids:
+        from app import content_i18n
+        content_i18n.delete_for('threads', thread_ids)   # a bulk delete passes the ORM cleanup
         Thread.query.filter(Thread.id.in_(thread_ids)).delete(synchronize_session=False)
     db.session.commit()

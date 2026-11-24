@@ -196,6 +196,17 @@ def moderator_dashboard():
         sorteer = 'wachtend'
     show_all = request.args.get('alle') == '1'
 
+    # The bin is searched by the vraagstuk title, else (an item from a
+    # conversation without an issue) by the conversation's title in every
+    # language (_context_title): those titles in one query, not per conversation.
+    from app import content_i18n
+    bin_posts = ([m.item for m in meldingen if m.kind == 'post'] + [r.award.post for r in open_reports]
+                 + [fd[0].fact for fd in fact_disputes] + [o.case.post for o in open_conduct_objections]
+                 + [c.post for c in doubt_cases + ai_removed] + list(unjudged_posts))
+    loose_threads = {p.thread for p in bin_posts
+                     if p is not None and p.thread is not None and _post_issue(p) is None}
+    content_i18n.preload(list(loose_threads), *Thread.TITLE_FIELDS)
+
     def arrange(items, post_of, at_of, count_of=None, issue_of=None):
         issue_of = issue_of or (lambda item: _post_issue(post_of(item)))
         return _arrange(items, lambda item: _context_title(issue_of(item), post_of(item)), at_of,

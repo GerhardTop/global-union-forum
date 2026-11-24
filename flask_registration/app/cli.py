@@ -212,6 +212,8 @@ def _execute(plan):
         if thread_ids:
             from app import proposals
             proposals.delete_for_threads(thread_ids)  # fase E: voorstellen bij die gesprekken
+            from app import content_i18n
+            content_i18n.delete_for('threads', thread_ids)   # a bulk delete passes the ORM cleanup
             Thread.query.filter(Thread.id.in_(thread_ids)).delete(synchronize_session=False)
         if user_ids:
             User.query.filter(User.id.in_(user_ids)).delete(synchronize_session=False)

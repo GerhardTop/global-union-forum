@@ -1272,6 +1272,7 @@ def _delete_thread(thread):
     # Ook in bulk: een ORM-delete zou de (al verwijderde) berichten nog bijwerken.
     from app import proposals
     proposals.delete_for_threads([thread.id])
+    content_i18n.delete_for('threads', [thread.id])   # a bulk delete passes the ORM cleanup
     Thread.query.filter_by(id=thread.id).delete(synchronize_session=False)
     db.session.commit()
 

@@ -6,6 +6,8 @@ The AI client is a fake (tests/test_content_i18n.FakeClient); the background
 thread is replaced by a list of jobs that the test runs itself, so "after the
 commit, not during the save" is visible.
 """
+import uuid
+
 import pytest
 
 import config
@@ -16,6 +18,12 @@ from tests.test_delete_issue import _clean_session, _cleanup  # noqa: F401  (aut
 from tests.test_issue_polish import _client, _issue, _req, make_user  # noqa: F401  (fixture)
 
 OTHER = [lang for lang in config.ENABLED_LANGUAGES if lang != 'nl']
+
+
+def _unique(text):
+    """A text no other test in the session translated: the same text is reused
+    without an AI call (content_i18n.translate), which would change the counts."""
+    return f'{text} ({uuid.uuid4().hex[:6]})'
 ENGLISH_NAME = {'en': 'English', 'de': 'German', 'es': 'Spanish', 'fr': 'French'}
 
 
@@ -54,7 +62,8 @@ def _run(app, jobs, client):
 
 def test_a_new_issue_is_translated_into_every_other_language(app, db, make_user, jobs):
     user = make_user()
-    issue = _issue(db, user, 'Een vraagstuk over water')  # nl, with an intro
+    title = _unique('Een vraagstuk over water')
+    issue = _issue(db, user, title, intro=_unique('Toelichting.'))  # nl, with an intro
     try:
         assert jobs == [[('issues', issue.id)]]   # scheduled at the commit, not run yet
         assert _translations('issues', issue.id) == {}
@@ -62,7 +71,7 @@ def test_a_new_issue_is_translated_into_every_other_language(app, db, make_user,
         _run(app, jobs, client)
         rows = _translations('issues', issue.id)
         assert set(rows) == {(field, lang) for field in ('title', 'intro') for lang in OTHER}
-        assert rows[('title', 'de')].text == '[German] Een vraagstuk over water'
+        assert rows[('title', 'de')].text == f'[German] {title}'
         assert all(row.is_machine for row in rows.values())
         assert len(client.calls) == 2 * len(OTHER)
     finally:
@@ -89,15 +98,16 @@ def test_a_new_version_gets_new_translations_and_the_old_one_keeps_its_own(app, 
     issue = _issue(db, user)
     jobs.clear()  # only the proposal's jobs below
     try:
-        proposal = ip.create(issue, user, 'Eerste tekst.', 'Uitleg een.', lang='nl')
+        statement = _unique('Eerste tekst.')
+        proposal = ip.create(issue, user, statement, _unique('Uitleg een.'), lang='nl')
         db.session.commit()
         client = FakeClient()
         _run(app, jobs, client)
         first = proposal.version_rows[0]
-        assert _translations('issue_proposals', proposal.id)[('statement', 'en')].text == '[English] Eerste tekst.'
+        assert _translations('issue_proposals', proposal.id)[('statement', 'en')].text == f'[English] {statement}'
         # A proposal and its version 1 have the same text: one AI call per language and field.
         assert len(client.calls) == 2 * len(OTHER)
-        assert _translations('issue_proposal_versions', first.id)[('statement', 'en')].text == '[English] Eerste tekst.'
+        assert _translations('issue_proposal_versions', first.id)[('statement', 'en')].text == f'[English] {statement}'
 
         ip.revise(proposal, 'Tweede tekst.', 'Uitleg twee.')
         db.session.commit()
@@ -107,7 +117,7 @@ def test_a_new_version_gets_new_translations_and_the_old_one_keeps_its_own(app, 
         assert _translations('issue_proposals', proposal.id)[('statement', 'fr')].text == '[French] Tweede tekst.'
         assert _translations('issue_proposal_versions', second.id)[('explanation', 'es')].text == '[Spanish] Uitleg twee.'
         old = _translations('issue_proposal_versions', first.id)
-        assert old[('statement', 'de')].text == '[German] Eerste tekst.'   # the old version keeps its own
+        assert old[('statement', 'de')].text == f'[German] {statement}'   # the old version keeps its own
         assert len(old) == 2 * len(OTHER)
     finally:
         _cleanup(issue.id)
@@ -160,7 +170,9 @@ def test_the_tick_respects_its_limit_and_skips_without_ai(app, db, make_user, jo
         assert content_jobs.backfill() == 0          # no AI key in the tests: nothing happens
         client = FakeClient()
         assert content_jobs.backfill(limit=3, client=client) == 3
-        assert len(client.calls) == 3
+        # At most 3 calls: the backlog is the whole session's database, where a
+        # text another test translated is reused without a call.
+        assert len(client.calls) <= 3
     finally:
         _cleanup(issue.id)
 
@@ -204,7 +216,9 @@ def test_deleting_an_issue_takes_the_translations_along(app, db, make_user, jobs
     db.session.commit()
     _run(app, jobs, FakeClient())
     ids = {'issues': [issue.id], 'issue_proposals': [proposal.id],
-           'issue_proposal_versions': [v.id for v in proposal.version_rows]}
+           'issue_proposal_versions': [v.id for v in proposal.version_rows],
+           'threads': [issue.thread_id]}   # the conversation's title (purge deletes it in bulk)
+    assert ContentTranslation.query.filter_by(object_type='threads', object_id=issue.thread_id).count() > 0
     _cleanup(issue.id)
     for kind, oids in ids.items():
         assert ContentTranslation.query.filter(ContentTranslation.object_type == kind,

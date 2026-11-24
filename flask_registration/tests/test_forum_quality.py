@@ -419,7 +419,9 @@ class TestAiFailure:
         fake_ai['fail'] = failure
         post = _reply(app, make_user(), thread, f'Bijdrage terwijl de AI faalt {failure}.')
         assert post.id and _award(post.id) is None
-        dash = _req(_client(app, make_user('moderator')), 'GET', '/moderator').get_data(as_text=True)
+        # ?alle=1: without the limit of 10 rows per section, which posts other
+        # tests in the session leave without a judgement would otherwise fill.
+        dash = _req(_client(app, make_user('moderator')), 'GET', '/moderator?stroom=zonder&alle=1').get_data(as_text=True)
         assert post.body in dash  # bij "Zonder oordeel", handmatig te beoordelen
 
     def test_refusal_gives_no_judgement(self, app, db, make_user, thread, fake_ai):
@@ -456,7 +458,7 @@ class TestReporting:
         _req(client, 'POST', f'/forum/kwaliteit/{post.id}/melden')  # dubbel telt niet
         reports = QualityReport.query.filter_by(award_id=_award(post.id).id).all()
         assert len(reports) == 1 and reports[0].reporter_id == reporter.id
-        dash = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
+        dash = _req(_client(app, mod), 'GET', '/moderator?alle=1').get_data(as_text=True)  # alle=1: other tests' rows
         assert f'Gemeld door @{reporter.username}' in dash
         _req(_client(app, mod), 'POST', f'/forum/kwaliteit/melding/{reports[0].id}/besluit',
              data={'decision': decision, 'note': 'Toch geen nieuw argument.'})

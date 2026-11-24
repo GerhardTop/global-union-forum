@@ -212,7 +212,7 @@ def test_the_moderator_sees_a_disputed_fact_in_their_language_and_the_note_on_re
     db.session.commit()
     row = FactDispute.query.filter_by(fact_post_id=fact.id).one()
     moderator = make_user('moderator')
-    page = _page(app, moderator, 'fr', '/moderator')
+    page = _page(app, moderator, 'fr', '/moderator?alle=1')  # alle=1: other tests' rows
     section = page[page.index('id="betwist"'):]
     section = section[:section.index('</section>')]
     assert '<p class="gu-fact__text" lang="fr" data-mt-translation>[French] Het water is schoner dan in 2010.</p>' in section
@@ -231,7 +231,7 @@ def test_the_moderator_sees_a_disputed_fact_in_their_language_and_the_note_on_re
     assert resp.get_json() == {'translation': 'Les chiffres viennent d’un autre point de mesure.'}
     assert _req(_client(app, disputer, 'fr'), 'POST', f'/forum/feit/betwisting/{row.id}/vertalen').status_code == 403
     # Translated before: the label and the swap, no request.
-    page = _page(app, moderator, 'fr', '/moderator')
+    page = _page(app, moderator, 'fr', '/moderator?alle=1')  # alle=1: other tests' rows
     assert re.search(r'<p class="gu-mrow__notetext" lang="fr" data-mt-translation( hidden)?>Les chiffres', page)
 
 

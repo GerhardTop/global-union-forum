@@ -1,0 +1,10 @@
+# Development and tests: the app's own requirements plus the test tools.
+# Render installs only requirements.txt (render.yaml).
+#     pip install -r requirements-dev.txt
+-r requirements.txt
+pytest==9.1.1
+pytest-mock==3.15.1
+# A new test order every run (files, classes and tests shuffled); the seed is
+# in the header ("Using --randomly-seed=..."), so an order failure can be
+# repeated with: pytest --randomly-seed=<seed>
+pytest-randomly==5.1.0

@@ -12,6 +12,8 @@ Wanneer een taak vereist dat de gebruiker zelf iets buiten de chat doet (een wac
 
 Wijzig geen code terwijl de volledige suite draait. Commit alleen als de laatste volledige run op precies de te committen code groen is; bij een rode run eerst de oorzaak vinden, ook als die buiten de wijziging lijkt te liggen.
 
+De tests draaien in willekeurige volgorde (pytest-randomly; installeer de testtools met `pip install -r requirements-dev.txt`). Een test mag dus niet afhangen van wat een andere test achterlaat: maak eigen data met unieke teksten, ruim op wat je commit, en tel op gedeelde overzichten (zoals `/moderator`) alleen je eigen items (`?alle=1`, of de toename). tests/conftest.py begint elke test met een lege `flask.g`, een lege databasesessie en lege rate-limit-tellers. Faalt een run, dan staat de seed in de uitvoer ("Using --randomly-seed=..."; het script toont hem bij rood); herhaal precies die volgorde met `pytest --randomly-seed=<seed>`.
+
 Pushen gaat altijd via `scripts/check_and_push.sh`, nooit met een losse `git push`. Het script draait de volledige suite op de gecommitte code (het stopt bij niet-gecommitte wijzigingen in `flask_registration/`), schrijft de uitvoer naar `.check_and_push.log`, toont de laatste regels en pusht alleen als pytest met 0 eindigt en de code tijdens de run niet veranderde. Draai pytest nooit via een pipe zonder `set -o pipefail` (zoals `pytest | tail`): dan is de afsluitcode die van het laatste commando en lijkt een rode run groen. Lees bij een losse run de afsluitcode van pytest zelf, of schrijf naar een bestand en lees dat.
 
 ## Ontwerp

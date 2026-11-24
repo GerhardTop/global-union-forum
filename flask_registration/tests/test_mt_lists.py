@@ -162,6 +162,42 @@ def test_a_fixed_number_of_queries_per_list(app, db, make_user, no_ai, path):
             _cleanup(issue_id)
 
 
+def test_the_moderator_overview_preloads_the_titles_of_conversations_without_an_issue(app, db, make_user, no_ai):
+    """An item in the bin from a conversation without an issue (an old forum
+    thread) is searched by the conversation's title in every language
+    (admin._context_title): those titles are preloaded too, not fetched per
+    conversation. Found through the test order: another test left such items."""
+    from app.models import Post, PostReport, Thread
+    moderator, author, reporter = make_user('moderator'), make_user(), make_user()
+    made, counts = [], []
+    try:
+        for n in (1, 5):
+            for i in range(n - len(made)):
+                thread = Thread(title_prefix=f'Los gesprek {len(made)}', source_lang='nl')
+                db.session.add(thread)
+                db.session.flush()
+                post = Post(thread_id=thread.id, user_id=author.id, author_name='',
+                            author_username=author.username, body='Een gemelde bijdrage.', source_lang='nl')
+                db.session.add(post)
+                db.session.flush()
+                db.session.add(PostReport(post_id=post.id, reporter_id=reporter.id, reason='x'))
+                made.append(thread.id)
+            db.session.commit()
+            with _queries() as seen:
+                _page(app, moderator, 'en', '/moderator?alle=1')
+            counts.append(sum(1 for q in seen if 'content_translations' in q))
+        assert counts[0] == counts[1] and counts[1] <= 4, counts
+    finally:
+        db.session.rollback()
+        for thread_id in made:
+            for post in Post.query.filter_by(thread_id=thread_id):
+                PostReport.query.filter_by(post_id=post.id).delete()
+                db.session.delete(post)
+            db.session.flush()
+            db.session.delete(db.session.get(Thread, thread_id))
+        db.session.commit()
+
+
 def test_mails_and_notifications_name_the_issue_in_the_recipients_language(app, voting, make_user):
     issue, proposal, _voter = voting
     content_i18n.set_translation(issue, 'title', 'en', 'What do we do with the square?', is_machine=True)

@@ -440,7 +440,7 @@ def test_author_names_link_to_dossier_for_moderators_only(app, db):
         review = _req(_client(app, mod), 'GET', f'/moderator/melding/bijdrage/{post.id}').get_data(as_text=True)
         assert author_link in review and reporter_link in review
 
-        dash = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
+        dash = _req(_client(app, mod), 'GET', '/moderator?alle=1').get_data(as_text=True)  # alle=1: other tests' rows
         assert author_link in dash
     finally:
         _cleanup(issue_id)

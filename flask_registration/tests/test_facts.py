@@ -134,7 +134,7 @@ def test_dispute_goes_to_moderators_and_fact_stays(app, db, make_user):
     as_mod = _req(_client(app, mod), 'GET', f'/vraagstuk/{issue.id}?vergroot=feiten').get_data(as_text=True)
     assert 'Een twijfelachtig feit' in as_mod and '>Betwist<' not in as_mod
 
-    dash = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
+    dash = _req(_client(app, mod), 'GET', '/moderator?alle=1').get_data(as_text=True)  # alle=1: other tests' rows
     assert 'Betwiste feiten (' in dash and 'Een twijfelachtig feit' in dash and 'De cijfers zijn van 2010.' in dash
     assert f'/forum/feit/betwisting/{row.id}/afhandelen' in dash
 

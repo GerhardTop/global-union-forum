@@ -106,6 +106,9 @@ class _Visible(HTMLParser):
             self.texts.append(data)
 
 
+QUOTED = re.compile(r'["\u201e\u201c]([^"\u201c\u201d]+)["\u201c\u201d]')
+
+
 def _norm(text):
     return ' '.join(html.unescape(text).split())
 
@@ -139,6 +142,11 @@ def _interface_texts(page, content):
         core = text.strip(' .…:;,·›»«()"\'„“”')
         if not core or text in values or core in values or (len(core) >= 12 and core in blob):
             continue
+        # Content quoted inside an interface sentence (a report's reason:
+        # 'Contribution · reason: "Niet respectvol."'): the quote goes, the
+        # sentence around it is still checked. Other tests in the session leave
+        # such reports open, in Dutch.
+        text = QUOTED.sub(lambda m: ' ' if _norm(m.group(1)) in values else m.group(0), text)
         for allowed in ALLOWED:
             text = text.replace(allowed, ' ')
         out.append(text)
@@ -154,7 +162,9 @@ def world(db, make_user):
     proposal = IssueProposal(issue_id=issue.id, statement=f'S{uuid.uuid4().hex[:6]}', created_by_id=author.id)
     db.session.add(proposal)
     db.session.commit()
-    db.session.add(PostReport(post_id=fact.id, reporter_id=reporter.id, reason='x'))
+    # A reason in Dutch, as other tests leave them: user content inside an
+    # interface sentence on /moderator, which the check must skip.
+    db.session.add(PostReport(post_id=fact.id, reporter_id=reporter.id, reason='Niet respectvol, een test.'))
     db.session.add(ProposalReport(proposal_id=proposal.id, reporter_id=reporter.id, reason='y'))
     db.session.commit()
     paths = {'issue': f'/vraagstuk/{issue.id}', 'proposal': f'/vraagstuk/{issue.id}/voorstel/{proposal.id}',

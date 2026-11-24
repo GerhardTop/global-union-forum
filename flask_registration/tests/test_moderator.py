@@ -77,8 +77,20 @@ def _report_fact(db, fact, reporter, reason='ongepast'):
     db.session.commit()
 
 
+def _tab_counts_of(page):
+    import re
+    flat = re.sub(r'\s+', ' ', page)
+    start = flat.index('class="gu-seg"')
+    tabs = flat[start:flat.index('</nav>', start)]
+    return {label: int(n) for label, n in re.findall(r'>\s?([^<>]+?) <span class="gu-seg__c">(\d+)</span>', tabs)}
+
+
 def test_dashboard_renders_each_stream(app, db):
     mod, author, reporter = _user(db, 'moderator'), _user(db), _user(db)
+    # The bin counts every open item in the database, also those other tests
+    # in this session left (they make reports and objections on purpose): this
+    # test checks what its own items add.
+    before = _tab_counts_of(_req(_client(app, mod), 'GET', '/moderator?stroom=alle').get_data(as_text=True))
     issue, fact = _issue_with_fact(db, author)
     _report_fact(db, fact, reporter)
     c = _client(app, mod)
@@ -105,7 +117,8 @@ def test_dashboard_renders_each_stream(app, db):
     objections = 'Gedragsregels: openstaande bezwaren'
 
     def page(q):
-        return _req(c, 'GET', '/moderator' + q).get_data(as_text=True)
+        # ?alle=1: no limit of 10 rows per section (other tests' items would fill it).
+        return _req(c, 'GET', '/moderator' + q + ('&' if '?' in q else '?') + 'alle=1').get_data(as_text=True)
 
     bezw = page('?stroom=bezwaren')
     assert objections in bezw and 'Ik ben het oneens.' in bezw and 'ongepast' not in bezw
@@ -127,16 +140,18 @@ def test_dashboard_renders_each_stream(app, db):
     labels = re.findall(r'>\s?([^<>]+?) <span class="gu-seg__c">(\d+)</span>', tabs)
     assert [l for l, _ in labels] == ['Alle', 'Meldingen', 'Bezwaren', 'Door de AI', 'Zonder AI-oordeel']
     counts = {l: int(n) for l, n in labels}
-    assert counts['Meldingen'] == 1 and counts['Bezwaren'] == 1
+    assert counts['Meldingen'] == before['Meldingen'] + 1 and counts['Bezwaren'] == before['Bezwaren'] + 1
     assert counts['Alle'] == sum(n for l, n in counts.items() if l != 'Alle')
-    assert 'aria-current="page">Bezwaren <span class="gu-seg__c">1</span>' in b
+    assert f'aria-current="page">Bezwaren <span class="gu-seg__c">{counts["Bezwaren"]}</span>' in b
     # De meldingen-rij linkt naar het beoordeelscherm. Bij het bezwaar nam deze
     # moderator zelf het besluit: de rij toont de notitie, geen uitklap.
     assert f'href="/moderator/melding/bijdrage/{fact.id}">Beoordelen</a>' in a
     group = b[b.index('id="bezwaren"'):]
     group = group[:group.index('</section>')]
-    assert 'class="gu-mrow__note"' in group and 'gu-mrow__more' not in group
-    assert '1 meldingen, door deelnemers' in a
+    own = group[group.rindex('<div class="gu-mrow">', 0, group.index('Ik ben het oneens.')):]
+    own = own[:own.find('<div class="gu-mrow">', 1) if '<div class="gu-mrow">' in own[1:] else len(own)]
+    assert 'class="gu-mrow__note"' in own and 'gu-mrow__more' not in own   # this row (others' rows may differ)
+    assert f'{counts["Meldingen"]} meldingen, door deelnemers' in a
 
     # De schil (artboard Main.dc.html): titel, zes tegels boven de bak,
     # rechts de wachttijd, vraagstukken en het fasebeheer; geen recente berichten.
@@ -169,7 +184,9 @@ def test_removed_post_not_in_without_judgement(app, db):
     db.session.add(ConductCase(post_id=moved.id, action='verplaatst', rule='respect', source='moderator',
                                acted_by_id=mod.id, on_background=True))
     db.session.commit()
-    page = _req(_client(app, mod), 'GET', '/moderator?stroom=zonder').get_data(as_text=True)
+    # ?alle=1: without the limit of 10 rows per section, which items other
+    # tests in this session left would otherwise fill (oldest first).
+    page = _req(_client(app, mod), 'GET', '/moderator?stroom=zonder&alle=1').get_data(as_text=True)
     assert 'Gewone bijdrage zonder oordeel.' in page
     assert 'Verplaatste bijdrage zonder oordeel.' not in page
 
@@ -296,7 +313,7 @@ def test_ai_removed_shows_and_can_restore(app, db):
                        acted_by_id=None, explanation='Niet respectvol.', on_background=True)
     db.session.add(case)
     db.session.commit()
-    page = _req(_client(app, mod), 'GET', '/moderator').get_data(as_text=True)
+    page = _req(_client(app, mod), 'GET', '/moderator?alle=1').get_data(as_text=True)  # alle=1: other tests' rows
     assert 'ai-verwijderd' in page and 'Door de AI verplaatst.' in page
     # Fase 2c: een verplaatste bijdrage linkt naar de achtergrondpagina, niet
     # naar de plek in het gesprek (daar staat ze niet meer).

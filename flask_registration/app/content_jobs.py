@@ -251,13 +251,16 @@ def _scan():
         yield kind, objs
 
 
-def backfill(limit=MAX_PER_TICK, client=None, tally=None, name='tick', max_failed=MAX_FAILED):
+def backfill(limit=MAX_PER_TICK, client=None, tally=None, name='tick', max_failed=None):
     """Translate what is still missing or outdated, newest content first, at
     most `limit` fields; stop after `max_failed` failures. Without an AI key
     (and no client) it does nothing. Logs one line, unless the caller passes
-    its own tally (and logs it)."""
+    its own tally (and logs it). max_failed defaults to MAX_FAILED, read at
+    the call."""
     if client is None and not ai_available():
         return 0
+    if max_failed is None:
+        max_failed = MAX_FAILED
     own = tally is None
     tally = Tally() if own else tally
     fail_limit = tally.failed + max_failed

@@ -8,6 +8,7 @@ is captured so the test runs it itself.
 """
 import logging
 import re
+import uuid
 
 import pytest
 
@@ -88,14 +89,20 @@ def _cell(page, key):
     return int(m.group(1))
 
 
+def _unique(text):
+    """A text no other test translated: the same text is reused without an AI
+    call (content_i18n.translate), also past a client that fails."""
+    return f'{text} ({uuid.uuid4().hex[:6]})'
+
+
 def _content(db, user):
     """One of each: an issue, a proposal (with its version 1), a follow-up
     update and a fact, all in Dutch, none translated yet."""
-    issue = _issue(db, user, 'Een vraagstuk over de achterstand')
-    proposal = ip.create(issue, user, 'Een stelling.', None, lang='nl')
-    issue_lifecycle.add_followup(issue, 'Een update.', user, lang='nl')
+    issue = _issue(db, user, _unique('Een vraagstuk over de achterstand'), intro=_unique('Toelichting.'))
+    proposal = ip.create(issue, user, _unique('Een stelling.'), None, lang='nl')
+    issue_lifecycle.add_followup(issue, _unique('Een update.'), user, lang='nl')
     db.session.commit()
-    _fact(db, issue, user, body='Een feit zonder vertaling.')
+    _fact(db, issue, user, body=_unique('Een feit zonder vertaling.'))
     return issue, proposal
 
 
@@ -170,7 +177,7 @@ def test_the_button_translates_the_whole_backlog(app, db, make_user, jobs, backl
         assert len(client.calls) <= run['done']             # reused texts cost no call
         assert run['done'] > content_jobs.BACKLOG_BATCH      # more than one batch
         assert run['failed'] == 0
-        assert content_i18n.text_for(issue, 'title', 'de') == '[German] Een vraagstuk over de achterstand'
+        assert content_i18n.text_for(issue, 'title', 'de') == f'[German] {issue.title}'
         page = _req(_client(app, admin), 'GET', '/admin/vertalingen').get_data(as_text=True)
         assert f'Laatste run: {run["done"]} velden gedaan, 0 mislukt.' in page
     finally:
@@ -196,7 +203,11 @@ def test_without_an_ai_key_nothing_starts(app, db, make_user, jobs, backlog_env,
     assert 'Er is hier geen AI-sleutel' in resp.get_data(as_text=True)
 
 
-def test_a_failure_is_counted_and_logged_in_full(app, db, make_user, jobs, backlog_env, caplog):
+def test_a_failure_is_counted_and_logged_in_full(app, db, make_user, jobs, backlog_env, caplog, monkeypatch):
+    # Every German field fails. The run stops after MAX_FAILED failures, and
+    # the backlog is the whole session's database, newest facts first: what
+    # other tests left could use up the limit before this issue is reached.
+    monkeypatch.setattr(content_jobs, 'MAX_FAILED', 100000)
     admin = make_user(admin=True)
     issue, _proposal = _content(db, admin)
     try:
@@ -244,7 +255,7 @@ def test_a_wrong_key_stops_the_run_early(app, db, make_user, jobs, backlog_env, 
 
 def test_the_background_job_and_the_tick_log_one_line(app, db, make_user, jobs, backlog_env, caplog, monkeypatch):
     user = make_user()
-    issue = _issue(db, user, 'Een vraagstuk voor de log')
+    issue = _issue(db, user, _unique('Een vraagstuk voor de log'), intro=_unique('Toelichting.'))
     try:
         caplog.set_level(logging.INFO, logger='app.content_jobs')
         for keys in jobs:
