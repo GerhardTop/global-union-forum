@@ -46,6 +46,7 @@ een gesprek) blijft ernaast werken tot stap 7.
 from datetime import datetime, timedelta
 
 from sqlalchemy import func, or_
+from sqlalchemy.orm import selectinload
 
 from app import db
 from types import SimpleNamespace
@@ -471,8 +472,11 @@ def regular_query(issue, include_hidden=False):
 
 
 def listing(issue, which='alle', order=DEFAULT_ORDER, include_hidden=False):
-    """[(voorstel, aantal steunbetuigingen)], gefilterd en gesorteerd."""
-    proposals = regular_query(issue, include_hidden=include_hidden).all()
+    """[(voorstel, aantal steunbetuigingen)], gefilterd en gesorteerd. The
+    versions come along in one query (current_version per proposal in the
+    cockpit, the enlarged view and the rail; lazily it was one per proposal)."""
+    proposals = (regular_query(issue, include_hidden=include_hidden)
+                 .options(selectinload(IssueProposal.version_rows)).all())
     counts = support_counts(p.id for p in proposals)
     rows = [(p, counts.get(p.id, 0)) for p in proposals]
     if which == 'stemlijst':

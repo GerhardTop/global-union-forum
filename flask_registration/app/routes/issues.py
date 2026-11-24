@@ -356,6 +356,13 @@ def proposal(issue_id, proposal_id):
     the right."""
     issue = _issue_or_404(issue_id)
     proposal = _proposal_or_404(issue, proposal_id)
+    # Discussie stap 3: eerst het openen onthouden, zodat dit voorstel in de
+    # eigen kolom rechts grijs staat. Before anything else is loaded: the
+    # commit expires every loaded object, and reloading the rail's proposals
+    # and their versions one by one cost two queries per proposal (N+1).
+    if current_user.is_authenticated:
+        ip.mark_read(proposal, current_user)
+        db.session.commit()
     count = ip.support_counts([proposal.id]).get(proposal.id, 0)
     supported = proposal.id in ip.my_supports([proposal.id], current_user)
     # The facts column's own form state first (add or edit a fact).
@@ -373,11 +380,6 @@ def proposal(issue_id, proposal_id):
     final = ip.final_proposal(issue)
     if final is not None:
         rail_proposals.insert(0, (final, ip.support_counts([final.id]).get(final.id, 0)))
-    # Discussie stap 3: eerst het openen onthouden, dan de markeringen, zodat
-    # dit voorstel in de eigen kolom rechts grijs staat.
-    if current_user.is_authenticated:
-        ip.mark_read(proposal, current_user)
-        db.session.commit()
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in rail_proposals])
     rail_versions = {p.id: ip.current_version(p) for p, _c in rail_proposals}
     _preload_translations(issue, proposal)  # after the last commit (a commit empties the cache)
