@@ -1,9 +1,10 @@
 import json
 import logging
+from datetime import date
 from pathlib import Path
 
 from flask import Blueprint, render_template, redirect, url_for, request, session, abort, flash
-from flask_babel import get_locale, gettext, lazy_gettext
+from flask_babel import format_date, get_locale, gettext, lazy_gettext
 from flask_login import current_user, login_required
 
 from app import db, i18n
@@ -165,9 +166,15 @@ def success():
     return render_template("success.html", name=name)
 
 
+# The date of the last change in substance to the privacy statement. Update it
+# with every such change (CLAUDE.md, Vertalingen); the page shows it in the
+# reader's language.
+PRIVACY_UPDATED = date(2026, 11, 24)
+
+
 @main.route("/privacy")
 def privacy():
-    return render_template("privacy.html")
+    return render_template("privacy.html", privacy_updated=format_date(PRIVACY_UPDATED, format='long'))
 
 
 @main.route("/faq")

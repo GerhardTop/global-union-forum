@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-24 19:27+0100\n"
+"POT-Creation-Date: 2026-11-24 20:35+0100\n"
 "PO-Revision-Date: 2026-11-22 15:18+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -1046,40 +1046,40 @@ msgid "The proposal is visible again."
 msgstr "La proposition est de nouveau visible."
 
 #. landenlijst, tekst 5
-#: app/routes/main.py:26 app/templates/landenlijst.html:38
+#: app/routes/main.py:27 app/templates/landenlijst.html:38
 msgid "Meets standard"
 msgstr "Au niveau"
 
 #. landenlijst, tekst 8
-#: app/routes/main.py:27 app/templates/landenlijst.html:44
+#: app/routes/main.py:28 app/templates/landenlijst.html:44
 msgid "Above minimum"
 msgstr "Au-dessus du minimum"
 
-#: app/routes/main.py:28
+#: app/routes/main.py:29
 msgid "Below minimum"
 msgstr "En dessous du minimum"
 
-#: app/routes/main.py:29
+#: app/routes/main.py:30
 msgid "Insufficient data"
 msgstr "Données insuffisantes"
 
-#: app/routes/main.py:32
+#: app/routes/main.py:33
 msgid "Yes"
 msgstr "Oui"
 
-#: app/routes/main.py:33
+#: app/routes/main.py:34
 msgid "No"
 msgstr "Non"
 
-#: app/routes/main.py:34
+#: app/routes/main.py:35
 msgid "n/a"
 msgstr "s.o."
 
-#: app/routes/main.py:35
+#: app/routes/main.py:36
 msgid "separate status"
 msgstr "statut à part"
 
-#: app/routes/main.py:198
+#: app/routes/main.py:205
 msgid "Thank you! You can now join the conversation."
 msgstr "Merci ! Vous pouvez maintenant participer à la conversation."
 
@@ -2725,10 +2725,12 @@ msgstr "Politique de confidentialité"
 msgid "Privacy statement Global Union Forum"
 msgstr "Politique de confidentialité du Global Union Forum"
 
-#. privacy, tekst 3
+#. privacy, tekst 3; %(date)s is the date, already written out in the reader's
+#. language (for example "24 november 2026")
 #: app/templates/privacy.html:16
-msgid "Last updated: 24 October 2026"
-msgstr "Dernière mise à jour : 24 octobre 2026"
+#, python-format
+msgid "Last updated: %(date)s"
+msgstr "Dernière mise à jour : %(date)s"
 
 #. privacy, kop 1
 #: app/templates/privacy.html:24

@@ -542,14 +542,14 @@ class TestAcceptanceTextsConsistent:
 # ── Privacyverklaring ────────────────────────────────────────────────────
 
 PRIVACY = {
-    'nl': ['Privacyverklaring Global Union Forum', 'Laatst bijgewerkt: 24 oktober 2026',
+    'nl': ['Privacyverklaring Global Union Forum', 'Laatst bijgewerkt: 24 november 2026',
            'Stichting Global Union Forum (in oprichting)', 'Welke gegevens we verzamelen',
            'Anthropic (automatische vertaling en het kwaliteitsoordeel)',
            'standaardcontractbepalingen van de Europese Commissie',
            'Technische loggegevens bewaren we zes maanden.',
            'Je moet minstens 16 jaar zijn om een account aan te maken.',
            'Autoriteit Persoonsgegevens', 'De datum bovenaan laat zien wanneer we dat voor het laatst deden.'],
-    'en': ['Privacy statement Global Union Forum', 'Last updated: 24 October 2026',
+    'en': ['Privacy statement Global Union Forum', 'Last updated: November 24, 2026',
            'Stichting Global Union Forum (in formation)', 'What data we collect',
            'Anthropic (automatic translation and the quality assessment)',
            "European Commission's standard contractual clauses",
@@ -561,6 +561,22 @@ PRIVACY = {
 
 
 class TestPrivacyPage:
+    @pytest.mark.parametrize('lang,expected,later', [
+        ('nl', 'Laatst bijgewerkt: 24 november 2026', 'Laatst bijgewerkt: 5 maart 2027'),
+        ('de', 'Zuletzt aktualisiert: 24. November 2026', 'Zuletzt aktualisiert: 5. März 2027'),
+    ])
+    def test_the_date_comes_from_the_code_in_the_readers_language(self, app, monkeypatch, lang, expected, later):
+        from datetime import date
+        import sys
+        main_routes = sys.modules["app.routes.main"]   # (app.routes.main is also the blueprint's name)
+        assert main_routes.PRIVACY_UPDATED == date(2026, 11, 24)
+        html = _req(_client(app, lang=lang), 'GET', '/privacy').get_data(as_text=True)
+        assert f'class="gu-legal__updated">{expected}</p>' in html
+        # A change in substance: only PRIVACY_UPDATED changes, the sentence follows.
+        monkeypatch.setattr(main_routes, 'PRIVACY_UPDATED', date(2027, 3, 5))
+        html = _req(_client(app, lang=lang), 'GET', '/privacy').get_data(as_text=True)
+        assert f'class="gu-legal__updated">{later}</p>' in html
+
     @pytest.mark.parametrize('lang', ['nl', 'en'])
     def test_page_loads_in_both_languages(self, app, lang):
         resp = _req(_client(app, lang=lang), 'GET', '/privacy')

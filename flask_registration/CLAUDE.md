@@ -29,6 +29,8 @@ Werkwijze na een tekstwijziging, vanuit `flask_registration/`:
 3. Vul de nieuwe NL-teksten in (en de EN-msgstr gelijk aan de msgid); geen lege of fuzzy NL-items.
 4. `pybabel compile -d app/translations` en commit de .mo mee (Render compileert niet bij de build).
 
+Bij een inhoudelijke wijziging van de privacyverklaring (`app/templates/privacy.html`) altijd `PRIVACY_UPDATED` in `app/routes/main.py` bijwerken: de regel "Laatst bijgewerkt" toont die datum, met Babel opgemaakt in de taal van de lezer (één msgid `Last updated: %(date)s`, geen datum in de vertalingen).
+
 Een vertaling die gelijk is aan de msgid mag alleen als hij op de toegestane lijst van die taal staat (`SAME_AS_MSGID` in tests/test_i18n_safety.py; voor nl is dat `SAME_IN_DUTCH`), met reden. Geen lange of korte streepjes in msgids of vertalingen.
 
 ### Het taalregister

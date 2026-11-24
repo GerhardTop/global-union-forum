@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-24 19:27+0100\n"
+"POT-Creation-Date: 2026-11-24 20:35+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -1049,40 +1049,40 @@ msgid "The proposal is visible again."
 msgstr "The proposal is visible again."
 
 #. landenlijst, tekst 5
-#: app/routes/main.py:26 app/templates/landenlijst.html:38
+#: app/routes/main.py:27 app/templates/landenlijst.html:38
 msgid "Meets standard"
 msgstr "Meets standard"
 
 #. landenlijst, tekst 8
-#: app/routes/main.py:27 app/templates/landenlijst.html:44
+#: app/routes/main.py:28 app/templates/landenlijst.html:44
 msgid "Above minimum"
 msgstr "Above minimum"
 
-#: app/routes/main.py:28
+#: app/routes/main.py:29
 msgid "Below minimum"
 msgstr "Below minimum"
 
-#: app/routes/main.py:29
+#: app/routes/main.py:30
 msgid "Insufficient data"
 msgstr "Insufficient data"
 
-#: app/routes/main.py:32
+#: app/routes/main.py:33
 msgid "Yes"
 msgstr "Yes"
 
-#: app/routes/main.py:33
+#: app/routes/main.py:34
 msgid "No"
 msgstr "No"
 
-#: app/routes/main.py:34
+#: app/routes/main.py:35
 msgid "n/a"
 msgstr "n/a"
 
-#: app/routes/main.py:35
+#: app/routes/main.py:36
 msgid "separate status"
 msgstr "separate status"
 
-#: app/routes/main.py:198
+#: app/routes/main.py:205
 msgid "Thank you! You can now join the conversation."
 msgstr "Thank you! You can now join the conversation."
 
@@ -2729,10 +2729,12 @@ msgstr "Privacy statement"
 msgid "Privacy statement Global Union Forum"
 msgstr "Privacy statement Global Union Forum"
 
-#. privacy, tekst 3
+#. privacy, tekst 3; %(date)s is the date, already written out in the reader's
+#. language (for example "24 november 2026")
 #: app/templates/privacy.html:16
-msgid "Last updated: 24 October 2026"
-msgstr "Last updated: 24 October 2026"
+#, python-format
+msgid "Last updated: %(date)s"
+msgstr "Last updated: %(date)s"
 
 #. privacy, kop 1
 #: app/templates/privacy.html:24
