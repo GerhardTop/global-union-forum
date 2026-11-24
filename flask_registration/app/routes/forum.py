@@ -127,7 +127,7 @@ def _auto_translate():
     aanklikken. Gebruikt door de threadpagina en de kwaliteitsdiscussie."""
     return current_user.is_authenticated and (
         current_user.auto_translate is True
-        or (current_user.auto_translate is None and i18n.auto_translate_default(session.get('lang')))
+        or (current_user.auto_translate is None and i18n.auto_translate_default(i18n.current()))
     )
 
 
@@ -703,7 +703,7 @@ def forum_thread(thread_id):
                 author_username=current_user.username,
                 author_role='member',
                 body=body or None,
-                source_lang=session.get('lang', 'nl'),
+                source_lang=i18n.current(),
                 parent_id=parent_id,
             )
             # Polijstronde P5: een reactie bij een voorstel van het vraagstuk
@@ -1066,7 +1066,7 @@ def _translate_json(obj, field):
     """The translation on request of one field into the reader's language, as
     JSON for the label script (_mt_script.html): from the cache, else one AI
     call (counted for the rate limit of the route)."""
-    user_lang = i18n.normalize(session.get('lang'))
+    user_lang = i18n.current()
 
     if user_lang == content_i18n.source_lang(obj):
         return jsonify({'error': 'no translation needed'}), 400
@@ -1201,7 +1201,7 @@ def forum_nieuw():
         if title and body:
             # The title as written, in the writer's language; the eyebrow is a
             # fixed label in every enabled language.
-            thread = Thread(title_prefix=title, source_lang=i18n.normalize(session.get('lang')))
+            thread = Thread(title_prefix=title, source_lang=i18n.current())
             db.session.add(thread)
             db.session.flush()
             content_i18n.set_label(thread, 'eyebrow', THREAD_EYEBROWS['proposal' if is_proposal else 'conversation'])
@@ -1219,7 +1219,7 @@ def forum_nieuw():
                 author_username=current_user.username,
                 author_role='member',
                 body=body or None,
-                source_lang=session.get('lang', 'nl'),
+                source_lang=i18n.current(),
                 is_op=True,
             )
             db.session.add(post)
@@ -1453,7 +1453,7 @@ def _translate_ai_text(obj, field, src_lang):
     verzoek en precies zoals forum_translate een bericht vertaalt: dezelfde
     vertaalhelper, alleen echte API-aanroepen tellen voor de rate limit, en de
     vertaling gecachet in content_translations (het origineel blijft staan)."""
-    user_lang = i18n.normalize(session.get('lang'))
+    user_lang = i18n.current()
     if src_lang is None or user_lang == src_lang:
         return jsonify({'error': 'no translation needed'}), 400
     cached = content_i18n.text_for(obj, field, user_lang)
@@ -1638,7 +1638,7 @@ def conduct_move(post_id):
     rule, note = request.form.get('rule'), _moderator_note()
     if rule not in ('respect', 'onderwerp') or not note or post.body == '[bericht verwijderd]':
         abort(400)
-    conduct.move(post, rule, note, session.get('lang', 'nl'), actor=current_user)
+    conduct.move(post, rule, note, i18n.current(), actor=current_user)
     db.session.commit()
     return _conduct_back(post)
 
@@ -1649,7 +1649,7 @@ def conduct_hide(post_id):
     """Moderator verbergt spam of grof misbruik volledig."""
     post = Post.query.get_or_404(post_id)
     _moderator_for(post)
-    conduct.hide(post, _moderator_note() or None, session.get('lang', 'nl'), actor=current_user)
+    conduct.hide(post, _moderator_note() or None, i18n.current(), actor=current_user)
     db.session.commit()
     return _conduct_back(post)
 
@@ -1840,7 +1840,7 @@ def _new_fact(thread, data):
     invoer zijn al gecontroleerd). Commit niet zelf; daarna
     quality.schedule_judgement voor de handhaving."""
     fact = Post(thread_id=thread.id, user_id=current_user.id, author_username=current_user.username,
-                author_name='', author_role='member', body=data['text'], source_lang=session.get('lang', 'nl'),
+                author_name='', author_role='member', body=data['text'], source_lang=i18n.current(),
                 kind=FACT_KIND, fact_direction=data['direction'], fact_source=data['source'],
                 fact_type=data.get('type') or 'feit', fact_title=data.get('title'))
     db.session.add(fact)
@@ -1929,7 +1929,7 @@ def fact_dispute(post_id):
     elif facts.has_open_dispute(fact, current_user):
         flash(gettext('You already disputed this fact; a moderator will look at it.'), 'info')
     else:
-        facts.dispute(fact, current_user, reason, note, lang=i18n.normalize(session.get('lang')))
+        facts.dispute(fact, current_user, reason, note, lang=i18n.current())
         db.session.commit()
         flash(gettext('Thank you. A moderator will look at your objection; the fact stays visible meanwhile.'),
               'success')

@@ -114,6 +114,7 @@ def set_lang(code):
     if i18n.is_enabled(code):
         session['lang'] = code
         session.permanent = True
+        i18n.remember(code)   # the cookie keeps the choice after the session
         if current_user.is_authenticated:
             current_user.auto_translate = True if i18n.auto_translate_default(code) else None
             current_user.lang = code  # keep the stored language preference in sync

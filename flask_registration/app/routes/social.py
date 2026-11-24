@@ -88,7 +88,7 @@ def _inject_social_forms():
 @limiter.limit("20 per hour", key_func=lambda: "uitnodiging-global")
 @limiter.limit("5 per hour")
 def uitnodiging():
-    lang = request.form.get('lang', session.get('lang', 'nl'))
+    lang = request.form.get('lang', i18n.current())
     form = InvitationForm()
     if not form.validate_on_submit():
         if form.csrf_token.errors:
@@ -295,7 +295,7 @@ def aanmelden():
 
         if not errors:
             password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
-            reg_lang = session.get('lang', 'nl')
+            reg_lang = i18n.current()
             bypass_verificatie = _verify_bypass_active()
             user = User(
                 username=form_data["username"],
@@ -327,7 +327,7 @@ def aanmelden():
                     f"- bypass actief tot {_VERIFY_BYPASS_DEADLINE.isoformat()}"
                 )
             else:
-                _send_verify_email(user, session.get('lang', 'nl'), current_app.config['SECRET_KEY'])
+                _send_verify_email(user, i18n.current(), current_app.config['SECRET_KEY'])
             session['modal'] = 'email_sent'
             return redirect(url_for("main.index"))
 

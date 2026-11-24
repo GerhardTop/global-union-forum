@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 22:18+0100\n"
+"POT-Creation-Date: 2026-11-24 19:27+0100\n"
 "PO-Revision-Date: 2026-11-20 22:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:863
+#: app/__init__.py:877
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Zu viele Versuche. Bitte versuche es in einer Minute noch einmal."
 
-#: app/__init__.py:893
+#: app/__init__.py:907
 msgid "Your session has expired. Please log in again."
 msgstr "Deine Sitzung ist abgelaufen. Bitte melde dich neu an."
 
@@ -46,7 +46,7 @@ msgstr "Über die Idee, nicht über die Person"
 msgid "Spam or abuse"
 msgstr "Spam oder Missbrauch"
 
-#: app/digest.py:222
+#: app/digest.py:222 app/templates/email/digest.html:3
 msgid "Your weekly summary"
 msgstr "Deine wöchentliche Zusammenfassung"
 
@@ -622,7 +622,7 @@ msgstr "Mitwirkender"
 msgid "Voter"
 msgstr "Stimmberechtigter"
 
-#: app/status.py:51 app/templates/_header.html:46
+#: app/status.py:51 app/templates/_header.html:57
 #: app/templates/admin/dashboard.html:75 app/templates/moderator/beheer.html:25
 #: app/templates/moderator/dashboard.html:4
 #: app/templates/moderator/dashboard.html:76
@@ -1079,7 +1079,7 @@ msgstr "entfällt"
 msgid "separate status"
 msgstr "eigener Status"
 
-#: app/routes/main.py:197
+#: app/routes/main.py:198
 msgid "Thank you! You can now join the conversation."
 msgstr "Danke! Du kannst jetzt beim Gespräch mitmachen."
 
@@ -1236,11 +1236,11 @@ msgstr "Denk mit"
 msgid "About"
 msgstr "Über uns"
 
-#: app/templates/_header.html:44 app/templates/notificaties.html:16
+#: app/templates/_header.html:55 app/templates/notificaties.html:16
 msgid "Profile"
 msgstr "Profil"
 
-#: app/templates/_header.html:49 app/templates/admin/dashboard.html:77
+#: app/templates/_header.html:60 app/templates/admin/dashboard.html:77
 #: app/templates/admin/dashboard.html:122
 #: app/templates/admin/proposal_limits.html:10
 #: app/templates/admin/thresholds.html:9
@@ -1249,7 +1249,7 @@ msgstr "Profil"
 msgid "Admin"
 msgstr "Admin"
 
-#: app/templates/_header.html:52
+#: app/templates/_header.html:63
 msgid "Log out"
 msgstr "Abmelden"
 
@@ -2801,34 +2801,44 @@ msgstr "Cookies"
 msgid "We use only functional cookies, for example to keep you signed in and to remember your language choice. We do not use cookies to track you or for advertising."
 msgstr "Wir nutzen nur funktionale Cookies, zum Beispiel damit du angemeldet bleibst und deine Sprachwahl gespeichert wird. Wir nutzen keine Cookies, um dich zu verfolgen oder für Werbung."
 
+#. privacy, cookie list; "session" is the cookie's name and stays untranslated
+#: app/templates/privacy.html:57
+msgid "keeps you signed in and remembers your choices during your visit. Functional, no consent needed."
+msgstr "hält dich angemeldet und speichert deine Auswahl während deines Besuchs. Funktional, keine Einwilligung nötig."
+
+#. privacy, cookie list; "lang" is the cookie's name and stays untranslated
+#: app/templates/privacy.html:58
+msgid "remembers your language choice for one year, also when you are not signed in. Functional, no consent needed."
+msgstr "speichert deine Sprachwahl ein Jahr lang, auch wenn du nicht angemeldet bist. Funktional, keine Einwilligung nötig."
+
 #. privacy, kop 15
-#: app/templates/privacy.html:59
+#: app/templates/privacy.html:63
 msgid "Security"
 msgstr "Sicherheit"
 
 #. privacy, alinea 16
-#: app/templates/privacy.html:60
+#: app/templates/privacy.html:64
 msgid "We store passwords encrypted, use a secure connection (https) and limit the number of attempts to prevent abuse."
 msgstr "Wir speichern Passwörter verschlüsselt, nutzen eine sichere Verbindung (https) und begrenzen die Zahl der Versuche, um Missbrauch zu verhindern."
 
 #. privacy, kop 17
-#: app/templates/privacy.html:64
+#: app/templates/privacy.html:68
 msgid "Your rights"
 msgstr "Deine Rechte"
 
 #. privacy, alinea 18
-#: app/templates/privacy.html:65
+#: app/templates/privacy.html:69
 #, python-format
 msgid "You may access, correct or delete your data, object to its use, and withdraw your consent. Email %(mail)s for this. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens)."
 msgstr "Du darfst deine Daten einsehen, berichtigen oder löschen lassen, der Nutzung widersprechen und deine Einwilligung widerrufen. Schreib dafür an %(mail)s. Bist du nicht einverstanden damit, wie wir mit deinen Daten umgehen, kannst du dich bei der niederländischen Datenschutzbehörde (Autoriteit Persoonsgegevens) beschweren."
 
 #. privacy, kop 19
-#: app/templates/privacy.html:69
+#: app/templates/privacy.html:73
 msgid "Changes"
 msgstr "Änderungen"
 
 #. privacy, alinea 20
-#: app/templates/privacy.html:70
+#: app/templates/privacy.html:74
 msgid "We may update this statement. The date at the top shows when we last did so."
 msgstr "Wir können diese Erklärung ändern. Das Datum oben zeigt, wann wir das zuletzt getan haben."
 

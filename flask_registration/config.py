@@ -74,8 +74,14 @@ LANGUAGES = [
 # code here (after its catalog is translated and compiled, see CLAUDE.md).
 ENABLED_LANGUAGES = ["nl", "en", "de", "es", "fr"]
 
-# The language for visitors without a preference, and the fallback everywhere.
+# The fallback everywhere a language is needed and none is known: emails to
+# a member without a stored language, migrations, the source language of old
+# content.
 DEFAULT_LANGUAGE = "nl"
+
+# The language for a visitor without a choice (no session, no cookie) whose
+# browser (Accept-Language) asks for no enabled language.
+VISITOR_FALLBACK_LANGUAGE = "en"
 
 # The language of the msgids in the templates and the code.
 SOURCE_LANGUAGE = "en"

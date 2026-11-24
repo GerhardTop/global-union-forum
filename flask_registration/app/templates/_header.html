@@ -15,7 +15,7 @@
        {% if request.endpoint == 'main.faq' %}class="is-active"{% endif %}>FAQ</a>
     <a href="{{ url_for('main.about') }}"
        {% if request.endpoint == 'main.about' %}class="is-active"{% endif %}>{{ _('About') }}</a>
-    {% if not current_user.is_authenticated %}
+    {# The language choice, for visitors and members alike (mobile menu). #}
     <div class="gu-header__nav-lang">
       <button class="gu-header__nav-lang-trigger" id="navLangBtn" aria-expanded="false">
         {{ lang | upper }}<span class="gu-lang-dd__chevron">▾</span>
@@ -27,10 +27,21 @@
         {% endfor %}
       </div>
     </div>
-    {% endif %}
   </nav>
 
   <div class="gu-header__end">
+    {# The language choice, for visitors and members alike (desktop; next to the avatar). #}
+    <div class="gu-lang-dd" id="langDd">
+      <button class="gu-lang-dd__trigger" id="langDdBtn" aria-expanded="false" aria-haspopup="true">
+        {{ lang | upper }}<span class="gu-lang-dd__chevron">▾</span>
+      </button>
+      <div class="gu-lang-dd__menu" id="langDdMenu" hidden>
+        {% for language in languages %}
+        <a href="{{ url_for('main.set_lang', code=language.code) }}"
+           class="gu-lang-dd__item{% if language.code == lang %} is-active{% endif %}" lang="{{ language.code }}" hreflang="{{ language.code }}">{{ language.code | upper }}</a>
+        {% endfor %}
+      </div>
+    </div>
     {% if current_user.is_authenticated %}
     {% set gu_display_name = (current_user.first_name ~ ' ' ~ current_user.last_name) if current_user.first_name else ('@' ~ current_user.username) %}
     {% set gu_avatar_initials = ((current_user.first_name[0] ~ current_user.last_name[0]) if current_user.first_name else current_user.username[:2]) | upper %}
@@ -53,17 +64,6 @@
       </div>
     </div>
     {% else %}
-    <div class="gu-lang-dd" id="langDd">
-      <button class="gu-lang-dd__trigger" id="langDdBtn" aria-expanded="false" aria-haspopup="true">
-        {{ lang | upper }}<span class="gu-lang-dd__chevron">▾</span>
-      </button>
-      <div class="gu-lang-dd__menu" id="langDdMenu" hidden>
-        {% for language in languages %}
-        <a href="{{ url_for('main.set_lang', code=language.code) }}"
-           class="gu-lang-dd__item{% if language.code == lang %} is-active{% endif %}" lang="{{ language.code }}" hreflang="{{ language.code }}">{{ language.code | upper }}</a>
-        {% endfor %}
-      </div>
-    </div>
     <a href="{{ url_for('auth.login') }}" class="gu-header__cta">
       {{ _('Log in') }}
     </a>

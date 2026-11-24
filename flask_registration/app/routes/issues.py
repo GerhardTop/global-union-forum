@@ -27,7 +27,7 @@ from flask import Blueprint, abort, flash, jsonify, redirect, render_template, r
 from flask_babel import gettext
 from flask_login import current_user, login_required
 
-from app import conduct, content_i18n, db, issues, limiter
+from app import conduct, content_i18n, db, i18n, issues, limiter
 from app import facts as fact_signals
 from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
@@ -148,7 +148,7 @@ def new():
             data['facts'] = fact_rows
             _stash_form_state('issue_new', errors, data)
             return redirect(url_for('issues.new'), code=303)
-        issue = issues.create(values, current_user, lang=session.get('lang', 'nl'))
+        issue = issues.create(values, current_user, lang=i18n.current())
         db.session.flush()
         made = [_new_fact(issue.thread, data) for data in new_facts]
         db.session.commit()
@@ -327,7 +327,7 @@ def proposal_new(issue_id):
             data['fact_ids'] = fact_ids
             _stash_form_state(form_key, errors, data)
             return redirect(url_for('issues.proposal_new', issue_id=issue.id), code=303)
-        proposal = ip.create(issue, current_user, statement, explanation, lang=session.get('lang', 'nl'))
+        proposal = ip.create(issue, current_user, statement, explanation, lang=i18n.current())
         db.session.flush()
         ip.link_ids(proposal, fact_ids, current_user)
         fact = _new_fact(issue.thread, new_fact) if new_fact is not None else None
@@ -616,7 +616,7 @@ def final_new(issue_id):
             _stash_form_state(form_key, errors, {k: request.form.get(k, '')
                                                  for k in ('statement', 'explanation', 'title', 'intro')})
             return redirect(url_for('issues.final_new', issue_id=issue.id), code=303)
-        proposal = ip.create_final(issue, current_user, statement, explanation, lang=session.get('lang', 'nl'),
+        proposal = ip.create_final(issue, current_user, statement, explanation, lang=i18n.current(),
                                    title=title if title != issue.title else None,
                                    intro=intro if intro != (issue.intro or '') else None)
         db.session.flush()
@@ -677,7 +677,7 @@ def followup(issue_id):
     if len(text) > FOLLOWUP_MAX:
         flash(gettext('The text can be at most %(n)s characters.', n=FOLLOWUP_MAX), 'error')
         return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg', code=303)
-    lifecycle.add_followup(issue, text, current_user, lang=session.get('lang', 'nl'))
+    lifecycle.add_followup(issue, text, current_user, lang=i18n.current())
     db.session.commit()
     return redirect(url_for('issues.show', issue_id=issue.id) + '#vervolg')
 

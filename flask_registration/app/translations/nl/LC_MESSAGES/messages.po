@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-22 22:18+0100\n"
+"POT-Creation-Date: 2026-11-24 19:27+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:863
+#: app/__init__.py:877
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Te veel pogingen. Probeer het over een minuut opnieuw."
 
-#: app/__init__.py:893
+#: app/__init__.py:907
 msgid "Your session has expired. Please log in again."
 msgstr "Je sessie is verlopen. Log opnieuw in."
 
@@ -46,7 +46,7 @@ msgstr "Over het idee, niet de persoon"
 msgid "Spam or abuse"
 msgstr "Spam of misbruik"
 
-#: app/digest.py:222
+#: app/digest.py:222 app/templates/email/digest.html:3
 msgid "Your weekly summary"
 msgstr "Je wekelijkse samenvatting"
 
@@ -623,7 +623,7 @@ msgstr "Bijdrager"
 msgid "Voter"
 msgstr "Stemmer"
 
-#: app/status.py:51 app/templates/_header.html:46
+#: app/status.py:51 app/templates/_header.html:57
 #: app/templates/admin/dashboard.html:75 app/templates/moderator/beheer.html:25
 #: app/templates/moderator/dashboard.html:4
 #: app/templates/moderator/dashboard.html:76
@@ -1082,7 +1082,7 @@ msgstr "n.v.t."
 msgid "separate status"
 msgstr "aparte status"
 
-#: app/routes/main.py:197
+#: app/routes/main.py:198
 msgid "Thank you! You can now join the conversation."
 msgstr "Bedankt! Je kunt nu meedoen aan het gesprek."
 
@@ -1240,11 +1240,11 @@ msgstr "Denk mee"
 msgid "About"
 msgstr "Over ons"
 
-#: app/templates/_header.html:44 app/templates/notificaties.html:16
+#: app/templates/_header.html:55 app/templates/notificaties.html:16
 msgid "Profile"
 msgstr "Profiel"
 
-#: app/templates/_header.html:49 app/templates/admin/dashboard.html:77
+#: app/templates/_header.html:60 app/templates/admin/dashboard.html:77
 #: app/templates/admin/dashboard.html:122
 #: app/templates/admin/proposal_limits.html:10
 #: app/templates/admin/thresholds.html:9
@@ -1253,7 +1253,7 @@ msgstr "Profiel"
 msgid "Admin"
 msgstr "Admin"
 
-#: app/templates/_header.html:52
+#: app/templates/_header.html:63
 msgid "Log out"
 msgstr "Uitloggen"
 
@@ -2805,34 +2805,44 @@ msgstr "Cookies"
 msgid "We use only functional cookies, for example to keep you signed in and to remember your language choice. We do not use cookies to track you or for advertising."
 msgstr "We gebruiken alleen functionele cookies, bijvoorbeeld om je ingelogd te houden en je taalkeuze te onthouden. We gebruiken geen cookies om je te volgen of voor advertenties."
 
+#. privacy, cookie list; "session" is the cookie's name and stays untranslated
+#: app/templates/privacy.html:57
+msgid "keeps you signed in and remembers your choices during your visit. Functional, no consent needed."
+msgstr "houdt je ingelogd en onthoudt je keuzes tijdens je bezoek. Functioneel, geen toestemming nodig."
+
+#. privacy, cookie list; "lang" is the cookie's name and stays untranslated
+#: app/templates/privacy.html:58
+msgid "remembers your language choice for one year, also when you are not signed in. Functional, no consent needed."
+msgstr "onthoudt je taalkeuze een jaar lang, ook als je niet ingelogd bent. Functioneel, geen toestemming nodig."
+
 #. privacy, kop 15
-#: app/templates/privacy.html:59
+#: app/templates/privacy.html:63
 msgid "Security"
 msgstr "Beveiliging"
 
 #. privacy, alinea 16
-#: app/templates/privacy.html:60
+#: app/templates/privacy.html:64
 msgid "We store passwords encrypted, use a secure connection (https) and limit the number of attempts to prevent abuse."
 msgstr "We slaan wachtwoorden versleuteld op, gebruiken een beveiligde verbinding (https) en beperken het aantal pogingen om misbruik tegen te gaan."
 
 #. privacy, kop 17
-#: app/templates/privacy.html:64
+#: app/templates/privacy.html:68
 msgid "Your rights"
 msgstr "Jouw rechten"
 
 #. privacy, alinea 18
-#: app/templates/privacy.html:65
+#: app/templates/privacy.html:69
 #, python-format
 msgid "You may access, correct or delete your data, object to its use, and withdraw your consent. Email %(mail)s for this. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens)."
 msgstr "Je mag je gegevens inzien, corrigeren of laten verwijderen, bezwaar maken tegen het gebruik, en je toestemming intrekken. Mail daarvoor %(mail)s. Ben je het niet eens met hoe we met je gegevens omgaan, dan kun je een klacht indienen bij de Autoriteit Persoonsgegevens."
 
 #. privacy, kop 19
-#: app/templates/privacy.html:69
+#: app/templates/privacy.html:73
 msgid "Changes"
 msgstr "Wijzigingen"
 
 #. privacy, alinea 20
-#: app/templates/privacy.html:70
+#: app/templates/privacy.html:74
 msgid "We may update this statement. The date at the top shows when we last did so."
 msgstr "We kunnen deze verklaring aanpassen. De datum bovenaan laat zien wanneer we dat voor het laatst deden."
 

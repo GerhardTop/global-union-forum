@@ -92,7 +92,7 @@ def login():
             if not user.verified:
                 unverified_email = user.email
             else:
-                lang = session.get('lang', 'nl')
+                lang = i18n.current()
                 session.clear()
                 session['lang'] = lang
                 session.permanent = True
@@ -115,7 +115,7 @@ def login():
 def wachtwoord_vergeten():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
-    lang = session.get('lang', 'nl')
+    lang = i18n.current()
     form = WachtwoordVergetenForm()
     is_xhr = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
@@ -156,7 +156,7 @@ def wachtwoord_vergeten():
 def wachtwoord_reset(token):
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
-    lang = session.get('lang', 'nl')
+    lang = i18n.current()
     email, issued_at, token_error = _verify_reset_token(token)
     if not email:
         if token_error == 'expired':
@@ -221,7 +221,7 @@ def auth_google():
 @auth.route('/auth/google/callback')
 @limiter.limit("20 per minute", key_func=real_client_ip)
 def auth_google_callback():
-    lang = session.get('lang', 'nl')
+    lang = i18n.current()
     oauth_error = request.args.get('error')
     if oauth_error:
         current_app.logger.warning(f"Google OAuth geweigerd: {oauth_error}")
@@ -383,7 +383,7 @@ def kies_gebruikersnaam():
 @auth.route("/logout")
 @login_required
 def logout():
-    lang = session.get('lang', 'nl')
+    lang = i18n.current()
     logout_user()
     session.clear()
     session['lang'] = lang
@@ -399,7 +399,7 @@ def _inject_verify_resend_form():
 @limiter.limit("10 per hour")
 def verify_email(token):
     s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    lang = session.get('lang', 'nl')
+    lang = i18n.current()
     try:
         email = s.loads(token, salt='email-verify', max_age=86400)
     except SignatureExpired:
@@ -438,7 +438,7 @@ def verify_resend():
     form = VerifyResendForm()
     if not form.validate_on_submit():
         abort(400)
-    lang = session.get('lang', 'nl')
+    lang = i18n.current()
     if current_user.verified:
         return redirect(url_for('main.index'))
     _send_verify_email(current_user, lang, current_app.config['SECRET_KEY'])
@@ -470,7 +470,7 @@ def verify_resend_onbevestigd():
     form = VerifyResendForm()
     if not form.validate_on_submit():
         return jsonify({'ok': False}), 400
-    lang = session.get('lang', 'nl')
+    lang = i18n.current()
     email = (request.form.get('email') or '').strip().lower()
     user = User.query.filter_by(email=email).first()
     if user and not user.verified:
@@ -484,7 +484,7 @@ def account_verwijderen():
     form = DeleteAccountForm()
     if not form.validate_on_submit():
         abort(400)
-    lang = session.get('lang', 'nl')
+    lang = i18n.current()
     if current_user.is_admin:
         flash(
             gettext('Admin accounts cannot be deleted.'),

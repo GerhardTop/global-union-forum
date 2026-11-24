@@ -21,6 +21,33 @@ def source_language():
     return config.SOURCE_LANGUAGE
 
 
+def visitor_fallback_language():
+    """The language for a visitor whose browser asks for no enabled language."""
+    return config.VISITOR_FALLBACK_LANGUAGE
+
+
+# The language choice, remembered beyond the session (functional cookie,
+# privacy page): set by /lang/<code> and at log in, read by get_locale.
+LANG_COOKIE = 'lang'
+LANG_COOKIE_MAX_AGE = 365 * 24 * 3600  # one year
+
+
+def current():
+    """The language of this request, as gettext picks it (app get_locale:
+    session, cookie, browser, visitor fallback). Use it wherever a request
+    needs the reader's language (the source language of new content, the
+    language to keep across session.clear())."""
+    from flask_babel import get_locale
+    return normalize(str(get_locale() or ''))
+
+
+def remember(code):
+    """Set the language cookie to `code` on this response (app after_request)."""
+    from flask import g
+    if is_enabled(code):
+        g._remember_lang = code
+
+
 def enabled_codes():
     """The codes of the enabled languages, in register order of ENABLED_LANGUAGES."""
     return list(config.ENABLED_LANGUAGES)

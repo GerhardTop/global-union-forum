@@ -188,7 +188,7 @@ body {
 .gu-header__nav a:hover { color: var(--gu-globe); }
 .gu-header__nav a.is-active { color: var(--gu-fg-1); font-weight: 600; border-bottom: 2px solid var(--gu-globe); padding-bottom: 2px; }
 .gu-header--night .gu-header__nav a.is-active { color: #fff; border-bottom-color: rgba(255,255,255,0.7); }
-/* Language dropdown (navbar, unauthenticated) */
+/* Language dropdown (navbar, visitors and members) */
 .gu-lang-dd {
   position: relative;
 }

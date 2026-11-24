@@ -2,7 +2,7 @@ import logging
 import os
 import time
 from datetime import datetime
-from flask import Flask, session, request, redirect, url_for, flash, jsonify, render_template
+from flask import Flask, g, session, request, redirect, url_for, flash, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -791,18 +791,32 @@ def create_app():
 
     @user_logged_in.connect_via(app)
     def _apply_stored_lang(sender, user, **extra):
-        # Open the site in the user's stored language, also on a new device.
+        # Open the site in the user's stored language, also on a new device,
+        # and remember it in the language cookie.
         if i18n.is_enabled(getattr(user, 'lang', None)):
             session['lang'] = user.lang
+            i18n.remember(user.lang)
 
     oauth.init_app(app)
     def get_locale():
-        # The session's language when it is enabled, else the browser's best
-        # enabled match, else the default language.
-        lang_in_session = session.get('lang')
-        if i18n.is_enabled(lang_in_session):
-            return lang_in_session
-        return request.accept_languages.best_match(i18n.enabled_codes(), default=i18n.default_language())
+        # In this order: the session's language, the language cookie (the
+        # choice, kept for a year), the browser's best enabled match, else the
+        # visitor fallback (English; DEFAULT_LANGUAGE stays for the rest).
+        for code in (session.get('lang'), request.cookies.get(i18n.LANG_COOKIE)):
+            if i18n.is_enabled(code):
+                return code
+        return request.accept_languages.best_match(i18n.enabled_codes(),
+                                                   default=i18n.visitor_fallback_language())
+
+    app.config['LANG_COOKIE_SECURE'] = _production
+
+    @app.after_request
+    def _set_lang_cookie(response):
+        code = g.pop('_remember_lang', None)
+        if code and request.cookies.get(i18n.LANG_COOKIE) != code:
+            response.set_cookie(i18n.LANG_COOKIE, code, max_age=i18n.LANG_COOKIE_MAX_AGE, path='/',
+                                samesite='Lax', secure=app.config['LANG_COOKIE_SECURE'], httponly=True)
+        return response
 
     babel.init_app(app, locale_selector=get_locale)
     oauth.register(
@@ -885,7 +899,7 @@ def create_app():
         last = session.get('_last_active')
         now = datetime.utcnow().timestamp()
         if last and (now - last) > 1800:
-            lang = session.get('lang', 'nl')
+            lang = i18n.current()
             _logout_user()
             session.clear()
             session['lang'] = lang
