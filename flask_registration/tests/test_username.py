@@ -13,17 +13,18 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 import config as config_module
+from tests.sqlite_file import temp_sqlite_uri
 from app import create_app, db, bcrypt
 from app.models import User, Thread, Post
 from app.utils import is_username_valid_format, is_username_blacklisted, is_username_available
 
 
 @pytest.fixture
-def app(monkeypatch):
+def app(monkeypatch, request):
     # monkeypatch, so every class attribute comes back after the test: the
     # session app (conftest) built later in the same run must not get these
     # (RATELIMIT_ENABLED False left the limiter without storage).
-    monkeypatch.setattr(config_module.Config, 'SQLALCHEMY_DATABASE_URI', 'sqlite:///:memory:')
+    monkeypatch.setattr(config_module.Config, 'SQLALCHEMY_DATABASE_URI', temp_sqlite_uri(request))
     monkeypatch.setattr(config_module.Config, 'TESTING', True, raising=False)
     monkeypatch.setattr(config_module.Config, 'WTF_CSRF_ENABLED', False, raising=False)
     monkeypatch.setattr(config_module.Config, 'RATELIMIT_ENABLED', False, raising=False)

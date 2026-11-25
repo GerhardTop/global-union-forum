@@ -27,6 +27,24 @@ def _build_db_url():
     )
 
 
+# Neon (Postgres on Render) can drop an idle connection: test a connection
+# before use and replace connections older than five minutes. Only for
+# Postgres: on SQLite these options do nothing useful, and for an in-memory
+# database a replaced connection is an empty database.
+NEON_ENGINE_OPTIONS = {
+    "pool_pre_ping": True,   # test connectie vóór gebruik; maakt nieuwe aan als Neon sliep
+    "pool_recycle": 300,     # vervang connecties ouder dan 5 minuten
+}
+
+
+def engine_options(db_uri: str) -> dict:
+    """The SQLAlchemy engine options for this database URI: the Neon pool
+    options for Postgres, none for anything else (SQLite in the tests)."""
+    if (db_uri or "").startswith(("postgresql", "postgres")):
+        return dict(NEON_ENGINE_OPTIONS)
+    return {}
+
+
 def ratelimit_storage_uri(db_uri: str) -> str:
     """
     Flask-Limiter/`limits` heeft geen ingebouwde SQL-backend; app/
@@ -91,10 +109,9 @@ class Config:
     SECRET_KEY = _require_env("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = _build_db_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_pre_ping": True,   # test connectie vóór gebruik; maakt nieuwe aan als Neon sliep
-        "pool_recycle": 300,     # vervang connecties ouder dan 5 minuten
-    }
+    # Neon pool options only for Postgres (engine_options); create_app sets
+    # them again from the URI the app really uses (tests replace the URI).
+    SQLALCHEMY_ENGINE_OPTIONS = engine_options(SQLALCHEMY_DATABASE_URI)
     # RATELIMIT_STORAGE_URI wordt NIET hier gezet — zie ratelimit_storage_uri()
     # hierboven voor waarom, en app/__init__.py:create_app() voor waar het
     # wél gebeurt.

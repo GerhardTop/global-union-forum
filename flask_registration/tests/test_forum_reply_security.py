@@ -20,16 +20,17 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 import config as config_module
+from tests.sqlite_file import temp_sqlite_uri
 from app import bcrypt, create_app, db
 from app.models import Post, Thread, User
 
 
 @pytest.fixture
-def app():
+def app(request):
     missing = object()
     orig = {k: config_module.Config.__dict__.get(k, missing)
             for k in ('SQLALCHEMY_DATABASE_URI', 'RATELIMIT_ENABLED', 'WTF_CSRF_ENABLED', 'TESTING')}
-    config_module.Config.SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    config_module.Config.SQLALCHEMY_DATABASE_URI = temp_sqlite_uri(request)
     config_module.Config.TESTING = True
     config_module.Config.WTF_CSRF_ENABLED = True
     config_module.Config.RATELIMIT_ENABLED = True

@@ -12,30 +12,39 @@ import os
 import sys
 
 import pytest
-from sqlalchemy import text
+from sqlalchemy import event, text
 
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 import config as config_module
+from tests.sqlite_file import temp_sqlite_uri
 from app import bcrypt, create_app, db
 from app.models import Post, PostLike, Thread, User
 from app.routes.forum import DEMO_USER_EMAILS
 
 
 @pytest.fixture
-def app():
+def app(request):
     missing = object()
     orig = {k: config_module.Config.__dict__.get(k, missing)
             for k in ('SQLALCHEMY_DATABASE_URI', 'TESTING')}
-    config_module.Config.SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    config_module.Config.SQLALCHEMY_DATABASE_URI = temp_sqlite_uri(request)
     config_module.Config.TESTING = True
     try:
         flask_app = create_app()
         with flask_app.app_context():
-            db.session.execute(text('PRAGMA foreign_keys=ON'))
-            db.session.commit()
+            # PRAGMA foreign_keys holds per connection: switch it on for every
+            # connection of this app's pool (a database file, not one in-memory
+            # connection), and start from new connections.
+            def _foreign_keys_on(dbapi_connection, _record):
+                cursor = dbapi_connection.cursor()
+                cursor.execute('PRAGMA foreign_keys=ON')
+                cursor.close()
+            event.listen(db.engine, 'connect', _foreign_keys_on)
+            db.session.remove()
+            db.engine.dispose()
             assert db.session.execute(text('PRAGMA foreign_keys')).scalar() == 1
             yield flask_app
             db.session.remove()
@@ -162,7 +171,7 @@ class TestExecute:
 
     def test_confirmation_prompt_accepts_database_name(self, app, world):
         demo = User.query.filter(User.email.in_(DEMO_USER_EMAILS.values())).count()
-        result = _run(app, '--execute', input=':memory:\n')
+        result = _run(app, '--execute', input=f'{db.engine.url.database}\n')   # the database file
         assert result.exit_code == 0, result.output
         assert User.query.count() == 1 + demo
 

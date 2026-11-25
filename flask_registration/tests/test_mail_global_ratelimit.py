@@ -36,6 +36,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 import config as config_module
+from tests.sqlite_file import temp_sqlite_uri
 from app import bcrypt, create_app, db
 from app.models import User
 from app.utils import MAIL_GLOBAL_SCOPE
@@ -44,10 +45,10 @@ social_module = importlib.import_module("app.routes.social")
 
 
 @pytest.fixture
-def app():
+def app(request):
     orig_db_uri = config_module.Config.SQLALCHEMY_DATABASE_URI
     orig_ratelimit_enabled = getattr(config_module.Config, "RATELIMIT_ENABLED", True)
-    config_module.Config.SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    config_module.Config.SQLALCHEMY_DATABASE_URI = temp_sqlite_uri(request)
     config_module.Config.TESTING = True
     config_module.Config.WTF_CSRF_ENABLED = False
     config_module.Config.RATELIMIT_ENABLED = True

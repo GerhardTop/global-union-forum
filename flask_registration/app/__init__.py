@@ -12,7 +12,7 @@ from flask_babel import Babel, gettext
 from authlib.integrations.flask_client import OAuth
 from sqlalchemy import text, inspect as sa_inspect
 
-from config import Config, ratelimit_storage_uri
+from config import Config, engine_options, ratelimit_storage_uri
 # Importeren (niet gebruiken) registreert SQLStorage bij `limits` vóór
 # limiter.init_app(app) hieronder draait — zie app/rate_limit_storage.py.
 from . import rate_limit_storage  # noqa: F401  (side effect on import: registers the SQL storage backend)
@@ -768,6 +768,9 @@ def create_app():
     logging.basicConfig(level=logging.WARNING if _production else logging.DEBUG)
     app = Flask(__name__)
     app.config.from_object(Config)
+    # The Neon pool options only for Postgres, from the URI the app really
+    # uses (a test may have replaced it after config.py was imported).
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options(app.config["SQLALCHEMY_DATABASE_URI"])
     # Pas hier bepalen (niet als Config-class-attribuut) zodat dit de
     # SQLALCHEMY_DATABASE_URI van DEZE app-instantie volgt, inclusief
     # test-fixtures die dat attribuut na het importeren van config.py nog
