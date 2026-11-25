@@ -1,0 +1,55 @@
+{#
+  Partial: issues/_chart_block.html (background figures, step 1f)
+  The part of the chart page that the reader changes: the controls (view,
+  period, the legend that switches a series on and off), the chart or the
+  table, and the source line. One GET form, so it works without JavaScript
+  (the buttons send ?zet=<change>, the hidden fields the current state);
+  static/js/chart_page.js fetches this block alone (?fragment=1) and swaps it.
+  Context: see issues.chart_page.
+#}
+{% from 'charts/_chart.html' import chart_large, chart_table %}
+{% set c = state.change %}
+{% if not c %}{% set announce = '' %}
+{% elif c[0] == 'view' %}{% set announce = _('Showing table') if c[1] == 'tabel' else _('Showing chart') %}
+{% elif c[0] == 'period' %}{% set announce = {'5': _('Last 5 years'), '10': _('Last 10 years'), 'alles': _('All years')}[c[1]] %}
+{% elif c[0] == 'hidden' %}{% set announce = _('%(name)s hidden', name=names.get(c[1], c[1])) %}
+{% else %}{% set announce = _('%(name)s shown', name=names.get(c[1], c[1])) %}{% endif %}
+{% set title = content_i18n.display(fact, 'fact_title', lang) %}
+{% set average_on = chart.average_key and chart.average_key in state.keys and chart.average_key not in state.hidden %}
+<div class="gu-chartpage__block" data-chart-block data-url="{{ url }}" data-announce="{{ announce }}">
+  <form method="GET" action="{{ base_url }}" class="gu-chartpage__controls" data-chart-form>
+    <input type="hidden" name="weergave" value="{{ state.view }}">
+    <input type="hidden" name="periode" value="{{ state.period }}">
+    <input type="hidden" name="verberg" value="{{ state.hidden | join(',') }}">
+    <div class="gu-chartpage__bar">
+      <div class="gu-chartseg" role="group" aria-label="{{ _('View') }}">
+        <button type="submit" name="zet" value="weergave:grafiek" aria-pressed="{{ 'true' if state.view == 'grafiek' else 'false' }}">{{ _('Chart') }}</button>
+        <button type="submit" name="zet" value="weergave:tabel" aria-pressed="{{ 'true' if state.view == 'tabel' else 'false' }}">{{ _('Table') }}</button>
+      </div>
+      <div class="gu-chartseg" role="group" aria-label="{{ _('Period') }}">
+        {%- set period_labels = {'5': _('5 years'), '10': _('10 years'), 'alles': _('All years')} %}
+        {%- for p in state.periods %}
+        <button type="submit" name="zet" value="periode:{{ p }}" aria-pressed="{{ 'true' if state.period == p else 'false' }}">{{ period_labels[p] }}</button>
+        {%- endfor %}
+      </div>
+    </div>
+    <ul class="gu-chart-toggles" aria-label="{{ _('Show or hide countries') }}">
+      {%- for item in view.legend %}
+      <li><button type="submit" name="zet" value="wissel:{{ item.key }}" class="gu-chart-toggle" aria-pressed="{{ 'false' if item.hidden else 'true' }}"><span class="gu-chart-swatch{% if item.dashed %} gu-chart-swatch--average{% endif %}" style="--c:{{ item.color }}"></span>{{ item.name }} <b class="gu-chart-toggle__value">{{ item.value }}</b></button></li>
+      {%- endfor %}
+    </ul>
+  </form>
+  {% if not shown and not average_on %}
+  <p class="gu-chartpage__empty">{{ _('Everything is hidden. Switch a country on to see the chart.') }}</p>
+  {% elif state.view == 'tabel' %}
+  {{ chart_table(view, _('Table: %(title)s, per year', title=title), _('Year'), _('no value')) }}
+  {% else %}
+  {% if average_on %}
+  {% set label = _('Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s, with %(average)s.', title=title, start=view.years[0], end=view.years[-1], countries=countries_text, average=average) %}
+  {% else %}
+  {% set label = _('Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s.', title=title, start=view.years[0], end=view.years[-1], countries=countries_text) %}
+  {% endif %}
+  {{ chart_large(view, label) }}
+  {% endif %}
+  <p class="gu-chartpage__foot">{{ _('Source') }}: <a href="{{ snapshot.source_url }}" target="_blank" rel="noopener noreferrer">{{ _('%(citation)s, via Our World in Data', citation=citation) }}</a>{% if fetched %} <span aria-hidden="true">·</span> {{ _('Retrieved on %(date)s', date=fetched) }}{% endif %}</p>
+</div>

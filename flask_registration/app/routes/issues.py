@@ -32,6 +32,7 @@ from app import facts as fact_signals
 from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
 from app.models import FACT_DIRECTIONS, FACT_KIND, Issue, IssueFollowup, IssueProposal, Post
+from sqlalchemy.orm import joinedload
 from app.routes.forum import (_auto_translate, _fact_form, _fact_phase_open, _new_fact, _require_csrf,
                               _rules_first_redirect, _thread_context, refuse_if_suspended)
 from app.utils import _pop_form_state, _pop_form_state_if, _stash_form_state, safe_next
@@ -224,6 +225,70 @@ def facts(issue_id):
 
 
 # ── Stap 4: voorstellen onder een vraagstuk ──────────────────────────────
+
+@issues_bp.route('/vraagstuk/<int:issue_id>/cijfer/<int:post_id>')
+def chart_page(issue_id, post_id):
+    """Background figures (step 1f, docs/design/achtergrondcijfers-uitgeklapt.html):
+    one chart enlarged. Readable by visitors and on closed or archived issues,
+    like the issue page. ?weergave=grafiek|tabel, ?periode=5|10|alles,
+    ?verberg=<keys>, ?zet=<one change> (the buttons; without JavaScript the
+    page redirects to the plain URL), ?fragment=1 (only the block with the
+    controls, the chart or table and the source line, for static/js/chart_page.js).
+    A fixed number of queries however many proposals are linked."""
+    from flask_babel import format_date
+    from app import background_figures as bf
+    from app.models import IssueProposalFact
+    issue = _issue_or_404(issue_id)
+    fact = db.session.get(Post, post_id)
+    if (fact is None or issue.thread_id is None or fact.thread_id != issue.thread_id or not fact.is_fact
+            or fact.fact_type != 'cijfer' or conduct.is_removed_for(fact, current_user)):
+        abort(404)
+    found = bf.charts_for([fact]).get(fact.id)
+    if found is None:
+        abort(404)
+    chart, snapshot = found
+    state = bf.page_state(request.args, chart, snapshot)
+    url = url_for('issues.chart_page', issue_id=issue.id, post_id=fact.id, **state.params())
+    fragment = request.args.get('fragment') == '1'
+    if state.change is not None and not fragment:
+        return redirect(url)
+    lang = i18n.current()
+    content_i18n.preload([fact], 'fact_title', 'body')
+    content_i18n.preload([chart], 'average_name')
+    view = bf.page_view(chart, snapshot, state, lang)
+    names, average = bf.display_names(chart, snapshot, lang)
+    countries = [k for k in state.keys if k != chart.average_key]
+    shown = [k for k in countries if k not in state.hidden]
+    ctx = dict(issue=issue, fact=fact, chart=chart, snapshot=snapshot, state=state, view=view, url=url,
+               names=names, average=average, countries=countries, shown=shown,
+               countries_text=_list_text([names.get(k, k) for k in shown], lang),
+               citation=snapshot.citation or bf.short_citation(snapshot),
+               fetched=format_date(snapshot.fetched_at, 'medium') if snapshot.fetched_at else '',
+               chosen=format_date(fact.created_at, 'medium') if fact.created_at else '',
+               base_url=url_for('issues.chart_page', issue_id=issue.id, post_id=fact.id))
+    if fragment:
+        return render_template('issues/_chart_block.html', **ctx)
+    # Linked to: every proposal linked now (by the AI or a member), not hidden.
+    linked = [row.proposal for row in IssueProposalFact.query.filter_by(fact_post_id=fact.id)
+              .options(joinedload(IssueProposalFact.proposal)).order_by(IssueProposalFact.id)
+              if row.proposal is not None and row.proposal.hidden_at is None]
+    linkable = []
+    if current_user.is_authenticated:
+        linked_ids = {p.id for p in linked}
+        linkable = [p for p in ip.regular_query(issue).order_by(IssueProposal.id)
+                    if p.id not in linked_ids and ip.can_link(p, current_user)]
+    content_i18n.preload(linked + linkable, 'statement')
+    from app import facts as fact_signals_mod
+    return render_template('issues/chart.html', linked=linked, linkable=linkable,
+                           fact_my_disputed=fact_signals_mod.my_disputed([fact.id], current_user),
+                           my_reported_ids=_reported_fact_ids([fact.id]), **ctx)
+
+
+def _list_text(items, lang):
+    """Names joined in the reader's language ("Poland, France and Germany")."""
+    from babel.lists import format_list
+    return format_list(items, locale=lang) if items else ''
+
 
 def _issue_or_404(issue_id):
     issue = db.session.get(Issue, issue_id)
@@ -529,10 +594,18 @@ def _basis_url(issue, proposal):
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/koppelen', methods=['POST'])
+@issues_bp.route('/vraagstuk/<int:issue_id>/koppelen', methods=['POST'], defaults={'proposal_id': None})
 @login_required
 @limiter.limit("60 per minute", key_func=lambda: f"issue-link-user-{current_user.get_id()}")
 def proposal_link(issue_id, proposal_id):
+    """Link facts to a proposal. Background figures (step 1f): the chart page
+    picks the proposal in a list (proposal_id in the form, the second URL)
+    and comes back to itself (next)."""
     issue = _issue_or_404(issue_id)
+    if proposal_id is None:
+        proposal_id = request.form.get('proposal_id', type=int)
+        if proposal_id is None:
+            abort(400)
     proposal = _proposal_or_404(issue, proposal_id)
     _require_csrf()
     if not ip.can_link(proposal, current_user):
@@ -540,7 +613,7 @@ def proposal_link(issue_id, proposal_id):
     if not ip.link_ids(proposal, request.form.getlist('fact_ids', type=int), current_user):
         flash(gettext('Choose at least one fact that is not linked yet.'), 'error')
     db.session.commit()
-    return redirect(_basis_url(issue, proposal))
+    return redirect(safe_next(request.form.get('next'), _basis_url(issue, proposal)))
 
 
 @issues_bp.route('/vraagstuk/<int:issue_id>/voorstel/<int:proposal_id>/feit', methods=['POST'])

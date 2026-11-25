@@ -1,6 +1,6 @@
 """No horizontal overflow at 320px on the nine pages of the step 7 set (home,
 forum, a conversation, an issue with its cockpit, a proposal, profile,
-moderator overview, manifest, country list), in nl, en, de, es and fr (long German compounds, longer Spanish and French phrases).
+moderator overview, manifest, country list) and the chart page of a background figure, in nl, en, de, es and fr (long German compounds, longer Spanish and French phrases).
 
 A real browser lays the pages out: Playwright for Node, against the app on
 its own SQLite database with the demo content (tests/browser/). The check:
@@ -25,8 +25,9 @@ import pytest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(HERE)
+# '/_chart' redirects to the chart page of the demo chart (tests/browser/serve_demo.py).
 PAGES = ['/', '/forum', '/forum/1', '/vraagstuk/1', '/vraagstuk/1/voorstel/1', '/profile', '/moderator',
-         '/manifest', '/manifest/landen']
+         '/manifest', '/manifest/landen', '/_chart', '/_chart?weergave=tabel']
 
 
 def _playwright_node_path():

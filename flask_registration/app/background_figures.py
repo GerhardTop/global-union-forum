@@ -519,6 +519,115 @@ class ChartCard:
     date: str                # the day of publishing, in the reader's notation
 
 
+_OWID_SUFFIX = re.compile(r'(?:^|\s+)[\u2013\u2014-]\s*with\b.*$', flags=re.S)
+_TRAILING_DASH = re.compile(r'(?:^|\s+)[\u2013\u2014-]\s*$')
+
+
+def short_citation(snapshot):
+    """The short source of a chart without OWID's suffix: citationShort
+    ("Stockholm International Peace Research Institute (2026) \u2013 with minor
+    processing by Our World in Data") cut before " \u2013 with" or " - with",
+    and a dash left at the end removed. Empty after that: the full citation.
+    The caller adds ", via Our World in Data"; no dash reaches the page."""
+    short = _OWID_SUFFIX.sub('', (snapshot.citation_short or '').strip())
+    short = _TRAILING_DASH.sub('', short).strip()
+    return short or (snapshot.citation or '').strip()
+
+
+def display_names(chart, snapshot, lang):
+    """({key: name in the reader's language}, name of the average or ''):
+    countries from our list or Babel, the average through the translation
+    route (English until it is translated). The caller preloads average_name."""
+    from app import content_i18n
+    from app.sources import countries
+    data = snapshot.values
+    names = {}
+    for key in data.get('names', {}):
+        iso2 = countries.iso2_for(key)
+        if iso2:
+            names[key] = countries.display_name(iso2, lang)
+    average = ''
+    if chart.average_key:
+        average = (content_i18n.display(chart, 'average_name', lang) if chart.average_name
+                   else data.get('names', {}).get(chart.average_key, ''))
+        names[chart.average_key] = average
+    return names, average
+
+
+# ── The chart page (step 1f) ─────────────────────────────────────────────
+
+VIEWS = ('grafiek', 'tabel')
+DEFAULT_VIEW = 'grafiek'
+DEFAULT_PERIOD = '10'
+PERIODS = {'5': 5, '10': 10, 'alles': None}
+
+
+@dataclass
+class PageState:
+    """What the reader chose on the chart page (?weergave, ?periode, ?verberg)."""
+    view: str = DEFAULT_VIEW
+    period: str = DEFAULT_PERIOD
+    hidden: list = field(default_factory=list)
+    periods: tuple = ('5', '10')
+    keys: list = field(default_factory=list)       # every key that can be switched, in legend order
+    change: tuple = None                           # (what, value) of ?zet=, for the announcement
+
+    def params(self, **override):
+        """The query parameters of this state (defaults left out)."""
+        view, period = override.get('view', self.view), override.get('period', self.period)
+        hidden = override.get('hidden', self.hidden)
+        out = {}
+        if view != DEFAULT_VIEW:
+            out['weergave'] = view
+        if period != DEFAULT_PERIOD:
+            out['periode'] = period
+        if hidden:
+            out['verberg'] = ','.join(hidden)
+        return out
+
+
+def switchable_keys(chart, snapshot):
+    """The entity keys the legend switches: the shown countries (at most the
+    large chart's eight) and the average, as far as they are in the data."""
+    from app import charts
+    series = snapshot.values.get('series', {})
+    keys = [k for k in chart.entity_keys if k in series and k != chart.average_key]
+    keys = keys[:charts._SIZES[charts.LARGE]['max_series']]
+    if chart.average_key and chart.average_key in series:
+        keys.append(chart.average_key)
+    return keys
+
+
+def page_state(args, chart, snapshot):
+    """The state from the query string, strictly checked: an invalid value
+    becomes the default, unknown keys fall away. ?zet= applies one change
+    (weergave:tabel, periode:5, wissel:<key>) on top of the state."""
+    keys = switchable_keys(chart, snapshot)
+    periods = ('5', '10', 'alles') if len(snapshot.values.get('years', [])) > 10 else ('5', '10')
+    view = args.get('weergave') if args.get('weergave') in VIEWS else DEFAULT_VIEW
+    period = args.get('periode') if args.get('periode') in periods else DEFAULT_PERIOD
+    hidden = [k for k in dict.fromkeys((args.get('verberg') or '').split(',')) if k in keys]
+    change = None
+    what, _sep, value = (args.get('zet') or '').partition(':')
+    if what == 'weergave' and value in VIEWS:
+        view, change = value, ('view', value)
+    elif what == 'periode' and value in periods:
+        period, change = value, ('period', value)
+    elif what == 'wissel' and value in keys:
+        hidden = [k for k in hidden if k != value] if value in hidden else hidden + [value]
+        change = ('hidden' if value in hidden else 'shown', value)
+    hidden = [k for k in keys if k in hidden]   # legend order
+    return PageState(view=view, period=period, hidden=hidden, periods=periods, keys=keys, change=change)
+
+
+def page_view(chart, snapshot, state, lang):
+    """The large ChartView for the chart page in this state."""
+    from app import charts
+    names, _average = display_names(chart, snapshot, lang)
+    return charts.layout(snapshot.values, chart.entity_keys, chart.average_key, charts.LARGE, lang,
+                         PERIODS[state.period], set(state.hidden), names, snapshot.short_unit or '')
+
+
 def chart_cards(posts, lang):
     """{post_id: ChartCard} for the chart facts among `posts`: two queries for
     the charts and snapshots and one for the translated average names,
@@ -527,7 +636,6 @@ def chart_cards(posts, lang):
     from flask_babel import format_date
 
     from app import charts, content_i18n
-    from app.sources import countries
     found = charts_for(posts)
     if not found:
         return {}
@@ -536,16 +644,7 @@ def chart_cards(posts, lang):
     out = {}
     for post_id, (chart, snapshot) in found.items():
         data = snapshot.values
-        names = {}
-        for key in data.get('names', {}):
-            iso2 = countries.iso2_for(key)
-            if iso2:
-                names[key] = countries.display_name(iso2, lang)
-        average = ''
-        if chart.average_key:
-            average = (content_i18n.display(chart, 'average_name', lang) if chart.average_name
-                       else data.get('names', {}).get(chart.average_key, ''))
-            names[chart.average_key] = average
+        names, average = display_names(chart, snapshot, lang)
         view = charts.layout(data, chart.entity_keys, chart.average_key, charts.SMALL, lang, None, (), names,
                              snapshot.short_unit or '')
         if view.empty:
@@ -557,7 +656,7 @@ def chart_cards(posts, lang):
             chart=chart, snapshot=snapshot, view=view, countries=shown,
             countries_text=format_list(shown, locale=lang) if shown else '',
             average=average, start=view.years[0], end=view.years[-1],
-            citation=snapshot.citation or '',   # not citation_short: it has a dash
+            citation=short_citation(snapshot),   # citation_short without OWID's suffix (and its dash)
             source_url=snapshot.source_url or '',
             date=format_date(post.created_at, 'medium') if post is not None and post.created_at else '')
     return out

@@ -41,6 +41,27 @@ with app.app_context():
     db.session.add(admin)
     db.session.commit()
 
+    # Background figures: one chart fact on the first issue, from the OWID
+    # fixture (no AI, no network), so the chart page can be checked too.
+    import json as _json
+    from app import background_figures
+    from app.models import Issue
+    from app.sources import owid
+    _folder = os.path.join(os.getcwd(), 'tests', 'data', 'owid')
+    _slug = 'military-spending-as-a-share-of-gdp-sipri'
+    with open(os.path.join(_folder, f'{_slug}.csv'), encoding='utf-8') as _f:
+        _csv = _f.read()
+    with open(os.path.join(_folder, f'{_slug}.metadata.json'), encoding='utf-8') as _f:
+        _meta = _json.load(_f)
+    _parsed = owid.parse(_csv, _meta, slug=_slug)
+    _issue = Issue.query.order_by(Issue.id).first()
+    background_figures.publish(background_figures.Context(issue=_issue), background_figures.Outcome(
+        status='done', accepted=[background_figures.Accepted(
+            slug=_slug, parsed=_parsed, metadata=_meta, keys=['POL', 'FRA', 'DEU', 'NLD', 'ESP', 'USA'],
+            average_key=None, year_from=2016, year_to=2025, proposal_ids=[],
+            reason='The chart shows how much each country spends on its armed forces compared with its economy.')]))
+    db.session.commit()
+
     # Multilingual phase 2: machine translations of the demo issues and
     # proposals, so the pages carry the label. A fake translator ("[EN] ..."),
     # never the AI.
@@ -67,6 +88,15 @@ def _as_admin():
     login_user(User.query.filter_by(username='browser_admin').first())
     session['lang'] = request.args.get('lang', 'nl')
     return redirect('/')
+
+
+@app.route('/_chart')
+def _chart():
+    """The chart page of the demo chart (its id depends on the seed)."""
+    from flask import redirect, request, url_for
+    from app.models import FactChart
+    chart = FactChart.query.order_by(FactChart.id).first()
+    return redirect(url_for('issues.chart_page', issue_id=chart.issue_id, post_id=chart.post_id, **request.args))
 
 
 app.run(port=port, use_reloader=False, threaded=True)

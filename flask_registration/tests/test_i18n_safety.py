@@ -270,6 +270,7 @@ SAME_IN_DUTCH = {
 # German translations identical to their msgid, on purpose (phase 1, see
 # docs/i18n/glossary_de.md).
 SAME_IN_GERMAN = {
+    'Definition': 'gleich im Deutschen',
     'Freedom for all': 'Slogan, nicht übersetzen',
     'Initiator · Global Union Forum': 'Rollenname und Markenname',
     'Moderator': 'Rollenname', 'Senior': 'Rollenname', 'Admin': 'Rollenname',
@@ -302,6 +303,7 @@ SAME_IN_SPANISH = {
 # French translations identical to their msgid, on purpose (phase 1, see
 # docs/i18n/glossary_fr.md).
 SAME_IN_FRENCH = {
+    'Licence': 'identique en français',
     '%(citation)s, via Our World in Data': 'mention de la source, via est aussi français',
     'Freedom for all': 'slogan, non traduit',
     'Spam': 'emprunt', 'Cookies': 'emprunt', 'Podcast': 'emprunt',

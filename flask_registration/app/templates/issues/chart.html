@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}{{ content_i18n.display(fact, 'fact_title', lang) }} · Global Union{% endblock %}
+{# Background figures: the chart (static/css/charts.css). #}
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ static_v('css/charts.css') }}">{% endblock %}
+{#
+  Background figures, step 1f: one chart enlarged (docs/achtergrondcijfers.md,
+  "Weergave"; design docs/design/achtergrondcijfers-uitgeklapt.html). Opened
+  with "Enlarge chart" on the card in the facts column. The block with the
+  controls, the chart or table and the source line is issues/_chart_block.html
+  (static/js/chart_page.js swaps it without a reload). Adding a country (the
+  reader's own) comes in step 2. Context: issues.chart_page.
+#}
+{% block content_outer %}{% block content %}
+{% from '_mt.html' import mt with context %}
+<div class="gu-chartpage" lang="{{ lang }}">
+  <nav class="gu-chartpage__crumbs" aria-label="{{ _('Breadcrumb') }}">
+    <a href="{{ url_for('issues.show', issue_id=issue.id, vergroot='feiten', _anchor='post-' ~ fact.id) }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6"/></svg>{{ _('Back to the issue') }}</a>
+    <span aria-hidden="true">·</span><span>{{ content_i18n.display(issue, 'title', lang) }}</span>
+    <span aria-hidden="true">·</span><span>{{ _('Facts and background') }}</span>
+  </nav>
+
+  <div class="gu-chartpage__grid">
+    <article class="gu-chartpage__main gu-fact gu-fact--neutraal" id="post-{{ fact.id }}">
+      {% set dir_labels = {'voor': _('Argues for'), 'tegen': _('Argues against'), 'neutraal': _('Neutral')} %}
+      {% set fact_back = request.path %}
+      <div class="gu-fact__topline gu-fact__topline--chart">
+        <span class="gu-fact__dir gu-fact__dir--neutraal">{{ dir_labels['neutraal'] }}</span>
+        <span class="gu-aisel" data-ai-tip>
+          <button type="button" class="gu-aisel__btn" aria-expanded="false" aria-describedby="aisel-{{ fact.id }}">{{ _('AI selection') }}</button>
+          <span class="gu-aisel__tip" role="tooltip" id="aisel-{{ fact.id }}">{{ _('Selected by AI from %(source)s on %(date)s. The figures come straight from the source.', source='Our World in Data', date=chosen) }}</span>
+        </span>
+        {% include 'issues/_fact_badges.html' %}
+      </div>
+
+      <div class="gu-chartpage__head">
+        {{ mt(fact, 'fact_title', el='h1', cls='gu-chartpage__title') }}
+        <p class="gu-chartpage__sub">
+          {%- set start, end = view.years[0], view.years[-1] -%}
+          {%- if average and chart.average_key not in state.hidden -%}
+          {{ ngettext('%(start)s to %(end)s · %(shown)d of %(num)d country, with %(average)s', '%(start)s to %(end)s · %(shown)d of %(num)d countries, with %(average)s', countries | length, start=start, end=end, shown=shown | length, average=average) }}
+          {%- else -%}
+          {{ ngettext('%(start)s to %(end)s · %(shown)d of %(num)d country', '%(start)s to %(end)s · %(shown)d of %(num)d countries', countries | length, start=start, end=end, shown=shown | length) }}
+          {%- endif -%}
+        </p>
+      </div>
+
+      {% include 'issues/_chart_block.html' %}
+      <p class="gu-sr-only" role="status" aria-live="polite" data-chart-live></p>
+    </article>
+
+    <aside class="gu-chartpage__aside">
+      <section class="gu-chartpage__card" aria-labelledby="chart-about">
+        <h2 class="gu-chartpage__cardtitle" id="chart-about">{{ _('About these figures') }}</h2>
+        <dl class="gu-chartpage__facts">
+          {% if snapshot.definition %}<dt>{{ _('Definition') }}</dt><dd>{{ snapshot.definition }}</dd>{% endif %}
+          {% if snapshot.unit %}<dt>{{ _('Unit') }}</dt><dd>{{ snapshot.unit }}</dd>{% endif %}
+          <dt>{{ _('Source') }}</dt><dd>{{ _('%(citation)s, via Our World in Data', citation=citation) }}</dd>
+          {% if average %}<dt>{{ _('Average') }}</dt><dd>{{ _('%(name)s, as supplied by the source', name=average) }}</dd>{% endif %}
+          <dt>{{ _('Licence') }}</dt>
+          <dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">{{ _('CC BY 4.0, with attribution') }}</a>. {{ _('Data from other organisations may have their own terms; see the source.') }}</dd>
+          {% if fetched %}<dt>{{ _('Retrieved') }}</dt><dd>{{ fetched }}</dd>{% endif %}
+          <dt>{{ _('Snapshot') }}</dt><dd>{{ _('Will be frozen when voting starts, so everyone votes on the same figures.') }}</dd>
+        </dl>
+      </section>
+
+      <section class="gu-chartpage__card" aria-labelledby="chart-why">
+        <h2 class="gu-chartpage__cardtitle" id="chart-why">{{ _('Why this chart') }}</h2>
+        {{ mt(fact, 'body', el='p', cls='gu-chartpage__why') }}
+        {% if linked %}
+        <div class="gu-chartpage__linked">
+          <p class="gu-chartpage__linkedtitle">{{ _('Linked to') }}</p>
+          <ul>
+            {% for p in linked %}<li><a href="{{ url_for('issues.proposal', issue_id=issue.id, proposal_id=p.id) }}" lang="{{ lang }}">{{ content_i18n.display(p, 'statement', lang) }}</a></li>{% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {% if chosen %}<p class="gu-chartpage__meta">{{ _('Chosen by AI on %(date)s', date=chosen) }}</p>{% endif %}
+      </section>
+
+      <div class="gu-chartpage__actions">
+        {% if linkable %}
+        <form method="POST" action="{{ url_for('issues.proposal_link', issue_id=issue.id) }}" class="gu-chartpage__link">
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          <input type="hidden" name="fact_ids" value="{{ fact.id }}">
+          <input type="hidden" name="next" value="{{ request.full_path if request.query_string else request.path }}">
+          <label for="chart-link-proposal">{{ _('Link to a proposal') }}</label>
+          <select id="chart-link-proposal" name="proposal_id" class="gu-chartpage__select">
+            {% for p in linkable %}<option value="{{ p.id }}">{{ content_i18n.display(p, 'statement', lang) | truncate(90, killwords=True, end='...') }}</option>{% endfor %}
+          </select>
+          <button type="submit" class="gu-btn gu-btn--sm">{{ _('Link') }}</button>
+        </form>
+        {% endif %}
+        <div class="gu-fact__actions gu-chartpage__row">
+          {% with signal_next=request.path %}{% include 'forum/_fact_signals.html' %}{% endwith %}
+          {% if current_user.is_authenticated and current_user.can_moderate() %}
+          <form method="POST" action="{{ url_for('forum.chart_delete', post_id=fact.id) }}" class="gu-fact__delete">
+            {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+            <input type="hidden" name="return_to" value="{{ issue.id }}">
+            <button type="submit" class="gu-fact__action gu-fact__action--danger"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>{{ _('Delete') }}</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+<script src="{{ static_v('js/cockpit.js') }}" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ static_v('js/chart_page.js') }}" nonce="{{ csp_nonce() }}"></script>
+{% endblock %}{% endblock %}
