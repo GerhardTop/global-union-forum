@@ -1892,6 +1892,28 @@ def fact_delete(post_id):
     return redirect(back)
 
 
+@forum_bp.route('/forum/feit/<int:post_id>/grafiek-verwijderen', methods=['POST'])
+@login_required
+def chart_delete(post_id):
+    """Background figures (step 1e): a moderator removes a chart the AI chose,
+    in any phase. Cleans up like fact_delete; the chart is remembered so the
+    AI does not choose it again for this issue (ChartBlock 'slug'), and the
+    action is logged. Only for chart facts (fact_type 'cijfer')."""
+    fact = Post.query.get_or_404(post_id)
+    if not current_user.can_moderate() or not fact.is_fact or fact.fact_type not in FACT_SYSTEM_TYPES:
+        abort(403)
+    _require_csrf()
+    back = _fact_back(fact.thread, '#feiten')
+    from app import facts, issues
+    issue = facts.issue_for_thread(fact.thread_id)
+    issues.log_action(current_user, 'delete_chart', 'fact', fact.id, snapshot=fact.fact_title,
+                      issue_id=issue.id if issue is not None else None)
+    quality.delete_for_posts([fact.id])
+    db.session.delete(fact)
+    db.session.commit()
+    return redirect(back)
+
+
 # ── Herontwerp stap 3: betwisten op een feit ─────────────────────────────
 # Zie app/facts.py. Werkt zonder JavaScript (formulier met next). Het oude
 # nuttig-signaal is in polijstronde P2 vervangen door het kwaliteitsmerk.

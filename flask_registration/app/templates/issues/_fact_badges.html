@@ -11,11 +11,14 @@
   In the enlarged facts (fact_back set) reporting comes back there, the fact in view.
 #}
 {% set mark = fact.id in (fact_marks or ()) %}
-{% set can_report = not hide_report and current_user.is_authenticated and fact.user_id and fact.user_id != current_user.id %}
+{#- A background figure (fact_type 'cijfer') has no person behind it; any member may report it. -#}
+{% set can_report = not hide_report and current_user.is_authenticated
+                    and ((fact.user_id and fact.user_id != current_user.id) or (fact.fact_type == 'cijfer' and not fact.user_id)) %}
 {% set kind = fact.fact_kind %}
-{% if kind != 'feit' or mark or can_report %}
+{% set kind_label = kind not in ('feit', 'cijfer') %}
+{% if kind_label or mark or can_report %}
 <span class="gu-fact__badges">
-  {% if kind != 'feit' %}{% set kind_labels = {'onderzoek': _('Research'), 'nieuwsartikel': _('News article'),
+  {% if kind_label %}{% set kind_labels = {'onderzoek': _('Research'), 'nieuwsartikel': _('News article'),
                                               'podcast': _('Podcast'), 'video': _('Video'), 'media': _('Media')} %}
   <span class="gu-fact__media gu-fact__kind--{{ kind }}">{{ kind_labels[kind] }}</span>{% endif %}
   {% if mark %}

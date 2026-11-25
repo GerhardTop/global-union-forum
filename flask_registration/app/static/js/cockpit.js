@@ -199,3 +199,43 @@
     return {show: show, expand: expand, collapse: collapse};
   };
 })();
+
+/* Background figures (step 1e): the explanation of "AI selection" on a chart
+   card. Hover and focus show it through CSS (also without JavaScript); a tap
+   or click toggles it (aria-expanded), Escape and a tap elsewhere close it. */
+(function () {
+  'use strict';
+  function close(wrap) {
+    wrap.classList.remove('is-open');
+    var btn = wrap.querySelector('button');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+  function closeAll(except) {
+    document.querySelectorAll('[data-ai-tip].is-open').forEach(function (wrap) {
+      if (wrap !== except) close(wrap);
+    });
+  }
+  document.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-ai-tip] > button');
+    if (!btn) { closeAll(null); return; }
+    var wrap = btn.parentElement;
+    var open = !wrap.classList.contains('is-open');
+    closeAll(wrap);
+    wrap.classList.toggle('is-open', open);
+    wrap.classList.remove('is-closed');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    document.querySelectorAll('[data-ai-tip]').forEach(function (wrap) {
+      if (wrap.classList.contains('is-open') || wrap.contains(document.activeElement)) {
+        close(wrap);
+        wrap.classList.add('is-closed');   /* hide it while focus stays on the button */
+      }
+    });
+  });
+  document.addEventListener('focusout', function (event) {
+    var wrap = event.target.closest && event.target.closest('[data-ai-tip]');
+    if (wrap) wrap.classList.remove('is-closed');
+  });
+})();

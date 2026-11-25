@@ -70,3 +70,4 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 | think tank | denktank | laboratorio de ideas | De door de RAE aanbevolen term. |
 | moderation | moderatie | moderación | Zelfde woord. |
 | Global Union, Global Union Forum, Freedom for all | (niet vertaald) | (niet vertaald) | Merknamen en slogan. |
+| AI selection | AI-selectie | Selección por IA | Het label op een achtergrondcijfer dat de AI uit een open bron koos; IA is de gewone Spaanse afkorting. |

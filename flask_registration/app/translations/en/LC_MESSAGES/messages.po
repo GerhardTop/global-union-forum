@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-25 07:49+0100\n"
+"POT-Creation-Date: 2026-11-25 14:48+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:868
+#: app/__init__.py:872
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Too many attempts. Please try again in a minute."
 
-#: app/__init__.py:898
+#: app/__init__.py:902
 msgid "Your session has expired. Please log in again."
 msgstr "Your session has expired. Please log in again."
 
@@ -308,31 +308,31 @@ msgstr "Forum · proposal"
 
 # Herontwerp stap 1: vraagstukken (Issue)
 #: app/models.py:246 app/templates/issues/new.html:23
-#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:92
+#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:95
 #: app/templates/moderator/melding_beoordelen.html:68
 msgid "Issue"
 msgstr "Issue"
 
-#: app/models.py:397
+#: app/models.py:404
 #, python-format
 msgid "%(num)d day ago"
 msgid_plural "%(num)d days ago"
 msgstr[0] "%(num)d day ago"
 msgstr[1] "%(num)d days ago"
 
-#: app/models.py:400
+#: app/models.py:407
 #, python-format
 msgid "%(num)d hour ago"
 msgid_plural "%(num)d hours ago"
 msgstr[0] "%(num)d hour ago"
 msgstr[1] "%(num)d hours ago"
 
-#: app/models.py:403
+#: app/models.py:410
 #, python-format
 msgid "%(num)d min ago"
 msgstr "%(num)d min ago"
 
-#: app/models.py:404
+#: app/models.py:411
 msgid "just now"
 msgstr "just now"
 
@@ -682,7 +682,7 @@ msgstr "Voting"
 #: app/templates/issues/_ip_final.html:20
 #: app/templates/issues/_proposals_big.html:43
 #: app/templates/issues/_steps.html:15 app/templates/issues/final_new.html:19
-#: app/templates/issues/proposal.html:46
+#: app/templates/issues/proposal.html:49
 #: app/templates/moderator/beheer.html:104
 msgid "Summary proposal"
 msgstr "Summary proposal"
@@ -812,17 +812,17 @@ msgid "Saved."
 msgstr "Saved."
 
 #: app/routes/admin.py:742 app/templates/issues/index.html:17
-#: app/templates/issues/show.html:22 app/templates/issues/verwijderen.html:29
+#: app/templates/issues/show.html:25 app/templates/issues/verwijderen.html:29
 msgid "Issues"
 msgstr "Issues"
 
 #: app/routes/admin.py:743 app/templates/issues/final_new.html:19
-#: app/templates/issues/proposal.html:43 app/templates/issues/proposal.html:60
-#: app/templates/issues/proposal.html:318
-#: app/templates/issues/proposal.html:320
-#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:95
-#: app/templates/issues/show.html:146 app/templates/issues/show.html:148
-#: app/templates/issues/show.html:149 app/templates/issues/show.html:188
+#: app/templates/issues/proposal.html:46 app/templates/issues/proposal.html:63
+#: app/templates/issues/proposal.html:321
+#: app/templates/issues/proposal.html:323
+#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:98
+#: app/templates/issues/show.html:149 app/templates/issues/show.html:151
+#: app/templates/issues/show.html:152 app/templates/issues/show.html:191
 #: app/templates/moderator/beheer.html:84
 msgid "Proposals"
 msgstr "Proposals"
@@ -963,23 +963,23 @@ msgid "edited %(when)s"
 msgstr "edited %(when)s"
 
 # Polijststap P7: volledige pagina vanuit de grote weergave
-#: app/routes/forum.py:1529 app/routes/issues.py:280
+#: app/routes/forum.py:1529 app/routes/issues.py:283
 msgid "Give a reason for your report."
 msgstr "Give a reason for your report."
 
-#: app/routes/forum.py:1538 app/routes/issues.py:286
+#: app/routes/forum.py:1538 app/routes/issues.py:289
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Thanks, your report has been sent to a moderator."
 
-#: app/routes/forum.py:1919
+#: app/routes/forum.py:1943
 msgid "Choose a reason (and keep the note under 500 characters)."
 msgstr "Choose a reason (and keep the note under 500 characters)."
 
-#: app/routes/forum.py:1921
+#: app/routes/forum.py:1945
 msgid "You already disputed this fact; a moderator will look at it."
 msgstr "You already disputed this fact; a moderator will look at it."
 
-#: app/routes/forum.py:1925
+#: app/routes/forum.py:1949
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 msgstr "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 
@@ -991,60 +991,60 @@ msgstr "Making proposals"
 msgid "Adjust the proposals"
 msgstr "Adjust the proposals"
 
-#: app/routes/issues.py:482
+#: app/routes/issues.py:488
 msgid "You already support this proposal."
 msgstr "You already support this proposal."
 
-#: app/routes/issues.py:535
+#: app/routes/issues.py:541
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Choose at least one fact that is not linked yet."
 
-#: app/routes/issues.py:664
+#: app/routes/issues.py:670
 msgid "The issue is now in the next phase."
 msgstr "The issue is now in the next phase."
 
-#: app/routes/issues.py:680 app/routes/issues.py:700
+#: app/routes/issues.py:686 app/routes/issues.py:706
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "The text can be at most %(n)s characters."
 
-#: app/routes/issues.py:732
+#: app/routes/issues.py:738
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Tick the box to confirm that you want to reopen the issue."
 
-#: app/routes/issues.py:737
+#: app/routes/issues.py:743
 msgid "The issue is open again for discussion."
 msgstr "The issue is open again for discussion."
 
-#: app/routes/issues.py:759
+#: app/routes/issues.py:765
 msgid "The issue has been archived."
 msgstr "The issue has been archived."
 
-#: app/routes/issues.py:774
+#: app/routes/issues.py:780
 msgid "The issue is back from the archive."
 msgstr "The issue is back from the archive."
 
-#: app/routes/issues.py:793
+#: app/routes/issues.py:799
 msgid "Type the exact title to confirm."
 msgstr "Type the exact title to confirm."
 
-#: app/routes/issues.py:799
+#: app/routes/issues.py:805
 msgid "The issue has been deleted."
 msgstr "The issue has been deleted."
 
-#: app/routes/issues.py:821
+#: app/routes/issues.py:827
 msgid "Type the exact text to confirm."
 msgstr "Type the exact text to confirm."
 
-#: app/routes/issues.py:828
+#: app/routes/issues.py:834
 msgid "The proposal has been deleted."
 msgstr "The proposal has been deleted."
 
-#: app/routes/issues.py:948
+#: app/routes/issues.py:954
 msgid "The proposal is hidden."
 msgstr "The proposal is hidden."
 
-#: app/routes/issues.py:948
+#: app/routes/issues.py:954
 msgid "The proposal is visible again."
 msgstr "The proposal is visible again."
 
@@ -1231,7 +1231,7 @@ msgstr "Navigation"
 # Polijstronde P1: Denk mee, overzicht, kruimelpad, termen
 #: app/templates/_header.html:11 app/templates/issues/_crumbs.html:10
 #: app/templates/issues/index.html:2 app/templates/issues/index.html:18
-#: app/templates/issues/proposal.html:42
+#: app/templates/issues/proposal.html:45
 msgid "Have your say"
 msgstr "Have your say"
 
@@ -2158,7 +2158,7 @@ msgid "We adopt legislation in phases. Simple, technical rules come first; polit
 msgstr "We adopt legislation in phases. Simple, technical rules come first; politically sensitive matters follow later and require a broader majority."
 
 #. manifest, tekst 26
-#: app/templates/issues/show.html:78 app/templates/manifest.html:177
+#: app/templates/issues/show.html:81 app/templates/manifest.html:177
 #: app/templates/moderator/beheer.html:34
 msgid "Phase"
 msgstr "Phase"
@@ -2642,7 +2642,7 @@ msgstr "Co-submit or support"
 msgid "Notification settings"
 msgstr "Notification settings"
 
-#: app/templates/issues/_crumbs.html:9 app/templates/issues/proposal.html:39
+#: app/templates/issues/_crumbs.html:9 app/templates/issues/proposal.html:42
 #: app/templates/issues/verwijderen.html:28
 #: app/templates/moderator/beheer.html:24
 #: app/templates/moderator/gebruiker.html:41
@@ -2712,7 +2712,7 @@ msgstr "Weekly"
 #: app/templates/admin/proposal_limits.html:28
 #: app/templates/admin/proposal_limits.html:43
 #: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:62
-#: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:52
+#: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:109
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
@@ -2901,7 +2901,7 @@ msgstr "Senior with more than %(senior_min)s quality contributions."
 msgid "Status ladder"
 msgstr "Status ladder"
 
-#: app/templates/issues/show.html:206 app/templates/profile.html:60
+#: app/templates/issues/show.html:209 app/templates/profile.html:60
 msgid "You have the right to vote."
 msgstr "You have the right to vote."
 
@@ -2910,7 +2910,7 @@ msgstr "You have the right to vote."
 msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
 msgstr "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
 
-#: app/templates/issues/show.html:210 app/templates/profile.html:65
+#: app/templates/issues/show.html:213 app/templates/profile.html:65
 msgid "Progress to the right to vote"
 msgstr "Progress to the right to vote"
 
@@ -3098,7 +3098,7 @@ msgstr "Delete my account"
 #: app/templates/forum/new_thread.html:128
 #: app/templates/issues/_facts_big.html:41
 #: app/templates/issues/final_new.html:57 app/templates/issues/new.html:190
-#: app/templates/issues/proposal.html:212
+#: app/templates/issues/proposal.html:215
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
@@ -3905,7 +3905,7 @@ msgid "Write your reply. Be concrete (a thought, a question, a pushback)."
 msgstr "Write your reply. Be concrete (a thought, a question, a pushback)."
 
 #: app/templates/forum/_discussion.html:68 app/templates/forum/_post.html:249
-#: app/templates/issues/proposal.html:291
+#: app/templates/issues/proposal.html:294
 msgid "Post"
 msgstr "Post"
 
@@ -3941,7 +3941,7 @@ msgstr "Against"
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:48
-#: app/templates/issues/proposal.html:72 app/templates/issues/show.html:106
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:109
 msgid "Neutral"
 msgstr "Neutral"
 
@@ -3988,27 +3988,28 @@ msgid "Fact"
 msgstr "Fact"
 
 #: app/templates/forum/_fact_fields.html:38
-#: app/templates/issues/_fact_badges.html:18
+#: app/templates/issues/_fact_badges.html:21
 msgid "Research"
 msgstr "Research"
 
 #: app/templates/forum/_fact_fields.html:38
-#: app/templates/issues/_fact_badges.html:18
+#: app/templates/issues/_fact_badges.html:21
 msgid "News article"
 msgstr "News article"
 
 #: app/templates/forum/_fact_fields.html:39
-#: app/templates/issues/_fact_badges.html:19
+#: app/templates/issues/_fact_badges.html:22
 msgid "Podcast"
 msgstr "Podcast"
 
 #: app/templates/forum/_fact_fields.html:39
-#: app/templates/issues/_fact_badges.html:19
+#: app/templates/issues/_fact_badges.html:22
 msgid "Video"
 msgstr "Video"
 
 #: app/templates/forum/_fact_fields.html:47 app/templates/forum/_facts.html:42
-#: app/templates/issues/_fact_card.html:28
+#: app/templates/issues/_fact_card.html:54
+#: app/templates/issues/_fact_card.html:85
 #: app/templates/moderator/dashboard.html:215
 msgid "Source"
 msgstr "Source"
@@ -4079,13 +4080,14 @@ msgstr "View on the background page"
 
 #: app/templates/forum/_facts.html:58 app/templates/forum/_post.html:136
 #: app/templates/forum/edit_thread.html:15
-#: app/templates/issues/_fact_card.html:45
+#: app/templates/issues/_fact_card.html:102
 #: app/templates/issues/_lifecycle.html:46
 msgid "Edit"
 msgstr "Edit"
 
 #: app/templates/forum/_facts.html:68 app/templates/forum/_post.html:151
-#: app/templates/issues/_fact_card.html:61
+#: app/templates/issues/_fact_card.html:67
+#: app/templates/issues/_fact_card.html:118
 #: app/templates/issues/_lifecycle.html:56
 #: app/templates/issues/verwijderen.html:2
 #: app/templates/issues/verwijderen.html:33
@@ -4148,27 +4150,27 @@ msgstr "Don't always translate"
 msgid "Always translate to English"
 msgstr "Always translate to English"
 
-#: app/templates/forum/_post.html:194 app/templates/issues/_fact_badges.html:40
+#: app/templates/forum/_post.html:194 app/templates/issues/_fact_badges.html:43
 #: app/templates/issues/_report_flag.html:9
 msgid "Reported"
 msgstr "Reported"
 
-#: app/templates/forum/_post.html:197 app/templates/issues/_fact_badges.html:45
+#: app/templates/forum/_post.html:197 app/templates/issues/_fact_badges.html:48
 #: app/templates/issues/_report_flag.html:14
 msgid "Report"
 msgstr "Report"
 
-#: app/templates/forum/_post.html:201 app/templates/issues/_fact_badges.html:51
+#: app/templates/forum/_post.html:201 app/templates/issues/_fact_badges.html:54
 #: app/templates/issues/_report_flag.html:20
 msgid "Why are you reporting this?"
 msgstr "Why are you reporting this?"
 
-#: app/templates/forum/_post.html:202 app/templates/issues/_fact_badges.html:52
+#: app/templates/forum/_post.html:202 app/templates/issues/_fact_badges.html:55
 #: app/templates/issues/_report_flag.html:21
 msgid "Briefly describe what is wrong."
 msgstr "Briefly describe what is wrong."
 
-#: app/templates/forum/_post.html:203 app/templates/issues/_fact_badges.html:53
+#: app/templates/forum/_post.html:203 app/templates/issues/_fact_badges.html:56
 #: app/templates/issues/_report_flag.html:22
 msgid "Send report"
 msgstr "Send report"
@@ -4217,7 +4219,7 @@ msgstr "Rejected"
 #: app/templates/forum/_proposal_status.html:15
 #: app/templates/forum/closed.html:13 app/templates/forum/closed.html:31
 #: app/templates/forum/index.html:48 app/templates/forum/thread.html:49
-#: app/templates/issues/index.html:56 app/templates/issues/show.html:24
+#: app/templates/issues/index.html:56 app/templates/issues/show.html:27
 #: app/templates/moderator/beheer.html:34
 #: app/templates/moderator/dashboard.html:427
 #: app/templates/moderator/dashboard.html:457
@@ -4779,10 +4781,10 @@ msgstr "Language of the contribution"
 msgid "The AI judges the English (translated) text and leaves style, spelling and fluency out of consideration."
 msgstr "The AI judges the English (translated) text and leaves style, spelling and fluency out of consideration."
 
-#: app/templates/forum/thread.html:56 app/templates/issues/proposal.html:44
-#: app/templates/issues/proposal.html:46 app/templates/issues/proposal.html:57
-#: app/templates/issues/proposal.html:59 app/templates/issues/proposal.html:174
-#: app/templates/issues/proposal.html:175
+#: app/templates/forum/thread.html:56 app/templates/issues/proposal.html:47
+#: app/templates/issues/proposal.html:49 app/templates/issues/proposal.html:60
+#: app/templates/issues/proposal.html:62 app/templates/issues/proposal.html:177
+#: app/templates/issues/proposal.html:178
 #: app/templates/moderator/melding_beoordelen.html:18
 msgid "Proposal"
 msgstr "Proposal"
@@ -4914,65 +4916,103 @@ msgid "Yes, reopen this issue for discussion"
 msgstr "Yes, reopen this issue for discussion"
 
 # Polijstronde P2: kwaliteitsmerk en media bij feiten
-#: app/templates/issues/_fact_badges.html:19
+#: app/templates/issues/_fact_badges.html:22
 msgid "Media"
 msgstr "Media"
 
-#: app/templates/issues/_fact_badges.html:22
 #: app/templates/issues/_fact_badges.html:25
+#: app/templates/issues/_fact_badges.html:28
 msgid "Quality mark for facts"
 msgstr "Quality mark for facts"
 
-#: app/templates/issues/_fact_badges.html:26
+#: app/templates/issues/_fact_badges.html:29
 msgid "The AI checked that:"
 msgstr "The AI checked that:"
 
-#: app/templates/issues/_fact_badges.html:28
+#: app/templates/issues/_fact_badges.html:31
 msgid "a source is given"
 msgstr "a source is given"
 
-#: app/templates/issues/_fact_badges.html:29
+#: app/templates/issues/_fact_badges.html:32
 msgid "the source is a findable link"
 msgstr "the source is a findable link"
 
-#: app/templates/issues/_fact_badges.html:30
+#: app/templates/issues/_fact_badges.html:33
 msgid "it says where in the source to find it"
 msgstr "it says where in the source to find it"
 
-#: app/templates/issues/_fact_badges.html:31
+#: app/templates/issues/_fact_badges.html:34
 msgid "it is on the topic"
 msgstr "it is on the topic"
 
-#: app/templates/issues/_fact_badges.html:32
+#: app/templates/issues/_fact_badges.html:35
 msgid "it is a new fact"
 msgstr "it is a new fact"
 
-#: app/templates/issues/_fact_badges.html:34
+#: app/templates/issues/_fact_badges.html:37
 msgid "The mark does not judge how reliable the source is."
 msgstr "The mark does not judge how reliable the source is."
 
-#: app/templates/issues/_fact_card.html:22
+#: app/templates/issues/_fact_card.html:27
+msgid "AI selection"
+msgstr "AI selection"
+
+#: app/templates/issues/_fact_card.html:28
+#, python-format
+msgid "Selected by AI from %(source)s on %(date)s. The figures come straight from the source."
+msgstr "Selected by AI from %(source)s on %(date)s. The figures come straight from the source."
+
+#: app/templates/issues/_fact_card.html:36
+#, python-format
+msgid "%(start)s to %(end)s · %(num)d country and %(average)s"
+msgid_plural "%(start)s to %(end)s · %(num)d countries and %(average)s"
+msgstr[0] "%(start)s to %(end)s · %(num)d country and %(average)s"
+msgstr[1] "%(start)s to %(end)s · %(num)d countries and %(average)s"
+
+#: app/templates/issues/_fact_card.html:38
+#, python-format
+msgid "%(start)s to %(end)s · %(num)d country"
+msgid_plural "%(start)s to %(end)s · %(num)d countries"
+msgstr[0] "%(start)s to %(end)s · %(num)d country"
+msgstr[1] "%(start)s to %(end)s · %(num)d countries"
+
+#: app/templates/issues/_fact_card.html:43
+#, python-format
+msgid "Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s, with %(average)s."
+msgstr "Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s, with %(average)s."
+
+#: app/templates/issues/_fact_card.html:45
+#, python-format
+msgid "Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s."
+msgstr "Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s."
+
+#: app/templates/issues/_fact_card.html:54
+#, python-format
+msgid "%(citation)s, via Our World in Data"
+msgstr "%(citation)s, via Our World in Data"
+
+#: app/templates/issues/_fact_card.html:79
 msgid "Your fact"
 msgstr "Your fact"
 
-#: app/templates/issues/_fact_card.html:34
+#: app/templates/issues/_fact_card.html:91
 msgid "more"
 msgstr "more"
 
-#: app/templates/issues/_fact_card.html:34
+#: app/templates/issues/_fact_card.html:91
 msgid "less"
 msgstr "less"
 
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:47
-#: app/templates/issues/proposal.html:72 app/templates/issues/show.html:106
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:109
 msgid "Argues for"
 msgstr "Argues for"
 
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
-#: app/templates/issues/proposal.html:72 app/templates/issues/show.html:106
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:109
 msgid "Argues against"
 msgstr "Argues against"
 
@@ -4990,7 +5030,7 @@ msgstr "Add"
 
 #: app/templates/issues/_facts_big.html:47
 #: app/templates/issues/_proposals_big.html:22
-#: app/templates/issues/index.html:39 app/templates/issues/proposal.html:79
+#: app/templates/issues/index.html:39 app/templates/issues/proposal.html:82
 #: app/templates/moderator/dashboard.html:97
 msgid "All"
 msgstr "All"
@@ -5020,7 +5060,7 @@ msgid "No facts with this direction."
 msgstr "No facts with this direction."
 
 #: app/templates/issues/_facts_big.html:77
-#: app/templates/issues/proposal.html:137 app/templates/issues/show.html:116
+#: app/templates/issues/proposal.html:140 app/templates/issues/show.html:119
 msgid "No facts yet."
 msgstr "No facts yet."
 
@@ -5033,7 +5073,7 @@ msgid "Write the statement in one sentence of at most 300 characters."
 msgstr "Write the statement in one sentence of at most 300 characters."
 
 #: app/templates/issues/_ip_fields.html:16 app/templates/issues/new.html:105
-#: app/templates/issues/proposal.html:267
+#: app/templates/issues/proposal.html:270
 #: app/templates/moderator/dashboard.html:201
 msgid "Explanation"
 msgstr "Explanation"
@@ -5215,9 +5255,9 @@ msgid "Most support"
 msgstr "Most support"
 
 #: app/templates/issues/_proposals_big.html:52
-#: app/templates/issues/proposal.html:244
-#: app/templates/issues/proposal.html:263
-#: app/templates/issues/proposal.html:328
+#: app/templates/issues/proposal.html:247
+#: app/templates/issues/proposal.html:266
+#: app/templates/issues/proposal.html:331
 #, python-format
 msgid "Version %(n)s"
 msgstr "Version %(n)s"
@@ -5227,7 +5267,7 @@ msgid "No proposals with this status."
 msgstr "No proposals with this status."
 
 #: app/templates/issues/_proposals_big.html:57
-#: app/templates/issues/show.html:183 app/templates/moderator/beheer.html:137
+#: app/templates/issues/show.html:186 app/templates/moderator/beheer.html:137
 msgid "No proposals yet."
 msgstr "No proposals yet."
 
@@ -5281,7 +5321,7 @@ msgid_plural "Adjust the proposals"
 msgstr[0] "Adjust the proposal"
 msgstr[1] "Adjust the proposals"
 
-#: app/templates/issues/_steps.html:28 app/templates/issues/proposal.html:49
+#: app/templates/issues/_steps.html:28 app/templates/issues/proposal.html:52
 msgid "Phases of the issue"
 msgstr "Phases of the issue"
 
@@ -5495,7 +5535,7 @@ msgstr "Per day the times the platform is open, in Dutch time."
 msgid "from"
 msgstr "from"
 
-#: app/templates/issues/new.html:117 app/templates/issues/show.html:68
+#: app/templates/issues/new.html:117 app/templates/issues/show.html:71
 msgid "to"
 msgstr "to"
 
@@ -5563,183 +5603,183 @@ msgstr "Add another fact"
 msgid "Start issue"
 msgstr "Start issue"
 
-#: app/templates/issues/proposal.html:32 app/templates/issues/show.html:102
-#: app/templates/issues/show.html:131 app/templates/issues/show.html:148
+#: app/templates/issues/proposal.html:35 app/templates/issues/show.html:105
+#: app/templates/issues/show.html:134 app/templates/issues/show.html:151
 msgid "Enlarge"
 msgstr "Enlarge"
 
-#: app/templates/issues/proposal.html:33 app/templates/issues/show.html:103
-#: app/templates/issues/show.html:132 app/templates/issues/show.html:149
+#: app/templates/issues/proposal.html:36 app/templates/issues/show.html:106
+#: app/templates/issues/show.html:135 app/templates/issues/show.html:152
 msgid "Reduce"
 msgstr "Reduce"
 
-#: app/templates/issues/proposal.html:40
+#: app/templates/issues/proposal.html:43
 msgid "Back to the issue"
 msgstr "Back to the issue"
 
-#: app/templates/issues/proposal.html:58 app/templates/issues/proposal.html:66
-#: app/templates/issues/proposal.html:68 app/templates/issues/show.html:93
-#: app/templates/issues/show.html:100 app/templates/issues/show.html:102
-#: app/templates/issues/show.html:103 app/templates/issues/show.html:120
+#: app/templates/issues/proposal.html:61 app/templates/issues/proposal.html:69
+#: app/templates/issues/proposal.html:71 app/templates/issues/show.html:96
+#: app/templates/issues/show.html:103 app/templates/issues/show.html:105
+#: app/templates/issues/show.html:106 app/templates/issues/show.html:123
 msgid "Facts and background"
 msgstr "Facts and background"
 
-#: app/templates/issues/proposal.html:77
+#: app/templates/issues/proposal.html:80
 msgid "Which facts"
 msgstr "Which facts"
 
-#: app/templates/issues/proposal.html:78 app/templates/issues/proposal.html:83
+#: app/templates/issues/proposal.html:81 app/templates/issues/proposal.html:86
 msgid "With this proposal"
 msgstr "With this proposal"
 
 # Herontwerp stap 5: feiten koppelen aan een voorstel
-#: app/templates/issues/proposal.html:90
+#: app/templates/issues/proposal.html:93
 msgid "Linked by"
 msgstr "Linked by"
 
-#: app/templates/issues/proposal.html:94 app/templates/issues/proposal.html:121
+#: app/templates/issues/proposal.html:97 app/templates/issues/proposal.html:124
 msgid "Unlink"
 msgstr "Unlink"
 
-#: app/templates/issues/proposal.html:101
-#: app/templates/issues/proposal.html:135
-#: app/templates/issues/proposal.html:333 app/templates/issues/show.html:120
-#: app/templates/issues/show.html:121 app/templates/issues/show.html:188
-#: app/templates/issues/show.html:189
+#: app/templates/issues/proposal.html:104
+#: app/templates/issues/proposal.html:138
+#: app/templates/issues/proposal.html:336 app/templates/issues/show.html:123
+#: app/templates/issues/show.html:124 app/templates/issues/show.html:191
+#: app/templates/issues/show.html:192
 msgid "Show more"
 msgstr "Show more"
 
-#: app/templates/issues/proposal.html:103
+#: app/templates/issues/proposal.html:106
 msgid "No facts linked yet."
 msgstr "No facts linked yet."
 
-#: app/templates/issues/proposal.html:108
+#: app/templates/issues/proposal.html:111
 msgid "All facts"
 msgstr "All facts"
 
-#: app/templates/issues/proposal.html:117
+#: app/templates/issues/proposal.html:120
 msgid "Linked"
 msgstr "Linked"
 
-#: app/templates/issues/proposal.html:127
-#: app/templates/issues/proposal.html:149
+#: app/templates/issues/proposal.html:130
+#: app/templates/issues/proposal.html:152
 msgid "Link"
 msgstr "Link"
 
-#: app/templates/issues/proposal.html:143
+#: app/templates/issues/proposal.html:146
 msgid "Link facts"
 msgstr "Link facts"
 
-#: app/templates/issues/proposal.html:144
+#: app/templates/issues/proposal.html:147
 msgid "Anyone can link facts, also facts that argue against the proposal. The direction stays visible."
 msgstr "Anyone can link facts, also facts that argue against the proposal. The direction stays visible."
 
-#: app/templates/issues/proposal.html:152
+#: app/templates/issues/proposal.html:155
 msgid "There are no other facts in this issue to link."
 msgstr "There are no other facts in this issue to link."
 
-#: app/templates/issues/proposal.html:157
+#: app/templates/issues/proposal.html:160
 msgid "Or add a new fact"
 msgstr "Or add a new fact"
 
-#: app/templates/issues/proposal.html:160
+#: app/templates/issues/proposal.html:163
 msgid "Add and link"
 msgstr "Add and link"
 
-#: app/templates/issues/proposal.html:182
+#: app/templates/issues/proposal.html:185
 msgid "This proposal is hidden. Only moderators can still see it."
 msgstr "This proposal is hidden. Only moderators can still see it."
 
-#: app/templates/issues/proposal.html:183
+#: app/templates/issues/proposal.html:186
 msgid "Manage issue"
 msgstr "Manage issue"
 
-#: app/templates/issues/proposal.html:188
-#: app/templates/issues/proposal.html:204
+#: app/templates/issues/proposal.html:191
+#: app/templates/issues/proposal.html:207
 msgid "Adjust proposal"
 msgstr "Adjust proposal"
 
-#: app/templates/issues/proposal.html:193
+#: app/templates/issues/proposal.html:196
 #: app/templates/moderator/dashboard.html:201
 #: app/templates/moderator/gebruiker.html:96
 msgid "by"
 msgstr "by"
 
-#: app/templates/issues/proposal.html:197
+#: app/templates/issues/proposal.html:200
 #, python-format
 msgid "%(num)d supporter"
 msgid_plural "%(num)d supporters"
 msgstr[0] "%(num)d supporter"
 msgstr[1] "%(num)d supporters"
 
-#: app/templates/issues/proposal.html:208
+#: app/templates/issues/proposal.html:211
 msgid "Change the statement or the explanation."
 msgstr "Change the statement or the explanation."
 
-#: app/templates/issues/proposal.html:209
+#: app/templates/issues/proposal.html:212
 msgid "Each revision becomes a new version. Earlier versions stay visible."
 msgstr "Each revision becomes a new version. Earlier versions stay visible."
 
-#: app/templates/issues/proposal.html:211
+#: app/templates/issues/proposal.html:214
 msgid "Save the revision"
 msgstr "Save the revision"
 
-#: app/templates/issues/proposal.html:238
+#: app/templates/issues/proposal.html:241
 msgid "Earlier versions"
 msgstr "Earlier versions"
 
-#: app/templates/issues/proposal.html:248
+#: app/templates/issues/proposal.html:251
 msgid "Reactions"
 msgstr "Reactions"
 
-#: app/templates/issues/proposal.html:248
+#: app/templates/issues/proposal.html:251
 msgid "reactions"
 msgstr "reactions"
 
-#: app/templates/issues/proposal.html:253
+#: app/templates/issues/proposal.html:256
 #, python-format
 msgid "Reactions to version %(number)s"
 msgstr "Reactions to version %(number)s"
 
-#: app/templates/issues/proposal.html:255
+#: app/templates/issues/proposal.html:258
 msgid "No reactions to this version."
 msgstr "No reactions to this version."
 
-#: app/templates/issues/proposal.html:263
+#: app/templates/issues/proposal.html:266
 msgid "Current version"
 msgstr "Current version"
 
-#: app/templates/issues/proposal.html:271
+#: app/templates/issues/proposal.html:274
 msgid "No explanation."
 msgstr "No explanation."
 
-#: app/templates/issues/proposal.html:282
+#: app/templates/issues/proposal.html:285
 #, python-format
 msgid "Reactions to version %(current_version)s"
 msgstr "Reactions to version %(current_version)s"
 
-#: app/templates/issues/proposal.html:288
+#: app/templates/issues/proposal.html:291
 #, python-format
 msgid "Your reaction to version %(n)s"
 msgstr "Your reaction to version %(n)s"
 
-#: app/templates/issues/proposal.html:289
+#: app/templates/issues/proposal.html:292
 msgid "Write a reaction…"
 msgstr "Write a reaction…"
 
-#: app/templates/issues/proposal.html:298
+#: app/templates/issues/proposal.html:301
 msgid "No reactions to this version yet."
 msgstr "No reactions to this version yet."
 
-#: app/templates/issues/proposal.html:306
+#: app/templates/issues/proposal.html:309
 msgid "Withdraw proposal"
 msgstr "Withdraw proposal"
 
-#: app/templates/issues/proposal.html:307
+#: app/templates/issues/proposal.html:310
 msgid "You can withdraw your own proposal as long as nobody has reacted yet."
 msgstr "You can withdraw your own proposal as long as nobody has reacted yet."
 
-#: app/templates/issues/proposal.html:319 app/templates/issues/show.html:147
+#: app/templates/issues/proposal.html:322 app/templates/issues/show.html:150
 msgid "New proposal"
 msgstr "New proposal"
 
@@ -5779,74 +5819,74 @@ msgid "New proposals can only be made during the facts phase. After that the vot
 msgstr "New proposals can only be made during the facts phase. After that the voting list is fixed."
 
 # Polijstronde P3: cockpit
-#: app/templates/issues/show.html:31 app/templates/issues/show.html:32
+#: app/templates/issues/show.html:34 app/templates/issues/show.html:35
 msgid "Following"
 msgstr "Following"
 
-#: app/templates/issues/show.html:31 app/templates/issues/show.html:32
+#: app/templates/issues/show.html:34 app/templates/issues/show.html:35
 msgid "Follow"
 msgstr "Follow"
 
-#: app/templates/issues/show.html:32
+#: app/templates/issues/show.html:35
 msgid "Followers get the updates of this issue in their daily summary."
 msgstr "Followers get the updates of this issue in their daily summary."
 
-#: app/templates/issues/show.html:40 app/templates/moderator/beheer.html:35
+#: app/templates/issues/show.html:43 app/templates/moderator/beheer.html:35
 msgid "Archived"
 msgstr "Archived"
 
-#: app/templates/issues/show.html:41
+#: app/templates/issues/show.html:44
 msgid "This issue is archived: it is closed and no longer listed publicly."
 msgstr "This issue is archived: it is closed and no longer listed publicly."
 
-#: app/templates/issues/show.html:45 app/templates/moderator/beheer.html:63
+#: app/templates/issues/show.html:48 app/templates/moderator/beheer.html:63
 msgid "Restore from archive"
 msgstr "Restore from archive"
 
-#: app/templates/issues/show.html:54
+#: app/templates/issues/show.html:57
 msgid "Show or hide the introduction"
 msgstr "Show or hide the introduction"
 
-#: app/templates/issues/show.html:59
+#: app/templates/issues/show.html:62
 msgid "No introduction yet."
 msgstr "No introduction yet."
 
-#: app/templates/issues/show.html:71
+#: app/templates/issues/show.html:74
 msgid "Online contributions are open between the first and the last day."
 msgstr "Online contributions are open between the first and the last day."
 
-#: app/templates/issues/show.html:81
+#: app/templates/issues/show.html:84
 #, python-format
 msgid "The platform opens for contributions on %(date)s."
 msgstr "The platform opens for contributions on %(date)s."
 
-#: app/templates/issues/show.html:81
+#: app/templates/issues/show.html:84
 msgid "The platform is not open for contributions right now. See the days of the event in the introduction."
 msgstr "The platform is not open for contributions right now. See the days of the event in the introduction."
 
-#: app/templates/issues/show.html:94 app/templates/issues/show.html:130
-#: app/templates/issues/show.html:131 app/templates/issues/show.html:132
+#: app/templates/issues/show.html:97 app/templates/issues/show.html:133
+#: app/templates/issues/show.html:134 app/templates/issues/show.html:135
 msgid "Discussion"
 msgstr "Discussion"
 
-#: app/templates/issues/show.html:137
+#: app/templates/issues/show.html:140
 msgid "This issue has no discussion yet."
 msgstr "This issue has no discussion yet."
 
-#: app/templates/issues/show.html:201
+#: app/templates/issues/show.html:204
 msgid "Your right to vote"
 msgstr "Your right to vote"
 
-#: app/templates/issues/show.html:208
+#: app/templates/issues/show.html:211
 #, python-format
 msgid "%(count)s of %(needed)s quality marks for the right to vote"
 msgstr "%(count)s of %(needed)s quality marks for the right to vote"
 
-#: app/templates/issues/show.html:211
+#: app/templates/issues/show.html:214
 msgid "You earn a quality mark with a well argued contribution to a discussion."
 msgstr "You earn a quality mark with a well argued contribution to a discussion."
 
-#: app/templates/issues/show.html:214
+#: app/templates/issues/show.html:217
 msgid "to see your right to vote."
 msgstr "to see your right to vote."
 
@@ -6042,7 +6082,7 @@ msgid "Visible"
 msgstr "Visible"
 
 #: app/templates/moderator/beheer.html:108
-#: app/templates/moderator/beheer.html:182
+#: app/templates/moderator/beheer.html:183
 msgid "deleted account"
 msgstr "deleted account"
 
@@ -6128,31 +6168,31 @@ msgstr "A senior moderator may delete all proposals. An admin may do everything.
 msgid "Log"
 msgstr "Log"
 
-#: app/templates/moderator/beheer.html:182
+#: app/templates/moderator/beheer.html:183
 msgid "You"
 msgstr "You"
 
-#: app/templates/moderator/beheer.html:187
+#: app/templates/moderator/beheer.html:188
 #, python-format
 msgid "hid \"%(snap)s\""
 msgstr "hid \"%(snap)s\""
 
-#: app/templates/moderator/beheer.html:188
+#: app/templates/moderator/beheer.html:189
 #, python-format
 msgid "made \"%(snap)s\" visible again"
 msgstr "made \"%(snap)s\" visible again"
 
-#: app/templates/moderator/beheer.html:189
+#: app/templates/moderator/beheer.html:190
 #, python-format
 msgid "deleted \"%(snap)s\""
 msgstr "deleted \"%(snap)s\""
 
-#: app/templates/moderator/beheer.html:190
+#: app/templates/moderator/beheer.html:191
 #, python-format
 msgid "deleted the issue \"%(snap)s\""
 msgstr "deleted the issue \"%(snap)s\""
 
-#: app/templates/moderator/beheer.html:194
+#: app/templates/moderator/beheer.html:195
 msgid "Nothing hidden or deleted yet."
 msgstr "Nothing hidden or deleted yet."
 

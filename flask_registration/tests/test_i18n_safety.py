@@ -249,6 +249,7 @@ def test_every_extracted_msgid_is_in_the_catalog(lang):
 # NL translations identical to their msgid, on purpose. Anything else that
 # stays identical is a Dutch msgid or an untranslated English text.
 SAME_IN_DUTCH = {
+    '%(citation)s, via Our World in Data': 'bronvermelding, via is ook Nederlands',
     'Freedom for all': 'slogan, niet vertalen',
     'Dashboard': 'leenwoord', 'Privacy': 'leenwoord', 'Cookies': 'leenwoord', 'Spam': 'leenwoord',
     'Respect': 'leenwoord', 'Media': 'leenwoord', 'Podcast': 'leenwoord', 'Video': 'leenwoord',
@@ -301,6 +302,7 @@ SAME_IN_SPANISH = {
 # French translations identical to their msgid, on purpose (phase 1, see
 # docs/i18n/glossary_fr.md).
 SAME_IN_FRENCH = {
+    '%(citation)s, via Our World in Data': 'mention de la source, via est aussi français',
     'Freedom for all': 'slogan, non traduit',
     'Spam': 'emprunt', 'Cookies': 'emprunt', 'Podcast': 'emprunt',
     'Respect': 'identique en français', 'Forum · conversation': 'identique en français',

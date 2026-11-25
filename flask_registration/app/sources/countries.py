@@ -47,3 +47,19 @@ def _our_rows():
 def english_name(iso2):
     """The English name of one of our countries, as our list writes it."""
     return (_our_rows().get(iso2) or {}).get('en')
+
+
+def display_name(iso2, lang):
+    """The name of one of our countries in `lang`: our own list first (every
+    country in nl and en, the sensitive areas in every enabled language),
+    else Babel's territory name, else English."""
+    names = _our_rows().get(iso2) or {}
+    own = names.get(lang)
+    if own:
+        return own
+    try:
+        from babel import Locale
+        babel_name = Locale.parse(lang).territories.get(iso2)
+    except Exception:   # an unknown locale: fall back
+        babel_name = None
+    return babel_name or names.get('en') or iso2

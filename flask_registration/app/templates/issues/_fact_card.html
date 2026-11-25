@@ -13,7 +13,64 @@
   fact_my_disputed, fact_phase_open, fact_removed_ids, fact_errors, fact_data,
   fact_back (this page, enlarged), optional fact_return_proposal.
 #}
-{% from '_mt.html' import mt_fact with context %}
+{% from '_mt.html' import mt, mt_fact with context %}
+{%- set chart_card = (chart_views or {}).get(fact.id) if fact.fact_type == 'cijfer' else none %}
+{% if chart_card %}
+{#- Background figures (docs/achtergrondcijfers.md, docs/design/achtergrondcijfers-kolom.html):
+    a chart the AI chose from a source. Neutral, no author, nobody edits it; a
+    moderator removes it. The reason shows on the chart page (step 1f). Context
+    extra: chart_views ({post_id: background_figures.ChartCard}). -#}
+{% from 'charts/_chart.html' import chart_small %}
+<div class="gu-fact__topline gu-fact__topline--chart">
+  <span class="gu-fact__dir gu-fact__dir--neutraal">{{ dir_labels.get('neutraal', '') }}</span>
+  <span class="gu-aisel" data-ai-tip>
+    <button type="button" class="gu-aisel__btn" aria-expanded="false" aria-describedby="aisel-{{ fact.id }}">{{ _('AI selection') }}</button>
+    <span class="gu-aisel__tip" role="tooltip" id="aisel-{{ fact.id }}">{{ _('Selected by AI from %(source)s on %(date)s. The figures come straight from the source.', source='Our World in Data', date=chart_card.date) }}</span>
+  </span>
+  {% include 'issues/_fact_badges.html' %}
+</div>
+<div class="gu-fact__main gu-chartcard">
+  {{ mt(fact, 'fact_title', el='p', cls='gu-fact__title') }}
+  <p class="gu-chartcard__sub">
+    {%- if chart_card.average -%}
+    {{ ngettext('%(start)s to %(end)s · %(num)d country and %(average)s', '%(start)s to %(end)s · %(num)d countries and %(average)s', chart_card.countries | length, start=chart_card.start, end=chart_card.end, average=chart_card.average) }}
+    {%- else -%}
+    {{ ngettext('%(start)s to %(end)s · %(num)d country', '%(start)s to %(end)s · %(num)d countries', chart_card.countries | length, start=chart_card.start, end=chart_card.end) }}
+    {%- endif -%}
+  </p>
+  {% set chart_title = content_i18n.display(fact, 'fact_title', lang) %}
+  {% if chart_card.average %}
+  {% set chart_label = _('Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s, with %(average)s.', title=chart_title, start=chart_card.start, end=chart_card.end, countries=chart_card.countries_text, average=chart_card.average) %}
+  {% else %}
+  {% set chart_label = _('Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s.', title=chart_title, start=chart_card.start, end=chart_card.end, countries=chart_card.countries_text) %}
+  {% endif %}
+  {{ chart_small(chart_card.view, chart_label) }}
+  <ul class="gu-chart-legend">
+    {%- for item in chart_card.view.legend %}
+    <li><span class="gu-chart-swatch{% if item.dashed %} gu-chart-swatch--average{% endif %}" style="--c:{{ item.color }}"></span><span class="gu-chart-legend__name">{{ item.name }}</span><b class="gu-chart-legend__value">{{ item.value }}</b></li>
+    {%- endfor %}
+  </ul>
+  {% if chart_card.citation %}
+  <p class="gu-chartcard__src">{{ _('Source') }}: <a href="{{ chart_card.source_url }}" target="_blank" rel="noopener noreferrer">{{ _('%(citation)s, via Our World in Data', citation=chart_card.citation) }}</a></p>
+  {% endif %}
+</div>
+{% if with_actions %}
+<div class="gu-fact__actions">
+  {% with signal_next=fact_back ~ '#post-' ~ fact.id %}{% include 'forum/_fact_signals.html' %}{% endwith %}
+  {% if current_user.is_authenticated and current_user.can_moderate() %}
+  <div class="gu-fact__own">
+    <form method="POST" action="{{ url_for('forum.chart_delete', post_id=fact.id) }}" class="gu-fact__delete">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <input type="hidden" name="return_to" value="{{ issue.id }}">
+      <input type="hidden" name="in_page" value="1">
+      {% if fact_return_proposal %}<input type="hidden" name="return_proposal" value="{{ fact_return_proposal }}">{% endif %}
+      <button type="submit" class="gu-fact__action gu-fact__action--danger"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>{{ _('Delete') }}</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+{% else -%}
 {% set own_actions = with_actions and current_user.is_authenticated and fact.user_id == current_user.id
                      and fact_phase_open and fact.id not in (fact_removed_ids or ()) %}
 <div class="gu-fact__topline">
@@ -63,4 +120,4 @@
   </div>
   {% endif %}
 </div>
-{% endif %}
+{% endif %}{% endif %}

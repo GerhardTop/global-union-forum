@@ -69,3 +69,4 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 | think tank | denktank | laboratoire d'idées | De aanbevolen Franse term (FranceTerme). |
 | moderation | moderatie | modération | Zelfde woord. |
 | Global Union, Global Union Forum, Freedom for all | (niet vertaald) | (niet vertaald) | Merknamen en slogan. |
+| AI selection | AI-selectie | Sélection par IA | Het label op een achtergrondcijfer dat de AI uit een open bron koos; IA is de gewone Franse afkorting. |

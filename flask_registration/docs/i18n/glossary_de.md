@@ -62,3 +62,4 @@ De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` 
 | think tank | denktank | Denkfabrik | Gangbaar Duits woord. |
 | moderation | moderatie | Moderation | Zelfde woord. |
 | Global Union, Global Union Forum, Freedom for all | (niet vertaald) | (niet vertaald) | Merknamen en slogan. |
+| AI selection | AI-selectie | KI-Auswahl | Het label op een achtergrondcijfer dat de AI uit een open bron koos. Duits gebruikt KI, niet AI. |

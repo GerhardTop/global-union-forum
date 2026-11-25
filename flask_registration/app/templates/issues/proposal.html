@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ content_i18n.display(proposal, 'statement', lang) }} · Global Union{% endblock %}
+{# Background figures: the chart cards in the facts (static/css/charts.css). #}
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ static_v('css/charts.css') }}">{% endblock %}
 
 {#
   The proposal screen, built to docs/design/voorstel.html. Same shell as the

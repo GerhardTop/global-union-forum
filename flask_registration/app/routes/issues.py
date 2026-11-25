@@ -179,6 +179,9 @@ def show(issue_id):
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in proposal_rows])
     big = _enlarged_proposals(issue, {p.id: ip.current_version(p) for p, _c in proposal_rows})
     _preload_translations(issue)
+    # Background figures: the chart cards of the facts, in a fixed number of queries.
+    from app import background_figures
+    chart_views = background_figures.chart_cards(visible, i18n.current())
     # The enlarged facts column (add form, card actions) overrides the
     # discussion's fact context: same facts, plus the edit state.
     discussion.update(_fact_box(issue, visible))
@@ -198,7 +201,7 @@ def show(issue_id):
                            can_add_followup=lifecycle.can_add_followup(issue, current_user),
                            following=lifecycle.is_following(issue, current_user),
                            can_add_fact=_can_add_fact(issue), open_now=issues.is_open_now(issue),
-                           return_to=issue.id,
+                           return_to=issue.id, chart_views=chart_views,
                            my_reported_proposal_ids=my_reported_proposal_ids, **discussion)
 
 
@@ -383,7 +386,10 @@ def proposal(issue_id, proposal_id):
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in rail_proposals])
     rail_versions = {p.id: ip.current_version(p) for p, _c in rail_proposals}
     _preload_translations(issue, proposal)  # after the last commit (a commit empties the cache)
+    from app import background_figures
+    chart_views = background_figures.chart_cards(issue_facts, i18n.current())
     return render_template('issues/proposal.html', issue=issue, proposal=proposal, count=count,
+                           chart_views=chart_views,
                            auto_translate=_auto_translate(),
                            supported=supported, can_support=ip.can_support(proposal, current_user, count, supported),
                            can_revise=ip.can_revise(proposal, current_user), errors=errors, form_data=data,

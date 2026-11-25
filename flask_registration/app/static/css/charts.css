@@ -206,3 +206,56 @@
   text-align: end;
   font-variant-numeric: tabular-nums;
 }
+
+/* Step 1e: the chart card in the facts column (docs/design/achtergrondcijfers-kolom.html). */
+.gu-fact__topline--chart .gu-fact__badges { margin-inline-start: auto; }
+.gu-fact__topline--chart .gu-fact__dir--neutraal { background: #ececee; color: #4b4f58; }
+
+/* "AI selection": a real button; the explanation on hover, focus and tap
+   (static/js/cockpit.js toggles .is-open; Escape closes). */
+.gu-aisel { position: relative; display: inline-flex; }
+.gu-aisel__btn {
+  display: inline-flex;
+  padding: 2px 10px;
+  border: 1px solid #c5dcf4;
+  border-radius: 999px;
+  background: #eaf2fb;
+  color: #1b5e9a;
+  font: 600 12px/1.4 var(--gu-font-sans, 'Inter', system-ui, sans-serif);
+  cursor: help;
+}
+.gu-aisel__btn:focus-visible { outline: 2px solid #1b74b8; outline-offset: 2px; }
+.gu-aisel__tip {
+  position: absolute;
+  z-index: 20;
+  inset-inline-start: 0;
+  top: calc(100% + 6px);
+  display: none;
+  inline-size: 240px;
+  max-inline-size: calc(100vw - 64px);
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #141b22;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: start;
+}
+.gu-aisel:hover .gu-aisel__tip,
+.gu-aisel:focus-within .gu-aisel__tip,
+.gu-aisel.is-open .gu-aisel__tip { display: block; }
+.gu-aisel.is-closed .gu-aisel__tip { display: none; }
+
+.gu-chartcard { display: flex; flex-direction: column; gap: 8px; }
+.gu-chartcard .gu-fact__title { margin: 0; }
+.gu-chartcard__sub { margin: 0; font-size: 12px; color: #6c7683; }
+.gu-chartcard__src { margin: 2px 0 0; font-size: 12px; color: #6c7683; line-height: 1.45; }
+/* Two columns as in the design when they fit (names whole); else one. */
+.gu-chartcard .gu-chart-legend { grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); }
+.gu-chartcard .gu-chart-legend__name { min-inline-size: 0; overflow-wrap: anywhere; }
+.gu-fact__topline--chart { inline-size: 100%; }
+.gu-chartcard__src a { color: #1b74b8; text-decoration: none; }
+.gu-chartcard__src a:hover,
+.gu-chartcard__src a:focus-visible { text-decoration: underline; }

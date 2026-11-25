@@ -52,6 +52,8 @@ _SOURCE_ATTR = {
     'issue_proposal_versions': lambda version: version.proposal.lang if version.proposal else None,
     'issue_followups': 'lang',
     'fact_disputes': 'lang',                # the note, translated on request
+    # Background figures: the name of an average comes from the source in English.
+    'fact_charts': lambda chart: 'en',
 }
 
 

@@ -1063,7 +1063,7 @@ class IssueProposalVersion(db.Model):
                                                                    cascade='all, delete-orphan'))
 
 
-MODERATION_ACTIONS = ('hide', 'unhide', 'delete_proposal', 'delete_issue')
+MODERATION_ACTIONS = ('hide', 'unhide', 'delete_proposal', 'delete_issue', 'delete_chart')
 
 
 class ModerationAction(db.Model):
@@ -1459,6 +1459,9 @@ class FactChart(db.Model):
     column_name = db.Column(db.String(300), nullable=False)    # the data column in the CSV
     entities    = db.Column(db.Text, nullable=True)            # JSON list of entity keys
     average_key = db.Column(db.String(120), nullable=True)     # as the source supplies it, or none
+    # Step 1e: the name of that average as the source writes it (English, e.g.
+    # "European Union (27)"); translated through content_i18n like a fact.
+    average_name = db.Column(db.String(200), nullable=True)
     year_from   = db.Column(db.Integer, nullable=False)
     year_to     = db.Column(db.Integer, nullable=False)
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)

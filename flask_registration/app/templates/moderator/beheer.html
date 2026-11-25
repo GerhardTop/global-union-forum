@@ -176,7 +176,8 @@
           <h2 class="gu-eyebrow" id="mgmtLog">{{ _('Log') }}</h2>
           <div class="gu-mgmt__log">
             {% set log_icons = {'hide': (i_eyeoff, 'gu-mgmt__logico--hide'), 'unhide': (i_eye, 'gu-mgmt__logico--show'),
-                                'delete_proposal': (i_bin, 'gu-mgmt__logico--del'), 'delete_issue': (i_bin, 'gu-mgmt__logico--del')} %}
+                                'delete_proposal': (i_bin, 'gu-mgmt__logico--del'), 'delete_issue': (i_bin, 'gu-mgmt__logico--del'),
+                                'delete_chart': (i_bin, 'gu-mgmt__logico--del')} %}
             {% for a in log %}
             {% set actor = people.get(a.actor_id) %}
             {% set who = (_('You')) if a.actor_id == current_user.id else (actor.public_name if actor and not actor.is_deleted else (_('deleted account'))) %}
@@ -186,7 +187,7 @@
               <div><b>{{ who }}</b>
                 {% if a.action == 'hide' %}{% trans snap=snap %}hid "{{ snap }}"{% endtrans %}
                 {% elif a.action == 'unhide' %}{% trans snap=snap %}made "{{ snap }}" visible again{% endtrans %}
-                {% elif a.action == 'delete_proposal' %}{% trans snap=snap %}deleted "{{ snap }}"{% endtrans %}
+                {% elif a.action in ('delete_proposal', 'delete_chart') %}{% trans snap=snap %}deleted "{{ snap }}"{% endtrans %}
                 {% else %}{% trans snap=snap %}deleted the issue "{{ snap }}"{% endtrans %}{% endif %}
                 <span class="gu-mgmt__logtime">{{ ago(a.created_at) }}</span></div>
             </div>

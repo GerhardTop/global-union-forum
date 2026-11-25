@@ -103,6 +103,12 @@ def _parts(obj):
     thread = getattr(obj, 'thread', None) if content_i18n.object_type(obj) == 'issues' else None
     if thread is not None and thread.title_prefix == obj.title and not thread.title_accent:
         parts.append((thread, 'title_prefix'))
+    # Background figures: the name of a chart's average goes with its fact
+    # (counted with the facts on /admin/vertalingen).
+    if content_i18n.object_type(obj) == 'posts' and obj.fact_type == 'cijfer':
+        chart = obj.chart
+        if chart is not None and chart.average_name:
+            parts.append((chart, 'average_name'))
     return parts
 
 

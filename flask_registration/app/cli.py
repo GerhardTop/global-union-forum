@@ -34,6 +34,7 @@ def register_cli(app):
     app.cli.add_command(seed_demo_voorbeeld)
     app.cli.add_command(remove_issue)
     app.cli.add_command(background_figures_trial)
+    app.cli.add_command(background_figures_example)
 
 
 @click.command('seed-demo-issues')
@@ -305,3 +306,44 @@ def background_figures_trial(issue_id):
     if outcome.none_reason:
         click.echo(f'\nNone reason: {outcome.none_reason}')
     click.echo(f'\nStatus it would get: {outcome.status}. Nothing was saved.')
+
+
+@click.command('achtergrondcijfers-voorbeeld')
+@click.argument('issue_id', type=int)
+def background_figures_example(issue_id):
+    """Background figures (step 1e): put one chart fact on an issue from the
+    fixture in tests/data/owid/ (military spending as a share of GDP), without
+    the AI and without the network, to see the card locally. Only with
+    BACKGROUND_FIGURES=1. Remove it again as a moderator, or with remove-issue."""
+    import os
+    from flask import current_app
+    from app import background_figures, db
+    from app.models import Issue, IssueProposal
+    from app.sources import owid
+    if not current_app.config.get('BACKGROUND_FIGURES'):
+        raise click.ClickException('Set BACKGROUND_FIGURES=1 first.')
+    issue = db.session.get(Issue, issue_id)
+    if issue is None or issue.thread_id is None:
+        raise click.ClickException(f'No issue {issue_id} with a conversation.')
+    folder = os.path.join(os.path.dirname(current_app.root_path), 'tests', 'data', 'owid')
+    slug = 'military-spending-as-a-share-of-gdp-sipri'
+    with open(os.path.join(folder, f'{slug}.csv'), encoding='utf-8') as f:
+        csv_text = f.read()
+    with open(os.path.join(folder, f'{slug}.metadata.json'), encoding='utf-8') as f:
+        metadata = __import__('json').load(f)
+    parsed = owid.parse(csv_text, metadata, slug=slug)
+    # An average, as some OWID charts supply one: the fixture has none, so the
+    # example borrows the series of Spain under the key of the EU (example only).
+    parsed.series['OWID_EU27'] = dict(parsed.series['ESP'])
+    parsed.names['OWID_EU27'] = 'European Union (27)'
+    proposals = IssueProposal.query.filter_by(issue_id=issue.id, is_final=False).order_by(IssueProposal.id).all()
+    item = background_figures.Accepted(
+        slug=slug, parsed=parsed, metadata=metadata, keys=['POL', 'FRA', 'DEU', 'NLD'], average_key='OWID_EU27',
+        year_from=2016, year_to=2025, proposal_ids=[p.id for p in proposals[:2]],
+        reason='The chart shows how much each country spends on its armed forces compared with the size of '
+               'its economy, which helps to see how far apart European countries are.')
+    ctx = background_figures.Context(issue=issue)
+    outcome = background_figures.Outcome(status='done', accepted=[item])
+    background_figures.publish(ctx, outcome)
+    db.session.commit()
+    click.echo(f'Chart fact added to issue {issue.id} (example data; the average is made up for the example).')

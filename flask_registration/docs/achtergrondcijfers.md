@@ -39,7 +39,7 @@ Opmaak is geen keuze van de AI maar een vaste regel in de app, zodat elke grafie
 ## Standaardprompt (keuzes, niet opmaak)
 Eén vaste prompt in de code, met het vraagstuk (titel, inleiding, de voorstellen), de al gekozen grafieken, en een lijst kandidaat-indicatoren uit de zoekfunctie van de bron. De AI geeft gestructureerde uitvoer (JSON), die de app controleert voordat iets getoond wordt. Prompt en model worden per aanroep bewaard (zoals QualityAward.prompt_text).
 Regels in de prompt:
-1. Liever één grafiek per vraagstuk; hoogstens vier in totaal, alleen als dat nuttig is. Geen nieuwe als die weinig toevoegt; geen geschikte, zeg dat.
+1. Liever één grafiek per vraagstuk; hoogstens vier in totaal, alleen als dat nuttig is. Geen nieuwe als die weinig toevoegt; geen geschikte, zeg dat. Een tweede grafiek alleen als die een ander aspect laat zien dat de eerste niet dekt, en noem dat aspect in de reden.
 2. Alleen indicatoren uit de meegegeven lijst (de app controleert dat de slug bestaat).
 3. Evenwicht: samen relevant voor meerdere voorstellen of kanten; per indicator noemen voor welke voorstellen. Voorbeeld (Europese defensie, voorstellen over een EU-leger, de NAVO-norm, en diplomatie en ontwikkelingshulp): niet alleen defensie-uitgaven (het kader van de NAVO-norm), maar ook steun voor gezamenlijk defensiebeleid en ontwikkelingshulp.
 4. Landen:
@@ -48,9 +48,9 @@ Regels in de prompt:
    c. landen nooit kiezen om een standpunt te ondersteunen, geen uitschieters zoeken.
 5. Gemiddelde: alleen een gemiddelde of totaal dat in de data van de bron staat (bijvoorbeeld EU-27, wereld). Een gemiddelde dat OWID zelf berekende telt als van de bron (de bron is daarvoor verantwoordelijk); de herkomst staat bij "Over deze cijfers". Is er geen, dan geen gemiddelde; de app rekent nooit zelf uit een selectie landen.
 6. Periode: de laatste tien jaar, tenzij een langere periode nodig is om het punt te zien; een afwijking uitleggen in de reden.
-7. Reden: één of twee zinnen in gewone taal, zonder oordeel over welk voorstel beter is.
+7. Reden: één of twee zinnen in gewone taal over wat de grafiek laat zien en welke vraag over het vraagstuk hij helpt beantwoorden. Herhaal of parafraseer geen standpunten of formuleringen van een voorstel, en suggereer niet welk voorstel beter is.
 Uitvoer per indicator: bron, slug, landen, gemiddelde (of geen), periode, reden, relevant voor (voorstellen). Bij een nieuw voorstel ook: welke bestaande grafieken aan dat voorstel gekoppeld worden.
-De app controleert: slug bestaat, landen en gemiddelde staan in de data, periode heeft data, niet eerder verwijderd, niet meer dan vier in totaal. Faalt iets, dan valt de indicator af; niets repareren of raden.
+De app controleert: slug bestaat, landen en gemiddelde staan in de data, periode heeft data, het laatste jaar met data is hoogstens vijf jaar oud, niet eerder verwijderd, niet meer dan vier in totaal. Faalt iets, dan valt de indicator af; niets repareren of raden.
 
 ## Koppelen aan voorstellen
 - De AI koppelt automatisch ("relevant voor"), als IssueProposalFact zonder linked_by. De voorsteller (en een moderator) kan ontkoppelen met de bestaande knop op de voorstelpagina; daar staat bij zo'n koppeling "Gekoppeld door AI" (nu staat bij een koppeling zonder persoon "@deleted_user"). issue_proposals.can_unlink moet daarvoor ook de voorsteller toelaten bij een koppeling zonder persoon.

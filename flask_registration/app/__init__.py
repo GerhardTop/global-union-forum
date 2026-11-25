@@ -362,6 +362,9 @@ _POLISH_COLUMNS = {
                         ('hidden_by_id', 'INTEGER NULL REFERENCES users(id)')),
     # Delete rights step 2: the issue of a logged action (for the manage screen).
     'moderation_actions': (('issue_id', 'INTEGER NULL'),),
+    # Background figures step 1e: the name of the average as the source writes
+    # it (English), translated with the fact (the table came in step 1b).
+    'fact_charts': (('average_name', 'VARCHAR(200) NULL'),),
 }
 
 

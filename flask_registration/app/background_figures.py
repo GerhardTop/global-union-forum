@@ -45,6 +45,7 @@ MAX_CANDIDATES = 40
 MAX_COUNTRIES = 4
 DEFAULT_YEARS = 10
 MAX_ATTEMPTS = 3
+MAX_DATA_AGE_YEARS = 5      # the last year with data at most this many years before now
 PENDING_AFTER = timedelta(minutes=10)
 SEARCH_HITS = 20
 
@@ -192,7 +193,9 @@ _SELECTION_SYSTEM = (
     "World in Data (OWID) and the platform draws the charts itself. You never write a number.\n\n"
     "Rules:\n"
     "1. Prefer one chart per issue; at most four in total (the existing ones count), and only when "
-    "each is useful. Do not add a chart that adds little. If no candidate fits, say so in none_reason.\n"
+    "each is useful. Do not add a chart that adds little. If no candidate fits, say so in none_reason. "
+    "Prefer one chart. Add a second only if it covers a different aspect that the first does not, and "
+    "say which aspect in its reason.\n"
     "2. Only charts from the candidate list (by slug).\n"
     "3. Balance: together the charts are relevant to several proposals or sides of the issue, not "
     "only to one. For each chart, say for which proposals it is relevant. Example (European defence, "
@@ -208,8 +211,9 @@ _SELECTION_SYSTEM = (
     "compute one.\n"
     "6. Period: the last ten years (years: 10), unless a longer period is needed to see the point; "
     "explain a longer period in the reason.\n"
-    "7. Reason: one or two sentences in plain English about what the chart shows and why it helps "
-    "here, without any judgement about which proposal is better.\n\n"
+    "7. Reason: one or two sentences in plain English that say what the chart shows and which question "
+    "about the issue it helps to answer. Do not repeat or paraphrase the positions or wording of any "
+    "proposal, and do not suggest which proposal is better.\n\n"
     "Answer with JSON only, in this form:\n"
     '{"charts": [{"slug": "...", "countries": ["..."], "average": "..." or null, "years": 10, '
     '"reason": "...", "relevant_for": [proposal ids]}], '
@@ -384,7 +388,7 @@ def _int_list(values):
     return out
 
 
-def check_chart(item, ctx, candidates, http, notes):
+def check_chart(item, ctx, candidates, http, notes, now=None):
     """An Accepted chart, or None (with the reason in notes). Nothing is
     repaired or guessed: a country that fails falls away; an average that
     fails means no average."""
@@ -419,6 +423,9 @@ def check_chart(item, ctx, candidates, http, notes):
     except (TypeError, ValueError):
         years = DEFAULT_YEARS
     year_to = max(max(parsed.series[k]) for k in keys)
+    if (now or datetime.utcnow()).year - year_to > MAX_DATA_AGE_YEARS:
+        notes.append(f'{slug}: stale (the last data is from {year_to})')
+        return None
     year_from = year_to - years + 1
     kept = [k for k in keys if owid.has_values(parsed, k, year_from, year_to)]
     for key in keys:
@@ -474,6 +481,85 @@ def check_links(answer, ctx, notes):
                 continue
             elif (post_id, pid) not in out:
                 out.append((post_id, pid))
+    return out
+
+
+# ── Showing the charts (step 1e) ─────────────────────────────────────────
+
+def charts_for(posts):
+    """{post_id: (FactChart, current ChartSnapshot)} for the chart facts among
+    `posts`, in two queries however many there are (never per fact)."""
+    from app.models import ChartSnapshot, FactChart
+    ids = [p.id for p in posts if p is not None and p.fact_type == 'cijfer']
+    if not ids:
+        return {}
+    charts = FactChart.query.filter(FactChart.post_id.in_(ids)).all()
+    if not charts:
+        return {}
+    latest = {}
+    for snapshot in ChartSnapshot.query.filter(ChartSnapshot.chart_id.in_([c.id for c in charts])):
+        if snapshot.chart_id not in latest or snapshot.version > latest[snapshot.chart_id].version:
+            latest[snapshot.chart_id] = snapshot
+    return {c.post_id: (c, latest[c.id]) for c in charts if c.id in latest}
+
+
+@dataclass
+class ChartCard:
+    """What the card in the facts column needs (issues/_fact_card.html)."""
+    chart: object
+    snapshot: object
+    view: object             # charts.ChartView, size 'kolom'
+    countries: list          # display names, in colour order
+    countries_text: str      # joined in the reader's language ("Poland, France and Germany")
+    average: str             # display name of the average, or ''
+    start: int
+    end: int
+    citation: str
+    source_url: str
+    date: str                # the day of publishing, in the reader's notation
+
+
+def chart_cards(posts, lang):
+    """{post_id: ChartCard} for the chart facts among `posts`: two queries for
+    the charts and snapshots and one for the translated average names,
+    however many facts there are."""
+    from babel.lists import format_list
+    from flask_babel import format_date
+
+    from app import charts, content_i18n
+    from app.sources import countries
+    found = charts_for(posts)
+    if not found:
+        return {}
+    content_i18n.preload([chart for chart, _s in found.values()], 'average_name')
+    by_id = {p.id: p for p in posts if p is not None}
+    out = {}
+    for post_id, (chart, snapshot) in found.items():
+        data = snapshot.values
+        names = {}
+        for key in data.get('names', {}):
+            iso2 = countries.iso2_for(key)
+            if iso2:
+                names[key] = countries.display_name(iso2, lang)
+        average = ''
+        if chart.average_key:
+            average = (content_i18n.display(chart, 'average_name', lang) if chart.average_name
+                       else data.get('names', {}).get(chart.average_key, ''))
+            names[chart.average_key] = average
+        view = charts.layout(data, chart.entity_keys, chart.average_key, charts.SMALL, lang, None, (), names,
+                             snapshot.short_unit or '')
+        if view.empty:
+            continue
+        shown = [names.get(k) or data['names'].get(k, k) for k in chart.entity_keys if k in data.get('series', {})]
+        shown = shown[:charts._SIZES[charts.SMALL]['max_series']]
+        post = by_id.get(post_id)
+        out[post_id] = ChartCard(
+            chart=chart, snapshot=snapshot, view=view, countries=shown,
+            countries_text=format_list(shown, locale=lang) if shown else '',
+            average=average, start=view.years[0], end=view.years[-1],
+            citation=snapshot.citation or '',   # not citation_short: it has a dash
+            source_url=snapshot.source_url or '',
+            date=format_date(post.created_at, 'medium') if post is not None and post.created_at else '')
     return out
 
 
@@ -573,11 +659,13 @@ def publish(ctx, outcome):
                           column_name=item.parsed.column_name[:300], average_key=item.average_key,
                           year_from=item.year_from, year_to=item.year_to)
         chart.entity_keys = item.keys
+        # The name of the average as the source writes it (English); translated with the fact.
+        chart.average_name = item.parsed.names.get(item.average_key) if item.average_key else None
         db.session.add(chart)
         owid.create_snapshot(chart, item.parsed, item.metadata, item.year_from, item.year_to)
         for pid in item.proposal_ids:
             db.session.add(IssueProposalFact(proposal_id=pid, fact_post_id=post.id, linked_by_id=None))
-        content_jobs.schedule(post)   # title and reason into the other languages; no quality judgement
+        content_jobs.schedule(post)   # title, reason and average name into the other languages; no judgement
     for post_id, pid in outcome.links:
         db.session.add(IssueProposalFact(proposal_id=pid, fact_post_id=post_id, linked_by_id=None))
 
