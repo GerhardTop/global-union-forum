@@ -1,0 +1,11 @@
+entity,code,year,share_gdp
+Netherlands,NLD,2020,1.4
+Netherlands,NLD,2022,1.6
+Netherlands,NLD,2023,
+World,OWID_WRL,2020,2.2
+World,OWID_WRL,2021,2.3
+World,OWID_WRL,2022,n/a
+European Union (27),OWID_EU27,2021,1.5
+Europe (SIPRI),,2020,1.7
+Europe (SIPRI),,2021,1.8
+Elsewhere,,2015,9.9

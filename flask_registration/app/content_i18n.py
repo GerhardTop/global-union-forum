@@ -374,10 +374,11 @@ def register_cleanup(*models):
 
 
 def _register_models():
-    from app.models import (FactDispute, Issue, IssueFollowup, IssueProposal, IssueProposalVersion, Post,
-                            QualityAward, QualityObjection, Thread)
+    from app.models import (ChartSnapshot, FactChart, FactDispute, Issue, IssueFollowup, IssueProposal,
+                            IssueProposalVersion, Post, QualityAward, QualityObjection, Thread)
     register_cleanup(Post, Thread, QualityAward, QualityObjection,
-                     Issue, IssueProposal, IssueProposalVersion, IssueFollowup, FactDispute)
+                     Issue, IssueProposal, IssueProposalVersion, IssueFollowup, FactDispute,
+                     FactChart, ChartSnapshot)
     event.listen(db.session, 'after_commit', clear_cache)
     event.listen(db.session, 'after_rollback', clear_cache)
 

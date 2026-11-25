@@ -166,6 +166,16 @@ def delete_for_posts(post_ids):
         issue_proposals.delete_links_for_facts(post_ids)  # stap 5: koppelingen aan voorstellen
         FactUsefulVote.query.filter(FactUsefulVote.fact_post_id.in_(post_ids)).delete(synchronize_session='evaluate')
         from app import content_i18n
+        # Background figures: the snapshots, then the charts of these facts.
+        from app.models import ChartSnapshot, FactChart
+        chart_ids = [row.id for row in FactChart.query.filter(FactChart.post_id.in_(post_ids))
+                     .with_entities(FactChart.id)]
+        if chart_ids:
+            snapshots = ChartSnapshot.query.filter(ChartSnapshot.chart_id.in_(chart_ids))
+            content_i18n.delete_for('chart_snapshots', [row.id for row in snapshots.with_entities(ChartSnapshot.id)])
+            snapshots.delete(synchronize_session='evaluate')
+            content_i18n.delete_for('fact_charts', chart_ids)
+            FactChart.query.filter(FactChart.id.in_(chart_ids)).delete(synchronize_session='evaluate')
         disputes = FactDispute.query.filter(FactDispute.fact_post_id.in_(post_ids))
         content_i18n.delete_for('fact_disputes', [row.id for row in disputes.with_entities(FactDispute.id)])
         disputes.delete(synchronize_session='evaluate')

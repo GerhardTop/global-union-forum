@@ -1423,3 +1423,81 @@ class ContentTranslation(db.Model):
     # and language).
     __table_args__ = (db.UniqueConstraint('object_type', 'object_id', 'field', 'lang',
                                           name='uq_content_translations_object_field_lang'),)
+
+
+class FactChart(db.Model):
+    """Background figures (docs/achtergrondcijfers.md), step 1b: one chart
+    with one fact (a Post with fact_type 'cijfer', made in step 1d). Which
+    indicator of which source, which entities (their order is the colour
+    order), which average the source supplies (or none), and which period.
+    The figures themselves live in the snapshots (ChartSnapshot)."""
+    __tablename__ = "fact_charts"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    post_id     = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False, unique=True, index=True)
+    issue_id    = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=False, index=True)
+    source      = db.Column(db.String(20), nullable=False, default='owid')
+    slug        = db.Column(db.String(200), nullable=False)
+    column_name = db.Column(db.String(300), nullable=False)    # the data column in the CSV
+    entities    = db.Column(db.Text, nullable=True)            # JSON list of entity keys
+    average_key = db.Column(db.String(120), nullable=True)     # as the source supplies it, or none
+    year_from   = db.Column(db.Integer, nullable=False)
+    year_to     = db.Column(db.Integer, nullable=False)
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Deleting the Post (ORM) takes its chart and the snapshots along; bulk
+    # deletes go through facts.delete_for_posts.
+    post = db.relationship('Post', backref=db.backref('chart', uselist=False, cascade='all, delete-orphan'))
+    issue = db.relationship('Issue')
+    snapshots = db.relationship('ChartSnapshot', back_populates='chart', order_by='ChartSnapshot.version',
+                                cascade='all, delete-orphan')
+
+    @property
+    def entity_keys(self):
+        import json
+        return json.loads(self.entities) if self.entities else []
+
+    @entity_keys.setter
+    def entity_keys(self, keys):
+        import json
+        self.entities = json.dumps(list(keys))
+
+    @property
+    def current_snapshot(self):
+        """The snapshot with the highest version, or None."""
+        return self.snapshots[-1] if self.snapshots else None
+
+
+class ChartSnapshot(db.Model):
+    """The snapshot of a chart: all entities of the indicator over the chosen
+    period, with definition, unit, citation and licence, as fetched. Frozen
+    when the voting phase starts (frozen_at, step 1g); a newer version comes
+    next to it at most (version), never in its place."""
+    __tablename__ = "chart_snapshots"
+
+    id             = db.Column(db.Integer, primary_key=True)
+    chart_id       = db.Column(db.Integer, db.ForeignKey('fact_charts.id'), nullable=False, index=True)
+    version        = db.Column(db.Integer, nullable=False, default=1)
+    fetched_at     = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    frozen_at      = db.Column(db.DateTime, nullable=True)
+    title          = db.Column(db.String(300), nullable=True)
+    subtitle       = db.Column(db.Text, nullable=True)
+    unit           = db.Column(db.String(120), nullable=True)
+    short_unit     = db.Column(db.String(40), nullable=True)
+    definition     = db.Column(db.Text, nullable=True)        # descriptionShort of the column
+    citation       = db.Column(db.Text, nullable=True)        # chart.citation
+    citation_short = db.Column(db.Text, nullable=True)        # citationShort of the column
+    source_url     = db.Column(db.String(500), nullable=True)
+    license        = db.Column(db.String(120), nullable=True, default='CC BY 4.0')
+    # JSON {"years": [...], "series": {key: [value or null per year]}, "names": {key: name}}
+    data           = db.Column(db.Text, nullable=True)
+    metadata_raw   = db.Column(db.Text, nullable=True)        # the metadata.json as received
+
+    chart = db.relationship('FactChart', back_populates='snapshots')
+
+    __table_args__ = (db.UniqueConstraint('chart_id', 'version', name='uq_chart_snapshots_chart_version'),)
+
+    @property
+    def values(self):
+        import json
+        return json.loads(self.data) if self.data else {'years': [], 'series': {}, 'names': {}}

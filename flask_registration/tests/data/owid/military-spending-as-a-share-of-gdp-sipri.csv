@@ -1,0 +1,113 @@
+entity,code,year,share_gdp,owid_region
+France,FRA,2010,1.9686438,Europe
+France,FRA,2011,1.8879462,Europe
+France,FRA,2012,1.8715441,Europe
+France,FRA,2013,1.8471165,Europe
+France,FRA,2014,1.8595291,Europe
+France,FRA,2015,1.8697327,Europe
+France,FRA,2016,1.8517182,Europe
+France,FRA,2017,1.8523088,Europe
+France,FRA,2018,1.8460426,Europe
+France,FRA,2019,1.8528852,Europe
+France,FRA,2020,2.0216746,Europe
+France,FRA,2021,1.9802222,Europe
+France,FRA,2022,1.9587812,Europe
+France,FRA,2023,1.9481759,Europe
+France,FRA,2024,2.0115757,Europe
+France,FRA,2025,2.0266297,Europe
+Germany,DEU,2010,1.2421901,Europe
+Germany,DEU,2011,1.1827247,Europe
+Germany,DEU,2012,1.217738,Europe
+Germany,DEU,2013,1.1624622,Europe
+Germany,DEU,2014,1.127964,Europe
+Germany,DEU,2015,1.1149198,Europe
+Germany,DEU,2016,1.129443,Europe
+Germany,DEU,2017,1.1305821,Europe
+Germany,DEU,2018,1.1471719,Europe
+Germany,DEU,2019,1.239307,Europe
+Germany,DEU,2020,1.3555577,Europe
+Germany,DEU,2021,1.2977482,Europe
+Germany,DEU,2022,1.3360198,Europe
+Germany,DEU,2023,1.5033264,Europe
+Germany,DEU,2024,1.8385782,Europe
+Germany,DEU,2025,2.2685108,Europe
+Kosovo,OWID_KOS,2010,0.722607,Europe
+Kosovo,OWID_KOS,2011,0.80477417,Europe
+Kosovo,OWID_KOS,2012,0.70395076,Europe
+Kosovo,OWID_KOS,2013,0.7217393,Europe
+Kosovo,OWID_KOS,2014,0.75832784,Europe
+Kosovo,OWID_KOS,2015,0.7942803,Europe
+Kosovo,OWID_KOS,2016,0.77786684,Europe
+Kosovo,OWID_KOS,2017,0.802901,Europe
+Kosovo,OWID_KOS,2018,0.8044206,Europe
+Kosovo,OWID_KOS,2019,0.831726,Europe
+Kosovo,OWID_KOS,2020,1.023039,Europe
+Kosovo,OWID_KOS,2021,0.84592986,Europe
+Kosovo,OWID_KOS,2022,1.1500461,Europe
+Kosovo,OWID_KOS,2023,1.2735134,Europe
+Kosovo,OWID_KOS,2024,1.4786814,Europe
+Kosovo,OWID_KOS,2025,1.8528173,Europe
+Netherlands,NLD,2010,1.3175288,Europe
+Netherlands,NLD,2011,1.2772613,Europe
+Netherlands,NLD,2012,1.2255254,Europe
+Netherlands,NLD,2013,1.1572088,Europe
+Netherlands,NLD,2014,1.1476113,Europe
+Netherlands,NLD,2015,1.1178603,Europe
+Netherlands,NLD,2016,1.1444997,Europe
+Netherlands,NLD,2017,1.1372144,Europe
+Netherlands,NLD,2018,1.1961416,Europe
+Netherlands,NLD,2019,1.2918084,Europe
+Netherlands,NLD,2020,1.4060771,Europe
+Netherlands,NLD,2021,1.3653749,Europe
+Netherlands,NLD,2022,1.3041999,Europe
+Netherlands,NLD,2023,1.441412,Europe
+Netherlands,NLD,2024,1.94065,Europe
+Netherlands,NLD,2025,2.1945446,Europe
+Poland,POL,2010,1.8385183,Europe
+Poland,POL,2011,1.7913148,Europe
+Poland,POL,2012,1.8040465,Europe
+Poland,POL,2013,1.7900583,Europe
+Poland,POL,2014,1.9082274,Europe
+Poland,POL,2015,2.1274238,Europe
+Poland,POL,2016,1.9358937,Europe
+Poland,POL,2017,1.8882873,Europe
+Poland,POL,2018,2.0247283,Europe
+Poland,POL,2019,1.9533832,Europe
+Poland,POL,2020,2.2630537,Europe
+Poland,POL,2021,2.2171633,Europe
+Poland,POL,2022,2.204589,Europe
+Poland,POL,2023,3.2567225,Europe
+Poland,POL,2024,3.754716,Europe
+Poland,POL,2025,4.4969378,Europe
+Spain,ESP,2010,1.3816645,Europe
+Spain,ESP,2011,1.3257362,Europe
+Spain,ESP,2012,1.4169518,Europe
+Spain,ESP,2013,1.2661887,Europe
+Spain,ESP,2014,1.2462595,Europe
+Spain,ESP,2015,1.2596927,Europe
+Spain,ESP,2016,1.128481,Europe
+Spain,ESP,2017,1.2221109,Europe
+Spain,ESP,2018,1.2456248,Europe
+Spain,ESP,2019,1.2246453,Europe
+Spain,ESP,2020,1.3557377,Europe
+Spain,ESP,2021,1.3668349,Europe
+Spain,ESP,2022,1.4319863,Europe
+Spain,ESP,2023,1.5349258,Europe
+Spain,ESP,2024,1.4603081,Europe
+Spain,ESP,2025,2.128921,Europe
+United States,USA,2010,4.904023,North America
+United States,USA,2011,4.822442,North America
+United States,USA,2012,4.46171,North America
+United States,USA,2013,4.0237055,North America
+United States,USA,2014,3.6789184,North America
+United States,USA,2015,3.4644928,North America
+United States,USA,2016,3.4026022,North America
+United States,USA,2017,3.2977235,North America
+United States,USA,2018,3.3040006,North America
+United States,USA,2019,3.409214,North America
+United States,USA,2020,3.6415763,North America
+United States,USA,2021,3.3981383,North America
+United States,USA,2022,3.3034158,North America
+United States,USA,2023,3.2936525,North America
+United States,USA,2024,3.4299288,North America
+United States,USA,2025,3.1173081,North America
