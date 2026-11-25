@@ -279,11 +279,12 @@ def layout(data, keys, average_key=None, size=LARGE, locale='nl', period=None, h
     def x_of(year):
         return 50.0 if first == last else round((year - first) / (last - first) * 100, 2)
 
-    axis_decimals = _decimals_for_step(step)
     n_lines = round((top_value - bottom_value) / step)
     for i in range(n_lines + 1):
         value = round(bottom_value + i * step, 9)
-        view.grid.append(GridLine(y=y_of(value), label=format_value(value, locale, short_unit, axis_decimals),
+        # Only the decimals this label's own number needs: 0%, 2,5%, 5%.
+        view.grid.append(GridLine(y=y_of(value), label=format_value(value, locale, short_unit,
+                                                                     _decimals_for_step(abs(value))),
                                   zero=abs(value) < 1e-9))
     if bottom_value < 0 < top_value and not any(g.zero for g in view.grid):
         view.grid.append(GridLine(y=y_of(0), label='', zero=True))

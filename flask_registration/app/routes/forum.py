@@ -9,7 +9,7 @@ from sqlalchemy import func, or_
 
 from app import db, bcrypt, limiter, i18n
 from app.forms import ForumActionForm, ForumReplyForm
-from app.models import (FACT_DIRECTIONS, FACT_KIND, FACT_LEGACY_TYPES, FACT_TYPES, STANCES, QUALITY_CRITERIA, User, Thread, Post,
+from app.models import (FACT_DIRECTIONS, FACT_KIND, FACT_LEGACY_TYPES, FACT_SYSTEM_TYPES, FACT_TYPES, STANCES, QUALITY_CRITERIA, User, Thread, Post,
                         PostLike, QualityAward, QualityReport, THREAD_EYEBROWS, time_ago)
 from app import conduct, content_i18n, quality
 from app.models import PostReport
@@ -1848,6 +1848,8 @@ def _own_fact_in_open_phase(post_id):
     fact = Post.query.get_or_404(post_id)
     if not fact.is_fact or fact.user_id is None or fact.user_id != current_user.id:
         abort(403)
+    if fact.fact_type in FACT_SYSTEM_TYPES or fact.is_system:
+        abort(403)  # a background figure: nobody edits it, only a moderator removes it
     if not _fact_phase_open(fact.thread):
         abort(403)  # na de feitenfase staan de feiten vast
     return fact

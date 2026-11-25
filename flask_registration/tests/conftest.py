@@ -124,6 +124,7 @@ def app():
         RATELIMIT_ENABLED = False          # Flask-Limiter uitschakelen
         SECRET_KEY = "test-secret-do-not-use-in-prod"
         SERVER_NAME = "localhost"
+        BACKGROUND_FIGURES = False         # tests of that track switch it on themselves
 
     flask_app = create_app_for_tests(TestConfig)
     from app import limiter

@@ -205,10 +205,10 @@ def test_large_numbers_are_grouped_without_decimals():
     assert charts.format_value(12.34, 'nl', '$', 1) == '12,3$'
 
 
-def test_one_decimal_below_one_hundred_and_axis_labels_after_the_step(sipri):
+def test_one_decimal_below_one_hundred_and_axis_labels_without_needless_zeros(sipri):
     view = charts.layout(sipri, KEYS, size=charts.SMALL, locale='nl', period=10, short_unit='%')
     assert view.legend[0].value == '4,5%'
-    assert [g.label for g in view.grid] == ['0,0%', '2,5%', '5,0%']
+    assert [g.label for g in view.grid] == ['0%', '2,5%', '5%']
     large = charts.layout(sipri, KEYS, size=charts.LARGE, locale='de', period=10, short_unit='%')
     assert [g.label for g in large.grid] == ['0 %', '1 %', '2 %', '3 %', '4 %', '5 %']
 

@@ -353,6 +353,8 @@ class Post(db.Model):
     # Zonder author (account verwijderd) blijft het opgeslagen pseudoniem.
     def public_author_name(self):
         a = self.author
+        if self.is_system:
+            return self.author_name
         return a.public_name if a is not None else '@' + self.author_username
 
     def public_author_initial(self):
@@ -383,7 +385,12 @@ class Post(db.Model):
     @property
     def fact_kind(self):
         """The kind for display: one of FACT_TYPES, or 'media' for an old fact."""
-        return self.fact_type if self.fact_type in FACT_TYPES + FACT_LEGACY_TYPES else 'feit'
+        return self.fact_type if self.fact_type in FACT_TYPES + FACT_LEGACY_TYPES + FACT_SYSTEM_TYPES else 'feit'
+
+    @property
+    def is_system(self):
+        """Made by the platform itself (a background figure): no person behind it."""
+        return self.author_role == SYSTEM_ROLE
 
 
 def time_ago(moment):
@@ -404,6 +411,13 @@ def time_ago(moment):
     return gettext('just now')
 
 
+# Background figures: the author of what the platform publishes itself. The
+# username has a dot, which registration never allows (utils._USERNAME_RE),
+# so no member can ever have it; user_id stays None.
+SYSTEM_ROLE = 'system'
+SYSTEM_USERNAME = 'global.union'
+SYSTEM_NAME = 'Global Union Forum'
+
 # Fase E: feiten bij een voorstel.
 FACT_KIND = 'feit'
 FACT_DIRECTIONS = ('voor', 'tegen', 'neutraal')
@@ -412,6 +426,10 @@ FACT_DIRECTIONS = ('voor', 'tegen', 'neutraal')
 # and show as "Media"; no data is rewritten.
 FACT_TYPES = ('feit', 'onderzoek', 'nieuwsartikel', 'podcast', 'video')
 FACT_LEGACY_TYPES = ('media',)
+# Background figures (docs/achtergrondcijfers.md): kinds only the system makes
+# (a chart chosen by the AI). Not in the fact form (FACT_TYPES), and nobody
+# edits such a fact; only a moderator removes it.
+FACT_SYSTEM_TYPES = ('cijfer',)
 
 # Herontwerp stap 3: nuttig en betwisten op een feit (zie app/facts.py).
 FACT_DISPUTE_REASONS = ('geen_bron', 'klopt_niet', 'niet_relevant', 'misleidend')
@@ -1501,3 +1519,41 @@ class ChartSnapshot(db.Model):
     def values(self):
         import json
         return json.loads(self.data) if self.data else {'years': [], 'series': {}, 'names': {}}
+
+
+class ChartSelectionRun(db.Model):
+    """Background figures, step 1d: one selection round of the AI for an issue
+    (after creating it, or after a new proposal), also when nothing comes of
+    it (status 'nothing', the AI's reason in response_text). The prompt and
+    the model are kept, like QualityAward.prompt_text."""
+    __tablename__ = "chart_selection_runs"
+
+    id            = db.Column(db.Integer, primary_key=True)
+    issue_id      = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=False, index=True)
+    proposal_id   = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=True)
+    trigger       = db.Column(db.String(10), nullable=False, default='issue')     # 'issue' or 'proposal'
+    status        = db.Column(db.String(10), nullable=False, default='pending')   # CHART_RUN_STATUSES
+    attempts      = db.Column(db.Integer, nullable=False, default=0)
+    model         = db.Column(db.String(60), nullable=True)
+    prompt_text   = db.Column(db.Text, nullable=True)
+    response_text = db.Column(db.Text, nullable=True)
+    error         = db.Column(db.Text, nullable=True)
+    created_at    = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    finished_at   = db.Column(db.DateTime, nullable=True)
+
+
+CHART_RUN_STATUSES = ('pending', 'running', 'done', 'nothing', 'failed')
+
+
+class ChartBlock(db.Model):
+    """The memory of the background figures: a removed chart ('slug') and an
+    AI link a person undid ('link') do not come back for this issue."""
+    __tablename__ = "chart_blocks"
+
+    id           = db.Column(db.Integer, primary_key=True)
+    issue_id     = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=False, index=True)
+    kind         = db.Column(db.String(10), nullable=False)    # 'slug' or 'link'
+    slug         = db.Column(db.String(200), nullable=True)
+    proposal_id  = db.Column(db.Integer, nullable=True)
+    fact_post_id = db.Column(db.Integer, nullable=True)
+    created_at   = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

@@ -331,6 +331,8 @@ def create(values, user, lang=None, now=None):
     _open_thread(issue, user)
     from app import content_jobs
     content_jobs.schedule(issue)  # translated into the other languages after the commit
+    from app import background_figures
+    background_figures.schedule(issue, trigger='issue')  # behind BACKGROUND_FIGURES
     return issue
 
 
@@ -648,6 +650,10 @@ def purge(issue):
         Post.query.filter(Post.parent_id.in_(post_ids)).update({Post.parent_id: None}, synchronize_session=False)
         Post.query.filter(Post.id.in_(post_ids)).delete(synchronize_session=False)
     from app import content_i18n
+    # Background figures: the selection rounds and the memory of this issue
+    # (the rounds point at its proposals, so before those go).
+    from app import background_figures
+    background_figures.delete_for_issue(issue.id)
     if prop_ids:
         version_ids = [v.id for v in IssueProposalVersion.query.filter(IssueProposalVersion.proposal_id.in_(prop_ids))]
         content_i18n.delete_for('issue_proposal_versions', version_ids)
@@ -699,7 +705,8 @@ def purge_proposal(proposal):
     content_i18n.delete_for('issue_proposals', [pid])
     for model in (IssueProposalVote, IssueProposalSupport, IssueProposalFact, IssueProposalVersion, ProposalReport):
         model.query.filter(model.proposal_id == pid).delete(synchronize_session=False)
-    from app import issue_proposals
+    from app import background_figures, issue_proposals
     issue_proposals.delete_reads([pid])
+    background_figures.detach_proposal(pid)
     IssueProposal.query.filter(IssueProposal.id == pid).delete(synchronize_session=False)
     db.session.commit()

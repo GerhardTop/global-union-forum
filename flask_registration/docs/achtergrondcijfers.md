@@ -21,6 +21,8 @@ Bewust NIET: afbeeldingen laten genereren door een beeldmodel (verzint getallen,
 - Na het begin van de stemfase niets nieuws. Een nieuwere versie naast de bevroren versie komt later.
 - Model: Opus 5.5 (één aanroep per vraagstuk en per nieuw voorstel; zonder menselijke goedkeuring telt de kwaliteit van de keuze zwaar). Het model staat als vaste instelling in de code.
 - Een pagina roept de AI nooit aan en haalt nooit iets bij de bron op; alles gebeurt op de achtergrond.
+- Twee aanroepen: eerst zoektermen (JUDGE_MODEL, Haiku), dan de keuze uit de kandidaten (Opus 5.5). De reden schrijft de AI in het Engels; titel (van OWID) en reden gaan als Engels origineel (source_lang 'en') door de vertaalroute.
+- Schakelaar: BACKGROUND_FIGURES (omgevingsvariabele, standaard uit). Uit = er start geen keuze en de tik doet niets voor dit spoor. Aan zetten pas na stap 1h.
 
 ## Grafiekstandaard (vast, in code, niet in de prompt)
 Opmaak is geen keuze van de AI maar een vaste regel in de app, zodat elke grafiek er hetzelfde uitziet en elk voorstel gelijk behandeld wordt.
@@ -67,7 +69,7 @@ De app controleert: slug bestaat, landen en gemiddelde staan in de data, periode
 
 ## Bronnen (toegestane lijst, uitbreidbaar)
 Criteria voor een bron: officieel of wetenschappelijk, open licentie met bronvermelding, een API of stabiele download, en metadata met definitie en eenheid. Elke bron is een eigen adapter.
-1. Our World in Data (eerste bron). Grapher-API: https://ourworldindata.org/grapher/<slug>.csv en <slug>.metadata.json. Ruim 5.000 grafieken; bundelt al veel andere bronnen (onder meer World Bank, V-Dem, SIPRI), met een kant-en-klare bronvermelding en eigen regio-gemiddelden. Landcodes zijn ISO3; regio's hebben eigen codes (zoals OWID_WRL). Zoeken: OWID heeft geen stabiele zoek-API, dus een eigen catalogustabel (slug, titel, ondertitel, onderwerp), gevuld uit de openbare chartlijst van OWID met een admin-knop "Catalogus verversen"; lukt verversen niet, dan blijft de oude lijst staan. De AI haalt zoekwoorden uit het vraagstuk, de app zoekt lokaal.
+1. Our World in Data (eerste bron). Grapher-API: https://ourworldindata.org/grapher/<slug>.csv en <slug>.metadata.json. Ruim 5.000 grafieken; bundelt al veel andere bronnen (onder meer World Bank, V-Dem, SIPRI), met een kant-en-klare bronvermelding en eigen regio-gemiddelden. Landcodes zijn ISO3; regio's hebben eigen codes (zoals OWID_WRL). Zoeken: de Search API van OWID (GET https://ourworldindata.org/api/search, type=charts, versie 0.1.0, nog in ontwikkeling). Geen eigen catalogus. Zoeken gebeurt alleen op de achtergrond; faalt de API, dan probeert de uurtik het later opnieuw.
 2. Eurostat (tweede bron, voor EU-onderwerpen). Statistics API in JSON-stat 2.0, antwoorden in EN, FR, DE.
 3. Later, per behoefte: World Bank API, OECD (SDMX), IMF, UN Data, CBS Statline (OData) voor Nederlandse onderwerpen, Eurobarometer voor publieke opinie.
 Bronnen zonder API (bijvoorbeeld een losse Excel) alleen via OWID, als die ze al opneemt.
@@ -91,9 +93,9 @@ Laag: één AI-aanroep per vraagstuk en per nieuw voorstel, plus vertaling van t
 ## Bouwvolgorde
 1. OWID, in deelstappen (elk een eigen opdracht, eigen tests, push via scripts/check_and_push.sh):
    1a. deze opzet en de artboards in de repo;
-   1b. datamodel, OWID-adapter en catalogus met de knop "Catalogus verversen" (nog niets zichtbaar voor deelnemers);
+   1b. datamodel en OWID-adapter (ophalen, momentopname);
    1c. grafiekstandaard in code (SVG uit Python, tabel, getalnotatie);
-   1d. automatische selectie, controle, publiceren en koppelen, met het geheugen voor verwijderd en ontkoppeld;
+   1d. zoeken via de Search API van OWID, de AI-keuze, controle, publiceren en koppelen, met het geheugen voor verwijderd en ontkoppeld; achter de schakelaar BACKGROUND_FIGURES;
    1e. kaart in de kolom, meldvlag, verwijderen door een moderator;
    1f. grafiekpagina;
    1g. bevriezen bij de stemfase, ontkoppelen door de voorsteller ("Gekoppeld door AI");

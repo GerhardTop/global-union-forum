@@ -33,6 +33,7 @@ def register_cli(app):
     app.cli.add_command(seed_demo_issues)
     app.cli.add_command(seed_demo_voorbeeld)
     app.cli.add_command(remove_issue)
+    app.cli.add_command(background_figures_trial)
 
 
 @click.command('seed-demo-issues')
@@ -266,3 +267,41 @@ def reset_content(execute, yes, list_users):
 
     _execute(plan)
     click.echo('\nKlaar: verwijderd en gecommit.')
+
+
+@click.command('achtergrondcijfers-proef')
+@click.argument('issue_id', type=int)
+def background_figures_trial(issue_id):
+    """Background figures (step 1d): the selection round for one issue, for
+    developers, WITHOUT saving anything. Needs a real ANTHROPIC_API_KEY; calls
+    the AI twice and the Search API and grapher of Our World in Data. Prints
+    the search terms, the candidates, the AI's answer and what the checks
+    accept or drop (with the reason)."""
+    import json as _json
+    from app import background_figures, db
+    from app.models import Issue
+    issue = db.session.get(Issue, issue_id)
+    if issue is None:
+        raise click.ClickException(f'No issue {issue_id}.')
+    click.echo(f'Issue {issue.id}: {issue.title} (phase {issue.phase})')
+    outcome = background_figures.dry_run(issue)
+    click.echo(f'\nSearch terms: {outcome.terms}')
+    click.echo(f'Candidates ({len(outcome.candidates)}):')
+    for hit in outcome.candidates:
+        click.echo(f'  {hit.slug}: {hit.title}')
+    click.echo('\nAnswer of the AI:')
+    click.echo(_json.dumps(outcome.answer, indent=2, ensure_ascii=False) if outcome.answer else '(none)')
+    click.echo('\nAccepted:')
+    for item in outcome.accepted:
+        names = [item.parsed.names[k] for k in item.keys]
+        average = item.parsed.names.get(item.average_key) if item.average_key else None
+        click.echo(f'  {item.slug}: {names}, average {average}, {item.year_from} to {item.year_to}, '
+                   f'proposals {item.proposal_ids}\n    {item.reason}')
+    for post_id, pid in outcome.links:
+        click.echo(f'  link: fact {post_id} to proposal {pid}')
+    click.echo('\nDropped or noted:')
+    for note in outcome.notes or ['(nothing)']:
+        click.echo(f'  {note}')
+    if outcome.none_reason:
+        click.echo(f'\nNone reason: {outcome.none_reason}')
+    click.echo(f'\nStatus it would get: {outcome.status}. Nothing was saved.')

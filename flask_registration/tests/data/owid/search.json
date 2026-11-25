@@ -1,0 +1,15 @@
+{
+  "query": "military spending",
+  "results": [
+    {"title": "Military spending as a share of GDP", "slug": "military-spending-as-a-share-of-gdp-sipri", "subtitle": "Military expenditure divided by gross domestic product, expressed as a percentage.", "variantName": "Shorter-term data from SIPRI", "type": "chart", "availableEntities": ["Netherlands", "Germany", "France", "Poland", "Spain", "United States", "Kosovo", "China", "India", "Burkina Faso"], "url": "https://ourworldindata.org/grapher/military-spending-as-a-share-of-gdp-sipri"},
+    {"title": "Military spending", "slug": "military-spending-sipri", "subtitle": "Made up: answers 403 in the tests.", "type": "chart", "availableEntities": ["Netherlands", "Germany", "World"]},
+    {"title": "Two columns", "slug": "two-columns-chart", "subtitle": "Made up: two data columns in the tests.", "type": "chart", "availableEntities": ["Netherlands", "Germany"]},
+    {"title": "Regions", "slug": "regions-chart", "subtitle": "Made up: regions.csv in the tests.", "type": "chart", "availableEntities": ["Netherlands", "World", "European Union (27)", "Europe (SIPRI)"]},
+    {"title": "An explorer", "slug": "some-explorer", "subtitle": "", "type": "explorerView", "availableEntities": ["Netherlands"]},
+    {"title": "A multi-dimensional view", "slug": "some-mdim", "subtitle": "", "type": "multiDimView", "availableEntities": ["Netherlands"]}
+  ],
+  "nbHits": 6,
+  "page": 0,
+  "nbPages": 1,
+  "hitsPerPage": 20
+}

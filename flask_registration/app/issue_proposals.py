@@ -103,6 +103,8 @@ def create(issue, user, statement, explanation=None, lang=None):
                                                       created_at=proposal.created_at))
     db.session.add(proposal)
     _translate_after_commit(proposal, *proposal.version_rows)
+    from app import background_figures
+    background_figures.schedule(issue, proposal=proposal, trigger='proposal')  # behind BACKGROUND_FIGURES
     return proposal
 
 
@@ -282,8 +284,13 @@ def can_link(proposal, user):
 
 
 def can_unlink(link, user):
-    return (getattr(user, 'is_authenticated', False) and _link_open(link.proposal.issue)
-            and (link.linked_by_id == user.id or user.can_moderate()))
+    """Who linked it, or a moderator. A link the AI made (background figures,
+    no person behind it) may also be undone by the proposer."""
+    if not (getattr(user, 'is_authenticated', False) and _link_open(link.proposal.issue)):
+        return False
+    if link.linked_by_id is None and link.proposal.created_by_id == user.id:
+        return True
+    return link.linked_by_id == user.id or user.can_moderate()
 
 
 def visible_issue_facts(issue, user):
@@ -330,6 +337,11 @@ def link_ids(proposal, fact_ids, user):
 
 
 def unlink(row):
+    """Undo a link. An AI link (no person behind it) is remembered, so the
+    AI does not lay it again (background figures). Commit niet zelf."""
+    if row.linked_by_id is None:
+        from app import background_figures
+        background_figures.block_link(row.proposal.issue_id, row.proposal_id, row.fact_post_id)
     db.session.delete(row)
 
 

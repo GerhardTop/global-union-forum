@@ -35,3 +35,15 @@ def iso3_for(iso2):
         if code == iso2:
             return iso3
     return None
+
+
+@lru_cache(maxsize=1)
+def _our_rows():
+    """{iso2: {lang: name}} of our country list."""
+    with open(os.path.join(_DATA, 'landenlijst_data.json'), encoding='utf-8') as f:
+        return {row['iso']: dict(row.get('names') or {}) for row in json.load(f)}
+
+
+def english_name(iso2):
+    """The English name of one of our countries, as our list writes it."""
+    return (_our_rows().get(iso2) or {}).get('en')

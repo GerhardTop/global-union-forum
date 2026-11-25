@@ -108,6 +108,55 @@ def fetch(slug, http=None):
     return csv_text, metadata
 
 
+# ── Searching ────────────────────────────────────────────────────────────
+
+SEARCH_URL = 'https://ourworldindata.org/api/search'
+
+
+@dataclass
+class SearchHit:
+    slug: str
+    title: str
+    subtitle: str
+    entities: list      # availableEntities: English names
+
+
+def search(query, countries=None, hits=20, http=None):
+    """Charts that match `query` in the Search API of OWID (version 0.1.0,
+    still in development): only type 'chart' (no explorer views or
+    multi-dimensional views). countries: English entity names that the
+    charts must have (OWID joins them with ~). A failure or an answer of an
+    unexpected shape is a SourceError ('network' or 'unsupported')."""
+    params = {'q': query, 'type': 'charts', 'hitsPerPage': int(hits)}
+    if countries:
+        params['countries'] = '~'.join(countries)
+    http = http or requests
+    try:
+        resp = http.get(SEARCH_URL, params=params, headers={'User-Agent': USER_AGENT}, timeout=TIMEOUT)
+    except requests.RequestException as exc:
+        raise SourceError('network', f'{type(exc).__name__}: search') from exc
+    if resp.status_code != 200:
+        raise SourceError('network', f'HTTP {resp.status_code}: search')
+    try:
+        answer = json.loads(resp.content.decode('utf-8'))
+    except ValueError as exc:
+        raise SourceError('unsupported', 'search answer is no JSON') from exc
+    results = answer.get('results') if isinstance(answer, dict) else None
+    if not isinstance(results, list):
+        raise SourceError('unsupported', 'search answer without results')
+    out = []
+    for row in results:
+        if not isinstance(row, dict) or row.get('type') != 'chart':
+            continue
+        slug = row.get('slug')
+        if not isinstance(slug, str) or not SLUG_RE.match(slug):
+            continue
+        entities = row.get('availableEntities')
+        out.append(SearchHit(slug=slug, title=str(row.get('title') or ''), subtitle=str(row.get('subtitle') or ''),
+                             entities=[e for e in entities if isinstance(e, str)] if isinstance(entities, list) else []))
+    return out
+
+
 # ── Parsing ──────────────────────────────────────────────────────────────
 
 def _column_meta(metadata, column_name):

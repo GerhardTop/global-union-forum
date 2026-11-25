@@ -44,4 +44,8 @@ def tik():
         result['translations'] = content_jobs.backfill(tally=tally)
         tally.log('tick')
         result['translations_failed'] = tally.failed
+    # Background figures: selection rounds that waited or failed (behind
+    # BACKGROUND_FIGURES; with the switch off this does nothing).
+    from app import background_figures
+    result['charts'], result['charts_failed'] = background_figures.backfill()
     return jsonify(result)

@@ -15,3 +15,4 @@ Vaste voorbeeldbestanden voor tests/test_owid_source.py; de tests gaan nooit het
 - `two-columns.csv`: twee datakolommen (moet 'unsupported' geven).
 - `daily.csv`: `day` in plaats van `year` (moet 'unsupported' geven).
 - `regions.csv`: gemiddelden zoals andere OWID-grafieken ze leveren (`World` met `OWID_WRL`, `European Union (27)` met `OWID_EU27`), een regio met een lege code, en lege en niet-numerieke cellen. Verzonnen getallen.
+- `search.json`: een antwoord van de Search API van OWID (`/api/search?type=charts`) in dezelfde vorm als het echte (gecontroleerd op 25 november 2026), ingekort en aangevuld met verzonnen grafieken voor de tests van app/background_figures.py (403, twee datakolommen, regio's, en een explorerView en multiDimView die het zoeken overslaat).

@@ -779,6 +779,7 @@ def create_app():
     from flask_login import user_logged_in
     from app import i18n
     from app import content_i18n  # noqa: F401  (a deleted object takes its translations along)
+    from app import background_figures  # noqa: F401  (a removed chart is remembered; rounds after commit)
 
     @user_logged_in.connect_via(app)
     def _apply_stored_lang(sender, user, **extra):
