@@ -30,7 +30,7 @@ class FailingClient(FakeClient):
         self.failing_lang = failing_lang
 
     def create(self, **kw):
-        if f' to {self.failing_lang}.' in kw['messages'][0]['content']:
+        if f' into {self.failing_lang}.' in kw.get('system', ''):
             raise RuntimeError('model not found: claude-nonexistent')
         return super().create(**kw)
 

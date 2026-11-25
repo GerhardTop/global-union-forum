@@ -35,6 +35,7 @@ def register_cli(app):
     app.cli.add_command(remove_issue)
     app.cli.add_command(background_figures_trial)
     app.cli.add_command(background_figures_example)
+    app.cli.add_command(check_translations)
 
 
 @click.command('seed-demo-issues')
@@ -347,3 +348,27 @@ def background_figures_example(issue_id):
     background_figures.publish(ctx, outcome)
     db.session.commit()
     click.echo(f'Chart fact added to issue {issue.id} (example data; the average is made up for the example).')
+
+
+@click.command('vertalingen-controleren')
+@click.option('--verwijderen', is_flag=True, help='Remove the bad machine translations (the route makes them again).')
+def check_translations(verwijderen):
+    """Check every stored translation with the checks of the translation route
+    (quality.translation_problem: an empty answer, a reply instead of a
+    translation, a heading or quote in a short field, far too long). Prints
+    table, id, field, language and the start of the text per case. With
+    --verwijderen the bad MACHINE translations are removed, so the background
+    job and the hourly tick make them again; handwritten ones are only shown."""
+    from app import content_i18n, db
+    bad = content_i18n.bad_translations()
+    removed = 0
+    for row, problem in bad:
+        text = (row.text or '').replace('\n', ' ')[:70]
+        hand = '' if row.is_machine else '  (handwritten, kept)'
+        click.echo(f'{row.object_type:<24} {row.object_id:>6} {row.field:<14} {row.lang:<3} {problem}: {text!r}{hand}')
+        if verwijderen and row.is_machine:
+            db.session.delete(row)
+            removed += 1
+    if verwijderen:
+        db.session.commit()
+    click.echo(f'{len(bad)} bad translation(s) found' + (f', {removed} removed.' if verwijderen else '.'))

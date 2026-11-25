@@ -1563,3 +1563,16 @@ class ChartBlock(db.Model):
     proposal_id  = db.Column(db.Integer, nullable=True)
     fact_post_id = db.Column(db.Integer, nullable=True)
     created_at   = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class OwidRejectedSlug(db.Model):
+    """Background figures, step 1i: an OWID chart that fell away for a
+    lasting reason (unsupported, forbidden, no_data, stale), for every issue.
+    The search leaves it out for REJECT_MEMORY_DAYS (app/background_figures.py);
+    after that it is checked again."""
+    __tablename__ = "owid_rejected_slugs"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    slug       = db.Column(db.String(200), nullable=False, unique=True)
+    reason     = db.Column(db.String(20), nullable=False)
+    checked_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

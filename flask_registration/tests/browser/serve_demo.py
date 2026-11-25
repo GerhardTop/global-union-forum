@@ -74,9 +74,9 @@ with app.app_context():
 
         def create(self, **kw):
             prompt = kw['messages'][0]['content']
-            language = prompt.split(' to ', 1)[1].split('.', 1)[0]
+            language = kw['system'].split(' into ', 1)[1].split('.', 1)[0]
             code = {'English': 'EN', 'Dutch': 'NL', 'German': 'DE', 'Spanish': 'ES', 'French': 'FR'}[language]
-            return SimpleNamespace(content=[SimpleNamespace(text=f'[{code}] ' + prompt.split('\n\n', 1)[1])])
+            return SimpleNamespace(content=[SimpleNamespace(text=f'[{code}] ' + prompt.split('<source>\n', 1)[1].rsplit('\n</source>', 1)[0])])
 
     content_jobs.backfill(limit=100000, client=_FakeTranslator())
 

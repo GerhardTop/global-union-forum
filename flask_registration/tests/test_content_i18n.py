@@ -16,18 +16,20 @@ from tests.test_issue_polish import make_user  # noqa: F401  (fixture)
 
 
 class FakeClient:
-    """Stands in for anthropic.Anthropic: records the prompts, 'translates' by
-    prefixing the language named in the prompt."""
+    """Stands in for anthropic.Anthropic: records the prompts (system and user
+    message), 'translates' by prefixing the language named in the system prompt."""
 
     def __init__(self):
         self.calls = []
         self.messages = self
 
     def create(self, **kw):
-        prompt = kw['messages'][0]['content']
+        # The instruction (with the language) is the system prompt; the source
+        # sits between <source> tags in the user message (quality.translate_text).
+        prompt = kw.get('system', '') + '\n\n' + kw['messages'][0]['content']
         self.calls.append(prompt)
-        language = prompt.split(' to ', 1)[1].split('.', 1)[0]
-        source = prompt.split('\n\n', 1)[1]
+        language = kw['system'].split(' into ', 1)[1].split('.', 1)[0]
+        source = kw['messages'][0]['content'].split('<source>\n', 1)[1].rsplit('\n</source>', 1)[0]
         return SimpleNamespace(content=[SimpleNamespace(text=f'[{language}] {source}')])
 
 
@@ -62,7 +64,7 @@ def test_translating_to_german(app, post, german):
     client = FakeClient()
     text = content_i18n.translate(post, 'body', 'de', client=client)
     assert text == '[German] Een korte bijdrage.'
-    assert len(client.calls) == 1 and 'to German.' in client.calls[0]
+    assert len(client.calls) == 1 and 'into German.' in client.calls[0]
     row = ContentTranslation.query.filter_by(object_type='posts', object_id=post.id, field='body', lang='de').one()
     assert row.is_machine is True and row.text == text
     assert row.source_hash == content_i18n.source_hash('Een korte bijdrage.')

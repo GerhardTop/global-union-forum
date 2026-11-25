@@ -28,7 +28,7 @@ def fake_anthropic(monkeypatch):
     class FakeMessages:
         def create(self, **kw):
             calls.append(kw)
-            text = kw['messages'][0]['content'].split('\n\n', 1)[1]
+            text = kw['messages'][0]['content'].split('<source>\n', 1)[1].rsplit('\n</source>', 1)[0]
             return SimpleNamespace(content=[SimpleNamespace(text=f'[vertaald] {text}')])
 
     class FakeClient:
@@ -80,7 +80,7 @@ class TestTranslateSuccess:
         resp = _translate(client, post, token)
         assert resp.status_code == 200
         assert resp.get_json() == {'translation': '[vertaald] English post number 0'}
-        assert len(fake_anthropic) == 1 and 'Dutch' in fake_anthropic[0]['messages'][0]['content']
+        assert len(fake_anthropic) == 1 and 'Dutch' in fake_anthropic[0]['system']
         db.session.expire_all()
         from app import content_i18n
         assert content_i18n.text_for(db.session.get(Post, post.id), 'body', 'nl') == '[vertaald] English post number 0'

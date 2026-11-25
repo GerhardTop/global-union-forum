@@ -54,6 +54,8 @@ _SOURCE_ATTR = {
     'fact_disputes': 'lang',                # the note, translated on request
     # Background figures: the name of an average comes from the source in English.
     'fact_charts': lambda chart: 'en',
+    # ... and so do the definition and the unit of a snapshot.
+    'chart_snapshots': lambda snapshot: 'en',
 }
 
 
@@ -272,6 +274,50 @@ def set_label(obj, field, label):
                 set_translation(obj, field, lang, str(label))
 
 
+# The short fields: titles, names and units, translated with the short-label
+# prompt (quality.translate_text kind 'short'); every other field is a text.
+SHORT_FIELDS = {
+    ('posts', 'fact_title'),
+    ('issues', 'title'),
+    ('threads', 'title_prefix'), ('threads', 'title_accent'), ('threads', 'title_suffix'),
+    ('fact_charts', 'average_name'),
+    ('chart_snapshots', 'unit'),
+}
+
+
+def field_kind(obj, field):
+    """'short' or 'text': which translation prompt a field gets."""
+    return kind_for(object_type(obj), field)
+
+
+def kind_for(kind, field):
+    return 'short' if (kind, field) in SHORT_FIELDS else 'text'
+
+
+def bad_translations():
+    """[(row, problem)]: stored translations that fail the checks of the
+    translation route (quality.translation_problem) against their original.
+    Rows whose object or field no longer exists are left to remove_orphans."""
+    from sqlalchemy import select
+    from app import quality
+    table = ContentTranslation.__table__
+    out = []
+    pairs = db.session.execute(select(table.c.object_type, table.c.field).distinct()).all()
+    for kind, field in sorted(pairs):
+        target = db.metadata.tables.get(kind)
+        if target is None or field not in target.c or 'id' not in target.c:
+            continue
+        originals = dict(db.session.execute(select(target.c.id, target.c[field])).all())
+        rows = ContentTranslation.query.filter_by(object_type=kind, field=field).order_by(ContentTranslation.id)
+        for row in rows:
+            if row.object_id not in originals:
+                continue
+            problem = quality.translation_problem(originals[row.object_id], row.text, kind_for(kind, field))
+            if problem:
+                out.append((row, problem))
+    return out
+
+
 def translate(obj, field, lang, client=None):
     """The text in `lang`, translated by the AI when there is no current
     translation yet, then cached (is_machine=True) and committed. Raises when
@@ -286,7 +332,7 @@ def translate(obj, field, lang, client=None):
         db.session.commit()
         return reused.text
     from app import quality
-    translated = quality.translate_text(source, lang, client=client)
+    translated = quality.translate_text(source, lang, client=client, kind=field_kind(obj, field))
     set_translation(obj, field, lang, translated, is_machine=True)
     db.session.commit()
     return translated

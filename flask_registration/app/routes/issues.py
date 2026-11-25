@@ -255,6 +255,7 @@ def chart_page(issue_id, post_id):
     lang = i18n.current()
     content_i18n.preload([fact], 'fact_title', 'body')
     content_i18n.preload([chart], 'average_name')
+    content_i18n.preload([snapshot], 'definition', 'unit')
     view = bf.page_view(chart, snapshot, state, lang)
     names, average = bf.display_names(chart, snapshot, lang)
     countries = [k for k in state.keys if k != chart.average_key]

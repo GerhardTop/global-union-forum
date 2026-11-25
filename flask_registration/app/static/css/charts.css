@@ -356,3 +356,5 @@
 .gu-chartpage__main { align-items: stretch; }
 /* The flag sits at the end of the top line: its form opens towards the start. */
 .gu-fact__topline--chart .gu-report--fact { inset-inline-start: auto; inset-inline-end: 0; }
+.gu-chartpage__dd { margin: 0; }
+.gu-chartpage__facts .gu-mt__note { margin: 2px 0 0; font-size: 11px; }

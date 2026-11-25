@@ -53,8 +53,9 @@
       <section class="gu-chartpage__card" aria-labelledby="chart-about">
         <h2 class="gu-chartpage__cardtitle" id="chart-about">{{ _('About these figures') }}</h2>
         <dl class="gu-chartpage__facts">
-          {% if snapshot.definition %}<dt>{{ _('Definition') }}</dt><dd>{{ snapshot.definition }}</dd>{% endif %}
-          {% if snapshot.unit %}<dt>{{ _('Unit') }}</dt><dd>{{ snapshot.unit }}</dd>{% endif %}
+          {#- Definition and unit come from the source in English; translated like the facts. -#}
+          {% if snapshot.definition %}<dt>{{ _('Definition') }}</dt><dd>{{ mt(snapshot, 'definition', el='p', cls='gu-chartpage__dd') }}</dd>{% endif %}
+          {% if snapshot.unit %}<dt>{{ _('Unit') }}</dt><dd>{{ mt(snapshot, 'unit', el='p', cls='gu-chartpage__dd') }}</dd>{% endif %}
           <dt>{{ _('Source') }}</dt><dd>{{ _('%(citation)s, via Our World in Data', citation=citation) }}</dd>
           {% if average %}<dt>{{ _('Average') }}</dt><dd>{{ _('%(name)s, as supplied by the source', name=average) }}</dd>{% endif %}
           <dt>{{ _('Licence') }}</dt>

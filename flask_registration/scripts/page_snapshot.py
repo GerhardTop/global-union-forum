@@ -71,8 +71,8 @@ def _build(db_file):
 
         def create(self, **kw):
             prompt = kw['messages'][0]['content']
-            language = prompt.split(' to ', 1)[1].split('.', 1)[0]
-            return SimpleNamespace(content=[SimpleNamespace(text=f'[{language}] ' + prompt.split('\n\n', 1)[1])])
+            language = kw['system'].split(' into ', 1)[1].split('.', 1)[0]
+            return SimpleNamespace(content=[SimpleNamespace(text=f'[{language}] ' + prompt.split('<source>\n', 1)[1].rsplit('\n</source>', 1)[0])])
 
     with app.app_context():
         demo_seed.seed_demo_issues()

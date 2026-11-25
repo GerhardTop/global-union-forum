@@ -50,7 +50,7 @@ def fake_ai(monkeypatch, app):
         def create(self, **kw):
             if 'output_config' not in kw:  # vertaling
                 state['translate'].append(kw)
-                src = kw['messages'][0]['content'].split('\n\n', 1)[1]
+                src = kw['messages'][0]['content'].split('<source>\n', 1)[1].rsplit('\n</source>', 1)[0]
                 return SimpleNamespace(content=[SimpleNamespace(type='text', text=f'EN: {src}')])
             state['judge'].append(kw)  # kwaliteitsoordeel
             if state['fail']:

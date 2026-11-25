@@ -51,6 +51,25 @@ def _no_background_translations(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def _no_rejected_charts():
+    """Background figures (step 1i): the memory of charts no issue can use
+    (owid_rejected_slugs) is shared by every issue, so a chart one test
+    rejected would be left out of the next test's search. Every test starts
+    with it empty."""
+    from flask import has_app_context
+    if has_app_context():
+        from app import db
+        from app.models import OwidRejectedSlug
+        try:
+            if OwidRejectedSlug.query.first() is not None:
+                OwidRejectedSlug.query.delete()
+                db.session.commit()
+        except Exception:   # a test with its own app and database
+            db.session.rollback()
+    yield
+
+
+@pytest.fixture(autouse=True)
 def _fresh_request_state():
     """Every test starts as a new request would: an empty flask.g and an empty
     database session.

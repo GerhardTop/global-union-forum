@@ -46,6 +46,8 @@ MAX_COUNTRIES = 4
 DEFAULT_YEARS = 10
 MAX_ATTEMPTS = 3
 MAX_DATA_AGE_YEARS = 5      # the last year with data at most this many years before now
+REJECT_MEMORY_DAYS = 30     # a chart rejected for a lasting reason stays out of the candidates this long
+LASTING_REASONS = ('unsupported', 'forbidden', 'no_data', 'stale')
 PENDING_AFTER = timedelta(minutes=10)
 SEARCH_HITS = 20
 
@@ -213,7 +215,8 @@ _SELECTION_SYSTEM = (
     "explain a longer period in the reason.\n"
     "7. Reason: one or two sentences in plain English that say what the chart shows and which question "
     "about the issue it helps to answer. Do not repeat or paraphrase the positions or wording of any "
-    "proposal, and do not suggest which proposal is better.\n\n"
+    "proposal, and do not suggest which proposal is better. Each reason must stand on its own. Do not refer "
+    "to other charts, since some may be dropped by the checks.\n\n"
     "Answer with JSON only, in this form:\n"
     '{"charts": [{"slug": "...", "countries": ["..."], "average": "..." or null, "years": 10, '
     '"reason": "...", "relevant_for": [proposal ids]}], '
@@ -404,6 +407,7 @@ def check_chart(item, ctx, candidates, http, notes, now=None):
         if exc.reason == 'network':
             raise
         notes.append(f'{slug}: {exc.reason}')
+        remember_rejected(slug, exc.reason)
         return None
     by_name = {name: key for key, name in parsed.names.items()}
     keys = []
@@ -425,6 +429,7 @@ def check_chart(item, ctx, candidates, http, notes, now=None):
     year_to = max(max(parsed.series[k]) for k in keys)
     if (now or datetime.utcnow()).year - year_to > MAX_DATA_AGE_YEARS:
         notes.append(f'{slug}: stale (the last data is from {year_to})')
+        remember_rejected(slug, 'stale')
         return None
     year_from = year_to - years + 1
     kept = [k for k in keys if owid.has_values(parsed, k, year_from, year_to)]
@@ -482,6 +487,29 @@ def check_links(answer, ctx, notes):
             elif (post_id, pid) not in out:
                 out.append((post_id, pid))
     return out
+
+
+# ── Charts no issue can use (step 1i) ────────────────────────────────────
+
+def remember_rejected(slug, reason, now=None):
+    """A chart fell away for a lasting reason (unsupported, forbidden,
+    no_data, stale): remember it for every issue, so the search leaves it out
+    for REJECT_MEMORY_DAYS. Network errors never get here. Does not commit."""
+    from app.models import OwidRejectedSlug
+    if reason not in LASTING_REASONS or not slug:
+        return
+    row = OwidRejectedSlug.query.filter_by(slug=slug).first()
+    if row is None:
+        row = OwidRejectedSlug(slug=slug)
+        db.session.add(row)
+    row.reason, row.checked_at = reason, now or datetime.utcnow()
+
+
+def recently_rejected(now=None):
+    """The slugs rejected for a lasting reason in the last REJECT_MEMORY_DAYS."""
+    from app.models import OwidRejectedSlug
+    since = (now or datetime.utcnow()) - timedelta(days=REJECT_MEMORY_DAYS)
+    return {slug for (slug,) in db.session.query(OwidRejectedSlug.slug).filter(OwidRejectedSlug.checked_at >= since)}
 
 
 # ── Freezing at the voting phase (step 1g) ──────────────────────────────
@@ -589,6 +617,7 @@ class PageState:
     """What the reader chose on the chart page (?weergave, ?periode, ?verberg)."""
     view: str = DEFAULT_VIEW
     period: str = DEFAULT_PERIOD
+    default_period: str = DEFAULT_PERIOD           # 'alles' when the AI chose more than ten years
     hidden: list = field(default_factory=list)
     periods: tuple = ('5', '10')
     keys: list = field(default_factory=list)       # every key that can be switched, in legend order
@@ -601,7 +630,7 @@ class PageState:
         out = {}
         if view != DEFAULT_VIEW:
             out['weergave'] = view
-        if period != DEFAULT_PERIOD:
+        if period != self.default_period:
             out['periode'] = period
         if hidden:
             out['verberg'] = ','.join(hidden)
@@ -626,8 +655,10 @@ def page_state(args, chart, snapshot):
     (weergave:tabel, periode:5, wissel:<key>) on top of the state."""
     keys = switchable_keys(chart, snapshot)
     periods = ('5', '10', 'alles') if len(snapshot.values.get('years', [])) > 10 else ('5', '10')
+    # The AI chose a longer period (its reason may count on it): open on all years.
+    default = 'alles' if 'alles' in periods and chart.year_to - chart.year_from + 1 > 10 else DEFAULT_PERIOD
     view = args.get('weergave') if args.get('weergave') in VIEWS else DEFAULT_VIEW
-    period = args.get('periode') if args.get('periode') in periods else DEFAULT_PERIOD
+    period = args.get('periode') if args.get('periode') in periods else default
     hidden = [k for k in dict.fromkeys((args.get('verberg') or '').split(',')) if k in keys]
     change = None
     what, _sep, value = (args.get('zet') or '').partition(':')
@@ -639,7 +670,8 @@ def page_state(args, chart, snapshot):
         hidden = [k for k in hidden if k != value] if value in hidden else hidden + [value]
         change = ('hidden' if value in hidden else 'shown', value)
     hidden = [k for k in keys if k in hidden]   # legend order
-    return PageState(view=view, period=period, hidden=hidden, periods=periods, keys=keys, change=change)
+    return PageState(view=view, period=period, default_period=default, hidden=hidden, periods=periods, keys=keys,
+                     change=change)
 
 
 def page_view(chart, snapshot, state, lang):
@@ -715,7 +747,7 @@ def select(ctx, client, http=None):
         out.none_reason = 'no search terms'
         return out
 
-    used = {c.slug for c in ctx.charts}
+    used = {c.slug for c in ctx.charts} | recently_rejected()
     candidates, errors = {}, 0
     for term in out.terms:
         try:

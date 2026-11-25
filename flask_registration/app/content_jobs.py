@@ -109,6 +109,9 @@ def _parts(obj):
         chart = obj.chart
         if chart is not None and chart.average_name:
             parts.append((chart, 'average_name'))
+        snapshot = chart.current_snapshot if chart is not None else None
+        if snapshot is not None:   # the definition and unit as the source gives them (English)
+            parts += [(snapshot, 'definition'), (snapshot, 'unit')]
     return parts
 
 
