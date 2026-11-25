@@ -4,6 +4,10 @@
 
 `docs/vraagstuk-ontwerp.md` is de canonieke bouw-specificatie voor het vraagstuk-model (Issue) en is bij elke bouwstap leidend.
 
+## Achtergrondcijfers
+
+`docs/achtergrondcijfers.md` is de bouw-specificatie voor de achtergrondcijfers (grafieken met cijfers uit open bronnen, door de AI geselecteerd, als soort feit) en is bij elke bouwstap van dat spoor leidend. Het ontwerp staat in `docs/design/achtergrondcijfers-kolom.html` (de kaart in de feitenkolom) en `docs/design/achtergrondcijfers-uitgeklapt.html` (de grafiekpagina).
+
 ## Communicatie
 
 Wanneer een taak vereist dat de gebruiker zelf iets buiten de chat doet (een wachtwoord of credential aanleveren, een commando met de hand draaien, of iets uitvoeren in een externe omgeving zoals de Neon- of Render-console), zet dat als allereerste zin van je antwoord, duidelijk zichtbaar. De gebruiker leest niet altijd het volledige antwoord.

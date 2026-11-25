@@ -1,0 +1,215 @@
+<!doctype html>
+<!--
+  Design-referentie (artboard Uitgeklapt.dc.html op het canvas "Achtergrondcijfers,
+  grafiek in kolom en uitgeklapt"). Statisch, alleen om naar te kijken en naartoe
+  te bouwen; geen app-code. VOORBEELDDATA: de getallen zijn niet echt.
+  Een achtergrondcijfer uitgeklapt, als eigen pagina (geopend via "Grafiek
+  uitvergroten" op de kaart in de feitenkolom). Spec: docs/achtergrondcijfers.md.
+  - Kruimelpad terug naar het vraagstuk.
+  - Bovenregel als in de kolom: "Neutraal", "AI-selectie" (uitleg hier open
+    getoond) en de meldvlag. Geen auteur.
+  - Bediening (in de app met een klein JS-bestand; zonder JS de volledige grafiek
+    en de tabel): Grafiek of Tabel; periode 5 jaar of 10 jaar (en "Alles" als de
+    AI een langere periode koos); legenda-knoppen zetten een land of het
+    gemiddelde aan en uit (aria-pressed; uit = grijs, gestippelde rand,
+    doorgestreept).
+  - "Spanje toevoegen" en "Land toevoegen" horen bij STAP 2 (niet in stap 1
+    bouwen). Het voorstel komt uit het profielveld "Mijn land" of de regio van de
+    browser; toegevoegde landen ziet alleen de lezer, met eigen kleur en
+    "door jou toegevoegd".
+  - Grafiek: y-as 0% tot 4% (5 rasterlijnen, nullijn donkerder), enkele
+    tussenjaren, lijnen 2,5 px, gemiddelde 2 px gestippeld grijs, punt en label
+    (naam en waarde) aan het eind van elke lijn, labels zonder overlap.
+    In de app schaalt de grafiek mee met de breedte; op mobiel staan de
+    zijkaarten onder de grafiek.
+  - Onder de grafiek de Tabelweergave zoals die eruitziet na "Tabel" (hier
+    allebei getoond; in de app is er een van de twee zichtbaar).
+  - Rechts "Over deze cijfers" (definitie, eenheid, bron, herkomst van het
+    gemiddelde, licentie, opgehaald, momentopname) en "Waarom deze grafiek":
+    de reden van de AI, daaronder "Gekoppeld aan" met de stellingen van de
+    gekoppelde voorstellen (links naar het voorstel, in de taal van de lezer,
+    na twee regels afgekapt; voorstellen hebben geen letter of korte titel).
+    "Gekoppeld aan" toont alle koppelingen die nu bestaan, door de AI of door
+    een deelnemer. Daaronder "Gekozen door AI op <datum>".
+  - Acties: Koppelen aan een voorstel, Betwisten, en Verwijderen (alleen voor
+    moderators; de regel "alleen voor moderators" is uitleg in dit ontwerp,
+    geen tekst in de app).
+-->
+<html lang="nl">
+<head>
+<meta charset="utf-8"><title>Achtergrondcijfer uitgeklapt</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
+<style>
+body{margin:0;background:#eef1f5;font-family:'Inter',system-ui,sans-serif;color:#141b22}
+a{color:#1b74b8;text-decoration:none}
+.page{width:1280px;box-sizing:border-box;padding:32px 48px;display:flex;flex-direction:column;gap:20px}
+.crumbs{display:flex;align-items:center;gap:8px;font-size:13px;color:#6c7683;flex-wrap:wrap}
+.crumbs a{display:inline-flex;align-items:center;gap:6px;font-weight:500}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+.card{background:#fff;border:1px solid #e4e9ef;border-radius:14px;box-shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05)}
+.main{padding:24px;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.neutraal{background:#ececee;color:#4b4f58}
+.ai{display:inline-flex;padding:2px 10px;border:1px solid #c5dcf4;border-radius:999px;background:#eaf2fb;color:#1b5e9a;font:600 12px/1.4 Inter,system-ui,sans-serif;cursor:help}
+.flag{margin-inline-start:auto;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:0;border-radius:6px;background:transparent;color:#6c7683;cursor:pointer}
+.tip{max-width:280px;box-sizing:border-box;padding:10px 12px;background:#141b22;color:#fff;border-radius:8px;font-size:12px;line-height:1.5}
+h1{margin:0;font-size:26px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.sub{margin:4px 0 0;font-size:14px;color:#6c7683}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.seg{display:inline-flex;gap:2px;padding:3px;background:#eef1f5;border:1px solid #e4e9ef;border-radius:9px}
+.seg button{min-height:32px;padding:0 14px;border:0;border-radius:7px;font:500 13px/1 Inter,system-ui,sans-serif;cursor:pointer;background:transparent;color:#525c69}
+.seg button[aria-pressed="true"]{background:#fff;color:#1b74b8;box-shadow:0 1px 2px rgba(15,25,35,.08)}
+.legend{list-style:none;margin:0;padding:0;display:flex;gap:8px;flex-wrap:wrap}
+.lg{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border-radius:999px;font:500 13px/1 Inter,system-ui,sans-serif;cursor:pointer;background:#fff;border:1px solid #c5dcf4;color:#3a434e}
+.lg b{font-weight:600;color:#141b22}
+.lg[aria-pressed="false"]{background:#f5f7f9;border:1px dashed #d3dae2;color:#6c7683;text-decoration:line-through}
+.sw{width:14px;height:3px;border-radius:2px;background:var(--c)}
+.sw--avg{width:16px;height:0;background:none;border-top:2px dashed var(--c)}
+.add{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;font:500 13px/1 Inter,system-ui,sans-serif;cursor:pointer}
+.chip--s{border:1px solid #c5dcf4;background:#eaf2fb;color:#1b5e9a}
+.chip--a{border:1px solid #e4e9ef;background:#fff;color:#3a434e}
+.note{font-size:12px;color:#6c7683}
+figure{margin:0;position:relative;width:752px;height:340px}
+figure svg{position:absolute;inset:0;display:block}
+.yl{position:absolute;inset-inline-start:0;width:40px;text-align:end;font-size:12px;line-height:16px;color:#525c69;font-variant-numeric:tabular-nums}
+.xl{position:absolute;top:318px;width:48px;text-align:center;font-size:12px;line-height:16px;color:#525c69}
+.el{position:absolute;left:632px;font-size:12px;line-height:16px;font-weight:600;white-space:nowrap}
+.tbl{overflow-x:auto;border:1px solid #e4e9ef;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+caption{text-align:start;padding:10px 14px;font-size:12px;color:#6c7683}
+thead tr{background:#f5f7f9}
+th,td{padding:8px 14px}
+thead th{font-weight:600;color:#3a434e;text-align:end}
+thead th:first-child,tbody th{text-align:start}
+tbody th{font-weight:500}
+tbody tr{border-top:1px solid #eef1f5}
+td{text-align:end;font-variant-numeric:tabular-nums}
+.foot{margin:0;font-size:12px;color:#6c7683;line-height:1.5}
+aside{display:flex;flex-direction:column;gap:16px}
+.side{padding:20px;display:flex;flex-direction:column;gap:12px}
+.side h2{margin:0;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#1b74b8}
+dl{margin:0;display:grid;grid-template-columns:104px minmax(0,1fr);gap:10px 12px;font-size:13px;line-height:1.45}
+dt{color:#6c7683}dd{margin:0}
+.why{margin:0;font-size:14px;line-height:1.55;color:#3a434e}
+.linked{display:flex;flex-direction:column;gap:6px;padding-top:4px;border-top:1px solid #eef1f5}
+.linked p{margin:0;font-size:12px;font-weight:600;color:#3a434e}
+.linked ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.45}
+.linked a{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{margin:0;font-size:12px;color:#6c7683}
+.actions{display:flex;flex-direction:column;gap:8px}
+.btn{min-height:44px;padding:8px 14px;border:1px solid #e4e9ef;border-radius:8px;background:#fff;color:#141b22;font:500 14px/1.2 Inter,system-ui,sans-serif;cursor:pointer}
+.row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.link{min-height:36px;padding:6px 2px;border:0;background:none;font:500 13px/1.2 Inter,system-ui,sans-serif;cursor:pointer}
+.link--dispute{color:#525c69;text-decoration:underline}
+.link--del{display:inline-flex;align-items:center;gap:6px;color:#b42318}
+</style>
+</head>
+<body>
+<div class="page">
+  <nav class="crumbs" aria-label="Kruimelpad">
+    <a href="achtergrondcijfers-kolom.html"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Terug naar het vraagstuk</a>
+    <span aria-hidden="true">·</span><span>Hoe versterken we de Europese defensie zonder de NAVO te ondermijnen?</span>
+    <span aria-hidden="true">·</span><span>Feiten en achtergrond</span>
+  </nav>
+
+  <div class="grid">
+    <article class="card main">
+      <div class="top">
+        <span class="pill neutraal">Neutraal</span>
+        <button type="button" class="ai" aria-label="AI-selectie. Uitleg tonen" aria-expanded="true" aria-describedby="ai-tip">AI-selectie</button>
+        <button type="button" class="flag" aria-label="Melden" title="Melden"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4a1 1 0 0 1 1-1h11l-2 4 2 4H6"/><path d="M5 21v-5"/></svg></button>
+      </div>
+      <div class="tip" id="ai-tip" role="tooltip"><strong>Door AI geselecteerd</strong> uit Our World in Data op 24 nov 2026. De cijfers komen rechtstreeks uit de bron.</div>
+
+      <div>
+        <h1>Defensie-uitgaven in % van het bbp</h1>
+        <p class="sub">2015 tot 2024 · 4 van 4 landen, met EU-gemiddelde</p>
+      </div>
+
+      <div class="bar">
+        <div class="seg" role="group" aria-label="Weergave"><button type="button" aria-pressed="true">Grafiek</button><button type="button" aria-pressed="false">Tabel</button></div>
+        <div class="seg" role="group" aria-label="Periode"><button type="button" aria-pressed="false">5 jaar</button><button type="button" aria-pressed="true">10 jaar</button></div>
+      </div>
+
+      <ul class="legend" aria-label="Landen tonen of verbergen"><li><button type="button" aria-pressed="true" class="lg"><span class="sw" style="--c:#1b74b8"></span>Polen <b>4,1%</b></button></li><li><button type="button" aria-pressed="true" class="lg"><span class="sw" style="--c:#e09400"></span>Frankrijk <b>2,1%</b></button></li><li><button type="button" aria-pressed="true" class="lg"><span class="sw" style="--c:#108a4e"></span>Duitsland <b>2,1%</b></button></li><li><button type="button" aria-pressed="true" class="lg"><span class="sw" style="--c:#7048c8"></span>Nederland <b>2,0%</b></button></li><li><button type="button" aria-pressed="true" class="lg"><span class="sw sw--avg" style="--c:#6c7683"></span>EU-gemiddelde <b>1,9%</b></button></li></ul>
+
+      <div class="add">
+        <button type="button" class="chip chip--s"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Spanje toevoegen</button>
+        <button type="button" class="chip chip--a" aria-expanded="false"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Land toevoegen</button>
+        <span class="note">Voorstel op basis van je profiel of de regio van je browser. (stap 2)</span>
+      </div>
+
+      <figure role="img" aria-label="Lijngrafiek van defensie-uitgaven in procent van het bbp, 2015 tot 2024. De tabelweergave geeft alle waarden.">
+        <svg viewBox="0 0 752 340" width="752" height="340" aria-hidden="true">
+          <line x1="48" x2="620" y1="300.0" y2="300.0" stroke="#a7b1bd"/>
+          <line x1="48" x2="620" y1="236.4" y2="236.4" stroke="#e4e9ef"/>
+          <line x1="48" x2="620" y1="172.9" y2="172.9" stroke="#e4e9ef"/>
+          <line x1="48" x2="620" y1="109.3" y2="109.3" stroke="#e4e9ef"/>
+          <line x1="48" x2="620" y1="45.8" y2="45.8" stroke="#e4e9ef"/>
+          <polyline points="48.0,179.2 111.6,172.9 175.1,179.2 238.7,172.9 302.2,172.9 365.8,160.2 429.3,160.2 492.9,147.5 556.4,58.5 620.0,39.4" fill="none" stroke="#1b74b8" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="620" cy="39.4" r="4" fill="#1b74b8"/>
+          <polyline points="48.0,179.2 111.6,179.2 175.1,179.2 238.7,179.2 302.2,179.2 365.8,172.9 429.3,179.2 492.9,179.2 556.4,172.9 620.0,166.5" fill="none" stroke="#e09400" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="620" cy="166.5" r="4" fill="#e09400"/>
+          <polyline points="48.0,226.9 111.6,223.7 175.1,223.7 238.7,220.6 302.2,214.2 365.8,211.0 429.3,214.2 492.9,211.0 556.4,198.3 620.0,166.5" fill="none" stroke="#108a4e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="620" cy="166.5" r="4" fill="#108a4e"/>
+          <polyline points="48.0,230.1 111.6,226.9 175.1,223.7 238.7,220.6 302.2,217.4 365.8,214.2 429.3,211.0 492.9,198.3 556.4,192.0 620.0,172.9" fill="none" stroke="#7048c8" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="620" cy="172.9" r="4" fill="#7048c8"/>
+          <polyline points="48.0,214.2 111.6,214.2 175.1,214.2 238.7,211.0 302.2,207.8 365.8,204.7 429.3,207.8 492.9,201.5 556.4,188.8 620.0,176.1" fill="none" stroke="#6c7683" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="620" cy="176.1" r="4" fill="#6c7683"/>
+        </svg>
+        <span class="el" style="top:31px;color:#1b74b8">Polen 4,1%</span><span class="el" style="top:159px;color:#108a4e">Duitsland 2,1%</span><span class="el" style="top:176px;color:#e09400">Frankrijk 2,1%</span><span class="el" style="top:193px;color:#7048c8">Nederland 2,0%</span><span class="el" style="top:210px;color:#6c7683">EU-gemiddelde 1,9%</span><span class="yl" style="top:292px">0%</span><span class="yl" style="top:228px">1%</span><span class="yl" style="top:165px">2%</span><span class="yl" style="top:101px">3%</span><span class="yl" style="top:38px">4%</span><span class="xl" style="left:24px">2015</span><span class="xl" style="left:215px">2018</span><span class="xl" style="left:405px">2021</span><span class="xl" style="left:596px">2024</span>
+      </figure>
+
+      <div class="tbl">
+        <table>
+          <caption>Tabelweergave (na "Tabel", periode 5 jaar): defensie-uitgaven in % van het bbp, per jaar</caption>
+          <thead><tr><th scope="col">Jaar</th><th scope="col">Polen</th><th scope="col">Frankrijk</th><th scope="col">Duitsland</th><th scope="col">Nederland</th><th scope="col">EU-gemiddelde</th></tr></thead>
+          <tbody><tr><th scope="row">2024</th><td>4,1%</td><td>2,1%</td><td>2,1%</td><td>2,0%</td><td>1,9%</td></tr><tr><th scope="row">2023</th><td>3,8%</td><td>2,0%</td><td>1,6%</td><td>1,7%</td><td>1,8%</td></tr><tr><th scope="row">2022</th><td>2,4%</td><td>1,9%</td><td>1,4%</td><td>1,6%</td><td>1,6%</td></tr><tr><th scope="row">2021</th><td>2,2%</td><td>1,9%</td><td>1,4%</td><td>1,4%</td><td>1,4%</td></tr><tr><th scope="row">2020</th><td>2,2%</td><td>2,0%</td><td>1,4%</td><td>1,4%</td><td>1,5%</td></tr></tbody>
+        </table>
+      </div>
+
+      <p class="foot">Voorbeelddata in dit ontwerp. Bron: <a href="#">SIPRI Military Expenditure Database, via Our World in Data</a> · Opgehaald op 24 nov 2026</p>
+    </article>
+
+    <aside>
+      <section class="card side" aria-labelledby="over-h">
+        <h2 id="over-h">Over deze cijfers</h2>
+        <dl>
+          <dt>Definitie</dt><dd>Militaire uitgaven van de overheid als percentage van het bruto binnenlands product.</dd>
+          <dt>Eenheid</dt><dd>% van het bbp</dd>
+          <dt>Bron</dt><dd>SIPRI Military Expenditure Database, via Our World in Data</dd>
+          <dt>Gemiddelde</dt><dd>EU-27, zoals de bron het levert [herkomst uit de metadata]</dd>
+          <dt>Licentie</dt><dd>[Licentie uit de metadata], met bronvermelding</dd>
+          <dt>Opgehaald</dt><dd>24 nov 2026</dd>
+          <dt>Momentopname</dt><dd>Wordt bevroren als de stemfase begint, zodat iedereen over dezelfde cijfers stemt.</dd>
+        </dl>
+      </section>
+
+      <section class="card side" aria-labelledby="waarom-h">
+        <h2 id="waarom-h">Waarom deze grafiek</h2>
+        <p class="why">[Reden van de AI, in één of twee zinnen: wat de grafiek laat zien en voor welke voorstellen of kanten van het vraagstuk hij relevant is.]</p>
+        <div class="linked">
+          <p>Gekoppeld aan</p>
+          <ul>
+            <li><a href="#">De EU bouwt een eigen leger op, naast de NAVO.</a></li>
+            <li><a href="#">Alle EU-landen halen binnen vijf jaar de NAVO-norm voor defensie-uitgaven.</a></li>
+          </ul>
+        </div>
+        <p class="meta">Gekozen door AI op 24 nov 2026</p>
+      </section>
+
+      <div class="actions">
+        <button type="button" class="btn">Koppelen aan een voorstel</button>
+        <div class="row">
+          <button type="button" class="link link--dispute">Betwisten</button>
+          <button type="button" class="link link--del"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>Verwijderen</button>
+          <span class="note">Verwijderen: alleen voor moderators</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+</body>
+</html>

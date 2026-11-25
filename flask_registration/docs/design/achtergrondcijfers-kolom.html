@@ -1,0 +1,105 @@
+<!doctype html>
+<!--
+  Design-referentie (artboard Main.dc.html op het canvas "Achtergrondcijfers,
+  grafiek in kolom en uitgeklapt"). Statisch, alleen om naar te kijken en
+  naartoe te bouwen; geen app-code. VOORBEELDDATA: de getallen zijn niet echt.
+  Een achtergrondcijfer in de feitenkolom van de cockpit (circa 280 px breed),
+  tussen gewone feiten (grijs weergegeven). Spec: docs/achtergrondcijfers.md.
+  - Bovenregel: de pil "Neutraal" (altijd), de pil "AI-selectie" (zonder icoon,
+    een echte knop) en rechts de meldvlag, zoals bij andere feiten.
+  - AI-selectie toont bij aanwijzen, focus of aantikken de uitleg: "Door AI
+    geselecteerd uit <bron> op <datum>. De cijfers komen rechtstreeks uit de
+    bron." Hieronder staat de uitleg open, om hem te laten zien.
+  - Geen auteur: de cijfers komen van de bron, de AI maakt alleen een selectie.
+  - Titel, periode en aantal landen, kleine lijngrafiek (y-as 3 labels vanaf 0,
+    alleen begin- en eindjaar, lijnen 2 px, het gemiddelde gestippeld grijs),
+    legenda in twee kolommen met de laatste waarde, bron, link "Grafiek
+    uitvergroten" naar de grafiekpagina (achtergrondcijfers-uitgeklapt.html).
+  - In de app blijft het vergroot-icoon in de kop van de kolom de feitenlijst
+    vergroten (zoals nu); alleen "Grafiek uitvergroten" opent de grafiekpagina.
+  - Kleuren in vaste volgorde: blauw, oranje, groen, paars; gemiddelde grijs en
+    gestippeld.
+-->
+<html lang="nl">
+<head>
+<meta charset="utf-8"><title>Achtergrondcijfer in de feitenkolom</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
+<style>
+body{margin:0;background:#eef1f5;font-family:'Inter',system-ui,sans-serif;color:#141b22}
+a{color:#1b74b8;text-decoration:none}
+.wrap{width:360px;box-sizing:border-box;padding:24px}
+.col{background:#fff;border:1px solid #e4e9ef;border-radius:14px;box-shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05);padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.head{display:flex;align-items:center;justify-content:space-between}
+.head h2{margin:0;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#1b74b8}
+.head h2 span{color:#6c7683;font-weight:500;letter-spacing:.04em}
+.icon{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #e4e9ef;border-radius:8px;color:#525c69}
+.ghost{background:#f5f7f9;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;opacity:.55}
+.ghost i{display:block;height:10px;background:#d3dae2;border-radius:4px}
+.pill{align-self:flex-start;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.card{background:#f5f7f9;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;position:relative}
+.top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.neutraal{background:#ececee;color:#4b4f58}
+.ai{display:inline-flex;padding:2px 10px;border:1px solid #c5dcf4;border-radius:999px;background:#eaf2fb;color:#1b5e9a;font:600 12px/1.4 Inter,system-ui,sans-serif;cursor:help}
+.flag{margin-inline-start:auto;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:0;border-radius:6px;background:transparent;color:#6c7683;cursor:pointer}
+.tip{box-sizing:border-box;padding:10px 12px;background:#141b22;color:#fff;border-radius:8px;font-size:12px;line-height:1.5}
+h3{margin:0;font-size:15px;font-weight:600;line-height:1.35}
+.sub{margin:0;font-size:12px;color:#6c7683}
+figure{margin:0;position:relative;width:252px;height:136px}
+figure svg{position:absolute;inset:0;display:block}
+.yl{position:absolute;inset-inline-start:0;width:24px;text-align:end;font-size:11px;line-height:14px;color:#525c69}
+.xl{position:absolute;top:120px;font-size:11px;line-height:14px;color:#525c69}
+.leg{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}
+.leg li{display:flex;align-items:center;gap:6px;font-size:12px;color:#3a434e}
+.leg b{margin-inline-start:auto;font-weight:600;color:#141b22}
+.sw{width:10px;height:3px;border-radius:2px;background:var(--c)}
+.sw--avg{width:12px;height:0;background:none;border-top:2px dashed var(--c)}
+.src{margin:2px 0 0;font-size:12px;color:#6c7683;line-height:1.45}
+.more{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:32px;font-size:13px;font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="col" aria-labelledby="facts-h">
+    <div class="head">
+      <h2 id="facts-h">Feiten en achtergrond <span>(6)</span></h2>
+      <a class="icon" href="#" aria-label="Feiten uitvergroten"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></a>
+    </div>
+
+    <div class="ghost" aria-hidden="true"><span class="pill" style="background:#e3f3ea;color:#11633d">Pleit voor</span><i style="width:92%"></i><i style="width:70%"></i></div>
+
+    <article class="card">
+      <div class="top">
+        <span class="pill neutraal">Neutraal</span>
+        <button type="button" class="ai" aria-label="AI-selectie. Uitleg tonen" aria-expanded="true" aria-describedby="ai-tip">AI-selectie</button>
+        <button type="button" class="flag" aria-label="Melden" title="Melden"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4a1 1 0 0 1 1-1h11l-2 4 2 4H6"/><path d="M5 21v-5"/></svg></button>
+      </div>
+      <div class="tip" id="ai-tip" role="tooltip"><strong>Door AI geselecteerd</strong> uit Our World in Data op 24 nov 2026. De cijfers komen rechtstreeks uit de bron.</div>
+
+      <h3>Defensie-uitgaven in % van het bbp</h3>
+      <p class="sub">2015 tot 2024 · 4 landen en EU-gemiddelde · voorbeelddata</p>
+
+      <figure role="img" aria-label="Lijngrafiek van defensie-uitgaven in procent van het bbp, 2015 tot 2024, voor Polen, Frankrijk, Duitsland en Nederland, met het EU-gemiddelde">
+        <svg viewBox="0 0 252 136" width="252" height="136" aria-hidden="true">
+          <line x1="28" x2="250" y1="112.0" y2="112.0" stroke="#a7b1bd"/>
+          <line x1="28" x2="250" y1="65.8" y2="65.8" stroke="#e4e9ef"/>
+          <line x1="28" x2="250" y1="19.6" y2="19.6" stroke="#e4e9ef"/>
+          <polyline points="28.0,68.1 52.7,65.8 77.3,68.1 102.0,65.8 126.7,65.8 151.3,61.2 176.0,61.2 200.7,56.5 225.3,24.2 250.0,17.2" fill="none" stroke="#1b74b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <polyline points="28.0,68.1 52.7,68.1 77.3,68.1 102.0,68.1 126.7,68.1 151.3,65.8 176.0,68.1 200.7,68.1 225.3,65.8 250.0,63.5" fill="none" stroke="#e09400" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <polyline points="28.0,85.4 52.7,84.3 77.3,84.3 102.0,83.1 126.7,80.8 151.3,79.6 176.0,80.8 200.7,79.6 225.3,75.0 250.0,63.5" fill="none" stroke="#108a4e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <polyline points="28.0,86.6 52.7,85.4 77.3,84.3 102.0,83.1 126.7,82.0 151.3,80.8 176.0,79.6 200.7,75.0 225.3,72.7 250.0,65.8" fill="none" stroke="#7048c8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <polyline points="28.0,80.8 52.7,80.8 77.3,80.8 102.0,79.6 126.7,78.5 151.3,77.3 176.0,78.5 200.7,76.2 225.3,71.6 250.0,66.9" fill="none" stroke="#6c7683" stroke-width="1.75" stroke-dasharray="5 4" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+        <span class="yl" style="top:105px">0%</span><span class="yl" style="top:59px">2%</span><span class="yl" style="top:13px">4%</span><span class="xl" style="left:28px">2015</span><span class="xl" style="right:2px">2024</span>
+      </figure>
+
+      <ul class="leg"><li><span class="sw" style="--c:#1b74b8"></span>Polen<b>4,1%</b></li><li><span class="sw" style="--c:#e09400"></span>Frankrijk<b>2,1%</b></li><li><span class="sw" style="--c:#108a4e"></span>Duitsland<b>2,1%</b></li><li><span class="sw" style="--c:#7048c8"></span>Nederland<b>2,0%</b></li><li><span class="sw sw--avg" style="--c:#6c7683"></span>EU-gem.<b>1,9%</b></li></ul>
+
+      <p class="src">Bron: <a href="#">SIPRI, via Our World in Data</a></p>
+      <a class="more" href="achtergrondcijfers-uitgeklapt.html"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Grafiek uitvergroten</a>
+    </article>
+
+    <div class="ghost" aria-hidden="true"><span class="pill" style="background:#fde7e7;color:#b42318">Pleit tegen</span><i style="width:88%"></i><i style="width:60%"></i></div>
+  </section>
+</div>
+</body>
+</html>
