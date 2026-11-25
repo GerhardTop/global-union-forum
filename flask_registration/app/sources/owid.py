@@ -263,12 +263,15 @@ def snapshot_data(parsed, year_from, year_to):
 
 
 def create_snapshot(chart, parsed, metadata_raw, year_from, year_to):
-    """A ChartSnapshot (version 1, fetched now) for `chart`. No commit."""
+    """A new ChartSnapshot (fetched now) for `chart`: version 1, or the next
+    version when the chart has one already. Never overwrites a snapshot (a
+    frozen one stays as it is). No commit."""
     from app.models import ChartSnapshot
     if not isinstance(metadata_raw, str):
         metadata_raw = json.dumps(metadata_raw, ensure_ascii=False)
+    version = max((s.version or 0 for s in chart.snapshots), default=0) + 1 if chart.id is not None else 1
     snapshot = ChartSnapshot(
-        version=1, fetched_at=datetime.utcnow(),
+        version=version, fetched_at=datetime.utcnow(),
         title=parsed.title[:300], subtitle=parsed.subtitle, unit=parsed.unit[:120],
         short_unit=parsed.short_unit[:40], definition=parsed.definition, citation=parsed.citation,
         citation_short=parsed.citation_short, source_url=parsed.source_url[:500], license=DEFAULT_LICENSE,

@@ -60,7 +60,7 @@
           <dt>{{ _('Licence') }}</dt>
           <dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">{{ _('CC BY 4.0, with attribution') }}</a>. {{ _('Data from other organisations may have their own terms; see the source.') }}</dd>
           {% if fetched %}<dt>{{ _('Retrieved') }}</dt><dd>{{ fetched }}</dd>{% endif %}
-          <dt>{{ _('Snapshot') }}</dt><dd>{{ _('Will be frozen when voting starts, so everyone votes on the same figures.') }}</dd>
+          <dt>{{ _('Snapshot') }}</dt><dd>{% if frozen %}{{ _('Frozen on %(date)s when voting started, so everyone votes on the same figures.', date=frozen) }}{% else %}{{ _('Will be frozen when voting starts, so everyone votes on the same figures.') }}{% endif %}</dd>
         </dl>
       </section>
 

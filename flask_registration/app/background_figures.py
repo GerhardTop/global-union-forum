@@ -484,6 +484,28 @@ def check_links(answer, ctx, notes):
     return out
 
 
+# ── Freezing at the voting phase (step 1g) ──────────────────────────────
+
+def freeze_for_issue(issue_id, now=None):
+    """Set frozen_at on the current snapshot of every chart of this issue
+    that is not frozen yet, in one UPDATE (issue_lifecycle.set_phase, when the
+    voting phase starts). A frozen snapshot never changes again, also not
+    when the issue is reopened; a newer one could only come next to it
+    (create_snapshot takes the next version). Does not commit."""
+    from sqlalchemy import and_, select, update
+    from app.models import ChartSnapshot, FactChart
+    newer = ChartSnapshot.__table__.alias('newer')
+    current = (select(ChartSnapshot.id).join(FactChart, FactChart.id == ChartSnapshot.chart_id)
+               .where(FactChart.issue_id == issue_id)
+               .where(~select(newer.c.id).where(and_(newer.c.chart_id == ChartSnapshot.chart_id,
+                                                     newer.c.version > ChartSnapshot.version)).exists()))
+    db.session.execute(update(ChartSnapshot)
+                       .where(ChartSnapshot.id.in_(current.scalar_subquery()))
+                       .where(ChartSnapshot.frozen_at.is_(None))
+                       .values(frozen_at=now or datetime.utcnow())
+                       .execution_options(synchronize_session=False))
+
+
 # ── Showing the charts (step 1e) ─────────────────────────────────────────
 
 def charts_for(posts):
@@ -763,10 +785,10 @@ def publish(ctx, outcome):
         db.session.add(chart)
         owid.create_snapshot(chart, item.parsed, item.metadata, item.year_from, item.year_to)
         for pid in item.proposal_ids:
-            db.session.add(IssueProposalFact(proposal_id=pid, fact_post_id=post.id, linked_by_id=None))
+            db.session.add(IssueProposalFact(proposal_id=pid, fact_post_id=post.id, linked_by_id=None, by_ai=True))
         content_jobs.schedule(post)   # title, reason and average name into the other languages; no judgement
     for post_id, pid in outcome.links:
-        db.session.add(IssueProposalFact(proposal_id=pid, fact_post_id=post_id, linked_by_id=None))
+        db.session.add(IssueProposalFact(proposal_id=pid, fact_post_id=post_id, linked_by_id=None, by_ai=True))
 
 
 def _claim(run_row):

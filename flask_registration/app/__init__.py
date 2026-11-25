@@ -365,6 +365,8 @@ _POLISH_COLUMNS = {
     # Background figures step 1e: the name of the average as the source writes
     # it (English), translated with the fact (the table came in step 1b).
     'fact_charts': (('average_name', 'VARCHAR(200) NULL'),),
+    # Background figures step 1g: a link laid by the AI (not "no person").
+    'issue_proposal_facts': (('by_ai', 'BOOLEAN NOT NULL DEFAULT FALSE'),),
 }
 
 

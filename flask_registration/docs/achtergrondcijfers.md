@@ -53,7 +53,7 @@ Uitvoer per indicator: bron, slug, landen, gemiddelde (of geen), periode, reden,
 De app controleert: slug bestaat, landen en gemiddelde staan in de data, periode heeft data, het laatste jaar met data is hoogstens vijf jaar oud, niet eerder verwijderd, niet meer dan vier in totaal. Faalt iets, dan valt de indicator af; niets repareren of raden.
 
 ## Koppelen aan voorstellen
-- De AI koppelt automatisch ("relevant voor"), als IssueProposalFact zonder linked_by. De voorsteller (en een moderator) kan ontkoppelen met de bestaande knop op de voorstelpagina; daar staat bij zo'n koppeling "Gekoppeld door AI" (nu staat bij een koppeling zonder persoon "@deleted_user"). issue_proposals.can_unlink moet daarvoor ook de voorsteller toelaten bij een koppeling zonder persoon.
+- De AI koppelt automatisch ("relevant voor"), als IssueProposalFact met by_ai = true. De voorsteller (en een moderator) kan ontkoppelen met de bestaande knop op de voorstelpagina; daar staat bij zo'n koppeling "Gekoppeld door AI". issue_proposals.can_unlink laat daarvoor ook de voorsteller toe bij een koppeling met by_ai. Een koppeling van een lid dat later zijn account verwijderde (geen persoon meer, maar by_ai = false) blijft "@deleted_user" en volgt de gewone regel.
 - Een losgemaakte koppeling zet de AI niet opnieuw.
 - Op de grafiekpagina staat onder "Waarom deze grafiek" het kopje "Gekoppeld aan" met de stellingen van alle voorstellen die nu gekoppeld zijn, door de AI of door een deelnemer (voorstellen hebben geen letter of korte titel). Elke stelling linkt naar het voorstel, in de taal van de lezer, na twee regels afgekapt. Wie koppelde staat op de voorstelpagina, niet hier.
 
@@ -92,14 +92,15 @@ Laag: één AI-aanroep per vraagstuk en per nieuw voorstel, plus vertaling van t
 
 ## Bouwvolgorde
 1. OWID, in deelstappen (elk een eigen opdracht, eigen tests, push via scripts/check_and_push.sh):
-   1a. deze opzet en de artboards in de repo;
-   1b. datamodel en OWID-adapter (ophalen, momentopname);
-   1c. grafiekstandaard in code (SVG uit Python, tabel, getalnotatie);
-   1d. zoeken via de Search API van OWID, de AI-keuze, controle, publiceren en koppelen, met het geheugen voor verwijderd en ontkoppeld; achter de schakelaar BACKGROUND_FIGURES;
-   1e. kaart in de kolom, meldvlag, verwijderen door een moderator;
-   1f. grafiekpagina;
-   1g. bevriezen bij de stemfase, ontkoppelen door de voorsteller ("Gekoppeld door AI");
-   1h. teksten in vijf talen (naleesbestanden opnieuw exporteren).
+   1a. deze opzet en de artboards in de repo (klaar, 25 november 2026);
+   1b. datamodel en OWID-adapter (ophalen, momentopname) (klaar, 25 november 2026);
+   1c. grafiekstandaard in code (SVG uit Python, tabel, getalnotatie) (klaar, 25 november 2026);
+   1d. zoeken via de Search API van OWID, de AI-keuze, controle, publiceren en koppelen, met het geheugen voor verwijderd en ontkoppeld; achter de schakelaar BACKGROUND_FIGURES (klaar, 25 november 2026);
+   1e. kaart in de kolom, meldvlag, verwijderen door een moderator (klaar, 25 november 2026);
+   1f. grafiekpagina (klaar, 25 november 2026);
+   1g. bevriezen bij de stemfase, ontkoppelen door de voorsteller ("Gekoppeld door AI") (klaar, 25 november 2026);
+   1h. teksten in vijf talen (naleesbestanden opnieuw exporteren) (klaar, 25 november 2026).
+   Aanzetten: BACKGROUND_FIGURES=1 op Render. Daarna maakt elk nieuw vraagstuk in de feitenfase een keuzeronde; bestaande vraagstukken krijgen alleen een ronde bij een nieuw voorstel.
 2. Land toevoegen en het profielveld "Mijn land" (met de eenmalige vraag).
 3. Eurostat erbij.
 4. Feitkaart (een groot getal uit een gewoon feit, alleen als het getal letterlijk in de tekst staat) als aanvulling.

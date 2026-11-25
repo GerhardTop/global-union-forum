@@ -285,10 +285,10 @@ def can_link(proposal, user):
 
 def can_unlink(link, user):
     """Who linked it, or a moderator. A link the AI made (background figures,
-    no person behind it) may also be undone by the proposer."""
+    by_ai) may also be undone by the proposer."""
     if not (getattr(user, 'is_authenticated', False) and _link_open(link.proposal.issue)):
         return False
-    if link.linked_by_id is None and link.proposal.created_by_id == user.id:
+    if link.by_ai and link.proposal.created_by_id == user.id:
         return True
     return link.linked_by_id == user.id or user.can_moderate()
 
@@ -337,9 +337,9 @@ def link_ids(proposal, fact_ids, user):
 
 
 def unlink(row):
-    """Undo a link. An AI link (no person behind it) is remembered, so the
+    """Undo a link. An AI link (by_ai) is remembered, so the
     AI does not lay it again (background figures). Commit niet zelf."""
-    if row.linked_by_id is None:
+    if row.by_ai:
         from app import background_figures
         background_figures.block_link(row.proposal.issue_id, row.proposal_id, row.fact_post_id)
     db.session.delete(row)

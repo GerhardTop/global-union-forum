@@ -1141,6 +1141,9 @@ class IssueProposalFact(db.Model):
     proposal_id  = db.Column(db.Integer, db.ForeignKey('issue_proposals.id'), nullable=False, index=True)
     fact_post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False, index=True)
     linked_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    # Background figures (step 1g): laid by the AI. Not "linked_by_id is
+    # empty": that is also a member who deleted their account.
+    by_ai        = db.Column(db.Boolean, nullable=False, default=False)
     created_at   = db.Column(db.DateTime, default=datetime.utcnow)
 
     __table_args__ = (db.UniqueConstraint('proposal_id', 'fact_post_id', name='uq_issue_proposal_fact'),)

@@ -264,6 +264,7 @@ def chart_page(issue_id, post_id):
                countries_text=_list_text([names.get(k, k) for k in shown], lang),
                citation=snapshot.citation or bf.short_citation(snapshot),
                fetched=format_date(snapshot.fetched_at, 'medium') if snapshot.fetched_at else '',
+               frozen=format_date(snapshot.frozen_at, 'medium') if snapshot.frozen_at else '',
                chosen=format_date(fact.created_at, 'medium') if fact.created_at else '',
                base_url=url_for('issues.chart_page', issue_id=issue.id, post_id=fact.id))
     if fragment:

@@ -102,6 +102,9 @@ def test_a_deleted_chart_is_gone(app, db, make_user, made, started, watched):
     _req(_client(app, moderator), 'POST', f'/forum/feit/{chart.post_id}/grafiek-verwijderen',
          data={'return_to': issue.id})
     assert _get(app, issue, chart).status_code == 404
+    from app.models import ModerationAction
+    ModerationAction.query.filter_by(action='delete_chart', actor_id=moderator.id).delete()   # clean up
+    db.session.commit()
 
 
 # ── The query string ─────────────────────────────────────────────────────

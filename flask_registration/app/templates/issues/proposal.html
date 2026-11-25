@@ -90,7 +90,7 @@
               <li class="gu-fact gu-fact--{{ fact.fact_direction }}{% if fact.fact_title %} gu-fact--titled{% endif %}" id="koppeling-{{ row.id }}">
                 {% include 'issues/_fact_card.html' %}
                 <div class="gu-pv__factmeta">
-                  <span>{{ _('Linked by') }} {{ row.linked_by.public_name if row.linked_by else '@deleted_user' }}</span>
+                  <span>{% if row.by_ai %}{{ _('Linked by AI') }}{% else %}{{ _('Linked by') }} {{ row.linked_by.public_name if row.linked_by else '@deleted_user' }}{% endif %}</span>
                   {% if can_unlink(row) %}
                   <form method="POST" action="{{ url_for('issues.proposal_unlink', issue_id=issue.id, proposal_id=proposal.id, link_id=row.id) }}">
                     {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}

@@ -136,7 +136,7 @@ def test_a_moderator_removes_a_chart(app, db, make_user, made, started, watched)
     assert resp.status_code in (302, 303) and 'vergroot=feiten' in resp.headers['Location']
     assert db.session.get(Post, post_id) is None and FactChart.query.filter_by(post_id=post_id).count() == 0
     assert ChartBlock.query.filter_by(issue_id=issue.id, kind='slug', slug=chart.slug).count() == 1
-    action = ModerationAction.query.filter_by(action='delete_chart', target_id=post_id).one()
+    action = ModerationAction.query.filter_by(action='delete_chart', target_id=post_id, actor_id=moderator.id).one()
     assert action.issue_id == issue.id and action.actor_id == moderator.id
     # The manage screen (an admin may open it) shows the logged action.
     manage = _req(_client(app, make_user(role='senior_moderator', admin=True)), 'GET', f'/moderator/vraagstuk/{issue.id}/beheer')
