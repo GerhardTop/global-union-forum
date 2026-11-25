@@ -51,11 +51,20 @@ LASTING_REASONS = ('unsupported', 'forbidden', 'no_data', 'stale')
 PENDING_AFTER = timedelta(minutes=10)
 SEARCH_HITS = 20
 
-# Rule 4b: fixed sets per region (for now in code; later in the admin).
-REGION_SETS = {
-    'Europe': ('Germany', 'France', 'Netherlands', 'Poland'),
-    'World': ('United States', 'China', 'India', 'European Union (27)'),
-}
+# Rule 4b: fixed sets per region (for now in code; later in the admin), as
+# ISO2 codes of our country list. The world set has the EU as its average.
+EUROPE_SET = ('DE', 'FR', 'NL', 'PL')
+WORLD_SET = ('US', 'CN', 'IN')
+WORLD_AVERAGE = 'European Union (27)'
+# European countries (for the choice of region): the EU, the EEA, the UK,
+# Switzerland, the Balkans and the east of Europe.
+EUROPEAN = frozenset((
+    'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU',
+    'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'CH', 'GB', 'AL', 'BA', 'ME', 'MK',
+    'RS', 'XK', 'MD', 'UA', 'BY', 'AD', 'MC', 'SM', 'VA', 'TR', 'GE', 'AM', 'AZ', 'RU'))
+# Words for "the world" in the five languages: they make the region the world.
+_WORLD_WORDS = re.compile(r'(?<!\w)(?:world|global|globally|wereld|wereldwijd|mondiaal|welt|weltweit|global|'
+                          r'mundo|mundial|monde|mondial|mondiale)(?!\w)', flags=re.I)
 # Names of entities that can serve as an average or total, as OWID writes
 # them (the source supplies them; we never compute one).
 _AVERAGE_NAMES = ('World', 'European Union (27)', 'Europe', 'Africa', 'Asia', 'North America',
@@ -259,7 +268,19 @@ class Context:
     charts: list = field(default_factory=list)          # existing FactCharts
     blocked_slugs: set = field(default_factory=set)
     blocked_links: set = field(default_factory=set)     # (proposal_id, fact_post_id)
-    mentioned: list = field(default_factory=list)       # English names of countries named
+    mentioned: list = field(default_factory=list)       # English (OWID) names of the countries named
+    named: list = field(default_factory=list)           # ISO2 of the countries named in the texts
+    fixed: list = field(default_factory=list)           # ISO2 of the region's fixed set
+    region: str = 'Europe'                              # 'Europe' or 'World'
+
+    @property
+    def allowed(self):
+        """Rule 4: the countries named; if none, the fixed set of the region;
+        with fewer than four named, the fixed set may fill up to four."""
+        if not self.named:
+            return list(self.fixed)
+        fill = [c for c in self.fixed if c not in self.named] if len(self.named) < MAX_COUNTRIES else []
+        return list(self.named) + fill
 
 
 def _text(obj, field_name):
@@ -269,24 +290,68 @@ def _text(obj, field_name):
     return original, english
 
 
+def owid_name(iso2):
+    """The name OWID gives one of our countries (its entity name)."""
+    from app.sources import countries
+    return _OWID_NAMES.get(iso2) or countries.english_name(iso2)
+
+
 def _country_names():
-    """{iso2: set of names in every language we know} for our country list."""
+    """{iso2: set of names} for our country list: nl and en from our list,
+    de, es and fr from Babel, and the name OWID uses. Country names only:
+    adjectives ("Duitse", "Polish") are not reliable enough to match."""
+    from babel import Locale
     from app.sources import countries
     rows = countries._our_rows()
-    return {iso2: {n for n in names.values() if n} for iso2, names in rows.items()}
+    babel = {lang: Locale.parse(lang).territories for lang in ('de', 'es', 'fr')}
+    out = {}
+    for iso2, names in rows.items():
+        found = {n for n in names.values() if n}
+        found.update(t[iso2] for t in babel.values() if t.get(iso2))
+        if owid_name(iso2):
+            found.add(owid_name(iso2))
+        out[iso2] = found
+    return out
 
 
-def _mentioned_countries(texts):
-    """English names (as in our list) of the countries named in the texts."""
-    from app.sources import countries
+def named_countries(texts):
+    """ISO2 codes of the countries of our list named in the texts: whole
+    words, any case, in nl, en, de, es or fr."""
     blob = ' '.join(t for t in texts if t)
     out = []
     for iso2, names in _country_names().items():
         if any(re.search(rf'(?<!\w){re.escape(name)}(?!\w)', blob, flags=re.I) for name in names):
-            english = _OWID_NAMES.get(iso2) or countries.english_name(iso2)
-            if english:
-                out.append(english)
+            out.append(iso2)
     return sorted(out)
+
+
+def region_for(texts, named):
+    """'World' when the texts name a country outside Europe or the world
+    itself ("wereld", "world", "global" ...); else 'Europe'."""
+    blob = ' '.join(t for t in texts if t)
+    if any(code not in EUROPEAN for code in named) or _WORLD_WORDS.search(blob):
+        return 'World'
+    return 'Europe'
+
+
+def _mentioned_countries(texts):
+    """English (OWID) names of the countries named in the texts."""
+    return sorted(filter(None, (owid_name(code) for code in named_countries(texts))))
+
+
+def _all_texts(issue, proposals):
+    """The originals and every translation there is of the issue's title and
+    introduction and of the statements and explanations of its proposals."""
+    from app import content_i18n, i18n
+    content_i18n.preload([issue], 'title', 'intro')
+    content_i18n.preload(proposals, 'statement', 'explanation')
+    texts = []
+    for obj, fields in [(issue, ('title', 'intro'))] + [(p, ('statement', 'explanation')) for p in proposals]:
+        for name in fields:
+            texts.append(getattr(obj, name) or '')
+            for lang in i18n.enabled_codes():
+                texts.append(content_i18n.text_for(obj, name, lang) or '')
+    return texts
 
 
 def gather(issue, proposal=None, trigger='issue'):
@@ -300,8 +365,11 @@ def gather(issue, proposal=None, trigger='issue'):
             ctx.blocked_slugs.add(block.slug)
         elif block.kind == 'link':
             ctx.blocked_links.add((block.proposal_id, block.fact_post_id))
-    texts = [issue.title, issue.intro] + [p.statement for p in ctx.proposals] + [p.explanation for p in ctx.proposals]
-    ctx.mentioned = _mentioned_countries(texts)
+    texts = _all_texts(issue, ctx.proposals)
+    ctx.named = named_countries(texts)
+    ctx.mentioned = sorted(filter(None, (owid_name(code) for code in ctx.named)))
+    ctx.region = region_for(texts, ctx.named)
+    ctx.fixed = list(EUROPE_SET if ctx.region == 'Europe' else WORLD_SET)
     return ctx
 
 
@@ -332,9 +400,9 @@ def terms_prompt(ctx):
 
 
 def _relevant_entities(hit, ctx):
-    wanted = set(ctx.mentioned)
-    for names in REGION_SETS.values():
-        wanted.update(names)
+    """The entities of a candidate the AI may use: the allowed countries
+    (rule 4, by their OWID names) and what can serve as an average."""
+    wanted = {owid_name(code) for code in ctx.allowed} | {WORLD_AVERAGE}
     out = []
     for name in hit.entities:
         if name in wanted or name in _AVERAGE_NAMES or name.startswith(_AVERAGE_PREFIXES):
@@ -353,8 +421,20 @@ def selection_prompt(ctx, candidates):
     if ctx.trigger == 'proposal' and ctx.proposal is not None:
         lines.append(f'A new proposal was just made (id {ctx.proposal.id}). Mainly say which existing charts '
                      'belong to it (link_existing); add a new chart only when it really adds something.')
-    if ctx.mentioned:
-        lines.append('Countries named in the issue or the proposals: ' + ', '.join(ctx.mentioned))
+    # Rule 4, decided by the app: only these countries may be chosen.
+    named = [owid_name(c) for c in ctx.named]
+    fill = [owid_name(c) for c in ctx.allowed if c not in ctx.named]
+    if named:
+        lines.append('Countries you may choose (named in the issue or the proposals): ' + ', '.join(named))
+        if fill:
+            lines.append(f'Only to fill up to {MAX_COUNTRIES} countries, from the fixed set of the region '
+                         f'({ctx.region}): ' + ', '.join(fill))
+    else:
+        lines.append(f'No country is named. Countries you may choose (the fixed set of the region, {ctx.region}): '
+                     + ', '.join(fill))
+    if ctx.region == 'World':
+        lines.append(f'For the world, the average may be {WORLD_AVERAGE} if the source has it.')
+    lines.append('Any other country is dropped by the app.')
     if ctx.charts:
         lines.append(f'Charts already chosen ({len(ctx.charts)} of at most {MAX_CHARTS}):')
         for chart in ctx.charts:
@@ -424,6 +504,8 @@ def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
             notes.append(f'{slug}: country {name!r} is not in the data')
         elif countries.iso2_for(key) is None:
             notes.append(f'{slug}: {name!r} is not a country of our list')
+        elif countries.iso2_for(key) not in ctx.allowed:
+            notes.append(f'{slug}: {name!r} country_not_allowed (rule 4)')
         elif key not in keys:
             keys.append(key)
     if not keys:

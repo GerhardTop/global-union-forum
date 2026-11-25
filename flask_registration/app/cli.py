@@ -286,6 +286,9 @@ def background_figures_trial(issue_id):
     if issue is None:
         raise click.ClickException(f'No issue {issue_id}.')
     click.echo(f'Issue {issue.id}: {issue.title} (phase {issue.phase})')
+    ctx = background_figures.gather(issue)
+    click.echo(f'Region: {ctx.region}; named: {ctx.named or "none"}; fixed set: {ctx.fixed}; '
+               f'allowed: {ctx.allowed}')
     outcome = background_figures.dry_run(issue)
     click.echo(f'\nSearch terms: {outcome.terms}')
     click.echo(f'Candidates ({len(outcome.candidates)}):')

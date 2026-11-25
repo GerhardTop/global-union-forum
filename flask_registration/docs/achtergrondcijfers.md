@@ -42,7 +42,7 @@ Regels in de prompt:
 1. Liever één grafiek per vraagstuk; hoogstens vier in totaal, alleen als dat nuttig is. Geen nieuwe als die weinig toevoegt; geen geschikte, zeg dat. Een tweede grafiek alleen als die een ander aspect laat zien dat de eerste niet dekt, en noem dat aspect in de reden.
 2. Alleen indicatoren uit de meegegeven lijst (de app controleert dat de slug bestaat). Kies grafieken met één maat per land, geen mix of uitsplitsing (naar bron, sector of soort), want de app tekent één maat: liever "Aandeel stroom uit kolen" dan "Elektriciteitsmix".
 3. Evenwicht: samen relevant voor meerdere voorstellen of kanten; per indicator noemen voor welke voorstellen. Voorbeeld (Europese defensie, voorstellen over een EU-leger, de NAVO-norm, en diplomatie en ontwikkelingshulp): niet alleen defensie-uitgaven (het kader van de NAVO-norm), maar ook steun voor gezamenlijk defensiebeleid en ontwikkelingshulp.
-4. Landen:
+4. Landen: De app bepaalt de toegestane landen (genoemd in de tekst, anders de vaste set van de regio) en laat andere landen vallen. Genoemd: in de titel, inleiding of voorstellen, in het origineel en de vertalingen, op landnaam in nl, en, de, es en fr (geen bijvoeglijke naamwoorden). Regio: Europa, tenzij de tekst een land buiten Europa of de wereld noemt. Met minder dan vier genoemde landen mag de vaste set aanvullen tot vier.
    a. eerst de landen die letterlijk in het vraagstuk of de voorstellen genoemd worden;
    b. anders een vaste set per regio (voorlopig in code: Europa: Duitsland, Frankrijk, Nederland, Polen; wereld: VS, China, India, EU; later instelbaar in het beheer, met eerst een ontwerp);
    c. landen nooit kiezen om een standpunt te ondersteunen, geen uitschieters zoeken.

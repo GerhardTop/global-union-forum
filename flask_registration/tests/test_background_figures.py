@@ -235,13 +235,15 @@ def test_charts_that_fail_a_check_fall_away(app, db, make_user, made, started, w
     run_row = _run_for(issue)
     assert bf.run(run_row.id, client=FakeClient(answer), http=FakeHttp()) == 'done'
     (chart,) = _charts(issue)
-    # Atlantis is not in the data; Kosovo, Spain and Poland are; World is not in this CSV: no average.
-    assert chart.slug == SIPRI and chart.entity_keys == ['OWID_KOS', 'ESP', 'POL'] and chart.average_key is None
+    # Atlantis is not in the data; Kosovo and Spain are, but are not allowed (rule 4: the issue names
+    # Poland and Germany, the fixed set of Europe fills up); World is not in this CSV: no average.
+    assert chart.slug == SIPRI and chart.entity_keys == ['POL'] and chart.average_key is None
     notes = db.session.get(ChartSelectionRun, run_row.id).error
     for expected in ('not-a-candidate: not one of the candidates', 'military-spending-sipri: forbidden',
                      'two-columns-chart: unsupported', "regions-chart: 'World' is not a country of our list",
                      "'Spain' is not in the data", 'regions-chart: no country left',
-                     "country 'Atlantis' is not in the data", "average 'World' is not in the data"):
+                     "country 'Atlantis' is not in the data", "average 'World' is not in the data",
+                     "'Kosovo' country_not_allowed", "'Spain' country_not_allowed"):
         assert expected in notes, expected
 
 
