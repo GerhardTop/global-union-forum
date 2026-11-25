@@ -1,0 +1,208 @@
+/* Background figures, step 1c: the chart standard (app/charts.py,
+   app/templates/charts/_chart.html). Design: docs/design/achtergrondcijfers-kolom.html
+   (the column) and achtergrondcijfers-uitgeklapt.html (the chart page).
+   Loaded from step 1e on.
+
+   The time axis runs left to right in every language, also in a right to left
+   page: the positions inside the chart are physical, everything else logical. */
+
+.gu-chart {
+  container-type: inline-size;
+  inline-size: 100%;
+  --gu-chart-start: 48px;
+  --gu-chart-end: 132px;
+  --gu-chart-label: 12px;
+  --gu-chart-line: 16px;
+}
+.gu-chart--small {
+  --gu-chart-start: 28px;
+  --gu-chart-end: 2px;
+  --gu-chart-label: 11px;
+  --gu-chart-line: 14px;
+}
+
+.gu-chart__figure {
+  position: relative;
+  margin: 0;
+  inline-size: 100%;
+  block-size: 340px;
+  direction: ltr; /* the time axis runs left to right in every language */
+  font-family: var(--gu-font-sans, 'Inter', system-ui, sans-serif);
+  font-size: var(--gu-chart-label);
+  line-height: var(--gu-chart-line);
+  color: #525c69;
+  font-variant-numeric: tabular-nums;
+}
+.gu-chart--small .gu-chart__figure { block-size: 136px; }
+
+.gu-chart__ylabels {
+  position: absolute;
+  inset-block: 0;
+  left: 0; /* physical on purpose: time axis runs left to right in every language */
+  inline-size: calc(var(--gu-chart-start) - 6px);
+}
+.gu-chart__ylabel {
+  position: absolute;
+  left: 0; /* physical on purpose: time axis runs left to right in every language */
+  inline-size: 100%;
+  text-align: right; /* physical on purpose: time axis runs left to right in every language */
+  white-space: nowrap;
+}
+
+.gu-chart__plot {
+  position: absolute;
+  inset-block: 0;
+  left: var(--gu-chart-start); /* physical on purpose: time axis runs left to right in every language */
+  right: var(--gu-chart-end); /* physical on purpose: time axis runs left to right in every language */
+}
+.gu-chart__svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+
+.gu-chart__xlabel {
+  position: absolute;
+  top: 318px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.gu-chart--small .gu-chart__xlabel { top: 120px; }
+.gu-chart__xlabel--start { transform: none; }
+.gu-chart__xlabel--end { transform: translateX(-100%); }
+
+.gu-chart__endlabel {
+  position: absolute;
+  left: calc(100% + 12px); /* physical on purpose: time axis runs left to right in every language */
+  display: flex;
+  gap: 4px;
+  max-inline-size: calc(var(--gu-chart-end) - 14px);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--c);
+}
+/* A long name is cut short; the value always shows (the legend has the full name). */
+.gu-chart__endname {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gu-chart__endvalue { flex: none; }
+
+/* Narrow: no end labels, a narrow gutter at the end; the legend shows the
+   last value. */
+@container (max-width: 559px) {
+  .gu-chart--large .gu-chart__plot { right: 10px; } /* physical on purpose: time axis runs left to right in every language */
+  .gu-chart__endlabels { display: none; }
+}
+@supports not (container-type: inline-size) {
+  @media (max-width: 600px) {
+    .gu-chart--large .gu-chart__plot { right: 10px; } /* physical on purpose: time axis runs left to right in every language */
+    .gu-chart__endlabels { display: none; }
+  }
+}
+
+/* The legend: in the column two columns with the last value; on the chart
+   page buttons that switch a series on and off (aria-pressed). */
+.gu-chart-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 12px;
+}
+.gu-chart-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #3a434e;
+}
+.gu-chart-legend__value {
+  margin-inline-start: auto;
+  font-weight: 600;
+  color: #141b22;
+  font-variant-numeric: tabular-nums;
+}
+.gu-chart-swatch {
+  flex: none;
+  inline-size: 10px;
+  block-size: 3px;
+  border-radius: 2px;
+  background: var(--c);
+}
+.gu-chart-swatch--average {
+  inline-size: 12px;
+  block-size: 0;
+  background: none;
+  border-block-start: 2px dashed var(--c);
+}
+
+.gu-chart-toggles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gu-chart-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 36px;
+  padding: 0 12px;
+  border: 1px solid #c5dcf4;
+  border-radius: 999px;
+  background: #fff;
+  color: #3a434e;
+  font: 500 13px/1 var(--gu-font-sans, 'Inter', system-ui, sans-serif);
+  cursor: pointer;
+}
+.gu-chart-toggle .gu-chart-swatch { inline-size: 14px; }
+.gu-chart-toggle .gu-chart-swatch--average { inline-size: 16px; }
+.gu-chart-toggle__value { font-weight: 600; color: #141b22; font-variant-numeric: tabular-nums; }
+.gu-chart-toggle[aria-pressed="false"] {
+  background: #f5f7f9;
+  border: 1px dashed #d3dae2;
+  color: #6c7683;
+  text-decoration: line-through;
+}
+
+/* The table: the accessible alternative to the chart. */
+.gu-chart-table {
+  overflow-x: auto;
+  border: 1px solid #e4e9ef;
+  border-radius: 8px;
+}
+.gu-chart-table table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.gu-chart-table caption {
+  text-align: start;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #6c7683;
+}
+.gu-chart-table thead tr { background: #f5f7f9; }
+.gu-chart-table th,
+.gu-chart-table td { padding: 8px 14px; }
+.gu-chart-table thead th {
+  font-weight: 600;
+  color: #3a434e;
+  text-align: end;
+}
+.gu-chart-table thead th:first-child,
+.gu-chart-table tbody th { text-align: start; }
+.gu-chart-table tbody th { font-weight: 500; }
+.gu-chart-table tbody tr { border-block-start: 1px solid #eef1f5; }
+.gu-chart-table td {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,73 @@
+{#
+  Background figures, step 1c: the chart standard (app/charts.py makes the
+  ChartView; docs/achtergrondcijfers.md, "Grafiekstandaard"; design
+  docs/design/achtergrondcijfers-kolom.html and -uitgeklapt.html). Styles in
+  static/css/charts.css. No gettext here: the caller passes every text.
+
+  chart_small(view, label)  the chart in the facts column (136 px high)
+  chart_large(view, label)  the chart on the chart page (340 px high)
+  chart_table(view, caption, year_heading, empty_cell)  the table, newest year first
+
+  The SVG stretches with the width (preserveAspectRatio="none"): x runs from
+  0 to 100 (percent of the plot area), y in pixels. Strokes keep their width
+  (vector-effect), end points are zero length lines with a round cap, so they
+  stay circles. Labels are HTML on their position, so text stays readable.
+  Positions are physical on purpose: the time axis runs left to right in every
+  language.
+#}
+
+{% macro _figure(view, label, modifier) -%}
+<div class="gu-chart gu-chart--{{ modifier }}">
+  <figure class="gu-chart__figure" role="img" aria-label="{{ label }}">
+    <div class="gu-chart__ylabels" aria-hidden="true">
+      {%- for g in view.grid if g.label %}<span class="gu-chart__ylabel" style="top:{{ g.y - view.label_half }}px">{{ g.label }}</span>{% endfor -%}
+    </div>
+    <div class="gu-chart__plot">
+      <svg class="gu-chart__svg" viewBox="0 0 100 {{ view.height }}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        {%- for g in view.grid %}
+        <line x1="0" x2="100" y1="{{ g.y }}" y2="{{ g.y }}" stroke="{{ '#a7b1bd' if g.zero else '#e4e9ef' }}" stroke-width="1" vector-effect="non-scaling-stroke"/>
+        {%- endfor %}
+        {%- for line in view.lines %}
+        <g class="gu-chart__series" data-series="{{ line.key }}" style="--c:{{ line.color }}">
+          {%- for points in line.segments %}
+          <polyline points="{{ points }}" fill="none" stroke="{{ line.color }}" stroke-width="{{ line.width }}"{% if line.dasharray %} stroke-dasharray="{{ line.dasharray }}"{% endif %} stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+          {%- endfor %}
+          {%- for x, y in line.dots %}
+          <line x1="{{ x }}" x2="{{ x }}" y1="{{ y }}" y2="{{ y }}" stroke="{{ line.color }}" stroke-width="{{ line.width * 2 }}" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+          {%- endfor %}
+          {%- if modifier == 'large' and line.end %}
+          <line class="gu-chart__dot" x1="{{ line.end[0] }}" x2="{{ line.end[0] }}" y1="{{ line.end[1] }}" y2="{{ line.end[1] }}" stroke="{{ line.color }}" stroke-width="8" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+          {%- endif %}
+        </g>
+        {%- endfor %}
+      </svg>
+      <div class="gu-chart__xlabels" aria-hidden="true">
+        {%- for x in view.x_labels %}<span class="gu-chart__xlabel gu-chart__xlabel--{{ x.align }}" style="left:{{ x.x }}%">{{ x.label }}</span>{% endfor -%}{# physical on purpose: time axis runs left to right in every language #}
+      </div>
+      {%- if view.end_labels %}
+      <div class="gu-chart__endlabels" aria-hidden="true">
+        {%- for e in view.end_labels %}<span class="gu-chart__endlabel" style="top:{{ e.y }}px;--c:{{ e.color }}"><span class="gu-chart__endname">{{ e.name }}</span> <span class="gu-chart__endvalue">{{ e.value }}</span></span>{% endfor -%}
+      </div>
+      {%- endif %}
+    </div>
+  </figure>
+</div>
+{%- endmacro %}
+
+{% macro chart_small(view, label) -%}{{ _figure(view, label, 'small') }}{%- endmacro %}
+
+{% macro chart_large(view, label) -%}{{ _figure(view, label, 'large') }}{%- endmacro %}
+
+{% macro chart_table(view, caption, year_heading, empty_cell) -%}
+<div class="gu-chart-table">
+  <table>
+    <caption>{{ caption }}</caption>
+    <thead><tr><th scope="col">{{ year_heading }}</th>{% for _key, name in view.table_columns %}<th scope="col">{{ name }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {%- for year, cells in view.table_rows %}
+      <tr><th scope="row">{{ year }}</th>{% for cell in cells %}<td>{% if cell is none %}<span class="gu-sr-only">{{ empty_cell }}</span>{% else %}{{ cell }}{% endif %}</td>{% endfor %}</tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</div>
+{%- endmacro %}
