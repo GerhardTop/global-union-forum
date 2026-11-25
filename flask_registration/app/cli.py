@@ -293,6 +293,9 @@ def background_figures_trial(issue_id):
         click.echo(f'  {hit.slug}: {hit.title}')
     click.echo('\nAnswer of the AI:')
     click.echo(_json.dumps(outcome.answer, indent=2, ensure_ascii=False) if outcome.answer else '(none)')
+    if outcome.retried:
+        click.echo('\nRetry (every chart showed several measures), answer:')
+        click.echo(_json.dumps(outcome.retry_answer, indent=2, ensure_ascii=False))
     click.echo('\nAccepted:')
     for item in outcome.accepted:
         names = [item.parsed.names[k] for k in item.keys]

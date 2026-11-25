@@ -185,7 +185,9 @@ _TERMS_SYSTEM = (
     "people discuss and vote on. The figures come from Our World in Data (OWID). Give at most "
     f"{MAX_TERMS} short English search terms (one to four words each) for OWID charts that would help "
     "people think well about this issue and about the different sides of it. Prefer measurable "
-    "indicators (spending, shares, rates, counts, opinion). Answer with JSON only: "
+    "indicators (spending, shares, rates, counts, opinion). Prefer terms for a single measure per country "
+    "(for example 'share of electricity from coal', 'wind power generation'), not for a breakdown or mix of "
+    "several sources. Answer with JSON only: "
     '{"terms": ["...", "..."]}'
 )
 
@@ -198,7 +200,10 @@ _SELECTION_SYSTEM = (
     "each is useful. Do not add a chart that adds little. If no candidate fits, say so in none_reason. "
     "Prefer one chart. Add a second only if it covers a different aspect that the first does not, and "
     "say which aspect in its reason.\n"
-    "2. Only charts from the candidate list (by slug).\n"
+    "2. Only charts from the candidate list (by slug). Choose charts that show one measure per country. Avoid "
+    "charts that show a mix or breakdown (by source, by sector, by type), because the app can only draw one "
+    "measure. For example, choose 'Share of electricity from coal' rather than 'Electricity mix' or "
+    "'Electricity by source'.\n"
     "3. Balance: together the charts are relevant to several proposals or sides of the issue, not "
     "only to one. For each chart, say for which proposals it is relevant. Example (European defence, "
     "with proposals about an EU army, the NATO spending target, and diplomacy and development aid): "
@@ -391,7 +396,7 @@ def _int_list(values):
     return out
 
 
-def check_chart(item, ctx, candidates, http, notes, now=None):
+def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
     """An Accepted chart, or None (with the reason in notes). Nothing is
     repaired or guessed: a country that fails falls away; an average that
     fails means no average."""
@@ -408,6 +413,8 @@ def check_chart(item, ctx, candidates, http, notes, now=None):
             raise
         notes.append(f'{slug}: {exc.reason}')
         remember_rejected(slug, exc.reason)
+        if reasons is not None:
+            reasons[slug] = exc.reason
         return None
     by_name = {name: key for key, name in parsed.names.items()}
     keys = []
@@ -730,6 +737,8 @@ class Outcome:
     links: list = field(default_factory=list)
     notes: list = field(default_factory=list)
     none_reason: str = ''
+    retried: bool = False                                # one retry after every chart was unsupported
+    retry_answer: dict = field(default_factory=dict)
 
 
 def select(ctx, client, http=None):
@@ -777,6 +786,35 @@ def select(ctx, client, http=None):
 
     room = MAX_CHARTS - len(ctx.charts)
     items = out.answer.get('charts') if isinstance(out.answer.get('charts'), list) else []
+    reasons = {}
+    _check_items(items, ctx, candidates, http, out, room, reasons)
+    # One retry in the same round: every new chart fell away because it shows
+    # several measures. Same candidates minus those; link_existing stays as
+    # the first answer gave it.
+    tried = [item.get('slug') for item in items if isinstance(item, dict)]
+    if items and not out.accepted and tried and all(reasons.get(slug) == 'unsupported' for slug in tried):
+        remaining = [hit for hit in out.candidates if hit.slug not in reasons]
+        user_msg = selection_prompt(ctx, remaining) + (
+            '\n\nThese charts could not be used because they show several measures: '
+            + ', '.join(tried) + '. Choose again, or choose none.')
+        out.prompts.append((_SELECTION_SYSTEM, user_msg))
+        text = _ask(client, SELECTION_MODEL, _SELECTION_SYSTEM, user_msg, 2000)
+        out.responses.append(text)
+        out.retried = True
+        retry = _parse_json(text)
+        out.retry_answer = retry
+        if retry.get('none_reason'):
+            out.none_reason = str(retry.get('none_reason'))
+        again = retry.get('charts') if isinstance(retry.get('charts'), list) else []
+        allowed = {hit.slug: hit for hit in remaining}
+        _check_items(again, ctx, allowed, http, out, room, {})
+    out.links = check_links(out.answer, ctx, out.notes)
+    out.status = 'done' if out.accepted or out.links else 'nothing'
+    return out
+
+
+def _check_items(items, ctx, candidates, http, out, room, reasons):
+    """Check the charts of one answer into out.accepted (at most `room`)."""
     for item in items:
         if len(out.accepted) >= room:
             out.notes.append(f'{item.get("slug") if isinstance(item, dict) else item}: '
@@ -784,12 +822,9 @@ def select(ctx, client, http=None):
             continue
         if isinstance(item, dict) and any(a.slug == item.get('slug') for a in out.accepted):
             continue
-        accepted = check_chart(item, ctx, candidates, http, out.notes)
+        accepted = check_chart(item, ctx, candidates, http, out.notes, reasons=reasons)
         if accepted is not None:
             out.accepted.append(accepted)
-    out.links = check_links(out.answer, ctx, out.notes)
-    out.status = 'done' if out.accepted or out.links else 'nothing'
-    return out
 
 
 def publish(ctx, outcome):
@@ -838,10 +873,14 @@ def _claim(run_row):
     return claimed == 1
 
 
+_SEPARATOR = '\n\n========\n\n'
+
+
 def _record(run_row, outcome):
     from app import quality
-    run_row.prompt_text = '\n\n'.join(quality._prompt_record(system, user) for system, user in outcome.prompts)
-    run_row.response_text = '\n\n'.join(outcome.responses)
+    # Search terms, the choice and (if any) the retry, one after the other.
+    run_row.prompt_text = _SEPARATOR.join(quality._prompt_record(system, user) for system, user in outcome.prompts)
+    run_row.response_text = _SEPARATOR.join(outcome.responses)
     if outcome.status == 'nothing' and outcome.none_reason:
         run_row.response_text = (run_row.response_text + '\n\n' if run_row.response_text else '') + \
             f'[none] {outcome.none_reason}'
