@@ -753,7 +753,7 @@ def translations_backlog():
     """Per type of content and language the fields still missing or outdated,
     the failures since the last start, and the button that translates the
     backlog now (app/content_jobs.py)."""
-    from app import content_jobs, i18n
+    from app import content_i18n, content_jobs, i18n
     if not current_user.is_admin:
         abort(403)
     counts = content_jobs.backlog()
@@ -764,6 +764,7 @@ def translations_backlog():
     names = {code: i18n.language_name_in(code, get_locale()) for code in langs}
     return render_template('admin/translations.html', rows=rows, langs=langs, names=names, totals=totals,
                            total=sum(totals.values()), stats=content_jobs.stats(),
+                           orphans=sum(content_i18n.orphans().values()),
                            ai_available=content_jobs.ai_available(),
                            per_tick=content_jobs.MAX_PER_TICK, limit=content_jobs.BACKLOG_LIMIT,
                            admin_action_form=AdminActionForm())

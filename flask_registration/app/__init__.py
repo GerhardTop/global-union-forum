@@ -162,6 +162,10 @@ def _migrate_columns():
     # Then drop the old per-language columns (and posts.author_badge): after
     # the migration above, in the same start, so nothing is lost (idempotent).
     content_migration.drop_old_columns(db.engine)
+    # Translations whose object is gone (bulk deletes from before
+    # content_i18n.delete_for): remove them (idempotent, logged per type).
+    from app import content_i18n
+    content_i18n.remove_orphans()
     _migrate_username_and_backfill(insp, existing, is_pg)
     # Na alle kolommigraties: de backfill gebruikt de ORM op Proposal en Thread.
     from app import issues

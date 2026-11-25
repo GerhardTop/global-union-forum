@@ -46,6 +46,7 @@
         </table>
       </div>
       <p class="gu-monitor__diff" data-backlog="failed">{{ _('Failed attempts since the last start: %(num)d', num=stats.failed) }}</p>
+      <p class="gu-quality__meta">{{ _('Translations of deleted content (removed at every start):') }} <strong data-backlog="orphans">{{ orphans }}</strong></p>
       {% if stats.last_error %}<p class="gu-quality__meta" data-backlog="last-error">{{ _('Last error:') }} <code>{{ stats.last_error }}</code></p>{% endif %}
     </section>
 

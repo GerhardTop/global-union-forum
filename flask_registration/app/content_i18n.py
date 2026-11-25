@@ -24,15 +24,19 @@ The rest of the code goes through these functions only:
     all_texts(obj, fields)               originals and translations (search)
 """
 import hashlib
+import logging
 from collections import namedtuple
 from datetime import datetime
 
 from flask import g, has_app_context
-from sqlalchemy import event
+from sqlalchemy import event, exists, func, select
 
 import config
 from app import db
 from app.models import ContentTranslation
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
 
 # The attribute that holds the source language, per table. The object's
 # own language field where it has one; None means the default language.
@@ -314,6 +318,46 @@ def delete_for(kind, ids):
     if ids:
         ContentTranslation.query.filter(ContentTranslation.object_type == kind,
                                         ContentTranslation.object_id.in_(ids)).delete(synchronize_session=False)
+
+
+def _orphan_conditions():
+    """(kind, where clause) per object type in content_translations whose
+    table is known: the rows whose object no longer exists in that table. An
+    object type without a known table is left alone."""
+    table = ContentTranslation.__table__
+    kinds = db.session.execute(select(table.c.object_type).distinct()).scalars().all()
+    for kind in sorted(kinds):
+        target = db.metadata.tables.get(kind)
+        if target is None or 'id' not in target.c:
+            continue
+        yield kind, (table.c.object_type == kind) & ~exists().where(target.c.id == table.c.object_id)
+
+
+def orphans():
+    """{kind: n}: translations whose object no longer exists, per object type
+    (only types that have any). Reads only."""
+    table = ContentTranslation.__table__
+    out = {}
+    for kind, where in _orphan_conditions():
+        n = db.session.execute(select(func.count()).select_from(table).where(where)).scalar()
+        if n:
+            out[kind] = n
+    return out
+
+
+def remove_orphans():
+    """Delete the translations whose object no longer exists (left behind by
+    bulk deletes from before delete_for), log one INFO line per object type and
+    commit. Idempotent: a second call removes nothing. Returns {kind: n}."""
+    table = ContentTranslation.__table__
+    removed = {}
+    for kind, where in list(_orphan_conditions()):
+        n = db.session.execute(table.delete().where(where)).rowcount
+        if n:
+            removed[kind] = n
+            log.info('Orphan translations removed: %d (%s)', n, kind)
+    db.session.commit()
+    return removed
 
 
 # A deleted object takes its translations along (ORM deletes; bulk query

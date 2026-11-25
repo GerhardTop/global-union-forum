@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-24 20:35+0100\n"
+"POT-Creation-Date: 2026-11-25 07:49+0100\n"
 "PO-Revision-Date: 2026-11-22 15:18+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:877
+#: app/__init__.py:868
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Trop de tentatives. Réessayez dans une minute."
 
-#: app/__init__.py:907
+#: app/__init__.py:898
 msgid "Your session has expired. Please log in again."
 msgstr "Votre session a expiré. Reconnectez-vous."
 
@@ -312,26 +312,26 @@ msgstr "Forum · proposition"
 msgid "Issue"
 msgstr "Dossier"
 
-#: app/models.py:398
+#: app/models.py:397
 #, python-format
 msgid "%(num)d day ago"
 msgid_plural "%(num)d days ago"
 msgstr[0] "il y a %(num)d jour"
 msgstr[1] "il y a %(num)d jours"
 
-#: app/models.py:401
+#: app/models.py:400
 #, python-format
 msgid "%(num)d hour ago"
 msgid_plural "%(num)d hours ago"
 msgstr[0] "il y a %(num)d heure"
 msgstr[1] "il y a %(num)d heures"
 
-#: app/models.py:404
+#: app/models.py:403
 #, python-format
 msgid "%(num)d min ago"
 msgstr "il y a %(num)d min"
 
-#: app/models.py:405
+#: app/models.py:404
 msgid "just now"
 msgstr "à l'instant"
 
@@ -691,130 +691,130 @@ msgstr "Proposition de synthèse"
 msgid "Follow-up"
 msgstr "Suivi"
 
-#: app/routes/admin.py:335
+#: app/routes/admin.py:346
 msgid "Rights saved."
 msgstr "Droits enregistrés."
 
-#: app/routes/admin.py:344
+#: app/routes/admin.py:355
 msgctxt "month"
 msgid "Jan"
 msgstr "janv."
 
-#: app/routes/admin.py:344
+#: app/routes/admin.py:355
 msgctxt "month"
 msgid "Feb"
 msgstr "févr."
 
-#: app/routes/admin.py:344
+#: app/routes/admin.py:355
 msgctxt "month"
 msgid "Mar"
 msgstr "mars"
 
-#: app/routes/admin.py:344
+#: app/routes/admin.py:355
 msgctxt "month"
 msgid "Apr"
 msgstr "avr."
 
-#: app/routes/admin.py:345
+#: app/routes/admin.py:356
 msgctxt "month"
 msgid "May"
 msgstr "mai"
 
-#: app/routes/admin.py:345
+#: app/routes/admin.py:356
 msgctxt "month"
 msgid "Jun"
 msgstr "juin"
 
-#: app/routes/admin.py:345
+#: app/routes/admin.py:356
 msgctxt "month"
 msgid "Jul"
 msgstr "juil."
 
-#: app/routes/admin.py:345
+#: app/routes/admin.py:356
 msgctxt "month"
 msgid "Aug"
 msgstr "août"
 
-#: app/routes/admin.py:346
+#: app/routes/admin.py:357
 msgctxt "month"
 msgid "Sep"
 msgstr "sept."
 
-#: app/routes/admin.py:346
+#: app/routes/admin.py:357
 msgctxt "month"
 msgid "Oct"
 msgstr "oct."
 
-#: app/routes/admin.py:346
+#: app/routes/admin.py:357
 msgctxt "month"
 msgid "Nov"
 msgstr "nov."
 
-#: app/routes/admin.py:346
+#: app/routes/admin.py:357
 msgctxt "month"
 msgid "Dec"
 msgstr "déc."
 
-#: app/routes/admin.py:398
+#: app/routes/admin.py:409
 msgid "Write a message to the user first."
 msgstr "Écrivez d'abord un message à cette personne."
 
-#: app/routes/admin.py:407
+#: app/routes/admin.py:418
 msgid "The warning has been sent."
 msgstr "L'avertissement a été envoyé."
 
-#: app/routes/admin.py:434
+#: app/routes/admin.py:445
 msgid "Choose 7 or 30 days."
 msgstr "Choisissez 7 ou 30 jours."
 
-#: app/routes/admin.py:436
+#: app/routes/admin.py:447
 msgid "Write the reason for the suspension first."
 msgstr "Écrivez d'abord le motif de la suspension."
 
-#: app/routes/admin.py:447
+#: app/routes/admin.py:458
 #, python-format
 msgid "@%(username)s has been suspended for %(days)s days."
 msgstr "Le compte @%(username)s est suspendu pour %(days)s jours."
 
-#: app/routes/admin.py:477
+#: app/routes/admin.py:488
 msgid "The username does not match. Nothing was deleted."
 msgstr "Le nom d'utilisateur ne correspond pas. Rien n'a été supprimé."
 
-#: app/routes/admin.py:482
+#: app/routes/admin.py:493
 #, python-format
 msgid "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
 msgstr "Le compte @%(username)s a été supprimé. Ses contributions apparaissent maintenant sous @verwijderd."
 
-#: app/routes/admin.py:529
+#: app/routes/admin.py:540
 msgid "Choose what to do with this report."
 msgstr "Choisissez quoi faire de ce signalement."
 
-#: app/routes/admin.py:532
+#: app/routes/admin.py:543
 msgid "The report has been handled."
 msgstr "Le signalement a été traité."
 
-#: app/routes/admin.py:649
+#: app/routes/admin.py:660
 msgid "Thresholds saved."
 msgstr "Seuils enregistrés."
 
-#: app/routes/admin.py:680
+#: app/routes/admin.py:691
 msgid "Maximum durations saved."
 msgstr "Durées maximales enregistrées."
 
-#: app/routes/admin.py:702 app/templates/admin/proposal_limits.html:25
+#: app/routes/admin.py:713 app/templates/admin/proposal_limits.html:25
 msgid "Enter a whole number from 1 to 365."
 msgstr "Saisissez un nombre entier de 1 à 365."
 
-#: app/routes/admin.py:705
+#: app/routes/admin.py:716
 msgid "Saved."
 msgstr "Enregistré."
 
-#: app/routes/admin.py:731 app/templates/issues/index.html:17
+#: app/routes/admin.py:742 app/templates/issues/index.html:17
 #: app/templates/issues/show.html:22 app/templates/issues/verwijderen.html:29
 msgid "Issues"
 msgstr "Dossiers"
 
-#: app/routes/admin.py:732 app/templates/issues/final_new.html:19
+#: app/routes/admin.py:743 app/templates/issues/final_new.html:19
 #: app/templates/issues/proposal.html:43 app/templates/issues/proposal.html:60
 #: app/templates/issues/proposal.html:318
 #: app/templates/issues/proposal.html:320
@@ -825,28 +825,28 @@ msgstr "Dossiers"
 msgid "Proposals"
 msgstr "Propositions"
 
-#: app/routes/admin.py:733
+#: app/routes/admin.py:744
 msgid "Versions of a proposal"
 msgstr "Versions d'une proposition"
 
-#: app/routes/admin.py:734
+#: app/routes/admin.py:745
 msgid "Follow-up updates"
 msgstr "Mises à jour de suivi"
 
-#: app/routes/admin.py:735 app/templates/forum/_facts.html:19
+#: app/routes/admin.py:746 app/templates/forum/_facts.html:19
 #: app/templates/moderator/gebruiker.html:71
 msgid "Facts"
 msgstr "Faits"
 
-#: app/routes/admin.py:771 app/templates/admin/translations.html:60
+#: app/routes/admin.py:783 app/templates/admin/translations.html:61
 msgid "There is no AI key here, so nothing can be translated."
 msgstr "Il n'y a pas de clé d'IA ici, rien ne peut donc être traduit."
 
-#: app/routes/admin.py:773
+#: app/routes/admin.py:785
 msgid "Started: the backlog is being translated in the background."
 msgstr "Lancé : le retard est en cours de traduction en arrière-plan."
 
-#: app/routes/admin.py:775
+#: app/routes/admin.py:787
 msgid "A run is already busy."
 msgstr "Une exécution est déjà en cours."
 
@@ -931,52 +931,52 @@ msgstr "Votre compte est suspendu jusqu'au %(until)s. Vous pouvez lire, mais pas
 msgid "Accept the conduct rules first to take part."
 msgstr "Acceptez d'abord les règles de conduite pour participer."
 
-#: app/routes/forum.py:661
+#: app/routes/forum.py:651
 msgid "The platform is not open for contributions to this issue right now."
 msgstr "La plateforme n'accepte pas de contributions à ce dossier pour le moment."
 
-#: app/routes/forum.py:683
+#: app/routes/forum.py:673
 msgid "You cannot reply to your own post."
 msgstr "Vous ne pouvez pas répondre à votre propre message."
 
-#: app/routes/forum.py:691
+#: app/routes/forum.py:681
 msgid "Invalid reply: the post you are replying to does not exist in this conversation."
 msgstr "Réponse non valide : le message auquel vous répondez n'existe pas dans cette conversation."
 
-#: app/routes/forum.py:1267
+#: app/routes/forum.py:1257
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "L'affirmation d'une proposition ne peut être modifiée que pendant la phase de révision."
 
-#: app/routes/forum.py:1269
+#: app/routes/forum.py:1259
 msgid "This post already has replies, so it can no longer be edited."
 msgstr "Ce message a déjà des réponses, il ne peut donc plus être modifié."
 
-#: app/routes/forum.py:1270
+#: app/routes/forum.py:1260
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "Un message déplacé ou masqué ne peut pas être modifié. Vous pouvez en revanche faire un recours."
 
-#: app/routes/forum.py:1346 app/templates/forum/_post.html:70
+#: app/routes/forum.py:1337 app/templates/forum/_post.html:70
 #, python-format
 msgid "edited %(when)s"
 msgstr "modifié %(when)s"
 
-#: app/routes/forum.py:1538 app/routes/issues.py:280
+#: app/routes/forum.py:1529 app/routes/issues.py:280
 msgid "Give a reason for your report."
 msgstr "Indiquez un motif pour votre signalement."
 
-#: app/routes/forum.py:1547 app/routes/issues.py:286
+#: app/routes/forum.py:1538 app/routes/issues.py:286
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Merci, votre signalement a été transmis à un modérateur."
 
-#: app/routes/forum.py:1928
+#: app/routes/forum.py:1919
 msgid "Choose a reason (and keep the note under 500 characters)."
 msgstr "Choisissez un motif (et gardez l'explication sous 500 caractères)."
 
-#: app/routes/forum.py:1930
+#: app/routes/forum.py:1921
 msgid "You already disputed this fact; a moderator will look at it."
 msgstr "Vous avez déjà contesté ce fait ; un modérateur va l'examiner."
 
-#: app/routes/forum.py:1934
+#: app/routes/forum.py:1925
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 msgstr "Merci. Un modérateur va examiner votre recours ; le fait reste visible en attendant."
 
@@ -988,60 +988,60 @@ msgstr "Faire des propositions"
 msgid "Adjust the proposals"
 msgstr "Ajuster les propositions"
 
-#: app/routes/issues.py:480
+#: app/routes/issues.py:482
 msgid "You already support this proposal."
 msgstr "Vous soutenez déjà cette proposition."
 
-#: app/routes/issues.py:533
+#: app/routes/issues.py:535
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Choisissez au moins un fait qui n'est pas encore lié."
 
-#: app/routes/issues.py:662
+#: app/routes/issues.py:664
 msgid "The issue is now in the next phase."
 msgstr "Le dossier est maintenant dans la phase suivante."
 
-#: app/routes/issues.py:678 app/routes/issues.py:698
+#: app/routes/issues.py:680 app/routes/issues.py:700
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "Le texte peut compter au maximum %(n)s caractères."
 
-#: app/routes/issues.py:730
+#: app/routes/issues.py:732
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Cochez la case pour confirmer que vous voulez rouvrir le dossier."
 
-#: app/routes/issues.py:735
+#: app/routes/issues.py:737
 msgid "The issue is open again for discussion."
 msgstr "Le dossier est de nouveau ouvert au débat."
 
-#: app/routes/issues.py:757
+#: app/routes/issues.py:759
 msgid "The issue has been archived."
 msgstr "Le dossier a été archivé."
 
-#: app/routes/issues.py:772
+#: app/routes/issues.py:774
 msgid "The issue is back from the archive."
 msgstr "Le dossier est sorti des archives."
 
-#: app/routes/issues.py:791
+#: app/routes/issues.py:793
 msgid "Type the exact title to confirm."
 msgstr "Saisissez le titre exact pour confirmer."
 
-#: app/routes/issues.py:797
+#: app/routes/issues.py:799
 msgid "The issue has been deleted."
 msgstr "Le dossier a été supprimé."
 
-#: app/routes/issues.py:819
+#: app/routes/issues.py:821
 msgid "Type the exact text to confirm."
 msgstr "Saisissez le texte exact pour confirmer."
 
-#: app/routes/issues.py:826
+#: app/routes/issues.py:828
 msgid "The proposal has been deleted."
 msgstr "La proposition a été supprimée."
 
-#: app/routes/issues.py:946
+#: app/routes/issues.py:948
 msgid "The proposal is hidden."
 msgstr "La proposition est masquée."
 
-#: app/routes/issues.py:946
+#: app/routes/issues.py:948
 msgid "The proposal is visible again."
 msgstr "La proposition est de nouveau visible."
 
@@ -3576,25 +3576,29 @@ msgid "Failed attempts since the last start: %(num)d"
 msgstr "Tentatives échouées depuis le dernier démarrage : %(num)d"
 
 #: app/templates/admin/translations.html:49
+msgid "Translations of deleted content (removed at every start):"
+msgstr "Traductions de contenus supprimés (retirées à chaque démarrage) :"
+
+#: app/templates/admin/translations.html:50
 msgid "Last error:"
 msgstr "Dernière erreur :"
 
-#: app/templates/admin/translations.html:53
-#: app/templates/admin/translations.html:65
+#: app/templates/admin/translations.html:54
+#: app/templates/admin/translations.html:66
 msgid "Translate the backlog now"
 msgstr "Traduire le retard maintenant"
 
-#: app/templates/admin/translations.html:55
+#: app/templates/admin/translations.html:56
 #, python-format
 msgid "Busy: %(done)d of at most %(limit)d fields done, %(failed)d failed. Refresh the page to follow it."
 msgstr "En cours : %(done)d champs sur %(limit)d au plus traités, %(failed)d échoués. Actualisez la page pour suivre."
 
-#: app/templates/admin/translations.html:57
+#: app/templates/admin/translations.html:58
 #, python-format
 msgid "Last run: %(done)d fields done, %(failed)d failed."
 msgstr "Dernière exécution : %(done)d champs traités, %(failed)d échoués."
 
-#: app/templates/admin/translations.html:64
+#: app/templates/admin/translations.html:65
 #, python-format
 msgid "At most %(num)d fields, in small batches with a short pause, so the site stays responsive."
 msgstr "Au plus %(num)d champs, par petits lots avec une courte pause, pour que le site reste accessible."
