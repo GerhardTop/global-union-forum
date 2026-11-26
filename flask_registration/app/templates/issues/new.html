@@ -68,11 +68,11 @@
         </div>
       </div>
 
-      {# Online: per fase een startdatum en een tijd. Een lege tijd is 00:00
-         voor de eerste fase en 24:00 (het einde van die dag) voor de volgende. #}
+      {# Online: per fase een startdatum en een tijd, standaard ingevuld (00:00,
+         en 23:59 voor het sluiten); een leeg tijdveld krijgt dezelfde standaard. #}
       <div class="gu-newissue__section" id="onlineFields">
         <p class="gu-newissue__sectionhead">{{ _('Schedule per phase') }}</p>
-        <p class="gu-composer__hint">{{ _('Times are in Dutch time. Leave a field empty and it becomes 00:00 for the first phase and 24:00 for the next ones.') }}</p>
+        <p class="gu-composer__hint">{{ _('Times are in Dutch time.') }}</p>
         <fieldset class="gu-schedule">
         {% set schedule_labels = {'starts_at': _('Facts and discussion start'), 'adjust_starts_at': _('Revising starts'),
                                   'vote_starts_at': _('Voting starts'), 'vote_ends_at': _('Voting closes')} %}

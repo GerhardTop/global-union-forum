@@ -68,8 +68,9 @@ def _local_time(moment):
 
 @issues_bp.app_template_filter('end_day')
 def _end_day(local):
-    """Een einde om 00:00 (ingevoerd als 24:00) hoort bij de dag ervoor; zo
-    toont een datum zonder tijd de laatste dag van de fase."""
+    """Een einde om 00:00 (het begin van de volgende fase, of ingevoerd als
+    24:00) hoort bij de dag ervoor; zo toont een datum zonder tijd de laatste
+    dag van de fase. Een einde om 23:59 is al de laatste dag."""
     if local is not None and not (local.hour or local.minute):
         return local - timedelta(minutes=1)
     return local

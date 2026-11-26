@@ -162,10 +162,12 @@ def test_new_issue_online(app, db, make_user):
     assert r.headers['Location'].endswith(f'/vraagstuk/{issue.id}')
     assert (issue.kind, issue.phase, issue.lang) == ('online', 'feiten', 'nl')
     # Wintertijd: 00:00 in Nederland is 23:00 UTC de dag ervoor.
+    # Een leeg tijdveld is 00:00 (bijstellen) en 23:59 (sluiten); 24:00 mag nog (stemmen begint 17 jan 00:00).
     assert issue.starts_at == datetime(2027, 1, 3, 23, 0) == issue.phase_started_at
-    assert issue.adjust_starts_at == datetime(2027, 1, 13, 23, 0) == issue.phase_deadline
-    assert issue.vote_ends_at == datetime(2027, 1, 20, 23, 0)
-    assert (issue.days_facts, issue.days_adjust, issue.days_vote) == (10, 3, 4)
+    assert issue.adjust_starts_at == datetime(2027, 1, 12, 23, 0) == issue.phase_deadline
+    assert issue.vote_starts_at == datetime(2027, 1, 16, 23, 0)
+    assert issue.vote_ends_at == datetime(2027, 1, 20, 22, 59)
+    assert (issue.days_facts, issue.days_adjust, issue.days_vote) == (9, 4, 4)
     assert (issue.support_threshold, issue.proposal_threshold_pct) == (8, 66)
     assert issue.show_interim is False and issue.final_vote is True
     assert issue.voting_deadline == date(2027, 1, 20)

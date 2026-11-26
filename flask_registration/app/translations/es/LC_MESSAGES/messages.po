@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-25 16:04+0100\n"
+"POT-Creation-Date: 2026-11-26 21:20+0100\n"
 "PO-Revision-Date: 2026-11-22 14:15+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:874
+#: app/__init__.py:877
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Demasiados intentos. Vuelve a intentarlo dentro de un minuto."
 
-#: app/__init__.py:904
+#: app/__init__.py:907
 msgid "Your session has expired. Please log in again."
 msgstr "Tu sesión ha caducado. Vuelve a iniciar sesión."
 
@@ -568,15 +568,15 @@ msgstr "Motivo: %(reason)s"
 msgid "You are suspended until %(until)s."
 msgstr "Tu cuenta está suspendida hasta el %(until)s."
 
-#: app/quality.py:36 app/templates/forum/quality.html:96
+#: app/quality.py:37 app/templates/forum/quality.html:96
 msgid "New argument"
 msgstr "Argumento nuevo"
 
-#: app/quality.py:37
+#: app/quality.py:38
 msgid "Substantiation with a new fact and source"
 msgstr "Fundamentación con un hecho y una fuente nuevos"
 
-#: app/quality.py:38
+#: app/quality.py:39
 msgid "Fairness"
 msgstr "Juego limpio"
 
@@ -960,11 +960,11 @@ msgstr "Un mensaje movido u oculto no se puede editar. Lo que sí puedes es pres
 msgid "edited %(when)s"
 msgstr "editado %(when)s"
 
-#: app/routes/forum.py:1529 app/routes/issues.py:349
+#: app/routes/forum.py:1529 app/routes/issues.py:351
 msgid "Give a reason for your report."
 msgstr "Indica un motivo para tu reporte."
 
-#: app/routes/forum.py:1538 app/routes/issues.py:355
+#: app/routes/forum.py:1538 app/routes/issues.py:357
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Gracias, tu reporte se ha enviado a un moderador."
 
@@ -988,60 +988,60 @@ msgstr "Hacer propuestas"
 msgid "Adjust the proposals"
 msgstr "Ajustar las propuestas"
 
-#: app/routes/issues.py:554
+#: app/routes/issues.py:556
 msgid "You already support this proposal."
 msgstr "Ya apoyas esta propuesta."
 
-#: app/routes/issues.py:615
+#: app/routes/issues.py:617
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Elige al menos un hecho que aún no esté vinculado."
 
-#: app/routes/issues.py:744
+#: app/routes/issues.py:746
 msgid "The issue is now in the next phase."
 msgstr "La cuestión ya está en la siguiente fase."
 
-#: app/routes/issues.py:760 app/routes/issues.py:780
+#: app/routes/issues.py:762 app/routes/issues.py:782
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "El texto puede tener como máximo %(n)s caracteres."
 
-#: app/routes/issues.py:812
+#: app/routes/issues.py:814
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Marca la casilla para confirmar que quieres volver a abrir la cuestión."
 
-#: app/routes/issues.py:817
+#: app/routes/issues.py:819
 msgid "The issue is open again for discussion."
 msgstr "La cuestión vuelve a estar abierta al debate."
 
-#: app/routes/issues.py:839
+#: app/routes/issues.py:841
 msgid "The issue has been archived."
 msgstr "La cuestión se ha archivado."
 
-#: app/routes/issues.py:854
+#: app/routes/issues.py:856
 msgid "The issue is back from the archive."
 msgstr "La cuestión ha salido del archivo."
 
-#: app/routes/issues.py:873
+#: app/routes/issues.py:875
 msgid "Type the exact title to confirm."
 msgstr "Escribe el título exacto para confirmar."
 
-#: app/routes/issues.py:879
+#: app/routes/issues.py:881
 msgid "The issue has been deleted."
 msgstr "La cuestión se ha eliminado."
 
-#: app/routes/issues.py:901
+#: app/routes/issues.py:903
 msgid "Type the exact text to confirm."
 msgstr "Escribe el texto exacto para confirmar."
 
-#: app/routes/issues.py:908
+#: app/routes/issues.py:910
 msgid "The proposal has been deleted."
 msgstr "La propuesta se ha eliminado."
 
-#: app/routes/issues.py:1028
+#: app/routes/issues.py:1030
 msgid "The proposal is hidden."
 msgstr "La propuesta está oculta."
 
-#: app/routes/issues.py:1028
+#: app/routes/issues.py:1030
 msgid "The proposal is visible again."
 msgstr "La propuesta vuelve a estar visible."
 
@@ -4006,7 +4006,7 @@ msgstr "Vídeo"
 #: app/templates/forum/_fact_fields.html:47 app/templates/forum/_facts.html:42
 #: app/templates/issues/_chart_block.html:54
 #: app/templates/issues/_fact_card.html:54
-#: app/templates/issues/_fact_card.html:86 app/templates/issues/chart.html:58
+#: app/templates/issues/_fact_card.html:86 app/templates/issues/chart.html:59
 #: app/templates/moderator/dashboard.html:215
 msgid "Source"
 msgstr "Fuente"
@@ -4085,7 +4085,7 @@ msgstr "Editar"
 #: app/templates/forum/_facts.html:68 app/templates/forum/_post.html:151
 #: app/templates/issues/_fact_card.html:68
 #: app/templates/issues/_fact_card.html:119
-#: app/templates/issues/_lifecycle.html:56 app/templates/issues/chart.html:100
+#: app/templates/issues/_lifecycle.html:56 app/templates/issues/chart.html:101
 #: app/templates/issues/verwijderen.html:2
 #: app/templates/issues/verwijderen.html:33
 #: app/templates/moderator/beheer.html:131
@@ -4993,7 +4993,7 @@ msgid "Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s."
 msgstr "Gráfico de líneas de %(title)s, de %(start)s a %(end)s, para %(countries)s."
 
 #: app/templates/issues/_chart_block.html:54
-#: app/templates/issues/_fact_card.html:54 app/templates/issues/chart.html:58
+#: app/templates/issues/_fact_card.html:54 app/templates/issues/chart.html:59
 #, python-format
 msgid "%(citation)s, via Our World in Data"
 msgstr "%(citation)s, a través de Our World in Data"
@@ -5456,70 +5456,70 @@ msgstr[1] "De %(start)s a %(end)s · %(shown)d de %(num)d países"
 msgid "About these figures"
 msgstr "Sobre estas cifras"
 
-#: app/templates/issues/chart.html:56
+#: app/templates/issues/chart.html:57
 msgid "Definition"
 msgstr "Definición"
 
-#: app/templates/issues/chart.html:57
+#: app/templates/issues/chart.html:58
 msgid "Unit"
 msgstr "Unidad"
 
-#: app/templates/issues/chart.html:59
+#: app/templates/issues/chart.html:60
 msgid "Average"
 msgstr "Promedio"
 
-#: app/templates/issues/chart.html:59
+#: app/templates/issues/chart.html:60
 #, python-format
 msgid "%(name)s, as supplied by the source"
 msgstr "%(name)s, tal como lo proporciona la fuente"
 
-#: app/templates/issues/chart.html:60
+#: app/templates/issues/chart.html:61
 msgid "Licence"
 msgstr "Licencia"
 
-#: app/templates/issues/chart.html:61
+#: app/templates/issues/chart.html:62
 msgid "CC BY 4.0, with attribution"
 msgstr "CC BY 4.0, con atribución"
 
-#: app/templates/issues/chart.html:61
+#: app/templates/issues/chart.html:62
 msgid "Data from other organisations may have their own terms; see the source."
 msgstr "Los datos de otras organizaciones pueden tener sus propias condiciones; consulta la fuente."
 
-#: app/templates/issues/chart.html:62
+#: app/templates/issues/chart.html:63
 msgid "Retrieved"
 msgstr "Obtenido"
 
-#: app/templates/issues/chart.html:63
+#: app/templates/issues/chart.html:64
 msgid "Snapshot"
 msgstr "Instantánea"
 
-#: app/templates/issues/chart.html:63
+#: app/templates/issues/chart.html:64
 #, python-format
 msgid "Frozen on %(date)s when voting started, so everyone votes on the same figures."
 msgstr "Congelado el %(date)s al empezar la votación, para que todos voten sobre las mismas cifras."
 
-#: app/templates/issues/chart.html:63
+#: app/templates/issues/chart.html:64
 msgid "Will be frozen when voting starts, so everyone votes on the same figures."
 msgstr "Se congelará cuando empiece la votación, para que todos voten sobre las mismas cifras."
 
-#: app/templates/issues/chart.html:68
+#: app/templates/issues/chart.html:69
 msgid "Why this chart"
 msgstr "Por qué este gráfico"
 
-#: app/templates/issues/chart.html:72
+#: app/templates/issues/chart.html:73
 msgid "Linked to"
 msgstr "Vinculado a"
 
-#: app/templates/issues/chart.html:78
+#: app/templates/issues/chart.html:79
 #, python-format
 msgid "Chosen by AI on %(date)s"
 msgstr "Elegido por IA el %(date)s"
 
-#: app/templates/issues/chart.html:87
+#: app/templates/issues/chart.html:88
 msgid "Link to a proposal"
 msgstr "Vincular a una propuesta"
 
-#: app/templates/issues/chart.html:91 app/templates/issues/proposal.html:130
+#: app/templates/issues/chart.html:92 app/templates/issues/proposal.html:130
 #: app/templates/issues/proposal.html:152
 msgid "Link"
 msgstr "Vincular"
@@ -5649,8 +5649,8 @@ msgid "Schedule per phase"
 msgstr "Calendario por fase"
 
 #: app/templates/issues/new.html:75
-msgid "Times are in Dutch time. Leave a field empty and it becomes 00:00 for the first phase and 24:00 for the next ones."
-msgstr "Las horas están en hora de los Países Bajos. Si dejas un campo vacío, será 00:00 en la primera fase y 24:00 en las siguientes."
+msgid "Times are in Dutch time."
+msgstr "Las horas están en hora de los Países Bajos."
 
 #: app/templates/issues/new.html:77
 msgid "Facts and discussion start"

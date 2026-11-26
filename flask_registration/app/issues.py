@@ -154,9 +154,9 @@ def delete_wrappers(issue_ids):
 # ── Een nieuw vraagstuk ──────────────────────────────────────────────────
 # Polijstronde P4: de tijden in het formulier zijn Nederlandse tijd
 # (LOCAL_TZ); opgeslagen wordt UTC, zoals de rest van de app (utcnow).
-# Online: per fase een begindatum met een tijd; feiten en discussie
-# standaard om 00:00, de volgende fasen standaard om 24:00 (het einde van
-# die dag). Event: een naam, een toelichting, één of meer dagen met een
+# Online: per fase een begindatum met een tijd; elke fase begint standaard
+# om 00:00 en het stemmen sluit standaard om 23:59 (een leeg tijdveld krijgt
+# dezelfde standaard; 24:00, het einde van de dag, mag nog). Event: een naam, een toelichting, één of meer dagen met een
 # van-tot-tijd en de keuze of online bijdragen tussen de eerste en de
 # laatste dag openstaan; de initiatiefnemer verzet de fasen zelf.
 
@@ -165,8 +165,8 @@ EVENT_DAYS_MAX = 14
 NEW_FACTS_MAX = 10
 NAME_MAX = 200
 # (veld, standaardtijd) per moment van de online planning.
-SCHEDULE_FIELDS = (('starts_at', '00:00'), ('adjust_starts_at', '24:00'), ('vote_starts_at', '24:00'),
-                   ('vote_ends_at', '24:00'))
+SCHEDULE_FIELDS = (('starts_at', '00:00'), ('adjust_starts_at', '00:00'), ('vote_starts_at', '00:00'),
+                   ('vote_ends_at', '23:59'))
 
 
 def to_utc(local):
@@ -210,14 +210,19 @@ def _moment(day, time, default_time):
 
 def default_schedule(today=None):
     """De standaardplanning voor het formulier: {veld: (datum, tijd)}, met de
-    standaard doorlooptijden (21, 5 en 7 dagen) vanaf vandaag 00:00."""
+    standaard doorlooptijden (21, 5 en 7 dagen) vanaf vandaag 00:00 en de
+    standaardtijden van SCHEDULE_FIELDS ingevuld: elke fase begint om 00:00,
+    het stemmen sluit op de laatste dag om 23:59."""
     today = today or to_local(datetime.utcnow()).date()
     days = dict(DAY_FIELDS)
-    adjust = today + timedelta(days=days['days_facts'] - 1)
+    adjust = today + timedelta(days=days['days_facts'])
     vote = adjust + timedelta(days=days['days_adjust'])
-    end = vote + timedelta(days=days['days_vote'])
-    return {'starts_at': (today.isoformat(), '00:00'), 'adjust_starts_at': (adjust.isoformat(), ''),
-            'vote_starts_at': (vote.isoformat(), ''), 'vote_ends_at': (end.isoformat(), '')}
+    last = vote + timedelta(days=days['days_vote'] - 1)
+    times = dict(SCHEDULE_FIELDS)
+    return {'starts_at': (today.isoformat(), times['starts_at']),
+            'adjust_starts_at': (adjust.isoformat(), times['adjust_starts_at']),
+            'vote_starts_at': (vote.isoformat(), times['vote_starts_at']),
+            'vote_ends_at': (last.isoformat(), times['vote_ends_at'])}
 
 
 def _days_between(start, end):

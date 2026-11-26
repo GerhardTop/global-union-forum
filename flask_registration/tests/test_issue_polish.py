@@ -363,7 +363,7 @@ def test_start_form_layout(app, db, make_user):
     user = make_user()
     page = _get(app, '/gesprekken/nieuw', user)
     assert 'Toelichting' in page and 'eerste bericht' not in page.lower()
-    for text in ('Feiten en discussie beginnen', 'Stemmen sluit', 'placeholder="24:00"', 'Naam van het event', 'Dag toevoegen',
+    for text in ('Feiten en discussie beginnen', 'Stemmen sluit', 'placeholder="23:59"', 'Naam van het event', 'Dag toevoegen',
                  'Online bijdragen open tussen de eerste en laatste dag', 'Locatie', 'Afsluiten met een samenvattend voorstel',
                  'name="fact_0_text"', 'data-draft-key', 'beforeunload', 'min="0"'):
         assert text in page, text
@@ -376,8 +376,8 @@ def test_start_form_layout(app, db, make_user):
 def test_default_schedule_times():
     sched = issues.default_schedule(datetime(2027, 3, 1).date())
     assert sched['starts_at'] == ('2027-03-01', '00:00')
-    assert sched['adjust_starts_at'] == ('2027-03-21', '')       # 21 dagen: tot en met 21 maart 24:00
-    assert sched['vote_starts_at'] == ('2027-03-26', '') and sched['vote_ends_at'] == ('2027-04-02', '')
+    assert sched['adjust_starts_at'] == ('2027-03-22', '00:00')  # 21 dagen: tot en met 21 maart
+    assert sched['vote_starts_at'] == ('2027-03-27', '00:00') and sched['vote_ends_at'] == ('2027-04-02', '23:59')
 
 
 def test_support_threshold_zero_puts_a_proposal_on_the_list(app, db, make_user):

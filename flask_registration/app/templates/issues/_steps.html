@@ -35,14 +35,14 @@
     <span class="gu-phasebar__label">
     <span class="gu-proposal-steps__title">{{ title }}{% if state == 'current' %}<span class="gu-sr-only"> ({{ _('current phase') }})</span>{% elif state == 'done' %}<span class="gu-sr-only"> ({{ _('done') }})</span>{% endif %}</span>
     {% if state == 'current' %}
-    {# Compact: meer dan 1 dag toont alleen "nog X dagen"; de laatste dag de datum (en tijd als die niet op einde-dag staat). #}
+    {# Compact: meer dan 1 dag toont alleen "nog X dagen"; de laatste dag de datum (en de tijd als die niet 00:00 (24:00) of 23:59 is). #}
     {% if remaining and remaining[1] == 'over' %}
     <span class="gu-proposal-steps__left">{{ _('Deadline passed') }}</span>
     {% elif remaining and remaining[1] == 'days' and remaining[0] > 1 %}
     <span class="gu-proposal-steps__left">{{ ngettext('%(num)d day left', '%(num)d days left', remaining[0]) }}</span>
     {% elif issue.phase_deadline %}
     {% set dl = issue.phase_deadline | local %}
-    <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=(dl | datetimeformat('d MMM y HH:mm')) if (dl.hour or dl.minute) else (dl | end_day | datetimeformat('d MMM y'))) }}</span>
+    <span class="gu-proposal-steps__when">{{ _('until %(date)s', date=(dl | datetimeformat('d MMM y HH:mm')) if (dl.hour, dl.minute) not in ((0, 0), (23, 59)) else (dl | end_day | datetimeformat('d MMM y'))) }}</span>
     {% endif %}
     {% elif issue.kind == 'online' and key in plan %}
     <span class="gu-proposal-steps__when">{{ _('%(start)s to %(end)s', start=plan[key][0] | local | datetimeformat('d MMM'), end=plan[key][1] | local | end_day | datetimeformat('d MMM y')) }}</span>
