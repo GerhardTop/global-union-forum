@@ -90,9 +90,9 @@ def test_the_ai_gets_only_the_allowed_countries(app, db, make_user, made, starte
     assert 'Countries you may choose (named in the issue or the proposals): Germany, Poland' in prompt
     assert 'Only to fill up to 4 countries, from the fixed set of the region (Europe): France, Netherlands' in prompt
     assert 'Any other country is dropped by the app.' in prompt
-    # The candidate's entities: only the allowed countries (and averages).
+    # The candidate's entities: only the allowed countries, the averages and (step 1l) the world blocks.
     entities = prompt.split(f'slug: {SIPRI}')[1].split('entities:')[1].split('\n')[0]
-    assert 'Poland' in entities and 'Spain' not in entities and 'United States' not in entities
+    assert 'Poland' in entities and 'Spain' not in entities and 'United States' in entities
     assert 'Burkina Faso' not in entities
 
 

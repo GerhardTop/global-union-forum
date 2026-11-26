@@ -193,12 +193,16 @@ def test_percentages_per_language():
 
 
 def test_large_numbers_are_grouped_without_decimals():
-    data = _data({'A': [1234567.0, 2345678.9]})
+    data = _data({'A': [123456.0, 234567.9]})
     view = charts.layout(data, ['A'], size=charts.LARGE, locale='nl')
-    assert view.legend[0].value == '2.345.679'
+    assert view.legend[0].value == '234.568'
+    assert view.table_rows[0] == (2016, ['234.568'])
+    assert charts.layout(data, ['A'], size=charts.LARGE, locale='en').legend[0].value == '234,568'
+    assert charts.layout(data, ['A'], size=charts.LARGE, locale='fr').legend[0].value == '234 568'
+    # From a million on the legend is compact (step 1l); the table keeps the full number.
+    view = charts.layout(_data({'A': [1234567.0, 2345678.9]}), ['A'], size=charts.LARGE, locale='nl')
+    assert view.legend[0].value == '2,3\xa0mln.'
     assert view.table_rows[0] == (2016, ['2.345.679'])
-    assert charts.layout(data, ['A'], size=charts.LARGE, locale='en').legend[0].value == '2,345,679'
-    assert charts.layout(data, ['A'], size=charts.LARGE, locale='fr').legend[0].value == '2 345 679'
     # A short unit goes after the number; a long one stays in the subtitle.
     assert charts.format_value(12.34, 'nl', 't', 1) == '12,3 t'
     assert charts.format_value(12.34, 'nl', 'tonnes', 1) == '12,3'

@@ -47,6 +47,7 @@ DEFAULT_YEARS = 10
 MAX_ATTEMPTS = 3
 MAX_DATA_AGE_YEARS = 5      # the last year with data at most this many years before now
 REJECT_MEMORY_DAYS = 30     # a chart rejected for a lasting reason stays out of the candidates this long
+AGGREGATE_TOTAL_FACTOR = 2  # an "average" this many times the largest chosen country in every year is a total
 LASTING_REASONS = ('unsupported', 'forbidden', 'no_data', 'stale')
 PENDING_AFTER = timedelta(minutes=10)
 SEARCH_HITS = 20
@@ -56,6 +57,11 @@ SEARCH_HITS = 20
 EUROPE_SET = ('DE', 'FR', 'NL', 'PL')
 WORLD_SET = ('US', 'CN', 'IN')
 WORLD_AVERAGE = 'European Union (27)'
+# Step 1l: the third fixed set, world blocks (compare "blocks"): the EU as an
+# ordinary line next to the United States, China and India; never an average.
+EU_BLOCK = 'European Union (27)'          # as OWID writes it (key OWID_EU27)
+BLOCK_SET = ('US', 'CN', 'IN')
+COMPARES = ('countries', 'blocks')
 # European countries (for the choice of region): the EU, the EEA, the UK,
 # Switzerland, the Balkans and the east of Europe.
 EUROPEAN = frozenset((
@@ -196,7 +202,8 @@ _TERMS_SYSTEM = (
     "people think well about this issue and about the different sides of it. Prefer measurable "
     "indicators (spending, shares, rates, counts, opinion). Prefer terms for a single measure per country "
     "(for example 'share of electricity from coal', 'wind power generation'), not for a breakdown or mix of "
-    "several sources. Answer with JSON only: "
+    "several sources. Use per capita or share terms for comparing countries, and 'share of global' terms for "
+    "comparing world blocks. Answer with JSON only: "
     '{"terms": ["...", "..."]}'
 )
 
@@ -212,7 +219,13 @@ _SELECTION_SYSTEM = (
     "2. Only charts from the candidate list (by slug). Choose charts that show one measure per country. Avoid "
     "charts that show a mix or breakdown (by source, by sector, by type), because the app can only draw one "
     "measure. For example, choose 'Share of electricity from coal' rather than 'Electricity mix' or "
-    "'Electricity by source'.\n"
+    "'Electricity by source'. The kind of measure decides what you compare. To compare countries, choose a per "
+    "capita or share measure and compare the named countries (otherwise the fixed set) with the average the "
+    "source supplies. To show how large each part of the world is, compare world blocks (European Union (27), "
+    "United States, China, India); prefer their share of the world total (for example 'share of global CO2 "
+    "emissions', in %) over absolute totals; absolute totals only between these blocks and never with an "
+    "average. For questions about responsibility or contribution, one chart of each kind can both be useful, "
+    "as two different aspects.\n"
     "3. Balance: together the charts are relevant to several proposals or sides of the issue, not "
     "only to one. For each chart, say for which proposals it is relevant. Example (European defence, "
     "with proposals about an EU army, the NATO spending target, and diplomacy and development aid): "
@@ -221,8 +234,11 @@ _SELECTION_SYSTEM = (
     "4. Countries: a) first the countries named in the issue or the proposals; b) otherwise a fixed set "
     "per region: Europe: Germany, France, Netherlands, Poland; world: United States, China, India, "
     "European Union (27); c) never choose countries to support a position, and never look for "
-    f"outliers. At most {MAX_COUNTRIES} countries, written exactly as in the candidate's entities.\n"
-    "5. Average: only an average or total that is in the source's own data (for example European "
+    f"outliers. At most {MAX_COUNTRIES} countries, written exactly as in the candidate's entities. "
+    "d) Or world blocks: European Union (27), United States, China, India, with compare \"blocks\": then only "
+    "these four, the European Union (27) as an ordinary line, and no average. Never mix blocks with other "
+    "countries, and never put the European Union (27) as a line in a countries chart.\n"
+    "5. Average (compare \"countries\" only): only an average or total that is in the source's own data (for example European "
     "Union (27) or World), written exactly as in the entities. If there is none, use null. Never "
     "compute one.\n"
     "6. Period: the last ten years (years: 10), unless a longer period is needed to see the point; "
@@ -232,7 +248,8 @@ _SELECTION_SYSTEM = (
     "proposal, and do not suggest which proposal is better. Each reason must stand on its own. Do not refer "
     "to other charts, since some may be dropped by the checks.\n\n"
     "Answer with JSON only, in this form:\n"
-    '{"charts": [{"slug": "...", "countries": ["..."], "average": "..." or null, "years": 10, '
+    '{"charts": [{"slug": "...", "compare": "countries" or "blocks", "countries": ["..."], '
+    '"average": "..." or null, "years": 10, '
     '"reason": "...", "relevant_for": [proposal ids]}], '
     '"link_existing": [{"fact_post_id": 0, "proposal_ids": [0]}], '
     '"none_reason": "..." or null}'
@@ -399,10 +416,14 @@ def terms_prompt(ctx):
     return '\n'.join(lines)
 
 
+def _block_names():
+    return [EU_BLOCK] + [owid_name(c) for c in BLOCK_SET]
+
+
 def _relevant_entities(hit, ctx):
     """The entities of a candidate the AI may use: the allowed countries
     (rule 4, by their OWID names) and what can serve as an average."""
-    wanted = {owid_name(code) for code in ctx.allowed} | {WORLD_AVERAGE}
+    wanted = {owid_name(code) for code in ctx.allowed} | {WORLD_AVERAGE, EU_BLOCK} | {owid_name(c) for c in BLOCK_SET}
     out = []
     for name in hit.entities:
         if name in wanted or name in _AVERAGE_NAMES or name.startswith(_AVERAGE_PREFIXES):
@@ -435,6 +456,8 @@ def selection_prompt(ctx, candidates):
     if ctx.region == 'World':
         lines.append(f'For the world, the average may be {WORLD_AVERAGE} if the source has it.')
     lines.append('Any other country is dropped by the app.')
+    lines.append('Or, with compare "blocks", only the world blocks: ' + ', '.join(_block_names())
+                 + ' (no average).')
     if ctx.charts:
         lines.append(f'Charts already chosen ({len(ctx.charts)} of at most {MAX_CHARTS}):')
         for chart in ctx.charts:
@@ -464,6 +487,7 @@ class Accepted:
     year_to: int
     reason: str
     proposal_ids: list
+    compare: str = 'countries'
 
 
 def _int_list(values):
@@ -474,6 +498,34 @@ def _int_list(values):
         except (TypeError, ValueError):
             continue
     return out
+
+
+def _is_block(key, name):
+    """Whether an entity of the data is one of the world blocks."""
+    from app.sources import countries
+    if key is None:
+        return False
+    return name == EU_BLOCK or key == 'OWID_EU27' or countries.iso2_for(key) in BLOCK_SET
+
+
+def aggregate_is_total(parsed, average_key, keys, year_from, year_to):
+    """Whether the chosen average is really a sum: in every year of the
+    period in which it and a chosen country have a value, it is at least
+    AGGREGATE_TOTAL_FACTOR times the largest country (absolute values). OWID
+    gives a regional total for an absolute measure (tonnes, people); that
+    line would dwarf the countries."""
+    average = parsed.series.get(average_key, {})
+    compared = 0
+    for year, value in average.items():
+        if not year_from <= year <= year_to:
+            continue
+        found = [abs(parsed.series[k][year]) for k in keys if parsed.series.get(k, {}).get(year) is not None]
+        if not found or value is None:
+            continue
+        compared += 1
+        if abs(value) < AGGREGATE_TOTAL_FACTOR * max(found):
+            return False
+    return compared > 0
 
 
 def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
@@ -497,11 +549,28 @@ def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
             reasons[slug] = exc.reason
         return None
     by_name = {name: key for key, name in parsed.names.items()}
+    compare = item.get('compare') or 'countries'
+    if compare not in COMPARES:
+        notes.append(f'{slug}: compare {compare!r} is neither countries nor blocks')
+        return None
+    chosen = (item.get('countries') or [])[:MAX_COUNTRIES] if isinstance(item.get('countries'), list) else []
+    if compare == 'blocks':
+        others = [name for name in chosen if not _is_block(by_name.get(name), name)]
+        if others:
+            notes.append(f'{slug}: blocks_mixed_with_countries ({", ".join(map(repr, others))})')
+            return None
+    elif EU_BLOCK in chosen:
+        notes.append(f'{slug}: eu_line_in_countries_chart (the European Union (27) is only a line with '
+                     f'compare "blocks"; in a countries chart it is the average)')
+        return None
     keys = []
-    for name in (item.get('countries') or [])[:MAX_COUNTRIES] if isinstance(item.get('countries'), list) else []:
+    for name in chosen:
         key = by_name.get(name)
         if key is None:
             notes.append(f'{slug}: country {name!r} is not in the data')
+        elif compare == 'blocks':
+            if key not in keys:
+                keys.append(key)
         elif countries.iso2_for(key) is None:
             notes.append(f'{slug}: {name!r} is not a country of our list')
         elif countries.iso2_for(key) not in ctx.allowed:
@@ -530,12 +599,17 @@ def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
         return None
     average_key = None
     average = item.get('average')
-    if average:
+    if average and compare == 'blocks':
+        notes.append(f'{slug}: average {average!r} with compare "blocks", so no average')
+    elif average:
         key = by_name.get(average)
         if key is None:
             notes.append(f'{slug}: average {average!r} is not in the data, so no average')
         elif not owid.has_values(parsed, key, year_from, year_to):
             notes.append(f'{slug}: average {average!r} has no data in the period, so no average')
+        elif aggregate_is_total(parsed, key, kept, year_from, year_to):
+            notes.append(f'{slug}: average {average!r} aggregate_is_total (at least {AGGREGATE_TOTAL_FACTOR} times '
+                         f'the largest country in every year), so no average')
         else:
             average_key = key
     open_ids = {p.id for p in ctx.proposals}
@@ -545,7 +619,8 @@ def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
         notes.append(f'{slug}: no reason')
         return None
     return Accepted(slug=slug, parsed=parsed, metadata=metadata, keys=kept, average_key=average_key,
-                    year_from=year_from, year_to=year_to, reason=reason, proposal_ids=proposal_ids)
+                    year_from=year_from, year_to=year_to, reason=reason, proposal_ids=proposal_ids,
+                    compare=compare)
 
 
 def check_links(answer, ctx, notes):
@@ -690,6 +765,11 @@ def display_names(chart, snapshot, lang):
         average = (content_i18n.display(chart, 'average_name', lang) if chart.average_name
                    else data.get('names', {}).get(chart.average_key, ''))
         names[chart.average_key] = average
+    elif chart.average_name:
+        # World blocks (step 1l): the EU is an ordinary line; its name goes through the translation route.
+        for key in chart.entity_keys:
+            if key not in names and key in data.get('names', {}):
+                names[key] = content_i18n.display(chart, 'average_name', lang)
     return names, average
 
 
@@ -914,7 +994,7 @@ def publish(ctx, outcome):
     from app import content_jobs
     from app.models import (FACT_KIND, SYSTEM_NAME, SYSTEM_ROLE, SYSTEM_USERNAME, FactChart, IssueProposalFact,
                             Post)
-    from app.sources import owid
+    from app.sources import countries, owid
     for item in outcome.accepted:
         title = item.parsed.title or item.slug
         if len(title) > 100:
@@ -929,8 +1009,12 @@ def publish(ctx, outcome):
                           column_name=item.parsed.column_name[:300], average_key=item.average_key,
                           year_from=item.year_from, year_to=item.year_to)
         chart.entity_keys = item.keys
-        # The name of the average as the source writes it (English); translated with the fact.
+        # The name of the average (or, with blocks, of the EU line) as the source writes it
+        # (English); translated with the fact.
         chart.average_name = item.parsed.names.get(item.average_key) if item.average_key else None
+        if item.compare == 'blocks':
+            chart.average_name = next((item.parsed.names[k] for k in item.keys if countries.iso2_for(k) is None),
+                                      None)
         db.session.add(chart)
         owid.create_snapshot(chart, item.parsed, item.metadata, item.year_from, item.year_to)
         for pid in item.proposal_ids:

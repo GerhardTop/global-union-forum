@@ -10,7 +10,7 @@
   container-type: inline-size;
   inline-size: 100%;
   --gu-chart-start: 48px;
-  --gu-chart-end: 132px;
+  --gu-chart-end: 160px; /* room for "Nederland 125 mln. t" */
   --gu-chart-label: 12px;
   --gu-chart-line: 16px;
 }

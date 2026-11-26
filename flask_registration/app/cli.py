@@ -303,7 +303,8 @@ def background_figures_trial(issue_id):
     for item in outcome.accepted:
         names = [item.parsed.names[k] for k in item.keys]
         average = item.parsed.names.get(item.average_key) if item.average_key else None
-        click.echo(f'  {item.slug}: {names}, average {average}, {item.year_from} to {item.year_to}, '
+        click.echo(f'  {item.slug} (compare {item.compare}): {names}, average {average}, '
+                   f'{item.year_from} to {item.year_to}, unit {item.parsed.unit or item.parsed.short_unit!r}, '
                    f'proposals {item.proposal_ids}\n    {item.reason}')
     for post_id, pid in outcome.links:
         click.echo(f'  link: fact {post_id} to proposal {pid}')

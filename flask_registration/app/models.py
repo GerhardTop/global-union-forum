@@ -1464,6 +1464,7 @@ class FactChart(db.Model):
     average_key = db.Column(db.String(120), nullable=True)     # as the source supplies it, or none
     # Step 1e: the name of that average as the source writes it (English, e.g.
     # "European Union (27)"); translated through content_i18n like a fact.
+    # Step 1l: in a chart of world blocks (no average) the name of the EU line.
     average_name = db.Column(db.String(200), nullable=True)
     year_from   = db.Column(db.Integer, nullable=False)
     year_to     = db.Column(db.Integer, nullable=False)
