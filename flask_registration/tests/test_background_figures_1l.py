@@ -91,26 +91,38 @@ LARGE_DATA = {'years': [2021, 2022, 2023],
 NBSP = '\xa0'
 
 
-@pytest.mark.parametrize('lang, value, expected', [
-    ('nl', 574e6, '574 mln. t'), ('nl', 2.4e9, '2,4 mld. t'),
-    ('de', 574e6, '574 Mio. t'), ('de', 2.4e9, '2,4 Mrd. t'),
-    ('es', 574e6, '574 M t'), ('es', 2.4e9, '2400 M t'),
-    ('fr', 574e6, '574 M t'), ('fr', 2.4e9, '2,4 Md t'),
-    ('en', 574e6, '574M t'), ('en', 2.4e9, '2.4B t'),
+def _axis(lang, top):
+    data = {'years': [2022, 2023], 'series': {'A': [0.0, top]}, 'names': {}}
+    view = charts.layout(data, ['A'], None, charts.LARGE, lang, None, (), {}, 't')
+    return [g.label.replace(NBSP, ' ') for g in view.grid], view.legend[0].value.replace(NBSP, ' ')
+
+
+# One magnitude per chart, the suffix from Babel (checked 26 November 2026, Babel 2.18).
+@pytest.mark.parametrize('lang, top, axis, legend', [
+    ('nl', 1e6, ['0 t', '0,2 mln. t', '0,4 mln. t', '0,6 mln. t', '0,8 mln. t', '1 mln. t'], '1,0 mln. t'),
+    ('nl', 3e9, ['0 t', '1 mld. t', '2 mld. t', '3 mld. t'], '3,0 mld. t'),
+    ('de', 1e6, ['0 t', '0,2 Mio. t', '0,4 Mio. t', '0,6 Mio. t', '0,8 Mio. t', '1 Mio. t'], '1,0 Mio. t'),
+    ('de', 3e9, ['0 t', '1 Mrd. t', '2 Mrd. t', '3 Mrd. t'], '3,0 Mrd. t'),
+    # Spanish has no short form for a billion: Babel writes "1000 M", so the axis stays in millions.
+    ('es', 1e6, ['0 t', '0,2 M t', '0,4 M t', '0,6 M t', '0,8 M t', '1 M t'], '1,0 M t'),
+    ('es', 3e9, ['0 t', '1.000 M t', '2.000 M t', '3.000 M t'], '3.000 M t'),
+    ('fr', 1e6, ['0 t', '0,2 M t', '0,4 M t', '0,6 M t', '0,8 M t', '1 M t'], '1,0 M t'),
+    ('fr', 3e9, ['0 t', '1 Md t', '2 Md t', '3 Md t'], '3,0 Md t'),
 ])
-def test_what_babel_gives_per_language(lang, value, expected):
-    assert charts.format_value(value, lang, 't', 1, compact=True).replace(NBSP, ' ') == expected
+def test_one_magnitude_per_axis(lang, top, axis, legend):
+    assert _axis(lang, top) == (axis, legend)
 
 
-def test_large_numbers_are_compact_except_in_the_table():
-    view = charts.layout(LARGE_DATA, ['DEU', 'POL', 'NLD'], None, charts.LARGE, 'nl', None, (), {}, 't')
+def test_smaller_numbers_keep_the_magnitude():
+    data = {'years': [2022, 2023], 'series': {'A': [0.0, 1.25e6], 'B': [250_000.0, 250_000.0]}, 'names': {}}
+    view = charts.layout(data, ['A', 'B'], None, charts.LARGE, 'nl', None, (), {}, 't')
     labels = [g.label.replace(NBSP, ' ') for g in view.grid]
-    assert labels == ['0 t', '200 mln. t', '400 mln. t', '600 mln. t', '800 mln. t']
-    assert [(e.name, e.value.replace(NBSP, ' ')) for e in view.end_labels] == \
-        [('Germany', '674 mln. t'), ('Poland', '287 mln. t'), ('Netherlands', '125 mln. t')]
-    assert [i.value.replace(NBSP, ' ') for i in view.legend] == ['674 mln. t', '287 mln. t', '125 mln. t']
-    year, cells = view.table_rows[0]
-    assert (year, [c.replace(NBSP, ' ') for c in cells]) == (2023, ['674.000.000 t', '287.000.000 t', '125.000.000 t'])
+    assert '0,25 mln. t' in labels and '1,25 mln. t' in labels and not any('K' in label for label in labels)
+    # One decimal under 100 in the chart's magnitude; Babel rounds half to even (1,25 to 1,2).
+    assert [i.value.replace(NBSP, ' ') for i in view.legend] == ['1,2 mln. t', '0,2 mln. t']
+    assert [e.value.replace(NBSP, ' ') for e in view.end_labels] == ['1,2 mln. t', '0,2 mln. t']
+    assert charts.magnitude(999_999, 'nl') is None and charts.magnitude(1e6, 'nl') == (10 ** 6, NBSP + 'mln.')
+    assert charts.magnitude(3e9, 'es') == (10 ** 6, NBSP + 'M')
 
 
 def test_axis_steps_keep_two_decimals():

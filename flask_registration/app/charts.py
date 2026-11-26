@@ -13,6 +13,7 @@ leaves room at the start for the y labels and (large) at the end for the end
 labels; charts.css sets those gutters.
 """
 import math
+import re
 from dataclasses import dataclass, field
 
 from babel import Locale
@@ -115,13 +116,31 @@ def _decimals_for_step(step):
     return 3
 
 
-def format_value(value, locale, short_unit='', decimals=1, compact=False):
+def magnitude(biggest, locale):
+    """One magnitude for a whole chart (step 1l): (divisor, suffix) for the
+    largest absolute number, or None below COMPACT_FROM. The suffix is the
+    one Babel's short compact notation gives for 10^k in that language (nl
+    " mln.", de " Mrd."); where Babel writes 10^k as a multiple of a smaller
+    unit (es "1000 M" for a billion), the divisor follows it (10^6, " M")."""
+    if biggest < COMPACT_FROM:
+        return None
+    k = 12 if biggest >= 10 ** 12 else 9 if biggest >= 10 ** 9 else 6
+    # 2 x 10^k: the plural form ("2 mln."), as most numbers on the chart use it.
+    text = format_compact_decimal(2 * 10 ** k, format_type='short', locale=locale)
+    match = re.match(r'(\d+)(.*)$', text, flags=re.S)
+    if match is None:
+        return None
+    return 10 ** k * 2 // int(match.group(1)), match.group(2)
+
+
+def format_value(value, locale, short_unit='', decimals=1, compact=None):
     """A number in the notation of the reader's language. A percentage with
     Babel's percent pattern of that language (nl "4,1%", fr "4,1 %"); else a
     decimal, with the short unit after it when it is short (at most 4).
-    compact: Babel's short compact notation with at most `decimals` decimals
-    (nl "574 mln.", "2,4 mld."), for the axis, the legend and the end labels
-    of a chart with large numbers; the table keeps the full number."""
+    compact: the magnitude of the chart, (divisor, suffix) from magnitude():
+    the number divided by it with `decimals` decimals and Babel's suffix
+    (nl "0,25 mln.", "2,4 mld."), for the axis, the legend and the end
+    labels of a chart with large numbers; the table keeps the full number."""
     if value is None:
         return ''
     if short_unit == '%':
@@ -129,10 +148,11 @@ def format_value(value, locale, short_unit='', decimals=1, compact=False):
         if decimals:
             pattern = pattern.replace('0', '0.' + '0' * decimals, 1)
         return format_percent(value / 100, format=pattern, locale=locale)
-    if compact:
-        text = format_compact_decimal(value, format_type='short', locale=locale, fraction_digits=decimals)
+    pattern = '#,##0' + ('.' + '0' * decimals if decimals else '')
+    if compact and value:
+        divisor, suffix = compact
+        text = format_decimal(value / divisor, format=pattern, locale=locale) + suffix
     else:
-        pattern = '#,##0' + ('.' + '0' * decimals if decimals else '')
         text = format_decimal(value, format=pattern, locale=locale)
     if short_unit and len(short_unit) <= 4:
         return f'{text} {short_unit}' if short_unit[0].isalnum() else f'{text}{short_unit}'
@@ -273,7 +293,11 @@ def layout(data, keys, average_key=None, size=LARGE, locale='nl', period=None, h
     numbers = [v for k in shown for v in values[k] if v is not None]
     biggest = max(abs(v) for v in numbers)
     decimals = 1 if biggest < 100 else 0
-    compact = biggest >= COMPACT_FROM and short_unit != '%'
+    compact = magnitude(biggest, locale) if short_unit != '%' else None
+
+    def compact_decimals(value):
+        """Legend and end labels: one decimal under 100 (in the chart's magnitude), else none."""
+        return 1 if abs(value) / compact[0] < 100 else 0
     scale_numbers = [v for k in visible for v in values[k] if v is not None] or numbers
     bottom_value, top_value, step = y_scale(min(scale_numbers), max(scale_numbers),
                                             conf['min_lines'], conf['max_lines'])
@@ -292,9 +316,9 @@ def layout(data, keys, average_key=None, size=LARGE, locale='nl', period=None, h
     for i in range(n_lines + 1):
         value = round(bottom_value + i * step, 9)
         # Only the decimals this label's own number needs: 0%, 2,5%, 5%.
-        # Compact: up to two decimals, so that a step of 250 mln. never rounds (1,25 mld.).
-        label = (format_value(value, locale, short_unit, 2, compact=True) if compact
-                 else format_value(value, locale, short_unit, _decimals_for_step(abs(value))))
+        # One magnitude for the whole axis; each label only the decimals its own number needs.
+        label = (format_value(value, locale, short_unit, _decimals_for_step(abs(value) / compact[0]), compact)
+                 if compact else format_value(value, locale, short_unit, _decimals_for_step(abs(value))))
         view.grid.append(GridLine(y=y_of(value), label=label, zero=abs(value) < 1e-9))
     if bottom_value < 0 < top_value and not any(g.zero for g in view.grid):
         view.grid.append(GridLine(y=y_of(0), label='', zero=True))
@@ -348,14 +372,15 @@ def layout(data, keys, average_key=None, size=LARGE, locale='nl', period=None, h
         placed = _spread([w[0] for w in wishes], END_LABEL_GAP, 0, conf['height'] - 2 * conf['label_half'])
         for y, (_wish, key, value) in zip(placed, wishes):
             view.end_labels.append(EndLabel(key=key, y=round(y, 1), name=name(key), color=colors[key],
-                                            value=format_value(value, locale, short_unit, 1 if compact else decimals,
-                                                               compact=compact)))
+                                            value=format_value(value, locale, short_unit,
+                                                               compact_decimals(value) if compact else decimals,
+                                                               compact)))
 
     for key in shown:
         _year, value = last_value(key)
         view.legend.append(LegendItem(key=key, name=name(key), color=colors[key], dashed=key == average_key,
-                                      value=format_value(value, locale, short_unit, 1 if compact else decimals,
-                                                         compact=compact),
+                                      value=format_value(value, locale, short_unit,
+                                                         compact_decimals(value) if compact else decimals, compact),
                                       hidden=key in hidden))
 
     view.table_columns = [(k, name(k)) for k in visible]

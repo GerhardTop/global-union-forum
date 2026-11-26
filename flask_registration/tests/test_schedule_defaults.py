@@ -107,3 +107,16 @@ def test_the_phase_bar_and_the_schedule_show_the_last_day(app, db, make_user):
         from flask import render_template
         html = render_template('issues/_steps.html', issue=issue, remaining=(5, 'hours'))
     assert f'tot {format_date(end, "d MMM y", locale="nl")}' in html and '23:59' not in html
+
+
+def test_an_empty_time_is_00_00_for_the_starts_and_23_59_for_the_close():
+    values, errors = issues.parse_form(_form(starts_at_time='', adjust_starts_at_time='', vote_starts_at_time='',
+                                             vote_ends_at_time=''))
+    assert errors == {}
+    start, adjust, vote, end = _moments(values)
+    assert start == datetime(2027, 3, 1, 0, 0)
+    assert adjust == datetime(2027, 3, 22, 0, 0)
+    assert vote == datetime(2027, 3, 27, 0, 0)
+    assert end == datetime(2027, 4, 2, 23, 59)               # the same day, not 00:00
+    assert issues._moment('2027-04-02', '', '23:59') == datetime(2027, 4, 2, 23, 59)
+    assert issues._moment('2027-04-02', '   ', '23:59') == datetime(2027, 4, 2, 23, 59)
