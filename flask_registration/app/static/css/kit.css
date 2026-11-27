@@ -4777,3 +4777,34 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-vote__statement { font-weight: 600; margin: 0 0 4px; }
 .gu-vote__official { font-size: 13px; color: var(--gu-fg-2); margin: 6px 0 0; }
 .gu-vote__original { font-size: 14px; margin: 6px 0 0; padding-inline-start: 10px; border-inline-start: 2px solid var(--gu-border); }
+
+/* Representativeness (docs/design/representativiteit-vragen.html): the
+   voluntary questions, in the profile (About me) and from step 1c in the
+   card after the first vote. Logical properties only. */
+.gu-pp__title { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+.gu-pp__pill { display:inline-flex; padding:2px 9px; border:1px solid #e4e9ef; border-radius:999px; background:#eef1f5; color:#525c69; font-size:12px; font-weight:500; font-family:var(--gu-font-sans); letter-spacing:0; }
+.gu-pp__intro { margin:0 0 20px; font-size:14px; line-height:1.55; color:#3a434e; }
+.gu-pp__form { display:flex; flex-direction:column; gap:18px; }
+.gu-pp__questions { display:flex; flex-direction:column; gap:18px; }
+.gu-pp__field { display:flex; flex-direction:column; gap:6px; }
+.gu-pp__fieldset { margin:0; padding:0; border:0; min-inline-size:0; }
+.gu-pp__label { display:block; padding:0; margin:0; font-size:14px; font-weight:600; color:#141b22; }
+.gu-pp__fieldset > .gu-pp__label { margin-block-end:8px; }
+.gu-pp__select { inline-size:320px; max-inline-size:100%; min-block-size:42px; padding:8px 12px; border:1px solid #d3dae2; border-radius:8px; background:#fff; font:400 14px var(--gu-font-sans); color:#141b22; }
+.gu-pp__hint { margin:0; font-size:12px; color:#525c69; }
+.gu-pp__opts { display:flex; flex-wrap:wrap; gap:8px; }
+.gu-pp__opts--edu { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); }
+.gu-pp__opt { position:relative; display:inline-flex; }
+.gu-pp__opt input { position:absolute; opacity:0; inline-size:1px; block-size:1px; }
+.gu-pp__opt span { display:inline-flex; align-items:center; min-block-size:40px; box-sizing:border-box; padding:8px 14px; border:1px solid #d3dae2; border-radius:999px; background:#fff; color:#141b22; font-size:14px; font-weight:500; cursor:pointer; }
+.gu-pp__opt input:checked + span { background:#eaf2fb; border-color:#1b74b8; color:#1b5e9a; }
+.gu-pp__opt input:focus-visible + span { outline:2px solid #3ab0f0; outline-offset:2px; }
+.gu-pp__opt--edu span { inline-size:100%; flex-direction:column; align-items:flex-start; gap:2px; padding:10px 14px; border-radius:10px; }
+.gu-pp__opt--edu small { font-size:12px; font-weight:400; color:#525c69; }
+.gu-pp__actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.gu-pp__btn { min-block-size:40px; padding:8px 16px; }
+@media (max-width: 600px) {
+  .gu-pp__opts { flex-direction:column; align-items:stretch; }
+  .gu-pp__opts--edu { grid-template-columns:1fr; }
+  .gu-pp__opt span { inline-size:100%; }
+}

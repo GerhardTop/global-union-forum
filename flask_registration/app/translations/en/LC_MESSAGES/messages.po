@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-27 16:44+0100\n"
+"POT-Creation-Date: 2026-11-27 22:10+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:880
+#: app/__init__.py:886
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Too many attempts. Please try again in a minute."
 
-#: app/__init__.py:910
+#: app/__init__.py:916
 msgid "Your session has expired. Please log in again."
 msgstr "Your session has expired. Please log in again."
 
@@ -289,50 +289,50 @@ msgid "Your contributions stay, but are no longer linked to your name. That way,
 msgstr "Your contributions stay, but are no longer linked to your name. That way, the discussions and votes others took part in keep their coherence. Only the link to you disappears."
 
 #: app/forms.py:12 app/templates/aanmelden/aanmelden.html:68
-#: app/templates/profile.html:254 app/templates/wachtwoord_reset.html:47
+#: app/templates/profile.html:281 app/templates/wachtwoord_reset.html:47
 msgid "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
 msgstr "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
 
 #: app/forms.py:27 app/templates/aanmelden/aanmelden.html:87
-#: app/templates/profile.html:273 app/templates/wachtwoord_reset.html:67
+#: app/templates/profile.html:300 app/templates/wachtwoord_reset.html:67
 msgid "Passwords do not match."
 msgstr "Passwords do not match."
 
-#: app/models.py:244
+#: app/models.py:248
 msgid "Forum · conversation"
 msgstr "Forum · conversation"
 
-#: app/models.py:245
+#: app/models.py:249
 msgid "Forum · proposal"
 msgstr "Forum · proposal"
 
 # Herontwerp stap 1: vraagstukken (Issue)
-#: app/models.py:246 app/templates/issues/new.html:23
+#: app/models.py:250 app/templates/issues/new.html:23
 #: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:95
 #: app/templates/moderator/melding_beoordelen.html:68
 msgid "Issue"
 msgstr "Issue"
 
-#: app/models.py:404
+#: app/models.py:408
 #, python-format
 msgid "%(num)d day ago"
 msgid_plural "%(num)d days ago"
 msgstr[0] "%(num)d day ago"
 msgstr[1] "%(num)d days ago"
 
-#: app/models.py:407
+#: app/models.py:411
 #, python-format
 msgid "%(num)d hour ago"
 msgid_plural "%(num)d hours ago"
 msgstr[0] "%(num)d hour ago"
 msgstr[1] "%(num)d hours ago"
 
-#: app/models.py:410
+#: app/models.py:414
 #, python-format
 msgid "%(num)d min ago"
 msgstr "%(num)d min ago"
 
-#: app/models.py:411
+#: app/models.py:415
 msgid "just now"
 msgstr "just now"
 
@@ -569,6 +569,81 @@ msgstr "Reason: %(reason)s"
 msgid "You are suspended until %(until)s."
 msgstr "You are suspended until %(until)s."
 
+#. TRANSLATORS: an age group in the representativeness block ("65 or older");
+#. %(age)s is an age in years.
+#: app/participants.py:68
+#, python-format
+msgid "%(age)s or older"
+msgstr "%(age)s or older"
+
+#. TRANSLATORS: an age group in years, both limits included ("25 to 44" means
+#. 25 up to and including 44).
+#: app/participants.py:70
+#, python-format
+msgid "%(low)s to %(high)s"
+msgstr "%(low)s to %(high)s"
+
+#. TRANSLATORS: the answer to a voluntary question (birth year, gender,
+#. education, country) for someone who does not want to answer.
+#: app/participants.py:75 app/templates/participants/_questions.html:12
+#: app/templates/participants/_questions.html:46
+msgid "Prefer not to say"
+msgstr "Prefer not to say"
+
+#. TRANSLATORS: an answer to "What is your gender?" (voluntary question).
+#: app/participants.py:81
+msgid "Woman"
+msgstr "Woman"
+
+#. TRANSLATORS: an answer to "What is your gender?" (voluntary question).
+#: app/participants.py:84
+msgid "Man"
+msgstr "Man"
+
+#. TRANSLATORS: an answer to "What is your gender?": another gender than woman
+#. or man.
+#: app/participants.py:87
+msgctxt "gender"
+msgid "Other"
+msgstr "Other"
+
+#. TRANSLATORS: education level, ISCED 0 to 2 (the first of three; "Basic",
+#. "Secondary", "Higher").
+#: app/participants.py:96
+msgid "Basic"
+msgstr "Basic"
+
+#. TRANSLATORS: the explanation under "Basic" (ISCED 0 to 2). Give an example
+#. readers in your language recognise; never the Dutch names.
+#: app/participants.py:98
+msgid "Primary school or the first years of secondary school"
+msgstr "Primary school or the first years of secondary school"
+
+#. TRANSLATORS: education level, ISCED 3 and 4 (the second of three; "Basic",
+#. "Secondary", "Higher").
+#: app/participants.py:102
+msgid "Secondary"
+msgstr "Secondary"
+
+#. TRANSLATORS: the explanation under "Secondary" (ISCED 3 and 4). Give an
+#. example readers in your language recognise (a vocational training of your
+#. country); never the Dutch names mbo or hbo.
+#: app/participants.py:104
+msgid "Completed secondary school, or vocational training"
+msgstr "Completed secondary school, or vocational training"
+
+#. TRANSLATORS: education level, ISCED 5 to 8 (the third of three; "Basic",
+#. "Secondary", "Higher").
+#: app/participants.py:108
+msgid "Higher"
+msgstr "Higher"
+
+#. TRANSLATORS: the explanation under "Higher" (ISCED 5 to 8). Give an example
+#. readers in your language recognise; never the Dutch names mbo or hbo.
+#: app/participants.py:110
+msgid "College or university"
+msgstr "College or university"
+
 #: app/quality.py:37 app/templates/forum/quality.html:96
 msgid "New argument"
 msgstr "New argument"
@@ -795,28 +870,28 @@ msgstr "Choose what to do with this report."
 msgid "The report has been handled."
 msgstr "The report has been handled."
 
-#: app/routes/admin.py:660
+#: app/routes/admin.py:662
 msgid "Thresholds saved."
 msgstr "Thresholds saved."
 
-#: app/routes/admin.py:691
+#: app/routes/admin.py:693
 msgid "Maximum durations saved."
 msgstr "Maximum durations saved."
 
-#: app/routes/admin.py:713 app/templates/admin/proposal_limits.html:25
+#: app/routes/admin.py:715 app/templates/admin/proposal_limits.html:25
 msgid "Enter a whole number from 1 to 365."
 msgstr "Enter a whole number from 1 to 365."
 
-#: app/routes/admin.py:716
+#: app/routes/admin.py:718 app/routes/profile.py:127
 msgid "Saved."
 msgstr "Saved."
 
-#: app/routes/admin.py:742 app/templates/issues/index.html:17
+#: app/routes/admin.py:744 app/templates/issues/index.html:17
 #: app/templates/issues/show.html:25 app/templates/issues/verwijderen.html:29
 msgid "Issues"
 msgstr "Issues"
 
-#: app/routes/admin.py:743 app/templates/issues/final_new.html:19
+#: app/routes/admin.py:745 app/templates/issues/final_new.html:19
 #: app/templates/issues/proposal.html:46 app/templates/issues/proposal.html:63
 #: app/templates/issues/proposal.html:321
 #: app/templates/issues/proposal.html:323
@@ -827,28 +902,28 @@ msgstr "Issues"
 msgid "Proposals"
 msgstr "Proposals"
 
-#: app/routes/admin.py:744
+#: app/routes/admin.py:746
 msgid "Versions of a proposal"
 msgstr "Versions of a proposal"
 
-#: app/routes/admin.py:745
+#: app/routes/admin.py:747
 msgid "Follow-up updates"
 msgstr "Follow-up updates"
 
-#: app/routes/admin.py:746 app/templates/forum/_facts.html:19
+#: app/routes/admin.py:748 app/templates/forum/_facts.html:19
 #: app/templates/moderator/gebruiker.html:71
 msgid "Facts"
 msgstr "Facts"
 
-#: app/routes/admin.py:783 app/templates/admin/translations.html:61
+#: app/routes/admin.py:785 app/templates/admin/translations.html:61
 msgid "There is no AI key here, so nothing can be translated."
 msgstr "There is no AI key here, so nothing can be translated."
 
-#: app/routes/admin.py:785
+#: app/routes/admin.py:787
 msgid "Started: the backlog is being translated in the background."
 msgstr "Started: the backlog is being translated in the background."
 
-#: app/routes/admin.py:787
+#: app/routes/admin.py:789
 msgid "A run is already busy."
 msgstr "A run is already busy."
 
@@ -916,11 +991,11 @@ msgstr "Verification email resent: check your inbox."
 msgid "Admin accounts cannot be deleted."
 msgstr "Admin accounts cannot be deleted."
 
-#: app/routes/auth.py:515
+#: app/routes/auth.py:517
 msgid "An error occurred. Please try again."
 msgstr "An error occurred. Please try again."
 
-#: app/routes/auth.py:525
+#: app/routes/auth.py:527
 msgid "Your account has been deleted."
 msgstr "Your account has been deleted."
 
@@ -1098,7 +1173,12 @@ msgstr "Current password is incorrect."
 msgid "Password changed successfully."
 msgstr "Password changed successfully."
 
-#: app/routes/profile.py:178
+#. TRANSLATORS: profile, About me: the message after "Clear answers".
+#: app/routes/profile.py:131
+msgid "Your answers have been cleared."
+msgstr "Your answers have been cleared."
+
+#: app/routes/profile.py:213
 msgid "Saved"
 msgstr "Saved"
 
@@ -1890,8 +1970,8 @@ msgstr "Password"
 
 #: app/templates/aanmelden/aanmelden.html:62
 #: app/templates/aanmelden/aanmelden.html:82 app/templates/login.html:36
-#: app/templates/profile.html:231 app/templates/profile.html:248
-#: app/templates/profile.html:268 app/templates/wachtwoord_reset.html:41
+#: app/templates/profile.html:258 app/templates/profile.html:275
+#: app/templates/profile.html:295 app/templates/wachtwoord_reset.html:41
 #: app/templates/wachtwoord_reset.html:62
 msgid "Show password"
 msgstr "Show password"
@@ -2509,7 +2589,7 @@ msgstr "This is a writing exercise, a first attempt. Not a blueprint, not a part
 
 #: app/templates/meldingen.html:9 app/templates/meldingen.html:15
 #: app/templates/notificaties.html:18 app/templates/notificaties.html:21
-#: app/templates/profile.html:213
+#: app/templates/profile.html:240
 msgid "Notifications"
 msgstr "Notifications"
 
@@ -2683,7 +2763,7 @@ msgstr "Moderation"
 msgid "for moderators"
 msgstr "for moderators"
 
-#: app/templates/notificaties.html:63 app/templates/profile.html:211
+#: app/templates/notificaties.html:63 app/templates/profile.html:238
 msgid "Summary by email"
 msgstr "Summary by email"
 
@@ -2717,6 +2797,7 @@ msgstr "Weekly"
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
+#: app/templates/profile.html:227
 msgid "Save"
 msgstr "Save"
 
@@ -3017,59 +3098,98 @@ msgstr "Automatically translate posts to English"
 msgid "Posts in another language are automatically translated when you open a conversation."
 msgstr "Posts in another language are automatically translated when you open a conversation."
 
-#: app/templates/profile.html:212
+#. profile, the eyebrow of the section with the voluntary questions about
+#. yourself.
+#: app/templates/profile.html:213
+msgid "About me"
+msgstr "About me"
+
+#. profile, About me: the title of the voluntary questions (who takes part in
+#. the votes).
+#: app/templates/profile.html:215
+msgid "Who votes?"
+msgstr "Who votes?"
+
+#. a small label: answering is voluntary.
+#: app/templates/profile.html:216
+msgid "Voluntary"
+msgstr "Voluntary"
+
+#. profile, About me: why we ask. "results": the outcome of the votes of an
+#. issue.
+#: app/templates/profile.html:218
+msgid "When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what."
+msgstr "When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what."
+
+#. a link to the privacy statement.
+#: app/templates/profile.html:219
+msgid "Why we ask this"
+msgstr "Why we ask this"
+
+#. profile, About me: when the answers were saved; %(date)s is a date.
+#: app/templates/profile.html:224
+#, python-format
+msgid "Filled in on %(date)s"
+msgstr "Filled in on %(date)s"
+
+#. profile, About me: a button that removes the answers.
+#: app/templates/profile.html:228
+msgid "Clear answers"
+msgstr "Clear answers"
+
+#: app/templates/profile.html:239
 msgid "View your daily summaries"
 msgstr "View your daily summaries"
 
-#: app/templates/profile.html:213
+#: app/templates/profile.html:240
 msgid "choose what you hear about, and where"
 msgstr "choose what you hear about, and where"
 
-#: app/templates/profile.html:217
+#: app/templates/profile.html:244
 msgid "Change password"
 msgstr "Change password"
 
-#: app/templates/profile.html:219
+#: app/templates/profile.html:246
 msgid "Update your password."
 msgstr "Update your password."
 
-#: app/templates/profile.html:229
+#: app/templates/profile.html:256
 msgid "Current password"
 msgstr "Current password"
 
-#: app/templates/profile.html:237
+#: app/templates/profile.html:264
 msgid "Enter your current password."
 msgstr "Enter your current password."
 
-#: app/templates/profile.html:246 app/templates/wachtwoord_reset.html:27
+#: app/templates/profile.html:273 app/templates/wachtwoord_reset.html:27
 #: app/templates/wachtwoord_reset.html:35
 msgid "New password"
 msgstr "New password"
 
-#: app/templates/profile.html:266 app/templates/wachtwoord_reset.html:56
+#: app/templates/profile.html:293 app/templates/wachtwoord_reset.html:56
 msgid "Confirm new password"
 msgstr "Confirm new password"
 
-#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:279
+#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:306
 msgid "Save changes"
 msgstr "Save changes"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:392
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:419
 #: app/templates/wachtwoord_reset.html:112
 msgid "Weak"
 msgstr "Weak"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:392
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:419
 #: app/templates/wachtwoord_reset.html:112
 msgid "Fair"
 msgstr "Fair"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:392
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:419
 #: app/templates/wachtwoord_reset.html:112
 msgid "Strong"
 msgstr "Strong"
 
-#: app/templates/profile.html:423
+#: app/templates/profile.html:450
 msgid "Danger zone"
 msgstr "Danger zone"
 
@@ -3077,11 +3197,11 @@ msgstr "Danger zone"
 #: app/templates/moderator/gebruiker.html:200
 #: app/templates/moderator/gebruiker.html:207
 #: app/templates/moderator/gebruiker_verwijderen.html:2
-#: app/templates/profile.html:426
+#: app/templates/profile.html:453
 msgid "Delete account"
 msgstr "Delete account"
 
-#: app/templates/profile.html:430
+#: app/templates/profile.html:457
 msgid ""
 "This permanently deletes your account, all your forum posts, and all your likes.\n"
 "        This cannot be undone."
@@ -3089,7 +3209,7 @@ msgstr ""
 "This permanently deletes your account, all your forum posts, and all your likes.\n"
 "        This cannot be undone."
 
-#: app/templates/profile.html:436
+#: app/templates/profile.html:463
 msgid "Delete my account"
 msgstr "Delete my account"
 
@@ -3103,33 +3223,33 @@ msgstr "Delete my account"
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
-#: app/templates/profile.html:448 app/templates/profile.html:457
-#: app/templates/profile.html:553 app/templates/profile.html:575
+#: app/templates/profile.html:475 app/templates/profile.html:484
+#: app/templates/profile.html:580 app/templates/profile.html:602
 msgid "Cancel"
 msgstr "Cancel"
 
-#: app/templates/profile.html:450
+#: app/templates/profile.html:477
 msgid "Show your real name?"
 msgstr "Show your real name?"
 
-#: app/templates/profile.html:453
+#: app/templates/profile.html:480
 #, python-format
 msgid "Your real name (%(value)s) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym."
 msgstr "Your real name (%(value)s) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym."
 
-#: app/templates/profile.html:460
+#: app/templates/profile.html:487
 msgid "Yes, show my name"
 msgstr "Yes, show my name"
 
-#: app/templates/profile.html:503 app/templates/profile.html:512
+#: app/templates/profile.html:530 app/templates/profile.html:539
 msgid "Saving failed, please try again."
 msgstr "Saving failed, please try again."
 
-#: app/templates/profile.html:562
+#: app/templates/profile.html:589
 msgid "Are you sure?"
 msgstr "Are you sure?"
 
-#: app/templates/profile.html:566
+#: app/templates/profile.html:593
 msgid ""
 "This permanently deletes your account and all associated data.\n"
 "        This <strong>cannot</strong> be undone."
@@ -3137,7 +3257,7 @@ msgstr ""
 "This permanently deletes your account and all associated data.\n"
 "        This <strong>cannot</strong> be undone."
 
-#: app/templates/profile.html:579
+#: app/templates/profile.html:606
 msgid "Yes, delete my account"
 msgstr "Yes, delete my account"
 
@@ -7134,4 +7254,50 @@ msgstr "Deleting"
 #: app/templates/moderator/rechten.html:25
 msgid "An admin may always do everything. These settings apply as soon as you save, to all issues."
 msgstr "An admin may always do everything. These settings apply as soon as you save, to all issues."
+
+#. representativeness, a voluntary question (the answer is a birth year).
+#: app/templates/participants/_questions.html:9
+msgid "What year were you born?"
+msgstr "What year were you born?"
+
+#. representativeness, the empty choice of the birth year list.
+#: app/templates/participants/_questions.html:11
+msgid "Choose a year"
+msgstr "Choose a year"
+
+#. representativeness, the last choice of the birth year list ("1920 or
+#. earlier").
+#: app/templates/participants/_questions.html:15
+#, python-format
+msgid "%(year)s or earlier"
+msgstr "%(year)s or earlier"
+
+#. representativeness, the hint under the birth year; %(group)s is an age group
+#. such as "25 to 44".
+#: app/templates/participants/_questions.html:21
+#, python-format
+msgid "We never show your age, only groups such as \"%(group)s\"."
+msgstr "We never show your age, only groups such as \"%(group)s\"."
+
+#. representativeness, a voluntary question.
+#: app/templates/participants/_questions.html:25
+msgid "What is your gender?"
+msgstr "What is your gender?"
+
+#. representativeness, a voluntary question; "following now" so a student
+#. counts at the level of the studies.
+#: app/templates/participants/_questions.html:34
+msgid "What is the highest level of education you have completed or are following now?"
+msgstr "What is the highest level of education you have completed or are following now?"
+
+#. representativeness, a voluntary question ("Mijn land": the country where you
+#. live).
+#: app/templates/participants/_questions.html:43
+msgid "Which country do you live in?"
+msgstr "Which country do you live in?"
+
+#. representativeness, the empty choice of the country list.
+#: app/templates/participants/_questions.html:45
+msgid "Choose a country"
+msgstr "Choose a country"
 

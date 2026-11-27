@@ -92,6 +92,10 @@ class User(UserMixin, db.Model):
     # (off/daily/weekly). Separate from the existing daily digest.
     notif_prefs         = db.Column(db.Text, nullable=True)
     summary_frequency   = db.Column(db.String(8), nullable=True, default='weekly')
+    # Representativeness 1b (docs/representativiteit.md, K6): "Mijn land", an
+    # ISO2 code of our country list (app/data/landenlijst_data.json). Only a
+    # country: "prefer not to say" is stored as NULL.
+    country             = db.Column(db.String(2), nullable=True, default=None)
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -1610,3 +1614,36 @@ class OwidRejectedSlug(db.Model):
     slug       = db.Column(db.String(200), nullable=False, unique=True)
     reason     = db.Column(db.String(20), nullable=False)
     checked_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class ParticipantProfile(db.Model):
+    """Representativeness 1b (docs/representativiteit.md): the voluntary
+    answers of one user (birth year, gender, education). Apart from users, so
+    they never come along with a query on the user; no relationship. Only the
+    user sees them (profile, About me); the app uses them in one place, the
+    frozen totals of step 1d. Codes in app/participants.py."""
+    __tablename__ = "participant_profiles"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True, index=True)
+    birth_year  = db.Column(db.Integer, nullable=True)        # 0 = prefer not to say
+    gender      = db.Column(db.String(2), nullable=True)      # f, m, x, na
+    education   = db.Column(db.String(8), nullable=True)      # basic, middle, higher, na
+    answered_at = db.Column(db.DateTime, nullable=True)
+    asked_at    = db.Column(db.DateTime, nullable=True)       # the card after the first vote (1c)
+    created_at  = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class IssueParticipationStats(db.Model):
+    """Representativeness: who voted in an issue, frozen once when the voting
+    phase ends (step 1d). Only totals after the thresholds, as codes (never
+    labels, never a user id); the display translates them."""
+    __tablename__ = "issue_participation_stats"
+
+    id        = db.Column(db.Integer, primary_key=True)
+    issue_id  = db.Column(db.Integer, db.ForeignKey('issues.id'), nullable=False, unique=True)
+    frozen_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    voters    = db.Column(db.Integer, nullable=False, default=0)
+    answered  = db.Column(db.Integer, nullable=False, default=0)
+    age_level = db.Column(db.String(8), nullable=True)        # fine, middle, coarse, none
+    counts    = db.Column(db.Text, nullable=True)             # JSON, codes only

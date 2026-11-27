@@ -1,0 +1,52 @@
+{# Representativeness (docs/representativiteit.md, docs/design/representativiteit-vragen.html):
+   the four voluntary questions, each with "Prefer not to say"; empty is allowed.
+   Used in the profile (About me, step 1b) and in the card after the first vote
+   (step 1c). Context: q = participants.form_context(...). Only the user sees
+   the answers. Birth years are bare numbers (1987, never 1.987). #}
+{% set p = q.profile %}
+<div class="gu-pp__questions">
+  <div class="gu-pp__field">
+    <label class="gu-pp__label" for="pp-birth-year">{# TRANSLATORS: representativeness, a voluntary question (the answer is a birth year). #}{{ _('What year were you born?') }}</label>
+    <select class="gu-pp__select" id="pp-birth-year" name="birth_year" aria-describedby="pp-birth-year-hint">
+      <option value="">{# TRANSLATORS: representativeness, the empty choice of the birth year list. #}{{ _('Choose a year') }}</option>
+      <option value="{{ q.prefer_not }}"{% if p and p.birth_year == 0 %} selected{% endif %}>{{ _('Prefer not to say') }}</option>
+      {% for year in q.years %}
+      {% if year == q.oldest_year %}
+      <option value="{{ year }}"{% if p and p.birth_year == year %} selected{% endif %}>{# TRANSLATORS: representativeness, the last choice of the birth year list ("1920 or earlier"). #}{{ _('%(year)s or earlier', year=year|string) }}</option>
+      {% else %}
+      <option value="{{ year }}"{% if p and p.birth_year == year %} selected{% endif %}>{{ year|string }}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+    <p class="gu-pp__hint" id="pp-birth-year-hint">{# TRANSLATORS: representativeness, the hint under the birth year; %(group)s is an age group such as "25 to 44". #}{{ _('We never show your age, only groups such as "%(group)s".', group=q.example_group) }}</p>
+  </div>
+
+  <fieldset class="gu-pp__fieldset">
+    <legend class="gu-pp__label">{# TRANSLATORS: representativeness, a voluntary question. #}{{ _('What is your gender?') }}</legend>
+    <div class="gu-pp__opts">
+      {% for code, label in q.genders %}
+      <label class="gu-pp__opt"><input type="radio" name="gender" value="{{ code }}"{% if p and p.gender == code %} checked{% endif %}><span>{{ label }}</span></label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <fieldset class="gu-pp__fieldset">
+    <legend class="gu-pp__label">{# TRANSLATORS: representativeness, a voluntary question; "following now" so a student counts at the level of the studies. #}{{ _('What is the highest level of education you have completed or are following now?') }}</legend>
+    <div class="gu-pp__opts gu-pp__opts--edu">
+      {% for code, label, explanation in q.education %}
+      <label class="gu-pp__opt gu-pp__opt--edu"><input type="radio" name="education" value="{{ code }}"{% if p and p.education == code %} checked{% endif %}><span>{{ label }}{% if explanation %}<small>{{ explanation }}</small>{% endif %}</span></label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <div class="gu-pp__field">
+    <label class="gu-pp__label" for="pp-country">{# TRANSLATORS: representativeness, a voluntary question ("Mijn land": the country where you live). #}{{ _('Which country do you live in?') }}</label>
+    <select class="gu-pp__select" id="pp-country" name="country">
+      <option value="">{# TRANSLATORS: representativeness, the empty choice of the country list. #}{{ _('Choose a country') }}</option>
+      <option value="{{ q.prefer_not }}">{{ _('Prefer not to say') }}</option>
+      {% for code, name in q.countries %}
+      <option value="{{ code }}"{% if q.country == code %} selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>

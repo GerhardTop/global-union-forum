@@ -330,7 +330,10 @@ _POLISH_COLUMNS = {
     'users': (('suspended_until', 'TIMESTAMP NULL'), ('deleted_at', 'TIMESTAMP NULL'),
               ('deleted_by_id', 'INTEGER NULL REFERENCES users(id)'), ('deleted_reason', 'TEXT NULL'),
               # Notifications step 1: preferences and the summary frequency.
-              ('notif_prefs', 'TEXT NULL'), ('summary_frequency', 'VARCHAR(8) NULL')),
+              ('notif_prefs', 'TEXT NULL'), ('summary_frequency', 'VARCHAR(8) NULL'),
+              # Representativeness 1b: "Mijn land" (ISO2); the tables
+              # participant_profiles and issue_participation_stats come from db.create_all().
+              ('country', 'VARCHAR(2) NULL')),
     # Notifications step 3a-2: the de-dup key of a tick-driven notification
     # (the table itself comes from db.create_all() in step 3a-1).
     # Step 3b: in_app (NULL = true) and emailed_at for the per-event email.

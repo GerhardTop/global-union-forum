@@ -97,8 +97,43 @@ def profile():
         password_mismatch=errors.get("password_mismatch", False),
         current_password_empty=errors.get("current_password_empty", False),
         name_display_error=errors.get("name_display_error"),
+        about_me=_about_me_context(),
         **_status_context(),
     )
+
+
+def _about_me_context():
+    """Representativeness 1b: the questions of About me, only with
+    PARTICIPANT_PROFILE on (else None: no section)."""
+    from app import i18n, participants
+    if not participants.enabled():
+        return None
+    return participants.form_context(current_user, i18n.normalize(str(get_locale())))
+
+
+@profile_bp.route("/profiel/over-mij", methods=["POST"])
+@login_required
+def over_mij():
+    """Save or clear the voluntary answers (docs/representativiteit.md).
+    Without JavaScript: a plain form, back to the section."""
+    from app import participants
+    if not participants.enabled():
+        abort(404)
+    if not ForumActionForm().validate_on_submit():
+        abort(400)
+    action = request.form.get("action")
+    if action == "save":
+        participants.save(current_user, request.form)
+        message = gettext('Saved.')
+    elif action == "clear":
+        participants.clear(current_user)
+        # TRANSLATORS: profile, About me: the message after "Clear answers".
+        message = gettext('Your answers have been cleared.')
+    else:
+        abort(400)
+    db.session.commit()
+    flash(message, "success")
+    return redirect(url_for("profile.profile") + "#over-mij", code=303)
 
 
 def _status_context():

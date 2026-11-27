@@ -455,6 +455,9 @@ def _remove_demo(db):
     for issue in issues:
         issue.thread_id = None
     db.session.flush()
+    from app import participants
+    for issue in issues:
+        participants.delete_for_issue(issue.id)
     Issue.query.filter(Issue.id.in_([i.id for i in issues])).delete(synchronize_session=False)
     if thread_ids:
         from app import content_i18n

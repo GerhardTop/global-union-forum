@@ -148,6 +148,9 @@ def delete_wrappers(issue_ids):
         from app import notifications
         notifications.delete_for_issues(empty)
         IssueEventDay.query.filter(IssueEventDay.issue_id.in_(empty)).delete(synchronize_session=False)
+        from app import participants
+        for issue_id in empty:
+            participants.delete_for_issue(issue_id)
         Issue.query.filter(Issue.id.in_(empty)).delete(synchronize_session=False)
 
 
@@ -659,6 +662,9 @@ def purge(issue):
     # (the rounds point at its proposals, so before those go).
     from app import background_figures
     background_figures.delete_for_issue(issue.id)
+    # Representativeness: the frozen totals of this issue.
+    from app import participants
+    participants.delete_for_issue(issue.id)
     if prop_ids:
         version_ids = [v.id for v in IssueProposalVersion.query.filter(IssueProposalVersion.proposal_id.in_(prop_ids))]
         content_i18n.delete_for('issue_proposal_versions', version_ids)

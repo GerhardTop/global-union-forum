@@ -506,6 +506,8 @@ def account_verwijderen():
             )
             quality.delete_for_posts(user_post_ids)
             Post.query.filter_by(user_id=user_id).delete(synchronize_session=False)
+        from app import participants
+        participants.delete_for_user(user_id)
         user = db.session.get(User, user_id)
         db.session.delete(user)
         db.session.commit()

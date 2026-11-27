@@ -238,3 +238,24 @@ def test_no_dutch_on_the_label_and_the_vote_block(app, db, make_user, lang):
         assert found == {}, found
     finally:
         _cleanup(issue.id)
+
+
+@pytest.mark.parametrize('lang', ['de', 'es', 'fr'])
+def test_no_dutch_in_about_me(app, db, make_user, monkeypatch, lang):
+    """Representativeness 1b: the profile with PARTICIPANT_PROFILE on, the
+    section About me with its four questions, saved answers and the date."""
+    from app import participants
+    from app.models import ParticipantProfile
+    monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', True)
+    user = make_user()
+    db.session.add(ParticipantProfile(user_id=user.id, birth_year=1987, gender='x', education='middle',
+                                      answered_at=participants.datetime.utcnow()))
+    user.country = 'NL'
+    db.session.commit()
+    content = _content(db)
+    page = _req(_client(app, user, lang), 'GET', '/profile').get_data(as_text=True)
+    section = page[page.index('id="over-mij"'):]
+    section = section[:section.index('</section>')]
+    assert 'name="education"' in section and 'gu-pp__hint' in section
+    found = [t for t in _interface_texts(section, content) if WORD.search(t) or re.search(r'\b(mbo|hbo)\b', t, re.I)]
+    assert found == []

@@ -125,6 +125,11 @@ class Config:
     # (docs/achtergrondcijfers.md). Off by default until the display (step 3c)
     # is right for Eurostat; "1" switches it on. Only with BACKGROUND_FIGURES.
     EUROSTAT_FIGURES = os.environ.get("EUROSTAT_FIGURES", "") == "1"
+    # Representativeness (docs/representativiteit.md): "1" switches on the
+    # voluntary questions (About me in the profile, from step 1c the card after
+    # the first vote) and the frozen totals. Off by default; on only after the
+    # DPIA and the new privacy statement.
+    PARTICIPANT_PROFILE = os.environ.get("PARTICIPANT_PROFILE", "") == "1"
 
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")

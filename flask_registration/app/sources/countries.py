@@ -24,6 +24,11 @@ def _our_countries():
         return frozenset(row['iso'] for row in json.load(f))
 
 
+def all_codes():
+    """The ISO2 codes of our own country list."""
+    return _our_countries()
+
+
 def iso2_for(key):
     """The ISO2 code of an entity key, only when it is a country of our own
     list; else None (regions, averages, countries we do not list)."""

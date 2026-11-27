@@ -63,3 +63,7 @@ De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` 
 | moderation | moderatie | Moderation | Zelfde woord. |
 | Global Union, Global Union Forum, Freedom for all | (niet vertaald) | (niet vertaald) | Merknamen en slogan. |
 | AI selection | AI-selectie | KI-Auswahl | Het label op een achtergrondcijfer dat de AI uit een open bron koos. Duits gebruikt KI, niet AI. |
+| About me (profile section) | Over mij | Über mich | De sectie in het profiel met de vrijwillige vragen (representativiteit). |
+| Who votes? | Wie stemt er mee? | Wer stimmt mit ab? | De kop boven de vrijwillige vragen; "mit abstimmen" volgt het Nederlandse "meestemmen". |
+| Prefer not to say | Zeg ik liever niet | Möchte ich nicht sagen | Het gangbare antwoord in Duitse formulieren; ich-vorm zoals het Nederlands. |
+| education: Basic / Secondary / Higher | Basis / Middelbaar / Hoger | Grundbildung / Mittlere Bildung / Höhere Bildung | De drie ISCED-niveaus (0 tot en met 2, 3 en 4, 5 tot en met 8); de uitleg noemt Duitse voorbeelden (Abitur, Lehre, Fachhochschule), nooit mbo of hbo. |

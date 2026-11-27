@@ -628,6 +628,8 @@ def admin_verwijder_gebruiker(user_id):
         quality.delete_for_posts(user_post_ids)
         Post.query.filter_by(user_id=uid).delete(synchronize_session=False)
 
+    from app import participants
+    participants.delete_for_user(uid)
     db.session.delete(user)
     db.session.commit()
     return redirect(url_for('admin.admin_dashboard'))

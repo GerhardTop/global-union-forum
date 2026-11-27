@@ -204,6 +204,33 @@
       
     </p>
 
+    {% if about_me %}
+    {# Representativeness 1b (docs/representativiteit.md): About me, the
+       voluntary questions. Only with PARTICIPANT_PROFILE on. #}
+    <hr class="gu-auth__divider" style="margin: 32px 0;">
+
+    <section id="over-mij" class="gu-pp" aria-labelledby="over-mij-title">
+      <p class="gu-eyebrow">{# TRANSLATORS: profile, the eyebrow of the section with the voluntary questions about yourself. #}{{ _('About me') }}</p>
+      <h2 class="gu-join__h2 gu-pp__title" id="over-mij-title" style="font-size: 1.25rem;">
+        <span>{# TRANSLATORS: profile, About me: the title of the voluntary questions (who takes part in the votes). #}{{ _('Who votes?') }}</span>
+        <span class="gu-pp__pill">{# TRANSLATORS: a small label: answering is voluntary. #}{{ _('Voluntary') }}</span>
+      </h2>
+      <p class="gu-pp__intro">{# TRANSLATORS: profile, About me: why we ask. "results": the outcome of the votes of an issue. #}{{ _('When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what.') }}
+        <a href="{{ url_for('main.privacy') }}">{# TRANSLATORS: a link to the privacy statement. #}{{ _('Why we ask this') }}</a></p>
+      <form method="POST" action="{{ url_for('profile.over_mij') }}" class="gu-pp__form" novalidate>
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        {% with q = about_me %}{% include "participants/_questions.html" %}{% endwith %}
+        {% if about_me.answered_at %}
+        <p class="gu-pp__hint">{# TRANSLATORS: profile, About me: when the answers were saved; %(date)s is a date. #}{{ _('Filled in on %(date)s', date=about_me.answered_at | dateformat('d MMMM y')) }}</p>
+        {% endif %}
+        <div class="gu-pp__actions">
+          <button type="submit" name="action" value="save" class="gu-btn gu-btn--primary gu-pp__btn">{{ _('Save') }}</button>
+          <button type="submit" name="action" value="clear" class="gu-btn gu-btn--ghost gu-pp__btn">{# TRANSLATORS: profile, About me: a button that removes the answers. #}{{ _('Clear answers') }}</button>
+        </div>
+      </form>
+    </section>
+    {% endif %}
+
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
     {# The summary of what you follow. How often (off/daily/weekly) is set on

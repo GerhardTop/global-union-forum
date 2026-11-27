@@ -172,6 +172,10 @@ def anonymise(user, actor, reason):
     user.suspended_until = None
     user.is_moderator = False
     user.role = None
+    # Representativeness: the voluntary answers and "Mijn land" go.
+    from app import participants
+    participants.delete_for_user(user.id)
+    user.country = None
     # The name snapshots on their posts (the fallback display) go too.
     Post.query.filter(Post.user_id == user.id).update(
         {Post.author_name: '', Post.author_username: DELETED_HANDLE}, synchronize_session=False)

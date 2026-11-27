@@ -220,6 +220,9 @@ def _execute(plan):
             content_i18n.delete_for('threads', thread_ids)   # a bulk delete passes the ORM cleanup
             Thread.query.filter(Thread.id.in_(thread_ids)).delete(synchronize_session=False)
         if user_ids:
+            from app import participants
+            for uid in user_ids:
+                participants.delete_for_user(uid)
             User.query.filter(User.id.in_(user_ids)).delete(synchronize_session=False)
 
         # Controle vóór de commit: klopt het resultaat niet, dan rollback.

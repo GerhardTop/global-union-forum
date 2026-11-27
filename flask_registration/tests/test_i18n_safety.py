@@ -264,6 +264,7 @@ SAME_IN_DUTCH = {
     'ISO, IEC, ITU': 'naam van een organisatie', 'Codex Alimentarius': 'naam van een standaard',
     'Basel III': 'naam van een standaard', 'IFRS': 'naam van een standaard', 'UNCAC': 'naam van een verdrag',
     'UNFCCC': 'naam van een verdrag',
+    'Man': 'in het Nederlands gelijk (antwoord op de vraag naar geslacht, representativiteit)',
 }
 
 

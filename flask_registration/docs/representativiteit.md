@@ -87,6 +87,7 @@ Wie stemde mee (artboard 2):
 ## Gegevens en techniek (voor de bouw)
 - Nieuwe tabel participant_profiles: user_id (uniek), birth_year (geheel getal of leeg; 0 betekent "zeg ik liever niet"), gender, education, answered_at, asked_at (de kaart is getoond en komt niet terug). Apart van users, zodat de antwoorden niet meekomen met elke query op de gebruiker. Waarden als vaste codes in code (gender f, m, x, na; education basic, middle, higher, na; de leeftijdstrap als vaste lijst in code); de labels via gettext.
 - "Mijn land": kolom users.country (ISO2 uit app/data/landenlijst_data.json), optioneel.
+- users.country slaat alleen een land op; "zeg ik liever niet" bij land wordt leeg opgeslagen.
 - Nieuwe tabel issue_participation_stats: issue_id, frozen_at, voters, answered, age_level (fine, middle, coarse of none), counts (JSON met per kenmerk de groepen na het toepassen van de drempels). Alleen totalen; geen user_id. De drempels gelden bij het bevriezen, zodat de opgeslagen cijfers zelf al veilig zijn.
 - Bevriezen in set_phase bij het einde van de stemfase, één keer per vraagstuk; bij heropenen (issue_lifecycle.reopen) niet opnieuw. Een vraagstuk dat eindigde vóór deze functie krijgt geen blok.
 - Account verwijderen: de rij in participant_profiles en users.country gaan weg. Bevroren totalen blijven (ze bevatten niemand).
@@ -118,7 +119,7 @@ Ik ben geen jurist; laat de DPIA en de tekst van de privacyverklaring nalezen.
 
 ## Bouwvolgorde niveau 1 (elk een eigen opdracht, push via scripts/check_and_push.sh)
 1a. Deze opzet en de artboards in de repo (docs/representativiteit.md, docs/design/representativiteit-vragen.html, docs/design/representativiteit-uitslag.html, rijen in docs/design/README.md, verwijzing in CLAUDE.md) (klaar, 27 november 2026).
-1b. Datamodel (participant_profiles, users.country, issue_participation_stats), de sectie "Over mij" en "Mijn land" in het profiel, wissen, opruimen bij account verwijderen; achter PARTICIPANT_PROFILE. Niets zichtbaars met de schakelaar uit (page_snapshot.py).
+1b. Datamodel (participant_profiles, users.country, issue_participation_stats), de sectie "Over mij" en "Mijn land" in het profiel, wissen, opruimen bij account verwijderen; achter PARTICIPANT_PROFILE. Niets zichtbaars met de schakelaar uit (page_snapshot.py) (klaar, 27 november 2026).
 1c. De kaart na de eerste stem, één keer (K1, K2), met en zonder JavaScript.
 1d. Bevriezen bij het einde van de stemfase en het blok "Wie stemde mee" met de leeftijdstrap en de drempels (K4, K7, K8), plus de regel bij de uitslag van elk voorstel; uitbreiding van tests/test_proposal_queries.py.
 1e. Privacyverklaring en FAQ (per alinea een msgid, in vijf talen), PRIVACY_UPDATED, naleesbestanden opnieuw exporteren. De teksten van 1b tot en met 1d gaan al in die stappen in alle vijf talen (zie Meertaligheid).

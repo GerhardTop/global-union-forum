@@ -70,3 +70,7 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 | moderation | moderatie | modération | Zelfde woord. |
 | Global Union, Global Union Forum, Freedom for all | (niet vertaald) | (niet vertaald) | Merknamen en slogan. |
 | AI selection | AI-selectie | Sélection par IA | Het label op een achtergrondcijfer dat de AI uit een open bron koos; IA is de gewone Franse afkorting. |
+| About me (profile section) | Over mij | À propos de moi | De sectie in het profiel met de vrijwillige vragen (representativiteit). |
+| Who votes? | Wie stemt er mee? | Qui vote ? | De kop boven de vrijwillige vragen; kort en neutraal. |
+| Prefer not to say | Zeg ik liever niet | Je préfère ne pas répondre | Het gangbare antwoord in Franse formulieren. |
+| education: Basic / Secondary / Higher | Basis / Middelbaar / Hoger | Primaire / Secondaire / Supérieur | De drie ISCED-niveaus (0 tot en met 2, 3 en 4, 5 tot en met 8); de uitleg noemt collège, baccalauréat, CAP, BTS en grande école, nooit mbo of hbo. |

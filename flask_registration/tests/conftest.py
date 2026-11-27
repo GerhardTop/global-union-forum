@@ -139,16 +139,16 @@ def _forget_deleted_users():
     """A safety net for the tests: many cleanups delete a User straight away
     (db.session.delete), without the app's own route (quality.detach_user).
     SQLite does not enforce the foreign keys and reuses ids, so a user's
-    notifications and proposal read stamps were left behind and a later user
+    notifications, proposal read stamps and voluntary answers were left behind and a later user
     with the same id got them (seen with pytest-xdist, where every worker has
     its own order). Postgres would refuse such a delete; here those rows go
     with the user."""
     from sqlalchemy import event
-    from app.models import IssueProposalRead, Notification, User
+    from app.models import IssueProposalRead, Notification, ParticipantProfile, User
 
     @event.listens_for(User, 'before_delete')
     def _before_delete(_mapper, connection, target):
-        for table in (Notification.__table__, IssueProposalRead.__table__):
+        for table in (Notification.__table__, IssueProposalRead.__table__, ParticipantProfile.__table__):
             connection.execute(table.delete().where(table.c.user_id == target.id))
 
 
