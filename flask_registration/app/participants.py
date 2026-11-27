@@ -53,6 +53,27 @@ def get(user):
     return ParticipantProfile.query.filter_by(user_id=user.id).first()
 
 
+def should_ask(user):
+    """Step 1c: the card after the first vote is due (K1, K2): the switch on,
+    a logged-in user that is not deleted, and the card was never shown."""
+    if not enabled() or not getattr(user, 'is_authenticated', False) or getattr(user, 'is_deleted', False):
+        return False
+    profile = get(user)
+    return profile is None or profile.asked_at is None
+
+
+def mark_asked(user, now=None):
+    """The card has been shown: it does not come back. Makes the row when
+    there is none. Commit niet zelf."""
+    profile = get(user)
+    if profile is None:
+        profile = ParticipantProfile(user_id=user.id)
+        db.session.add(profile)
+    if profile.asked_at is None:
+        profile.asked_at = now or datetime.utcnow()
+    return profile
+
+
 def birth_year_choices(today=None):
     """The birth years to choose from, newest first: from the year in which
     you turn 17 back to 1921, then 1920 ("1920 or earlier")."""

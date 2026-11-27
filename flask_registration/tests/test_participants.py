@@ -326,3 +326,173 @@ def test_migration_twice_adds_users_country(app, db):
         assert 'country' in {c['name'] for c in sa_inspect(db.engine).get_columns('users')}
     tables = set(sa_inspect(db.engine).get_table_names())
     assert {'participant_profiles', 'issue_participation_stats'} <= tables
+
+
+# ── Step 1c: the card after the first vote ───────────────────────────────
+
+CARD = 'class="gu-ppcard"'
+THANKS = 'Dank je. Je antwoorden staan in je profiel onder Over mij.'
+
+
+@pytest.fixture
+def voting(db, make_user):
+    """An issue in the voting phase with two proposals on the voting list."""
+    from app import issue_proposals as ip, issues
+    made = []
+
+    def _make():
+        author, backer = make_user(), make_user('voter')
+        issue = issues.create({'title': f'Q{uuid.uuid4().hex[:6]}', 'intro': 'I.', 'kind': 'online',
+                               'support_threshold': 1}, author, lang='nl')
+        db.session.flush()
+        props = [ip.create(issue, author, f'S{uuid.uuid4().hex[:6]}', 'E.', lang='nl') for _ in range(2)]
+        db.session.flush()
+        for p in props:
+            ip.support(p, backer)
+        issue.phase = 'stemmen'
+        db.session.commit()
+        made.append(issue.id)
+        return issue, props
+
+    yield _make
+    for issue_id in made:
+        _cleanup(issue_id)
+
+
+def _url(issue, proposal):
+    return f'/vraagstuk/{issue.id}/voorstel/{proposal.id}'
+
+
+def _vote(client, issue, proposal, choice='voor'):
+    return _req(client, 'POST', _url(issue, proposal) + '/stemmen', data={'choice': choice})
+
+
+def test_card_switch_off(app, db, make_user, voting):
+    issue, (p1, _p2) = voting()
+    voter = make_user('voter')
+    client = _client(app, voter)
+    before = _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+    r = _vote(client, issue, p1)
+    assert r.status_code == 302
+    with client.session_transaction() as s:
+        assert 'pp_ask' not in s
+    page = _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+    assert CARD not in page and 'pp-birth-year' not in page
+    assert _profile(voter.id) is None
+    assert before.count('gu-ppcard') == page.count('gu-ppcard') == 0
+
+
+def test_card_once_after_the_first_vote(app, db, make_user, voting, switch_on):
+    issue, (p1, p2) = voting()
+    voter = make_user('voter')
+    voter.country = 'BE'
+    db.session.commit()
+    client = _client(app, voter)
+    r = _vote(client, issue, p1)
+    assert r.status_code == 302 and r.headers['Location'].endswith(_url(issue, p1) + '#stemming')
+    page = _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+    assert page.count(CARD) == 1
+    card = page[page.index(CARD):page.index('</form>', page.index(CARD))]
+    for name in ('name="birth_year"', 'name="gender"', 'name="education"', 'name="country"'):
+        assert name in card
+    assert 'Je stem is opgeslagen. Mogen we nog iets vragen?' in card and 'Je stem telt hoe dan ook.' in card
+    assert '<option value="BE" selected>' in card            # Mijn land, filled in
+    assert f'name="next" value="{_url(issue, p1)}#stemming"' in card
+    assert 'href="/profile#over-mij"' in card and 'Overslaan' in card
+    # The vote buttons still work next to the card.
+    assert 'name="choice" value="tegen"' in page
+    db.session.expire_all()
+    assert _profile(voter.id).asked_at is not None
+    # Not on a second visit, not after a vote on another proposal, not after changing the vote.
+    assert CARD not in _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+    _vote(client, issue, p2)
+    assert CARD not in _req(client, 'GET', _url(issue, p2)).get_data(as_text=True)
+    _vote(client, issue, p1, 'tegen')
+    assert CARD not in _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+
+
+def test_no_card_when_changing_a_vote(app, db, make_user, voting, switch_on):
+    """A vote from before the card (asked_at empty) that is changed: no card."""
+    from app.models import IssueProposalVote
+    issue, (p1, _p2) = voting()
+    voter = make_user('voter')
+    db.session.add(IssueProposalVote(proposal_id=p1.id, user_id=voter.id, choice='voor'))
+    db.session.commit()
+    client = _client(app, voter)
+    _vote(client, issue, p1, 'tegen')
+    assert CARD not in _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+    assert _profile(voter.id) is None
+
+
+def test_save_from_the_card(app, db, make_user, voting, switch_on):
+    issue, (p1, _p2) = voting()
+    voter = make_user('voter')
+    client = _client(app, voter)
+    _vote(client, issue, p1)
+    _req(client, 'GET', _url(issue, p1))
+    r = _req(client, 'POST', '/profiel/over-mij', data={
+        'action': 'save', 'next': _url(issue, p1) + '#stemming',
+        'birth_year': '1970', 'gender': 'f', 'education': 'middle', 'country': 'FR'})
+    assert r.status_code == 303 and r.headers['Location'].endswith(_url(issue, p1) + '#stemming')
+    db.session.expire_all()
+    p = _profile(voter.id)
+    assert (p.birth_year, p.gender, p.education) == (1970, 'f', 'middle') and p.asked_at is not None
+    assert db.session.get(User, voter.id).country == 'FR'
+    with client.session_transaction() as s:
+        assert not s.get('_flashes')
+    page = _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+    assert page.count(THANKS) == 1 and 'role="status">' in page and CARD not in page
+    assert 'gu-flash-modal' not in page
+    assert THANKS not in _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+
+
+def test_skip_from_the_card(app, db, make_user, voting, switch_on):
+    issue, (p1, p2) = voting()
+    voter = make_user('voter')
+    client = _client(app, voter)
+    _vote(client, issue, p1)
+    _req(client, 'GET', _url(issue, p1))
+    r = _req(client, 'POST', '/profiel/over-mij', data={'action': 'skip', 'next': _url(issue, p1) + '#stemming',
+                                                        'birth_year': '1970', 'country': 'FR'})
+    assert r.status_code == 303 and r.headers['Location'].endswith(_url(issue, p1) + '#stemming')
+    db.session.expire_all()
+    p = _profile(voter.id)
+    assert (p.birth_year, p.gender, p.education, p.answered_at) == (None, None, None, None)
+    assert p.asked_at is not None and db.session.get(User, voter.id).country is None
+    with client.session_transaction() as s:
+        assert not s.get('_flashes')
+    page = _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+    assert THANKS not in page and CARD not in page
+    _vote(client, issue, p2)
+    assert CARD not in _req(client, 'GET', _url(issue, p2)).get_data(as_text=True)
+
+
+def test_external_next_is_ignored(app, db, make_user, switch_on):
+    user = make_user()
+    r = _post(app, user, {'action': 'save', 'next': 'https://example.com/x', 'gender': 'm'})
+    assert r.status_code == 303 and r.headers['Location'].endswith('/profile#over-mij')
+    r = _post(app, user, {'action': 'skip', 'next': '//example.com'})
+    assert r.status_code == 303 and r.headers['Location'].endswith('/profile#over-mij')
+
+
+def test_card_only_for_the_voter(app, db, make_user, voting, switch_on):
+    issue, (p1, _p2) = voting()
+    voter, other = make_user('voter'), make_user('voter')
+    _vote(_client(app, voter), issue, p1)
+    page = _req(_client(app, other), 'GET', _url(issue, p1)).get_data(as_text=True)
+    assert CARD not in page
+    assert _profile(other.id) is None
+
+
+@pytest.mark.parametrize('lang,expected', [
+    ('de', ('Grundschule, Hauptschul- oder Realschulabschluss',
+            'Was ist die höchste Ausbildung, die du abgeschlossen hast oder gerade machst?')),
+    ('es', ('Secundaria completa, o formación profesional',)),
+    ('fr', ('>De base<',)),
+])
+def test_translation_corrections(app, db, make_user, switch_on, lang, expected):
+    user = make_user()
+    section = _section(_req(_client(app, user, lang), 'GET', '/profile').get_data(as_text=True))
+    for text_ in expected:
+        assert text_ in section, text_
+    assert 'Primaire' not in section

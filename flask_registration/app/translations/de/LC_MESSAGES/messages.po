@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 22:10+0100\n"
+"POT-Creation-Date: 2026-11-27 22:30+0100\n"
 "PO-Revision-Date: 2026-11-20 22:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -570,76 +570,76 @@ msgstr "Du bist gesperrt bis %(until)s."
 
 #. TRANSLATORS: an age group in the representativeness block ("65 or older");
 #. %(age)s is an age in years.
-#: app/participants.py:68
+#: app/participants.py:89
 #, python-format
 msgid "%(age)s or older"
 msgstr "%(age)s und älter"
 
 #. TRANSLATORS: an age group in years, both limits included ("25 to 44" means
 #. 25 up to and including 44).
-#: app/participants.py:70
+#: app/participants.py:91
 #, python-format
 msgid "%(low)s to %(high)s"
 msgstr "%(low)s bis %(high)s"
 
 #. TRANSLATORS: the answer to a voluntary question (birth year, gender,
 #. education, country) for someone who does not want to answer.
-#: app/participants.py:75 app/templates/participants/_questions.html:12
+#: app/participants.py:96 app/templates/participants/_questions.html:12
 #: app/templates/participants/_questions.html:46
 msgid "Prefer not to say"
 msgstr "Möchte ich nicht sagen"
 
 #. TRANSLATORS: an answer to "What is your gender?" (voluntary question).
-#: app/participants.py:81
+#: app/participants.py:102
 msgid "Woman"
 msgstr "Frau"
 
 #. TRANSLATORS: an answer to "What is your gender?" (voluntary question).
-#: app/participants.py:84
+#: app/participants.py:105
 msgid "Man"
 msgstr "Mann"
 
 #. TRANSLATORS: an answer to "What is your gender?": another gender than woman
 #. or man.
-#: app/participants.py:87
+#: app/participants.py:108
 msgctxt "gender"
 msgid "Other"
 msgstr "Divers"
 
 #. TRANSLATORS: education level, ISCED 0 to 2 (the first of three; "Basic",
 #. "Secondary", "Higher").
-#: app/participants.py:96
+#: app/participants.py:117
 msgid "Basic"
 msgstr "Grundbildung"
 
 #. TRANSLATORS: the explanation under "Basic" (ISCED 0 to 2). Give an example
 #. readers in your language recognise; never the Dutch names.
-#: app/participants.py:98
+#: app/participants.py:119
 msgid "Primary school or the first years of secondary school"
-msgstr "Grundschule oder die ersten Jahre einer weiterführenden Schule"
+msgstr "Grundschule, Hauptschul- oder Realschulabschluss"
 
 #. TRANSLATORS: education level, ISCED 3 and 4 (the second of three; "Basic",
 #. "Secondary", "Higher").
-#: app/participants.py:102
+#: app/participants.py:123
 msgid "Secondary"
 msgstr "Mittlere Bildung"
 
 #. TRANSLATORS: the explanation under "Secondary" (ISCED 3 and 4). Give an
 #. example readers in your language recognise (a vocational training of your
 #. country); never the Dutch names mbo or hbo.
-#: app/participants.py:104
+#: app/participants.py:125
 msgid "Completed secondary school, or vocational training"
 msgstr "Abitur oder eine abgeschlossene Berufsausbildung, zum Beispiel eine Lehre"
 
 #. TRANSLATORS: education level, ISCED 5 to 8 (the third of three; "Basic",
 #. "Secondary", "Higher").
-#: app/participants.py:108
+#: app/participants.py:129
 msgid "Higher"
 msgstr "Höhere Bildung"
 
 #. TRANSLATORS: the explanation under "Higher" (ISCED 5 to 8). Give an example
 #. readers in your language recognise; never the Dutch names mbo or hbo.
-#: app/participants.py:110
+#: app/participants.py:131
 msgid "College or university"
 msgstr "Fachhochschule oder Universität"
 
@@ -880,7 +880,7 @@ msgstr "Maximale Laufzeiten gespeichert."
 msgid "Enter a whole number from 1 to 365."
 msgstr "Gib eine ganze Zahl von 1 bis 365 ein."
 
-#: app/routes/admin.py:718 app/routes/profile.py:127
+#: app/routes/admin.py:718 app/routes/profile.py:131
 msgid "Saved."
 msgstr "Gespeichert."
 
@@ -1063,60 +1063,60 @@ msgstr "Vorschläge machen"
 msgid "Adjust the proposals"
 msgstr "Vorschläge anpassen"
 
-#: app/routes/issues.py:564
+#: app/routes/issues.py:593
 msgid "You already support this proposal."
 msgstr "Du unterstützt diesen Vorschlag schon."
 
-#: app/routes/issues.py:625
+#: app/routes/issues.py:654
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Wähle mindestens einen Fakt, der noch nicht verknüpft ist."
 
-#: app/routes/issues.py:754
+#: app/routes/issues.py:790
 msgid "The issue is now in the next phase."
 msgstr "Die Fragestellung ist jetzt in der nächsten Phase."
 
-#: app/routes/issues.py:770 app/routes/issues.py:790
+#: app/routes/issues.py:806 app/routes/issues.py:826
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "Der Text darf höchstens %(n)s Zeichen lang sein."
 
-#: app/routes/issues.py:822
+#: app/routes/issues.py:858
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Setz das Häkchen, um zu bestätigen, dass du die Fragestellung wieder öffnen willst."
 
-#: app/routes/issues.py:827
+#: app/routes/issues.py:863
 msgid "The issue is open again for discussion."
 msgstr "Die Fragestellung ist wieder offen für die Diskussion."
 
-#: app/routes/issues.py:849
+#: app/routes/issues.py:885
 msgid "The issue has been archived."
 msgstr "Die Fragestellung wurde archiviert."
 
-#: app/routes/issues.py:864
+#: app/routes/issues.py:900
 msgid "The issue is back from the archive."
 msgstr "Die Fragestellung ist zurück aus dem Archiv."
 
-#: app/routes/issues.py:883
+#: app/routes/issues.py:919
 msgid "Type the exact title to confirm."
 msgstr "Gib den Titel genau ein, um zu bestätigen."
 
-#: app/routes/issues.py:889
+#: app/routes/issues.py:925
 msgid "The issue has been deleted."
 msgstr "Die Fragestellung wurde gelöscht."
 
-#: app/routes/issues.py:911
+#: app/routes/issues.py:947
 msgid "Type the exact text to confirm."
 msgstr "Gib den Text genau ein, um zu bestätigen."
 
-#: app/routes/issues.py:918
+#: app/routes/issues.py:954
 msgid "The proposal has been deleted."
 msgstr "Der Vorschlag wurde gelöscht."
 
-#: app/routes/issues.py:1038
+#: app/routes/issues.py:1074
 msgid "The proposal is hidden."
 msgstr "Der Vorschlag ist verborgen."
 
-#: app/routes/issues.py:1038
+#: app/routes/issues.py:1074
 msgid "The proposal is visible again."
 msgstr "Der Vorschlag ist wieder sichtbar."
 
@@ -1171,11 +1171,11 @@ msgid "Password changed successfully."
 msgstr "Passwort erfolgreich geändert."
 
 #. TRANSLATORS: profile, About me: the message after "Clear answers".
-#: app/routes/profile.py:131
+#: app/routes/profile.py:135
 msgid "Your answers have been cleared."
 msgstr "Deine Antworten wurden gelöscht."
 
-#: app/routes/profile.py:213
+#: app/routes/profile.py:224
 msgid "Saved"
 msgstr "Gespeichert"
 
@@ -1414,7 +1414,7 @@ msgid "Everyone speaks with one voice. More than one account per person is not a
 msgstr "Alle sprechen mit einer Stimme. Mehrere Konten pro Person sind nicht erlaubt, auch nicht unter einem anderen Pseudonym."
 
 #: app/templates/_rules_list.html:41 app/templates/forum/_proposal_vote.html:58
-#: app/templates/issues/_ip_vote.html:64
+#: app/templates/issues/_ip_vote.html:89
 msgid "Quality guidelines"
 msgstr "Qualitätsrichtlinien"
 
@@ -2790,6 +2790,7 @@ msgstr "Wöchentlich"
 #: app/templates/admin/proposal_limits.html:43
 #: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:62
 #: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:111
+#: app/templates/issues/_ip_vote.html:76
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
@@ -3095,29 +3096,29 @@ msgstr "Beiträge in einer anderen Sprache werden automatisch übersetzt, wenn d
 
 #. profile, the eyebrow of the section with the voluntary questions about
 #. yourself.
-#: app/templates/profile.html:213
+#: app/templates/issues/_ip_vote.html:79 app/templates/profile.html:213
 msgid "About me"
 msgstr "Über mich"
 
 #. profile, About me: the title of the voluntary questions (who takes part in
 #. the votes).
-#: app/templates/profile.html:215
+#: app/templates/issues/_ip_vote.html:70 app/templates/profile.html:215
 msgid "Who votes?"
 msgstr "Wer stimmt mit ab?"
 
 #. a small label: answering is voluntary.
-#: app/templates/profile.html:216
+#: app/templates/issues/_ip_vote.html:70 app/templates/profile.html:216
 msgid "Voluntary"
 msgstr "Freiwillig"
 
 #. profile, About me: why we ask. "results": the outcome of the votes of an
 #. issue.
-#: app/templates/profile.html:218
+#: app/templates/issues/_ip_vote.html:71 app/templates/profile.html:218
 msgid "When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what."
 msgstr "Beim Ergebnis zeigen wir, wie sich die Gruppe der Abstimmenden zusammensetzt, nur in Gruppen von mindestens 10 Personen. Nie, wer wie abgestimmt hat."
 
 #. a link to the privacy statement.
-#: app/templates/profile.html:219
+#: app/templates/issues/_ip_vote.html:72 app/templates/profile.html:219
 msgid "Why we ask this"
 msgstr "Warum wir das fragen"
 
@@ -4454,7 +4455,7 @@ msgid "You can change your vote until voting closes."
 msgstr "Du kannst deine Stimme ändern, bis die Abstimmung endet."
 
 #: app/templates/forum/_proposal_vote.html:56
-#: app/templates/issues/_ip_vote.html:62
+#: app/templates/issues/_ip_vote.html:87
 msgid "You do not have voting rights yet"
 msgstr "Du hast noch kein Stimmrecht"
 
@@ -4463,28 +4464,28 @@ msgid "You earn voting rights with quality contributions: contributions that rec
 msgstr "Stimmrecht erwirbst du mit Qualitätsbeiträgen: Beiträgen, die das Gütesiegel bekommen."
 
 #: app/templates/forum/_proposal_vote.html:61
-#: app/templates/issues/_ip_vote.html:67
+#: app/templates/issues/_ip_vote.html:92
 msgid "Log in to vote."
 msgstr "Melde dich an, um abzustimmen."
 
 #: app/templates/forum/_proposal_vote.html:67
-#: app/templates/issues/_ip_vote.html:72
+#: app/templates/issues/_ip_vote.html:97
 msgid "Running tally"
 msgstr "Zwischenstand"
 
 #: app/templates/forum/_proposal_vote.html:74
-#: app/templates/issues/_ip_vote.html:78
+#: app/templates/issues/_ip_vote.html:103
 #, python-format
 msgid "%(pct)s%% in favour of the valid votes"
 msgstr "%(pct)s%% dafür von den gültigen Stimmen"
 
 #: app/templates/forum/_proposal_vote.html:77
-#: app/templates/issues/_ip_vote.html:81
+#: app/templates/issues/_ip_vote.html:106
 msgid "Nobody has voted yet."
 msgstr "Es hat noch niemand abgestimmt."
 
 #: app/templates/forum/_proposal_vote.html:78
-#: app/templates/issues/_ip_vote.html:82
+#: app/templates/issues/_ip_vote.html:107
 #, python-format
 msgid "One person has voted so far."
 msgid_plural "%(num)d people have voted so far."
@@ -4492,7 +4493,7 @@ msgstr[0] "Eine Person hat bisher abgestimmt."
 msgstr[1] "%(num)d Personen haben bisher abgestimmt."
 
 #: app/templates/forum/_proposal_vote.html:79
-#: app/templates/issues/_ip_vote.html:83
+#: app/templates/issues/_ip_vote.html:108
 msgid "The tally is shown when voting closes."
 msgstr "Die Verteilung wird gezeigt, wenn die Abstimmung endet."
 
@@ -5374,12 +5375,41 @@ msgstr "Du stimmst über den Originaltext ab (%(language)s)."
 msgid "Hide original"
 msgstr "Original ausblenden"
 
-#: app/templates/issues/_ip_vote.html:63 app/templates/issues/_ip_vote.html:67
+#. the card with the voluntary questions, right after the first vote.
+#: app/templates/issues/_ip_vote.html:71
+msgid "Your vote has been saved. May we ask you something else?"
+msgstr "Deine Stimme ist gespeichert. Dürfen wir dich noch etwas fragen?"
+
+#. the card after the first vote: answering the questions has no effect on the
+#. vote.
+#: app/templates/issues/_ip_vote.html:72
+msgid "Your vote counts either way."
+msgstr "Deine Stimme zählt so oder so."
+
+#. a button on the card after the first vote: do not answer the voluntary
+#. questions.
+#: app/templates/issues/_ip_vote.html:77
+msgid "Skip"
+msgstr "Überspringen"
+
+#. the card after the first vote; %(about_me)s is a link to the profile section
+#. "About me".
+#: app/templates/issues/_ip_vote.html:80
+#, python-format
+msgid "We only ask this once. You can always fill it in, change it or clear it in your profile, under %(about_me)s."
+msgstr "Wir fragen das nur einmal. Du kannst es jederzeit in deinem Profil unter %(about_me)s ausfüllen, ändern oder löschen."
+
+#. after saving the voluntary questions from the card after the first vote.
+#: app/templates/issues/_ip_vote.html:83
+msgid "Thank you. Your answers are in your profile under About me."
+msgstr "Danke. Deine Antworten stehen in deinem Profil unter Über mich."
+
+#: app/templates/issues/_ip_vote.html:88 app/templates/issues/_ip_vote.html:92
 #, python-format
 msgid "You may vote after %(n)s quality contributions: contributions that receive the quality mark."
 msgstr "Du darfst nach %(n)s Qualitätsbeiträgen mit abstimmen: Beiträgen, die das Gütesiegel bekommen."
 
-#: app/templates/issues/_ip_vote.html:88
+#: app/templates/issues/_ip_vote.html:113
 msgid "Voting on proposals on the voting list opens in the voting phase."
 msgstr "Die Abstimmung über Vorschläge auf der Abstimmungsliste öffnet in der Abstimmungsphase."
 
@@ -7273,7 +7303,7 @@ msgstr "Was ist dein Geschlecht?"
 #. counts at the level of the studies.
 #: app/templates/participants/_questions.html:34
 msgid "What is the highest level of education you have completed or are following now?"
-msgstr "Was ist dein höchster Bildungsabschluss, abgeschlossen oder gerade in Ausbildung?"
+msgstr "Was ist die höchste Ausbildung, die du abgeschlossen hast oder gerade machst?"
 
 #. representativeness, a voluntary question ("Mijn land": the country where you
 #. live).

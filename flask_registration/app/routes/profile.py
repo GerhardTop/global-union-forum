@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, abort, session
 from flask_login import login_required, current_user
 from flask_babel import gettext, gettext as _, get_locale
 
@@ -121,7 +121,11 @@ def over_mij():
         abort(404)
     if not ForumActionForm().validate_on_submit():
         abort(400)
+    # Step 1c: the card after the first vote posts here too, with next (the
+    # proposal page). Only an internal path counts; else back to the profile.
+    back = safe_next(request.form.get("next"), None)
     action = request.form.get("action")
+    message = None
     if action == "save":
         participants.save(current_user, request.form)
         message = gettext('Saved.')
@@ -129,10 +133,17 @@ def over_mij():
         participants.clear(current_user)
         # TRANSLATORS: profile, About me: the message after "Clear answers".
         message = gettext('Your answers have been cleared.')
-    else:
+    elif action != "skip":   # skip: nothing to save, asked_at is already set
         abort(400)
     db.session.commit()
-    flash(message, "success")
+    if back:
+        # The proposal page shows the thank-you line in the vote block, once.
+        if action == "save":
+            from app.routes.issues import PP_SAVED
+            session[PP_SAVED] = back.split("#")[0].split("?")[0]
+        return redirect(back, code=303)
+    if message:
+        flash(message, "success")
     return redirect(url_for("profile.profile") + "#over-mij", code=303)
 
 

@@ -28,6 +28,7 @@ Besluit: direct NA de eerste stem op een voorstel van een vraagstuk, als kaart i
 
 K2. Hoe vaak?
 Besluit: maar één keer, bij de eerste stem. De kaart heeft twee knoppen: "Opslaan" en "Overslaan". Na allebei komt de kaart niet terug; invullen, wijzigen en wissen kan daarna alleen in het profiel (Over mij). Alternatief (niet gekozen): met "Niet nu" de kaart nog één keer laten terugkomen.
+Eén keer betekent: de kaart verschijnt op de voorstelpagina direct na de eerste stem en asked_at wordt gezet zodra hij getoond is; wie hem negeert, krijgt hem niet opnieuw.
 
 K3. Welke vragen?
 Besluit: vier vragen, alle vier met "Zeg ik liever niet": geboortejaar, geslacht, opleiding, land. Geen etniciteit, geen woonplaats, geen inkomen. Alternatief (niet gekozen): alleen leeftijd en geslacht (minder vragen, maar opleiding is volgens onderzoek vaak het scheefste kenmerk bij deelname).
@@ -120,7 +121,7 @@ Ik ben geen jurist; laat de DPIA en de tekst van de privacyverklaring nalezen.
 ## Bouwvolgorde niveau 1 (elk een eigen opdracht, push via scripts/check_and_push.sh)
 1a. Deze opzet en de artboards in de repo (docs/representativiteit.md, docs/design/representativiteit-vragen.html, docs/design/representativiteit-uitslag.html, rijen in docs/design/README.md, verwijzing in CLAUDE.md) (klaar, 27 november 2026).
 1b. Datamodel (participant_profiles, users.country, issue_participation_stats), de sectie "Over mij" en "Mijn land" in het profiel, wissen, opruimen bij account verwijderen; achter PARTICIPANT_PROFILE. Niets zichtbaars met de schakelaar uit (page_snapshot.py) (klaar, 27 november 2026).
-1c. De kaart na de eerste stem, één keer (K1, K2), met en zonder JavaScript.
+1c. De kaart na de eerste stem, één keer (K1, K2), met en zonder JavaScript (klaar, 27 november 2026).
 1d. Bevriezen bij het einde van de stemfase en het blok "Wie stemde mee" met de leeftijdstrap en de drempels (K4, K7, K8), plus de regel bij de uitslag van elk voorstel; uitbreiding van tests/test_proposal_queries.py.
 1e. Privacyverklaring en FAQ (per alinea een msgid, in vijf talen), PRIVACY_UPDATED, naleesbestanden opnieuw exporteren. De teksten van 1b tot en met 1d gaan al in die stappen in alle vijf talen (zie Meertaligheid).
 Daarna: DPIA afronden, dan PARTICIPANT_PROFILE=1 op Render.

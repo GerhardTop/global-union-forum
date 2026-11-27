@@ -285,3 +285,18 @@ class TestMigration:
         insp = sa_inspect(db.engine)
         assert 'proposal_votes' in insp.get_table_names()
         assert any(set(u['column_names']) == {'proposal_id', 'user_id'} for u in insp.get_unique_constraints('proposal_votes'))
+
+
+def test_forum_vote_sets_no_participant_card(app, db, voter, voting, monkeypatch):
+    """Representativeness 1c: the card is only for proposals of an issue."""
+    monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', True)
+    from app.models import ParticipantProfile
+    t = voting()
+    u = voter()
+    client = _client(app, u)
+    r = _req(client, 'POST', f'/forum/{t.id}/voorstel/stem', data={'choice': 'voor'})
+    assert r.status_code in (302, 303)
+    with client.session_transaction() as s:
+        assert 'pp_ask' not in s
+    assert 'gu-ppcard' not in _req(client, 'GET', f'/forum/{t.id}').get_data(as_text=True)
+    assert ParticipantProfile.query.filter_by(user_id=u.id).first() is None

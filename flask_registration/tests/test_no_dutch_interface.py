@@ -259,3 +259,37 @@ def test_no_dutch_in_about_me(app, db, make_user, monkeypatch, lang):
     assert 'name="education"' in section and 'gu-pp__hint' in section
     found = [t for t in _interface_texts(section, content) if WORD.search(t) or re.search(r'\b(mbo|hbo)\b', t, re.I)]
     assert found == []
+
+
+@pytest.mark.parametrize('lang', ['de', 'es', 'fr'])
+def test_no_dutch_on_the_card_after_the_first_vote(app, db, make_user, monkeypatch, lang):
+    """Representativeness 1c: the card with the voluntary questions in the vote
+    block, right after the first vote, and the thank-you line after saving."""
+    from app import issue_proposals as ip, issues
+    monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', True)
+    author, backer, voter = make_user(), make_user('voter'), make_user('voter')
+    issue = issues.create({'title': f'Q{uuid.uuid4().hex[:6]}', 'intro': f'I{uuid.uuid4().hex[:6]}',
+                           'kind': 'online', 'support_threshold': 1}, author, lang='nl')
+    db.session.flush()
+    proposal = ip.create(issue, author, f'S{uuid.uuid4().hex[:6]}', f'E{uuid.uuid4().hex[:6]}', lang='nl')
+    db.session.flush()
+    ip.support(proposal, backer)
+    issue.phase = 'stemmen'
+    db.session.commit()
+    path = f'/vraagstuk/{issue.id}/voorstel/{proposal.id}'
+    try:
+        content = _content(db)
+        client = _client(app, voter, lang)
+        _req(client, 'POST', path + '/stemmen', data={'choice': 'voor'})
+        page = _req(client, 'GET', path).get_data(as_text=True)
+        start = page.index('class="gu-ppcard"')
+        card = page[start:page.index('</form>', start)]
+        _req(client, 'POST', '/profiel/over-mij', data={'action': 'save', 'next': path + '#stemming', 'gender': 'f'})
+        saved = _req(client, 'GET', path).get_data(as_text=True)
+        start = saved.index('gu-ppcard__saved')
+        line = saved[start:saved.index('</p>', start)]
+        found = [t for t in _interface_texts('<div ' + card + '</div>' + '<p class="' + line + '</p>', content)
+                 if WORD.search(t) or re.search(r'\b(mbo|hbo)\b', t, re.I)]
+        assert found == []
+    finally:
+        _cleanup(issue.id)

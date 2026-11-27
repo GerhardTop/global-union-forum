@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-27 22:10+0100\n"
+"POT-Creation-Date: 2026-11-27 22:30+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -571,76 +571,76 @@ msgstr "Je bent geschorst tot %(until)s."
 
 #. TRANSLATORS: an age group in the representativeness block ("65 or older");
 #. %(age)s is an age in years.
-#: app/participants.py:68
+#: app/participants.py:89
 #, python-format
 msgid "%(age)s or older"
 msgstr "%(age)s of ouder"
 
 #. TRANSLATORS: an age group in years, both limits included ("25 to 44" means
 #. 25 up to and including 44).
-#: app/participants.py:70
+#: app/participants.py:91
 #, python-format
 msgid "%(low)s to %(high)s"
 msgstr "%(low)s tot en met %(high)s"
 
 #. TRANSLATORS: the answer to a voluntary question (birth year, gender,
 #. education, country) for someone who does not want to answer.
-#: app/participants.py:75 app/templates/participants/_questions.html:12
+#: app/participants.py:96 app/templates/participants/_questions.html:12
 #: app/templates/participants/_questions.html:46
 msgid "Prefer not to say"
 msgstr "Zeg ik liever niet"
 
 #. TRANSLATORS: an answer to "What is your gender?" (voluntary question).
-#: app/participants.py:81
+#: app/participants.py:102
 msgid "Woman"
 msgstr "Vrouw"
 
 #. TRANSLATORS: an answer to "What is your gender?" (voluntary question).
-#: app/participants.py:84
+#: app/participants.py:105
 msgid "Man"
 msgstr "Man"
 
 #. TRANSLATORS: an answer to "What is your gender?": another gender than woman
 #. or man.
-#: app/participants.py:87
+#: app/participants.py:108
 msgctxt "gender"
 msgid "Other"
 msgstr "Anders"
 
 #. TRANSLATORS: education level, ISCED 0 to 2 (the first of three; "Basic",
 #. "Secondary", "Higher").
-#: app/participants.py:96
+#: app/participants.py:117
 msgid "Basic"
 msgstr "Basis"
 
 #. TRANSLATORS: the explanation under "Basic" (ISCED 0 to 2). Give an example
 #. readers in your language recognise; never the Dutch names.
-#: app/participants.py:98
+#: app/participants.py:119
 msgid "Primary school or the first years of secondary school"
 msgstr "Lagere school of het eerste deel van de middelbare school"
 
 #. TRANSLATORS: education level, ISCED 3 and 4 (the second of three; "Basic",
 #. "Secondary", "Higher").
-#: app/participants.py:102
+#: app/participants.py:123
 msgid "Secondary"
 msgstr "Middelbaar"
 
 #. TRANSLATORS: the explanation under "Secondary" (ISCED 3 and 4). Give an
 #. example readers in your language recognise (a vocational training of your
 #. country); never the Dutch names mbo or hbo.
-#: app/participants.py:104
+#: app/participants.py:125
 msgid "Completed secondary school, or vocational training"
 msgstr "Middelbare school afgerond, of een beroepsopleiding zoals het mbo"
 
 #. TRANSLATORS: education level, ISCED 5 to 8 (the third of three; "Basic",
 #. "Secondary", "Higher").
-#: app/participants.py:108
+#: app/participants.py:129
 msgid "Higher"
 msgstr "Hoger"
 
 #. TRANSLATORS: the explanation under "Higher" (ISCED 5 to 8). Give an example
 #. readers in your language recognise; never the Dutch names mbo or hbo.
-#: app/participants.py:110
+#: app/participants.py:131
 msgid "College or university"
 msgstr "Hbo of universiteit"
 
@@ -882,7 +882,7 @@ msgstr "Maximale doorlooptijden opgeslagen."
 msgid "Enter a whole number from 1 to 365."
 msgstr "Vul een geheel getal van 1 tot en met 365 in."
 
-#: app/routes/admin.py:718 app/routes/profile.py:127
+#: app/routes/admin.py:718 app/routes/profile.py:131
 msgid "Saved."
 msgstr "Opgeslagen."
 
@@ -1066,60 +1066,60 @@ msgstr "Voorstellen maken"
 msgid "Adjust the proposals"
 msgstr "Voorstellen aanpassen"
 
-#: app/routes/issues.py:564
+#: app/routes/issues.py:593
 msgid "You already support this proposal."
 msgstr "Je steunt dit voorstel al."
 
-#: app/routes/issues.py:625
+#: app/routes/issues.py:654
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Kies minstens één feit dat nog niet gekoppeld is."
 
-#: app/routes/issues.py:754
+#: app/routes/issues.py:790
 msgid "The issue is now in the next phase."
 msgstr "Het vraagstuk staat nu in de volgende fase."
 
-#: app/routes/issues.py:770 app/routes/issues.py:790
+#: app/routes/issues.py:806 app/routes/issues.py:826
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "De tekst kan hooguit %(n)s tekens zijn."
 
-#: app/routes/issues.py:822
+#: app/routes/issues.py:858
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Vink het vakje aan om te bevestigen dat je het vraagstuk opnieuw wilt openstellen."
 
-#: app/routes/issues.py:827
+#: app/routes/issues.py:863
 msgid "The issue is open again for discussion."
 msgstr "Het vraagstuk staat weer open voor discussie."
 
-#: app/routes/issues.py:849
+#: app/routes/issues.py:885
 msgid "The issue has been archived."
 msgstr "Het vraagstuk is gearchiveerd."
 
-#: app/routes/issues.py:864
+#: app/routes/issues.py:900
 msgid "The issue is back from the archive."
 msgstr "Het vraagstuk is terug uit het archief."
 
-#: app/routes/issues.py:883
+#: app/routes/issues.py:919
 msgid "Type the exact title to confirm."
 msgstr "Typ de titel precies over om te bevestigen."
 
-#: app/routes/issues.py:889
+#: app/routes/issues.py:925
 msgid "The issue has been deleted."
 msgstr "Het vraagstuk is verwijderd."
 
-#: app/routes/issues.py:911
+#: app/routes/issues.py:947
 msgid "Type the exact text to confirm."
 msgstr "Typ de tekst precies over om te bevestigen."
 
-#: app/routes/issues.py:918
+#: app/routes/issues.py:954
 msgid "The proposal has been deleted."
 msgstr "Het voorstel is verwijderd."
 
-#: app/routes/issues.py:1038
+#: app/routes/issues.py:1074
 msgid "The proposal is hidden."
 msgstr "Het voorstel is verborgen."
 
-#: app/routes/issues.py:1038
+#: app/routes/issues.py:1074
 msgid "The proposal is visible again."
 msgstr "Het voorstel is weer zichtbaar."
 
@@ -1174,11 +1174,11 @@ msgid "Password changed successfully."
 msgstr "Wachtwoord succesvol gewijzigd."
 
 #. TRANSLATORS: profile, About me: the message after "Clear answers".
-#: app/routes/profile.py:131
+#: app/routes/profile.py:135
 msgid "Your answers have been cleared."
 msgstr "Je antwoorden zijn gewist."
 
-#: app/routes/profile.py:213
+#: app/routes/profile.py:224
 msgid "Saved"
 msgstr "Bewaard"
 
@@ -1418,7 +1418,7 @@ msgid "Everyone speaks with one voice. More than one account per person is not a
 msgstr "Iedereen spreekt met één stem. Meerdere accounts per persoon zijn niet toegestaan, ook niet onder een ander pseudoniem."
 
 #: app/templates/_rules_list.html:41 app/templates/forum/_proposal_vote.html:58
-#: app/templates/issues/_ip_vote.html:64
+#: app/templates/issues/_ip_vote.html:89
 msgid "Quality guidelines"
 msgstr "Kwaliteitsrichtlijnen"
 
@@ -2794,6 +2794,7 @@ msgstr "Wekelijks"
 #: app/templates/admin/proposal_limits.html:43
 #: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:62
 #: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:111
+#: app/templates/issues/_ip_vote.html:76
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
@@ -3100,29 +3101,29 @@ msgstr "Berichten in een andere taal worden bij het openen van een gesprek autom
 
 #. profile, the eyebrow of the section with the voluntary questions about
 #. yourself.
-#: app/templates/profile.html:213
+#: app/templates/issues/_ip_vote.html:79 app/templates/profile.html:213
 msgid "About me"
 msgstr "Over mij"
 
 #. profile, About me: the title of the voluntary questions (who takes part in
 #. the votes).
-#: app/templates/profile.html:215
+#: app/templates/issues/_ip_vote.html:70 app/templates/profile.html:215
 msgid "Who votes?"
 msgstr "Wie stemt er mee?"
 
 #. a small label: answering is voluntary.
-#: app/templates/profile.html:216
+#: app/templates/issues/_ip_vote.html:70 app/templates/profile.html:216
 msgid "Voluntary"
 msgstr "Vrijwillig"
 
 #. profile, About me: why we ask. "results": the outcome of the votes of an
 #. issue.
-#: app/templates/profile.html:218
+#: app/templates/issues/_ip_vote.html:71 app/templates/profile.html:218
 msgid "When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what."
 msgstr "Bij de uitslag laten we zien hoe de groep stemmers is samengesteld, alleen in groepen van minstens 10 mensen. Nooit wie wat stemde."
 
 #. a link to the privacy statement.
-#: app/templates/profile.html:219
+#: app/templates/issues/_ip_vote.html:72 app/templates/profile.html:219
 msgid "Why we ask this"
 msgstr "Waarom we dit vragen"
 
@@ -4460,7 +4461,7 @@ msgid "You can change your vote until voting closes."
 msgstr "Je kunt je stem wijzigen tot het stemmen sluit."
 
 #: app/templates/forum/_proposal_vote.html:56
-#: app/templates/issues/_ip_vote.html:62
+#: app/templates/issues/_ip_vote.html:87
 msgid "You do not have voting rights yet"
 msgstr "Je hebt nog geen stemrecht"
 
@@ -4469,28 +4470,28 @@ msgid "You earn voting rights with quality contributions: contributions that rec
 msgstr "Stemrecht verdien je met kwaliteitsbijdragen: bijdragen die het kwaliteitskeurmerk krijgen."
 
 #: app/templates/forum/_proposal_vote.html:61
-#: app/templates/issues/_ip_vote.html:67
+#: app/templates/issues/_ip_vote.html:92
 msgid "Log in to vote."
 msgstr "Log in om te stemmen."
 
 #: app/templates/forum/_proposal_vote.html:67
-#: app/templates/issues/_ip_vote.html:72
+#: app/templates/issues/_ip_vote.html:97
 msgid "Running tally"
 msgstr "Tussenstand"
 
 #: app/templates/forum/_proposal_vote.html:74
-#: app/templates/issues/_ip_vote.html:78
+#: app/templates/issues/_ip_vote.html:103
 #, python-format
 msgid "%(pct)s%% in favour of the valid votes"
 msgstr "%(pct)s%% voor van de geldige stemmen"
 
 #: app/templates/forum/_proposal_vote.html:77
-#: app/templates/issues/_ip_vote.html:81
+#: app/templates/issues/_ip_vote.html:106
 msgid "Nobody has voted yet."
 msgstr "Er is nog niet gestemd."
 
 #: app/templates/forum/_proposal_vote.html:78
-#: app/templates/issues/_ip_vote.html:82
+#: app/templates/issues/_ip_vote.html:107
 #, python-format
 msgid "One person has voted so far."
 msgid_plural "%(num)d people have voted so far."
@@ -4498,7 +4499,7 @@ msgstr[0] "Eén persoon heeft al gestemd."
 msgstr[1] "%(num)d mensen hebben al gestemd."
 
 #: app/templates/forum/_proposal_vote.html:79
-#: app/templates/issues/_ip_vote.html:83
+#: app/templates/issues/_ip_vote.html:108
 msgid "The tally is shown when voting closes."
 msgstr "De verdeling volgt als het stemmen sluit."
 
@@ -5383,12 +5384,41 @@ msgstr "Je stemt over de oorspronkelijke tekst (%(language)s)."
 msgid "Hide original"
 msgstr "Origineel verbergen"
 
-#: app/templates/issues/_ip_vote.html:63 app/templates/issues/_ip_vote.html:67
+#. the card with the voluntary questions, right after the first vote.
+#: app/templates/issues/_ip_vote.html:71
+msgid "Your vote has been saved. May we ask you something else?"
+msgstr "Je stem is opgeslagen. Mogen we nog iets vragen?"
+
+#. the card after the first vote: answering the questions has no effect on the
+#. vote.
+#: app/templates/issues/_ip_vote.html:72
+msgid "Your vote counts either way."
+msgstr "Je stem telt hoe dan ook."
+
+#. a button on the card after the first vote: do not answer the voluntary
+#. questions.
+#: app/templates/issues/_ip_vote.html:77
+msgid "Skip"
+msgstr "Overslaan"
+
+#. the card after the first vote; %(about_me)s is a link to the profile section
+#. "About me".
+#: app/templates/issues/_ip_vote.html:80
+#, python-format
+msgid "We only ask this once. You can always fill it in, change it or clear it in your profile, under %(about_me)s."
+msgstr "We vragen dit maar één keer. Je kunt het altijd invullen, wijzigen of wissen in je profiel, onder %(about_me)s."
+
+#. after saving the voluntary questions from the card after the first vote.
+#: app/templates/issues/_ip_vote.html:83
+msgid "Thank you. Your answers are in your profile under About me."
+msgstr "Dank je. Je antwoorden staan in je profiel onder Over mij."
+
+#: app/templates/issues/_ip_vote.html:88 app/templates/issues/_ip_vote.html:92
 #, python-format
 msgid "You may vote after %(n)s quality contributions: contributions that receive the quality mark."
 msgstr "Je mag meestemmen na %(n)s kwaliteitsbijdragen: bijdragen die het keurmerk krijgen."
 
-#: app/templates/issues/_ip_vote.html:88
+#: app/templates/issues/_ip_vote.html:113
 msgid "Voting on proposals on the voting list opens in the voting phase."
 msgstr "Het stemmen over voorstellen op de stemlijst gaat open in de stemfase."
 

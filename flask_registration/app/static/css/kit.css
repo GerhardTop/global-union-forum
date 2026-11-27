@@ -4808,3 +4808,12 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
   .gu-pp__opts--edu { grid-template-columns:1fr; }
   .gu-pp__opt span { inline-size:100%; }
 }
+/* Step 1c: the card after the first vote, in the vote block. */
+.gu-ppcard { margin-block-start:4px; background:#f5f7f9; border:1px solid #e4e9ef; border-radius:12px; padding:20px 22px; display:flex; flex-direction:column; gap:18px; }
+.gu-ppcard__head { display:flex; flex-direction:column; gap:6px; }
+.gu-ppcard__title { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:0; font-size:17px; font-weight:600; color:#141b22; }
+.gu-ppcard__text { margin:0; font-size:14px; line-height:1.55; color:#3a434e; }
+.gu-ppcard__saved { margin:0; padding:10px 14px; border:1px solid #d6e8dc; border-radius:10px; background:#f3f8f4; font-size:14px; color:#11633d; }
+@media (max-width: 600px) {
+  .gu-ppcard { padding:16px; }
+}

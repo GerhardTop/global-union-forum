@@ -181,3 +181,49 @@ def test_queries_with_chart_facts_do_not_grow(app, db, make_user, who):
     repeated = {page: [(s, c) for s, c in shapes[20][page].most_common(8) if c > shapes[1][page][s]]
                 for page in counts[1]}
     assert counts[1] == counts[5] == counts[20], (counts, repeated)
+
+
+# Representativeness 1c: the extra queries of the proposal page when the card
+# after the first vote is due (the session flag): the answers row (read),
+# making it with asked_at (insert, in the page's existing commit), and the
+# answers again for the questions (the commit expired them).
+PARTICIPANT_CARD_QUERIES = 3
+
+
+def test_queries_with_the_participant_card(app, db, make_user, monkeypatch):
+    """Without the flag the proposal page does exactly the queries it did
+    before step 1c, with the switch off and on; with the flag a fixed number
+    more (PARTICIPANT_CARD_QUERIES), and the card shows."""
+    issue, proposals, member = _world(db, make_user, 5)
+    member.set_role('voter')
+    issue.support_threshold = 1      # on the voting list: the vote block with the buttons
+    db.session.commit()
+    issue_id, path, pid, member_id = issue.id, PAGES(issue, proposals)[2][1], proposals[0].id, member.id
+
+    def measure(flag):
+        from app.models import User
+        client = _client(app, db.session.get(User, member_id), 'nl')
+        _req(client, 'GET', path)
+        db.session.commit()
+        db.session.expunge_all()
+        if flag:
+            with client.session_transaction() as s:
+                s['pp_ask'] = pid
+        with _count_queries() as queries:
+            resp = _req(client, 'GET', path)
+        assert resp.status_code == 200
+        return len(queries), resp.get_data(as_text=True)
+
+    try:
+        off, page = measure(False)
+        assert 'gu-ppcard' not in page
+        monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', True)
+        on, page = measure(False)
+        assert 'gu-ppcard' not in page
+        with_flag, page = measure(True)
+        assert 'class="gu-ppcard"' in page
+        print(f'\nproposal page queries: switch off {off}, on {on}, with the card {with_flag}')
+        assert on == off
+        assert with_flag == off + PARTICIPANT_CARD_QUERIES
+    finally:
+        _cleanup(issue_id)

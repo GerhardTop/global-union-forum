@@ -27,7 +27,7 @@ from flask import Blueprint, abort, flash, jsonify, redirect, render_template, r
 from flask_babel import gettext
 from flask_login import current_user, login_required
 
-from app import conduct, content_i18n, db, i18n, issues, limiter
+from app import conduct, content_i18n, db, i18n, issues, limiter, participants
 from app import facts as fact_signals
 from app import issue_lifecycle as lifecycle
 from app import issue_proposals as ip
@@ -439,8 +439,11 @@ def proposal(issue_id, proposal_id):
     # eigen kolom rechts grijs staat. Before anything else is loaded: the
     # commit expires every loaded object, and reloading the rail's proposals
     # and their versions one by one cost two queries per proposal (N+1).
+    ask_participant, participant_saved = _participant_flags(proposal)
     if current_user.is_authenticated:
         ip.mark_read(proposal, current_user)
+        if ask_participant:
+            participants.mark_asked(current_user)   # shown now: it does not come back
         db.session.commit()
     count = ip.support_counts([proposal.id]).get(proposal.id, 0)
     supported = proposal.id in ip.my_supports([proposal.id], current_user)
@@ -473,7 +476,8 @@ def proposal(issue_id, proposal_id):
                            links=links, can_link=ip.can_link(proposal, current_user),
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
                            candidates=[f for f in issue_facts if f.id not in linked_ids],
-                           can_add_fact=_can_add_fact(issue), vote=_vote_context(proposal, count),
+                           can_add_fact=_can_add_fact(issue),
+                           vote=_vote_context(proposal, count, ask_participant, participant_saved),
                            versions=_versions_with_reactions(proposal), current_version=ip.current_version(proposal),
                            can_react=_can_react(issue), remaining=issues.remaining(issue),
                            rail_facts=fact_signals.listing(issue_facts, order='kwaliteit'),
@@ -537,12 +541,39 @@ def _can_react(issue):
             and not issue.thread.is_closed and issues.is_open_now(issue))
 
 
-def _vote_context(proposal, count):
-    """Alles voor de stemming op het detail (stap 6)."""
+# Representativeness 1c: session flags of the card after the first vote.
+# PP_ASK: the proposal id the card is due on; PP_SAVED: the path of the page
+# that shows the thank-you line once (set by profile.over_mij).
+PP_ASK = 'pp_ask'
+PP_SAVED = 'pp_saved'
+
+
+def _participant_flags(proposal):
+    """(ask, saved) for this page, each at most once. No query: only the
+    session (and the switch)."""
+    if not participants.enabled() or not current_user.is_authenticated:
+        return False, False
+    ask = session.get(PP_ASK) == proposal.id
+    if ask:
+        session.pop(PP_ASK, None)
+    saved = session.get(PP_SAVED) == request.path
+    if saved:
+        session.pop(PP_SAVED, None)
+    return ask, saved
+
+
+def _vote_context(proposal, count, ask_participant=False, participant_saved=False):
+    """Alles voor de stemming op het detail (stap 6). Representativeness 1c:
+    the questions of the card after the first vote (ask_participant) or the
+    thank-you line after saving them (participant_saved)."""
     from app import status
     show = ip.show_tally(proposal, count)
-    return {'open': ip.voting_open(proposal, count), 'over': ip.voting_over(proposal),
-            'on_list': ip.on_list(proposal, count), 'can_vote': ip.can_vote(proposal, current_user, count),
+    can_vote = ip.can_vote(proposal, current_user, count)
+    return {'ask_participant': (participants.form_context(current_user, i18n.current())
+                                if ask_participant and can_vote else None),
+            'participant_saved': participant_saved,
+            'open': ip.voting_open(proposal, count), 'over': ip.voting_over(proposal),
+            'on_list': ip.on_list(proposal, count), 'can_vote': can_vote,
             'mine': ip.my_vote(proposal, current_user), 'show': show,
             'result': ip.result(proposal) if show else None,
             'voters': sum(ip.tally(proposal).values()),
@@ -682,8 +713,15 @@ def proposal_vote(issue_id, proposal_id):
     choice = request.form.get('choice')
     if choice not in VOTE_CHOICES:
         abort(400)
+    # Representativeness 1c: the card with the voluntary questions, once,
+    # right after the first vote (K1, K2). Only a flag in the own session
+    # here; the proposal page shows the card and marks it as asked.
+    ask = (participants.enabled() and ip.my_vote(proposal, current_user) is None
+           and participants.should_ask(current_user))
     ip.cast_vote(proposal, current_user, choice)
     db.session.commit()
+    if ask:
+        session[PP_ASK] = proposal.id
     return redirect(url_for('issues.proposal', issue_id=issue.id, proposal_id=proposal.id) + '#stemming')
 
 
