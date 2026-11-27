@@ -42,25 +42,44 @@ def _free_port():
         return s.getsockname()[1]
 
 
+def _wait_for(base, token, proc):
+    """Whether our own server (it answers /_ready with its database file)
+    answers within a minute; False when it stopped (its port was taken)."""
+    for _ in range(120):
+        if proc.poll() is not None:
+            return False
+        try:
+            with urllib.request.urlopen(base + '/_ready', timeout=2) as resp:
+                if resp.read().decode() == token:
+                    return True
+        except OSError:
+            pass
+        time.sleep(0.5)
+    return False
+
+
 @pytest.fixture(scope='module')
 def demo_server(tmp_path_factory):
     node_path = _playwright_node_path()
     if shutil.which('node') is None or node_path is None:
         pytest.skip('node with the playwright package is not available')
-    port = _free_port()
-    db_file = tmp_path_factory.mktemp('overflow') / 'demo.sqlite3'
-    proc = subprocess.Popen([sys.executable, os.path.join(HERE, 'browser', 'serve_demo.py'), str(db_file), str(port)],
-                            cwd=PROJECT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    base = f'http://127.0.0.1:{port}'
+    # Every pytest-xdist worker starts its own server on its own free port. The
+    # port is free when chosen but taken only after the demo seed, so another
+    # worker could take it first: then this server stops and a new port is tried.
+    proc, base = None, None
+    for _attempt in range(3):
+        port = _free_port()
+        db_file = tmp_path_factory.mktemp('overflow') / 'demo.sqlite3'
+        proc = subprocess.Popen([sys.executable, os.path.join(HERE, 'browser', 'serve_demo.py'), str(db_file),
+                                 str(port)], cwd=PROJECT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        base = f'http://127.0.0.1:{port}'
+        if _wait_for(base, str(db_file), proc):
+            break
+        proc.terminate()
+        proc.wait(timeout=10)
+    else:
+        pytest.fail('the demo server did not start')
     try:
-        for _ in range(120):
-            try:
-                urllib.request.urlopen(base + '/', timeout=2)
-                break
-            except OSError:
-                time.sleep(0.5)
-        else:
-            pytest.fail('the demo server did not start')
         yield base, node_path
     finally:
         proc.terminate()

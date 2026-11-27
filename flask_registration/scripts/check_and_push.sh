@@ -14,8 +14,14 @@
 #   - the commit or the tracked files changed while the suite was running.
 # The full pytest output goes to .check_and_push.log; only the last lines
 # are shown. The test order is random (pytest-randomly, requirements-dev.txt):
-# the script picks the seed, shows it before the run and again on a red run,
-# to repeat exactly that order.
+# the script picks the seed, shows it before the run, writes it at the top of
+# the log and shows it again on a red run, to repeat exactly that order.
+#
+# The suite runs in parallel (pytest-xdist, -n auto: one worker per core, each
+# with its own order from the same seed). Emergency brake: GUF_SERIAL=1 runs
+# it in one process, as before:
+#
+#     GUF_SERIAL=1 scripts/check_and_push.sh
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -48,18 +54,32 @@ fi
 HEAD_BEFORE=$(git rev-parse HEAD)
 BRANCH=$(git branch --show-current)
 SEED=$("$PY" -c 'import random; print(random.randrange(1, 2**31))')
-echo "Running the full suite on $(git log --oneline -1), test order seed $SEED (log: $LOG) ..."
+
+if [ "${GUF_SERIAL:-}" = "1" ]; then
+    PARALLEL=()
+    MODE="serial (GUF_SERIAL=1)"
+else
+    if ! "$PY" -c 'import xdist' 2>/dev/null; then
+        echo "Stopped: pytest-xdist is missing; pip install -r requirements-dev.txt (or GUF_SERIAL=1)." >&2
+        exit 1
+    fi
+    PARALLEL=(-n auto)
+    MODE="parallel (-n auto)"
+fi
+echo "Running the full suite on $(git log --oneline -1), $MODE, test order seed $SEED (log: $LOG) ..."
 
 # pytest's own exit code, not that of a pipe: no pipe at all.
 status=0
-"$PY" -m pytest -q -p no:cacheprovider -p randomly --randomly-seed="$SEED" >"$LOG" 2>&1 || status=$?
+echo "Test order seed: $SEED, $MODE" >"$LOG"
+"$PY" -m pytest -q -p no:cacheprovider -p randomly --randomly-seed="$SEED" ${PARALLEL[@]+"${PARALLEL[@]}"} \
+    >>"$LOG" 2>&1 || status=$?
 
 tail -n "$TAIL_LINES" "$LOG"
 
 if [ "$status" -ne 0 ]; then
     echo "Stopped: pytest exited with $status; nothing pushed. Failures:" >&2
     grep '^FAILED\|^ERROR' "$LOG" >&2 || true
-    echo "Test order seed: $SEED (repeat: $PY -m pytest -p no:cacheprovider --randomly-seed=$SEED)" >&2
+    echo "Test order seed: $SEED (repeat: $PY -m pytest -p no:cacheprovider --randomly-seed=$SEED ${PARALLEL[*]:-})" >&2
     exit "$status"
 fi
 

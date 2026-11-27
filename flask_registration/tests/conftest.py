@@ -26,7 +26,10 @@ import tempfile
 import pytest
 from itsdangerous import URLSafeTimedSerializer
 
-_TEST_DB_PATH = tempfile.mktemp(suffix=".sqlite3", prefix="guf-test-")
+# One database per process: with pytest-xdist every worker (PYTEST_XDIST_WORKER,
+# gw0, gw1, ...) imports this file itself and gets its own file.
+_WORKER = os.environ.get("PYTEST_XDIST_WORKER", "main")
+_TEST_DB_PATH = tempfile.mktemp(suffix=".sqlite3", prefix=f"guf-test-{_WORKER}-")
 
 # Stel testomgeving in vóór de import van de app — DATABASE_URL wijst al
 # hier naar het sqlite-testbestand (leeg zou terugvallen op de MySQL-branch
@@ -132,6 +135,23 @@ def _fresh_rate_limits_for_every_test(request):
     yield
 
 
+def _forget_deleted_users():
+    """A safety net for the tests: many cleanups delete a User straight away
+    (db.session.delete), without the app's own route (quality.detach_user).
+    SQLite does not enforce the foreign keys and reuses ids, so a user's
+    notifications and proposal read stamps were left behind and a later user
+    with the same id got them (seen with pytest-xdist, where every worker has
+    its own order). Postgres would refuse such a delete; here those rows go
+    with the user."""
+    from sqlalchemy import event
+    from app.models import IssueProposalRead, Notification, User
+
+    @event.listens_for(User, 'before_delete')
+    def _before_delete(_mapper, connection, target):
+        for table in (Notification.__table__, IssueProposalRead.__table__):
+            connection.execute(table.delete().where(table.c.user_id == target.id))
+
+
 @pytest.fixture(scope="session")
 def app():
     """Maak één Flask-app voor de hele testsessie, met een losse SQLite-file."""
@@ -146,6 +166,7 @@ def app():
         BACKGROUND_FIGURES = False         # tests of that track switch it on themselves
 
     flask_app = create_app_for_tests(TestConfig)
+    _forget_deleted_users()
     from app import limiter
     _LIMITER_STATE.update(vars(limiter), _session_app=flask_app)
 

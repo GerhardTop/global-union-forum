@@ -8,3 +8,6 @@ pytest-mock==3.15.1
 # in the header ("Using --randomly-seed=..."), so an order failure can be
 # repeated with: pytest --randomly-seed=<seed>
 pytest-randomly==5.1.0
+# The suite in parallel: pytest -n auto (one worker per core, each with its own
+# database, temporary folders and demo server); scripts/check_and_push.sh does so.
+pytest-xdist==3.8.0

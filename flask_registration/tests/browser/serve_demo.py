@@ -86,6 +86,14 @@ with app.app_context():
     content_jobs.backfill(limit=100000, client=_FakeTranslator())
 
 
+@app.route('/_ready')
+def _ready():
+    """Which server this is (its database file): with pytest-xdist several
+    demo servers run at once, each on its own port; the fixture waits for
+    its own answer, not for any server on that port."""
+    return db_file
+
+
 @app.route('/_as_admin')
 def _as_admin():
     from flask import redirect, request, session
