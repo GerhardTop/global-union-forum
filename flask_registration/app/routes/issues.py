@@ -190,15 +190,17 @@ def show(issue_id):
     # Representativeness 1d: who voted, frozen at the end of the voting phase (one query).
     stats = participants.stats_for(issue.id)
     participation = participants.stats_view(stats, i18n.current()) if stats is not None else None
+    final = ip.final_proposal(issue)
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
                            participation=participation,
+                           vote_tallies=_vote_tallies([p for p, _c in proposal_rows] + ([final] if final else [])),
                            big_facts=_enlarged_facts(visible),
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
                            proposal_rows=proposal_rows, proposals_shown=COCKPIT_PROPOSALS,
                            reaction_counts=reaction_counts, new_discussion=new_discussion, big=big,
                            proposal_total=ip.regular_query(issue).count(),
-                           final=ip.final_proposal(issue), can_make_final=ip.can_make_final(issue, current_user),
+                           final=final, can_make_final=ip.can_make_final(issue, current_user),
                            can_propose=ip.can_propose(issue, current_user),
                            # P7: "Fasen beheren" in de cockpit alleen voor de initiatiefnemer.
                            can_step=lifecycle.can_step(issue, current_user) and lifecycle.is_initiator(issue, current_user),
@@ -468,6 +470,7 @@ def proposal(issue_id, proposal_id):
         rail_proposals.insert(0, (final, ip.support_counts([final.id]).get(final.id, 0)))
     reaction_counts, new_discussion = _reaction_stats([p for p, _c in rail_proposals])
     rail_versions = {p.id: ip.current_version(p) for p, _c in rail_proposals}
+    vote_tallies = _vote_tallies([p for p, _c in rail_proposals] + [proposal])
     _preload_translations(issue, proposal)  # after the last commit (a commit empties the cache)
     from app import background_figures
     chart_views = background_figures.chart_cards(issue_facts, i18n.current())
@@ -481,7 +484,8 @@ def proposal(issue_id, proposal_id):
                            can_unlink=lambda row: ip.can_unlink(row, current_user),
                            candidates=[f for f in issue_facts if f.id not in linked_ids],
                            can_add_fact=_can_add_fact(issue),
-                           vote=_vote_context(proposal, count, ask_participant, participant_saved),
+                           vote=_vote_context(proposal, count, ask_participant, participant_saved, vote_tallies),
+                           vote_tallies=vote_tallies,
                            versions=_versions_with_reactions(proposal), current_version=ip.current_version(proposal),
                            can_react=_can_react(issue), remaining=issues.remaining(issue),
                            rail_facts=fact_signals.listing(issue_facts, order='kwaliteit'),
@@ -566,7 +570,14 @@ def _participant_flags(proposal):
     return ask, saved
 
 
-def _vote_context(proposal, count, ask_participant=False, participant_saved=False):
+def _vote_tallies(proposals):
+    """The vote counts of the proposals on a page whose voting is over, in one
+    query (issue_proposals.tallies); None while nothing is over (no query)."""
+    ids = {p.id for p in proposals if ip.voting_over(p)}
+    return ip.tallies(ids) if ids else None
+
+
+def _vote_context(proposal, count, ask_participant=False, participant_saved=False, tallies=None):
     """Alles voor de stemming op het detail (stap 6). Representativeness 1c:
     the questions of the card after the first vote (ask_participant) or the
     thank-you line after saving them (participant_saved)."""
@@ -574,6 +585,8 @@ def _vote_context(proposal, count, ask_participant=False, participant_saved=Fals
     show = ip.show_tally(proposal, count)
     can_vote = ip.can_vote(proposal, current_user, count)
     over = ip.voting_over(proposal)
+    # After voting the page's counts (one query for all its proposals), else this proposal's own.
+    counts = (tallies or {}).get(proposal.id) or ip.tally(proposal)
     return {# Representativeness 1d: the line "n participants in this issue · Who voted"
             # under the result (one query; not for the summary proposal).
             'participation': (participants.stats_for(proposal.issue_id)
@@ -584,8 +597,8 @@ def _vote_context(proposal, count, ask_participant=False, participant_saved=Fals
             'open': ip.voting_open(proposal, count), 'over': over,
             'on_list': ip.on_list(proposal, count), 'can_vote': can_vote,
             'mine': ip.my_vote(proposal, current_user), 'show': show,
-            'result': ip.result(proposal) if show else None,
-            'voters': sum(ip.tally(proposal).values()),
+            'result': ip.result(proposal, counts) if show else None,
+            'voters': sum(counts.values()),
             'final_end': ip.final_voting_end(proposal) if proposal.is_final else None,
             'voter_min': status.get_thresholds()['voter_min']}
 

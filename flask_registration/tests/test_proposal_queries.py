@@ -276,3 +276,64 @@ def test_queries_with_who_voted(app, db, make_user, monkeypatch, who):
     for n in (1, 5):
         for page in ('issue', 'issue enlarged', 'proposal'):
             assert counts[(n, page, True)] == counts[(n, page, False)] + PARTICIPATION_QUERIES, (n, page, counts)
+
+
+# After voting (the follow-up phase) every proposal shows its result. The
+# votes of all proposals on the page are counted in one query
+# (issue_proposals.tallies), so the pages do a fixed number of queries.
+AFTER_VOTING_SIZES = (2, 6)
+AFTER_VOTING_COUNTS = {}   # filled by the test below, for the report
+# The fixed counts per page (before: 2 more per proposal, 40 and 48 on the
+# issue page for a visitor at 2 and 6 proposals).
+AFTER_VOTING_EXPECTED = {
+    'visitor': {'issue': 35, 'issue enlarged': 35, 'proposal': 40, 'proposal without votes': 38},
+    'member': {'issue': 49, 'issue enlarged': 49, 'proposal': 55, 'proposal without votes': 53},
+}
+
+
+def _after_voting_world(db, make_user, n):
+    """n proposals with two votes each, plus one on the voting list without any
+    vote (its result: no valid votes), in the follow-up phase."""
+    issue, proposals, member = _world(db, make_user, n)
+    empty = ip.create(issue, issue.created_by, 'Stelling zonder stemmen.', 'Toelichting.', lang='nl')
+    db.session.flush()
+    db.session.add(IssueProposalSupport(proposal_id=empty.id, user_id=member.id))
+    issue.phase, issue.support_threshold = 'vervolg', 1
+    db.session.commit()
+    return issue, proposals, member, empty
+
+
+@pytest.mark.parametrize('who', ['visitor', 'member'])
+def test_queries_after_voting_do_not_grow(app, db, make_user, who):
+    from app.models import User
+    counts, made = {}, []
+    try:
+        for n in AFTER_VOTING_SIZES:
+            issue, proposals, member, empty = _after_voting_world(db, make_user, n)
+            made.append(issue.id)
+            user_id = member.id if who == 'member' else None
+            pages = PAGES(issue, proposals) + (('proposal without votes', f'/vraagstuk/{issue.id}/voorstel/{empty.id}'),)
+            for page, path in pages:
+                client = _client(app, db.session.get(User, user_id) if user_id else None, 'nl')
+                _req(client, 'GET', path)
+                db.session.commit()
+                db.session.expunge_all()
+                with _count_queries() as queries:
+                    resp = _req(client, 'GET', path)
+                html = resp.get_data(as_text=True)
+                assert resp.status_code == 200
+                # The results are right: the proposals with votes 50% for, the empty one without valid votes.
+                assert 'Verworpen, geen geldige stemmen' in html or page == 'proposal', page
+                if page == 'proposal without votes':
+                    assert 'Er zijn geen geldige stemmen uitgebracht.' in html
+                if page == 'proposal':
+                    assert '50% voor, 50% tegen (van de geldige stemmen)' in html
+                counts[(n, page)] = len(queries)
+    finally:
+        for issue_id in made:
+            _cleanup(issue_id)
+    AFTER_VOTING_COUNTS[who] = counts
+    print(f'\nafter voting query counts ({who}):', counts)
+    for page in ('issue', 'issue enlarged', 'proposal', 'proposal without votes'):
+        assert counts[(2, page)] == counts[(6, page)], (page, counts)
+        assert counts[(2, page)] == AFTER_VOTING_EXPECTED[who][page], (page, counts)

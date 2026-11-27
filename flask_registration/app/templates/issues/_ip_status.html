@@ -3,9 +3,10 @@
   De status van een voorstel onder een vraagstuk: verzamelt steun (x van n)
   in de feitenfase, daarna op de stemlijst of niet op de stemlijst, en na het
   stemmen de uitslag. Het samenvattende voorstel: stemmen tot, daarna de uitslag.
-  Context: proposal, count (aantal steunbetuigingen).
+  Context: proposal, count (aantal steunbetuigingen); vote_tallies (optional:
+  the counts of all proposals on the page after voting, one query).
 #}
-{% set st = ip_status(proposal, count) %}
+{% set st = ip_status(proposal, count, vote_tallies | default(none)) %}
 {% if st[0] in ('aangenomen', 'verworpen') %}
 <span class="gu-ip-status gu-ip-status--{{ st[0] }}">
   {%- if st[1].pct_for is none -%}{{ _('Rejected, no valid votes') }}

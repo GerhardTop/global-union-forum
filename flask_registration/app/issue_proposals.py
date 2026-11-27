@@ -141,7 +141,7 @@ def on_list(proposal, count):
     return bool(proposal.is_final) or count >= proposal.issue.support_threshold
 
 
-def status(proposal, count):
+def status(proposal, count, tallies=None):
     """(sleutel, info) voor het statuslabel; de template maakt er tekst van.
     Gewoon voorstel: 'steun' (aantal, drempel) in de feitenfase, daarna
     'niet_op_lijst' (aantal, drempel) of 'stemlijst'; na het stemmen de
@@ -149,7 +149,8 @@ def status(proposal, count):
     'ultiem_stemmen' (einddatum) tijdens de stemming, daarna de uitslag."""
     if on_list(proposal, count):
         if voting_over(proposal):
-            res = result(proposal)
+            # tallies: the counts of every proposal on the page, from one query.
+            res = result(proposal, tallies.get(proposal.id) if tallies is not None else None)
             return ('aangenomen' if res['adopted'] else 'verworpen'), res
         if proposal.is_final:
             return 'ultiem_stemmen', final_voting_end(proposal)
@@ -411,11 +412,26 @@ def tally(proposal):
     return counts
 
 
+def tallies(proposal_ids):
+    """{proposal_id: {choice: n}} for every id, all VOTE_CHOICES (0 when there
+    are no votes), in one query: the results of a whole page after voting."""
+    ids = list(proposal_ids)
+    out = {pid: dict.fromkeys(VOTE_CHOICES, 0) for pid in ids}
+    if ids:
+        for pid, choice, n in (db.session.query(IssueProposalVote.proposal_id, IssueProposalVote.choice,
+                                                func.count(IssueProposalVote.id))
+                               .filter(IssueProposalVote.proposal_id.in_(ids))
+                               .group_by(IssueProposalVote.proposal_id, IssueProposalVote.choice)):
+            if choice in out[pid]:
+                out[pid][choice] = int(n)
+    return out
+
+
 def result(proposal, counts=None):
     """De uitslag: aantallen, percentage voor en tegen van de geldige stemmen
     (None zonder geldige stemmen) en of het voorstel is aangenomen."""
     from app.proposals import for_pct
-    counts = counts or tally(proposal)
+    counts = counts if counts is not None else tally(proposal)
     pct = for_pct(counts['voor'], counts['tegen'])
     threshold = proposal.issue.proposal_threshold_pct
     return {'counts': counts, 'total': sum(counts.values()), 'pct_for': pct,
