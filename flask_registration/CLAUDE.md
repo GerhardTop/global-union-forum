@@ -14,7 +14,7 @@ Wanneer een taak vereist dat de gebruiker zelf iets buiten de chat doet (een wac
 
 ## Werkregels
 
-Wijzig geen code terwijl de volledige suite draait. Commit alleen als de laatste volledige run op precies de te committen code groen is; bij een rode run eerst de oorzaak vinden, ook als die buiten de wijziging lijkt te liggen.
+Tijdens het werk draai je alleen de tests die bij je wijziging horen: de nieuwe en aangepaste testbestanden en de bestaande tests van de modules die je raakt. De volledige suite draai je alleen via `scripts/check_and_push.sh`, dat hem vóór het pushen draait op precies de gecommitte code. Wordt het script rood, dan los je het op (ook als de oorzaak buiten de wijziging lijkt te liggen) en draai je het script opnieuw. Wijzig geen code terwijl het script draait.
 
 De tests draaien in willekeurige volgorde (pytest-randomly; installeer de testtools met `pip install -r requirements-dev.txt`). Een test mag dus niet afhangen van wat een andere test achterlaat: maak eigen data met unieke teksten, ruim op wat je commit, en tel op gedeelde overzichten (zoals `/moderator`) alleen je eigen items (`?alle=1`, of de toename). tests/conftest.py begint elke test met een lege `flask.g`, een lege databasesessie, lege rate-limit-tellers en een leeg geheugen van afgewezen OWID-grafieken. Faalt een run, dan staat de seed in de uitvoer ("Using --randomly-seed=..."; het script toont hem bij rood); herhaal precies die volgorde met `pytest --randomly-seed=<seed>`.
 
