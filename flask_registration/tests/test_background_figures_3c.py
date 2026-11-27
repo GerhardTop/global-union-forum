@@ -157,16 +157,16 @@ def _chart_page(app, issue, chart, query='', lang='nl', user=None):
 def test_the_snapshot_keeps_the_selection_and_the_flag_labels(app, db, make_user, made, both, watched, catalog):
     _issue_row, chart, _props = _eurostat_published(db, make_user, made)
     snapshot = chart.current_snapshot
-    assert snapshot.label_texts == {'selection': 'Percentage of population in the labour force',
-                                    'flag:b': 'break in time series', 'flag:d': 'definition differs (see metadata)'}
-    assert content_i18n.label_fields(snapshot) == ['label:flag:b', 'label:flag:d', 'label:selection']
+    # Only the unit was chosen, and the unit has its own line: no selection.
+    assert snapshot.label_texts == {'flag:b': 'break in time series', 'flag:d': 'definition differs (see metadata)'}
+    assert content_i18n.label_fields(snapshot) == ['label:flag:b', 'label:flag:d']
     assert content_i18n.original(snapshot, 'label:flag:b') == 'break in time series'
     assert content_i18n.field_kind(snapshot, 'label:selection') == 'short'
     # They go through the translation route with the fact, as short fields.
     from app import content_jobs
     parts = {(type(obj).__name__, field) for obj, field in content_jobs._parts(db.session.get(
         type(chart.post), chart.post_id))}
-    assert {('ChartSnapshot', 'label:selection'), ('ChartSnapshot', 'label:flag:b')} <= parts
+    assert {('ChartSnapshot', 'label:flag:b'), ('ChartSnapshot', 'label:flag:d')} <= parts
 
 
 def test_the_card_names_eurostat(app, db, make_user, made, both, watched, catalog):
@@ -188,7 +188,8 @@ def test_the_chart_page_for_eurostat(app, db, make_user, made, both, watched, ca
     assert '>Eurostat (tps00203), laatst bijgewerkt op 6 nov 2026</a> <span aria-hidden="true">·</span> Opgehaald op' \
         in page
     assert '<dt>Bron</dt><dd>Eurostat (tps00203), laatst bijgewerkt op 6 nov 2026</dd>' in page
-    assert '<dt>Selectie</dt>' in page and 'Percentage of population in the labour force</p>' in page
+    # Only the unit was chosen: it stands under "Unit", there is no line "Selection".
+    assert '<dt>Selectie</dt>' not in page and 'Percentage of population in the labour force</p>' in page
     assert 'zoals de bron het levert' in page
     assert 'CC BY 4.0, met bronvermelding' in page
     assert 'Eurostat is niet verantwoordelijk voor vertalingen of bewerkingen van zijn cijfers op deze site.' in page
@@ -238,12 +239,11 @@ def test_the_notes_and_selection_in_a_translation(app, db, make_user, made, both
     _issue_row, chart, _props = _eurostat_published(db, make_user, made)
     snapshot = chart.current_snapshot
     content_i18n.set_translation(snapshot, 'label:flag:b', 'de', 'Bruch in der Zeitreihe', is_machine=True)
-    content_i18n.set_translation(snapshot, 'label:selection', 'de', 'Prozent der Erwerbspersonen', is_machine=True)
     db.session.commit()
     issue = chart.issue
     page = _chart_page(app, issue, chart, '?weergave=tabel', lang='de').get_data(as_text=True)
     assert '<span class="gu-sr-only"> (Bruch in der Zeitreihe)</span>' in page
-    assert 'Prozent der Erwerbspersonen' in page and 'Bruch in der Zeitreihe' in page
+    assert 'Bruch in der Zeitreihe' in page
     assert 'Eurostat (tps00203), letzte Aktualisierung' in page
 
 
@@ -273,3 +273,73 @@ def test_queries_of_a_eurostat_chart_page_do_not_grow(app, db, make_user, made, 
             assert _req(client, 'GET', path).status_code == 200
         counts[n] = len(queries)
     assert counts[1] == counts[5] == counts[20], counts
+
+
+# ── Selection without the unit ───────────────────────────────────────────
+
+def _table(dims):
+    """A minimal JSON-stat structure: {dimension: [(code, label)]}."""
+    return {'id': list(dims) + ['geo', 'time'],
+            'dimension': {d: {'label': d, 'category': {'index': {c: i for i, (c, _l) in enumerate(v)},
+                                                       'label': dict(v)}} for d, v in dims.items()}}
+
+
+def test_the_selection_leaves_the_unit_out():
+    data = _table({'freq': [('A', 'Annual')], 'indic_bt': [('PRC_PRR', 'Producer prices')],
+                   'sex': [('T', 'Total')], 'unit': [('I21', 'Index, 2021=100')]})
+    assert eurostat.selection_text(data, {'unit': 'I21'}) == ''
+    assert eurostat.selection_text(data, {'unit': 'I21', 'indic_bt': 'PRC_PRR'}) == 'Producer prices'
+    assert eurostat.selection_text(data, {'sex': 'T', 'unit': 'I21', 'indic_bt': 'PRC_PRR'}) == \
+        'Producer prices; Total'
+    assert eurostat.selection_text(data, {}) == ''
+
+
+def test_existing_selections_are_computed_again(app, db, make_user, made, both, watched, catalog):
+    from app.models import FactChart
+    # Two charts published before this change, with the unit in their selection.
+    _i1, only_unit, _p = _eurostat_published(db, make_user, made)
+    _i2, with_sex, _p = _eurostat_published(db, make_user, made)
+    with_sex.filters = json.dumps({'sex': 'T', 'unit': 'PC_ACT'})
+    for chart in (only_unit, with_sex):
+        snapshot = chart.current_snapshot
+        snapshot.labels = json.dumps(dict(snapshot.label_texts,
+                                          selection='Percentage of population in the labour force'))
+        db.session.flush()
+        content_i18n.set_translation(snapshot, 'label:selection', 'nl', 'Percentage van de beroepsbevolking',
+                                     is_machine=True)
+        content_i18n.set_translation(snapshot, 'label:flag:b', 'nl', 'breuk in tijdreeks', is_machine=True)
+    db.session.commit()
+    ids = {only_unit.id, with_sex.id}
+    assert bf.refresh_selection_labels() >= 2
+    db.session.expire_all()
+    content_i18n.clear_cache()
+    charts = {c.id: c for c in FactChart.query.filter(FactChart.id.in_(ids))}
+    first, second = charts[only_unit.id].current_snapshot, charts[with_sex.id].current_snapshot
+    assert 'selection' not in first.label_texts and 'flag:b' in first.label_texts
+    assert second.label_texts['selection'] == 'Total'
+    # The old translation of the selection is gone (translated again by the route), the flags' stay.
+    for snapshot in (first, second):
+        assert content_i18n.text_for(snapshot, 'label:selection', 'nl') is None
+        assert content_i18n.text_for(snapshot, 'label:flag:b', 'nl') == 'breuk in tijdreeks'
+    from app import content_jobs
+    assert (second, 'label:selection', 'nl') in content_jobs.missing(db.session.get(type(with_sex.post),
+                                                                                      with_sex.post_id))
+    # The page: no line for the first, only the other dimension for the second.
+    page = _chart_page(app, charts[only_unit.id].issue, charts[only_unit.id]).get_data(as_text=True)
+    assert '<dt>Selectie</dt>' not in page
+    page = _chart_page(app, charts[with_sex.id].issue, charts[with_sex.id]).get_data(as_text=True)
+    selection = page[page.index('<dt>Selectie</dt>'):]
+    assert 'Total</p>' in selection[:selection.index('</dd>')]
+    assert 'Percentage of population' not in selection[:selection.index('</dd>')]
+    # Idempotent.
+    assert bf.refresh_selection_labels() == 0
+
+
+def test_owid_snapshots_are_left_alone(app, db, make_user, made, started, watched):
+    from tests.test_chart_page import _get, _published
+    issue, chart, _props = _published(db, make_user, made)
+    bf.refresh_selection_labels()
+    db.session.expire_all()
+    assert chart.current_snapshot.labels is None
+    page = _get(app, issue, chart).get_data(as_text=True)
+    assert '<dt>Selectie</dt>' not in page and 'via Our World in Data' in page

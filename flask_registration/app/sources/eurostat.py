@@ -475,13 +475,20 @@ def parse(data, code):
     )
 
 
+# Dimensions left out of "Selection": shown elsewhere under "About these figures"
+# (the unit has its own line).
+SELECTION_SKIP = ('unit',)
+
+
 def selection_text(data, filters):
     """The English labels of the chosen value per dimension (step 3c), in
     the order of the table's dimensions, joined by "; "; '' without filters.
-    Only the dimensions that had several values (the keys of filters)."""
+    Only the dimensions that had several values (the keys of filters), and
+    not the unit (SELECTION_SKIP), which has its own line."""
     ids = data.get('id') or []
+    filters = {k: v for k, v in (filters or {}).items() if k not in SELECTION_SKIP}
     out = []
-    for dim in [d for d in ids if d in (filters or {})] + [d for d in (filters or {}) if d not in ids]:
+    for dim in [d for d in ids if d in filters] + [d for d in filters if d not in ids]:
         labels = dict(_labels(data, dim))
         out.append(str(labels.get(filters[dim]) or filters[dim]).strip())
     return '; '.join(t for t in out if t)[:300]

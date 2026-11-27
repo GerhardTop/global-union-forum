@@ -81,7 +81,7 @@ def _chart_facts(issue, proposals):
               encoding='utf-8') as f:
         data = json.load(f)
     parsed = eurostat.parse(data, 'tps00203')
-    parsed.labels = dict(parsed.labels, selection=eurostat.selection_text(data, {'unit': 'PC_ACT'}))
+    parsed.labels = dict(parsed.labels, selection='Total')   # as for a dimension other than the unit
     accepted.append(bf.Accepted(slug='tps00203', parsed=parsed, metadata=eurostat.metadata_of(data),
                                 keys=['POL', 'FRA', 'DEU'], average_key='eurostat:EU27_2020', year_from=2016,
                                 year_to=2025, reason='Reason eurostat.', proposal_ids=[p.id for p in proposals[:2]],

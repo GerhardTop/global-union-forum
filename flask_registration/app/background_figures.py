@@ -822,8 +822,9 @@ def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None, prep
             _fell_away(slug, exc.reason, notes, reasons, exc.detail)
             return None
         metadata, filters = eurostat.metadata_of(ready.data), ready.filters
-        if filters:   # step 3c: "Selection" under "About these figures"
-            parsed.labels = dict(parsed.labels or {}, selection=eurostat.selection_text(ready.data, filters))
+        selection = eurostat.selection_text(ready.data, filters)   # step 3c: "Selection", without the unit
+        if selection:
+            parsed.labels = dict(parsed.labels or {}, selection=selection)
         by_name = _eurostat_names(parsed)
     else:
         try:
@@ -1476,6 +1477,48 @@ def refresh_eurostat_catalog(now=None, http=None):
         return 'fresh'
     count = eurostat.refresh_catalog(http=http, now=now)
     return 'failed' if count is None else count
+
+
+def refresh_selection_labels():
+    """At start (idempotent): the "selection" label of every Eurostat
+    snapshot computed again from the chart's filters and the snapshot's
+    metadata_raw (since 3c without the unit). A changed label loses its
+    translations, so the translation route translates it again; an empty
+    one is removed (no line "Selection"). A snapshot whose filters or
+    metadata cannot be read stays as it is. The number changed."""
+    from app import content_i18n
+    from app.models import FactChart
+    from app.sources import eurostat
+    changed = 0
+    for chart in FactChart.query.filter_by(source='eurostat'):
+        try:
+            filters = json.loads(chart.filters) if chart.filters else {}
+        except ValueError:
+            continue
+        if not isinstance(filters, dict):
+            continue
+        for snapshot in chart.snapshots:
+            try:
+                metadata = json.loads(snapshot.metadata_raw) if snapshot.metadata_raw else None
+            except ValueError:
+                metadata = None
+            if not isinstance(metadata, dict) or not metadata.get('id'):
+                continue
+            labels = snapshot.label_texts
+            new = eurostat.selection_text(metadata, filters)
+            if labels.get('selection', '') == new:
+                continue
+            if new:
+                labels['selection'] = new
+            else:
+                labels.pop('selection', None)
+            snapshot.labels = json.dumps(labels, ensure_ascii=False, sort_keys=True) if labels else None
+            content_i18n.invalidate(snapshot, 'label:selection')
+            changed += 1
+    if changed:
+        db.session.commit()
+        log.info('Background figures: %d Eurostat selection labels computed again', changed)
+    return changed
 
 
 def dry_run(issue, client=None, http=None, trigger='issue'):

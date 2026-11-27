@@ -166,6 +166,9 @@ def _migrate_columns():
     # content_i18n.delete_for): remove them (idempotent, logged per type).
     from app import content_i18n
     content_i18n.remove_orphans()
+    # Eurostat display: "Selection" without the unit (idempotent).
+    from app import background_figures
+    background_figures.refresh_selection_labels()
     _migrate_username_and_backfill(insp, existing, is_pg)
     # Na alle kolommigraties: de backfill gebruikt de ORM op Proposal en Thread.
     from app import issues
