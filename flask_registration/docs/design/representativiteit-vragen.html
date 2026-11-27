@@ -1,0 +1,125 @@
+<!doctype html>
+<!--
+  Design-referentie (artboard "1. Vragen bij de eerste stem" op het canvas
+  "Representativiteit, vragen bij de eerste stem en wie stemde mee"). Statisch,
+  alleen om naar te kijken en naartoe te bouwen; geen app-code. VOORBEELDDATA.
+  Spec: docs/representativiteit.md (K1 tot en met K6, Weergave). Leidend zijn de
+  vormgeving, de volgorde, de teksten en het gedrag hieronder; de markup van de
+  app (issues/_ip_vote.html, kit.css) blijft de basis voor het stemblok zelf.
+  - De kaart staat in het stemblok op de voorstelpagina, onder de bevestiging
+    van de stem. Hij verschijnt EEN keer: direct na de eerste stem op een
+    voorstel van een vraagstuk (participant_profiles.asked_at leeg). De stem
+    is dan al opgeslagen; de vragen zijn nooit een voorwaarde.
+  - Vier vragen, elk met "Zeg ik liever niet", leeg laten mag: geboortejaar
+    (keuzelijst van "1920 of eerder" tot het jaar waarin je 17 wordt), geslacht
+    en opleiding (keuzerondjes in knopvorm, opleiding met uitleg per niveau),
+    land (keuzelijst uit de landenlijst; vooraf ingevuld met Mijn land).
+  - Knoppen: Opslaan (primair) en Overslaan. Na allebei komt de kaart niet
+    terug; daarna alleen via het profiel (Over mij).
+  - Na opslaan vervangt de groene regel de kaart (onderaan getoond).
+  - Werkt zonder JavaScript (gewoon formulier, terug naar #stemming). Op mobiel
+    staan de keuzes onder elkaar (de opleiding in een kolom).
+  - Hier zijn als voorbeeld 1987, Hoger en Nederland gekozen; de keuzelijsten
+    tonen hier maar een paar jaren en landen.
+  - De app toont het geboortejaar en de leeftijd nergens, behalve in het eigen
+    profiel.
+-->
+<html lang="nl">
+<head>
+<meta charset="utf-8"><title>Vragen bij de eerste stem</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
+<style>
+body{margin:0;background:#eef1f5}
+a{color:#1b74b8}a:hover{color:#155e96}
+.opt{position:relative;display:inline-flex}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.opt span{display:inline-flex;align-items:center;min-height:40px;box-sizing:border-box;padding:8px 14px;border:1px solid #d3dae2;border-radius:999px;background:#fff;color:#141b22;font-size:14px;font-weight:500;cursor:pointer}
+.opt input:checked + span{background:#eaf2fb;border-color:#1b74b8;color:#1b5e9a}
+.opt input:focus-visible + span{outline:2px solid #3ab0f0;outline-offset:2px}
+.edu span{flex-direction:column;align-items:flex-start;border-radius:10px;padding:10px 14px;gap:2px}
+.edu small{font-size:12px;font-weight:400;color:#525c69}
+</style>
+</head>
+<body>
+<div style="width:760px;box-sizing:border-box;padding:24px;font-family:Inter,system-ui,sans-serif;color:#141b22">
+<section aria-labelledby="voteTitle" style="background:#fff;border:1px solid #e4e9ef;border-radius:14px;box-shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05);padding:22px 24px;display:flex;flex-direction:column;gap:14px">
+<h2 id="voteTitle" style="margin:0;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#1b74b8">Stemming</h2>
+<p style="margin:0;font-weight:600;font-size:16px;line-height:1.45">De EU richt een gezamenlijke defensiemacht op, naast de nationale legers.</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<button type="button" aria-pressed="true" style="padding:8px 16px;border:1px solid #11633d;border-radius:999px;background:#e3f3ea;color:#11633d;font:500 14px Inter,system-ui,sans-serif">Voor</button>
+<button type="button" aria-pressed="false" style="padding:8px 16px;border:1px solid #e4e9ef;border-radius:999px;background:#fff;color:#141b22;font:500 14px Inter,system-ui,sans-serif">Tegen</button>
+<button type="button" aria-pressed="false" style="padding:8px 16px;border:1px solid #e4e9ef;border-radius:999px;background:#fff;color:#141b22;font:500 14px Inter,system-ui,sans-serif">Onthouding</button>
+</div>
+<p style="margin:0;font-size:13px;color:#525c69">Je stem: Voor. Je kunt hem wijzigen tot het stemmen sluit.</p>
+
+<form aria-labelledby="whoTitle" style="margin:4px 0 0;background:#f5f7f9;border:1px solid #e4e9ef;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+<h3 id="whoTitle" style="margin:0;font-size:17px;font-weight:600">Wie stemt er mee?</h3>
+<span style="display:inline-flex;padding:2px 9px;border:1px solid #e4e9ef;border-radius:999px;background:#eef1f5;color:#525c69;font-size:12px;font-weight:500">Vrijwillig</span>
+</div>
+<p style="margin:0;font-size:14px;line-height:1.55;color:#3a434e">Je stem is opgeslagen. Mogen we nog iets vragen? Bij de uitslag laten we zien hoe de groep stemmers is samengesteld, alleen in groepen van minstens 10 mensen. Nooit wie wat stemde.</p>
+<p style="margin:0;font-size:14px;line-height:1.55;color:#3a434e">Je stem telt hoe dan ook. <a href="#privacy">Waarom we dit vragen</a></p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:6px">
+<label for="birthyear" style="font-size:14px;font-weight:600">In welk jaar ben je geboren?</label>
+<select id="birthyear" name="birth_year" style="width:320px;min-height:42px;padding:8px 12px;border:1px solid #d3dae2;border-radius:8px;background:#fff;font:400 14px Inter,system-ui,sans-serif;color:#141b22">
+<option value="">Kies een jaar</option>
+<option value="na">Zeg ik liever niet</option>
+<option value="2009">2009</option>
+<option value="2008">2008</option>
+<option value="1987" selected>1987</option>
+<option value="1920">1920 of eerder</option>
+</select>
+<p style="margin:0;font-size:12px;color:#525c69">We tonen nooit je leeftijd, alleen groepen zoals "25 tot en met 44".</p>
+</div>
+
+<fieldset style="margin:0;padding:0;border:0;display:flex;flex-direction:column;gap:8px">
+<legend style="padding:0;margin:0 0 8px;font-size:14px;font-weight:600">Wat is je geslacht?</legend>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<label class="opt"><input type="radio" name="gender" value="f"><span>Vrouw</span></label>
+<label class="opt"><input type="radio" name="gender" value="m"><span>Man</span></label>
+<label class="opt"><input type="radio" name="gender" value="x"><span>Anders</span></label>
+<label class="opt"><input type="radio" name="gender" value="na"><span>Zeg ik liever niet</span></label>
+</div>
+</fieldset>
+
+<fieldset style="margin:0;padding:0;border:0;display:flex;flex-direction:column;gap:8px">
+<legend style="padding:0;margin:0 0 8px;font-size:14px;font-weight:600">Wat is de hoogste opleiding die je hebt afgerond of nu volgt?</legend>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+<label class="opt edu"><input type="radio" name="edu" value="basic"><span style="width:100%">Basis<small>Lagere school of het eerste deel van de middelbare school</small></span></label>
+<label class="opt edu"><input type="radio" name="edu" value="middle"><span style="width:100%">Middelbaar<small>Middelbare school afgerond, of een beroepsopleiding zoals het mbo</small></span></label>
+<label class="opt edu"><input type="radio" name="edu" value="higher" checked><span style="width:100%">Hoger<small>Hbo of universiteit</small></span></label>
+<label class="opt edu"><input type="radio" name="edu" value="na"><span style="width:100%">Zeg ik liever niet<small>&#160;</small></span></label>
+</div>
+</fieldset>
+
+<div style="display:flex;flex-direction:column;gap:6px">
+<label for="country" style="font-size:14px;font-weight:600">In welk land woon je?</label>
+<select id="country" name="country" style="width:320px;min-height:42px;padding:8px 12px;border:1px solid #d3dae2;border-radius:8px;background:#fff;font:400 14px Inter,system-ui,sans-serif;color:#141b22">
+<option value="">Kies een land</option>
+<option value="na">Zeg ik liever niet</option>
+<option value="BE">België</option>
+<option value="DE">Duitsland</option>
+<option value="NL" selected>Nederland</option>
+</select>
+<p style="margin:0;font-size:12px;color:#525c69">Dit is ook je land bij "Land toevoegen" in de grafieken.</p>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-top:4px">
+<button type="submit" name="action" value="save" style="min-height:40px;padding:8px 16px;border:0;border-radius:8px;background:#1b74b8;color:#fff;font:500 14px Inter,system-ui,sans-serif">Opslaan</button>
+<button type="submit" name="action" value="skip" style="min-height:40px;padding:8px 14px;border:1px solid #d3dae2;border-radius:8px;background:#fff;color:#141b22;font:500 14px Inter,system-ui,sans-serif">Overslaan</button>
+</div>
+<p style="margin:0;font-size:12px;color:#525c69">We vragen dit maar één keer. Je kunt het altijd invullen, wijzigen of wissen in je profiel, onder Over mij.</p>
+</form>
+
+<div style="display:flex;flex-direction:column;gap:6px;padding-top:10px;border-top:1px solid #e4e9ef">
+<p style="margin:0;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#6c7683">Na opslaan (in plaats van de kaart)</p>
+<p role="status" style="margin:0;padding:10px 14px;border:1px solid #d6e8dc;border-radius:10px;background:#f3f8f4;font-size:14px;color:#11633d">Dank je. Je antwoorden staan in je profiel onder Over mij.</p>
+</div>
+<p style="margin:0;font-size:13px;color:#525c69">48 mensen hebben tot nu toe gestemd. De tussenstand wordt getoond als het stemmen sluit.</p>
+</section>
+</div>
+</body>
+</html>

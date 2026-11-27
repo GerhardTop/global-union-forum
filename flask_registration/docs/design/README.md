@@ -21,6 +21,8 @@ De artboards staan als statische referentie-HTML in deze map (`docs/design/`). B
 | Vraagstuk beheren (moderatie) | /moderator/vraagstuk/<id>/beheer | docs/design/beheer.html |
 | Achtergrondcijfer in de feitenkolom (stap 1e) | /vraagstuk/<id> (feitenkolom) | docs/design/achtergrondcijfers-kolom.html |
 | Achtergrondcijfer uitgeklapt, de grafiekpagina (stap 1f) | nieuwe route, wordt in stap 1f bepaald | docs/design/achtergrondcijfers-uitgeklapt.html |
+| Vragen bij de eerste stem (representativiteit, stap 1c) | /vraagstuk/<id>/voorstel/<pid> (stemblok, direct na de eerste stem) | docs/design/representativiteit-vragen.html |
+| Wie stemde mee, bij de uitslag (representativiteit, stap 1d) | /vraagstuk/<id> (cockpit, bij de uitslag) | docs/design/representativiteit-uitslag.html |
 
 Main.html toont nu ook de ingang naar het vraagstukbeheer: in de rechterkolom "Vraagstukken beheren" staat per vraagstuk een Beheer-link naar docs/design/beheer.html. Toegang.html is niet het rollenbeheer, maar de ingang van de verwijder-flow: het Beheer-menu op het vraagstuk (fasen beheren, archiveren, verwijderen). Gebruiker.html (gebruikersmoderatie: waarschuwingen, schorsingen, account verwijderen) is een geplande functie en nog niet gebouwd.
 
