@@ -54,11 +54,15 @@ def make_user(db):
                 synchronize_session=False)
             Post.query.filter(Post.issue_proposal_id.in_(proposal_ids)).update(
                 {Post.issue_proposal_id: None}, synchronize_session=False)
+            from app import issue_proposals as _ip  # the read stamps too (SQLite reuses ids)
+            _ip.delete_reads(proposal_ids)
             IssueProposal.query.filter(IssueProposal.id.in_(proposal_ids)).delete(synchronize_session=False)
         Issue.query.filter(Issue.id.in_(issue_ids)).delete(synchronize_session=False)
     db.session.commit()
+    from app import issue_proposals as _ip
     for uid in made:
         quality.detach_user(uid)
+        _ip.delete_reads(user_id=uid)     # what they read of other proposals
         db.session.delete(db.session.get(User, uid))
     db.session.commit()
     db.session.expunge_all()  # SQLite hergebruikt id's; geen achtergebleven objecten

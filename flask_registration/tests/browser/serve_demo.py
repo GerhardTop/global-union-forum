@@ -12,9 +12,14 @@ import sys
 sys.path.insert(0, os.getcwd())
 db_file, port = sys.argv[1], int(sys.argv[2])
 os.environ['DATABASE_URL'] = f'sqlite:///{db_file}'
-for key, value in (('SECRET_KEY', 'test-only'), ('RESEND_API_KEY', 'fake'), ('ANTHROPIC_API_KEY', ''),
+for key, value in (('SECRET_KEY', 'test-only'), ('RESEND_API_KEY', 'fake'),
                    ('GOOGLE_CLIENT_ID', 'fake'), ('GOOGLE_CLIENT_SECRET', 'fake')):
     os.environ.setdefault(key, value)
+# Never the AI, also not with the key the suite sets (conftest: "fake") or one
+# from .env: without a key quality._client() makes no client, so a translation
+# on request or after saving fails at once instead of waiting on the network
+# (a slow answer kept the browser checks from reaching "networkidle").
+os.environ['ANTHROPIC_API_KEY'] = ''
 
 import app.quality as quality  # noqa: E402
 quality.schedule_judgement = lambda *a, **k: None   # no AI calls
