@@ -48,4 +48,6 @@ def tik():
     # BACKGROUND_FIGURES; with the switch off this does nothing).
     from app import background_figures
     result['charts'], result['charts_failed'] = background_figures.backfill()
+    # Step 3a: the catalogue of Eurostat's main tables, once a week.
+    result['eurostat_catalog'] = background_figures.refresh_eurostat_catalog()
     return jsonify(result)

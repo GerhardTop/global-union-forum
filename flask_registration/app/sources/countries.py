@@ -2,7 +2,9 @@
 (app/data/landenlijst_data.json). Our World in Data uses ISO3 codes for
 countries (NLD) and codes of its own for regions (OWID_WRL) and for Kosovo
 (OWID_KOS). app/data/iso3_iso2.json was generated once from pycountry, plus
-OWID_KOS; pycountry is no runtime dependency."""
+OWID_KOS; pycountry is no runtime dependency. Eurostat (step 3a) gets the
+same keys: its countries as ISO3 (EL and UK as GRC and GBR), its aggregates
+as "eurostat:<code>", which are no country of our list."""
 import json
 import os
 from functools import lru_cache

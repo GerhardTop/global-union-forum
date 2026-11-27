@@ -58,6 +58,9 @@ class ParsedChart:
     years: list = field(default_factory=list)       # every year with at least one value, sorted
     series: dict = field(default_factory=dict)      # {key: {year: value}}
     names: dict = field(default_factory=dict)       # {key: name in the CSV (English)}
+    # Step 3a (Eurostat): {key: {year: flag}} (b, e, p, ...); None for a source without flags.
+    flags: dict = None
+    license: str = ''                               # empty: DEFAULT_LICENSE
 
 
 def csv_url(slug):
@@ -249,17 +252,21 @@ def has_values(parsed, key, year_from, year_to):
 def snapshot_data(parsed, year_from, year_to):
     """The data of a ChartSnapshot: the years in the period in which at least
     one entity has a value; for EVERY entity with a value in the period a row
-    of values (None where a year is missing); the names. An empty period is
-    'no_data'."""
+    of values (None where a year is missing); the names; for a source with
+    flags (Eurostat) the flags in the same form as the values (None where
+    there is none). An empty period is 'no_data'."""
     keys = [k for k in sorted(parsed.series) if has_values(parsed, k, year_from, year_to)]
     years = sorted({y for k in keys for y in parsed.series[k] if year_from <= y <= year_to})
     if not years:
         raise SourceError('no_data', f'no values in {year_from} to {year_to}')
-    return {
+    data = {
         'years': years,
         'series': {k: [parsed.series[k].get(y) for y in years] for k in keys},
         'names': {k: parsed.names[k] for k in keys},
     }
+    if parsed.flags is not None:
+        data['flags'] = {k: [parsed.flags.get(k, {}).get(y) for y in years] for k in keys}
+    return data
 
 
 def create_snapshot(chart, parsed, metadata_raw, year_from, year_to):
@@ -274,7 +281,7 @@ def create_snapshot(chart, parsed, metadata_raw, year_from, year_to):
         version=version, fetched_at=datetime.utcnow(),
         title=parsed.title[:300], subtitle=parsed.subtitle, unit=parsed.unit[:120],
         short_unit=parsed.short_unit[:40], definition=parsed.definition, citation=parsed.citation,
-        citation_short=parsed.citation_short, source_url=parsed.source_url[:500], license=DEFAULT_LICENSE,
+        citation_short=parsed.citation_short, source_url=parsed.source_url[:500], license=parsed.license or DEFAULT_LICENSE,
         data=json.dumps(snapshot_data(parsed, year_from, year_to)), metadata_raw=metadata_raw)
     chart.snapshots.append(snapshot)
     return snapshot

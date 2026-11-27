@@ -1,0 +1,243 @@
+{
+ "version": "2.0",
+ "class": "dataset",
+ "label": "Unemployment rate",
+ "source": "ESTAT",
+ "updated": "2026-11-06T23:00:00+0100",
+ "value": {
+  "10": 3.9,
+  "11": 3.5,
+  "12": 3.2,
+  "13": 2.9,
+  "14": 3.6,
+  "15": 3.6,
+  "16": 3.1,
+  "17": 3.1,
+  "18": 3.5,
+  "19": 3.8,
+  "20": 23.9,
+  "21": 21.8,
+  "22": 19.7,
+  "23": 17.9,
+  "24": 17.6,
+  "25": 14.7,
+  "26": 12.5,
+  "27": 11.1,
+  "28": 10.1,
+  "29": 8.9,
+  "30": 19.6,
+  "31": 17.2,
+  "32": 15.3,
+  "33": 14.1,
+  "34": 15.5,
+  "35": 14.9,
+  "36": 13.0,
+  "37": 12.2,
+  "38": 11.4,
+  "39": 10.5,
+  "0": 9.3,
+  "1": 8.3,
+  "2": 7.4,
+  "3": 6.8,
+  "4": 7.2,
+  "5": 7.1,
+  "6": 6.2,
+  "7": 6.1,
+  "8": 6.0,
+  "9": 6.0,
+  "40": 10.1,
+  "41": 9.4,
+  "42": 9.1,
+  "43": 8.5,
+  "44": 8.1,
+  "45": 7.9,
+  "46": 7.3,
+  "47": 7.4,
+  "48": 7.4,
+  "49": 7.7,
+  "50": 7.0,
+  "51": 5.9,
+  "52": 4.9,
+  "53": 4.4,
+  "54": 4.9,
+  "55": 4.2,
+  "56": 3.5,
+  "57": 3.6,
+  "58": 3.7,
+  "59": 3.9,
+  "60": 6.3,
+  "61": 5.0,
+  "62": 3.9,
+  "63": 3.3,
+  "64": 3.2,
+  "65": 3.4,
+  "66": 2.9,
+  "67": 2.8,
+  "68": 2.9,
+  "69": 3.1
+ },
+ "status": {
+  "14": "b",
+  "35": "d",
+  "36": "d",
+  "37": "d",
+  "38": "d",
+  "39": "d",
+  "45": "d",
+  "46": "d",
+  "47": "d",
+  "48": "d",
+  "49": "d",
+  "63": "b"
+ },
+ "id": [
+  "freq",
+  "age",
+  "unit",
+  "sex",
+  "geo",
+  "time"
+ ],
+ "size": [
+  1,
+  1,
+  1,
+  1,
+  7,
+  10
+ ],
+ "dimension": {
+  "freq": {
+   "label": "Time frequency",
+   "category": {
+    "index": {
+     "A": 0
+    },
+    "label": {
+     "A": "Annual"
+    }
+   }
+  },
+  "age": {
+   "label": "Age class",
+   "category": {
+    "index": {
+     "Y15-74": 0
+    },
+    "label": {
+     "Y15-74": "From 15 to 74 years"
+    }
+   }
+  },
+  "unit": {
+   "label": "Unit of measure",
+   "category": {
+    "index": {
+     "PC_ACT": 0
+    },
+    "label": {
+     "PC_ACT": "Percentage of population in the labour force"
+    }
+   }
+  },
+  "sex": {
+   "label": "Sex",
+   "category": {
+    "index": {
+     "T": 0
+    },
+    "label": {
+     "T": "Total"
+    }
+   }
+  },
+  "geo": {
+   "label": "Geopolitical entity (reporting)",
+   "category": {
+    "index": {
+     "EU27_2020": 0,
+     "DE": 1,
+     "EL": 2,
+     "ES": 3,
+     "FR": 4,
+     "NL": 5,
+     "PL": 6
+    },
+    "label": {
+     "EU27_2020": "European Union - 27 countries (from 2020)",
+     "DE": "Germany",
+     "EL": "Greece",
+     "ES": "Spain",
+     "FR": "France",
+     "NL": "Netherlands",
+     "PL": "Poland"
+    }
+   }
+  },
+  "time": {
+   "label": "Time",
+   "category": {
+    "index": {
+     "2016": 0,
+     "2017": 1,
+     "2018": 2,
+     "2019": 3,
+     "2020": 4,
+     "2021": 5,
+     "2022": 6,
+     "2023": 7,
+     "2024": 8,
+     "2025": 9
+    },
+    "label": {
+     "2016": "2016",
+     "2017": "2017",
+     "2018": "2018",
+     "2019": "2019",
+     "2020": "2020",
+     "2021": "2021",
+     "2022": "2022",
+     "2023": "2023",
+     "2024": "2024",
+     "2025": "2025"
+    }
+   }
+  }
+ },
+ "extension": {
+  "lang": "EN",
+  "description": "<p>Unemployed persons as a percentage of the labour force. The labour force is the total number of people employed and unemployed. Unemployed persons are persons aged 15 to 74 who were without work during the reference week, were available for work and were actively seeking work. Data available as rates (% of population in the labour force, % of the total population) and in absolute numbers (1000 persons).</p>",
+  "id": "TPS00203",
+  "agencyId": "ESTAT",
+  "version": "1.0",
+  "datastructure": {
+   "id": "TPS00203",
+   "agencyId": "ESTAT",
+   "version": "53.0"
+  },
+  "annotation": [
+   {
+    "type": "CREATED",
+    "date": "2017-12-05T16:53:32+0100"
+   },
+   {
+    "type": "DISSEMINATION_OBJECT_TYPE",
+    "title": "DATASET"
+   }
+  ],
+  "status": {
+   "label": {
+    "b": "break in time series",
+    "d": "definition differs (see metadata)"
+   }
+  },
+  "positions-with-no-data": {
+   "freq": [],
+   "age": [],
+   "unit": [],
+   "sex": [],
+   "geo": [],
+   "time": []
+  }
+ }
+}

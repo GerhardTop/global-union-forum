@@ -35,6 +35,7 @@ def register_cli(app):
     app.cli.add_command(remove_issue)
     app.cli.add_command(background_figures_trial)
     app.cli.add_command(background_figures_example)
+    app.cli.add_command(eurostat_catalog_refresh)
     app.cli.add_command(check_translations)
 
 
@@ -314,6 +315,18 @@ def background_figures_trial(issue_id):
     if outcome.none_reason:
         click.echo(f'\nNone reason: {outcome.none_reason}')
     click.echo(f'\nStatus it would get: {outcome.status}. Nothing was saved.')
+
+
+@click.command('eurostat-catalogus-verversen')
+def eurostat_catalog_refresh():
+    """Background figures (step 3a): fetch Eurostat's table of contents now and
+    replace the catalogue of main tables (otherwise the tick does this once a
+    week, with BACKGROUND_FIGURES on). On failure the old catalogue stays."""
+    from app.sources import eurostat
+    count = eurostat.refresh_catalog()
+    if count is None:
+        raise click.ClickException('The table of contents could not be fetched or read; the old catalogue stays.')
+    click.echo(f'Eurostat catalogue: {count} main tables.')
 
 
 @click.command('achtergrondcijfers-voorbeeld')

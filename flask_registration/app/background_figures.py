@@ -1135,6 +1135,20 @@ def backfill(now=None, client=None, http=None):
     return done, failed
 
 
+def refresh_eurostat_catalog(now=None, http=None):
+    """The tick (step 3a): refresh the catalogue of Eurostat's main tables
+    when it is empty or older than seven days. None with the switch off,
+    'fresh' when not needed, the number of tables, or 'failed' (the old
+    catalogue stays)."""
+    from app.sources import eurostat
+    if not enabled():
+        return None
+    if not eurostat.catalog_due(now):
+        return 'fresh'
+    count = eurostat.refresh_catalog(http=http, now=now)
+    return 'failed' if count is None else count
+
+
 def dry_run(issue, client=None, http=None, trigger='issue'):
     """The round for flask achtergrondcijfers-proef: nothing is saved."""
     from app import quality

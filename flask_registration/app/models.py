@@ -1466,6 +1466,8 @@ class FactChart(db.Model):
     # "European Union (27)"); translated through content_i18n like a fact.
     # Step 1l: in a chart of world blocks (no average) the name of the EU line.
     average_name = db.Column(db.String(200), nullable=True)
+    # Step 3a (Eurostat): JSON {dimension: chosen value}, the filters of the table; None for OWID.
+    filters     = db.Column(db.Text, nullable=True)
     year_from   = db.Column(db.Integer, nullable=False)
     year_to     = db.Column(db.Integer, nullable=False)
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
@@ -1564,6 +1566,22 @@ class ChartBlock(db.Model):
     proposal_id  = db.Column(db.Integer, nullable=True)
     fact_post_id = db.Column(db.Integer, nullable=True)
     created_at   = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class EurostatCatalog(db.Model):
+    """Background figures, step 3a: the main tables of Eurostat (type "table"
+    in the table of contents), searched locally (app/sources/eurostat.py).
+    The tick replaces the whole catalogue once a week (refreshed_at)."""
+    __tablename__ = "eurostat_catalog"
+
+    id           = db.Column(db.Integer, primary_key=True)
+    code         = db.Column(db.String(40), nullable=False, unique=True)
+    title        = db.Column(db.String(500), nullable=False)
+    type         = db.Column(db.String(20), nullable=False, default='table')
+    last_update  = db.Column(db.Date, nullable=True)
+    data_start   = db.Column(db.String(10), nullable=True)      # 2014, 2025-11, 2026-Q2
+    data_end     = db.Column(db.String(10), nullable=True)
+    refreshed_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
 class OwidRejectedSlug(db.Model):

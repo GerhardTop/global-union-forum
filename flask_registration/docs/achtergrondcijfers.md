@@ -72,7 +72,15 @@ De app controleert: slug bestaat, landen en gemiddelde staan in de data, periode
 ## Bronnen (toegestane lijst, uitbreidbaar)
 Criteria voor een bron: officieel of wetenschappelijk, open licentie met bronvermelding, een API of stabiele download, en metadata met definitie en eenheid. Elke bron is een eigen adapter.
 1. Our World in Data (eerste bron). Grapher-API: https://ourworldindata.org/grapher/<slug>.csv en <slug>.metadata.json. Ruim 5.000 grafieken; bundelt al veel andere bronnen (onder meer World Bank, V-Dem, SIPRI), met een kant-en-klare bronvermelding en eigen regio-gemiddelden. Landcodes zijn ISO3; regio's hebben eigen codes (zoals OWID_WRL). Zoeken: de Search API van OWID (GET https://ourworldindata.org/api/search, type=charts, versie 0.1.0, nog in ontwikkeling). Geen eigen catalogus. Zoeken gebeurt alleen op de achtergrond; faalt de API, dan probeert de uurtik het later opnieuw.
-2. Eurostat (tweede bron, voor EU-onderwerpen). Statistics API in JSON-stat 2.0, antwoorden in EN, FR, DE.
+2. Eurostat (tweede bron, voor EU-onderwerpen; besloten 26 november 2026).
+   - Ophalen: de Statistics API (https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/<code>, JSON-stat 2.0, lang=EN), met filters per dimensie in de URL en sinceTimePeriod voor de periode.
+   - Zoeken: Eurostat heeft geen zoek-API. De app houdt een eigen catalogus bij uit de inhoudsopgave (https://ec.europa.eu/eurostat/api/dissemination/catalogue/toc/txt?lang=en), met alleen de hoofdtabellen (type "table"). De tik ververst hem wekelijks; zoeken gebeurt lokaal, op woorden in de Engelse titel, alleen in tabellen met data van hoogstens vijf jaar oud.
+   - Dimensies: blijft er na land, jaar en frequentie een dimensie met meer dan één waarde over, dan kiest de AI (stap 3b) per dimensie één waarde uit de echte lijst; de app controleert dat. De gekozen waarden staan bij de grafiek (fact_charts.filters). Voorlopig alleen jaarcijfers (frequentie A); een tabel zonder jaarcijfers valt af.
+   - Bronvoorrang: bij EU-onderwerpen Eurostat als die dezelfde maat heeft; voor de wereld en landen buiten Europa OWID.
+   - Voorlopige en geschatte cijfers (de vlaggen van Eurostat, zoals p voorlopig, e geschat, b breuk in de reeks): een kleine markering in de tabel en een zin bij "Over deze cijfers"; niet in de grafiek. De vlaggen staan in de momentopname.
+   - Titels en labels gaan via onze vertaalroute (ook in het Duits en Frans), niet via de officiële Duitse of Franse titels van Eurostat.
+   - Licentie: CC BY 4.0 met bronvermelding (Eurostat copyright notice), plus de verplichte disclaimer dat Eurostat niet verantwoordelijk is voor vertalingen of bewerkingen.
+   - Landen: EU, EFTA en kandidaat-lidstaten. EL is Griekenland, UK het Verenigd Koninkrijk; de EU-27 (EU27_2020) is het gemiddelde zoals de bron het levert. Geen wereldblokken.
 3. Later, per behoefte: World Bank API, OECD (SDMX), IMF, UN Data, CBS Statline (OData) voor Nederlandse onderwerpen, Eurobarometer voor publieke opinie.
 Bronnen zonder API (bijvoorbeeld een losse Excel) alleen via OWID, als die ze al opneemt.
 
@@ -105,7 +113,10 @@ Laag: één AI-aanroep per vraagstuk en per nieuw voorstel, plus vertaling van t
    1l. maat per persoon of aandeel, wereldblokken met hun aandeel in de wereld, geen totaal als gemiddelde, compacte grote getallen (klaar, 26 november 2026).
    Aanzetten: BACKGROUND_FIGURES=1 op Render. Daarna maakt elk nieuw vraagstuk in de feitenfase een keuzeronde; bestaande vraagstukken krijgen alleen een ronde bij een nieuw voorstel.
 2. Land toevoegen en het profielveld "Mijn land" (met de eenmalige vraag).
-3. Eurostat erbij.
+3. Eurostat erbij, in deelstappen:
+   3a. catalogus van hoofdtabellen, ophalen in JSON-stat en de momentopname (nog niets zichtbaar, geen AI) (klaar, 27 november 2026);
+   3b. Eurostat in de keuze: kandidaten van beide bronnen, keuze per dimensie, bronvoorrang;
+   3c. weergave: bronregel, "Over deze cijfers", link naar de databrowser, markering van voorlopige cijfers, vijf talen.
 4. Feitkaart (een groot getal uit een gewoon feit, alleen als het getal letterlijk in de tekst staat) als aanvulling.
 Na de eerste echte vraagstukken met grafieken nagaan of deelnemers ernaar verwijzen in de discussie (in plaats van een proef vooraf).
 

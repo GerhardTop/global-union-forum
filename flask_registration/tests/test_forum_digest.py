@@ -89,7 +89,7 @@ class TestEndpoint:
         assert resp.status_code == 200
         data = resp.get_json()
         assert set(data) == {'moved', 'issues_moved', 'digests', 'translations', 'translations_failed',
-                             'charts', 'charts_failed'} and data['moved'] >= 1
+                             'charts', 'charts_failed', 'eurostat_catalog'} and data['moved'] >= 1
         assert Proposal.query.filter_by(thread_id=t.id).one().phase == 'bijstellen'
         again = _tick(app, f'Bearer {SECRET}').get_json()   # idempotent
         assert again['moved'] == 0

@@ -1,0 +1,36 @@
+"title"	"code"	"type"	"last update of data"	"last table structure change"	"data start"	"data end"	"values"
+"Database by themes"	"data"	"folder"	" "	" "	" "	" "	
+"    General and regional statistics"	"general"	"folder"	" "	" "	" "	" "	
+"        European and national indicators for short-term analysis"	"euroind"	"folder"	" "	" "	" "	" "	
+"            Balance of payments"	"ei_bp"	"folder"	" "	" "	" "	" "	
+"                Current account - quarterly data"	"ei_bpm6ca_q"	"table"	"20.11.2026"	"19.11.2026"	"1991-Q1"	"2026-Q3"	314941
+"                Financial account - quarterly data"	"ei_bpm6fa_q"	"table"	"20.11.2026"	"19.11.2026"	"1991-Q1"	"2026-Q3"	55946
+"                Current account - monthly data"	"ei_bpm6ca_m"	"table"	"20.11.2026"	"19.11.2026"	"1991-01"	"2026-09"	262496
+"                Financial account - monthly data"	"ei_bpm6fa_m"	"table"	"20.11.2026"	"19.11.2026"	"1991-01"	"2026-09"	90042
+"                International investment position - quarterly data"	"ei_bpm6iip_q"	"table"	"28.10.2026"	"02.10.2026"	"1992-Q4"	"2026-Q2"	70772
+"            Business and consumer surveys"	"ei_bcs"	"folder"	" "	" "	" "	" "	
+"                Business and consumer survey - composite indicators"	"ei_bcs_mi"	"folder"	" "	" "	" "	" "	
+"                    Economic sentiment and confidence indicators by sector - monthly data"	"ei_bssi_m_r2"	"dataset"	"29.10.2026"	"29.10.2026"	"1980-01"	"2026-10"	142662
+"                        Confidence indicators by sector"	"teibs020"	"table"	"29.10.2026"	"29.10.2026"	"2025-11"	"2026-10"	1948
+"            Housing price statistics"	"ei_hp"	"folder"	" "	" "	" "	" "	
+"                House price index (2025 = 100) - quarterly data"	"ei_hppi_q"	"table"	"01.10.2026"	"01.10.2026"	"2005-Q1"	"2026-Q2"	11752
+"                Agri-environmental indicators"	"reg_aei"	"folder"	" "	" "	" "	" "	
+"                        Estimated soil loss by water erosion by land cover type"	"tai10"	"table"	"19.03.2026"	"19.03.2026"	"2000"	"2016"	261
+"                        Unemployment - LFS adjusted series - historical data"	"une_h"	"folder"	" "	" "	" "	" "	
+"                            Unemployment rate"	"tps00203"	"table"	"06.11.2026"	"06.11.2026"	"2014"	"2025"	1296
+"                        Flexibility of working time"	"lfso_10flex"	"folder"	" "	" "	" "	" "	
+"                                Employees with a flexible work schedule by sex"	"tqoe3b4"	"table"	"21.12.2023"	"03.01.2024"	"2004"	"2010"	57
+"                        Work organisation and working time arrangements (2004)"	"lfso_04"	"folder"	" "	" "	" "	" "	
+"                                Employees with a flexible work schedule by sex"	"tqoe3b4"	"table"	"21.12.2023"	"03.01.2024"	"2004"	"2010"	57
+"                Water statistics on national level"	"env_nwat"	"folder"	" "	" "	" "	" "	
+"                        Water resources: long-term annual average"	"ten00001"	"table"	"03.07.2026"	"30.07.2025"	" "	" "	390
+"            MIP Scoreboard indicators"	"tips_h"	"folder"	" "	" "	" "	" "	
+"                Unemployment rate - annual data"	"tipsun20"	"table"	"06.11.2026"	"06.11.2026"	"2003"	"2025"	1509
+"                Harmonised unemployment - monthly data"	"teilm_un"	"folder"	" "	" "	" "	" "	
+"                    Unemployment rate by sex"	"teilm020"	"table"	"24.11.2026"	"05.11.2026"	"2025-11"	"2026-10"	1221
+"            Goal 11 - Sustainable cities and communities"	"sdg_11"	"folder"	" "	" "	" "	" "	
+"                    Housing cost overburden rate by degree of urbanisation - EU-SILC survey"	"tessi165"	"table"	"05.11.2026"	"30.04.2026"	"2014"	"2025"	1352
+"            Social protection performance monitor - indicators"	"tespm"	"folder"	" "	" "	" "	" "	
+"                Housing cost overburden rate"	"tespm140"	"table"	"29.10.2026"	"21.05.2026"	"2014"	"2025"	492
+"            Employment performance monitor - indicators"	"tesem"	"folder"	" "	" "	" "	" "	
+"                Unemployment rate by sex"	"tesem120"	"table"	"06.11.2026"	"06.11.2026"	"2005"	"2025"	1848
