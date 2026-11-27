@@ -221,3 +221,188 @@ def delete_for_user(user_id):
 
 def delete_for_issue(issue_id):
     IssueParticipationStats.query.filter_by(issue_id=issue_id).delete(synchronize_session=False)
+
+
+# ── Step 1d: freezing the totals and the block "Who voted" ────────────────
+# docs/representativiteit.md K4, K7, K8. Only totals after the thresholds,
+# as codes; the display translates them. The thresholds apply when freezing,
+# so what is stored is already safe to show.
+
+MIN_VOTERS = 30     # fewer: only the sentence "Too few participants ..."
+MIN_GROUP = 10      # a group of 1 to 9 people is too small to show
+NA = 'na'           # not filled in, prefer not to say, or merged in
+SMALL = 'small'     # "Smaller groups combined" (gender, education)
+OTHER = 'other'     # "Other countries combined"
+TRAITS = ('age', 'gender', 'education', 'country')
+
+
+def _too_small(n):
+    return 0 < n < MIN_GROUP
+
+
+def age_code(low, high):
+    return f'{low}_plus' if high is None else f'{low}_{high}'
+
+
+def parse_age_code(code):
+    """(low, high) of an age group code ("25_44", "65_plus")."""
+    low, high = code.split('_')
+    return int(low), (None if high == 'plus' else int(high))
+
+
+def count_ages(birth_years, year, voters):
+    """(age_level, [[code, n], ...]) for the ages at `year`: the finest level of
+    AGE_LADDER on which no group has 1 to 9 people (a group of 0 is fine),
+    then "na" for everyone without a birth year. No level: ('none', [])."""
+    ages = [max(year - b, YOUNGEST_AGE) for b in birth_years if b]   # 0 and empty: not filled in
+    for level in AGE_LEVELS:
+        groups = [[age_code(low, high), sum(1 for a in ages if a >= low and (high is None or a <= high))]
+                  for low, high in AGE_LADDER[level]]
+        if not any(_too_small(n) for _code, n in groups):
+            return level, groups + [[NA, voters - len(ages)]]
+    return 'none', []
+
+
+def count_codes(values, order, voters):
+    """[[code, n], ...] in the fixed order of `order`, then "small", then "na".
+    Groups of 1 to 9 go together in "small"; is "small" then 1 to 9, it goes
+    into "na". "na" (prefer not to say) and empty count as not filled in."""
+    counts = {code: sum(1 for v in values if v == code) for code in order if code != NA}
+    small = sum(n for n in counts.values() if _too_small(n))
+    rows = [[code, n] for code, n in counts.items() if not _too_small(n)]
+    if small and not _too_small(small):
+        rows.append([SMALL, small])
+    return rows + [[NA, voters - sum(n for _code, n in rows)]]
+
+
+def count_countries(values, voters):
+    """[[iso2, n], ...] for the countries with at least 10 voters (most first,
+    then by code), then "other" with the rest (into "na" when 1 to 9), then "na"."""
+    counts = {}
+    for v in values:
+        if v:
+            counts[v] = counts.get(v, 0) + 1
+    rows = sorted(([code, n] for code, n in counts.items() if n >= MIN_GROUP), key=lambda r: (-r[1], r[0]))
+    other = sum(n for n in counts.values() if n < MIN_GROUP)
+    if other and not _too_small(other):
+        rows.append([OTHER, other])
+    return rows + [[NA, voters - sum(n for _code, n in rows)]]
+
+
+def compute(rows, year):
+    """The frozen totals from the answers of the voters, one row per voter:
+    (birth_year, gender, education, answered_at, country). Returns
+    (voters, answered, age_level, counts). Nothing per person."""
+    voters = len(rows)
+    answered = sum(1 for r in rows if r[3] is not None)
+    if voters < MIN_VOTERS:
+        return voters, answered, 'none', {}
+    age_level, ages = count_ages([r[0] for r in rows], year, voters)
+    return voters, answered, age_level, {
+        'age': ages,
+        'gender': count_codes([r[1] for r in rows], GENDERS, voters),
+        'education': count_codes([r[2] for r in rows], EDUCATION_LEVELS, voters),
+        'country': count_countries([r[4] for r in rows], voters),
+    }
+
+
+def _voter_answers(issue_id):
+    """One row per voter of the issue (not the summary proposal, not deleted
+    accounts), with their answers, in one query."""
+    from app.models import IssueProposal, IssueProposalVote, User
+    return (db.session.query(IssueProposalVote.user_id, ParticipantProfile.birth_year, ParticipantProfile.gender,
+                             ParticipantProfile.education, ParticipantProfile.answered_at, User.country)
+            .join(IssueProposal, IssueProposal.id == IssueProposalVote.proposal_id)
+            .join(User, User.id == IssueProposalVote.user_id)
+            .outerjoin(ParticipantProfile, ParticipantProfile.user_id == IssueProposalVote.user_id)
+            .filter(IssueProposal.issue_id == issue_id, IssueProposalVote.user_id.isnot(None),
+                    db.or_(IssueProposal.is_final.is_(None), IssueProposal.is_final.is_(False)))
+            .distinct().all())
+
+
+def freeze_for_issue(issue, now=None):
+    """Freeze who voted, once per issue, at the end of the voting phase
+    (issue_lifecycle.set_phase). Only with the switch on; an existing row
+    stays (also after reopening and voting again). Commit niet zelf."""
+    import json
+    if not enabled():
+        return None
+    if IssueParticipationStats.query.filter_by(issue_id=issue.id).first() is not None:
+        return None
+    now = now or datetime.utcnow()
+    rows = [r[1:] for r in _voter_answers(issue.id)]
+    voters, answered, age_level, counts = compute(rows, now.year)
+    stats = IssueParticipationStats(issue_id=issue.id, frozen_at=now, voters=voters, answered=answered,
+                                    age_level=age_level, counts=json.dumps(counts))
+    db.session.add(stats)
+    return stats
+
+
+def stats_for(issue_id):
+    """The frozen row of an issue, or None (one query; none with the switch off)."""
+    if not enabled():
+        return None
+    return IssueParticipationStats.query.filter_by(issue_id=issue_id).first()
+
+
+# ── The display (labels at showing time, in the reader's language) ────────
+
+def trait_label(trait):
+    if trait == 'age':
+        # TRANSLATORS: a heading in the block "Who voted" (the age groups of the voters).
+        return gettext('Age')
+    if trait == 'gender':
+        # TRANSLATORS: a heading in the block "Who voted".
+        return gettext('Gender')
+    if trait == 'education':
+        # TRANSLATORS: a heading in the block "Who voted" (the level of education of the voters).
+        return gettext('Education')
+    # TRANSLATORS: a heading in the block "Who voted" (the country where the voters live).
+    return gettext('Country')
+
+
+def group_label(trait, code, lang):
+    if code == NA:
+        # TRANSLATORS: in the block "Who voted": nothing filled in, "prefer not to say", or merged in.
+        return gettext('Not filled in')
+    if code == SMALL:
+        # TRANSLATORS: in the block "Who voted": groups smaller than 10 people, shown together.
+        return gettext('Smaller groups combined')
+    if code == OTHER:
+        # TRANSLATORS: in the block "Who voted": the countries with fewer than 10 voters, together.
+        return gettext('Other countries combined')
+    if trait == 'age':
+        return age_group_label(*parse_age_code(code))
+    if trait == 'gender':
+        return gender_label(code)
+    if trait == 'education':
+        return education_label(code)[0]
+    return countries.display_name(code, lang)
+
+
+def percent(n, total):
+    """A whole percentage, rounded half up."""
+    return (n * 200 + total) // (2 * total) if total else 0
+
+
+def stats_view(stats, lang):
+    """What the block "Who voted" needs, translated for the reader."""
+    import json
+    from app.charts import format_value
+    from babel.numbers import format_decimal
+
+    def pct_text(n):
+        return format_value(percent(n, stats.voters), lang, '%', decimals=0)
+
+    view = {'stats': stats, 'voters': stats.voters, 'answered': format_decimal(stats.answered, locale=lang),
+            'answered_pct': pct_text(stats.answered), 'too_few': stats.voters < MIN_VOTERS, 'traits': []}
+    if view['too_few']:
+        return view
+    counts = json.loads(stats.counts or '{}')
+    for trait in TRAITS:
+        rows = [{'label': group_label(trait, code, lang), 'pct': percent(n, stats.voters), 'pct_text': pct_text(n),
+                 'n': format_decimal(n, locale=lang), 'na': code == NA}
+                for code, n in counts.get(trait, [])]
+        view['traits'].append({'key': trait, 'title': trait_label(trait), 'rows': rows,
+                               'not_enough': trait == 'age' and stats.age_level == 'none'})
+    return view

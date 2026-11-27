@@ -74,3 +74,7 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 | Who votes? | Wie stemt er mee? | Qui vote ? | De kop boven de vrijwillige vragen; kort en neutraal. |
 | Prefer not to say | Zeg ik liever niet | Je préfère ne pas répondre | Het gangbare antwoord in Franse formulieren. |
 | education: Basic / Secondary / Higher | Basis / Middelbaar / Hoger | De base / Secondaire / Supérieur | De drie ISCED-niveaus (0 tot en met 2, 3 en 4, 5 tot en met 8); "De base" en niet "Primaire", want het collège hoort in Frankrijk bij het secundair. De uitleg noemt collège, baccalauréat, CAP, BTS en grande école, nooit mbo of hbo. |
+| Who voted (block) | Wie stemde mee | Qui a voté | Het blok bij de uitslag met de samenstelling van de stemmers. |
+| Not filled in | Niet ingevuld | Non renseigné | Niets ingevuld, "zeg ik liever niet" of samengevoegd. |
+| Smaller groups combined / Other countries combined | Kleinere groepen samen / Andere landen samen | Petits groupes regroupés / Autres pays regroupés | Groepen onder de 10 mensen, samen getoond. |
+| Frozen (the totals at the end of voting) | Bevroren | Arrêté | De totalen worden één keer vastgelegd aan het eind van de stemfase en daarna niet meer gewijzigd. |

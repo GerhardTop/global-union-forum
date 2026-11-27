@@ -13,6 +13,8 @@
   - Long facts clamped to a few lines with a per-fact more/less.
   - Disclosures ([data-disclosure] buttons with aria-controls), such as the
     collapsed voting rules card.
+  - The block "Who voted" ([data-pp-stats]): the switch Bars / Table shows one
+    of the two views; without JavaScript both are in the page.
   - A sort select with [data-autosubmit] submits on change (no button).
   - The "+" of the facts column ([data-fact-add]) toggles the add form
     ([data-fact-add-box]) at the top of the enlarged facts, enlarging the
@@ -237,5 +239,26 @@
   document.addEventListener('focusout', function (event) {
     var wrap = event.target.closest && event.target.closest('[data-ai-tip]');
     if (wrap) wrap.classList.remove('is-closed');
+  });
+})();
+
+(function () {
+  document.querySelectorAll('[data-pp-stats]').forEach(function (block) {
+    var sw = block.querySelector('[data-pp-switch]');
+    if (!sw) return;
+    function show(which) {
+      block.querySelectorAll('[data-pp-view]').forEach(function (view) {
+        view.hidden = view.getAttribute('data-pp-view') !== which;
+      });
+      sw.querySelectorAll('[data-pp-show]').forEach(function (btn) {
+        btn.setAttribute('aria-pressed', btn.getAttribute('data-pp-show') === which ? 'true' : 'false');
+      });
+    }
+    sw.hidden = false;
+    sw.addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-pp-show]');
+      if (btn) show(btn.getAttribute('data-pp-show'));
+    });
+    show('bars');
   });
 })();

@@ -1,0 +1,72 @@
+{#
+  Partial: issues/_participation.html (representativeness 1d,
+  docs/representativiteit.md K4, K7, K8; artboard
+  docs/design/representativiteit-uitslag.html).
+  The block "Who voted" on the issue page, full width under the phase: the
+  totals frozen at the end of the voting phase (issue_participation_stats).
+  Only codes are stored; the labels are made here in the reader's language
+  (participants.stats_view). Never split by what anyone voted.
+  Bars and table: without JavaScript both are in the page; with JavaScript the
+  switch shows one (cockpit.js, [data-pp-view]).
+  Context: participation (participants.stats_view).
+#}
+{% set pv = participation %}
+<section class="gu-pstats" id="wie-stemde-mee" aria-labelledby="ppStatsTitle" data-pp-stats>
+  {% if pv.too_few %}
+  <h2 class="gu-pstats__title" id="ppStatsTitle">{# TRANSLATORS: the heading of the block with the make-up of the voters of an issue (age, gender, education, country). #}{{ _('Who voted') }}</h2>
+  <p class="gu-pstats__lead">{# TRANSLATORS: the block "Who voted" with fewer than 30 voters. #}{{ _('Too few participants to show who voted (fewer than 30).') }}</p>
+  <p class="gu-pstats__note">{# TRANSLATORS: the block "Who voted" with fewer than 30 voters: why nothing is shown. #}{{ _('This way nobody can be recognised.') }} <a href="{{ url_for('main.privacy') }}">{{ _('Why we ask this') }}</a></p>
+  {% else %}
+  <div class="gu-pstats__head">
+    <div class="gu-pstats__intro">
+      <h2 class="gu-pstats__title" id="ppStatsTitle">{{ _('Who voted') }}</h2>
+      <p class="gu-pstats__lead">{# TRANSLATORS: the block "Who voted"; %(num)d is the number of voters of the issue. #}{{ ngettext('%(num)d participant voted on at least one proposal.', '%(num)d participants voted on at least one proposal.', pv.voters) }}
+        {# TRANSLATORS: the block "Who voted"; %(answered)s is a number of voters, %(pct)s their percentage. #}{{ _('%(answered)s of them (%(pct)s) answered at least one question.', answered=pv.answered, pct=pv.answered_pct) }}</p>
+    </div>
+    <div class="gu-pstats__switch" role="group" aria-label="{{ _('Who voted') }}" data-pp-switch hidden>
+      <button type="button" class="gu-pstats__switchbtn" aria-pressed="true" data-pp-show="bars">{# TRANSLATORS: a switch in the block "Who voted": show the groups as bars. #}{{ _('Bars') }}</button>
+      <button type="button" class="gu-pstats__switchbtn" aria-pressed="false" data-pp-show="table">{# TRANSLATORS: a switch in the block "Who voted": show the groups as a table. #}{{ _('Table') }}</button>
+    </div>
+  </div>
+
+  <div class="gu-pstats__traits" data-pp-view="bars">
+    {% for trait in pv.traits %}
+    <section class="gu-pstats__trait" aria-label="{{ trait.title }}">
+      <h3 class="gu-pstats__traittitle">{{ trait.title }}</h3>
+      {% if trait.not_enough %}
+      <p class="gu-pstats__note">{# TRANSLATORS: the block "Who voted": too few birth years to show age groups. #}{{ _('Not enough answers to show.') }}</p>
+      {% else %}
+      <ul class="gu-pstats__groups">
+        {% for row in trait.rows %}
+        <li class="gu-pstats__group{% if row.na %} is-na{% endif %}"><span class="gu-pstats__name">{{ row.label }}</span><span class="gu-pstats__bar" aria-hidden="true"><span style="inline-size: {{ row.pct }}%"></span></span><strong class="gu-pstats__pct">{{ row.pct_text }}</strong><span class="gu-pstats__n">{{ row.n }}</span></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </section>
+    {% endfor %}
+  </div>
+
+  <div class="gu-pstats__tables" data-pp-view="table">
+    {% for trait in pv.traits %}
+    <table class="gu-pstats__table">
+      <caption>{{ trait.title }}</caption>
+      {% if trait.not_enough %}
+      <tbody><tr><td colspan="3">{{ _('Not enough answers to show.') }}</td></tr></tbody>
+      {% else %}
+      <thead><tr><th scope="col">{# TRANSLATORS: a column of the table in the block "Who voted": the group (an age group, a gender, a country). #}{{ _('Group') }}</th><th scope="col">{# TRANSLATORS: a column of the table in the block "Who voted": the percentage of all voters. #}{{ _('Share') }}</th><th scope="col">{# TRANSLATORS: a column of the table in the block "Who voted": the number of people. #}{{ _('People') }}</th></tr></thead>
+      <tbody>
+        {% for row in trait.rows %}
+        <tr{% if row.na %} class="is-na"{% endif %}><th scope="row">{{ row.label }}</th><td>{{ row.pct_text }}</td><td>{{ row.n }}</td></tr>
+        {% endfor %}
+      </tbody>
+      {% endif %}
+    </table>
+    {% endfor %}
+  </div>
+
+  <div class="gu-pstats__foot">
+    <p class="gu-pstats__note">{# TRANSLATORS: the explanation under the block "Who voted". #}{{ _('Self-reported and voluntary. Percentages of all voters, rounded. Age groups as fine as the number of voters allows. Other groups smaller than 10 are combined. This says nothing about who voted what.') }}</p>
+    <p class="gu-pstats__note">{# TRANSLATORS: under the block "Who voted"; %(date)s is a date. #}{{ _('Frozen on %(date)s, at the end of the voting phase.', date=pv.stats.frozen_at | local | datetimeformat('d MMMM y')) }} <a href="{{ url_for('main.privacy') }}">{{ _('Why we ask this') }}</a></p>
+  </div>
+  {% endif %}
+</section>

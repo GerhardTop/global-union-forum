@@ -53,6 +53,7 @@ Besluit: één veld, "Mijn land" (het land waar je woont), dat we nu bouwen en d
 
 K7. Waar tonen we "Wie stemde mee", en wanneer?
 Besluit: één blok per vraagstuk, bij de uitslag in de cockpit, voor iedereen die op minstens één voorstel van de stemlijst stemde. De cijfers worden één keer berekend en bevroren als de stemfase eindigt (set_phase, naast het bevriezen van de achtergrondcijfers). Tijdens het stemmen niets: een telling die na elke stem verandert, laat zien in welke groep de laatste stemmer zat. Bij de uitslag van elk voorstel een regel "312 deelnemers · Wie stemde mee" die naar het blok linkt. Het samenvattende voorstel (de slotstemming) krijgt later een eigen blok met dezelfde regels. Alternatief (niet gekozen): per voorstel een eigen blok (meer detail, maar meer kleine groepen en meer kans om verschillen tussen voorstellen te gebruiken om iets over één persoon af te leiden).
+Plek: op de vraagstukpagina over de volle breedte, onder de fase en vóór de drie kolommen.
 
 K8. Drempels
 Besluit:
@@ -60,6 +61,7 @@ Besluit:
 - Leeftijd: de vaste trap uit K4. Bij de andere kenmerken tonen we alleen groepen van minstens 10 mensen. Kleinere groepen gaan samen in "Kleinere groepen samen"; is die samen nog onder de 10, dan gaat hij op in "Niet ingevuld". Zo kun je een kleine groep niet terugrekenen door af te trekken.
 - Percentages van alle stemmers, afgerond op hele procenten, met het aantal mensen erbij. "Niet ingevuld" (niets ingevuld of "zeg ik liever niet") staat altijd als laatste regel, zodat duidelijk is hoeveel mensen meededen aan de vragen.
 - Land: de landen met minstens 10 stemmers, dan "Andere landen samen", dan "Niet ingevuld".
+- Een groep met 0 mensen is niet te klein en staat er met 0%; te klein is 1 tot en met 9. Past bij leeftijd geen enkel niveau, dan staan er bij leeftijd geen groepen en ook geen regel Niet ingevuld, maar alleen de zin Niet genoeg ingevuld om te tonen.
 Alternatief (niet gekozen): drempel 10 voor het hele blok (eerder zichtbaar, maar met 10 tot 29 stemmers zit bijna alles in "Kleinere groepen").
 
 K9. Vergelijking met de bevolking
@@ -122,7 +124,7 @@ Ik ben geen jurist; laat de DPIA en de tekst van de privacyverklaring nalezen.
 1a. Deze opzet en de artboards in de repo (docs/representativiteit.md, docs/design/representativiteit-vragen.html, docs/design/representativiteit-uitslag.html, rijen in docs/design/README.md, verwijzing in CLAUDE.md) (klaar, 27 november 2026).
 1b. Datamodel (participant_profiles, users.country, issue_participation_stats), de sectie "Over mij" en "Mijn land" in het profiel, wissen, opruimen bij account verwijderen; achter PARTICIPANT_PROFILE. Niets zichtbaars met de schakelaar uit (page_snapshot.py) (klaar, 27 november 2026).
 1c. De kaart na de eerste stem, één keer (K1, K2), met en zonder JavaScript (klaar, 27 november 2026).
-1d. Bevriezen bij het einde van de stemfase en het blok "Wie stemde mee" met de leeftijdstrap en de drempels (K4, K7, K8), plus de regel bij de uitslag van elk voorstel; uitbreiding van tests/test_proposal_queries.py.
+1d. Bevriezen bij het einde van de stemfase en het blok "Wie stemde mee" met de leeftijdstrap en de drempels (K4, K7, K8), plus de regel bij de uitslag van elk voorstel; uitbreiding van tests/test_proposal_queries.py (klaar, 27 november 2026).
 1e. Privacyverklaring en FAQ (per alinea een msgid, in vijf talen), PRIVACY_UPDATED, naleesbestanden opnieuw exporteren. De teksten van 1b tot en met 1d gaan al in die stappen in alle vijf talen (zie Meertaligheid).
 Daarna: DPIA afronden, dan PARTICIPANT_PROFILE=1 op Render.
 

@@ -187,7 +187,11 @@ def show(issue_id):
     # The enlarged facts column (add form, card actions) overrides the
     # discussion's fact context: same facts, plus the edit state.
     discussion.update(_fact_box(issue, visible))
+    # Representativeness 1d: who voted, frozen at the end of the voting phase (one query).
+    stats = participants.stats_for(issue.id)
+    participation = participants.stats_view(stats, i18n.current()) if stats is not None else None
     return render_template('issues/show.html', issue=issue, has_discussion=bool(discussion),
+                           participation=participation,
                            big_facts=_enlarged_facts(visible),
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
                            remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
@@ -569,10 +573,15 @@ def _vote_context(proposal, count, ask_participant=False, participant_saved=Fals
     from app import status
     show = ip.show_tally(proposal, count)
     can_vote = ip.can_vote(proposal, current_user, count)
-    return {'ask_participant': (participants.form_context(current_user, i18n.current())
+    over = ip.voting_over(proposal)
+    return {# Representativeness 1d: the line "n participants in this issue · Who voted"
+            # under the result (one query; not for the summary proposal).
+            'participation': (participants.stats_for(proposal.issue_id)
+                              if over and not proposal.is_final else None),
+            'ask_participant': (participants.form_context(current_user, i18n.current())
                                 if ask_participant and can_vote else None),
             'participant_saved': participant_saved,
-            'open': ip.voting_open(proposal, count), 'over': ip.voting_over(proposal),
+            'open': ip.voting_open(proposal, count), 'over': over,
             'on_list': ip.on_list(proposal, count), 'can_vote': can_vote,
             'mine': ip.my_vote(proposal, current_user), 'show': show,
             'result': ip.result(proposal) if show else None,

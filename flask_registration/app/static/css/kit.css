@@ -4817,3 +4817,39 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 @media (max-width: 600px) {
   .gu-ppcard { padding:16px; }
 }
+/* Step 1d: the block "Who voted" (docs/design/representativiteit-uitslag.html),
+   full width under the phase of the issue. */
+.gu-pstats { background:#fff; border:1px solid #e4e9ef; border-radius:14px; box-shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05); padding:22px 24px; display:flex; flex-direction:column; gap:18px; margin-block:16px; }
+.gu-pstats__head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.gu-pstats__intro { display:flex; flex-direction:column; gap:6px; max-inline-size:560px; }
+.gu-pstats__title { margin:0; font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:#1b74b8; }
+.gu-pstats__lead { margin:0; font-size:15px; line-height:1.5; color:#141b22; }
+.gu-pstats__note { margin:0; font-size:12px; line-height:1.5; color:#525c69; }
+.gu-pstats__switch { display:inline-flex; padding:3px; background:#eef1f5; border:1px solid #e4e9ef; border-radius:9px; }
+.gu-pstats__switch[hidden] { display:none; }
+.gu-pstats__switchbtn { min-block-size:32px; padding:4px 12px; border:0; border-radius:7px; background:transparent; color:#525c69; font:500 13px var(--gu-font-sans); cursor:pointer; }
+.gu-pstats__switchbtn[aria-pressed="true"] { background:#fff; color:#141b22; box-shadow:0 1px 2px rgba(15,25,35,.08); }
+.gu-pstats__traits, .gu-pstats__tables { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:24px 32px; align-items:start; }
+.gu-pstats__traits[hidden], .gu-pstats__tables[hidden] { display:none; }
+.gu-pstats__trait { display:flex; flex-direction:column; gap:10px; }
+.gu-pstats__traittitle { margin:0; font-size:14px; font-weight:600; color:#141b22; }
+.gu-pstats__groups { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px; }
+.gu-pstats__group { display:grid; grid-template-columns:minmax(0, 9em) minmax(0, 1fr) 3.2em 2.8em; align-items:center; gap:8px; font-size:13px; color:#141b22; }
+.gu-pstats__pct { text-align:end; font-weight:600; }
+.gu-pstats__n { text-align:end; color:#6c7683; }
+.gu-pstats__bar { display:block; block-size:10px; border-radius:5px; background:#eef1f5; overflow:hidden; }
+.gu-pstats__bar > span { display:block; block-size:10px; border-radius:5px; background:#1b74b8; }
+.gu-pstats__group.is-na { color:#525c69; }
+.gu-pstats__group.is-na .gu-pstats__bar > span { background:#a7b1bd; }
+.gu-pstats__table { inline-size:100%; border-collapse:collapse; font-size:13px; }
+.gu-pstats__table caption { text-align:start; font-size:14px; font-weight:600; padding-block-end:8px; color:#141b22; }
+.gu-pstats__table th, .gu-pstats__table td { padding:5px 8px; border-block-end:1px solid #eef1f5; text-align:end; font-weight:400; }
+.gu-pstats__table th[scope="row"], .gu-pstats__table thead th:first-child { text-align:start; }
+.gu-pstats__table thead th { color:#525c69; font-weight:600; }
+.gu-pstats__table .is-na { color:#525c69; }
+.gu-pstats__foot { display:flex; flex-direction:column; gap:4px; padding-block-start:12px; border-block-start:1px solid #eef1f5; }
+@media (max-width: 700px) {
+  .gu-pstats { padding:16px; }
+  .gu-pstats__traits, .gu-pstats__tables { grid-template-columns:1fr; }
+  .gu-pstats__group { grid-template-columns:minmax(0, 8em) minmax(0, 1fr) 3.2em 2.6em; }
+}

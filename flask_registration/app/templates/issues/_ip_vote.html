@@ -28,6 +28,10 @@
       {% endfor %}
     </ul>
     <p class="gu-composer__hint">{{ _('Votes cast: %(n)s', n=res.total) }} · {{ _('Threshold: more than %(pct)s%% in favour', pct=res.threshold) }}</p>
+    {%- if vote.participation %}
+    {# Representativeness 1d: the link to the block "Who voted" on the issue page. #}
+    <p class="gu-composer__hint gu-pstats__resultline">{# TRANSLATORS: under the result of a proposal; %(num)d is the number of voters of the issue, followed by a link "Who voted". #}{{ ngettext('%(num)d participant in this issue', '%(num)d participants in this issue', vote.participation.voters) }} · <a href="{{ url_for('issues.show', issue_id=issue.id) }}#wie-stemde-mee">{{ _('Who voted') }}</a></p>
+    {%- endif %}
     {% if vote.mine %}<p class="gu-composer__hint">{{ _('Your vote: %(choice)s.', choice=choice_labels[vote.mine]) }}</p>{% endif %}
   {% elif vote.open %}
     {# Multilingual phase 2c: the statement in the reader's language (with the

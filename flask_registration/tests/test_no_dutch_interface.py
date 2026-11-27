@@ -293,3 +293,41 @@ def test_no_dutch_on_the_card_after_the_first_vote(app, db, make_user, monkeypat
         assert found == []
     finally:
         _cleanup(issue.id)
+
+
+@pytest.mark.parametrize('lang', ['de', 'es', 'fr'])
+def test_no_dutch_in_who_voted(app, db, make_user, monkeypatch, lang):
+    """Representativeness 1d: the block "Who voted" (bars and table), its
+    variant with too few voters, and the line under the result."""
+    import json
+    from app import issues
+    from app.models import IssueParticipationStats
+    monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', True)
+    author = make_user()
+    made = []
+    try:
+        pages = []
+        for voters, level, counts in (
+                (312, 'middle', {'age': [['17_24', 34], ['25_44', 88], ['45_64', 79], ['65_plus', 33], ['na', 78]],
+                                 'gender': [['f', 82], ['m', 151], ['small', 10], ['na', 69]],
+                                 'education': [['basic', 12], ['middle', 61], ['higher', 162], ['na', 77]],
+                                 'country': [['NL', 121], ['BE', 28], ['other', 83], ['na', 80]]}),
+                (40, 'none', {'age': [], 'gender': [['na', 40]], 'education': [['na', 40]], 'country': [['na', 40]]}),
+                (12, 'none', {})):
+            issue = issues.create({'title': f'Q{uuid.uuid4().hex[:6]}', 'intro': f'I{uuid.uuid4().hex[:6]}',
+                                   'kind': 'online'}, author, lang='nl')
+            issue.phase = 'vervolg'
+            db.session.flush()
+            made.append(issue.id)
+            db.session.add(IssueParticipationStats(issue_id=issue.id, voters=voters, answered=voters // 2,
+                                                   age_level=level, counts=json.dumps(counts)))
+            db.session.commit()
+            page = _req(_client(app, author, lang), 'GET', f'/vraagstuk/{issue.id}').get_data(as_text=True)
+            start = page.index('id="wie-stemde-mee"')
+            pages.append('<section ' + page[start:page.index('</header>', start)])
+        content = _content(db)
+        found = [t for block in pages for t in _interface_texts(block, content) if WORD.search(t)]
+        assert found == []
+    finally:
+        for issue_id in made:
+            _cleanup(issue_id)

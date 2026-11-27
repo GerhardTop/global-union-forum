@@ -75,3 +75,7 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 | Who votes? | Wie stemt er mee? | ¿Quién vota? | De kop boven de vrijwillige vragen; kort en neutraal. |
 | Prefer not to say | Zeg ik liever niet | Prefiero no decirlo | Het gangbare antwoord in Spaanstalige formulieren. |
 | education: Basic / Secondary / Higher | Basis / Middelbaar / Hoger | Básica / Media / Superior | De drie ISCED-niveaus (0 tot en met 2, 3 en 4, 5 tot en met 8), zoals "educación básica, media, superior"; de uitleg noemt "secundaria completa" en formación profesional (niet "bachillerato": dat betekent per land iets anders), nooit mbo of hbo. |
+| Who voted (block) | Wie stemde mee | Quién votó | Het blok bij de uitslag met de samenstelling van de stemmers. |
+| Not filled in | Niet ingevuld | Sin respuesta | Niets ingevuld, "zeg ik liever niet" of samengevoegd. |
+| Smaller groups combined / Other countries combined | Kleinere groepen samen / Andere landen samen | Grupos más pequeños juntos / Otros países juntos | Groepen onder de 10 mensen, samen getoond. |
+| Frozen (the totals at the end of voting) | Bevroren | Fijado | De totalen worden één keer vastgelegd aan het eind van de stemfase en daarna niet meer gewijzigd. |

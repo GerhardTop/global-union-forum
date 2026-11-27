@@ -97,6 +97,7 @@ def _deadline(issue, phase, start):
 
 def set_phase(issue, phase, start):
     """Zet de fase met een nieuw begin en een nieuwe deadline. Commit niet zelf."""
+    old = issue.phase
     issue.phase = phase
     issue.phase_started_at = start
     issue.phase_deadline = _deadline(issue, phase, start)
@@ -106,6 +107,13 @@ def set_phase(issue, phase, start):
         # Background figures: everyone votes on the same figures.
         from app import background_figures
         background_figures.freeze_for_issue(issue.id, now=start)   # the moment voting started
+    # Representativeness 1d: who voted, frozen once when the voting phase ends
+    # (forward, not a reopen); an old wrapped proposal gets no block.
+    phases = issue.phases
+    if (old == 'stemmen' and phase in phases and phases.index(phase) > phases.index('stemmen')
+            and not is_wrapper(issue)):
+        from app import participants
+        participants.freeze_for_issue(issue, now=start)
 
 
 def last_quality_at(issue):

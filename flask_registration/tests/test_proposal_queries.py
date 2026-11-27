@@ -227,3 +227,52 @@ def test_queries_with_the_participant_card(app, db, make_user, monkeypatch):
         assert with_flag == off + PARTICIPANT_CARD_QUERIES
     finally:
         _cleanup(issue_id)
+
+
+# Representativeness 1d: with the switch on, the issue page reads the frozen
+# row of "Who voted" with one query, and the proposal page after voting one
+# (the line under the result), at 1 and at 5 proposals. (In the follow-up
+# phase these pages already grow with the number of proposals, switch off
+# too; that is older than this step and measured here only as the base.)
+PARTICIPATION_QUERIES = 1
+
+
+@pytest.mark.parametrize('who', ['visitor', 'member'])
+def test_queries_with_who_voted(app, db, make_user, monkeypatch, who):
+    import json
+    from app.models import IssueParticipationStats
+    counts, made = {}, []
+    try:
+        for n in (1, 5):
+            issue, proposals, member = _world(db, make_user, n)
+            issue.phase, issue.support_threshold = 'vervolg', 1   # voting is over: the result and its line
+            db.session.add(IssueParticipationStats(issue_id=issue.id, voters=40, answered=20, age_level='coarse',
+                                                   counts=json.dumps({'age': [['17_44', 20], ['45_plus', 10], ['na', 10]],
+                                                                      'gender': [['na', 40]], 'education': [['na', 40]],
+                                                                      'country': [['na', 40]]})))
+            db.session.commit()
+            made.append(issue.id)
+            user_id = member.id if who == 'member' else None
+            pages = PAGES(issue, proposals)
+            for switch in (False, True):
+                monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', switch)
+                for page, path in pages:
+                    from app.models import User
+                    client = _client(app, db.session.get(User, user_id) if user_id else None, 'nl')
+                    _req(client, 'GET', path)
+                    db.session.commit()
+                    db.session.expunge_all()
+                    with _count_queries() as queries:
+                        resp = _req(client, 'GET', path)
+                    html = resp.get_data(as_text=True)
+                    assert resp.status_code == 200
+                    shown = 'id="wie-stemde-mee"' in html if page != 'proposal' else 'deelnemers in dit vraagstuk' in html
+                    assert shown == switch, (page, switch)
+                    counts[(n, page, switch)] = len(queries)
+    finally:
+        for issue_id in made:
+            _cleanup(issue_id)
+    print(f'\nwho voted query counts ({who}):', counts)
+    for n in (1, 5):
+        for page in ('issue', 'issue enlarged', 'proposal'):
+            assert counts[(n, page, True)] == counts[(n, page, False)] + PARTICIPATION_QUERIES, (n, page, counts)

@@ -85,6 +85,9 @@
         {% endif %}
       </section>
       {% include 'issues/_lifecycle.html' %}
+      {%- if participation %}
+      {% include 'issues/_participation.html' %}
+      {%- endif %}
     </header>
 
     <div class="gu-cockpit__grid">

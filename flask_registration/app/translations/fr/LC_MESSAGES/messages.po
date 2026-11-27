@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 22:30+0100\n"
+"POT-Creation-Date: 2026-11-27 22:42+0100\n"
 "PO-Revision-Date: 2026-11-22 15:18+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -307,7 +307,7 @@ msgid "Forum · proposal"
 msgstr "Forum · proposition"
 
 #: app/models.py:250 app/templates/issues/new.html:23
-#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:95
+#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:98
 #: app/templates/moderator/melding_beoordelen.html:68
 msgid "Issue"
 msgstr "Dossier"
@@ -643,6 +643,48 @@ msgstr "Supérieur"
 msgid "College or university"
 msgstr "Université, BTS ou grande école"
 
+#. TRANSLATORS: a heading in the block "Who voted" (the age groups of the
+#. voters).
+#: app/participants.py:353
+msgid "Age"
+msgstr "Âge"
+
+#. TRANSLATORS: a heading in the block "Who voted".
+#: app/participants.py:356
+msgid "Gender"
+msgstr "Genre"
+
+#. TRANSLATORS: a heading in the block "Who voted" (the level of education of
+#. the voters).
+#: app/participants.py:359
+msgid "Education"
+msgstr "Études"
+
+#. TRANSLATORS: a heading in the block "Who voted" (the country where the
+#. voters live).
+#. landenlijst, tekst 11
+#: app/participants.py:361 app/templates/landenlijst.html:64
+msgid "Country"
+msgstr "Pays"
+
+#. TRANSLATORS: in the block "Who voted": nothing filled in, "prefer not to
+#. say", or merged in.
+#: app/participants.py:367
+msgid "Not filled in"
+msgstr "Non renseigné"
+
+#. TRANSLATORS: in the block "Who voted": groups smaller than 10 people, shown
+#. together.
+#: app/participants.py:370
+msgid "Smaller groups combined"
+msgstr "Petits groupes regroupés"
+
+#. TRANSLATORS: in the block "Who voted": the countries with fewer than 10
+#. voters, together.
+#: app/participants.py:373
+msgid "Other countries combined"
+msgstr "Autres pays regroupés"
+
 #: app/quality.py:37 app/templates/forum/quality.html:96
 msgid "New argument"
 msgstr "Nouvel argument"
@@ -893,9 +935,9 @@ msgstr "Dossiers"
 #: app/templates/issues/proposal.html:46 app/templates/issues/proposal.html:63
 #: app/templates/issues/proposal.html:321
 #: app/templates/issues/proposal.html:323
-#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:98
-#: app/templates/issues/show.html:149 app/templates/issues/show.html:151
-#: app/templates/issues/show.html:152 app/templates/issues/show.html:191
+#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:101
+#: app/templates/issues/show.html:152 app/templates/issues/show.html:154
+#: app/templates/issues/show.html:155 app/templates/issues/show.html:194
 #: app/templates/moderator/beheer.html:84
 msgid "Proposals"
 msgstr "Propositions"
@@ -1035,11 +1077,11 @@ msgstr "Un message déplacé ou masqué ne peut pas être modifié. Vous pouvez 
 msgid "edited %(when)s"
 msgstr "modifié %(when)s"
 
-#: app/routes/forum.py:1529 app/routes/issues.py:359
+#: app/routes/forum.py:1529 app/routes/issues.py:363
 msgid "Give a reason for your report."
 msgstr "Indiquez un motif pour votre signalement."
 
-#: app/routes/forum.py:1538 app/routes/issues.py:365
+#: app/routes/forum.py:1538 app/routes/issues.py:369
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Merci, votre signalement a été transmis à un modérateur."
 
@@ -1063,60 +1105,60 @@ msgstr "Faire des propositions"
 msgid "Adjust the proposals"
 msgstr "Ajuster les propositions"
 
-#: app/routes/issues.py:593
+#: app/routes/issues.py:604
 msgid "You already support this proposal."
 msgstr "Vous soutenez déjà cette proposition."
 
-#: app/routes/issues.py:654
+#: app/routes/issues.py:665
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Choisissez au moins un fait qui n'est pas encore lié."
 
-#: app/routes/issues.py:790
+#: app/routes/issues.py:801
 msgid "The issue is now in the next phase."
 msgstr "Le dossier est maintenant dans la phase suivante."
 
-#: app/routes/issues.py:806 app/routes/issues.py:826
+#: app/routes/issues.py:817 app/routes/issues.py:837
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "Le texte peut compter au maximum %(n)s caractères."
 
-#: app/routes/issues.py:858
+#: app/routes/issues.py:869
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Cochez la case pour confirmer que vous voulez rouvrir le dossier."
 
-#: app/routes/issues.py:863
+#: app/routes/issues.py:874
 msgid "The issue is open again for discussion."
 msgstr "Le dossier est de nouveau ouvert au débat."
 
-#: app/routes/issues.py:885
+#: app/routes/issues.py:896
 msgid "The issue has been archived."
 msgstr "Le dossier a été archivé."
 
-#: app/routes/issues.py:900
+#: app/routes/issues.py:911
 msgid "The issue is back from the archive."
 msgstr "Le dossier est sorti des archives."
 
-#: app/routes/issues.py:919
+#: app/routes/issues.py:930
 msgid "Type the exact title to confirm."
 msgstr "Saisissez le titre exact pour confirmer."
 
-#: app/routes/issues.py:925
+#: app/routes/issues.py:936
 msgid "The issue has been deleted."
 msgstr "Le dossier a été supprimé."
 
-#: app/routes/issues.py:947
+#: app/routes/issues.py:958
 msgid "Type the exact text to confirm."
 msgstr "Saisissez le texte exact pour confirmer."
 
-#: app/routes/issues.py:954
+#: app/routes/issues.py:965
 msgid "The proposal has been deleted."
 msgstr "La proposition a été supprimée."
 
-#: app/routes/issues.py:1074
+#: app/routes/issues.py:1085
 msgid "The proposal is hidden."
 msgstr "La proposition est masquée."
 
-#: app/routes/issues.py:1074
+#: app/routes/issues.py:1085
 msgid "The proposal is visible again."
 msgstr "La proposition est de nouveau visible."
 
@@ -1360,7 +1402,7 @@ msgstr "Original en %(language)s"
 
 #: app/templates/_mt.html:55 app/templates/_mt.html:66
 #: app/templates/_mt.html:113 app/templates/_mt.html:126
-#: app/templates/forum/quality.html:32 app/templates/issues/_ip_vote.html:43
+#: app/templates/forum/quality.html:32 app/templates/issues/_ip_vote.html:47
 msgid "Show original"
 msgstr "Afficher l'original"
 
@@ -1414,7 +1456,7 @@ msgid "Everyone speaks with one voice. More than one account per person is not a
 msgstr "Chaque personne parle d'une seule voix. Avoir plusieurs comptes est interdit, même sous un autre pseudonyme."
 
 #: app/templates/_rules_list.html:41 app/templates/forum/_proposal_vote.html:58
-#: app/templates/issues/_ip_vote.html:89
+#: app/templates/issues/_ip_vote.html:93
 msgid "Quality guidelines"
 msgstr "Lignes directrices de qualité"
 
@@ -1906,11 +1948,6 @@ msgstr "≥ 6,0"
 #: app/templates/landenlijst.html:47
 msgid "≥ 0.70"
 msgstr "≥ 0,70"
-
-#. landenlijst, tekst 11
-#: app/templates/landenlijst.html:64
-msgid "Country"
-msgstr "Pays"
 
 #. landenlijst, tekst 12
 #: app/templates/landenlijst.html:68
@@ -2790,7 +2827,7 @@ msgstr "Hebdomadaire"
 #: app/templates/admin/proposal_limits.html:43
 #: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:62
 #: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:111
-#: app/templates/issues/_ip_vote.html:76
+#: app/templates/issues/_ip_vote.html:80
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
@@ -2980,7 +3017,7 @@ msgstr "Modérateur senior avec plus de %(senior_min)s contributions de qualité
 msgid "Status ladder"
 msgstr "Échelle des statuts"
 
-#: app/templates/issues/show.html:209 app/templates/profile.html:60
+#: app/templates/issues/show.html:212 app/templates/profile.html:60
 msgid "You have the right to vote."
 msgstr "Vous avez le droit de vote."
 
@@ -2989,7 +3026,7 @@ msgstr "Vous avez le droit de vote."
 msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
 msgstr "En route vers le droit de vote : %(quality_count)s contributions de qualité sur %(needed)s."
 
-#: app/templates/issues/show.html:213 app/templates/profile.html:65
+#: app/templates/issues/show.html:216 app/templates/profile.html:65
 msgid "Progress to the right to vote"
 msgstr "Progression vers le droit de vote"
 
@@ -3096,29 +3133,31 @@ msgstr "Les messages dans une autre langue sont traduits automatiquement à l'ou
 
 #. profile, the eyebrow of the section with the voluntary questions about
 #. yourself.
-#: app/templates/issues/_ip_vote.html:79 app/templates/profile.html:213
+#: app/templates/issues/_ip_vote.html:83 app/templates/profile.html:213
 msgid "About me"
 msgstr "À propos de moi"
 
 #. profile, About me: the title of the voluntary questions (who takes part in
 #. the votes).
-#: app/templates/issues/_ip_vote.html:70 app/templates/profile.html:215
+#: app/templates/issues/_ip_vote.html:74 app/templates/profile.html:215
 msgid "Who votes?"
 msgstr "Qui vote ?"
 
 #. a small label: answering is voluntary.
-#: app/templates/issues/_ip_vote.html:70 app/templates/profile.html:216
+#: app/templates/issues/_ip_vote.html:74 app/templates/profile.html:216
 msgid "Voluntary"
 msgstr "Facultatif"
 
 #. profile, About me: why we ask. "results": the outcome of the votes of an
 #. issue.
-#: app/templates/issues/_ip_vote.html:71 app/templates/profile.html:218
+#: app/templates/issues/_ip_vote.html:75 app/templates/profile.html:218
 msgid "When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what."
 msgstr "Lors des résultats, nous montrons la composition du groupe de votants, uniquement par groupes d'au moins 10 personnes. Jamais qui a voté quoi."
 
 #. a link to the privacy statement.
-#: app/templates/issues/_ip_vote.html:72 app/templates/profile.html:219
+#: app/templates/issues/_ip_vote.html:76
+#: app/templates/issues/_participation.html:18
+#: app/templates/issues/_participation.html:69 app/templates/profile.html:219
 msgid "Why we ask this"
 msgstr "Pourquoi nous le demandons"
 
@@ -4058,7 +4097,7 @@ msgstr "Contre"
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:48 app/templates/issues/chart.html:25
-#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:109
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:112
 msgid "Neutral"
 msgstr "Neutre"
 
@@ -4312,7 +4351,7 @@ msgstr "Contribution déplacée en raison des règles de conduite"
 #: app/templates/forum/_proposal_status.html:10
 #: app/templates/forum/_proposal_vote.html:40
 #: app/templates/issues/_ip_status.html:16
-#: app/templates/issues/_ip_vote.html:47
+#: app/templates/issues/_ip_vote.html:51
 #, python-format
 msgid "Voting open until %(date)s"
 msgstr "Vote ouvert jusqu'au %(date)s"
@@ -4444,18 +4483,18 @@ msgid "Round %(n)s (%(kind)s)"
 msgstr "Tour %(n)s (%(kind)s)"
 
 #: app/templates/forum/_proposal_vote.html:51
-#: app/templates/issues/_ip_vote.html:57
+#: app/templates/issues/_ip_vote.html:61
 #, python-format
 msgid "Your vote: %(choice)s. You can change it until voting closes."
 msgstr "Votre vote : %(choice)s. Vous pouvez le modifier jusqu'à la clôture du vote."
 
 #: app/templates/forum/_proposal_vote.html:52
-#: app/templates/issues/_ip_vote.html:58
+#: app/templates/issues/_ip_vote.html:62
 msgid "You can change your vote until voting closes."
 msgstr "Vous pouvez modifier votre vote jusqu'à la clôture du vote."
 
 #: app/templates/forum/_proposal_vote.html:56
-#: app/templates/issues/_ip_vote.html:87
+#: app/templates/issues/_ip_vote.html:91
 msgid "You do not have voting rights yet"
 msgstr "Vous n'avez pas encore le droit de vote"
 
@@ -4464,28 +4503,28 @@ msgid "You earn voting rights with quality contributions: contributions that rec
 msgstr "Vous obtenez le droit de vote grâce aux contributions de qualité : des contributions qui reçoivent le label de qualité."
 
 #: app/templates/forum/_proposal_vote.html:61
-#: app/templates/issues/_ip_vote.html:92
+#: app/templates/issues/_ip_vote.html:96
 msgid "Log in to vote."
 msgstr "Connectez-vous pour voter."
 
 #: app/templates/forum/_proposal_vote.html:67
-#: app/templates/issues/_ip_vote.html:97
+#: app/templates/issues/_ip_vote.html:101
 msgid "Running tally"
 msgstr "Résultats provisoires"
 
 #: app/templates/forum/_proposal_vote.html:74
-#: app/templates/issues/_ip_vote.html:103
+#: app/templates/issues/_ip_vote.html:107
 #, python-format
 msgid "%(pct)s%% in favour of the valid votes"
 msgstr "%(pct)s %% pour, sur les votes valables"
 
 #: app/templates/forum/_proposal_vote.html:77
-#: app/templates/issues/_ip_vote.html:106
+#: app/templates/issues/_ip_vote.html:110
 msgid "Nobody has voted yet."
 msgstr "Personne n'a encore voté."
 
 #: app/templates/forum/_proposal_vote.html:78
-#: app/templates/issues/_ip_vote.html:107
+#: app/templates/issues/_ip_vote.html:111
 #, python-format
 msgid "One person has voted so far."
 msgid_plural "%(num)d people have voted so far."
@@ -4493,7 +4532,7 @@ msgstr[0] "%(num)d personne a voté jusqu'ici."
 msgstr[1] "%(num)d personnes ont voté jusqu'ici."
 
 #: app/templates/forum/_proposal_vote.html:79
-#: app/templates/issues/_ip_vote.html:108
+#: app/templates/issues/_ip_vote.html:112
 msgid "The tally is shown when voting closes."
 msgstr "La répartition s'affiche à la clôture du vote."
 
@@ -5071,7 +5110,9 @@ msgstr "%(name)s affiché"
 msgid "Chart"
 msgstr "Graphique"
 
+#. a switch in the block "Who voted": show the groups as a table.
 #: app/templates/issues/_chart_block.html:27
+#: app/templates/issues/_participation.html:28
 msgid "Table"
 msgstr "Tableau"
 
@@ -5217,13 +5258,13 @@ msgstr "moins"
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:47 app/templates/issues/chart.html:25
-#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:109
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:112
 msgid "Argues for"
 msgstr "Plaide pour"
 
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23 app/templates/issues/chart.html:25
-#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:109
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:112
 msgid "Argues against"
 msgstr "Plaide contre"
 
@@ -5270,7 +5311,7 @@ msgid "No facts with this direction."
 msgstr "Aucun fait dans ce sens."
 
 #: app/templates/issues/_facts_big.html:77
-#: app/templates/issues/proposal.html:140 app/templates/issues/show.html:119
+#: app/templates/issues/proposal.html:140 app/templates/issues/show.html:122
 msgid "No facts yet."
 msgstr "Pas encore de faits."
 
@@ -5359,57 +5400,75 @@ msgstr "Voter"
 msgid "This proposal is not on the voting list. Only proposals with enough support are voted on."
 msgstr "Cette proposition n'est pas sur la liste de vote. Seules les propositions qui ont assez de soutiens sont soumises au vote."
 
-#: app/templates/issues/_ip_vote.html:31
+#. under the result of a proposal; %(num)d is the number of voters of the
+#. issue, followed by a link "Who voted".
+#: app/templates/issues/_ip_vote.html:33
+#, python-format
+msgid "%(num)d participant in this issue"
+msgid_plural "%(num)d participants in this issue"
+msgstr[0] "%(num)d participant à ce dossier"
+msgstr[1] "%(num)d participants à ce dossier"
+
+#. the heading of the block with the make-up of the voters of an issue (age,
+#. gender, education, country).
+#: app/templates/issues/_ip_vote.html:33
+#: app/templates/issues/_participation.html:16
+#: app/templates/issues/_participation.html:22
+#: app/templates/issues/_participation.html:26
+msgid "Who voted"
+msgstr "Qui a voté"
+
+#: app/templates/issues/_ip_vote.html:35
 #, python-format
 msgid "Your vote: %(choice)s."
 msgstr "Votre vote : %(choice)s."
 
 #. in the vote block, under a proposal statement shown in a translation.
 #. %(language)s is the original language in its base form, e.g. "Dutch".
-#: app/templates/issues/_ip_vote.html:41
+#: app/templates/issues/_ip_vote.html:45
 #, python-format
 msgid "You vote on the original text (%(language)s)."
 msgstr "Vous votez sur le texte original (%(language)s)."
 
-#: app/templates/issues/_ip_vote.html:43
+#: app/templates/issues/_ip_vote.html:47
 msgid "Hide original"
 msgstr "Masquer l'original"
 
 #. the card with the voluntary questions, right after the first vote.
-#: app/templates/issues/_ip_vote.html:71
+#: app/templates/issues/_ip_vote.html:75
 msgid "Your vote has been saved. May we ask you something else?"
 msgstr "Votre vote a été enregistré. Pouvons-nous vous poser encore quelques questions ?"
 
 #. the card after the first vote: answering the questions has no effect on the
 #. vote.
-#: app/templates/issues/_ip_vote.html:72
+#: app/templates/issues/_ip_vote.html:76
 msgid "Your vote counts either way."
 msgstr "Votre vote compte dans tous les cas."
 
 #. a button on the card after the first vote: do not answer the voluntary
 #. questions.
-#: app/templates/issues/_ip_vote.html:77
+#: app/templates/issues/_ip_vote.html:81
 msgid "Skip"
 msgstr "Passer"
 
 #. the card after the first vote; %(about_me)s is a link to the profile section
 #. "About me".
-#: app/templates/issues/_ip_vote.html:80
+#: app/templates/issues/_ip_vote.html:84
 #, python-format
 msgid "We only ask this once. You can always fill it in, change it or clear it in your profile, under %(about_me)s."
 msgstr "Nous ne le demandons qu'une fois. Vous pouvez toujours le remplir, le modifier ou l'effacer dans votre profil, sous %(about_me)s."
 
 #. after saving the voluntary questions from the card after the first vote.
-#: app/templates/issues/_ip_vote.html:83
+#: app/templates/issues/_ip_vote.html:87
 msgid "Thank you. Your answers are in your profile under About me."
 msgstr "Merci. Vos réponses se trouvent dans votre profil, sous À propos de moi."
 
-#: app/templates/issues/_ip_vote.html:88 app/templates/issues/_ip_vote.html:92
+#: app/templates/issues/_ip_vote.html:92 app/templates/issues/_ip_vote.html:96
 #, python-format
 msgid "You may vote after %(n)s quality contributions: contributions that receive the quality mark."
 msgstr "Vous pourrez voter après %(n)s contributions de qualité : des contributions qui reçoivent le label de qualité."
 
-#: app/templates/issues/_ip_vote.html:113
+#: app/templates/issues/_ip_vote.html:117
 msgid "Voting on proposals on the voting list opens in the voting phase."
 msgstr "Le vote sur les propositions de la liste de vote s'ouvre pendant la phase Vote."
 
@@ -5471,6 +5530,66 @@ msgstr "par %(name)s"
 msgid "Delete this update?"
 msgstr "Supprimer cette mise à jour ?"
 
+#. the block "Who voted" with fewer than 30 voters.
+#: app/templates/issues/_participation.html:17
+msgid "Too few participants to show who voted (fewer than 30)."
+msgstr "Trop peu de participants pour montrer qui a voté (moins de 30)."
+
+#. the block "Who voted" with fewer than 30 voters: why nothing is shown.
+#: app/templates/issues/_participation.html:18
+msgid "This way nobody can be recognised."
+msgstr "Ainsi, personne n'est reconnaissable."
+
+#. the block "Who voted"; %(num)d is the number of voters of the issue.
+#: app/templates/issues/_participation.html:23
+#, python-format
+msgid "%(num)d participant voted on at least one proposal."
+msgid_plural "%(num)d participants voted on at least one proposal."
+msgstr[0] "%(num)d participant a voté sur au moins une proposition."
+msgstr[1] "%(num)d participants ont voté sur au moins une proposition."
+
+#. the block "Who voted"; %(answered)s is a number of voters, %(pct)s their
+#. percentage.
+#: app/templates/issues/_participation.html:24
+#, python-format
+msgid "%(answered)s of them (%(pct)s) answered at least one question."
+msgstr "Parmi eux, %(answered)s (%(pct)s) ont répondu à au moins une question."
+
+#. a switch in the block "Who voted": show the groups as bars.
+#: app/templates/issues/_participation.html:27
+msgid "Bars"
+msgstr "Barres"
+
+#. the block "Who voted": too few birth years to show age groups.
+#: app/templates/issues/_participation.html:37
+#: app/templates/issues/_participation.html:54
+msgid "Not enough answers to show."
+msgstr "Pas assez de réponses pour l'afficher."
+
+#. a column of the table in the block "Who voted": the number of people.
+#: app/templates/issues/_participation.html:56
+msgid "Group"
+msgstr "Groupe"
+
+#: app/templates/issues/_participation.html:56
+msgid "Share"
+msgstr "Part"
+
+#: app/templates/issues/_participation.html:56
+msgid "People"
+msgstr "Personnes"
+
+#. the explanation under the block "Who voted".
+#: app/templates/issues/_participation.html:68
+msgid "Self-reported and voluntary. Percentages of all voters, rounded. Age groups as fine as the number of voters allows. Other groups smaller than 10 are combined. This says nothing about who voted what."
+msgstr "Données déclarées et facultatives. Pourcentages de tous les votants, arrondis. Tranches d'âge aussi fines que le nombre de votants le permet. Les autres groupes de moins de 10 personnes sont regroupés. Cela ne dit rien sur qui a voté quoi."
+
+#. under the block "Who voted"; %(date)s is a date.
+#: app/templates/issues/_participation.html:69
+#, python-format
+msgid "Frozen on %(date)s, at the end of the voting phase."
+msgstr "Arrêté le %(date)s, à la fin du vote."
+
 #: app/templates/issues/_proposals_big.html:19
 msgid "Collecting support"
 msgstr "Recueille des soutiens"
@@ -5504,7 +5623,7 @@ msgid "No proposals with this status."
 msgstr "Aucune proposition avec ce statut."
 
 #: app/templates/issues/_proposals_big.html:57
-#: app/templates/issues/show.html:186 app/templates/moderator/beheer.html:137
+#: app/templates/issues/show.html:189 app/templates/moderator/beheer.html:137
 msgid "No proposals yet."
 msgstr "Pas encore de propositions."
 
@@ -5596,9 +5715,9 @@ msgstr "Retour au dossier"
 
 #: app/templates/issues/chart.html:20 app/templates/issues/proposal.html:61
 #: app/templates/issues/proposal.html:69 app/templates/issues/proposal.html:71
-#: app/templates/issues/show.html:96 app/templates/issues/show.html:103
-#: app/templates/issues/show.html:105 app/templates/issues/show.html:106
-#: app/templates/issues/show.html:123
+#: app/templates/issues/show.html:99 app/templates/issues/show.html:106
+#: app/templates/issues/show.html:108 app/templates/issues/show.html:109
+#: app/templates/issues/show.html:126
 msgid "Facts and background"
 msgstr "Faits et contexte"
 
@@ -5946,13 +6065,13 @@ msgstr "Ajouter un autre fait"
 msgid "Start issue"
 msgstr "Lancer le dossier"
 
-#: app/templates/issues/proposal.html:35 app/templates/issues/show.html:105
-#: app/templates/issues/show.html:134 app/templates/issues/show.html:151
+#: app/templates/issues/proposal.html:35 app/templates/issues/show.html:108
+#: app/templates/issues/show.html:137 app/templates/issues/show.html:154
 msgid "Enlarge"
 msgstr "Agrandir"
 
-#: app/templates/issues/proposal.html:36 app/templates/issues/show.html:106
-#: app/templates/issues/show.html:135 app/templates/issues/show.html:152
+#: app/templates/issues/proposal.html:36 app/templates/issues/show.html:109
+#: app/templates/issues/show.html:138 app/templates/issues/show.html:155
 msgid "Reduce"
 msgstr "Réduire"
 
@@ -5978,9 +6097,9 @@ msgstr "Délier"
 
 #: app/templates/issues/proposal.html:104
 #: app/templates/issues/proposal.html:138
-#: app/templates/issues/proposal.html:336 app/templates/issues/show.html:123
-#: app/templates/issues/show.html:124 app/templates/issues/show.html:191
-#: app/templates/issues/show.html:192
+#: app/templates/issues/proposal.html:336 app/templates/issues/show.html:126
+#: app/templates/issues/show.html:127 app/templates/issues/show.html:194
+#: app/templates/issues/show.html:195
 msgid "Show more"
 msgstr "Afficher plus"
 
@@ -6109,7 +6228,7 @@ msgstr "Retirer la proposition"
 msgid "You can withdraw your own proposal as long as nobody has reacted yet."
 msgstr "Vous pouvez retirer votre propre proposition tant que personne n'y a réagi."
 
-#: app/templates/issues/proposal.html:322 app/templates/issues/show.html:150
+#: app/templates/issues/proposal.html:322 app/templates/issues/show.html:153
 msgid "New proposal"
 msgstr "Nouvelle proposition"
 
@@ -6192,29 +6311,29 @@ msgstr "La plateforme s'ouvre aux contributions le %(date)s."
 msgid "The platform is not open for contributions right now. See the days of the event in the introduction."
 msgstr "La plateforme n'est pas ouverte aux contributions pour le moment. Consultez les jours de l'événement dans l'introduction."
 
-#: app/templates/issues/show.html:97 app/templates/issues/show.html:133
-#: app/templates/issues/show.html:134 app/templates/issues/show.html:135
+#: app/templates/issues/show.html:100 app/templates/issues/show.html:136
+#: app/templates/issues/show.html:137 app/templates/issues/show.html:138
 msgid "Discussion"
 msgstr "Débat"
 
-#: app/templates/issues/show.html:140
+#: app/templates/issues/show.html:143
 msgid "This issue has no discussion yet."
 msgstr "Ce dossier n'a pas encore de débat."
 
-#: app/templates/issues/show.html:204
+#: app/templates/issues/show.html:207
 msgid "Your right to vote"
 msgstr "Votre droit de vote"
 
-#: app/templates/issues/show.html:211
+#: app/templates/issues/show.html:214
 #, python-format
 msgid "%(count)s of %(needed)s quality marks for the right to vote"
 msgstr "%(count)s sur %(needed)s labels de qualité pour le droit de vote"
 
-#: app/templates/issues/show.html:214
+#: app/templates/issues/show.html:217
 msgid "You earn a quality mark with a well argued contribution to a discussion."
 msgstr "Vous obtenez un label de qualité avec une contribution bien argumentée à un débat."
 
-#: app/templates/issues/show.html:217
+#: app/templates/issues/show.html:220
 msgid "to see your right to vote."
 msgstr "pour voir votre droit de vote."
 
