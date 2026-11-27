@@ -42,7 +42,7 @@
   {% if not shown and not average_on %}
   <p class="gu-chartpage__empty">{{ _('Everything is hidden. Switch a country on to see the chart.') }}</p>
   {% elif state.view == 'tabel' %}
-  {{ chart_table(view, _('Table: %(title)s, per year', title=title), _('Year'), _('no value')) }}
+  {{ chart_table(view, _('Table: %(title)s, per year', title=title), _('Year'), _('no value'), flag_text) }}
   {% else %}
   {% if average_on %}
   {% set label = _('Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s, with %(average)s.', title=title, start=view.years[0], end=view.years[-1], countries=countries_text, average=average) %}
@@ -51,5 +51,9 @@
   {% endif %}
   {{ chart_large(view, label) }}
   {% endif %}
-  <p class="gu-chartpage__foot">{{ _('Source') }}: <a href="{{ snapshot.source_url }}" target="_blank" rel="noopener noreferrer">{{ _('%(citation)s, via Our World in Data', citation=citation) }}</a>{% if fetched %} <span aria-hidden="true">·</span> {{ _('Retrieved on %(date)s', date=fetched) }}{% endif %}</p>
+  <p class="gu-chartpage__foot">{{ _('Source') }}: <a href="{{ snapshot.source_url }}" target="_blank" rel="noopener noreferrer">
+    {%- if eurostat_chart %}{% if updated %}{{ _('Eurostat (%(code)s), last update %(date)s', code=code, date=updated) }}{% else %}Eurostat ({{ code }}){% endif %}
+    {%- else %}{{ _('%(citation)s, via Our World in Data', citation=citation) }}{% endif %}</a>{% if fetched %} <span aria-hidden="true">·</span> {{ _('Retrieved on %(date)s', date=fetched) }}{% endif %}</p>
+  {#- The notes on the flags for "About these figures", swapped along by chart_page.js. -#}
+  <template data-chart-notes-fresh>{% include 'issues/_chart_notes.html' %}</template>
 </div>

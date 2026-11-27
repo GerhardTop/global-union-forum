@@ -23,6 +23,12 @@ The suite never goes on the network.
   - `tps00203_pc_act.json`: the same with unit=PC_ACT (flags b and d).
   - `ei_hppi_q.json`: House price index, quarterly only (freq Q: unsupported
     in this step). Eurostat has no annual main table for house prices.
+  - `tessi162.json` (fetched 27 November 2026, step 3c): Housing cost
+    overburden rate by income quintile, QU1 to QU5 and no total (no_total).
+
+Step 3c added five lines of the table of contents of 27 November 2026 at the
+end of `toc.txt`: tessi162, tipsna50 and three waste tables "per capita"
+(cei_pc031, cei_pc040, cei_pc050), for the search per term.
 
 Licence: Eurostat data, CC BY 4.0, source: Eurostat
 (https://ec.europa.eu/eurostat/about-us/policies/copyright). Eurostat is not

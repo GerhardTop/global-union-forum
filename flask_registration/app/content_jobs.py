@@ -112,6 +112,8 @@ def _parts(obj):
         snapshot = chart.current_snapshot if chart is not None else None
         if snapshot is not None:   # the definition and unit as the source gives them (English)
             parts += [(snapshot, 'definition'), (snapshot, 'unit')]
+            # Step 3c (Eurostat): the selection and the labels of the flags, as short fields.
+            parts += [(snapshot, field) for field in content_i18n.label_fields(snapshot)]
     return parts
 
 

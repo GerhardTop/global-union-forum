@@ -239,6 +239,7 @@ def chart_page(issue_id, post_id):
     from flask_babel import format_date
     from app import background_figures as bf
     from app.models import IssueProposalFact
+    from app.sources import eurostat
     issue = _issue_or_404(issue_id)
     fact = db.session.get(Post, post_id)
     if (fact is None or issue.thread_id is None or fact.thread_id != issue.thread_id or not fact.is_fact
@@ -256,8 +257,11 @@ def chart_page(issue_id, post_id):
     lang = i18n.current()
     content_i18n.preload([fact], 'fact_title', 'body')
     content_i18n.preload([chart], 'average_name')
-    content_i18n.preload([snapshot], 'definition', 'unit')
+    label_fields = content_i18n.label_fields(snapshot)   # step 3c: selection and flags (Eurostat)
+    content_i18n.preload([snapshot], 'definition', 'unit', *label_fields)
     view = bf.page_view(chart, snapshot, state, lang)
+    eurostat_chart = chart.source == 'eurostat'
+    updated = eurostat.last_update(snapshot.metadata_raw) if eurostat_chart else None
     names, average = bf.display_names(chart, snapshot, lang)
     countries = [k for k in state.keys if k != chart.average_key]
     shown = [k for k in countries if k not in state.hidden]
@@ -268,6 +272,10 @@ def chart_page(issue_id, post_id):
                fetched=format_date(snapshot.fetched_at, 'medium') if snapshot.fetched_at else '',
                frozen=format_date(snapshot.frozen_at, 'medium') if snapshot.frozen_at else '',
                chosen=format_date(fact.created_at, 'medium') if fact.created_at else '',
+               source_name=bf.source_name(chart), eurostat_chart=eurostat_chart, code=chart.slug,
+               updated=format_date(updated, 'medium') if updated else '',
+               flag_text={f: content_i18n.display(snapshot, f'label:flag:{f}', lang) for f in view.flags},
+               has_selection='label:selection' in label_fields,
                base_url=url_for('issues.chart_page', issue_id=issue.id, post_id=fact.id))
     if fragment:
         return render_template('issues/_chart_block.html', **ctx)

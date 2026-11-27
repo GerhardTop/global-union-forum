@@ -4,7 +4,8 @@ Bronnen punt 2).
 refresh_catalog() keeps a local catalogue of Eurostat's main tables (type
 "table" in the table of contents) and, since step 3b, the datasets with
 yearly figures only (data start and end a bare year); search_catalog()
-searches it, main tables first. fetch(code)
+searches it per term (step 3c), with fixed places for main tables and
+datasets. is_measure() and is_total() sort the dimensions (step 3c). fetch(code)
 gets one table as JSON-stat 2.0 from the Statistics API; parse(jsonstat,
 code) turns it into a ParsedChart, the same type as for Our World in Data,
 so snapshot_data and create_snapshot of app/sources/owid.py work for both.
@@ -177,37 +178,120 @@ def catalog_due(now=None):
 
 _WORD = re.compile(r'[a-z0-9]+')
 
+# Step 3c: words that do not count when searching (docs/achtergrondcijfers.md,
+# Bronnen punt 2): small words, and words that sit in the titles of many
+# unrelated tables ("per capita" hit packaging waste in a search on housing).
+STOPWORDS = frozenset((
+    'a', 'an', 'and', 'as', 'at', 'by', 'for', 'from', 'in', 'into', 'of', 'on', 'or', 'over', 'per', 'the',
+    'to', 'vs', 'with', 'without',
+    'annual', 'capita', 'country', 'countries', 'data', 'eu', 'europe', 'european', 'indicator', 'indicators',
+    'level', 'levels', 'number', 'numbers', 'percent', 'percentage', 'rate', 'rates', 'ratio', 'share', 'shares',
+    'statistics', 'total', 'totals', 'year', 'years', 'yearly',
+))
+# Fixed places among the candidates of a round: an empty place for datasets
+# is not given to tables, nor the other way round.
+SEARCH_TABLES = 10
+SEARCH_DATASETS = 5
+
 
 def _words(text):
     return set(_WORD.findall((text or '').lower()))
 
 
-def search_catalog(terms, limit=20, now=None):
-    """Catalogue entries whose English title has the most words of the terms
-    (case insensitive, whole words): first the main tables, then the yearly
-    datasets (step 3b), together at most `limit`. Within each group on a tie
-    the title with fewer other words first ("Unemployment rate" before
-    "Long-term unemployment rate by sex"), then by title. Only entries whose
-    data end at most five years ago. terms: a string or a list of strings."""
+def _content_words(text):
+    return _words(text) - STOPWORDS
+
+
+def _ranked(entries, term):
+    """The entries for one term, best first: a title with every word of the
+    term (stop words left out) before one with some, then more words hit,
+    then the title with fewer words ("Housing cost overburden rate" before
+    "Housing cost overburden rate by income quintile"), then by title."""
+    wanted = _content_words(term)
+    if not wanted:
+        return []
+    scored = []
+    for row, words in entries:
+        hits = len(wanted & words)
+        if hits:
+            scored.append((hits < len(wanted), -hits, len(words), row.title.lower(), row.code, row))
+    scored.sort(key=lambda item: item[:5])
+    return [item[-1] for item in scored]
+
+
+def _merge(lists, places, exclude):
+    """Turn by turn from each list (the first of every term, then the second,
+    ...), without doubles and without the excluded codes, at most `places`."""
+    out, seen = [], set(exclude)
+    for turn in range(max((len(rows) for rows in lists), default=0)):
+        for rows in lists:
+            if len(out) >= places:
+                return out
+            if turn < len(rows) and rows[turn].code not in seen:
+                seen.add(rows[turn].code)
+                out.append(rows[turn])
+    return out
+
+
+def search_catalog(terms, tables=SEARCH_TABLES, datasets=SEARCH_DATASETS, exclude=(), now=None):
+    """Catalogue entries for the search terms (step 3c: per term): each term
+    on its own ranks the entries whose English title has its words (whole
+    words, case insensitive, STOPWORDS left out; see _ranked); the lists are
+    merged turn by turn per term, without doubles. At most `tables` main
+    tables, then at most `datasets` yearly datasets. Only entries whose data
+    end at most five years ago; codes in `exclude` (the memories of the
+    round) are skipped, the next entry takes their place. terms: a string or
+    a list of strings."""
     from app.models import EurostatCatalog
     if isinstance(terms, str):
         terms = [terms]
-    wanted = set().union(*(_words(t) for t in terms or [])) if terms else set()
-    if not wanted:
+    terms = [t for t in terms or [] if isinstance(t, str) and _content_words(t)]
+    if not terms:
         return []
     oldest = (now or datetime.utcnow()).year - CATALOG_MAX_DATA_AGE_YEARS
-    scored = []
+    groups = {'table': [], 'dataset': []}
     for row in EurostatCatalog.query:
         year = (row.data_end or '')[:4]
-        if not year.isdigit() or int(year) < oldest:
-            continue
-        words = _words(row.title)
-        hits = len(wanted & words)
-        if hits:
-            scored.append((row.type != 'table', -hits, len(words), row.title.lower(), row.code, row))
-    scored.sort()
+        if year.isdigit() and int(year) >= oldest and row.type in groups:
+            groups[row.type].append((row, _words(row.title)))
+    found = []
+    for kind, places in (('table', tables), ('dataset', datasets)):
+        found += _merge([_ranked(groups[kind], term) for term in terms], places, exclude)
     return [CatalogHit(code=r.code, title=r.title, data_start=r.data_start or '', data_end=r.data_end or '',
-                       type=r.type) for *_k, r in scored[:limit]]
+                       type=r.type) for r in found]
+
+
+# ── Dimensions: measures and breakdowns (step 3c) ────────────────────────
+
+MEASURE_DIMENSIONS = ('unit', 'currency', 's_adj', 'na_item', 'freq')
+TOTAL_CODES = ('T', 'TOTAL', 'TOT')
+
+
+def is_measure(dim_id):
+    """Whether a dimension says what is measured (free to choose: unit,
+    currency, seasonal adjustment, national accounts item, ids starting with
+    indic, and freq, which is reduced to A); every other dimension is a
+    breakdown (sex, age, income group, category), where the choice must be
+    the total."""
+    dim_id = (dim_id or '').lower()
+    return dim_id in MEASURE_DIMENSIONS or dim_id.startswith('indic')
+
+
+def is_total(code, label):
+    """Whether a value of a breakdown is its total: the code T, TOTAL or TOT,
+    or a label starting with "Total"."""
+    return (code or '').upper() in TOTAL_CODES or (label or '').strip().lower().startswith('total')
+
+
+def totals_of(dim):
+    """The codes of a dimension that are a total."""
+    return [code for code, label in dim.values if is_total(code, label)]
+
+
+def without_total(dims):
+    """The breakdowns with more than one value and no total: a table with one
+    falls away ('no_total')."""
+    return [d for d in dims if not is_measure(d.id) and len(d.values) > 1 and not totals_of(d)]
 
 
 # ── Fetching ─────────────────────────────────────────────────────────────
@@ -374,6 +458,10 @@ def parse(data, code):
     if not series:
         raise SourceError('no_data', 'no values')
     title = (data.get('label') or code).strip()
+    # Step 3c: the label of every flag used, for "Notes" (through the translation route).
+    flag_labels = ((data.get('extension') or {}).get('status') or {}).get('label') or {}
+    used = sorted({flag for per_year in flags.values() for flag in per_year.values()})
+    labels = {f'flag:{flag}': str(flag_labels.get(flag) or flag).strip()[:200] for flag in used}
     unit_code, unit_label = next(((d.values[0]) for d in dims if d.id == 'unit'), ('', ''))
     return ParsedChart(
         title=title, subtitle='', unit=unit_label, short_unit=_short_unit(unit_code, unit_label),
@@ -383,8 +471,30 @@ def parse(data, code):
         source_url=BROWSER_URL.format(code=code),
         column_name=code,
         years=sorted({y for vals in series.values() for y in vals}),
-        series=series, names=names, flags=flags, license=LICENSE,
+        series=series, names=names, flags=flags, license=LICENSE, labels=labels,
     )
+
+
+def selection_text(data, filters):
+    """The English labels of the chosen value per dimension (step 3c), in
+    the order of the table's dimensions, joined by "; "; '' without filters.
+    Only the dimensions that had several values (the keys of filters)."""
+    ids = data.get('id') or []
+    out = []
+    for dim in [d for d in ids if d in (filters or {})] + [d for d in (filters or {}) if d not in ids]:
+        labels = dict(_labels(data, dim))
+        out.append(str(labels.get(filters[dim]) or filters[dim]).strip())
+    return '; '.join(t for t in out if t)[:300]
+
+
+def last_update(metadata_raw):
+    """The date of the last update of a table ("updated" of the JSON-stat),
+    or None."""
+    try:
+        data = json.loads(metadata_raw) if isinstance(metadata_raw, str) else (metadata_raw or {})
+        return datetime.strptime(str(data.get('updated') or '')[:10], '%Y-%m-%d').date()
+    except (ValueError, TypeError, AttributeError):
+        return None
 
 
 def metadata_of(data):

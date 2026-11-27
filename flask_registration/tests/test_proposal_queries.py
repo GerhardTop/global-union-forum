@@ -53,8 +53,9 @@ def _shape(statement):
 
 def _chart_facts(issue, proposals):
     """Background figures (step 1e): two chart facts on the issue from the
-    OWID fixture, one with an average, both linked to the first proposals by
-    the AI. Published the way a selection round does, without AI or network."""
+    OWID fixture, one with an average, and (step 3c) one from the Eurostat
+    fixture, all linked to the first proposals by the AI. Published the way a
+    selection round does, without AI or network."""
     import json
     import os
     from app import background_figures as bf
@@ -74,6 +75,17 @@ def _chart_facts(issue, proposals):
         accepted.append(bf.Accepted(slug=f'{slug}-{i}', parsed=parsed, metadata=metadata,
                                     keys=['POL', 'FRA', 'DEU', 'NLD'], average_key=average, year_from=2016,
                                     year_to=2025, reason=f'Reason {i}.', proposal_ids=[p.id for p in proposals[:2]]))
+    # Step 3c: a Eurostat chart too, with a selection and flags (short labels in the snapshot).
+    from app.sources import eurostat
+    with open(os.path.join(os.path.dirname(__file__), 'data', 'eurostat', 'tps00203_pc_act.json'),
+              encoding='utf-8') as f:
+        data = json.load(f)
+    parsed = eurostat.parse(data, 'tps00203')
+    parsed.labels = dict(parsed.labels, selection=eurostat.selection_text(data, {'unit': 'PC_ACT'}))
+    accepted.append(bf.Accepted(slug='tps00203', parsed=parsed, metadata=eurostat.metadata_of(data),
+                                keys=['POL', 'FRA', 'DEU'], average_key='eurostat:EU27_2020', year_from=2016,
+                                year_to=2025, reason='Reason eurostat.', proposal_ids=[p.id for p in proposals[:2]],
+                                source='eurostat', filters={'unit': 'PC_ACT'}))
     bf.publish(bf.Context(issue=issue), bf.Outcome(status='done', accepted=accepted))
 
 
@@ -122,8 +134,8 @@ def _measure(app, db, make_user, n, who, charts=False):
             resp = _req(client, 'GET', path)
         assert resp.status_code == 200, (page, resp.status_code)
         if charts:
-            # Both charts show (the column and the enlarged facts are both in the page).
-            assert resp.get_data(as_text=True).count('class="gu-chart gu-chart--small"') >= 2, page
+            # The charts show (the column and the enlarged facts are both in the page), Eurostat's too.
+            assert resp.get_data(as_text=True).count('class="gu-chart gu-chart--small"') >= 3, page
         out[page] = queries
     return issue_id, out
 

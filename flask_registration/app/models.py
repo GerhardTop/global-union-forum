@@ -1519,6 +1519,10 @@ class ChartSnapshot(db.Model):
     # JSON {"years": [...], "series": {key: [value or null per year]}, "names": {key: name}}
     data           = db.Column(db.Text, nullable=True)
     metadata_raw   = db.Column(db.Text, nullable=True)        # the metadata.json as received
+    # Step 3c (Eurostat): JSON {name: English text} of the short labels that go
+    # through the translation route as the fields "label:<name>": "selection"
+    # (the chosen value per dimension) and "flag:<letter>" (a flag's label).
+    labels         = db.Column(db.Text, nullable=True)
 
     chart = db.relationship('FactChart', back_populates='snapshots')
 
@@ -1528,6 +1532,16 @@ class ChartSnapshot(db.Model):
     def values(self):
         import json
         return json.loads(self.data) if self.data else {'years': [], 'series': {}, 'names': {}}
+
+    @property
+    def label_texts(self):
+        """{name: English text} of the labels column (step 3c); {} without."""
+        import json
+        try:
+            value = json.loads(self.labels) if self.labels else {}
+        except ValueError:
+            return {}
+        return value if isinstance(value, dict) else {}
 
 
 class ChartSelectionRun(db.Model):

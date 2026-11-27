@@ -1,0 +1,18 @@
+{#
+  Partial: issues/_chart_notes.html (background figures, step 3c)
+  "Notes" under "About these figures": what each flag letter in the period
+  shown means (Eurostat's labels, through the translation route as short
+  fields). Nothing without a flag. Inside the <dl> of issues/chart.html and,
+  as a template, in issues/_chart_block.html (chart_page.js swaps it along).
+  Context: view (its flags), snapshot.
+#}
+{% from '_mt.html' import mt with context %}
+{%- if view.flags %}
+{# TRANSLATORS: a heading in "About these figures": what the small letters after some values in the table mean (provisional, estimated and the like). #}
+<dt>{{ _('Notes') }}</dt>
+<dd><ul class="gu-chartpage__flags">
+  {%- for flag in view.flags %}
+  <li><sup class="gu-chart-flag" aria-hidden="true">{{ flag }}</sup> {{ mt(snapshot, 'label:flag:' ~ flag, el='span', cls='gu-chartpage__flag') }}</li>
+  {%- endfor %}
+</ul></dd>
+{%- endif %}

@@ -5,7 +5,8 @@
    fields. Without JavaScript the page reloads. Here the form is caught: the
    same URL is fetched with fragment=1, the block is swapped, the address is
    updated (history.replaceState), focus stays on the pressed button, and the
-   live region says briefly what changed. */
+   live region says briefly what changed. The notes on the flags (step 3c)
+   come along in a <template> of the block. */
 (function () {
   'use strict';
   var live = document.querySelector('[data-chart-live]');
@@ -33,6 +34,10 @@
         var old = block();
         if (!fresh || !old) throw new Error('no block');
         old.replaceWith(fresh);
+        /* Step 3c: the notes on the flags under "About these figures" follow the period shown. */
+        var notes = document.querySelector('[data-chart-notes]');
+        var freshNotes = fresh.querySelector('template[data-chart-notes-fresh]');
+        if (notes && freshNotes) notes.replaceChildren(freshNotes.content.cloneNode(true));
         if (fresh.dataset.url && window.history && history.replaceState) {
           history.replaceState(null, '', fresh.dataset.url);
         }

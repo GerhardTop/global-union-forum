@@ -307,7 +307,8 @@ def test_yearly_datasets_in_the_catalogue_quarterly_not(app, db):
 
 def test_tables_before_datasets_when_searching(app, db, catalog):
     hits = eurostat.search_catalog('housing cost overburden rate by age sex poverty status', now=NOW)
-    # The dataset hits every word, the tables fewer; the tables still come first.
-    assert [h.code for h in hits] == ['tespm140', 'tps00203', 'ilc_lvho07a']
-    assert [h.type for h in hits] == ['table', 'table', 'dataset']
-    assert [h.code for h in eurostat.search_catalog('housing cost overburden', limit=1, now=NOW)] == ['tespm140']
+    # The dataset hits every word, the table fewer; the table still comes first.
+    assert [h.code for h in hits] == ['tespm140', 'ilc_lvho07a']
+    assert [h.type for h in hits] == ['table', 'dataset']
+    assert [h.code for h in eurostat.search_catalog('housing cost overburden', tables=1, datasets=0,
+                                                              now=NOW)] == ['tespm140']

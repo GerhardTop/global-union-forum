@@ -6,7 +6,9 @@
 
   chart_small(view, label)  the chart in the facts column (136 px high)
   chart_large(view, label)  the chart on the chart page (340 px high)
-  chart_table(view, caption, year_heading, empty_cell)  the table, newest year first
+  chart_table(view, caption, year_heading, empty_cell, flag_text)  the table, newest year first;
+      a value with a flag of the source (Eurostat, step 3c) gets the letter as a
+      small superscript, and flag_text[letter] for screen readers
 
   The SVG stretches with the width (preserveAspectRatio="none"): x runs from
   0 to 100 (percent of the plot area), y in pixels. Strokes keep their width
@@ -58,14 +60,15 @@
 
 {% macro chart_large(view, label) -%}{{ _figure(view, label, 'large') }}{%- endmacro %}
 
-{% macro chart_table(view, caption, year_heading, empty_cell) -%}
+{% macro chart_table(view, caption, year_heading, empty_cell, flag_text=none) -%}
 <div class="gu-chart-table">
   <table>
     <caption>{{ caption }}</caption>
     <thead><tr><th scope="col">{{ year_heading }}</th>{% for _key, name in view.table_columns %}<th scope="col">{{ name }}</th>{% endfor %}</tr></thead>
     <tbody>
       {%- for year, cells in view.table_rows %}
-      <tr><th scope="row">{{ year }}</th>{% for cell in cells %}<td>{% if cell is none %}<span class="gu-sr-only">{{ empty_cell }}</span>{% else %}{{ cell }}{% endif %}</td>{% endfor %}</tr>
+      {%- set row_flags = view.table_flags[loop.index0] if view.table_flags else [] %}
+      <tr><th scope="row">{{ year }}</th>{% for cell in cells %}{% set flag = row_flags[loop.index0] if row_flags else none %}<td>{% if cell is none %}<span class="gu-sr-only">{{ empty_cell }}</span>{% else %}{{ cell }}{% if flag %}<sup class="gu-chart-flag" aria-hidden="true">{{ flag }}</sup><span class="gu-sr-only"> ({{ (flag_text or {}).get(flag, flag) }})</span>{% endif %}{% endif %}</td>{% endfor %}</tr>
       {%- endfor %}
     </tbody>
   </table>

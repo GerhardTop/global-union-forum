@@ -96,6 +96,10 @@ class ChartView:
     legend: list = field(default_factory=list)
     table_columns: list = field(default_factory=list)   # [(key, name)]
     table_rows: list = field(default_factory=list)      # [(year, [formatted value or None])]
+    # Step 3c (Eurostat): per table row the flag of each cell (None without),
+    # and the letters used in the table, sorted.
+    table_flags: list = field(default_factory=list)
+    flags: list = field(default_factory=list)
     years: list = field(default_factory=list)
     y_min: float = 0
     y_max: float = 0
@@ -288,6 +292,8 @@ def layout(data, keys, average_key=None, size=LARGE, locale='nl', period=None, h
     if not years:
         return view
     values = {k: [series[k][i] for i in with_data] for k in shown}
+    all_flags = data.get('flags') or {}
+    flags = {k: [(all_flags.get(k) or [None] * len(all_years))[i] for i in with_data] for k in shown}
 
     visible = [k for k in shown if k not in hidden]
     numbers = [v for k in shown for v in values[k] if v is not None]
@@ -388,4 +394,6 @@ def layout(data, keys, average_key=None, size=LARGE, locale='nl', period=None, h
         cells = [format_value(values[k][i], locale, short_unit, decimals) if values[k][i] is not None else None
                  for k in visible]
         view.table_rows.append((years[i], cells))
+        view.table_flags.append([flags[k][i] if values[k][i] is not None else None for k in visible])
+    view.flags = sorted({f for row in view.table_flags for f in row if f})
     return view

@@ -105,7 +105,7 @@ def test_search_ranks_by_words_hit_and_leaves_old_tables_out(app, db, catalog):
     eurostat.refresh_catalog(http=FakeHttp(), now=NOW)
     hits = eurostat.search_catalog(['Unemployment RATE by sex'], now=NOW)
     codes = [h.code for h in hits]
-    # Four words hit: "Unemployment rate by sex" (two tables), then three, then two.
+    # Every word but the stop words (rate, by) hit: "Unemployment rate by sex" (two tables), then one.
     assert codes[:2] == ['teilm020', 'tesem120']
     assert set(codes[2:]) >= {'tps00203', 'tipsun20'}
     assert hits[0].title == 'Unemployment rate by sex' and hits[0].data_end == '2026-10'
@@ -117,7 +117,9 @@ def test_search_ranks_by_words_hit_and_leaves_old_tables_out(app, db, catalog):
     # A tie: the title with fewer other words first.
     assert [h.code for h in eurostat.search_catalog('unemployment rate', now=NOW)][:2] == ['tps00203', 'tipsun20']
     assert eurostat.search_catalog('', now=NOW) == [] and eurostat.search_catalog([], now=NOW) == []
-    assert len(eurostat.search_catalog('rate', limit=2, now=NOW)) == 2
+    assert len(eurostat.search_catalog('unemployment', tables=2, now=NOW)) == 2
+    # Only stop words: nothing to search for (step 3c).
+    assert eurostat.search_catalog('rate per capita', now=NOW) == []
 
 
 # ── Reading JSON-stat ────────────────────────────────────────────────────

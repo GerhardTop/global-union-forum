@@ -61,6 +61,8 @@ class ParsedChart:
     # Step 3a (Eurostat): {key: {year: flag}} (b, e, p, ...); None for a source without flags.
     flags: dict = None
     license: str = ''                               # empty: DEFAULT_LICENSE
+    # Step 3c (Eurostat): {name: English text} for ChartSnapshot.labels ("selection", "flag:<letter>").
+    labels: dict = None
 
 
 def csv_url(slug):
@@ -283,5 +285,7 @@ def create_snapshot(chart, parsed, metadata_raw, year_from, year_to):
         short_unit=parsed.short_unit[:40], definition=parsed.definition, citation=parsed.citation,
         citation_short=parsed.citation_short, source_url=parsed.source_url[:500], license=parsed.license or DEFAULT_LICENSE,
         data=json.dumps(snapshot_data(parsed, year_from, year_to)), metadata_raw=metadata_raw)
+    if parsed.labels:
+        snapshot.labels = json.dumps(parsed.labels, ensure_ascii=False, sort_keys=True)
     chart.snapshots.append(snapshot)
     return snapshot

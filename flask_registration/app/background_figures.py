@@ -50,10 +50,10 @@ REJECT_MEMORY_DAYS = 30     # a chart rejected for a lasting reason stays out of
 AGGREGATE_TOTAL_FACTOR = 2  # an "average" this many times the largest chosen country in every year is a total
 # needs_choice: a Eurostat table that still has a dimension with several values
 # after the filters of the dimension choice (step 3b).
-LASTING_REASONS = ('unsupported', 'forbidden', 'no_data', 'stale', 'needs_choice')
+LASTING_REASONS = ('unsupported', 'forbidden', 'no_data', 'stale', 'needs_choice', 'no_total')
 # Step 3b, with EUROSTAT_FIGURES on: candidates from both sources.
 MAX_OWID_CANDIDATES = 25
-MAX_EUROSTAT_CANDIDATES = 15
+MAX_EUROSTAT_CANDIDATES = 15   # eurostat.SEARCH_TABLES + SEARCH_DATASETS (step 3c: fixed places)
 EUROSTAT_AVERAGE = 'eurostat:EU27_2020'     # the only average of a Eurostat chart, as the source supplies it
 SOURCES = ('owid', 'eurostat')
 PENDING_AFTER = timedelta(minutes=10)
@@ -301,7 +301,8 @@ _SELECTION_SYSTEM_BOTH = (_SELECTION_SYSTEM
 _DIMENSION_SYSTEM = (
     "You choose, for tables of Eurostat that were chosen as background figures for an issue on Global Union "
     "Forum, one value for each dimension that has several. For each dimension choose exactly one code from the "
-    "list. For breakdowns (sex, age, category) choose the total. For the unit choose a relative measure "
+    "list. For breakdown dimensions you must choose the total; if there is no total, answer null for that "
+    "table. For the unit choose a relative measure "
     "(percentage, rate, per capita, share) over an absolute number, and for an index the most recent base year. "
     "Answer as JSON: {table_id: {dimension_id: code}}."
 )
@@ -622,7 +623,9 @@ class Prepared:
 def _choice_problem(choice, dims):
     """Why a choice per dimension is not valid, or None: every dimension with
     several values has exactly one code from its list; a code for any other
-    dimension must be in its list too."""
+    dimension must be in its list too; for a breakdown it is the total (step
+    3c; a measure such as the unit is free)."""
+    from app.sources import eurostat
     if not isinstance(choice, dict):
         return 'no choice for this table'
     known = {d.id: [code for code, _label in d.values] for d in dims}
@@ -634,6 +637,10 @@ def _choice_problem(choice, dims):
     missing = [d.id for d in dims if len(d.values) > 1 and d.id not in choice]
     if missing:
         return 'no code for ' + ', '.join(missing)
+    # Step 3c: a breakdown (not a measure) must be its total.
+    for dim in dims:
+        if len(dim.values) > 1 and not eurostat.is_measure(dim.id) and choice[dim.id] not in eurostat.totals_of(dim):
+            return f'{choice[dim.id]!r} is not the total of the breakdown {dim.id}'
     return None
 
 
@@ -642,7 +649,9 @@ def prepare_eurostat(items, ctx, candidates, client, http, out, now=None):
     dimension filters (since the period), its dimensions, and, when one or more
     have several values, one extra call of SELECTION_MODEL for all tables of the
     round together. {candidate id: Prepared or (reason, detail)}. A Eurostat
-    chart for the world or for blocks falls away at once ('source_scope')."""
+    chart for the world or for blocks falls away at once ('source_scope'); a
+    table with a breakdown of several values and no total too ('no_total',
+    step 3c, remembered like unsupported)."""
     from app.sources import SourceError, eurostat
     result, needing = {}, {}
     year = (now or datetime.utcnow()).year
@@ -662,6 +671,10 @@ def prepare_eurostat(items, ctx, candidates, client, http, out, now=None):
             if exc.reason == 'network':
                 raise
             result[cid] = (exc.reason, exc.detail)
+            continue
+        lacking = eurostat.without_total(dims)
+        if lacking:   # step 3c: no breakdown without a total
+            result[cid] = ('no_total', 'no total in ' + ', '.join(d.id for d in lacking))
             continue
         if all(len(d.values) == 1 for d in dims):
             result[cid] = Prepared(data=data, filters={})
@@ -775,7 +788,8 @@ def aggregate_is_total(parsed, average_key, keys, year_from, year_to):
 
 def _fell_away(label, reason, notes, reasons, detail=''):
     notes.append(f'{label}: {reason}' + (f' ({detail})' if detail and reason in ('dimension_choice', 'source_scope',
-                                                                                'needs_choice') else ''))
+                                                                                'needs_choice', 'no_total')
+                                         else ''))
     remember_rejected(label, reason)
     if reasons is not None:
         reasons[label] = reason
@@ -808,6 +822,8 @@ def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None, prep
             _fell_away(slug, exc.reason, notes, reasons, exc.detail)
             return None
         metadata, filters = eurostat.metadata_of(ready.data), ready.filters
+        if filters:   # step 3c: "Selection" under "About these figures"
+            parsed.labels = dict(parsed.labels or {}, selection=eurostat.selection_text(ready.data, filters))
         by_name = _eurostat_names(parsed)
     else:
         try:
@@ -1003,10 +1019,24 @@ class ChartCard:
     citation: str
     source_url: str
     date: str                # the day of publishing, in the reader's notation
+    source_name: str = 'Our World in Data'   # step 3c: the name of the source (source_name)
 
 
 _OWID_SUFFIX = re.compile(r'(?:^|\s+)[\u2013\u2014-]\s*with\b.*$', flags=re.S)
 _TRAILING_DASH = re.compile(r'(?:^|\s+)[\u2013\u2014-]\s*$')
+
+
+# Step 3c: the name of each source as the page shows it (a proper name, no gettext).
+SOURCE_NAMES = {'owid': 'Our World in Data', 'eurostat': 'Eurostat'}
+
+
+def source_name(chart):
+    return SOURCE_NAMES.get(chart.source, chart.source or '')
+
+
+def eurostat_citation(chart):
+    """The short source of a Eurostat chart: "Eurostat (<code>)"."""
+    return f'Eurostat ({chart.slug})'
 
 
 def short_citation(snapshot):
@@ -1151,8 +1181,9 @@ def chart_cards(posts, lang):
             chart=chart, snapshot=snapshot, view=view, countries=shown,
             countries_text=format_list(shown, locale=lang) if shown else '',
             average=average, start=view.years[0], end=view.years[-1],
-            citation=short_citation(snapshot),   # citation_short without OWID's suffix (and its dash)
-            source_url=snapshot.source_url or '',
+            # OWID: citation_short without its suffix (and its dash); Eurostat: "Eurostat (<code>)".
+            citation=eurostat_citation(chart) if chart.source == 'eurostat' else short_citation(snapshot),
+            source_url=snapshot.source_url or '', source_name=source_name(chart),
             date=format_date(post.created_at, 'medium') if post is not None and post.created_at else '')
     return out
 
@@ -1218,13 +1249,11 @@ def select(ctx, client, http=None):
     if errors == len(out.terms):
         raise SourceError('network', 'every search failed')
     if both:
-        found = 0
-        for hit in eurostat.search_catalog(out.terms, limit=MAX_EUROSTAT_CANDIDATES * 3):
+        # Step 3c: per term, at most 10 main tables and 5 yearly datasets (fixed places).
+        exclude = {key.split(':', 1)[1] for key in used if key.startswith(eurostat.AGGREGATE_PREFIX)}
+        for hit in eurostat.search_catalog(out.terms, exclude=exclude):
             candidate = _eurostat_candidate(hit)
-            if candidate.key in used or candidate.id in candidates or found >= MAX_EUROSTAT_CANDIDATES:
-                continue
-            candidates[candidate.id] = candidate
-            found += 1
+            candidates.setdefault(candidate.id, candidate)
     out.candidates = list(candidates.values())
     if not out.candidates and not ctx.charts:
         out.none_reason = 'no candidates'

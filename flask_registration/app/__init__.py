@@ -366,6 +366,8 @@ _POLISH_COLUMNS = {
     # it (English), translated with the fact (the table came in step 1b).
     # Step 3a: the chosen value per dimension of a Eurostat table (JSON).
     'fact_charts': (('average_name', 'VARCHAR(200) NULL'), ('filters', 'TEXT NULL')),
+    # Background figures step 3c: the short labels of a Eurostat snapshot (JSON).
+    'chart_snapshots': (('labels', 'TEXT NULL'),),
     # Background figures step 1g: a link laid by the AI (not "no person").
     'issue_proposal_facts': (('by_ai', 'BOOLEAN NOT NULL DEFAULT FALSE'),),
 }

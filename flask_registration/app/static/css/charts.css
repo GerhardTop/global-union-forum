@@ -358,3 +358,13 @@
 .gu-fact__topline--chart .gu-report--fact { inset-inline-start: auto; inset-inline-end: 0; }
 .gu-chartpage__dd { margin: 0; }
 .gu-chartpage__facts .gu-mt__note { margin: 2px 0 0; font-size: 11px; }
+
+/* Step 3c (Eurostat): a flag of the source after a value in the table, and
+   the notes on the flags under "About these figures" (the wrapper keeps the
+   dt and dd in the grid of the list). */
+.gu-chart-flag { font-size: 10px; line-height: 0; margin-inline-start: 1px; color: #6c7683; font-weight: 600; }
+.gu-chartpage__notes { display: contents; }
+.gu-chartpage__flags { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.gu-chartpage__flags li { display: grid; grid-template-columns: 2.2em minmax(0, 1fr); align-items: baseline; }
+.gu-chartpage__flags .gu-chart-flag { font-size: 12px; line-height: inherit; vertical-align: baseline; }
+.gu-chartpage__flags .gu-mt { min-width: 0; }

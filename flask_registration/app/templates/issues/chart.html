@@ -28,7 +28,7 @@
         <span class="gu-fact__dir gu-fact__dir--neutraal">{{ dir_labels['neutraal'] }}</span>
         <span class="gu-aisel" data-ai-tip>
           <button type="button" class="gu-aisel__btn" aria-expanded="false" aria-describedby="aisel-{{ fact.id }}">{{ _('AI selection') }}</button>
-          <span class="gu-aisel__tip" role="tooltip" id="aisel-{{ fact.id }}">{{ _('Selected by AI from %(source)s on %(date)s. The figures come straight from the source.', source='Our World in Data', date=chosen) }}</span>
+          <span class="gu-aisel__tip" role="tooltip" id="aisel-{{ fact.id }}">{{ _('Selected by AI from %(source)s on %(date)s. The figures come straight from the source.', source=source_name, date=chosen) }}</span>
         </span>
         {% include 'issues/_fact_badges.html' %}
       </div>
@@ -56,10 +56,24 @@
           {#- Definition and unit come from the source in English; translated like the facts. -#}
           {% if snapshot.definition %}<dt>{{ _('Definition') }}</dt><dd>{{ mt(snapshot, 'definition', el='p', cls='gu-chartpage__dd') }}</dd>{% endif %}
           {% if snapshot.unit %}<dt>{{ _('Unit') }}</dt><dd>{{ mt(snapshot, 'unit', el='p', cls='gu-chartpage__dd') }}</dd>{% endif %}
+          {%- if eurostat_chart %}
+          {#- Step 3c: the chosen value per dimension (only dimensions that had several), a short field. -#}
+          {# TRANSLATORS: a heading in "About these figures": which value of the source's table the chart shows per dimension (for example the unit or the age group). #}
+          {% if has_selection %}<dt>{{ _('Selection') }}</dt><dd>{{ mt(snapshot, 'label:selection', el='p', cls='gu-chartpage__dd') }}</dd>{% endif %}
+          {# TRANSLATORS: %(code)s is the code of a Eurostat table (such as tps00203), %(date)s the date of its last update. #}
+          <dt>{{ _('Source') }}</dt><dd>{% if updated %}{{ _('Eurostat (%(code)s), last update %(date)s', code=code, date=updated) }}{% else %}Eurostat ({{ code }}){% endif %}</dd>
+          {%- else %}
           <dt>{{ _('Source') }}</dt><dd>{{ _('%(citation)s, via Our World in Data', citation=citation) }}</dd>
+          {%- endif %}
           {% if average %}<dt>{{ _('Average') }}</dt><dd>{{ _('%(name)s, as supplied by the source', name=average) }}</dd>{% endif %}
           <dt>{{ _('Licence') }}</dt>
+          {%- if eurostat_chart %}
+          <dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">{{ _('CC BY 4.0, with attribution') }}</a>. {{ _('Eurostat is not responsible for translations or adaptations of its data on this site.') }}</dd>
+          {%- else %}
           <dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">{{ _('CC BY 4.0, with attribution') }}</a>. {{ _('Data from other organisations may have their own terms; see the source.') }}</dd>
+          {%- endif %}
+          {#- Step 3c: the flags in the period shown; the block below swaps this part along (chart_page.js). -#}
+          <div class="gu-chartpage__notes" data-chart-notes>{% include 'issues/_chart_notes.html' %}</div>
           {% if fetched %}<dt>{{ _('Retrieved') }}</dt><dd>{{ fetched }}</dd>{% endif %}
           <dt>{{ _('Snapshot') }}</dt><dd>{% if frozen %}{{ _('Frozen on %(date)s when voting started, so everyone votes on the same figures.', date=frozen) }}{% else %}{{ _('Will be frozen when voting starts, so everyone votes on the same figures.') }}{% endif %}</dd>
         </dl>

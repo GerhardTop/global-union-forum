@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-26 21:20+0100\n"
+"POT-Creation-Date: 2026-11-27 16:44+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:877
+#: app/__init__.py:880
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Te veel pogingen. Probeer het over een minuut opnieuw."
 
-#: app/__init__.py:907
+#: app/__init__.py:910
 msgid "Your session has expired. Please log in again."
 msgstr "Je sessie is verlopen. Log opnieuw in."
 
@@ -963,11 +963,11 @@ msgid "edited %(when)s"
 msgstr "bewerkt %(when)s"
 
 # Polijststap P7: volledige pagina vanuit de grote weergave
-#: app/routes/forum.py:1529 app/routes/issues.py:351
+#: app/routes/forum.py:1529 app/routes/issues.py:359
 msgid "Give a reason for your report."
 msgstr "Geef een reden voor je melding."
 
-#: app/routes/forum.py:1538 app/routes/issues.py:357
+#: app/routes/forum.py:1538 app/routes/issues.py:365
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Bedankt, je melding is doorgegeven aan een moderator."
 
@@ -991,60 +991,60 @@ msgstr "Voorstellen maken"
 msgid "Adjust the proposals"
 msgstr "Voorstellen aanpassen"
 
-#: app/routes/issues.py:556
+#: app/routes/issues.py:564
 msgid "You already support this proposal."
 msgstr "Je steunt dit voorstel al."
 
-#: app/routes/issues.py:617
+#: app/routes/issues.py:625
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Kies minstens één feit dat nog niet gekoppeld is."
 
-#: app/routes/issues.py:746
+#: app/routes/issues.py:754
 msgid "The issue is now in the next phase."
 msgstr "Het vraagstuk staat nu in de volgende fase."
 
-#: app/routes/issues.py:762 app/routes/issues.py:782
+#: app/routes/issues.py:770 app/routes/issues.py:790
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "De tekst kan hooguit %(n)s tekens zijn."
 
-#: app/routes/issues.py:814
+#: app/routes/issues.py:822
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Vink het vakje aan om te bevestigen dat je het vraagstuk opnieuw wilt openstellen."
 
-#: app/routes/issues.py:819
+#: app/routes/issues.py:827
 msgid "The issue is open again for discussion."
 msgstr "Het vraagstuk staat weer open voor discussie."
 
-#: app/routes/issues.py:841
+#: app/routes/issues.py:849
 msgid "The issue has been archived."
 msgstr "Het vraagstuk is gearchiveerd."
 
-#: app/routes/issues.py:856
+#: app/routes/issues.py:864
 msgid "The issue is back from the archive."
 msgstr "Het vraagstuk is terug uit het archief."
 
-#: app/routes/issues.py:875
+#: app/routes/issues.py:883
 msgid "Type the exact title to confirm."
 msgstr "Typ de titel precies over om te bevestigen."
 
-#: app/routes/issues.py:881
+#: app/routes/issues.py:889
 msgid "The issue has been deleted."
 msgstr "Het vraagstuk is verwijderd."
 
-#: app/routes/issues.py:903
+#: app/routes/issues.py:911
 msgid "Type the exact text to confirm."
 msgstr "Typ de tekst precies over om te bevestigen."
 
-#: app/routes/issues.py:910
+#: app/routes/issues.py:918
 msgid "The proposal has been deleted."
 msgstr "Het voorstel is verwijderd."
 
-#: app/routes/issues.py:1030
+#: app/routes/issues.py:1038
 msgid "The proposal is hidden."
 msgstr "Het voorstel is verborgen."
 
-#: app/routes/issues.py:1030
+#: app/routes/issues.py:1038
 msgid "The proposal is visible again."
 msgstr "Het voorstel is weer zichtbaar."
 
@@ -2713,7 +2713,7 @@ msgstr "Wekelijks"
 #: app/templates/admin/proposal_limits.html:28
 #: app/templates/admin/proposal_limits.html:43
 #: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:62
-#: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:110
+#: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:111
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
 #: app/templates/profile.html:116 app/templates/profile.html:158
@@ -4009,10 +4009,13 @@ msgstr "Podcast"
 msgid "Video"
 msgstr "Video"
 
+#. %(code)s is the code of a Eurostat table (such as tps00203), %(date)s the
+#. date of its last update.
 #: app/templates/forum/_fact_fields.html:47 app/templates/forum/_facts.html:42
 #: app/templates/issues/_chart_block.html:54
-#: app/templates/issues/_fact_card.html:54
-#: app/templates/issues/_fact_card.html:86 app/templates/issues/chart.html:59
+#: app/templates/issues/_fact_card.html:55
+#: app/templates/issues/_fact_card.html:87 app/templates/issues/chart.html:64
+#: app/templates/issues/chart.html:66
 #: app/templates/moderator/dashboard.html:215
 msgid "Source"
 msgstr "Bron"
@@ -4083,15 +4086,15 @@ msgstr "Bekijk op de achtergrondpagina"
 
 #: app/templates/forum/_facts.html:58 app/templates/forum/_post.html:136
 #: app/templates/forum/edit_thread.html:15
-#: app/templates/issues/_fact_card.html:103
+#: app/templates/issues/_fact_card.html:104
 #: app/templates/issues/_lifecycle.html:46
 msgid "Edit"
 msgstr "Bewerken"
 
 #: app/templates/forum/_facts.html:68 app/templates/forum/_post.html:151
-#: app/templates/issues/_fact_card.html:68
-#: app/templates/issues/_fact_card.html:119
-#: app/templates/issues/_lifecycle.html:56 app/templates/issues/chart.html:101
+#: app/templates/issues/_fact_card.html:69
+#: app/templates/issues/_fact_card.html:120
+#: app/templates/issues/_lifecycle.html:56 app/templates/issues/chart.html:115
 #: app/templates/issues/verwijderen.html:2
 #: app/templates/issues/verwijderen.html:33
 #: app/templates/moderator/beheer.html:131
@@ -4998,16 +5001,27 @@ msgstr "Lijngrafiek van %(title)s, %(start)s tot %(end)s, voor %(countries)s, me
 msgid "Line chart of %(title)s, %(start)s to %(end)s, for %(countries)s."
 msgstr "Lijngrafiek van %(title)s, %(start)s tot %(end)s, voor %(countries)s."
 
-#: app/templates/issues/_chart_block.html:54
-#: app/templates/issues/_fact_card.html:54 app/templates/issues/chart.html:59
+#: app/templates/issues/_chart_block.html:55 app/templates/issues/chart.html:64
+#, python-format
+msgid "Eurostat (%(code)s), last update %(date)s"
+msgstr "Eurostat (%(code)s), laatst bijgewerkt op %(date)s"
+
+#: app/templates/issues/_chart_block.html:56
+#: app/templates/issues/_fact_card.html:55 app/templates/issues/chart.html:66
 #, python-format
 msgid "%(citation)s, via Our World in Data"
 msgstr "%(citation)s, via Our World in Data"
 
-#: app/templates/issues/_chart_block.html:54
+#: app/templates/issues/_chart_block.html:56
 #, python-format
 msgid "Retrieved on %(date)s"
 msgstr "Opgehaald op %(date)s"
+
+#. a heading in "About these figures": what the small letters after some values
+#. in the table mean (provisional, estimated and the like).
+#: app/templates/issues/_chart_notes.html:12
+msgid "Notes"
+msgstr "Opmerkingen"
 
 # Polijstronde P2: kwaliteitsmerk en media bij feiten
 #: app/templates/issues/_fact_badges.html:22
@@ -5070,19 +5084,19 @@ msgid_plural "%(start)s to %(end)s · %(num)d countries"
 msgstr[0] "%(start)s tot %(end)s · %(num)d land"
 msgstr[1] "%(start)s tot %(end)s · %(num)d landen"
 
-#: app/templates/issues/_fact_card.html:56
+#: app/templates/issues/_fact_card.html:57
 msgid "Enlarge chart"
 msgstr "Grafiek uitvergroten"
 
-#: app/templates/issues/_fact_card.html:80
+#: app/templates/issues/_fact_card.html:81
 msgid "Your fact"
 msgstr "Jouw feit"
 
-#: app/templates/issues/_fact_card.html:92
+#: app/templates/issues/_fact_card.html:93
 msgid "more"
 msgstr "meer"
 
-#: app/templates/issues/_fact_card.html:92
+#: app/templates/issues/_fact_card.html:93
 msgid "less"
 msgstr "minder"
 
@@ -5474,62 +5488,72 @@ msgstr "Definitie"
 msgid "Unit"
 msgstr "Eenheid"
 
-#: app/templates/issues/chart.html:60
+#. a heading in "About these figures": which value of the source's table the
+#. chart shows per dimension (for example the unit or the age group).
+#: app/templates/issues/chart.html:62
+msgid "Selection"
+msgstr "Selectie"
+
+#: app/templates/issues/chart.html:68
 msgid "Average"
 msgstr "Gemiddelde"
 
-#: app/templates/issues/chart.html:60
+#: app/templates/issues/chart.html:68
 #, python-format
 msgid "%(name)s, as supplied by the source"
 msgstr "%(name)s, zoals de bron het levert"
 
-#: app/templates/issues/chart.html:61
+#: app/templates/issues/chart.html:69
 msgid "Licence"
 msgstr "Licentie"
 
-#: app/templates/issues/chart.html:62
+#: app/templates/issues/chart.html:71 app/templates/issues/chart.html:73
 msgid "CC BY 4.0, with attribution"
 msgstr "CC BY 4.0, met bronvermelding"
 
-#: app/templates/issues/chart.html:62
+#: app/templates/issues/chart.html:71
+msgid "Eurostat is not responsible for translations or adaptations of its data on this site."
+msgstr "Eurostat is niet verantwoordelijk voor vertalingen of bewerkingen van zijn cijfers op deze site."
+
+#: app/templates/issues/chart.html:73
 msgid "Data from other organisations may have their own terms; see the source."
 msgstr "Gegevens van andere organisaties kunnen eigen voorwaarden hebben; zie de bron."
 
-#: app/templates/issues/chart.html:63
+#: app/templates/issues/chart.html:77
 msgid "Retrieved"
 msgstr "Opgehaald"
 
-#: app/templates/issues/chart.html:64
+#: app/templates/issues/chart.html:78
 msgid "Snapshot"
 msgstr "Momentopname"
 
-#: app/templates/issues/chart.html:64
+#: app/templates/issues/chart.html:78
 #, python-format
 msgid "Frozen on %(date)s when voting started, so everyone votes on the same figures."
 msgstr "Bevroren op %(date)s toen de stemfase begon, zodat iedereen over dezelfde cijfers stemt."
 
-#: app/templates/issues/chart.html:64
+#: app/templates/issues/chart.html:78
 msgid "Will be frozen when voting starts, so everyone votes on the same figures."
 msgstr "Wordt bevroren als de stemfase begint, zodat iedereen over dezelfde cijfers stemt."
 
-#: app/templates/issues/chart.html:69
+#: app/templates/issues/chart.html:83
 msgid "Why this chart"
 msgstr "Waarom deze grafiek"
 
-#: app/templates/issues/chart.html:73
+#: app/templates/issues/chart.html:87
 msgid "Linked to"
 msgstr "Gekoppeld aan"
 
-#: app/templates/issues/chart.html:79
+#: app/templates/issues/chart.html:93
 #, python-format
 msgid "Chosen by AI on %(date)s"
 msgstr "Gekozen door AI op %(date)s"
 
-#: app/templates/issues/chart.html:88
+#: app/templates/issues/chart.html:102
 msgid "Link to a proposal"
 msgstr "Koppelen aan een voorstel"
 
-#: app/templates/issues/chart.html:92 app/templates/issues/proposal.html:130
+#: app/templates/issues/chart.html:106 app/templates/issues/proposal.html:130
 #: app/templates/issues/proposal.html:152
 msgid "Link"
 msgstr "Koppelen"

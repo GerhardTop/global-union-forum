@@ -24,6 +24,7 @@ The rest of the code goes through these functions only:
     all_texts(obj, fields)               originals and translations (search)
 """
 import hashlib
+import json
 import logging
 from collections import namedtuple
 from datetime import datetime
@@ -72,8 +73,20 @@ def source_lang(obj):
     return lang or config.DEFAULT_LANGUAGE
 
 
+# Background figures step 3c: short labels kept as JSON in one column
+# (ChartSnapshot.labels) are fields "label:<name>" of their object.
+LABEL_PREFIX = 'label:'
+
+
 def original(obj, field):
+    if field.startswith(LABEL_PREFIX):
+        return obj.label_texts.get(field[len(LABEL_PREFIX):])
     return getattr(obj, field)
+
+
+def label_fields(obj):
+    """The "label:<name>" fields of an object with a labels column."""
+    return [LABEL_PREFIX + name for name in sorted(getattr(obj, 'label_texts', None) or {})]
 
 
 def source_hash(text):
@@ -291,7 +304,7 @@ def field_kind(obj, field):
 
 
 def kind_for(kind, field):
-    return 'short' if (kind, field) in SHORT_FIELDS else 'text'
+    return 'short' if (kind, field) in SHORT_FIELDS or field.startswith(LABEL_PREFIX) else 'text'
 
 
 def bad_translations():
@@ -305,9 +318,20 @@ def bad_translations():
     pairs = db.session.execute(select(table.c.object_type, table.c.field).distinct()).all()
     for kind, field in sorted(pairs):
         target = db.metadata.tables.get(kind)
-        if target is None or field not in target.c or 'id' not in target.c:
+        if field.startswith(LABEL_PREFIX) and target is not None and 'labels' in target.c:
+            name = field[len(LABEL_PREFIX):]
+            originals = {}
+            for oid, raw in db.session.execute(select(target.c.id, target.c.labels)).all():
+                try:
+                    value = json.loads(raw) if raw else {}
+                except ValueError:
+                    value = {}
+                if isinstance(value, dict) and name in value:
+                    originals[oid] = value[name]
+        elif target is None or field not in target.c or 'id' not in target.c:
             continue
-        originals = dict(db.session.execute(select(target.c.id, target.c[field])).all())
+        else:
+            originals = dict(db.session.execute(select(target.c.id, target.c[field])).all())
         rows = ContentTranslation.query.filter_by(object_type=kind, field=field).order_by(ContentTranslation.id)
         for row in rows:
             if row.object_id not in originals:

@@ -36,3 +36,8 @@
 "                Unemployment rate by sex"	"tesem120"	"table"	"06.11.2026"	"06.11.2026"	"2005"	"2025"	1848
 "                            Housing cost overburden rate by age, sex and poverty status"	"ilc_lvho07a"	"dataset"	"29.10.2026"	"21.05.2026"	"2003"	"2025"	126859
 "                    Industry survey results - quarterly data"	"ei_bsin_q_r2"	"dataset"	"29.10.2026"	"29.10.2026"	"1980-Q1"	"2026-Q4"	91124
+"                Generation of municipal waste per capita"	"cei_pc031"	"table"	"15.10.2026"	"15.10.2026"	"2000"	"2024"	875
+"                Generation of packaging waste per capita"	"cei_pc040"	"table"	"10.11.2026"	"21.10.2026"	"2000"	"2024"	679
+"                Generation of plastic packaging waste per capita"	"cei_pc050"	"table"	"10.11.2026"	"21.10.2026"	"2000"	"2024"	679
+"                            Housing cost overburden rate by income quintile - EU-SILC survey"	"tessi162"	"table"	"29.10.2026"	"27.07.2026"	"2014"	"2025"	2480
+"                        Residential construction - annual data, % of GDP"	"tipsna50"	"table"	"24.11.2026"	"20.10.2026"	"1995"	"2025"	930
