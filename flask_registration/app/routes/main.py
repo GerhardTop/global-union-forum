@@ -170,17 +170,25 @@ def success():
 # with every such change (CLAUDE.md, Vertalingen); the page shows it in the
 # reader's language.
 PRIVACY_UPDATED = date(2026, 11, 24)
+# Representativeness 1e: the date of the text about the voluntary questions,
+# which only shows with PARTICIPANT_PROFILE on. Then the page shows the later
+# of the two dates; with the switch off nothing changes.
+PARTICIPANT_PRIVACY_UPDATED = date(2026, 11, 27)
 
 
 @main.route("/privacy")
 def privacy():
-    return render_template("privacy.html", privacy_updated=format_date(PRIVACY_UPDATED, format='long'))
+    from app import participants
+    shown = participants.enabled()
+    updated = max(PRIVACY_UPDATED, PARTICIPANT_PRIVACY_UPDATED) if shown else PRIVACY_UPDATED
+    return render_template("privacy.html", privacy_updated=format_date(updated, format='long'),
+                           participant_profile=shown)
 
 
 @main.route("/faq")
 def faq():
-    from app import faq as faq_content
-    return render_template("faq.html", themes=faq_content.themes())
+    from app import faq as faq_content, participants
+    return render_template("faq.html", themes=faq_content.themes(participants=participants.enabled()))
 
 
 @main.route("/spelregels")

@@ -73,7 +73,7 @@
       <div class="gu-ppcard__head">
         <h3 class="gu-ppcard__title" id="ppCardTitle">{{ _('Who votes?') }} <span class="gu-pp__pill">{{ _('Voluntary') }}</span></h3>
         <p class="gu-ppcard__text">{# TRANSLATORS: the card with the voluntary questions, right after the first vote. #}{{ _('Your vote has been saved. May we ask you something else?') }} {{ _('When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what.') }}</p>
-        <p class="gu-ppcard__text">{# TRANSLATORS: the card after the first vote: answering the questions has no effect on the vote. #}{{ _('Your vote counts either way.') }} <a href="{{ url_for('main.privacy') }}">{{ _('Why we ask this') }}</a></p>
+        <p class="gu-ppcard__text">{# TRANSLATORS: the card after the first vote: answering the questions has no effect on the vote. #}{{ _('Your vote counts either way.') }} <a href="{{ url_for('main.privacy', _anchor='wie-stemde-mee') }}">{{ _('Why we ask this') }}</a></p>
       </div>
       {% include "participants/_questions.html" %}
       <div class="gu-pp__actions">

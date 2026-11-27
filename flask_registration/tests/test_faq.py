@@ -33,7 +33,9 @@ SNAPSHOT = json.load(open(os.path.join(os.path.dirname(__file__), 'data', 'faq_s
 
 def test_one_list_with_the_same_shape():
     assert len(faq.FAQ) == 4
-    assert [len(q) for _t, q in faq.FAQ] == [5, 5, 7, 7]
+    # Theme 4 has one question more that only shows with PARTICIPANT_PROFILE
+    # on (representativeness 1e); the page without the switch has 7.
+    assert [len(q) for _t, q in faq.FAQ] == [5, 5, 7, 8]
     for lang in ('nl', 'en'):
         assert [len(q) for _t, q in SNAPSHOT[lang]] == [5, 5, 7, 7]
 

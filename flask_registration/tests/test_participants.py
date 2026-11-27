@@ -104,7 +104,7 @@ def test_empty_stays_none(app, db, make_user, switch_on):
     assert (p.birth_year, p.gender, p.education, p.answered_at) == (None, None, None, None)
 
 
-@pytest.mark.parametrize('year', [TODAY.year - 17, 1920])
+@pytest.mark.parametrize('year', [TODAY.year - 16, 1920])
 def test_year_limits_allowed(app, db, make_user, switch_on, year):
     user = make_user()
     assert _post(app, user, {'action': 'save', 'birth_year': str(year)}).status_code == 303
@@ -113,7 +113,7 @@ def test_year_limits_allowed(app, db, make_user, switch_on, year):
 
 
 @pytest.mark.parametrize('field,value', [
-    ('birth_year', str(TODAY.year - 16)), ('birth_year', '1919'), ('birth_year', 'abc'),
+    ('birth_year', str(TODAY.year - 15)), ('birth_year', '1919'), ('birth_year', 'abc'),
     ('gender', 'q'), ('education', 'phd'), ('country', 'ZZ'), ('country', 'nl'),
 ])
 def test_value_outside_the_choices_is_400(app, db, make_user, switch_on, field, value):
@@ -138,7 +138,7 @@ def test_login_required(app, db, switch_on):
 
 def test_birth_year_choices():
     years = participants.birth_year_choices(date(2026, 11, 27))
-    assert years[0] == 2009 and years[-1] == 1920 and 1921 in years
+    assert years[0] == 2010 and years[-1] == 1920 and 1921 in years
     assert years == sorted(years, reverse=True) and len(years) == len(set(years))
 
 
@@ -217,7 +217,7 @@ def test_age_ladder_levels_nest():
             if high is not None:
                 assert high + 1 in bounds
     for level in participants.AGE_LEVELS:
-        assert participants.AGE_LADDER[level][0][0] == 17
+        assert participants.AGE_LADDER[level][0][0] == 16
         assert participants.AGE_LADDER[level][-1][1] is None
 
 
@@ -517,7 +517,7 @@ def test_compute_age_finest_level():
     rows += _rows(12, None, answered=False)
     voters, answered, level, counts = participants.compute(rows, 2026)
     assert (voters, answered, level) == (82, 70, 'fine')
-    assert counts['age'] == [['17_24', 10], ['25_34', 10], ['35_44', 10], ['45_54', 10], ['55_64', 10],
+    assert counts['age'] == [['16_24', 10], ['25_34', 10], ['35_44', 10], ['45_54', 10], ['55_64', 10],
                              ['65_74', 10], ['75_plus', 10], ['na', 12]]
     for trait in participants.TRAITS:
         assert sum(n for _c, n in counts[trait]) == voters
@@ -528,15 +528,15 @@ def test_compute_age_falls_back_to_middle_coarse_none():
     rows = _rows(12, 2006) + _rows(5, 1996) + _rows(6, 1986) + _rows(10, 1976) + _rows(10, 1966) + _rows(10, 1956)
     level, ages = participants.count_ages([r[0] for r in rows], 2026, len(rows))
     assert level == 'middle'
-    assert ages == [['17_24', 12], ['25_44', 11], ['45_64', 20], ['65_plus', 10], ['na', 0]]
-    # Coarse: 17 to 44 has 25, 45 or older only 5.
+    assert ages == [['16_24', 12], ['25_44', 11], ['45_64', 20], ['65_plus', 10], ['na', 0]]
+    # Coarse: 16 to 44 has 25, 45 or older only 5.
     rows = _rows(25, 2000) + _rows(5, 1950) + _rows(5, 0)
     level, ages = participants.count_ages([r[0] for r in rows], 2026, len(rows))
     assert level == 'none' and ages == []
-    # Too small in fine and middle (17 to 24 has 5), fine in coarse.
+    # Too small in fine and middle (16 to 24 has 5), fine in coarse.
     rows = _rows(5, 2006) + _rows(5, 1996) + _rows(6, 1986) + _rows(6, 1976) + _rows(6, 1956) + _rows(4, 0)
     level, ages = participants.count_ages([r[0] for r in rows], 2026, len(rows))
-    assert level == 'coarse' and ages == [['17_44', 16], ['45_plus', 12], ['na', 4]]
+    assert level == 'coarse' and ages == [['16_44', 16], ['45_plus', 12], ['na', 4]]
     # 1920 counts as 1920 (106 years old in 2026, in the oldest group).
     level, ages = participants.count_ages([1920] * 10 + [1990] * 10, 2026, 20)
     assert level == 'fine' and ages[-2] == ['75_plus', 10] and ages[2] == ['35_44', 10]
@@ -656,7 +656,7 @@ def _block(page):
 def test_block_on_the_issue_page(app, db, make_user, voting, switch_on):
     import json
     issue, _props = voting()
-    counts = {'age': [['17_24', 34], ['25_44', 88], ['45_64', 79], ['65_plus', 33], ['na', 78]],
+    counts = {'age': [['16_24', 34], ['25_44', 88], ['45_64', 79], ['65_plus', 33], ['na', 78]],
               'gender': [['f', 82], ['m', 151], ['na', 79]],
               'education': [['basic', 12], ['middle', 61], ['higher', 162], ['na', 77]],
               'country': [['NL', 121], ['BE', 28], ['DE', 22], ['other', 61], ['na', 80]]}
@@ -821,7 +821,7 @@ def test_block_rows_order_language_and_sensitive_area(app, db, make_user, voting
     import json
     import html as html_lib
     issue, _props = voting()
-    counts = {'age': [['17_44', 15], ['45_plus', 11], ['na', 10]],
+    counts = {'age': [['16_44', 15], ['45_plus', 11], ['na', 10]],
               'gender': [['f', 12], ['m', 14], ['na', 10]],
               'education': [['basic', 0], ['middle', 13], ['higher', 13], ['na', 10]],
               'country': [['TW', 12], ['NL', 11], ['na', 13]]}
@@ -852,3 +852,57 @@ def test_result_line_not_with_the_switch_off(app, db, make_user, voting):
     db.session.commit()
     page = _req(_client(app, make_user()), 'GET', _url(issue, p1)).get_data(as_text=True)
     assert 'deelnemers in dit vraagstuk' not in page and 'wie-stemde-mee' not in page
+
+
+# ── Step 1e: privacy statement, FAQ and the links ─────────────────────────
+
+def _get_page(app, path, lang='nl', user=None):
+    return _req(_client(app, user, lang), 'GET', path).get_data(as_text=True)
+
+
+def test_privacy_text_only_with_the_switch(app, db, monkeypatch):
+    off = _get_page(app, '/privacy')
+    assert 'id="wie-stemde-mee"' not in off and 'Waarom we vragen wie er meestemt' not in off
+    assert 'je geboortejaar, je geslacht' not in off
+    assert 'Laatst bijgewerkt: 24 november 2026' in off
+    monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', True)
+    on = _get_page(app, '/privacy')
+    assert 'id="wie-stemde-mee"' in on and 'Waarom we vragen wie er meestemt' in on
+    assert 'Als je dat zelf invult: je geboortejaar, je geslacht' in on
+    assert 'daarin ben je niet terug te vinden.' in on
+    assert 'Laatst bijgewerkt: 27 november 2026' in on
+    # The new section sits after "What we use it for" and before "Who we share data with".
+    assert on.index('id="gebruik"') < on.index('id="wie-stemde-mee"') < on.index('id="delen"')
+
+
+def test_faq_question_only_with_the_switch(app, db, monkeypatch):
+    question = 'Waarom vragen jullie na mijn eerste stem naar mijn leeftijd en opleiding?'
+    assert question not in _get_page(app, '/faq')
+    monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', True)
+    page = _get_page(app, '/faq')
+    assert question in page
+    assert '<a href="/privacy#wie-stemde-mee">privacypagina</a>' in page
+    # Right after "Which data do you keep, and what for?".
+    assert page.index('Welke gegevens') < page.index(question) < page.index('Wie kan zien wat ik schrijf?')
+
+
+def test_why_we_ask_links_to_the_privacy_section(app, db, make_user, voting, switch_on):
+    import json
+    target = 'href="/privacy#wie-stemde-mee">Waarom we dit vragen</a>'
+    user = make_user()
+    assert target in _section(_get_page(app, '/profile', user=user))                    # About me (1b)
+    issue, (p1, _p2) = voting()
+    voter = make_user('voter')
+    client = _client(app, voter)
+    _vote(client, issue, p1)
+    page = _req(client, 'GET', _url(issue, p1)).get_data(as_text=True)
+    card = page[page.index(CARD):page.index('</form>', page.index(CARD))]
+    assert target in card                                                                 # the card (1c)
+    stats = IssueParticipationStats(issue_id=issue.id, voters=12, answered=1, age_level='none', counts='{}')
+    db.session.add(stats)
+    db.session.commit()
+    assert target in _issue_page(app, user, issue)                                        # the block (1d), too few
+    stats.voters, stats.counts = 40, json.dumps({'age': [], 'gender': [['na', 40]], 'education': [['na', 40]],
+                                                 'country': [['na', 40]]})
+    db.session.commit()
+    assert target in _issue_page(app, user, issue)                                        # the block (1d)

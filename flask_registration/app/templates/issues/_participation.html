@@ -15,7 +15,7 @@
   {% if pv.too_few %}
   <h2 class="gu-pstats__title" id="ppStatsTitle">{# TRANSLATORS: the heading of the block with the make-up of the voters of an issue (age, gender, education, country). #}{{ _('Who voted') }}</h2>
   <p class="gu-pstats__lead">{# TRANSLATORS: the block "Who voted" with fewer than 30 voters. #}{{ _('Too few participants to show who voted (fewer than 30).') }}</p>
-  <p class="gu-pstats__note">{# TRANSLATORS: the block "Who voted" with fewer than 30 voters: why nothing is shown. #}{{ _('This way nobody can be recognised.') }} <a href="{{ url_for('main.privacy') }}">{{ _('Why we ask this') }}</a></p>
+  <p class="gu-pstats__note">{# TRANSLATORS: the block "Who voted" with fewer than 30 voters: why nothing is shown. #}{{ _('This way nobody can be recognised.') }} <a href="{{ url_for('main.privacy', _anchor='wie-stemde-mee') }}">{{ _('Why we ask this') }}</a></p>
   {% else %}
   <div class="gu-pstats__head">
     <div class="gu-pstats__intro">
@@ -66,7 +66,7 @@
 
   <div class="gu-pstats__foot">
     <p class="gu-pstats__note">{# TRANSLATORS: the explanation under the block "Who voted". #}{{ _('Self-reported and voluntary. Percentages of all voters, rounded. Age groups as fine as the number of voters allows. Other groups smaller than 10 are combined. This says nothing about who voted what.') }}</p>
-    <p class="gu-pstats__note">{# TRANSLATORS: under the block "Who voted"; %(date)s is a date. #}{{ _('Frozen on %(date)s, at the end of the voting phase.', date=pv.stats.frozen_at | local | datetimeformat('d MMMM y')) }} <a href="{{ url_for('main.privacy') }}">{{ _('Why we ask this') }}</a></p>
+    <p class="gu-pstats__note">{# TRANSLATORS: under the block "Who voted"; %(date)s is a date. #}{{ _('Frozen on %(date)s, at the end of the voting phase.', date=pv.stats.frozen_at | local | datetimeformat('d MMMM y')) }} <a href="{{ url_for('main.privacy', _anchor='wie-stemde-mee') }}">{{ _('Why we ask this') }}</a></p>
   </div>
   {% endif %}
 </section>

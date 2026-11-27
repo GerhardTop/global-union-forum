@@ -308,7 +308,7 @@ def test_no_dutch_in_who_voted(app, db, make_user, monkeypatch, lang):
     try:
         pages = []
         for voters, level, counts in (
-                (312, 'middle', {'age': [['17_24', 34], ['25_44', 88], ['45_64', 79], ['65_plus', 33], ['na', 78]],
+                (312, 'middle', {'age': [['16_24', 34], ['25_44', 88], ['45_64', 79], ['65_plus', 33], ['na', 78]],
                                  'gender': [['f', 82], ['m', 151], ['small', 10], ['na', 69]],
                                  'education': [['basic', 12], ['middle', 61], ['higher', 162], ['na', 77]],
                                  'country': [['NL', 121], ['BE', 28], ['other', 83], ['na', 80]]}),
@@ -331,3 +331,22 @@ def test_no_dutch_in_who_voted(app, db, make_user, monkeypatch, lang):
     finally:
         for issue_id in made:
             _cleanup(issue_id)
+
+
+@pytest.mark.parametrize('lang', ['de', 'es', 'fr'])
+def test_no_dutch_on_privacy_and_faq_with_participant_profile(app, db, monkeypatch, lang):
+    """Representativeness 1e: the privacy statement and the FAQ with the
+    text about the voluntary questions (PARTICIPANT_PROFILE on)."""
+    monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', True)
+    content = _content(db)
+    found = {}
+    client = _client(app, None, lang)
+    for path in ('/privacy', '/faq'):
+        resp = _req(client, 'GET', path)
+        assert resp.status_code == 200
+        page = resp.get_data(as_text=True)
+        assert 'wie-stemde-mee' in page
+        for text in _interface_texts(page, content):
+            if WORD.search(text):
+                found.setdefault(path, []).append(text)
+    assert found == {}, found

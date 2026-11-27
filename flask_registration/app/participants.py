@@ -27,15 +27,16 @@ EDUCATION_LEVELS = ('basic', 'middle', 'higher', PREFER_NOT)
 BIRTH_YEAR_PREFER_NOT = 0
 # The oldest choice, shown as "1920 or earlier".
 OLDEST_YEAR = 1920
-# The youngest voters are 17 (the year in which you turn 17).
-YOUNGEST_AGE = 17
+# The youngest voters are 16 (the year in which you turn 16), the minimum
+# age of signing up.
+YOUNGEST_AGE = 16
 
 # The fixed age ladder (K4): every level consists exactly of groups of the
 # finer one. (low, high) in years, both included; high None is "or older".
 AGE_LADDER = {
-    'fine': ((17, 24), (25, 34), (35, 44), (45, 54), (55, 64), (65, 74), (75, None)),
-    'middle': ((17, 24), (25, 44), (45, 64), (65, None)),
-    'coarse': ((17, 44), (45, None)),
+    'fine': ((16, 24), (25, 34), (35, 44), (45, 54), (55, 64), (65, 74), (75, None)),
+    'middle': ((16, 24), (25, 44), (45, 64), (65, None)),
+    'coarse': ((16, 44), (45, None)),
 }
 AGE_LEVELS = ('fine', 'middle', 'coarse')
 
@@ -76,7 +77,7 @@ def mark_asked(user, now=None):
 
 def birth_year_choices(today=None):
     """The birth years to choose from, newest first: from the year in which
-    you turn 17 back to 1921, then 1920 ("1920 or earlier")."""
+    you turn 16 back to 1921, then 1920 ("1920 or earlier")."""
     today = today or date.today()
     return list(range(today.year - YOUNGEST_AGE, OLDEST_YEAR - 1, -1))
 

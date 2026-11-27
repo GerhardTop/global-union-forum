@@ -19,6 +19,14 @@ _PRIVACY = lazy_gettext('As little as possible. Your pseudonym, your email addre
                         'yourself. Extra profile details only if you fill them in yourself. The details are on the <a '
                         'href="%(url)s">privacy page</a>.')
 
+# Representativeness 1e: only with PARTICIPANT_PROFILE on (themes(participants=True)).
+# TRANSLATORS: faq, vraag 4.3b (the voluntary questions about age, gender, education and country after the first vote)
+_PARTICIPANTS_Q = lazy_gettext('Why do you ask about my age and education after my first vote?')
+# TRANSLATORS: faq, antwoord 4.3b, met een link naar de privacy-pagina
+_PARTICIPANTS = lazy_gettext('So that we can show with the result how diverse the group of voters is. It is voluntary '
+                             'and your vote counts either way. We only show totals of groups of at least 10 people, '
+                             'never who voted what. There is more on the <a href="%(url)s">privacy page</a>.')
+
 FAQ = [
     # TRANSLATORS: faq, thema 1
     ('Global Union Forum', [
@@ -132,6 +140,7 @@ FAQ = [
         # TRANSLATORS: faq, vraag 4.3 en antwoord 4.3
         (lazy_gettext('Which data do you keep, and what for?'),
          _PRIVACY),
+        (_PARTICIPANTS_Q, _PARTICIPANTS),
         # TRANSLATORS: faq, vraag 4.4 en antwoord 4.4
         (lazy_gettext('Who can see what I write?'),
          lazy_gettext('Your contributions are public and visible under your pseudonym. Anyone can read them. Your email'
@@ -151,15 +160,22 @@ FAQ = [
 ]
 
 
-def themes():
+def themes(participants=False):
     """The FAQ in the current language: [(theme, [(question, answer)])]. The
-    answer with a link is Markup; everything else is plain text."""
+    answers with a link are Markup; everything else is plain text. The
+    question about the voluntary questions only with participants (the switch
+    PARTICIPANT_PROFILE)."""
     out = []
     for theme, questions in FAQ:
         rows = []
         for question, answer in questions:
+            if answer is _PARTICIPANTS and not participants:
+                continue
             if answer is _PRIVACY:
                 answer = Markup(str(answer) % {'url': '/privacy'})
+            elif answer is _PARTICIPANTS:
+                from flask import url_for
+                answer = Markup(str(answer) % {'url': url_for('main.privacy', _anchor='wie-stemde-mee')})
             else:
                 answer = str(answer)
             rows.append((str(question), answer))

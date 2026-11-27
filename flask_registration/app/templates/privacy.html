@@ -28,12 +28,24 @@
     <section id="gegevens">
       <h2>{# TRANSLATORS: privacy, kop 3 #}{% trans %}What data we collect{% endtrans %}</h2>
       <p>{# TRANSLATORS: privacy, alinea 4 #}{% trans %}Your username (pseudonym), which is public. Your email address, which is private and not visible to other users. Your password, which we store encrypted. If you fill them in yourself: your first and last name and your LinkedIn address, which stay private unless you choose in your profile to show your real name. What you write on the forum, your replies, and your agree and disagree votes; your contributions are public under your pseudonym. And your IP address and technical log data, which we use to prevent abuse.{% endtrans %}</p>
+      {%- if participant_profile %}
+      <p>{# TRANSLATORS: privacy, alinea 4b (representativeness: the voluntary questions after the first vote; "About me" is the section in the profile) #}{% trans %}If you fill it in yourself: your year of birth, your gender, your level of education and the country you live in. This is voluntary. We ask once, after your first vote. You can change or clear it at any time in your profile, under About me. Nobody else sees your answers, not even a moderator.{% endtrans %}</p>
+      {%- endif %}
     </section>
 
     <section id="gebruik">
       <h2>{# TRANSLATORS: privacy, kop 5 #}{% trans %}What we use it for{% endtrans %}</h2>
       <p>{# TRANSLATORS: privacy, alinea 6 #}{% trans %}To make your account work and sign you in, to run the forum, to prevent abuse and overload, to translate your contributions and give them a quality assessment, and to send you emails that relate to your account.{% endtrans %}</p>
     </section>
+    {%- if participant_profile %}
+
+    <section id="wie-stemde-mee">
+      <h2>{# TRANSLATORS: privacy, kop 6b (representativeness: why we ask voters about their age, gender, education and country) #}{% trans %}Why we ask who votes{% endtrans %}</h2>
+      <p>{# TRANSLATORS: privacy, alinea 6c #}{% trans %}We want to show how diverse the group is that votes on an issue, so that everyone can see whether a group is missing. Your vote counts either way, whether you answer the questions or not.{% endtrans %}</p>
+      <p>{# TRANSLATORS: privacy, alinea 6d #}{% trans %}At the end of the voting phase we add up the answers of all voters. We only show totals: in groups of at least 10 people, and only if at least 30 people voted. We combine smaller groups. We never show who voted what, and we do not split the votes by group. We never show your year of birth or your age.{% endtrans %}</p>
+      <p>{# TRANSLATORS: privacy, alinea 6e (the legal basis: consent) #}{% trans %}We use these answers only for this, based on your consent. You give it by answering the questions and withdraw it by clearing your answers. We keep them as long as your account exists. If you delete your account, they are deleted too. Totals already shown with a result stay; you cannot be found in them.{% endtrans %}</p>
+    </section>
+    {%- endif %}
 
     <section id="delen">
       <h2>{# TRANSLATORS: privacy, kop 7 #}{% trans %}Who we share data with{% endtrans %}</h2>

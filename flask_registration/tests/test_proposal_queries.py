@@ -247,7 +247,7 @@ def test_queries_with_who_voted(app, db, make_user, monkeypatch, who):
             issue, proposals, member = _world(db, make_user, n)
             issue.phase, issue.support_threshold = 'vervolg', 1   # voting is over: the result and its line
             db.session.add(IssueParticipationStats(issue_id=issue.id, voters=40, answered=20, age_level='coarse',
-                                                   counts=json.dumps({'age': [['17_44', 20], ['45_plus', 10], ['na', 10]],
+                                                   counts=json.dumps({'age': [['16_44', 20], ['45_plus', 10], ['na', 10]],
                                                                       'gender': [['na', 40]], 'education': [['na', 40]],
                                                                       'country': [['na', 40]]})))
             db.session.commit()

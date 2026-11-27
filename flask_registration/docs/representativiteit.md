@@ -13,7 +13,7 @@ Bewust NIET in deze stap: stemmen uitsplitsen per groep, een gewogen uitslag, lo
 3. Loten (later en apart, schets onderaan): een geloot panel bij een specifiek vraagstuk.
 
 ## Wat al vastlag (achtergrondcijfers-opzet, 24 november)
-Vrijwillig met "zeg ik liever niet", gevraagd bij de eerste stem, leeftijdsgroepen in plaats van geboortedatum (op 27 november aangepast: geboortejaar vragen, alleen groepen tonen, zie K4), geslacht als vrouw / man / anders / zeg ik liever niet, alleen totalen met een minimale groepsgrootte (10), geen uitsplitsing van stemmen, extra zorg omdat de doelgroep bij 17 jaar begint, vooraf een DPIA en een aangepaste privacyverklaring. Geen etniciteit (startnotitie, 27 november).
+Vrijwillig met "zeg ik liever niet", gevraagd bij de eerste stem, leeftijdsgroepen in plaats van geboortedatum (op 27 november aangepast: geboortejaar vragen, alleen groepen tonen, zie K4), geslacht als vrouw / man / anders / zeg ik liever niet, alleen totalen met een minimale groepsgrootte (10), geen uitsplitsing van stemmen, extra zorg omdat de doelgroep bij 16 jaar begint, vooraf een DPIA en een aangepaste privacyverklaring. Geen etniciteit (startnotitie, 27 november).
 
 ## Hoe het nu werkt (uit de code)
 - Stemmen kan alleen wie stemrecht heeft (na een aantal kwaliteitsbijdragen, vote.voter_min). Een stem is één rij in issue_proposal_votes per voorstel, met user_id; een klik op Voor, Tegen of Onthouding verstuurt meteen (issues.proposal_vote).
@@ -35,12 +35,13 @@ Besluit: vier vragen, alle vier met "Zeg ik liever niet": geboortejaar, geslacht
 
 K4. Leeftijd: geboortejaar vragen, groepen tonen
 Besluit (voorstel van Gerhard): we vragen het geboortejaar en tonen alleen groepen. Redenen: de leeftijd veroudert vanzelf (een vaste groep klopt na een paar jaar niet meer), de groepen kunnen meegroeien met het aantal stemmers, en voor niveau 2 sluit het precies aan op de leeftijdsgroepen van Eurostat (blokken van vijf jaar). Het e-mailadres en vaak de naam zijn al bekend, dus een jaar maakt iemand nauwelijks herkenbaarder; de DPIA legt uit waarom het jaar nodig is (minimale gegevens).
-- Vraag: "In welk jaar ben je geboren?", een keuzelijst van "1920 of eerder" tot het jaar waarin je 17 wordt, plus "Zeg ik liever niet". Hint: "We tonen nooit je leeftijd, alleen groepen zoals "25 tot en met 44"."
+- Vraag: "In welk jaar ben je geboren?", een keuzelijst van "1920 of eerder" tot het jaar waarin je 16 wordt, plus "Zeg ik liever niet". Hint: "We tonen nooit je leeftijd, alleen groepen zoals "25 tot en met 44"."
+- Jongste leeftijd 16, gelijk aan de minimumleeftijd van de aanmelding (27 november 2026).
 - Leeftijd bij de uitslag = het jaar van bevriezen min het geboortejaar (klopt op een jaar na; genoeg voor groepen).
 - Groepen als vaste trap, waarin elk niveau precies uit het fijnere bestaat:
-  Fijn: 17 tot en met 24, 25 tot en met 34, 35 tot en met 44, 45 tot en met 54, 55 tot en met 64, 65 tot en met 74, 75 of ouder;
-  Middel: 17 tot en met 24, 25 tot en met 44, 45 tot en met 64, 65 of ouder;
-  Grof: 17 tot en met 44, 45 of ouder.
+  Fijn: 16 tot en met 24, 25 tot en met 34, 35 tot en met 44, 45 tot en met 54, 55 tot en met 64, 65 tot en met 74, 75 of ouder;
+  Middel: 16 tot en met 24, 25 tot en met 44, 45 tot en met 64, 65 of ouder;
+  Grof: 16 tot en met 44, 45 of ouder.
   De app kiest het fijnste niveau waarop elke groep minstens 10 mensen heeft. Lukt het zelfs bij Grof niet, dan bij leeftijd alleen "Niet genoeg ingevuld om te tonen". Geen vrij gekozen grenzen per vraagstuk: die zouden door vergelijken terugrekenen mogelijk maken en vraagstukken onvergelijkbaar maken.
 - Het geboortejaar en de leeftijd verschijnen nergens, behalve voor de gebruiker zelf in zijn eigen profiel.
 Alternatief (niet gekozen): vaste leeftijdsgroepen vragen.
@@ -116,7 +117,7 @@ Wie stemde mee (artboard 2):
 Ik ben geen jurist; laat de DPIA en de tekst van de privacyverklaring nalezen.
 - Leeftijdsgroep, geslacht, opleiding en land zijn geen bijzondere persoonsgegevens, maar het platform verwerkt al politieke meningen (de stemmen). Samen maken ze iemand herkenbaarder. Daarom: apart bewaren, alleen totalen, drempels, niemand ziet losse antwoorden, bevriezen pas na het stemmen.
 - Grondslag: toestemming (vrijwillig, apart te geven, even makkelijk in te trekken). Het stemrecht hangt er niet van af.
-- Doelgroep vanaf 17 jaar. De AVG laat lidstaten de leeftijd voor eigen toestemming bij online diensten op 13 tot 16 jaar zetten, dus een 17-jarige kan zelf toestemming geven. Toch extra zorg: alleen groepen tonen, en de jongste groep loopt in elk niveau tot en met 24 of verder, zodat 17-jarigen er niet apart uit springen.
+- Doelgroep vanaf 16 jaar. De AVG laat lidstaten de leeftijd voor eigen toestemming bij online diensten op 13 tot 16 jaar zetten, dus een 16-jarige kan zelf toestemming geven. Toch extra zorg: alleen groepen tonen, en de jongste groep loopt in elk niveau tot en met 24 of verder, zodat 16-jarigen er niet apart uit springen.
 - Geboortejaar in plaats van leeftijdsgroep: nodig voor het verouderen en de meegroeiende groepen (K4); het jaar wordt nergens getoond of geëxporteerd.
 - Zelf opgegeven gegevens zijn niet te controleren. Bij niveau 1 is er geen reden om te liegen (er hangt niets van af); bij niveau 2 en 3 wel, zie daar.
 
@@ -125,7 +126,7 @@ Ik ben geen jurist; laat de DPIA en de tekst van de privacyverklaring nalezen.
 1b. Datamodel (participant_profiles, users.country, issue_participation_stats), de sectie "Over mij" en "Mijn land" in het profiel, wissen, opruimen bij account verwijderen; achter PARTICIPANT_PROFILE. Niets zichtbaars met de schakelaar uit (page_snapshot.py) (klaar, 27 november 2026).
 1c. De kaart na de eerste stem, één keer (K1, K2), met en zonder JavaScript (klaar, 27 november 2026).
 1d. Bevriezen bij het einde van de stemfase en het blok "Wie stemde mee" met de leeftijdstrap en de drempels (K4, K7, K8), plus de regel bij de uitslag van elk voorstel; uitbreiding van tests/test_proposal_queries.py (klaar, 27 november 2026).
-1e. Privacyverklaring en FAQ (per alinea een msgid, in vijf talen), PRIVACY_UPDATED, naleesbestanden opnieuw exporteren. De teksten van 1b tot en met 1d gaan al in die stappen in alle vijf talen (zie Meertaligheid).
+1e. Privacyverklaring en FAQ (per alinea een msgid, in vijf talen), PRIVACY_UPDATED, naleesbestanden opnieuw exporteren. De teksten van 1b tot en met 1d gaan al in die stappen in alle vijf talen (zie Meertaligheid) (klaar, 27 november 2026).
 Daarna: DPIA afronden, dan PARTICIPANT_PROFILE=1 op Render.
 
 ## Niveau 2: wegen (schets, later)
