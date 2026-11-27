@@ -677,7 +677,7 @@ msgstr "Sin respuesta"
 #. together.
 #: app/participants.py:370
 msgid "Smaller groups combined"
-msgstr "Grupos más pequeños juntos"
+msgstr "Grupos pequeños agrupados"
 
 #. TRANSLATORS: in the block "Who voted": the countries with fewer than 10
 #. voters, together.
@@ -5582,7 +5582,7 @@ msgstr "Personas"
 #. the explanation under the block "Who voted".
 #: app/templates/issues/_participation.html:68
 msgid "Self-reported and voluntary. Percentages of all voters, rounded. Age groups as fine as the number of voters allows. Other groups smaller than 10 are combined. This says nothing about who voted what."
-msgstr "Datos propios y voluntarios. Porcentajes de todas las personas que votaron, redondeados. Grupos de edad tan detallados como lo permite el número de votantes. Los demás grupos de menos de 10 personas se juntan. Esto no dice nada sobre quién votó qué."
+msgstr "Datos aportados por cada persona, de forma voluntaria. Porcentajes de todas las personas que votaron, redondeados. Grupos de edad tan detallados como lo permite el número de votantes. Los demás grupos de menos de 10 personas se agrupan. Esto no dice nada sobre quién votó qué."
 
 #. under the block "Who voted"; %(date)s is a date.
 #: app/templates/issues/_participation.html:69

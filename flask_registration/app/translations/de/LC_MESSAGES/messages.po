@@ -677,7 +677,7 @@ msgstr "Nicht angegeben"
 #. together.
 #: app/participants.py:370
 msgid "Smaller groups combined"
-msgstr "Kleinere Gruppen zusammen"
+msgstr "Kleinere Gruppen zusammengefasst"
 
 #. TRANSLATORS: in the block "Who voted": the countries with fewer than 10
 #. voters, together.
@@ -5416,7 +5416,7 @@ msgstr[1] "%(num)d Personen bei dieser Fragestellung"
 #: app/templates/issues/_participation.html:22
 #: app/templates/issues/_participation.html:26
 msgid "Who voted"
-msgstr "Wer mit abgestimmt hat"
+msgstr "Wer abgestimmt hat"
 
 #: app/templates/issues/_ip_vote.html:35
 #, python-format

@@ -264,7 +264,7 @@ app/participants.py:356,"TRANSLATORS: a heading in the block ""Who voted"".",,Ge
 app/participants.py:359,"TRANSLATORS: a heading in the block ""Who voted"" (the level of education of the voters).",,Education,,Opleiding,,Bildung,
 app/participants.py:361 app/templates/landenlijst.html:64,"TRANSLATORS: a heading in the block ""Who voted"" (the country where the voters live). landenlijst, tekst 11",,Country,,Land,,Land,
 app/participants.py:367,"TRANSLATORS: in the block ""Who voted"": nothing filled in, ""prefer not to say"", or merged in.",,Not filled in,,Niet ingevuld,,Nicht angegeben,
-app/participants.py:370,"TRANSLATORS: in the block ""Who voted"": groups smaller than 10 people, shown together.",,Smaller groups combined,,Kleinere groepen samen,,Kleinere Gruppen zusammen,
+app/participants.py:370,"TRANSLATORS: in the block ""Who voted"": groups smaller than 10 people, shown together.",,Smaller groups combined,,Kleinere groepen samen,,Kleinere Gruppen zusammengefasst,
 app/participants.py:373,"TRANSLATORS: in the block ""Who voted"": the countries with fewer than 10 voters, together.",,Other countries combined,,Andere landen samen,,Andere Länder zusammen,
 app/quality.py:37 app/templates/forum/quality.html:96,,,New argument,,Nieuw argument,,Neues Argument,
 app/quality.py:38,,,Substantiation with a new fact and source,,Onderbouwing met nieuw feit en bron,,Begründung mit neuem Fakt und Quelle,
@@ -967,7 +967,7 @@ app/templates/issues/_ip_vote.html:11,,,Final vote,,Eindstemming,,Schlussabstimm
 app/templates/issues/_ip_vote.html:11,,,Vote,,Stemming,,Abstimmung,
 app/templates/issues/_ip_vote.html:14,,,This proposal is not on the voting list. Only proposals with enough support are voted on.,,Dit voorstel staat niet op de stemlijst. Alleen over voorstellen met genoeg steun wordt gestemd.,,Dieser Vorschlag steht nicht auf der Abstimmungsliste. Abgestimmt wird nur über Vorschläge mit genug Unterstützung.,
 app/templates/issues/_ip_vote.html:33,"under the result of a proposal; %(num)d is the number of voters of the issue, followed by a link ""Who voted"".",,%(num)d participant in this issue,%(num)d participants in this issue,%(num)d deelnemer in dit vraagstuk,%(num)d deelnemers in dit vraagstuk,%(num)d Person bei dieser Fragestellung,%(num)d Personen bei dieser Fragestellung
-app/templates/issues/_ip_vote.html:33 app/templates/issues/_participation.html:16 app/templates/issues/_participation.html:22 app/templates/issues/_participation.html:26,"the heading of the block with the make-up of the voters of an issue (age, gender, education, country).",,Who voted,,Wie stemde mee,,Wer mit abgestimmt hat,
+app/templates/issues/_ip_vote.html:33 app/templates/issues/_participation.html:16 app/templates/issues/_participation.html:22 app/templates/issues/_participation.html:26,"the heading of the block with the make-up of the voters of an issue (age, gender, education, country).",,Who voted,,Wie stemde mee,,Wer abgestimmt hat,
 app/templates/issues/_ip_vote.html:35,,,Your vote: %(choice)s.,,Je stem: %(choice)s.,,Deine Stimme: %(choice)s.,
 app/templates/issues/_ip_vote.html:45,"in the vote block, under a proposal statement shown in a translation. %(language)s is the original language in its base form, e.g. ""Dutch"".",,You vote on the original text (%(language)s).,,Je stemt over de oorspronkelijke tekst (%(language)s).,,Du stimmst über den Originaltext ab (%(language)s).,
 app/templates/issues/_ip_vote.html:47,,,Hide original,,Origineel verbergen,,Original ausblenden,

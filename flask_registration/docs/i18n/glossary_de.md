@@ -67,7 +67,7 @@ De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` 
 | Who votes? | Wie stemt er mee? | Wer stimmt mit ab? | De kop boven de vrijwillige vragen; "mit abstimmen" volgt het Nederlandse "meestemmen". |
 | Prefer not to say | Zeg ik liever niet | Möchte ich nicht sagen | Het gangbare antwoord in Duitse formulieren; ich-vorm zoals het Nederlands. |
 | education: Basic / Secondary / Higher | Basis / Middelbaar / Hoger | Grundbildung / Mittlere Bildung / Höhere Bildung | De drie ISCED-niveaus (0 tot en met 2, 3 en 4, 5 tot en met 8); de uitleg noemt Duitse voorbeelden (Hauptschul- of Realschulabschluss bij Grundbildung, Abitur of Lehre bij Mittlere Bildung, Fachhochschule), nooit mbo of hbo. De vraag: "Was ist die höchste Ausbildung, die du abgeschlossen hast oder gerade machst?" |
-| Who voted (block) | Wie stemde mee | Wer mit abgestimmt hat | Het blok bij de uitslag met de samenstelling van de stemmers. |
+| Who voted (block) | Wie stemde mee | Wer abgestimmt hat | Het blok bij de uitslag met de samenstelling van de stemmers. |
 | Not filled in | Niet ingevuld | Nicht angegeben | Niets ingevuld, "zeg ik liever niet" of samengevoegd. |
-| Smaller groups combined / Other countries combined | Kleinere groepen samen / Andere landen samen | Kleinere Gruppen zusammen / Andere Länder zusammen | Groepen onder de 10 mensen, samen getoond. |
+| Smaller groups combined / Other countries combined | Kleinere groepen samen / Andere landen samen | Kleinere Gruppen zusammengefasst / Andere Länder zusammen | Groepen onder de 10 mensen, samen getoond. |
 | Frozen (the totals at the end of voting) | Bevroren | Festgehalten | De totalen worden één keer vastgelegd aan het eind van de stemfase en daarna niet meer gewijzigd. |
