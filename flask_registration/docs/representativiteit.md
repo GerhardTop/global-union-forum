@@ -92,8 +92,21 @@ Wie stemde mee (artboard 2):
 - Account verwijderen: de rij in participant_profiles en users.country gaan weg. Bevroren totalen blijven (ze bevatten niemand).
 - Schakelaar: PARTICIPANT_PROFILE (omgevingsvariabele, "1" is aan, standaard uit). Uit: geen kaart, geen sectie in het profiel, niets bevriezen. Aan pas na de DPIA en de nieuwe privacyverklaring.
 - Privacyverklaring en FAQ bijwerken (en PRIVACY_UPDATED): welke gegevens, het ene doel, vrijwillig op basis van toestemming, intrekken door wissen in het profiel, wie ze ziet (niemand), hoe lang (zolang het account bestaat).
-- Randvoorwaarden zoals bij de achtergrondcijfers: werkregels uit CLAUDE.md, tests in willekeurige volgorde, vijf talen via gettext, geen lange of korte streepjes, vast aantal queries op de vraagstuk- en voorstelpagina (het blok leest één rij issue_participation_stats), migraties additief en idempotent, page_snapshot.py voor stappen die niets zichtbaars horen te veranderen.
+- Randvoorwaarden zoals bij de achtergrondcijfers: werkregels uit CLAUDE.md, tests in willekeurige volgorde, vijf talen via gettext (zie Meertaligheid), geen lange of korte streepjes, vast aantal queries op de vraagstuk- en voorstelpagina (het blok leest één rij issue_participation_stats), migraties additief en idempotent, page_snapshot.py voor stappen die niets zichtbaars horen te veranderen.
 - Tests die bewaken dat de antwoorden nergens anders verschijnen: niet op /admin en de moderatorschermen, niet in de profielpagina van een ander, niet in de JSON-antwoorden.
+
+## Meertaligheid (volgens CLAUDE.md, sectie "Vertalingen (i18n)", en docs/i18n/machinevertaling.md)
+- Alles in dit spoor is vaste interfacetekst. Er is geen inhoud van gebruikers of de AI, dus niets via content_i18n of content_jobs en geen label "Machinaal vertaald".
+- Alle tekst via gettext; de msgid is Engels, de Nederlandse tekst staat in de catalogus. De teksten in deze opzet en in de artboards zijn de Nederlandse vertalingen; de bouwstap kiest de Engelse msgids en geeft elke tekst een translator-comment (TRANSLATORS:).
+- Elke bouwstap (1b, 1c, 1d) levert zijn eigen teksten meteen in alle vijf ingeschakelde talen (nl, en, de, es, fr): geen lege of fuzzy items, .mo meecommitten, naleesbestanden opnieuw exporteren (python i18n_review.py export de, es en fr). Niet uitstellen naar een latere stap.
+- Aanspreekvorm en woordkeuze volgens de woordenlijsten (docs/i18n/glossary_<taal>.md): je, du, tú, vous; geen genderster of inclusieve schrijfwijze, neutraal waar het kan; geen lange of korte streepjes. De nieuwe kernbegrippen (Wie stemde mee, Wie stemt er mee, Zeg ik liever niet, Niet ingevuld, Kleinere groepen samen, de drie opleidingsniveaus, Over mij) komen in de drie woordenlijsten.
+- Opleiding: de namen Basis, Middelbaar en Hoger worden gewoon vertaald; de uitleg eronder noemt per taal voorbeelden uit dat taalgebied, nooit de Nederlandse namen (mbo, hbo). De Engelse msgid is neutraal (bijvoorbeeld "College or university"); de translator-comment noemt de ISCED-niveaus (0 tot en met 2, 3 en 4, 5 tot en met 8) en vraagt om een voorbeeld dat lezers in die taal herkennen.
+- Leeftijdsgroepen als msgids met plaatshouders ("%(low)s to %(high)s", "%(age)s or older"); de code vult de getallen in.
+- Getallen, percentages en datums via Babel in de taal van de lezer (de bestaande filters zoals decimalformat en datetimeformat; een percentage in de notatie van de taal, in het Frans met een spatie voor het teken). Uitzondering: geboortejaren in de keuzelijst zijn kale jaartallen, zonder scheidingsteken voor duizendtallen (1987, niet 1.987).
+- Landen: opslaan als ISO2-code; namen alleen via app/sources/countries.display_name (de eigen landenlijst, met een eigen naam per taal; PS, HK, TW en XK nooit via Babel), in de keuzelijst gesorteerd op de naam in de taal van de lezer.
+- De bevroren totalen (issue_participation_stats.counts) bevatten alleen codes, nooit labels: leeftijdsgroep, f/m/x, basic/middle/higher, ISO2, plus vaste codes voor "Kleinere groepen samen", "Andere landen samen" en "Niet ingevuld". De weergave vertaalt bij het tonen, dus het blok klopt in elke taal, ook in een taal die later aangaat.
+- Opmaak met logische CSS (inline-start en inline-end, text-align start en end), zodat kaart en blok later ook in een taal van rechts naar links kloppen (tests/test_logical_css.py).
+- tests/test_no_dutch_interface.py dekt de nieuwe schermen per taal: de kaart na de eerste stem, het blok "Wie stemde mee" en de sectie "Over mij" in het profiel.
 
 ## Privacy (aandachtspunten voor de DPIA)
 Ik ben geen jurist; laat de DPIA en de tekst van de privacyverklaring nalezen.
@@ -108,7 +121,7 @@ Ik ben geen jurist; laat de DPIA en de tekst van de privacyverklaring nalezen.
 1b. Datamodel (participant_profiles, users.country, issue_participation_stats), de sectie "Over mij" en "Mijn land" in het profiel, wissen, opruimen bij account verwijderen; achter PARTICIPANT_PROFILE. Niets zichtbaars met de schakelaar uit (page_snapshot.py).
 1c. De kaart na de eerste stem, één keer (K1, K2), met en zonder JavaScript.
 1d. Bevriezen bij het einde van de stemfase en het blok "Wie stemde mee" met de leeftijdstrap en de drempels (K4, K7, K8), plus de regel bij de uitslag van elk voorstel; uitbreiding van tests/test_proposal_queries.py.
-1e. Privacyverklaring, FAQ, PRIVACY_UPDATED, teksten in vijf talen (naleesbestanden opnieuw exporteren).
+1e. Privacyverklaring en FAQ (per alinea een msgid, in vijf talen), PRIVACY_UPDATED, naleesbestanden opnieuw exporteren. De teksten van 1b tot en met 1d gaan al in die stappen in alle vijf talen (zie Meertaligheid).
 Daarna: DPIA afronden, dan PARTICIPANT_PROFILE=1 op Render.
 
 ## Niveau 2: wegen (schets, later)
