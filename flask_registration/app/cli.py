@@ -291,22 +291,40 @@ def background_figures_trial(issue_id):
     click.echo(f'Region: {ctx.region}; named: {ctx.named or "none"}; fixed set: {ctx.fixed}; '
                f'allowed: {ctx.allowed}')
     outcome = background_figures.dry_run(issue)
+    click.echo(f'Eurostat as a second source (EUROSTAT_FIGURES): '
+               f'{"on" if background_figures.eurostat_enabled() else "off"}')
     click.echo(f'\nSearch terms: {outcome.terms}')
-    click.echo(f'Candidates ({len(outcome.candidates)}):')
+    by_source = {}
     for hit in outcome.candidates:
-        click.echo(f'  {hit.slug}: {hit.title}')
+        by_source[getattr(hit, 'source', 'owid')] = by_source.get(getattr(hit, 'source', 'owid'), 0) + 1
+    click.echo(f'Candidates ({len(outcome.candidates)}: '
+               + ', '.join(f'{n} {source}' for source, n in sorted(by_source.items())) + '):')
+    for hit in outcome.candidates:
+        extra = f' [{hit.kind}, {hit.period}]' if getattr(hit, 'source', 'owid') == 'eurostat' else ''
+        click.echo(f'  {getattr(hit, "id", hit.slug)}: {hit.title}{extra}')
     click.echo('\nAnswer of the AI:')
     click.echo(_json.dumps(outcome.answer, indent=2, ensure_ascii=False) if outcome.answer else '(none)')
     if outcome.retried:
         click.echo('\nRetry (every chart showed several measures), answer:')
         click.echo(_json.dumps(outcome.retry_answer, indent=2, ensure_ascii=False))
+    if outcome.prepared:
+        click.echo('\nEurostat tables chosen:')
+        for answer in outcome.dimension_answers:
+            click.echo('  choice per dimension, answer of the AI: ' + _json.dumps(answer, ensure_ascii=False))
+        for cid, ready in outcome.prepared.items():
+            if isinstance(ready, tuple):
+                click.echo(f'  {cid}: falls away before the checks: {ready[0]} ({ready[1]})')
+            else:
+                click.echo(f'  {cid}: filters {ready.filters or "none needed"}; on to the checks')
     click.echo('\nAccepted:')
     for item in outcome.accepted:
         names = [item.parsed.names[k] for k in item.keys]
         average = item.parsed.names.get(item.average_key) if item.average_key else None
-        click.echo(f'  {item.slug} (compare {item.compare}): {names}, average {average}, '
-                   f'{item.year_from} to {item.year_to}, unit {item.parsed.unit or item.parsed.short_unit!r}, '
-                   f'proposals {item.proposal_ids}\n    {item.reason}')
+        filters = f', filters {item.filters}' if item.source == 'eurostat' else ''
+        click.echo(f'  {background_figures.memory_key(item.source, item.slug)} (source {item.source}, '
+                   f'compare {item.compare}): {names}, average {average}, '
+                   f'{item.year_from} to {item.year_to}, unit {item.parsed.unit or item.parsed.short_unit!r}'
+                   f'{filters}, proposals {item.proposal_ids}\n    {item.reason}')
     for post_id, pid in outcome.links:
         click.echo(f'  link: fact {post_id} to proposal {pid}')
     click.echo('\nDropped or noted:')
@@ -320,13 +338,15 @@ def background_figures_trial(issue_id):
 @click.command('eurostat-catalogus-verversen')
 def eurostat_catalog_refresh():
     """Background figures (step 3a): fetch Eurostat's table of contents now and
-    replace the catalogue of main tables (otherwise the tick does this once a
-    week, with BACKGROUND_FIGURES on). On failure the old catalogue stays."""
+    replace the catalogue of main tables and (step 3b) yearly datasets
+    (otherwise the tick does this once a week, with BACKGROUND_FIGURES on).
+    On failure the old catalogue stays."""
     from app.sources import eurostat
     count = eurostat.refresh_catalog()
     if count is None:
         raise click.ClickException('The table of contents could not be fetched or read; the old catalogue stays.')
-    click.echo(f'Eurostat catalogue: {count} main tables.')
+    counts = eurostat.catalog_counts()
+    click.echo(f'Eurostat catalogue: {counts["table"]} main tables and {counts["dataset"]} yearly datasets.')
 
 
 @click.command('achtergrondcijfers-voorbeeld')

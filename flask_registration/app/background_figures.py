@@ -48,7 +48,14 @@ MAX_ATTEMPTS = 3
 MAX_DATA_AGE_YEARS = 5      # the last year with data at most this many years before now
 REJECT_MEMORY_DAYS = 30     # a chart rejected for a lasting reason stays out of the candidates this long
 AGGREGATE_TOTAL_FACTOR = 2  # an "average" this many times the largest chosen country in every year is a total
-LASTING_REASONS = ('unsupported', 'forbidden', 'no_data', 'stale')
+# needs_choice: a Eurostat table that still has a dimension with several values
+# after the filters of the dimension choice (step 3b).
+LASTING_REASONS = ('unsupported', 'forbidden', 'no_data', 'stale', 'needs_choice')
+# Step 3b, with EUROSTAT_FIGURES on: candidates from both sources.
+MAX_OWID_CANDIDATES = 25
+MAX_EUROSTAT_CANDIDATES = 15
+EUROSTAT_AVERAGE = 'eurostat:EU27_2020'     # the only average of a Eurostat chart, as the source supplies it
+SOURCES = ('owid', 'eurostat')
 PENDING_AFTER = timedelta(minutes=10)
 SEARCH_HITS = 20
 
@@ -90,6 +97,19 @@ _PENDING = 'background_figures_pending'
 
 def enabled(app=None):
     return bool((app or current_app).config.get('BACKGROUND_FIGURES'))
+
+
+def eurostat_enabled(app=None):
+    """Step 3b: Eurostat as a second source (EUROSTAT_FIGURES, off by default
+    until the display of step 3c), only with BACKGROUND_FIGURES on."""
+    return enabled(app) and bool((app or current_app).config.get('EUROSTAT_FIGURES'))
+
+
+def memory_key(source, slug):
+    """The key of a chart in the memories (ChartBlock.slug, owid_rejected_slugs,
+    the charts an issue has): the OWID slug as it always was, "eurostat:<code>"
+    for Eurostat (step 3b), so the two sources never collide."""
+    return f'eurostat:{slug}' if source == 'eurostat' else slug
 
 
 # ── Scheduling ───────────────────────────────────────────────────────────
@@ -171,10 +191,11 @@ def _block_on_orm_delete(mapper, connection, target):
     the slug. Bulk deletes go through facts.delete_for_posts."""
     from app.models import ChartBlock
     table = ChartBlock.__table__
+    key = memory_key(target.source, target.slug)
     exists = connection.execute(table.select().where(table.c.issue_id == target.issue_id)
-                                .where(table.c.kind == 'slug').where(table.c.slug == target.slug)).first()
+                                .where(table.c.kind == 'slug').where(table.c.slug == key)).first()
     if exists is None:
-        connection.execute(table.insert().values(issue_id=target.issue_id, kind='slug', slug=target.slug,
+        connection.execute(table.insert().values(issue_id=target.issue_id, kind='slug', slug=key,
                                                  created_at=datetime.utcnow()))
 
 
@@ -253,6 +274,36 @@ _SELECTION_SYSTEM = (
     '"reason": "...", "relevant_for": [proposal ids]}], '
     '"link_existing": [{"fact_post_id": 0, "proposal_ids": [0]}], '
     '"none_reason": "..." or null}'
+)
+
+
+# Step 3b, with EUROSTAT_FIGURES on: the same prompts with two sources, the
+# candidates by id ("owid:<slug>", "eurostat:<code>").
+_TERMS_SYSTEM_BOTH = _TERMS_SYSTEM.replace(
+    'The figures come from Our World in Data (OWID).',
+    'The figures come from Our World in Data (OWID) and Eurostat.').replace('terms (one to four words each) for OWID '
+                                                                            'charts', 'terms (one to four words '
+                                                                            'each) for charts')
+_EUROSTAT_RULE = (
+    "Candidates come from two sources. For questions about the EU or European countries, prefer Eurostat when it "
+    "has the same measure (official and often more recent); use Our World in Data for the world, for world blocks "
+    "and for countries outside Europe. Eurostat covers EU, EFTA and candidate countries only and cannot be used to "
+    "compare world blocks. ")
+_SELECTION_SYSTEM_BOTH = (_SELECTION_SYSTEM
+                          .replace('the figures come straight from Our World in Data (OWID) and the platform',
+                                   'the figures come straight from Our World in Data (OWID) or Eurostat and the '
+                                   'platform')
+                          .replace('2. Only charts from the candidate list (by slug). ',
+                                   '2. Only charts from the candidate list (by id). ' + _EUROSTAT_RULE)
+                          .replace('{"charts": [{"slug": "...",', '{"charts": [{"id": "...",'))
+
+# Step 3b: the choice per dimension of the Eurostat tables of a round.
+_DIMENSION_SYSTEM = (
+    "You choose, for tables of Eurostat that were chosen as background figures for an issue on Global Union "
+    "Forum, one value for each dimension that has several. For each dimension choose exactly one code from the "
+    "list. For breakdowns (sex, age, category) choose the total. For the unit choose a relative measure "
+    "(percentage, rate, per capita, share) over an absolute number, and for an index the most recent base year. "
+    "Answer as JSON: {table_id: {dimension_id: code}}."
 )
 
 
@@ -412,7 +463,7 @@ def terms_prompt(ctx):
     for p in ctx.proposals:
         lines.append(f'Proposal {p.id}: {p.statement}')
     if ctx.charts:
-        lines.append('Charts already chosen: ' + ', '.join(c.slug for c in ctx.charts))
+        lines.append('Charts already chosen: ' + ', '.join(memory_key(c.source, c.slug) for c in ctx.charts))
     return '\n'.join(lines)
 
 
@@ -431,7 +482,26 @@ def _relevant_entities(hit, ctx):
     return out
 
 
-def selection_prompt(ctx, candidates):
+def _eurostat_entities(ctx):
+    """What the AI may choose in a Eurostat table: the allowed countries
+    (rule 4) that Eurostat covers, and the EU-27 as the average."""
+    return [owid_name(code) for code in ctx.allowed if code in EUROPEAN] + [WORLD_AVERAGE]
+
+
+def _candidate_lines(ctx, hit, both):
+    if not both:
+        entities = ', '.join(_relevant_entities(hit, ctx)) or '(none of the usual ones)'
+        return f'- slug: {hit.slug}\n  title: {hit.title}\n  subtitle: {hit.subtitle}\n  entities: {entities}'
+    if hit.source == 'eurostat':
+        kind = 'main table' if hit.kind == 'table' else 'dataset'
+        return (f'- id: {hit.id}\n  source: Eurostat ({kind})\n  title: {hit.title}\n  period: {hit.period}\n'
+                f'  entities: {", ".join(_eurostat_entities(ctx))} (Eurostat: EU, EFTA and candidate countries only)')
+    entities = ', '.join(_relevant_entities(hit, ctx)) or '(none of the usual ones)'
+    return (f'- id: {hit.id}\n  source: Our World in Data\n  title: {hit.title}\n  subtitle: {hit.subtitle}\n'
+            f'  entities: {entities}')
+
+
+def selection_prompt(ctx, candidates, both=False):
     lines = _issue_block(ctx)
     if ctx.proposals:
         lines.append('Proposals:')
@@ -465,13 +535,182 @@ def selection_prompt(ctx, candidates):
             snapshot = chart.current_snapshot
             names = snapshot.values.get('names', {}) if snapshot else {}
             countries = ', '.join(names.get(k, k) for k in chart.entity_keys)
-            lines.append(f'- fact_post_id {chart.post_id}: {chart.slug} "{title}" ({countries}); '
+            lines.append(f'- fact_post_id {chart.post_id}: {memory_key(chart.source, chart.slug)} "{title}" '
+                         f'({countries}); '
                          f'linked to proposals {_links_of(chart)}')
     lines.append('Candidates:')
     for hit in candidates:
-        entities = ', '.join(_relevant_entities(hit, ctx)) or '(none of the usual ones)'
-        lines.append(f'- slug: {hit.slug}\n  title: {hit.title}\n  subtitle: {hit.subtitle}\n  entities: {entities}')
+        lines.append(_candidate_lines(ctx, hit, both))
     return '\n'.join(lines)
+
+
+def dimension_prompt(needing, candidates):
+    """The Eurostat tables of a round with a dimension that has several values:
+    per table its id, title and those dimensions (id, label, code = label)."""
+    lines = []
+    for cid, (dims, _since) in needing.items():
+        lines.append(f'Table {cid}: {candidates[cid].title}')
+        for dim in dims:
+            if len(dim.values) > 1:
+                codes = '; '.join(f'{code} = {label}' for code, label in dim.values)
+                lines.append(f'- dimension {dim.id} ({dim.label}): {codes}')
+    return '\n'.join(lines)
+
+
+# ── Candidates (step 3b: from both sources) ──────────────────────────────
+
+@dataclass
+class Candidate:
+    id: str                      # "owid:<slug>" or "eurostat:<code>"
+    source: str                  # 'owid' or 'eurostat'
+    slug: str                    # the OWID slug or the Eurostat code
+    title: str
+    subtitle: str = ''
+    entities: list = field(default_factory=list)    # OWID: the entities the search reports
+    period: str = ''             # Eurostat: data start to data end in the catalogue
+    kind: str = ''               # Eurostat: 'table' or 'dataset'
+
+    @property
+    def key(self):
+        return memory_key(self.source, self.slug)
+
+
+def _owid_candidate(hit):
+    return Candidate(id=f'owid:{hit.slug}', source='owid', slug=hit.slug, title=hit.title, subtitle=hit.subtitle,
+                     entities=list(hit.entities or []))
+
+
+def _eurostat_candidate(hit):
+    period = f'{hit.data_start} to {hit.data_end}' if hit.data_start else hit.data_end
+    return Candidate(id=f'eurostat:{hit.code}', source='eurostat', slug=hit.code, title=hit.title, period=period,
+                     kind=hit.type)
+
+
+def _item_id(item):
+    """The candidate id of a chart in an answer: "id" (two sources) or
+    "slug" (OWID only); a bare slug is an OWID one."""
+    raw = (item.get('id') or item.get('slug')) if isinstance(item, dict) else None
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    raw = raw.strip()
+    return raw if raw.startswith(('owid:', 'eurostat:')) else f'owid:{raw}'
+
+
+def _label(cid):
+    """How a chart is named in the notes and the memories: the OWID slug,
+    or "eurostat:<code>"."""
+    if cid is None:
+        return None
+    return cid.split(':', 1)[1] if cid.startswith('owid:') else cid
+
+
+def _years(item):
+    try:
+        return max(1, int(item.get('years') or DEFAULT_YEARS))
+    except (TypeError, ValueError):
+        return DEFAULT_YEARS
+
+
+# ── The choice per dimension (step 3b, Eurostat) ─────────────────────────
+
+@dataclass
+class Prepared:
+    data: dict                   # the JSON-stat, with the filters of the choice
+    filters: dict                # {dimension: chosen code}; {} when nothing had to be chosen
+
+
+def _choice_problem(choice, dims):
+    """Why a choice per dimension is not valid, or None: every dimension with
+    several values has exactly one code from its list; a code for any other
+    dimension must be in its list too."""
+    if not isinstance(choice, dict):
+        return 'no choice for this table'
+    known = {d.id: [code for code, _label in d.values] for d in dims}
+    for dim_id, code in choice.items():
+        if dim_id not in known:
+            return f'{dim_id!r} is no dimension of this table'
+        if not isinstance(code, str) or code not in known[dim_id]:
+            return f'{code!r} is not in the list of {dim_id}'
+    missing = [d.id for d in dims if len(d.values) > 1 and d.id not in choice]
+    if missing:
+        return 'no code for ' + ', '.join(missing)
+    return None
+
+
+def prepare_eurostat(items, ctx, candidates, client, http, out, now=None):
+    """Before the checks: for every chosen Eurostat table the data without
+    dimension filters (since the period), its dimensions, and, when one or more
+    have several values, one extra call of SELECTION_MODEL for all tables of the
+    round together. {candidate id: Prepared or (reason, detail)}. A Eurostat
+    chart for the world or for blocks falls away at once ('source_scope')."""
+    from app.sources import SourceError, eurostat
+    result, needing = {}, {}
+    year = (now or datetime.utcnow()).year
+    for item in items:
+        cid = _item_id(item)
+        if cid is None or not cid.startswith('eurostat:') or cid not in candidates or cid in result or cid in needing:
+            continue
+        if ctx.region == 'World' or (item.get('compare') or 'countries') == 'blocks':
+            result[cid] = ('source_scope', 'Eurostat covers EU, EFTA and candidate countries only, no world '
+                                           'and no blocks')
+            continue
+        since = year - _years(item) - MAX_DATA_AGE_YEARS
+        try:
+            data = eurostat.fetch(candidates[cid].slug, since=since, http=http)
+            dims = eurostat.describe_dimensions(data)
+        except SourceError as exc:
+            if exc.reason == 'network':
+                raise
+            result[cid] = (exc.reason, exc.detail)
+            continue
+        if all(len(d.values) == 1 for d in dims):
+            result[cid] = Prepared(data=data, filters={})
+        else:
+            needing[cid] = (dims, since)
+    if not needing:
+        return result
+    user_msg = dimension_prompt(needing, candidates)
+    out.prompts.append((_DIMENSION_SYSTEM, user_msg))
+    text = _ask(client, SELECTION_MODEL, _DIMENSION_SYSTEM, user_msg, 1500)
+    out.responses.append(text)
+    answer = _parse_json(text)
+    out.dimension_answers.append(answer)
+    for cid, (dims, since) in needing.items():
+        code = candidates[cid].slug
+        choice = answer.get(cid, answer.get(code))
+        problem = _choice_problem(choice, dims)
+        if problem:
+            result[cid] = ('dimension_choice', problem)
+            continue
+        filters = {d.id: choice[d.id] for d in dims if len(d.values) > 1}
+        out.dimension_choices[cid] = filters
+        try:
+            data = eurostat.fetch(code, filters=filters, since=since, http=http)
+        except SourceError as exc:
+            if exc.reason == 'network':
+                raise
+            result[cid] = (exc.reason, exc.detail)
+            continue
+        result[cid] = Prepared(data=data, filters=filters)
+    return result
+
+
+def _eurostat_names(parsed):
+    """{name: key} of a Eurostat table: its own English labels, and for our
+    countries the names the AI sees (as for OWID), the EU-27 also as
+    "European Union (27)"."""
+    from app.sources import countries
+    by_name = {}
+    for key, name in parsed.names.items():
+        by_name.setdefault(name, key)
+        iso2 = countries.iso2_for(key)
+        if iso2:
+            for other in (owid_name(iso2), countries.english_name(iso2)):
+                if other:
+                    by_name.setdefault(other, key)
+        if key == EUROSTAT_AVERAGE:
+            by_name[WORLD_AVERAGE] = key
+    return by_name
 
 
 # ── The checks ───────────────────────────────────────────────────────────
@@ -488,6 +727,12 @@ class Accepted:
     reason: str
     proposal_ids: list
     compare: str = 'countries'
+    source: str = 'owid'
+    filters: dict = None         # Eurostat: the choice per dimension
+
+    @property
+    def key(self):
+        return memory_key(self.source, self.slug)
 
 
 def _int_list(values):
@@ -528,27 +773,52 @@ def aggregate_is_total(parsed, average_key, keys, year_from, year_to):
     return compared > 0
 
 
-def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
+def _fell_away(label, reason, notes, reasons, detail=''):
+    notes.append(f'{label}: {reason}' + (f' ({detail})' if detail and reason in ('dimension_choice', 'source_scope',
+                                                                                'needs_choice') else ''))
+    remember_rejected(label, reason)
+    if reasons is not None:
+        reasons[label] = reason
+
+
+def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None, prepared=None):
     """An Accepted chart, or None (with the reason in notes). Nothing is
     repaired or guessed: a country that fails falls away; an average that
-    fails means no average."""
-    from app.sources import SourceError, countries, owid
-    slug = item.get('slug') if isinstance(item, dict) else None
-    if slug not in candidates:
+    fails means no average. candidates: {id: Candidate}; prepared: the
+    Eurostat tables after the choice per dimension (prepare_eurostat)."""
+    from app.sources import SourceError, countries, eurostat, owid
+    cid = _item_id(item)
+    slug = _label(cid)
+    if cid not in candidates:
         notes.append(f'{slug}: not one of the candidates')
         return None
-    try:
-        csv_text, metadata = owid.fetch(slug, http=http)
-        parsed = owid.parse(csv_text, metadata, slug=slug)
-    except SourceError as exc:
-        if exc.reason == 'network':
-            raise
-        notes.append(f'{slug}: {exc.reason}')
-        remember_rejected(slug, exc.reason)
-        if reasons is not None:
-            reasons[slug] = exc.reason
-        return None
-    by_name = {name: key for key, name in parsed.names.items()}
+    candidate = candidates[cid]
+    filters = None
+    if candidate.source == 'eurostat':
+        ready = (prepared or {}).get(cid)
+        if ready is None:
+            ready = ('dimension_choice', 'not prepared')
+        if isinstance(ready, tuple):
+            _fell_away(slug, ready[0], notes, reasons, ready[1])
+            return None
+        try:
+            parsed = eurostat.parse(ready.data, candidate.slug)
+        except SourceError as exc:
+            # needs_choice here: still several values after the filters of the choice.
+            _fell_away(slug, exc.reason, notes, reasons, exc.detail)
+            return None
+        metadata, filters = eurostat.metadata_of(ready.data), ready.filters
+        by_name = _eurostat_names(parsed)
+    else:
+        try:
+            csv_text, metadata = owid.fetch(candidate.slug, http=http)
+            parsed = owid.parse(csv_text, metadata, slug=candidate.slug)
+        except SourceError as exc:
+            if exc.reason == 'network':
+                raise
+            _fell_away(slug, exc.reason, notes, reasons)
+            return None
+        by_name = {name: key for key, name in parsed.names.items()}
     compare = item.get('compare') or 'countries'
     if compare not in COMPARES:
         notes.append(f'{slug}: compare {compare!r} is neither countries nor blocks')
@@ -580,10 +850,7 @@ def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
     if not keys:
         notes.append(f'{slug}: no country left')
         return None
-    try:
-        years = max(1, int(item.get('years') or DEFAULT_YEARS))
-    except (TypeError, ValueError):
-        years = DEFAULT_YEARS
+    years = _years(item)
     year_to = max(max(parsed.series[k]) for k in keys)
     if (now or datetime.utcnow()).year - year_to > MAX_DATA_AGE_YEARS:
         notes.append(f'{slug}: stale (the last data is from {year_to})')
@@ -605,6 +872,8 @@ def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
         key = by_name.get(average)
         if key is None:
             notes.append(f'{slug}: average {average!r} is not in the data, so no average')
+        elif candidate.source == 'eurostat' and key != EUROSTAT_AVERAGE:
+            notes.append(f'{slug}: average {average!r} is not the EU-27 of Eurostat, so no average')
         elif not owid.has_values(parsed, key, year_from, year_to):
             notes.append(f'{slug}: average {average!r} has no data in the period, so no average')
         elif aggregate_is_total(parsed, key, kept, year_from, year_to):
@@ -618,9 +887,9 @@ def check_chart(item, ctx, candidates, http, notes, now=None, reasons=None):
     if not reason:
         notes.append(f'{slug}: no reason')
         return None
-    return Accepted(slug=slug, parsed=parsed, metadata=metadata, keys=kept, average_key=average_key,
+    return Accepted(slug=candidate.slug, parsed=parsed, metadata=metadata, keys=kept, average_key=average_key,
                     year_from=year_from, year_to=year_to, reason=reason, proposal_ids=proposal_ids,
-                    compare=compare)
+                    compare=compare, source=candidate.source, filters=filters)
 
 
 def check_links(answer, ctx, notes):
@@ -657,8 +926,11 @@ def check_links(answer, ctx, notes):
 
 def remember_rejected(slug, reason, now=None):
     """A chart fell away for a lasting reason (unsupported, forbidden,
-    no_data, stale): remember it for every issue, so the search leaves it out
-    for REJECT_MEMORY_DAYS. Network errors never get here. Does not commit."""
+    no_data, stale, and for Eurostat needs_choice after the filters): remember
+    it for every issue, so the search leaves it out for REJECT_MEMORY_DAYS.
+    Network errors never get here. Does not commit. The table is
+    owid_rejected_slugs for both sources: an OWID chart by its slug, a
+    Eurostat table as "eurostat:<code>" (memory_key, step 3b)."""
     from app.models import OwidRejectedSlug
     if reason not in LASTING_REASONS or not slug:
         return
@@ -901,16 +1173,23 @@ class Outcome:
     none_reason: str = ''
     retried: bool = False                                # one retry after every chart was unsupported
     retry_answer: dict = field(default_factory=dict)
+    # Step 3b (Eurostat): the answers of the choice per dimension and the valid choices.
+    dimension_answers: list = field(default_factory=list)
+    dimension_choices: dict = field(default_factory=dict)   # {candidate id: {dimension: code}}
+    prepared: dict = field(default_factory=dict)            # {candidate id: Prepared or (reason, detail)}
 
 
 def select(ctx, client, http=None):
     """The round without saving: terms, candidates, choice, checks."""
     from app import quality
-    from app.sources import SourceError, owid
+    from app.sources import SourceError, eurostat, owid
     out = Outcome()
+    both = eurostat_enabled()
+    terms_system = _TERMS_SYSTEM_BOTH if both else _TERMS_SYSTEM
+    selection_system = _SELECTION_SYSTEM_BOTH if both else _SELECTION_SYSTEM
     user_msg = terms_prompt(ctx)
-    out.prompts.append((_TERMS_SYSTEM, user_msg))
-    text = _ask(client, quality.JUDGE_MODEL, _TERMS_SYSTEM, user_msg, 300)
+    out.prompts.append((terms_system, user_msg))
+    text = _ask(client, quality.JUDGE_MODEL, terms_system, user_msg, 300)
     out.responses.append(text)
     terms = [t.strip() for t in _parse_json(text).get('terms') or [] if isinstance(t, str) and t.strip()]
     out.terms = terms[:MAX_TERMS]
@@ -918,8 +1197,11 @@ def select(ctx, client, http=None):
         out.none_reason = 'no search terms'
         return out
 
-    used = {c.slug for c in ctx.charts} | recently_rejected()
+    # Blocked (removed here) and rejected (for every issue) charts by their
+    # memory key: the OWID slug, or "eurostat:<code>".
+    used = {memory_key(c.source, c.slug) for c in ctx.charts} | recently_rejected() | set(ctx.blocked_slugs)
     candidates, errors = {}, 0
+    max_owid = MAX_OWID_CANDIDATES if both else MAX_CANDIDATES
     for term in out.terms:
         try:
             hits = owid.search(term, hits=SEARCH_HITS, http=http)
@@ -928,20 +1210,29 @@ def select(ctx, client, http=None):
             out.notes.append(f'search {term!r}: {exc.reason}')
             continue
         for hit in hits:
-            if hit.slug in ctx.blocked_slugs or hit.slug in used or hit.slug in candidates:
+            candidate = _owid_candidate(hit)
+            if candidate.key in used or candidate.id in candidates:
                 continue
-            if len(candidates) < MAX_CANDIDATES:
-                candidates[hit.slug] = hit
+            if len(candidates) < max_owid:
+                candidates[candidate.id] = candidate
     if errors == len(out.terms):
         raise SourceError('network', 'every search failed')
+    if both:
+        found = 0
+        for hit in eurostat.search_catalog(out.terms, limit=MAX_EUROSTAT_CANDIDATES * 3):
+            candidate = _eurostat_candidate(hit)
+            if candidate.key in used or candidate.id in candidates or found >= MAX_EUROSTAT_CANDIDATES:
+                continue
+            candidates[candidate.id] = candidate
+            found += 1
     out.candidates = list(candidates.values())
     if not out.candidates and not ctx.charts:
         out.none_reason = 'no candidates'
         return out
 
-    user_msg = selection_prompt(ctx, out.candidates)
-    out.prompts.append((_SELECTION_SYSTEM, user_msg))
-    text = _ask(client, SELECTION_MODEL, _SELECTION_SYSTEM, user_msg, 2000)
+    user_msg = selection_prompt(ctx, out.candidates, both)
+    out.prompts.append((selection_system, user_msg))
+    text = _ask(client, SELECTION_MODEL, selection_system, user_msg, 2000)
     out.responses.append(text)
     out.answer = _parse_json(text)
     out.none_reason = str(out.answer.get('none_reason') or '')
@@ -949,18 +1240,20 @@ def select(ctx, client, http=None):
     room = MAX_CHARTS - len(ctx.charts)
     items = out.answer.get('charts') if isinstance(out.answer.get('charts'), list) else []
     reasons = {}
-    _check_items(items, ctx, candidates, http, out, room, reasons)
+    prepared = prepare_eurostat(items, ctx, candidates, client, http, out) if both else {}
+    out.prepared.update(prepared)
+    _check_items(items, ctx, candidates, http, out, room, reasons, prepared)
     # One retry in the same round: every new chart fell away because it shows
     # several measures. Same candidates minus those; link_existing stays as
     # the first answer gave it.
-    tried = [item.get('slug') for item in items if isinstance(item, dict)]
-    if items and not out.accepted and tried and all(reasons.get(slug) == 'unsupported' for slug in tried):
-        remaining = [hit for hit in out.candidates if hit.slug not in reasons]
-        user_msg = selection_prompt(ctx, remaining) + (
+    tried = [_label(_item_id(item)) for item in items if isinstance(item, dict)]
+    if items and not out.accepted and tried and all(reasons.get(label) == 'unsupported' for label in tried):
+        remaining = [hit for hit in out.candidates if hit.key not in reasons]
+        user_msg = selection_prompt(ctx, remaining, both) + (
             '\n\nThese charts could not be used because they show several measures: '
             + ', '.join(tried) + '. Choose again, or choose none.')
-        out.prompts.append((_SELECTION_SYSTEM, user_msg))
-        text = _ask(client, SELECTION_MODEL, _SELECTION_SYSTEM, user_msg, 2000)
+        out.prompts.append((selection_system, user_msg))
+        text = _ask(client, SELECTION_MODEL, selection_system, user_msg, 2000)
         out.responses.append(text)
         out.retried = True
         retry = _parse_json(text)
@@ -968,23 +1261,25 @@ def select(ctx, client, http=None):
         if retry.get('none_reason'):
             out.none_reason = str(retry.get('none_reason'))
         again = retry.get('charts') if isinstance(retry.get('charts'), list) else []
-        allowed = {hit.slug: hit for hit in remaining}
-        _check_items(again, ctx, allowed, http, out, room, {})
+        allowed = {hit.id: hit for hit in remaining}
+        prepared = prepare_eurostat(again, ctx, allowed, client, http, out) if both else {}
+        out.prepared.update(prepared)
+        _check_items(again, ctx, allowed, http, out, room, {}, prepared)
     out.links = check_links(out.answer, ctx, out.notes)
     out.status = 'done' if out.accepted or out.links else 'nothing'
     return out
 
 
-def _check_items(items, ctx, candidates, http, out, room, reasons):
+def _check_items(items, ctx, candidates, http, out, room, reasons, prepared=None):
     """Check the charts of one answer into out.accepted (at most `room`)."""
     for item in items:
+        label = _label(_item_id(item))
         if len(out.accepted) >= room:
-            out.notes.append(f'{item.get("slug") if isinstance(item, dict) else item}: '
-                             f'more than {MAX_CHARTS} charts for this issue')
+            out.notes.append(f'{label if label is not None else item}: more than {MAX_CHARTS} charts for this issue')
             continue
-        if isinstance(item, dict) and any(a.slug == item.get('slug') for a in out.accepted):
+        if label is not None and any(a.key == label for a in out.accepted):
             continue
-        accepted = check_chart(item, ctx, candidates, http, out.notes, reasons=reasons)
+        accepted = check_chart(item, ctx, candidates, http, out.notes, reasons=reasons, prepared=prepared)
         if accepted is not None:
             out.accepted.append(accepted)
 
@@ -994,21 +1289,26 @@ def publish(ctx, outcome):
     from app import content_jobs
     from app.models import (FACT_KIND, SYSTEM_NAME, SYSTEM_ROLE, SYSTEM_USERNAME, FactChart, IssueProposalFact,
                             Post)
-    from app.sources import countries, owid
+    from app.sources import countries, eurostat, owid
     for item in outcome.accepted:
         title = item.parsed.title or item.slug
         if len(title) > 100:
             title = title[:99].rstrip() + '…'
+        default_url = (f'https://ourworldindata.org/grapher/{item.slug}' if item.source == 'owid'
+                       else eurostat.BROWSER_URL.format(code=item.slug))
         post = Post(thread_id=ctx.issue.thread_id, user_id=None, author_name=SYSTEM_NAME,
                     author_username=SYSTEM_USERNAME, author_role=SYSTEM_ROLE, body=item.reason, source_lang='en',
                     kind=FACT_KIND, fact_type='cijfer', fact_direction='neutraal', fact_title=title,
-                    fact_source=(item.parsed.source_url or f'https://ourworldindata.org/grapher/{item.slug}')[:500])
+                    fact_source=(item.parsed.source_url or default_url)[:500])
         db.session.add(post)
         db.session.flush()
-        chart = FactChart(post_id=post.id, issue_id=ctx.issue.id, source='owid', slug=item.slug,
-                          column_name=item.parsed.column_name[:300], average_key=item.average_key,
-                          year_from=item.year_from, year_to=item.year_to)
+        # Eurostat (step 3b): the code as slug, the one value column, the choice per dimension.
+        chart = FactChart(post_id=post.id, issue_id=ctx.issue.id, source=item.source, slug=item.slug,
+                          column_name=('value' if item.source == 'eurostat' else item.parsed.column_name)[:300],
+                          average_key=item.average_key, year_from=item.year_from, year_to=item.year_to)
         chart.entity_keys = item.keys
+        if item.source == 'eurostat':
+            chart.filters = json.dumps(item.filters or {}, sort_keys=True)
         # The name of the average (or, with blocks, of the EU line) as the source writes it
         # (English); translated with the fact.
         chart.average_name = item.parsed.names.get(item.average_key) if item.average_key else None

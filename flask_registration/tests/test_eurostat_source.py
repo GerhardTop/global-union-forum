@@ -311,4 +311,7 @@ def test_the_tick_route_reports_the_catalogue(app, db, monkeypatch):
 def test_the_cli_refreshes(app, db, catalog, monkeypatch):
     monkeypatch.setattr(eurostat, 'requests', SimpleNamespace(get=FakeHttp().get, RequestException=Exception))
     result = app.test_cli_runner().invoke(args=['eurostat-catalogus-verversen'])
-    assert result.exit_code == 0 and f'{EurostatCatalog.query.count()} main tables' in result.output
+    tables = EurostatCatalog.query.filter_by(type='table').count()
+    datasets = EurostatCatalog.query.filter_by(type='dataset').count()
+    assert result.exit_code == 0 and f'{tables} main tables and {datasets} yearly datasets' in result.output
+    assert datasets == 1                           # ilc_lvho07a; the quarterly dataset is left out

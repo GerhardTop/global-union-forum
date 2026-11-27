@@ -121,6 +121,10 @@ class Config:
     # Background figures (docs/achtergrondcijfers.md): "1" switches on the AI
     # selection of charts (step 1d). Off by default; switch on after step 1h.
     BACKGROUND_FIGURES = os.environ.get("BACKGROUND_FIGURES", "") == "1"
+    # Background figures step 3b: Eurostat as a second source in the selection
+    # (docs/achtergrondcijfers.md). Off by default until the display (step 3c)
+    # is right for Eurostat; "1" switches it on. Only with BACKGROUND_FIGURES.
+    EUROSTAT_FIGURES = os.environ.get("EUROSTAT_FIGURES", "") == "1"
 
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")

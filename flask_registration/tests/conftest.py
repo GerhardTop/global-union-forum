@@ -164,6 +164,7 @@ def app():
         SECRET_KEY = "test-secret-do-not-use-in-prod"
         SERVER_NAME = "localhost"
         BACKGROUND_FIGURES = False         # tests of that track switch it on themselves
+        EUROSTAT_FIGURES = False           # idem (step 3b)
 
     flask_app = create_app_for_tests(TestConfig)
     _forget_deleted_users()

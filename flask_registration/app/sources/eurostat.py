@@ -2,7 +2,9 @@
 Bronnen punt 2).
 
 refresh_catalog() keeps a local catalogue of Eurostat's main tables (type
-"table" in the table of contents); search_catalog() searches it. fetch(code)
+"table" in the table of contents) and, since step 3b, the datasets with
+yearly figures only (data start and end a bare year); search_catalog()
+searches it, main tables first. fetch(code)
 gets one table as JSON-stat 2.0 from the Statistics API; parse(jsonstat,
 code) turns it into a ParsedChart, the same type as for Our World in Data,
 so snapshot_data and create_snapshot of app/sources/owid.py work for both.
@@ -55,6 +57,8 @@ AGGREGATE_PREFIX = 'eurostat:'
 _GEO_ISO2 = {'EL': 'GR', 'UK': 'GB'}
 _SKIP_DIMS = ('geo', 'time')
 _HTML_TAG = re.compile(r'<[^>]+>')
+_YEAR = re.compile(r'^\d{4}$')
+TYPES = ('table', 'dataset')
 
 
 class NeedsChoice(SourceError):
@@ -78,6 +82,7 @@ class CatalogHit:
     title: str
     data_start: str
     data_end: str
+    type: str = 'table'
 
 
 # ── The catalogue ────────────────────────────────────────────────────────
@@ -89,10 +94,16 @@ def _date(text):
         return None
 
 
+def _keep(kind, start, end):
+    """Main tables always; datasets only with yearly figures (step 3b: data
+    start and end both a bare year such as 2025, not 2026-Q3 or 2026-09)."""
+    return kind == 'table' or (kind == 'dataset' and bool(_YEAR.match(start)) and bool(_YEAR.match(end)))
+
+
 def parse_toc(text):
-    """The main tables of the table of contents: [dict], one per code (the
-    first time it appears). Raises SourceError('unsupported') when the
-    header is not the one we know."""
+    """The main tables and the yearly datasets of the table of contents:
+    [dict], one per code (the first time it appears). Raises
+    SourceError('unsupported') when the header is not the one we know."""
     reader = csv.reader(io.StringIO(text or ''), delimiter='\t', quotechar='"')
     header = [h.strip().lower() for h in next(reader, [])]
     needed = ('title', 'code', 'type', 'last update of data', 'data start', 'data end')
@@ -103,21 +114,21 @@ def parse_toc(text):
     for row in reader:
         if len(row) <= max(at.values()):
             continue
-        code = row[at['code']].strip()
-        if row[at['type']].strip() != 'table' or not code or code in seen:
+        code, kind = row[at['code']].strip(), row[at['type']].strip()
+        start, end = row[at['data start']].strip(), row[at['data end']].strip()
+        if not code or code in seen or not _keep(kind, start, end):
             continue
         seen.add(code)
-        tables.append({'code': code[:40], 'title': row[at['title']].strip()[:500], 'type': 'table',
+        tables.append({'code': code[:40], 'title': row[at['title']].strip()[:500], 'type': kind,
                        'last_update': _date(row[at['last update of data']]),
-                       'data_start': row[at['data start']].strip()[:10] or None,
-                       'data_end': row[at['data end']].strip()[:10] or None})
+                       'data_start': start[:10] or None, 'data_end': end[:10] or None})
     return tables
 
 
 def refresh_catalog(http=None, now=None):
-    """Replace the catalogue by the main tables of the table of contents, in
-    one transaction. The number of tables, or None when fetching or reading
-    failed (the old catalogue stays)."""
+    """Replace the catalogue by the main tables and yearly datasets of the
+    table of contents, in one transaction. The number of entries, or None
+    when fetching or reading failed (the old catalogue stays)."""
     from flask import current_app
     from app import db
     from app.models import EurostatCatalog
@@ -128,7 +139,7 @@ def refresh_catalog(http=None, now=None):
         if resp.status_code != 200:
             raise SourceError('network', f'HTTP {resp.status_code}: {TOC_URL}')
         tables = parse_toc(resp.content.decode('utf-8-sig'))
-        if not tables:
+        if not any(t['type'] == 'table' for t in tables):
             raise SourceError('no_data', 'no tables in the table of contents')
     except (requests.RequestException, SourceError, UnicodeDecodeError) as exc:
         current_app.logger.warning('Eurostat catalogue not refreshed: %s', exc)
@@ -141,8 +152,19 @@ def refresh_catalog(http=None, now=None):
         db.session.rollback()
         current_app.logger.exception('Eurostat catalogue not saved')
         return None
-    current_app.logger.info('Eurostat catalogue: %d main tables', len(tables))
+    counts = catalog_counts()
+    current_app.logger.info('Eurostat catalogue: %d main tables, %d yearly datasets', counts['table'],
+                            counts['dataset'])
     return len(tables)
+
+
+def catalog_counts():
+    """{'table': n, 'dataset': n} in the catalogue."""
+    from app import db
+    from app.models import EurostatCatalog
+    counts = dict(db.session.query(EurostatCatalog.type, db.func.count(EurostatCatalog.id))
+                  .group_by(EurostatCatalog.type).all())
+    return {kind: counts.get(kind, 0) for kind in TYPES}
 
 
 def catalog_due(now=None):
@@ -161,11 +183,12 @@ def _words(text):
 
 
 def search_catalog(terms, limit=20, now=None):
-    """Main tables whose English title has the most words of the terms (case
-    insensitive, whole words); on a tie the title with fewer other words
-    first ("Unemployment rate" before "Long-term unemployment rate by sex"),
-    then by title. Only tables whose data end at most five years ago. terms:
-    a string or a list of strings."""
+    """Catalogue entries whose English title has the most words of the terms
+    (case insensitive, whole words): first the main tables, then the yearly
+    datasets (step 3b), together at most `limit`. Within each group on a tie
+    the title with fewer other words first ("Unemployment rate" before
+    "Long-term unemployment rate by sex"), then by title. Only entries whose
+    data end at most five years ago. terms: a string or a list of strings."""
     from app.models import EurostatCatalog
     if isinstance(terms, str):
         terms = [terms]
@@ -181,10 +204,10 @@ def search_catalog(terms, limit=20, now=None):
         words = _words(row.title)
         hits = len(wanted & words)
         if hits:
-            scored.append((-hits, len(words), row.title.lower(), row.code, row))
+            scored.append((row.type != 'table', -hits, len(words), row.title.lower(), row.code, row))
     scored.sort()
-    return [CatalogHit(code=r.code, title=r.title, data_start=r.data_start or '', data_end=r.data_end or '')
-            for *_k, r in scored[:limit]]
+    return [CatalogHit(code=r.code, title=r.title, data_start=r.data_start or '', data_end=r.data_end or '',
+                       type=r.type) for *_k, r in scored[:limit]]
 
 
 # ── Fetching ─────────────────────────────────────────────────────────────

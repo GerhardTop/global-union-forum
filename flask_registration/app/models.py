@@ -1570,7 +1570,8 @@ class ChartBlock(db.Model):
 
 class EurostatCatalog(db.Model):
     """Background figures, step 3a: the main tables of Eurostat (type "table"
-    in the table of contents), searched locally (app/sources/eurostat.py).
+    in the table of contents) and, since step 3b, the datasets with yearly
+    figures only (type "dataset"), searched locally (app/sources/eurostat.py).
     The tick replaces the whole catalogue once a week (refreshed_at)."""
     __tablename__ = "eurostat_catalog"
 

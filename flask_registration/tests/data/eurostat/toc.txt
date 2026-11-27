@@ -34,3 +34,5 @@
 "                Housing cost overburden rate"	"tespm140"	"table"	"29.10.2026"	"21.05.2026"	"2014"	"2025"	492
 "            Employment performance monitor - indicators"	"tesem"	"folder"	" "	" "	" "	" "	
 "                Unemployment rate by sex"	"tesem120"	"table"	"06.11.2026"	"06.11.2026"	"2005"	"2025"	1848
+"                            Housing cost overburden rate by age, sex and poverty status"	"ilc_lvho07a"	"dataset"	"29.10.2026"	"21.05.2026"	"2003"	"2025"	126859
+"                    Industry survey results - quarterly data"	"ei_bsin_q_r2"	"dataset"	"29.10.2026"	"29.10.2026"	"1980-Q1"	"2026-Q4"	91124

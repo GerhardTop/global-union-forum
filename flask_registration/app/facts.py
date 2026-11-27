@@ -169,12 +169,12 @@ def delete_for_posts(post_ids):
         # Background figures: the snapshots, then the charts of these facts.
         from app.models import ChartSnapshot, FactChart
         chart_rows = (FactChart.query.filter(FactChart.post_id.in_(post_ids))
-                      .with_entities(FactChart.id, FactChart.issue_id, FactChart.slug).all())
+                      .with_entities(FactChart.id, FactChart.issue_id, FactChart.slug, FactChart.source).all())
         chart_ids = [row.id for row in chart_rows]
         if chart_ids:
             from app import background_figures
             for row in chart_rows:   # the memory: a removed chart does not come back
-                background_figures.block_slug(row.issue_id, row.slug)
+                background_figures.block_slug(row.issue_id, background_figures.memory_key(row.source, row.slug))
             snapshots = ChartSnapshot.query.filter(ChartSnapshot.chart_id.in_(chart_ids))
             content_i18n.delete_for('chart_snapshots', [row.id for row in snapshots.with_entities(ChartSnapshot.id)])
             snapshots.delete(synchronize_session='evaluate')

@@ -37,7 +37,8 @@ def _check(monkeypatch, average_values):
     notes = []
     item = {'slug': SLUG, 'countries': ['Germany', 'Poland', 'Netherlands'], 'average': 'European Union (27)',
             'years': 3, 'reason': 'Emissions per country.'}
-    accepted = bf.check_chart(item, ctx, {SLUG: SimpleNamespace()}, None, notes, now=bf.datetime(2025, 1, 1))
+    candidates = {f'owid:{SLUG}': bf.Candidate(id=f'owid:{SLUG}', source='owid', slug=SLUG, title=SLUG)}
+    accepted = bf.check_chart(item, ctx, candidates, None, notes, now=bf.datetime(2025, 1, 1))
     assert accepted is not None and accepted.keys == ['DEU', 'POL', 'NLD']
     return accepted, notes
 
