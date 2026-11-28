@@ -66,6 +66,14 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 | online / event | online / event | en ligne / événement | "En ligne" is het gewone woord; "événement" voor een bijeenkomst op een plek. |
 | username | gebruikersnaam | nom d'utilisateur | Het ene woord voor de naam waaronder je meedoet (@naam); nergens "pseudonyme". Met het voorzetsel "sous": "sous votre nom d'utilisateur". |
 | Former account | Voormalig account | Ancien compte | Het label dat bij een account dat er niet meer is in plaats van de naam staat; zonder @, het is geen gebruikersnaam. Zegt niet wie het account verwijderde, en is genderneutraal. |
+| organiser | organisator | personne qui organise (l'organisation de l'événement) | Wie een event maakt en beheert. Neutraal, zonder "organisateur/trice"; als los label "Organisation". |
+| New event | Nieuw event | Nouvel événement | De knop in Denk mee en de titel van het formulier. |
+| Everyone may vote | Iedereen mag stemmen | Tout le monde peut voter | De instelling op een event. |
+| Participants may add issues | Deelnemers mogen vraagstukken toevoegen | Les participants peuvent ajouter des dossiers | De instelling op een event. |
+| Where does the event take place? | Waar vindt het event plaats? | Où a lieu l'événement ? | De vraag boven de vorm van een event (vaste spatie voor het vraagteken). |
+| At a location / Online / At a location and online | Op een locatie / Online / Op een locatie en online | Dans un lieu / En ligne / Dans un lieu et en ligne | De drie vormen van een event (codes location, online, hybrid). |
+| Link to the video call or the livestream | Link naar het videogesprek of de livestream | Lien vers l'appel vidéo ou la diffusion en direct | Niet de link naar het event zelf; vandaar de volledige naam. |
+| Fixed since voting began. | Vastgelegd sinds het stemmen begon. | Fixé depuis le début du vote. | Onder het uitgeschakelde vinkje Iedereen mag stemmen. |
 | initiator | initiatiefnemer | Initiateur | Vaste label voor wie een dossier start. |
 | think tank | denktank | laboratoire d'idées | De aanbevolen Franse term (FranceTerme). |
 | moderation | moderatie | modération | Zelfde woord. |

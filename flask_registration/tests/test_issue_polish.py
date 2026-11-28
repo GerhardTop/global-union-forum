@@ -81,11 +81,17 @@ def make_user(db):
     for tid in [t.id for t in Thread.query.join(Post).filter(Post.user_id.in_(made)).distinct()]:
         _delete_thread(db.session.get(Thread, tid))
     IssueFollow.query.filter(IssueFollow.user_id.in_(made)).delete(synchronize_session=False)
+    # Events: those of these issues and those these users made (SQLite reuses ids).
+    from app.models import Event
+    event_ids = {e for (e,) in db.session.query(Event.id).filter(Event.created_by_id.in_(made))}
     if issue_ids:
+        event_ids |= {e for (e,) in db.session.query(Issue.event_id).filter(Issue.id.in_(issue_ids))}
         from app.models import IssueEventDay
         IssueEventDay.query.filter(IssueEventDay.issue_id.in_(issue_ids)).delete(synchronize_session=False)
         IssueFollow.query.filter(IssueFollow.issue_id.in_(issue_ids)).delete(synchronize_session=False)
         Issue.query.filter(Issue.id.in_(issue_ids)).delete(synchronize_session=False)
+    from app import events as _events
+    _events.delete_empty(event_ids)
     db.session.commit()
     from app import issue_proposals as _ip
     for uid in made:

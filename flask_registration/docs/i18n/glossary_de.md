@@ -59,6 +59,14 @@ De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` 
 | online / event | online / event | Online / Veranstaltung | "Online" is ook in het Duits gewoon; voor een event is "Veranstaltung" het neutrale woord. |
 | username | gebruikersnaam | Benutzername | Het ene woord voor de naam waaronder je meedoet (@naam); nergens "Pseudonym". "Unter meinem Benutzernamen", "unter deinem Benutzernamen" (n-declinatie). |
 | Former account | Voormalig account | Ehemaliges Konto | Het label dat bij een account dat er niet meer is in plaats van de naam staat; zonder @, het is geen gebruikersnaam. Zegt niet wie het account verwijderde, en is genderneutraal. |
+| organiser | organisator | Veranstaltende (Person, die die Veranstaltung organisiert) | Wie een event maakt en beheert. Neutrale deelwoordvorm, zoals "Teilnehmende"; geen "Veranstalter/in" of genderster. Als los label (de pil bij je eigen events, stap 1d) "Veranstaltende". |
+| New event | Nieuw event | Neue Veranstaltung | De knop in Denk mee en de titel van het formulier. |
+| Everyone may vote | Iedereen mag stemmen | Alle dürfen abstimmen | De instelling op een event; neutraal, zonder "jeder". |
+| Participants may add issues | Deelnemers mogen vraagstukken toevoegen | Teilnehmende dürfen Fragestellungen hinzufügen | De instelling op een event. |
+| Where does the event take place? | Waar vindt het event plaats? | Wo findet die Veranstaltung statt? | De vraag boven de vorm van een event. |
+| At a location / Online / At a location and online | Op een locatie / Online / Op een locatie en online | An einem Ort / Online / An einem Ort und online | De drie vormen van een event (codes location, online, hybrid). |
+| Link to the video call or the livestream | Link naar het videogesprek of de livestream | Link zum Videoanruf oder zum Livestream | Niet de link naar het event zelf; vandaar de volledige naam. |
+| Fixed since voting began. | Vastgelegd sinds het stemmen begon. | Festgelegt, seit die Abstimmung begonnen hat. | Onder het uitgeschakelde vinkje Iedereen mag stemmen. |
 | initiator | initiatiefnemer | Initiator | Vaste label voor de rol van wie een vraagstuk start. |
 | think tank | denktank | Denkfabrik | Gangbaar Duits woord. |
 | moderation | moderatie | Moderation | Zelfde woord. |

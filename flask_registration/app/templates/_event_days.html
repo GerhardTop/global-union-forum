@@ -1,0 +1,27 @@
+{#
+  Macro: _event_days.html (events step 1c)
+  The days of an event, each with a from and to time, shared by the issue
+  form (EVENTS off) and the form "New event" and the event settings.
+  Without JavaScript one day; with _event_days_script.html "Add a day" and
+  the remove buttons.
+  Use: {% from '_event_days.html' import event_days with context %}
+       {{ event_days(fd, errs, event_days_max) }}
+#}
+{% macro event_days(fd, errs, event_days_max) %}
+          <span class="gu-newissue__label">{{ _('Days') }}</span>
+          <p class="gu-composer__hint">{{ _('Per day the times the platform is open, in Dutch time.') }}</p>
+          {% set day_dates = fd.get('event_day') or [''] %}
+          <ol class="gu-eventdays" id="eventDays">
+            {% for d in day_dates %}
+            <li class="gu-eventdays__row">
+              <label><span>{{ _('Date') }}</span><input type="date" name="event_day" class="gu-input" value="{{ d }}"></label>
+              <label><span>{{ _('from') }}</span><input type="time" name="event_from" class="gu-input" value="{{ (fd.get('event_from') or [])[loop.index0] if fd.get('event_from') else '09:00' }}"></label>
+              <label><span>{{ _('to') }}</span><input type="time" name="event_to" class="gu-input" value="{{ (fd.get('event_to') or [])[loop.index0] if fd.get('event_to') else '17:00' }}"></label>
+              <button type="button" class="gu-iconbtn gu-eventdays__remove" title="{{ _('Remove this day') }}" aria-label="{{ _('Remove this day') }}" hidden>&times;</button>
+            </li>
+            {% endfor %}
+          </ol>
+          <button type="button" class="gu-btn gu-btn--ghost gu-btn--sm" id="addEventDay" hidden data-max="{{ event_days_max }}"><span aria-hidden="true">+</span> {{ _('Add a day') }}</button>
+          {% if errs.get('event_days') == 'missing' %}<p class="gu-join__formError">{{ _('Enter at least one day.') }}</p>
+          {% elif errs.get('event_days') %}<p class="gu-join__formError">{{ _('Each day needs a date, and the end time after the start time.') }}</p>{% endif %}
+{% endmacro %}

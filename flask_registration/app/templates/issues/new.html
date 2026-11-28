@@ -14,6 +14,7 @@
 {% block content_outer %}{% block content %}
 {% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'forum/_fact_fields.html' import fact_fields with context %}
+{% from '_event_days.html' import event_days with context %}
 <main class="gu-forum gu-forum--soft" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
@@ -28,7 +29,7 @@
     {% set errs = errors or {} %}
     {# Bij een eerste bezoek staan beide stemregel-vinkjes aan; na een fout de ingevulde stand. #}
     {% set fresh = not fd %}
-    <form class="gu-forum__newform gu-newissue" id="newIssueForm" method="POST" action="{{ url_for('issues.new') }}"
+    <form class="gu-forum__newform gu-newissue" id="newIssueForm" method="POST" action="{{ url_for('issues.new', event=request.args.get('event') or None) }}"
           data-draft-key="guf-new-issue-{{ current_user.id }}" data-fresh="{{ '1' if fresh else '0' }}" novalidate>
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
       <p class="gu-composer__hint gu-newissue__restored" id="draftRestored" hidden>{{ _('We restored what you filled in earlier.') }}
@@ -92,6 +93,33 @@
         </fieldset>
       </div>
 
+      {% if events_on %}
+      {# Events step 1c: an event issue belongs to an existing event; the event
+         has the name, the days and the place (docs/events.md, K3). #}
+      <div class="gu-newissue__section" id="eventFields">
+        <p class="gu-newissue__sectionhead">{{ _('Event') }}</p>
+        {% set chosen = (fd.get('event_id') or (preselected.id if preselected else '')) | string %}
+        {% if event_choices %}
+        <div class="gu-forum__newfield">
+          {# TRANSLATORS: label of the list of events an event issue can belong to. #}
+          <label for="event_id">{{ _('Which event?') }}</label>
+          <select id="event_id" name="event_id" class="gu-input{% if errs.get('event') %} gu-input--error{% endif %}">
+            {# TRANSLATORS: the empty first option of the list of events. #}
+            {% if not chosen %}<option value="">{{ _('Choose an event') }}</option>{% endif %}
+            {% for ev in event_choices %}
+            <option value="{{ ev.id }}"{% if chosen == ev.id | string %} selected{% endif %}>{{ content_i18n.text_for(ev, 'name', lang) or ev.name }}</option>
+            {% endfor %}
+          </select>
+          <p class="gu-composer__hint"><a href="{{ url_for('events.new') }}">{{ _('New event') }}</a></p>
+        </div>
+        {% else %}
+        {# TRANSLATORS: in the issue form when there is no event to choose; followed by the link "New event". #}
+        <p class="gu-composer__hint">{{ _('You do not have an event yet. Create an event first.') }} <a href="{{ url_for('events.new') }}">{{ _('New event') }}</a></p>
+        {% endif %}
+        {# TRANSLATORS: error when no event (or one you may not add to) is chosen. #}
+        {% if errs.get('event') %}<p class="gu-join__formError">{{ _('Choose an event.') }}</p>{% endif %}
+      </div>
+      {% else %}
       {# Event: naam, toelichting, dagen met een van-tot-tijd, locatie. #}
       <div class="gu-newissue__section gu-schedule" id="eventFields">
         <p class="gu-newissue__sectionhead">{{ _('Event') }}</p>
@@ -106,22 +134,7 @@
           <textarea id="event_note" name="event_note" rows="3" class="gu-composer__input">{{ fd.get('event_note', '') }}</textarea>
         </div>
         <div class="gu-forum__newfield">
-          <span class="gu-newissue__label">{{ _('Days') }}</span>
-          <p class="gu-composer__hint">{{ _('Per day the times the platform is open, in Dutch time.') }}</p>
-          {% set day_dates = fd.get('event_day') or [''] %}
-          <ol class="gu-eventdays" id="eventDays">
-            {% for d in day_dates %}
-            <li class="gu-eventdays__row">
-              <label><span>{{ _('Date') }}</span><input type="date" name="event_day" class="gu-input" value="{{ d }}"></label>
-              <label><span>{{ _('from') }}</span><input type="time" name="event_from" class="gu-input" value="{{ (fd.get('event_from') or [])[loop.index0] if fd.get('event_from') else '09:00' }}"></label>
-              <label><span>{{ _('to') }}</span><input type="time" name="event_to" class="gu-input" value="{{ (fd.get('event_to') or [])[loop.index0] if fd.get('event_to') else '17:00' }}"></label>
-              <button type="button" class="gu-iconbtn gu-eventdays__remove" title="{{ _('Remove this day') }}" aria-label="{{ _('Remove this day') }}" hidden>&times;</button>
-            </li>
-            {% endfor %}
-          </ol>
-          <button type="button" class="gu-btn gu-btn--ghost gu-btn--sm" id="addEventDay" hidden data-max="{{ event_days_max }}"><span aria-hidden="true">+</span> {{ _('Add a day') }}</button>
-          {% if errs.get('event_days') == 'missing' %}<p class="gu-join__formError">{{ _('Enter at least one day.') }}</p>
-          {% elif errs.get('event_days') %}<p class="gu-join__formError">{{ _('Each day needs a date, and the end time after the start time.') }}</p>{% endif %}
+          {{ event_days(fd, errs, event_days_max) }}
         </div>
         <label class="gu-join__check">
           <input type="checkbox" name="event_online_between" value="1"{% if fd.get('event_online_between') == '1' %} checked{% endif %}>
@@ -133,6 +146,7 @@
                  value="{{ fd.get('event_location', '') }}">
         </div>
       </div>
+      {% endif %}
 
       {# Stemregels in een eigen sectie. #}
       <div class="gu-newissue__section">
@@ -198,6 +212,7 @@
 </main>
 {% endblock %}
 
+{% include '_event_days_script.html' %}
 <script nonce="{{ csp_nonce() }}">
   (function () {
     var form = document.getElementById('newIssueForm');
@@ -212,32 +227,9 @@
     }
     form.querySelectorAll('input[name="kind"]').forEach(function (r) { r.addEventListener('change', sync); });
 
-    // Eventdagen: "Dag toevoegen" kopieert de laatste rij (de dag erna).
-    var days = document.getElementById('eventDays');
-    var addDay = document.getElementById('addEventDay');
-    function dayRows() { return days.querySelectorAll('.gu-eventdays__row'); }
-    function syncDays() {
-      var rows = dayRows();
-      rows.forEach(function (row) { row.querySelector('.gu-eventdays__remove').hidden = rows.length < 2; });
-      addDay.hidden = rows.length >= Number(addDay.dataset.max);
-    }
-    function addDayRow() {
-      var rows = dayRows(), last = rows[rows.length - 1], row = last.cloneNode(true);
-      var date = last.querySelector('input[name="event_day"]').value;
-      if (date) {
-        var next = new Date(date + 'T12:00:00');
-        next.setDate(next.getDate() + 1);
-        row.querySelector('input[name="event_day"]').value = next.toISOString().slice(0, 10);
-      }
-      days.appendChild(row);
-      syncDays();
-      return row;
-    }
-    addDay.addEventListener('click', function () { addDayRow().querySelector('input').focus(); dirty = true; });
-    days.addEventListener('click', function (e) {
-      var btn = e.target.closest('.gu-eventdays__remove');
-      if (btn && dayRows().length > 1) { btn.closest('li').remove(); syncDays(); dirty = true; }
-    });
+    // Eventdagen (gedeeld script, _event_days_script.html); met EVENTS aan
+    // staan er geen dagen in dit formulier.
+    var dayCtl = window.guEventDays(function () { dirty = true; });
 
     // Feiten: "Nog een feit" voegt een lege rij toe met nieuwe namen.
     var facts = document.getElementById('newFacts');
@@ -267,7 +259,7 @@
     // je was; weg na het versturen. Na een serverfout geldt de serverstand.
     var key = form.dataset.draftKey, dirty = false, submitting = false;
     function save() {
-      var data = {fields: [], days: dayRows().length, facts: factRows().length};
+      var data = {fields: [], days: dayCtl ? dayCtl.rows().length : 1, facts: factRows().length};
       new FormData(form).forEach(function (value, name) {
         if (name !== 'csrf_token') data.fields.push([name, value]);
       });
@@ -277,7 +269,7 @@
       var data;
       try { data = JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { data = null; }
       if (!data || !data.fields || !data.fields.length) return false;
-      while (dayRows().length < Math.min(data.days || 1, Number(addDay.dataset.max))) addDayRow();
+      if (dayCtl) while (dayCtl.rows().length < Math.min(data.days || 1, dayCtl.max)) dayCtl.add();
       while (factRows().length < Math.min(data.facts || 1, Number(facts.dataset.max))) addFactRow();
       form.querySelectorAll('input[type="checkbox"]').forEach(function (el) { el.checked = false; });
       var seen = {};
@@ -312,7 +304,6 @@
       if (dirty && !submitting) { e.preventDefault(); e.returnValue = ''; }
     });
     sync();
-    syncDays();
   })();
 </script>
 {% endblock %}

@@ -3,9 +3,17 @@
   Het label online of event, met de datum. Online: wanneer het stemmen
   sluit; event: de naam, de eerste dag (Nederlandse tijd) en de plaats. Een
   event van vóór P4 heeft alleen event_date (zoals ingevoerd). Context: issue.
+  Events step 1c: with EVENTS on the name (translated content), the days and
+  the location come from issue.event.
 #}
 <span class="gu-issue-kind gu-issue-kind--{{ issue.kind }}">
-  {%- if issue.kind == 'event' -%}
+  {%- if issue.kind == 'event' and events_on and issue.event -%}
+    {%- from '_mt.html' import mt_inline with context -%}
+    {%- set ev = issue.event -%}
+    {%- set days = ev.days -%}
+    {%- set when = (days[0].starts_at | local) if days else none -%}
+    {{ _('Event') }} · {{ mt_inline(ev, 'name') }}{% if when %} · {{ when | datetimeformat('d MMM y HH:mm') }}{% if days | length > 1 %} ({{ _('%(num)s days', num=days | length) }}){% endif %}{% endif %}{% if ev.location %}{{ ', ' if when else ' · ' }}{{ ev.location }}{% endif %}
+  {%- elif issue.kind == 'event' -%}
     {%- set days = issue.event_days if issue.id else [] -%}
     {%- set when = (days[0].starts_at | local) if days else issue.event_date -%}
     {{ _('Event') }}{% if issue.event_name %} · {{ issue.event_name }}{% endif %}{% if when %} · {{ when | datetimeformat('d MMM y HH:mm') }}{% if days | length > 1 %} ({{ _('%(num)s days', num=days | length) }}){% endif %}{% endif %}{% if issue.event_location %}{{ ', ' if when else ' · ' }}{{ issue.event_location }}{% endif %}

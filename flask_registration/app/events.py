@@ -107,3 +107,185 @@ def delete_empty(event_ids):
     EventDay.query.filter(EventDay.event_id.in_(empty)).delete(synchronize_session=False)
     content_i18n.delete_for('events', empty)
     Event.query.filter(Event.id.in_(empty)).delete(synchronize_session=False)
+
+
+# ── Rights (step 1c, K4) ─────────────────────────────────────────────────
+
+def _active(user):
+    return (user is not None and getattr(user, 'is_authenticated', False)
+            and not getattr(user, 'is_deleted', False))
+
+
+def can_create(user):
+    """Anyone who may contribute (logged in, conduct rules accepted, not suspended)."""
+    return _active(user) and user.can_contribute()
+
+
+def can_manage(event, user):
+    """The organiser, with moderators as the fallback. A former account
+    manages nothing."""
+    if event is None or not _active(user):
+        return False
+    return event.created_by_id == user.id or user.can_moderate()
+
+
+def can_add_issue(event, user):
+    """Who may add an issue to the event: whoever manages it, or, with
+    "Participants may add issues" on, anyone who may contribute. Nobody for
+    an archived event."""
+    if event is None or event.archived_at is not None:
+        return False
+    return can_manage(event, user) or (bool(event.open_for_issues) and can_create(user))
+
+
+def votes_locked(event):
+    """K7: "Everyone may vote" is fixed once voting began (set in step 1f;
+    now only on migrated events)."""
+    return event is not None and event.everyone_votes_locked_at is not None
+
+
+def by_code(code):
+    """The event with this code (normalised), or None."""
+    from app.models import Event
+    code = normalize_code(code)
+    if len(code) != CODE_LENGTH:
+        return None
+    return Event.query.filter_by(code=code).first()
+
+
+# ── The form "New event" and the settings (step 1c, K13) ─────────────────
+
+LOCATION_MAX = 200
+URL_MAX = 500
+FORM_FIELDS = ('name', 'note', 'format', 'location', 'online_url', 'online_between', 'open_for_issues',
+               'everyone_votes')
+FORM_LISTS = ('event_day', 'event_from', 'event_to')
+
+
+def _is_web_link(url):
+    """Only http:// and https://, with a host after it and no spaces."""
+    low = url.lower()
+    rest = low.split('://', 1)[1] if '://' in low else ''
+    return low.split('://', 1)[0] in ('http', 'https') and bool(rest) and not any(ch.isspace() for ch in url)
+
+
+def parse_form(form):
+    """The fields of the form: (values, errors). Codes, not labels: the
+    format is stored as location, online or hybrid."""
+    from app import issues
+    from app.models import EVENT_FORMATS
+    values, errors = {}, {}
+    name = (form.get('name') or '').strip()
+    if not name or len(name) > NAME_MAX:
+        errors['name'] = 'invalid'
+    values['name'] = name[:NAME_MAX]
+    values['note'] = (form.get('note') or '').strip() or None
+    fmt = form.get('format')
+    if fmt not in EVENT_FORMATS:
+        errors['format'] = 'invalid'
+    values['format'] = fmt if fmt in EVENT_FORMATS else 'location'
+    location = (form.get('location') or '').strip()
+    url = (form.get('online_url') or '').strip()
+    if fmt in ('location', 'hybrid'):
+        if not location or len(location) > LOCATION_MAX:
+            errors['location'] = 'invalid'
+        values['location'] = location[:LOCATION_MAX] or None
+    else:
+        values['location'] = None
+    if fmt in ('online', 'hybrid'):
+        if url and (len(url) > URL_MAX or not _is_web_link(url)):
+            errors['online_url'] = 'invalid'
+        values['online_url'] = url[:URL_MAX] or None
+    else:
+        values['online_url'] = None
+    values['days'] = issues.parse_event_days(form, errors)
+    values['online_between'] = form.get('online_between') == '1'
+    values['open_for_issues'] = form.get('open_for_issues') == '1'
+    values['everyone_votes'] = form.get('everyone_votes') == '1'
+    return values, errors
+
+
+def _set_days(event, days):
+    from app.models import EventDay
+    event.days = [EventDay(starts_at=begin, ends_at=end) for begin, end in days]
+
+
+def create(values, user, lang=None):
+    """A new event of `user`, with a fresh code; translated into the other
+    languages after the commit. Does not commit."""
+    from app import content_jobs, i18n
+    from app.models import Event
+    values = dict(values)
+    days = values.pop('days', None) or []
+    event = Event(code=new_code(), lang=lang or i18n.current(), created_by_id=user.id,
+                  created_at=datetime.utcnow(), **values)
+    _set_days(event, days)
+    db.session.add(event)
+    db.session.flush()
+    content_jobs.schedule(event)
+    return event
+
+
+def update(event, values):
+    """Save the settings. A locked "Everyone may vote" stays as it is, also
+    with a forged POST. A new name or note: translations again. Does not commit."""
+    from app import content_i18n, content_jobs
+    values = dict(values)
+    days = values.pop('days', None)
+    if votes_locked(event):
+        values.pop('everyone_votes', None)
+    changed = [field for field in ('name', 'note') if field in values and values[field] != getattr(event, field)]
+    for key, value in values.items():
+        setattr(event, key, value)
+    if days is not None:
+        _set_days(event, days)
+    if changed:
+        for field in changed:
+            content_i18n.invalidate(event, field)
+        content_jobs.schedule(event)
+
+
+def renumber(event):
+    """event_position 1 to n, in the current order."""
+    for position, issue in enumerate(_ordered(event), start=1):
+        issue.event_position = position
+
+
+def _ordered(event):
+    return sorted(event.issues, key=lambda i: (i.event_position is None, i.event_position or 0, i.id))
+
+
+def move(event, issue_id, direction):
+    """Move an issue one place up or down; the ends do nothing. Does not commit."""
+    issues = _ordered(event)
+    index = next((n for n, issue in enumerate(issues) if issue.id == issue_id), None)
+    if index is None:
+        return False
+    other = index - 1 if direction == 'up' else index + 1 if direction == 'down' else None
+    if other is not None and 0 <= other < len(issues):
+        issues[index], issues[other] = issues[other], issues[index]
+    for position, issue in enumerate(issues, start=1):
+        issue.event_position = position
+    return True
+
+
+def next_position(event):
+    """The place of a new issue: at the bottom of the list."""
+    from app.models import Issue
+    highest = db.session.query(db.func.max(Issue.event_position)).filter(Issue.event_id == event.id).scalar()
+    return (highest or 0) + 1
+
+
+def choices_for(user, code=None):
+    """The events an issue of `user` can be added to in the issue form: own
+    events that are not archived, and the event of ?event=<code> when user
+    may add to it (open_for_issues, or managing it)."""
+    from app.models import Event
+    if not _active(user):
+        return []
+    own = Event.query.filter(Event.created_by_id == user.id, Event.archived_at.is_(None)) \
+        .order_by(Event.created_at.desc(), Event.id.desc()).all()
+    extra = by_code(code) if code else None
+    if extra is not None and extra not in own and can_add_issue(extra, user):
+        own.insert(0, extra)
+    return [event for event in own if can_add_issue(event, user)]

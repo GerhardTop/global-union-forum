@@ -959,6 +959,8 @@ def create_app():
     app.register_blueprint(wikipolitics)
     app.register_blueprint(intern)
     app.register_blueprint(issues_bp)
+    from app.routes.events import events_bp
+    app.register_blueprint(events_bp)
 
     from app.cli import register_cli
     register_cli(app)
@@ -975,6 +977,8 @@ def create_app():
     app.jinja_env.globals['unread_notifications'] = unread_notifications
     from app.models import deleted_label
     app.jinja_env.globals['deleted_label'] = deleted_label
+
+    from app import events as _events
 
     @app.context_processor
     def inject_babel():
@@ -993,6 +997,8 @@ def create_app():
             language_name_in=i18n.language_name_in,
             # Content in several languages (multilingual step 6).
             content_i18n=content_i18n,
+            # Events (docs/events.md): the switch EVENTS, for the templates.
+            events_on=_events.enabled(app),
         )
 
     @app.context_processor

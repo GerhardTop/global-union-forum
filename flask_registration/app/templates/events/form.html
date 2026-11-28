@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}{% if event %}{{ _('Settings') }} · {{ content_i18n.text_for(event, 'name', lang) or event.name }}{% else %}{{ _('New event') }}{% endif %} · Global Union{% endblock %}
+
+{#
+  Events step 1c (docs/events.md, K3, K4, K6, K7, K10, K13), built to
+  docs/design/event-formulier.html: the form "New event" and, with the same
+  form filled in, the event settings with the issues of the event (Up and
+  Down). Name and note are user content: shown via mt_inline, never gettext.
+  Without JavaScript every field is in view (one day); with JavaScript the
+  format hides the field that does not fit.
+#}
+{% block content_outer %}{% block content %}
+{% from 'issues/_crumbs.html' import crumbs with context %}
+{% from '_event_days.html' import event_days with context %}
+{% from '_mt.html' import mt_inline with context %}
+<main class="gu-forum gu-forum--soft" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+
+    {% if event %}
+    {{ crumbs(None, [(mt_inline(event, 'name'), url_for('events.settings', code=event.code)), (_('Settings'), None)]) }}
+    {% else %}
+    {# TRANSLATORS: the title of the form to make an event, also the button in "Have your say". #}
+    {{ crumbs(None, [(_('New event'), None)]) }}
+    {% endif %}
+
+    <header class="gu-forum__threadhead">
+      <p class="gu-eyebrow">{{ _('Event') }}</p>
+      {% if event %}
+      <h1 class="gu-forum__title">{{ mt_inline(event, 'name') }}</h1>
+      <p class="gu-composer__hint">{{ _('Settings') }}</p>
+      {% else %}
+      <h1 class="gu-forum__title">{{ _('New event') }}</h1>
+      {# TRANSLATORS: the explanation at the top of the form "New event". #}
+      <p class="gu-composer__hint">{{ _('An event is a gathering on fixed days and times, at a location or online. Anyone with the link or the event code can take part.') }}</p>
+      {% endif %}
+    </header>
+
+    {% set fd = form_data or {} %}
+    {% set errs = errors or {} %}
+    {% set fmt = fd.get('format') or 'location' %}
+    <form class="gu-forum__newform gu-newissue" id="eventForm" method="POST"
+          action="{{ url_for('events.settings', code=event.code) if event else url_for('events.new') }}" novalidate>
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+
+      <div class="gu-newissue__section">
+        <div class="gu-forum__newfield">
+          <label for="evName">{{ _('Name of the event') }}</label>
+          <input type="text" id="evName" name="name" maxlength="200" autocomplete="off"
+                 class="gu-input{% if errs.get('name') %} gu-input--error{% endif %}" value="{{ fd.get('name', '') }}">
+          {# TRANSLATORS: error under the name in the form "New event". #}
+          {% if errs.get('name') %}<p class="gu-join__formError">{{ _('Give the event a name of at most 200 characters.') }}</p>{% endif %}
+        </div>
+        <div class="gu-forum__newfield">
+          <label for="evNote">{{ _('Explanation') }} <span class="gu-join__badge">{{ _('optional') }}</span></label>
+          <textarea id="evNote" name="note" rows="3" class="gu-composer__input">{{ fd.get('note', '') }}</textarea>
+        </div>
+
+        <fieldset class="gu-forum__newfield gu-newtype">
+          {# TRANSLATORS: the question above the three formats of an event. #}
+          <legend>{{ _('Where does the event take place?') }}</legend>
+          {# TRANSLATORS: the three formats of an event: at a location, online, or at a location and online. #}
+          {% set at_location = _('At a location') %}
+          {# TRANSLATORS: the format of an event that takes place both at a location and online. #}
+          {% set hybrid = _('At a location and online') %}
+          {% set formats = [('location', at_location), ('online', _('Online')), ('hybrid', hybrid)] %}
+          <div class="gu-newtype__grid gu-newtype__grid--3">
+            {% for code, label in formats %}
+            <label class="gu-newtype__option">
+              <input type="radio" name="format" value="{{ code }}"{% if fmt == code %} checked{% endif %}>
+              <span><strong>{{ label }}</strong></span>
+            </label>
+            {% endfor %}
+          </div>
+          {# TRANSLATORS: error when no format of the event is chosen. #}
+          {% if errs.get('format') %}<p class="gu-join__formError">{{ _('Choose where the event takes place.') }}</p>{% endif %}
+        </fieldset>
+
+        <div class="gu-forum__newfield" id="evLocationField">
+          <label for="evLoc">{{ _('Location') }}</label>
+          <input type="text" id="evLoc" name="location" maxlength="200"
+                 class="gu-input{% if errs.get('location') %} gu-input--error{% endif %}" value="{{ fd.get('location', '') }}">
+          {# TRANSLATORS: hint under the location; without JavaScript both the location and the link are shown. #}
+          <p class="gu-composer__hint gu-eventform__fieldhint">{{ _('For an event at a location, or at a location and online.') }}</p>
+          {# TRANSLATORS: error under the location of an event. #}
+          {% if errs.get('location') %}<p class="gu-join__formError">{{ _('Enter the location, of at most 200 characters.') }}</p>{% endif %}
+        </div>
+        <div class="gu-forum__newfield" id="evUrlField">
+          {# TRANSLATORS: the link to the video call or stream of an online event; not the link to the event itself. #}
+          <label for="evUrl">{{ _('Link to the video call or the livestream') }} <span class="gu-join__badge">{{ _('optional') }}</span></label>
+          <input type="url" id="evUrl" name="online_url" maxlength="500" placeholder="https://" autocomplete="off"
+                 class="gu-input{% if errs.get('online_url') %} gu-input--error{% endif %}" value="{{ fd.get('online_url', '') }}">
+          {# TRANSLATORS: hint under the link to the video call; "Join via the video call" is the link text on the event page. #}
+          <p class="gu-composer__hint gu-eventform__fieldhint">{{ _('For an online event, or at a location and online. Where participants watch or join in online. Shown on the event page, under "Join via the video call".') }}</p>
+          {# TRANSLATORS: error under the link to the video call. #}
+          {% if errs.get('online_url') %}<p class="gu-join__formError">{{ _('Enter a link that starts with http:// or https://.') }}</p>{% endif %}
+        </div>
+
+        <div class="gu-forum__newfield gu-schedule">
+          {{ event_days(fd, errs, event_days_max) }}
+        </div>
+        <label class="gu-join__check">
+          <input type="checkbox" name="online_between" value="1"{% if fd.get('online_between') == '1' %} checked{% endif %}>
+          <span>{{ _('Online contributions open between the first and the last day') }}</span>
+        </label>
+      </div>
+
+      <div class="gu-newissue__section">
+        <p class="gu-newissue__sectionhead">{{ _('Issues') }}</p>
+        <label class="gu-join__check gu-eventform__check">
+          <input type="checkbox" name="open_for_issues" value="1"{% if fd.get('open_for_issues') == '1' %} checked{% endif %}>
+          {# TRANSLATORS: setting of an event; off by default. #}
+          <span><strong>{{ _('Participants may add issues') }}</strong>
+          {# TRANSLATORS: explanation under "Participants may add issues", for the organiser. #}
+          <span class="gu-composer__hint">{{ _('Off: only you add issues. On: every participant can add an issue to this event; it goes to the bottom of the list. You can change this at any time.') }}</span></span>
+        </label>
+      </div>
+
+      <div class="gu-newissue__section">
+        {# TRANSLATORS: section head in the event form. #}
+        <p class="gu-newissue__sectionhead">{{ _('Right to vote') }}</p>
+        <label class="gu-join__check gu-eventform__check">
+          <input type="checkbox" name="everyone_votes" value="1"{% if fresh or fd.get('everyone_votes') == '1' %} checked{% endif %}{% if locked %} disabled{% endif %}>
+          {# TRANSLATORS: setting of an event, on by default: everyone with an account may vote on its issues. #}
+          <span><strong>{{ _('Everyone may vote') }}</strong>
+          {# TRANSLATORS: explanation of "Everyone may vote", only for the organiser; %(num)d is the number of quality contributions for the right to vote. #}
+          <span class="gu-composer__hint">{{ ngettext('Every participant with an account may vote on the issues of this event, even without quality contributions. If you turn this off, only those who already have the right to vote may vote (after %(num)d quality contribution).', 'Every participant with an account may vote on the issues of this event, even without quality contributions. If you turn this off, only those who already have the right to vote may vote (after %(num)d quality contributions).', voter_min) }}</span></span>
+        </label>
+        {% if locked %}
+        {# TRANSLATORS: under the disabled checkbox "Everyone may vote" once voting began. #}
+        <p class="gu-eventform__locked">{{ _('Fixed since voting began.') }}</p>
+        {% else %}
+        {# TRANSLATORS: under "Everyone may vote", before voting began. #}
+        <p class="gu-composer__hint">{{ _('You can change this until voting starts on the first issue of this event. After that it is fixed.') }}</p>
+        {% endif %}
+      </div>
+
+      <div class="gu-newissue__section">
+        {# TRANSLATORS: section head in the event form. #}
+        <p class="gu-newissue__sectionhead">{{ _('Visibility') }}</p>
+        {# TRANSLATORS: section Visibility in the event form; participants are those who have the link. #}
+        <p>{{ _('This event is only visible to the participants of this event. You invite them with the link or the QR code.') }}</p>
+        {# TRANSLATORS: section Visibility in the event form; "share" means: show the event in the overview for everyone. #}
+        <p class="gu-composer__hint">{{ _('After saving you get your own link to the event and a QR code, to copy and share. Afterwards you choose whether to share the event with all participants of Global Union.') }}</p>
+      </div>
+
+      <div class="gu-forum__newactions">
+        <a href="{{ url_for('issues.index') }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>
+        <button type="submit" class="gu-btn gu-btn--primary gu-btn--lg">
+          {# TRANSLATORS: the button under the form "New event" (Save in the settings). #}
+          {% if event %}{{ _('Save') }}{% else %}
+          {# TRANSLATORS: the button under the form "New event". #}
+          {{ _('Create event') }}{% endif %} <span class="gu-arrow"></span>
+        </button>
+      </div>
+    </form>
+
+    {% if event %}
+    <section class="gu-forum__newform gu-newissue" id="vraagstukken" aria-labelledby="eventIssuesHead">
+      <div class="gu-newissue__section">
+        {# TRANSLATORS: section head in the event settings: the issues of this event, in their order. #}
+        <h2 class="gu-newissue__sectionhead" id="eventIssuesHead">{{ _('Issues of this event') }}</h2>
+        {% if rows %}
+        <ol class="gu-eventform__issues">
+          {% for issue in rows %}
+          {% set title = content_i18n.text_for(issue, 'title', lang) or issue.title %}
+          <li class="gu-eventform__issue">
+            <span class="gu-eventform__pos">{{ loop.index }}</span>
+            <span class="gu-eventform__issuebody">
+              <span><span class="gu-issuelist__phase{% if issue.is_closed %} is-closed{% endif %}">{% if issue.is_closed %}{{ _('Closed') }}{% else %}{{ phase_labels.get(issue.phase, issue.phase) }}{% endif %}</span></span>
+              <a href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ mt_inline(issue, 'title') }}</a>
+            </span>
+            <span class="gu-eventform__moves">
+              {# TRANSLATORS: button to move an issue one place up in the list of an event. #}
+              {% set up = _('Up') %}
+              {# TRANSLATORS: button to move an issue one place down in the list of an event. #}
+              {% set down = _('Down') %}
+              {# TRANSLATORS: label for screen readers of the button Up; %(title)s is the issue. #}
+              {% set up_aria = _('Move up: %(title)s', title=title) %}
+              {# TRANSLATORS: label for screen readers of the button Down; %(title)s is the issue. #}
+              {% set down_aria = _('Move down: %(title)s', title=title) %}
+              {% for direction, label, aria in [('up', up, up_aria), ('down', down, down_aria)] %}
+              <form method="POST" action="{{ url_for('events.order', code=event.code) }}">
+                {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+                <input type="hidden" name="issue_id" value="{{ issue.id }}">
+                <input type="hidden" name="direction" value="{{ direction }}">
+                <button type="submit" class="gu-btn gu-btn--ghost gu-btn--sm" aria-label="{{ aria }}">{{ label }}</button>
+              </form>
+              {% endfor %}
+            </span>
+          </li>
+          {% endfor %}
+        </ol>
+        {% else %}
+        {# TRANSLATORS: in the event settings, when the event has no issues. #}
+        <p class="gu-composer__hint">{{ _('This event has no issues yet.') }}</p>
+        {% endif %}
+        {# TRANSLATORS: button in the event settings: a new issue that belongs to this event. #}
+        <p><a href="{{ url_for('issues.new', event=event.code) }}" class="gu-btn gu-btn--primary gu-btn--sm"><span aria-hidden="true">+</span> {{ _('New issue for this event') }}</a></p>
+      </div>
+    </section>
+    {% endif %}
+
+  </div>
+</main>
+{% endblock %}
+
+{% include '_event_days_script.html' %}
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var form = document.getElementById('eventForm');
+    window.guEventDays();
+    // The format hides the field that does not fit; without JavaScript both are in view.
+    var locField = document.getElementById('evLocationField');
+    var urlField = document.getElementById('evUrlField');
+    function sync() {
+      var fmt = form.querySelector('input[name="format"]:checked');
+      var value = fmt ? fmt.value : 'location';
+      locField.hidden = value === 'online';
+      urlField.hidden = value === 'location';
+    }
+    form.querySelectorAll('input[name="format"]').forEach(function (r) { r.addEventListener('change', sync); });
+    sync();
+  })();
+</script>
+{% endblock %}

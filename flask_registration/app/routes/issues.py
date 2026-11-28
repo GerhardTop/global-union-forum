@@ -76,7 +76,7 @@ def _end_day(local):
     return local
 
 
-_FORM_FIELDS = ('title', 'intro', 'kind', 'event_name', 'event_note', 'event_location', 'event_online_between',
+_FORM_FIELDS = ('title', 'intro', 'kind', 'event_id', 'event_name', 'event_note', 'event_location', 'event_online_between',
                 'support_threshold', 'proposal_threshold_pct', 'show_interim', 'final_vote') + tuple(
                 f'{name}_{part}' for name, _t in issues.SCHEDULE_FIELDS for part in ('date', 'time'))
 _FORM_LISTS = ('event_day', 'event_from', 'event_to')
@@ -129,6 +129,15 @@ def index():
     which = which if which in issues.OVERVIEW_FILTERS else 'alle'
     rows = issues.overview(which)
     content_i18n.preload([row[0] for row in rows], 'title')  # the translated titles in one query
+    from app import events
+    if events.enabled():
+        # Events step 1c: the label reads the event (name, days, location),
+        # loaded with its days and translated names in a fixed number of queries.
+        from app.models import Event
+        from sqlalchemy.orm import selectinload
+        ids = {row[0].event_id for row in rows if row[0].event_id is not None}
+        if ids:
+            content_i18n.preload(Event.query.options(selectinload(Event.days)).filter(Event.id.in_(ids)).all(), 'name')
     return render_template('issues/index.html', rows=rows, which=which)
 
 
@@ -139,7 +148,7 @@ def new():
         return _rules_first_redirect()
     if request.method == 'POST':
         _require_csrf()
-        values, errors = issues.parse_form(request.form)
+        values, errors = issues.parse_form(request.form, current_user)
         new_facts, fact_errors, fact_rows = _new_issue_facts(request.form)
         if fact_errors:
             errors['facts'] = fact_errors
@@ -149,7 +158,7 @@ def new():
             data.update({k: request.form.getlist(k) for k in _FORM_LISTS})
             data['facts'] = fact_rows
             _stash_form_state('issue_new', errors, data)
-            return redirect(url_for('issues.new'), code=303)
+            return redirect(url_for('issues.new', event=request.args.get('event') or None), code=303)
         issue = issues.create(values, current_user, lang=i18n.current())
         db.session.flush()
         made = [_new_fact(issue.thread, data) for data in new_facts]
@@ -160,7 +169,19 @@ def new():
             quality.schedule_judgement(post.id)
         return redirect(url_for('issues.show', issue_id=issue.id))
     errors, data = _pop_form_state('issue_new')
+    # Events step 1c: with EVENTS on an event issue chooses an existing event
+    # (?event=<code> preselects it).
+    from app import events
+    event_choices, preselected = [], None
+    if events.enabled():
+        code = request.args.get('event')
+        event_choices = events.choices_for(current_user, code)
+        content_i18n.preload(event_choices, 'name')
+        preselected = next((e for e in event_choices if code and e.code == events.normalize_code(code)), None)
+        if preselected is not None and not data:
+            data = {'kind': 'event', 'event_id': str(preselected.id)}
     return render_template('issues/new.html', errors=errors, form_data=data,
+                           event_choices=event_choices, preselected=preselected,
                            schedule=issues.default_schedule(), schedule_fields=issues.SCHEDULE_FIELDS,
                            new_facts_max=issues.NEW_FACTS_MAX, event_days_max=issues.EVENT_DAYS_MAX)
 

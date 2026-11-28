@@ -67,6 +67,14 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 | online / event | online / event | en línea / evento | "En línea" is neutraal internationaal; "evento" voor een bijeenkomst op een plek. |
 | username | gebruikersnaam | nombre de usuario | Het ene woord voor de naam waaronder je meedoet (@naam); nergens "seudónimo". Met het voorzetsel "con": "con tu nombre de usuario". |
 | Former account | Voormalig account | Cuenta antigua | Het label dat bij een account dat er niet meer is in plaats van de naam staat; zonder @, het is geen gebruikersnaam. Zegt niet wie het account verwijderde, en is genderneutraal. |
+| organiser | organisator | persona organizadora | Wie een event maakt en beheert. Neutraal, zonder "organizador/a"; in een zin ook "quien organiza". |
+| New event | Nieuw event | Nuevo evento | De knop in Denk mee en de titel van het formulier. |
+| Everyone may vote | Iedereen mag stemmen | Todos pueden votar | De instelling op een event. |
+| Participants may add issues | Deelnemers mogen vraagstukken toevoegen | Los participantes pueden añadir cuestiones | De instelling op een event; "participante" is in het enkelvoud genderneutraal. |
+| Where does the event take place? | Waar vindt het event plaats? | ¿Dónde tiene lugar el evento? | De vraag boven de vorm van een event. |
+| At a location / Online / At a location and online | Op een locatie / Online / Op een locatie en online | En un lugar / En línea / En un lugar y en línea | De drie vormen van een event (codes location, online, hybrid). |
+| Link to the video call or the livestream | Link naar het videogesprek of de livestream | Enlace a la videollamada o a la transmisión en directo | Niet de link naar het event zelf; vandaar de volledige naam. |
+| Fixed since voting began. | Vastgelegd sinds het stemmen begon. | Fijado desde que empezó la votación. | Onder het uitgeschakelde vinkje Iedereen mag stemmen. |
 | initiator | initiatiefnemer | Promotor | Vaste label voor wie een cuestión start; de gangbare term bij burgerinitiatieven. |
 | think tank | denktank | laboratorio de ideas | De door de RAE aanbevolen term. |
 | moderation | moderatie | moderación | Zelfde woord. |

@@ -1,0 +1,38 @@
+{#
+  Script: _event_days_script.html (events step 1c)
+  window.guEventDays(onChange): wires "Add a day" (copies the last row, the
+  day after) and the remove buttons of _event_days.html. Returns
+  {rows, add, sync}; onChange runs after every change by the user.
+#}
+<script nonce="{{ csp_nonce() }}">
+  window.guEventDays = function (onChange) {
+    var days = document.getElementById('eventDays');
+    var addDay = document.getElementById('addEventDay');
+    if (!days || !addDay) return null;
+    function rows() { return days.querySelectorAll('.gu-eventdays__row'); }
+    function sync() {
+      var all = rows();
+      all.forEach(function (row) { row.querySelector('.gu-eventdays__remove').hidden = all.length < 2; });
+      addDay.hidden = all.length >= Number(addDay.dataset.max);
+    }
+    function add() {
+      var all = rows(), last = all[all.length - 1], row = last.cloneNode(true);
+      var date = last.querySelector('input[name="event_day"]').value;
+      if (date) {
+        var next = new Date(date + 'T12:00:00');
+        next.setDate(next.getDate() + 1);
+        row.querySelector('input[name="event_day"]').value = next.toISOString().slice(0, 10);
+      }
+      days.appendChild(row);
+      sync();
+      return row;
+    }
+    addDay.addEventListener('click', function () { add().querySelector('input').focus(); if (onChange) onChange(); });
+    days.addEventListener('click', function (e) {
+      var btn = e.target.closest('.gu-eventdays__remove');
+      if (btn && rows().length > 1) { btn.closest('li').remove(); sync(); if (onChange) onChange(); }
+    });
+    sync();
+    return {rows: rows, add: add, sync: sync, max: Number(addDay.dataset.max)};
+  };
+</script>

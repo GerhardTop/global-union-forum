@@ -81,6 +81,7 @@ SUSPENDED_BLOCKED = {
     'issues.new', 'issues.proposal_new', 'issues.proposal_support', 'issues.proposal_revise',
     'issues.proposal_link', 'issues.proposal_new_fact', 'issues.proposal_unlink',
     'issues.proposal_vote', 'issues.final_new',
+    'events.new', 'events.settings', 'events.order',   # events step 1c
 }
 
 

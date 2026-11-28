@@ -20,9 +20,21 @@
       <div class="gu-forum__topactions">
         {% if current_user.is_authenticated %}
         {% if current_user.can_contribute() %}
+        {%- if events_on %}
+        {# Events step 1c: "New event" next to "New issue" (docs/design/event-overzicht.html). #}
+        <div class="gu-forum__topbuttons">
+        <a href="{{ url_for('events.new') }}" class="gu-btn gu-btn--ghost gu-forum__newbtn">
+          <span aria-hidden="true">+</span> {{ _('New event') }}
+        </a>
         <a href="{{ url_for('issues.new') }}" class="gu-btn gu-btn--primary gu-forum__newbtn">
           <span aria-hidden="true">+</span> {{ _('New issue') }}
         </a>
+        </div>
+        {%- else %}
+        <a href="{{ url_for('issues.new') }}" class="gu-btn gu-btn--primary gu-forum__newbtn">
+          <span aria-hidden="true">+</span> {{ _('New issue') }}
+        </a>
+        {%- endif %}
         {% elif current_user.is_suspended %}
         <span class="gu-forum__suspended">{{ _('You are suspended and cannot contribute right now') }}</span>
         {% else %}

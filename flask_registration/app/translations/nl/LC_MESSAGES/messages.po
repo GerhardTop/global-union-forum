@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 16:43+0100\n"
+"POT-Creation-Date: 2026-11-28 16:59+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -330,8 +330,8 @@ msgid "Forum · proposal"
 msgstr "Forum · voorstel"
 
 # Herontwerp stap 1: vraagstukken (Issue)
-#: app/models.py:274 app/templates/issues/new.html:23
-#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:98
+#: app/models.py:274 app/templates/issues/new.html:24
+#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:113
 #: app/templates/moderator/melding_beoordelen.html:68
 msgid "Issue"
 msgstr "Vraagstuk"
@@ -959,8 +959,9 @@ msgstr "Vul een geheel getal van 1 tot en met 365 in."
 msgid "Saved."
 msgstr "Opgeslagen."
 
-#: app/routes/admin.py:747 app/templates/issues/index.html:17
-#: app/templates/issues/show.html:25 app/templates/issues/verwijderen.html:29
+#: app/routes/admin.py:747 app/templates/events/form.html:108
+#: app/templates/issues/index.html:17 app/templates/issues/show.html:25
+#: app/templates/issues/verwijderen.html:29
 msgid "Issues"
 msgstr "Vraagstukken"
 
@@ -968,9 +969,9 @@ msgstr "Vraagstukken"
 #: app/templates/issues/proposal.html:46 app/templates/issues/proposal.html:63
 #: app/templates/issues/proposal.html:321
 #: app/templates/issues/proposal.html:323
-#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:101
-#: app/templates/issues/show.html:152 app/templates/issues/show.html:154
-#: app/templates/issues/show.html:155 app/templates/issues/show.html:194
+#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:116
+#: app/templates/issues/show.html:167 app/templates/issues/show.html:169
+#: app/templates/issues/show.html:170 app/templates/issues/show.html:209
 #: app/templates/moderator/beheer.html:84
 msgid "Proposals"
 msgstr "Voorstellen"
@@ -1078,62 +1079,72 @@ msgstr "Er is een fout opgetreden. Probeer het opnieuw."
 msgid "Your account has been deleted."
 msgstr "Je account is verwijderd."
 
+#. TRANSLATORS: message after making a new event.
+#: app/routes/events.py:83
+msgid "Event created."
+msgstr "Event gemaakt."
+
+#. TRANSLATORS: message after saving the settings of an event.
+#: app/routes/events.py:113
+msgid "Event saved."
+msgstr "Event opgeslagen."
+
 #: app/routes/forum.py:72
 #, python-format
 msgid "You are suspended until %(until)s. You can read, but not contribute or vote."
 msgstr "Je bent geschorst tot %(until)s. Je kunt lezen, maar niet bijdragen of stemmen."
 
-#: app/routes/forum.py:121
+#: app/routes/forum.py:122
 msgid "Accept the conduct rules first to take part."
 msgstr "Accepteer eerst de gedragsregels om mee te doen."
 
-#: app/routes/forum.py:651
+#: app/routes/forum.py:652
 msgid "The platform is not open for contributions to this issue right now."
 msgstr "Het platform is nu niet open voor bijdragen aan dit vraagstuk."
 
-#: app/routes/forum.py:673
+#: app/routes/forum.py:674
 msgid "You cannot reply to your own post."
 msgstr "Je kunt niet reageren op je eigen bericht."
 
-#: app/routes/forum.py:681
+#: app/routes/forum.py:682
 msgid "Invalid reply: the post you are replying to does not exist in this conversation."
 msgstr "Ongeldige reactie: het bericht waarop je reageert bestaat niet in dit gesprek."
 
-#: app/routes/forum.py:1259
+#: app/routes/forum.py:1260
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "De stelling van een voorstel kan alleen in de bijstelfase worden aangepast."
 
-#: app/routes/forum.py:1261
+#: app/routes/forum.py:1262
 msgid "This post already has replies, so it can no longer be edited."
 msgstr "Dit bericht heeft al reacties en kan daarom niet meer worden bewerkt."
 
-#: app/routes/forum.py:1262
+#: app/routes/forum.py:1263
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "Een verplaatst of verborgen bericht kun je niet bewerken. Je kunt wel bezwaar maken."
 
-#: app/routes/forum.py:1339 app/templates/forum/_post.html:70
+#: app/routes/forum.py:1340 app/templates/forum/_post.html:70
 #, python-format
 msgid "edited %(when)s"
 msgstr "bewerkt %(when)s"
 
 # Polijststap P7: volledige pagina vanuit de grote weergave
-#: app/routes/forum.py:1531 app/routes/issues.py:365
+#: app/routes/forum.py:1532 app/routes/issues.py:386
 msgid "Give a reason for your report."
 msgstr "Geef een reden voor je melding."
 
-#: app/routes/forum.py:1540 app/routes/issues.py:371
+#: app/routes/forum.py:1541 app/routes/issues.py:392
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Bedankt, je melding is doorgegeven aan een moderator."
 
-#: app/routes/forum.py:1945
+#: app/routes/forum.py:1946
 msgid "Choose a reason (and keep the note under 500 characters)."
 msgstr "Kies een reden (en houd de toelichting onder 500 tekens)."
 
-#: app/routes/forum.py:1947
+#: app/routes/forum.py:1948
 msgid "You already disputed this fact; a moderator will look at it."
 msgstr "Je hebt dit feit al betwist; een moderator kijkt ernaar."
 
-#: app/routes/forum.py:1951
+#: app/routes/forum.py:1952
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 msgstr "Dank je. Een moderator kijkt naar je bezwaar; het feit blijft zolang zichtbaar."
 
@@ -1145,60 +1156,60 @@ msgstr "Voorstellen maken"
 msgid "Adjust the proposals"
 msgstr "Voorstellen aanpassen"
 
-#: app/routes/issues.py:617
+#: app/routes/issues.py:638
 msgid "You already support this proposal."
 msgstr "Je steunt dit voorstel al."
 
-#: app/routes/issues.py:678
+#: app/routes/issues.py:699
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Kies minstens één feit dat nog niet gekoppeld is."
 
-#: app/routes/issues.py:814
+#: app/routes/issues.py:835
 msgid "The issue is now in the next phase."
 msgstr "Het vraagstuk staat nu in de volgende fase."
 
-#: app/routes/issues.py:830 app/routes/issues.py:850
+#: app/routes/issues.py:851 app/routes/issues.py:871
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "De tekst kan hooguit %(n)s tekens zijn."
 
-#: app/routes/issues.py:882
+#: app/routes/issues.py:903
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Vink het vakje aan om te bevestigen dat je het vraagstuk opnieuw wilt openstellen."
 
-#: app/routes/issues.py:887
+#: app/routes/issues.py:908
 msgid "The issue is open again for discussion."
 msgstr "Het vraagstuk staat weer open voor discussie."
 
-#: app/routes/issues.py:909
+#: app/routes/issues.py:930
 msgid "The issue has been archived."
 msgstr "Het vraagstuk is gearchiveerd."
 
-#: app/routes/issues.py:924
+#: app/routes/issues.py:945
 msgid "The issue is back from the archive."
 msgstr "Het vraagstuk is terug uit het archief."
 
-#: app/routes/issues.py:943
+#: app/routes/issues.py:964
 msgid "Type the exact title to confirm."
 msgstr "Typ de titel precies over om te bevestigen."
 
-#: app/routes/issues.py:949
+#: app/routes/issues.py:970
 msgid "The issue has been deleted."
 msgstr "Het vraagstuk is verwijderd."
 
-#: app/routes/issues.py:971
+#: app/routes/issues.py:992
 msgid "Type the exact text to confirm."
 msgstr "Typ de tekst precies over om te bevestigen."
 
-#: app/routes/issues.py:978
+#: app/routes/issues.py:999
 msgid "The proposal has been deleted."
 msgstr "Het voorstel is verwijderd."
 
-#: app/routes/issues.py:1098
+#: app/routes/issues.py:1119
 msgid "The proposal is hidden."
 msgstr "Het voorstel is verborgen."
 
-#: app/routes/issues.py:1098
+#: app/routes/issues.py:1119
 msgid "The proposal is visible again."
 msgstr "Het voorstel is weer zichtbaar."
 
@@ -1326,6 +1337,44 @@ msgstr "Er is iets misgegaan<br><em>aan onze kant</em>"
 #: app/templates/500.html:12
 msgid "We've been notified and will fix this as soon as possible. Head back to the homepage and try again in a few minutes."
 msgstr "We zijn op de hoogte gesteld en lossen het zo snel mogelijk op. Ga terug naar de homepage en probeer het over een paar minuten opnieuw."
+
+#: app/templates/_event_days.html:11
+msgid "Days"
+msgstr "Dagen"
+
+#: app/templates/_event_days.html:12
+msgid "Per day the times the platform is open, in Dutch time."
+msgstr "Per dag de tijden dat het platform open is, in Nederlandse tijd."
+
+#: app/templates/_event_days.html:17
+#: app/templates/admin/language_monitor.html:74
+msgid "Date"
+msgstr "Datum"
+
+#: app/templates/_event_days.html:18
+msgid "from"
+msgstr "van"
+
+#: app/templates/_event_days.html:19 app/templates/issues/show.html:73
+#: app/templates/issues/show.html:86
+msgid "to"
+msgstr "tot"
+
+#: app/templates/_event_days.html:20
+msgid "Remove this day"
+msgstr "Deze dag weghalen"
+
+#: app/templates/_event_days.html:24
+msgid "Add a day"
+msgstr "Dag toevoegen"
+
+#: app/templates/_event_days.html:25
+msgid "Enter at least one day."
+msgstr "Vul minstens één dag in."
+
+#: app/templates/_event_days.html:26
+msgid "Each day needs a date, and the end time after the start time."
+msgstr "Elke dag heeft een datum nodig, en de eindtijd na de begintijd."
 
 #. Slogan, niet vertalen.
 #: app/templates/_footer.html:13 app/templates/index.html:10
@@ -2019,8 +2068,10 @@ msgstr "Activiteit"
 
 #. profile, the eyebrow of the section with language, automatic translation and
 #. the summary by email.
-#: app/templates/landing.html:33 app/templates/meldingen.html:17
-#: app/templates/notificaties.html:20 app/templates/profile.html:161
+#: app/templates/events/form.html:2 app/templates/events/form.html:20
+#: app/templates/events/form.html:30 app/templates/landing.html:33
+#: app/templates/meldingen.html:17 app/templates/notificaties.html:20
+#: app/templates/profile.html:161
 msgid "Settings"
 msgstr "Instellingen"
 
@@ -2310,7 +2361,7 @@ msgid "We adopt legislation in phases. Simple, technical rules come first; polit
 msgstr "Wetgeving nemen we gefaseerd over. Eenvoudige, technische regels komen eerst; politiek gevoelige onderwerpen volgen later en vragen een bredere meerderheid."
 
 #. manifest, tekst 26
-#: app/templates/issues/show.html:81 app/templates/manifest.html:177
+#: app/templates/issues/show.html:96 app/templates/manifest.html:177
 #: app/templates/moderator/beheer.html:34
 msgid "Phase"
 msgstr "Fase"
@@ -2862,10 +2913,12 @@ msgctxt "summary frequency"
 msgid "Weekly"
 msgstr "Wekelijks"
 
+#. the button under the form "New event" (Save in the settings).
 #: app/templates/admin/proposal_limits.html:28
 #: app/templates/admin/proposal_limits.html:43
-#: app/templates/admin/thresholds.html:31 app/templates/forum/_facts.html:62
-#: app/templates/forum/_post.html:224 app/templates/issues/_fact_card.html:111
+#: app/templates/admin/thresholds.html:31 app/templates/events/form.html:150
+#: app/templates/forum/_facts.html:62 app/templates/forum/_post.html:224
+#: app/templates/issues/_fact_card.html:111
 #: app/templates/issues/_ip_vote.html:80
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
@@ -3072,7 +3125,7 @@ msgstr "Hoe werkt dit?"
 msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
 msgstr "Op weg naar stemrecht: %(quality_count)s van %(needed)s kwaliteitsbijdragen."
 
-#: app/templates/issues/show.html:216 app/templates/profile.html:40
+#: app/templates/issues/show.html:231 app/templates/profile.html:40
 msgid "Progress to the right to vote"
 msgstr "Voortgang naar stemrecht"
 
@@ -3119,7 +3172,8 @@ msgstr "Vul je achternaam in."
 msgid "LinkedIn profile"
 msgstr "LinkedIn-profiel"
 
-#: app/templates/issues/new.html:105 app/templates/issues/new.html:175
+#: app/templates/events/form.html:54 app/templates/events/form.html:89
+#: app/templates/issues/new.html:133 app/templates/issues/new.html:189
 #: app/templates/issues/proposal_new.html:31 app/templates/profile.html:83
 msgid "optional"
 msgstr "optioneel"
@@ -3271,11 +3325,12 @@ msgid "Delete my account"
 msgstr "Verwijder mijn account"
 
 #: app/templates/admin/dashboard.html:170
-#: app/templates/admin/dashboard.html:178 app/templates/forum/_post.html:218
-#: app/templates/forum/_post.html:246 app/templates/forum/edit_thread.html:58
+#: app/templates/admin/dashboard.html:178 app/templates/events/form.html:147
+#: app/templates/forum/_post.html:218 app/templates/forum/_post.html:246
+#: app/templates/forum/edit_thread.html:58
 #: app/templates/forum/new_thread.html:128
 #: app/templates/issues/_facts_big.html:41
-#: app/templates/issues/final_new.html:57 app/templates/issues/new.html:190
+#: app/templates/issues/final_new.html:57 app/templates/issues/new.html:204
 #: app/templates/issues/proposal.html:215
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
@@ -3645,11 +3700,6 @@ msgstr "Huidige stand"
 msgid "Contribution"
 msgstr "Bijdrage"
 
-#: app/templates/admin/language_monitor.html:74
-#: app/templates/issues/new.html:115
-msgid "Date"
-msgstr "Datum"
-
 #: app/templates/admin/language_monitor.html:81
 #: app/templates/admin/language_monitor.html:82
 msgid "awarded"
@@ -3773,6 +3823,218 @@ msgstr "Dit bericht gaat over je account en wordt altijd verstuurd."
 #: app/templates/email/notification.html:11
 msgid "You receive this email because you turned on email for this. You can turn it off per kind of notification:"
 msgstr "Je krijgt deze e-mail omdat je hiervoor e-mail hebt aangezet. Je kunt dat per soort melding uitzetten:"
+
+#. the title of the form to make an event, also the button in "Have your say".
+#: app/templates/events/form.html:2 app/templates/events/form.html:23
+#: app/templates/events/form.html:32 app/templates/issues/index.html:27
+#: app/templates/issues/new.html:113 app/templates/issues/new.html:117
+msgid "New event"
+msgstr "Nieuw event"
+
+#: app/templates/events/form.html:27 app/templates/forum/new_thread.html:66
+#: app/templates/forum/thread.html:59 app/templates/issues/_kind.html:15
+#: app/templates/issues/_kind.html:19 app/templates/issues/index.html:51
+#: app/templates/issues/new.html:50 app/templates/issues/new.html:100
+#: app/templates/issues/new.html:125 app/templates/moderator/beheer.html:35
+#: app/templates/moderator/dashboard.html:458
+#: app/templates/moderator/melding_beoordelen.html:53
+msgid "Event"
+msgstr "Event"
+
+#. the explanation at the top of the form "New event".
+#: app/templates/events/form.html:34
+msgid "An event is a gathering on fixed days and times, at a location or online. Anyone with the link or the event code can take part."
+msgstr "Een event is een bijeenkomst op vaste dagen en tijden, op een locatie of online. Iedereen met de link of de eventcode kan meedoen."
+
+#: app/templates/events/form.html:47 app/templates/issues/new.html:127
+msgid "Name of the event"
+msgstr "Naam van het event"
+
+#. error under the name in the form "New event".
+#: app/templates/events/form.html:51
+msgid "Give the event a name of at most 200 characters."
+msgstr "Geef het event een naam van hoogstens 200 tekens."
+
+#: app/templates/events/form.html:54 app/templates/issues/_ip_fields.html:16
+#: app/templates/issues/new.html:133 app/templates/issues/proposal.html:270
+#: app/templates/moderator/dashboard.html:201
+msgid "Explanation"
+msgstr "Toelichting"
+
+#. the question above the three formats of an event.
+#: app/templates/events/form.html:60
+msgid "Where does the event take place?"
+msgstr "Waar vindt het event plaats?"
+
+#. the three formats of an event: at a location, online, or at a location and
+#. online.
+#: app/templates/events/form.html:62
+msgid "At a location"
+msgstr "Op een locatie"
+
+#. the format of an event that takes place both at a location and online.
+#: app/templates/events/form.html:64
+msgid "At a location and online"
+msgstr "Op een locatie en online"
+
+#: app/templates/events/form.html:65 app/templates/issues/_kind.html:21
+#: app/templates/issues/index.html:51 app/templates/issues/new.html:46
+#: app/templates/moderator/beheer.html:35
+#: app/templates/moderator/dashboard.html:458
+msgid "Online"
+msgstr "Online"
+
+#. error when no format of the event is chosen.
+#: app/templates/events/form.html:75
+msgid "Choose where the event takes place."
+msgstr "Kies waar het event plaatsvindt."
+
+#: app/templates/events/form.html:79 app/templates/issues/new.html:144
+msgid "Location"
+msgstr "Locatie"
+
+#. hint under the location; without JavaScript both the location and the link
+#. are shown.
+#: app/templates/events/form.html:83
+msgid "For an event at a location, or at a location and online."
+msgstr "Bij een event op een locatie, of op een locatie en online."
+
+#. error under the location of an event.
+#: app/templates/events/form.html:85
+msgid "Enter the location, of at most 200 characters."
+msgstr "Vul de locatie in, van hoogstens 200 tekens."
+
+#. the link to the video call or stream of an online event; not the link to the
+#. event itself.
+#: app/templates/events/form.html:89
+msgid "Link to the video call or the livestream"
+msgstr "Link naar het videogesprek of de livestream"
+
+#. hint under the link to the video call; "Join via the video call" is the link
+#. text on the event page.
+#: app/templates/events/form.html:93
+msgid "For an online event, or at a location and online. Where participants watch or join in online. Shown on the event page, under \"Join via the video call\"."
+msgstr "Bij een online event, of op een locatie en online. Waar deelnemers online meekijken of meepraten. Staat op de eventpagina, onder \"Meedoen via het videogesprek\"."
+
+#. error under the link to the video call.
+#: app/templates/events/form.html:95
+msgid "Enter a link that starts with http:// or https://."
+msgstr "Vul een link in die begint met http:// of https://."
+
+#: app/templates/events/form.html:103 app/templates/issues/new.html:141
+msgid "Online contributions open between the first and the last day"
+msgstr "Online bijdragen open tussen de eerste en laatste dag"
+
+#. setting of an event; off by default.
+#: app/templates/events/form.html:112
+msgid "Participants may add issues"
+msgstr "Deelnemers mogen vraagstukken toevoegen"
+
+#. explanation under "Participants may add issues", for the organiser.
+#: app/templates/events/form.html:114
+msgid "Off: only you add issues. On: every participant can add an issue to this event; it goes to the bottom of the list. You can change this at any time."
+msgstr "Uit: alleen jij voegt vraagstukken toe. Aan: iedere deelnemer kan een vraagstuk aan dit event toevoegen; het komt onderaan de lijst. Je kunt dit altijd wijzigen."
+
+#. section head in the event form.
+#: app/templates/events/form.html:120
+msgid "Right to vote"
+msgstr "Stemrecht"
+
+#. setting of an event, on by default: everyone with an account may vote on its
+#. issues.
+#: app/templates/events/form.html:124
+msgid "Everyone may vote"
+msgstr "Iedereen mag stemmen"
+
+#. explanation of "Everyone may vote", only for the organiser; %(num)d is the
+#. number of quality contributions for the right to vote.
+#: app/templates/events/form.html:126
+#, python-format
+msgid "Every participant with an account may vote on the issues of this event, even without quality contributions. If you turn this off, only those who already have the right to vote may vote (after %(num)d quality contribution)."
+msgid_plural "Every participant with an account may vote on the issues of this event, even without quality contributions. If you turn this off, only those who already have the right to vote may vote (after %(num)d quality contributions)."
+msgstr[0] "Iedere deelnemer met een account mag stemmen op de vraagstukken van dit event, ook zonder kwaliteitsbijdragen. Zet je dit uit, dan mag alleen stemmen wie al stemrecht heeft (na %(num)d kwaliteitsbijdrage)."
+msgstr[1] "Iedere deelnemer met een account mag stemmen op de vraagstukken van dit event, ook zonder kwaliteitsbijdragen. Zet je dit uit, dan mag alleen stemmen wie al stemrecht heeft (na %(num)d kwaliteitsbijdragen)."
+
+#. under the disabled checkbox "Everyone may vote" once voting began.
+#: app/templates/events/form.html:130
+msgid "Fixed since voting began."
+msgstr "Vastgelegd sinds het stemmen begon."
+
+#. under "Everyone may vote", before voting began.
+#: app/templates/events/form.html:133
+msgid "You can change this until voting starts on the first issue of this event. After that it is fixed."
+msgstr "Je kunt dit wijzigen tot het stemmen begint bij het eerste vraagstuk van dit event. Daarna ligt het vast."
+
+#. section head in the event form.
+#: app/templates/events/form.html:139
+msgid "Visibility"
+msgstr "Zichtbaarheid"
+
+#. section Visibility in the event form; participants are those who have the
+#. link.
+#: app/templates/events/form.html:141
+msgid "This event is only visible to the participants of this event. You invite them with the link or the QR code."
+msgstr "Dit event is alleen zichtbaar voor de deelnemers aan dit event. Je nodigt ze uit met de link of de QR-code."
+
+#. section Visibility in the event form; "share" means: show the event in the
+#. overview for everyone.
+#: app/templates/events/form.html:143
+msgid "After saving you get your own link to the event and a QR code, to copy and share. Afterwards you choose whether to share the event with all participants of Global Union."
+msgstr "Na het opslaan krijg je een eigen link naar het event en een QR-code, om te kopiëren en te delen. Na afloop kies je of je het event deelt met alle deelnemers van Global Union."
+
+#. the button under the form "New event".
+#: app/templates/events/form.html:152
+msgid "Create event"
+msgstr "Event maken"
+
+#. section head in the event settings: the issues of this event, in their
+#. order.
+#: app/templates/events/form.html:161
+msgid "Issues of this event"
+msgstr "Vraagstukken van dit event"
+
+#: app/templates/events/form.html:169
+#: app/templates/forum/_proposal_status.html:15
+#: app/templates/forum/closed.html:13 app/templates/forum/closed.html:31
+#: app/templates/forum/index.html:48 app/templates/forum/thread.html:49
+#: app/templates/issues/index.html:68 app/templates/issues/show.html:27
+#: app/templates/moderator/beheer.html:34
+#: app/templates/moderator/dashboard.html:427
+#: app/templates/moderator/dashboard.html:457
+msgid "Closed"
+msgstr "Gesloten"
+
+#. button to move an issue one place up in the list of an event.
+#: app/templates/events/form.html:174
+msgid "Up"
+msgstr "Omhoog"
+
+#. button to move an issue one place down in the list of an event.
+#: app/templates/events/form.html:176
+msgid "Down"
+msgstr "Omlaag"
+
+#. label for screen readers of the button Up; %(title)s is the issue.
+#: app/templates/events/form.html:178
+#, python-format
+msgid "Move up: %(title)s"
+msgstr "Omhoog: %(title)s"
+
+#. label for screen readers of the button Down; %(title)s is the issue.
+#: app/templates/events/form.html:180
+#, python-format
+msgid "Move down: %(title)s"
+msgstr "Omlaag: %(title)s"
+
+#. in the event settings, when the event has no issues.
+#: app/templates/events/form.html:195
+msgid "This event has no issues yet."
+msgstr "Dit event heeft nog geen vraagstukken."
+
+#. button in the event settings: a new issue that belongs to this event.
+#: app/templates/events/form.html:198
+msgid "New issue for this event"
+msgstr "Nieuw vraagstuk bij dit event"
 
 #: app/templates/forum/_conduct_mod.html:18
 #: app/templates/forum/_conduct_mod.html:58
@@ -4056,12 +4318,12 @@ msgstr "Posten"
 
 #: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:94
 #: app/templates/forum/index.html:21 app/templates/issues/_propose_hint.html:11
-#: app/templates/issues/index.html:27
+#: app/templates/issues/index.html:39
 msgid "You are suspended and cannot contribute right now"
 msgstr "Je bent geschorst en kunt nu niet bijdragen"
 
 #: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:94
-#: app/templates/forum/index.html:24 app/templates/issues/index.html:30
+#: app/templates/forum/index.html:24 app/templates/issues/index.html:42
 msgid "Accept the conduct rules to join in"
 msgstr "Accepteer de gedragsregels om mee te doen"
 
@@ -4086,7 +4348,7 @@ msgstr "Tegen"
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:48 app/templates/issues/chart.html:25
-#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:112
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:127
 msgid "Neutral"
 msgstr "Neutraal"
 
@@ -4364,16 +4626,6 @@ msgstr "Aangenomen"
 #: app/templates/issues/_ip_vote.html:18
 msgid "Rejected"
 msgstr "Verworpen"
-
-#: app/templates/forum/_proposal_status.html:15
-#: app/templates/forum/closed.html:13 app/templates/forum/closed.html:31
-#: app/templates/forum/index.html:48 app/templates/forum/thread.html:49
-#: app/templates/issues/index.html:56 app/templates/issues/show.html:27
-#: app/templates/moderator/beheer.html:34
-#: app/templates/moderator/dashboard.html:427
-#: app/templates/moderator/dashboard.html:457
-msgid "Closed"
-msgstr "Gesloten"
 
 #: app/templates/forum/_proposal_status.html:16
 msgid "In discussion"
@@ -4803,15 +5055,6 @@ msgstr "Publiek voorstel"
 msgid "Fixed schedule: you set a duration for each phase."
 msgstr "Vaste planning: je stelt per fase een doorlooptijd in."
 
-#: app/templates/forum/new_thread.html:66 app/templates/forum/thread.html:59
-#: app/templates/issues/_kind.html:11 app/templates/issues/index.html:39
-#: app/templates/issues/new.html:49 app/templates/issues/new.html:97
-#: app/templates/moderator/beheer.html:35
-#: app/templates/moderator/dashboard.html:458
-#: app/templates/moderator/melding_beoordelen.html:53
-msgid "Event"
-msgstr "Event"
-
 #: app/templates/forum/new_thread.html:66
 msgid "The host moves through the phases later, without fixed dates."
 msgstr "De host stuurt de fasen later zelf, zonder vaste datums."
@@ -4828,15 +5071,15 @@ msgstr "Doorlooptijd per fase"
 msgid "Show the running tally during voting"
 msgstr "Tussenstand live tonen tijdens het stemmen"
 
-#: app/templates/forum/new_thread.html:97 app/templates/issues/new.html:152
+#: app/templates/forum/new_thread.html:97 app/templates/issues/new.html:166
 msgid "Threshold for adoption"
 msgstr "Drempel voor aannemen"
 
-#: app/templates/forum/new_thread.html:99 app/templates/issues/new.html:154
+#: app/templates/forum/new_thread.html:99 app/templates/issues/new.html:168
 msgid "more than"
 msgstr "meer dan"
 
-#: app/templates/forum/new_thread.html:103 app/templates/issues/new.html:158
+#: app/templates/forum/new_thread.html:103 app/templates/issues/new.html:172
 msgid "percent in favour"
 msgstr "procent voor"
 
@@ -4844,7 +5087,7 @@ msgstr "procent voor"
 msgid "The percentage in favour of the valid votes (for plus against) that is needed. At least 50."
 msgstr "Het percentage voor van de geldige stemmen (voor plus tegen) dat nodig is. Minimaal 50."
 
-#: app/templates/forum/new_thread.html:106 app/templates/issues/new.html:160
+#: app/templates/forum/new_thread.html:106 app/templates/issues/new.html:174
 msgid "Choose a threshold from 50 to 99 percent."
 msgstr "Kies een drempel van 50 tot en met 99 procent."
 
@@ -5248,13 +5491,13 @@ msgstr "minder"
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:47 app/templates/issues/chart.html:25
-#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:112
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:127
 msgid "Argues for"
 msgstr "Pleit voor"
 
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23 app/templates/issues/chart.html:25
-#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:112
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:127
 msgid "Argues against"
 msgstr "Pleit tegen"
 
@@ -5272,7 +5515,7 @@ msgstr "Toevoegen"
 
 #: app/templates/issues/_facts_big.html:47
 #: app/templates/issues/_proposals_big.html:22
-#: app/templates/issues/index.html:39 app/templates/issues/proposal.html:82
+#: app/templates/issues/index.html:51 app/templates/issues/proposal.html:82
 #: app/templates/moderator/dashboard.html:97
 msgid "All"
 msgstr "Alle"
@@ -5302,7 +5545,7 @@ msgid "No facts with this direction."
 msgstr "Geen feiten met deze richting."
 
 #: app/templates/issues/_facts_big.html:77
-#: app/templates/issues/proposal.html:140 app/templates/issues/show.html:122
+#: app/templates/issues/proposal.html:140 app/templates/issues/show.html:137
 msgid "No facts yet."
 msgstr "Nog geen feiten."
 
@@ -5313,12 +5556,6 @@ msgstr "Eén zin: wat stel je voor?"
 #: app/templates/issues/_ip_fields.html:13
 msgid "Write the statement in one sentence of at most 300 characters."
 msgstr "Schrijf de stelling in één zin van hooguit 300 tekens."
-
-#: app/templates/issues/_ip_fields.html:16 app/templates/issues/new.html:105
-#: app/templates/issues/proposal.html:270
-#: app/templates/moderator/dashboard.html:201
-msgid "Explanation"
-msgstr "Toelichting"
 
 #: app/templates/issues/_ip_fields.html:19
 msgid "Why this proposal? Refer to the discussion and the facts."
@@ -5467,18 +5704,12 @@ msgstr "Je mag meestemmen na %(n)s kwaliteitsbijdragen: bijdragen die het keurme
 msgid "Voting on proposals on the voting list opens in the voting phase."
 msgstr "Het stemmen over voorstellen op de stemlijst gaat open in de stemfase."
 
-#: app/templates/issues/_kind.html:11
+#: app/templates/issues/_kind.html:15 app/templates/issues/_kind.html:19
 #, python-format
 msgid "%(num)s days"
 msgstr "%(num)s dagen"
 
-#: app/templates/issues/_kind.html:13 app/templates/issues/index.html:39
-#: app/templates/issues/new.html:45 app/templates/moderator/beheer.html:35
-#: app/templates/moderator/dashboard.html:458
-msgid "Online"
-msgstr "Online"
-
-#: app/templates/issues/_kind.html:13
+#: app/templates/issues/_kind.html:21
 #, python-format
 msgid "voting closes %(date)s"
 msgstr "stemmen sluit %(date)s"
@@ -5619,7 +5850,7 @@ msgid "No proposals with this status."
 msgstr "Geen voorstellen met deze status."
 
 #: app/templates/issues/_proposals_big.html:57
-#: app/templates/issues/show.html:189 app/templates/moderator/beheer.html:137
+#: app/templates/issues/show.html:204 app/templates/moderator/beheer.html:137
 msgid "No proposals yet."
 msgstr "Nog geen voorstellen."
 
@@ -5654,7 +5885,7 @@ msgid_plural "%(num)d reactions"
 msgstr[0] "%(num)d reactie"
 msgstr[1] "%(num)d reacties"
 
-#: app/templates/issues/_rules_card.html:11 app/templates/issues/new.html:139
+#: app/templates/issues/_rules_card.html:11 app/templates/issues/new.html:153
 msgid "Voting rules"
 msgstr "Stemregels"
 
@@ -5711,9 +5942,9 @@ msgstr "Terug naar het vraagstuk"
 
 #: app/templates/issues/chart.html:20 app/templates/issues/proposal.html:61
 #: app/templates/issues/proposal.html:69 app/templates/issues/proposal.html:71
-#: app/templates/issues/show.html:99 app/templates/issues/show.html:106
-#: app/templates/issues/show.html:108 app/templates/issues/show.html:109
-#: app/templates/issues/show.html:126
+#: app/templates/issues/show.html:114 app/templates/issues/show.html:121
+#: app/templates/issues/show.html:123 app/templates/issues/show.html:124
+#: app/templates/issues/show.html:141
 msgid "Facts and background"
 msgstr "Feiten en achtergrond"
 
@@ -5826,11 +6057,11 @@ msgstr "De voorstellen en hun uitslag"
 msgid "Adjust the issue (optional)"
 msgstr "Het vraagstuk aanpassen (optioneel)"
 
-#: app/templates/issues/final_new.html:46 app/templates/issues/new.html:56
+#: app/templates/issues/final_new.html:46 app/templates/issues/new.html:57
 msgid "The question"
 msgstr "De vraag"
 
-#: app/templates/issues/final_new.html:48 app/templates/issues/new.html:60
+#: app/templates/issues/final_new.html:48 app/templates/issues/new.html:61
 msgid "Enter a question of at most 300 characters."
 msgstr "Vul een vraag in van hooguit 300 tekens."
 
@@ -5843,233 +6074,210 @@ msgstr "Waar gaat dit over"
 msgid "Submit the summary proposal"
 msgstr "Samenvattend voorstel indienen"
 
-#: app/templates/issues/index.html:24 app/templates/issues/new.html:2
-#: app/templates/issues/new.html:20
+#: app/templates/issues/index.html:30 app/templates/issues/index.html:35
+#: app/templates/issues/new.html:2 app/templates/issues/new.html:21
 msgid "New issue"
 msgstr "Nieuw vraagstuk"
 
-#: app/templates/issues/index.html:38
+#: app/templates/issues/index.html:50
 msgid "Filter issues"
 msgstr "Vraagstukken filteren"
 
-#: app/templates/issues/index.html:39
+#: app/templates/issues/index.html:51
 msgid "Ongoing"
 msgstr "Lopend"
 
-#: app/templates/issues/index.html:39
+#: app/templates/issues/index.html:51
 msgid "Finished"
 msgstr "Afgerond"
 
-#: app/templates/issues/index.html:53
+#: app/templates/issues/index.html:65
 msgid "submitted by"
 msgstr "ingebracht door"
 
-#: app/templates/issues/index.html:58 app/templates/moderator/beheer.html:53
+#: app/templates/issues/index.html:70 app/templates/moderator/beheer.html:53
 #, python-format
 msgid "%(num)d proposal"
 msgid_plural "%(num)d proposals"
 msgstr[0] "%(num)d voorstel"
 msgstr[1] "%(num)d voorstellen"
 
-#: app/templates/issues/index.html:59
+#: app/templates/issues/index.html:71
 #, python-format
 msgid "%(num)d participant"
 msgid_plural "%(num)d participants"
 msgstr[0] "%(num)d deelnemer"
 msgstr[1] "%(num)d deelnemers"
 
-#: app/templates/issues/index.html:66
+#: app/templates/issues/index.html:78
 msgid "No issues match this filter."
 msgstr "Geen vraagstukken bij dit filter."
 
-#: app/templates/issues/index.html:68
+#: app/templates/issues/index.html:80
 msgid "No issues yet. Start the first one."
 msgstr "Nog geen vraagstukken. Start het eerste vraagstuk."
 
-#: app/templates/issues/new.html:24
+#: app/templates/issues/new.html:25
 msgid "Start a new issue"
 msgstr "Nieuw vraagstuk starten"
 
 # Polijstronde P4: startformulier
-#: app/templates/issues/new.html:34
+#: app/templates/issues/new.html:35
 msgid "We restored what you filled in earlier."
 msgstr "We hebben teruggezet wat je eerder had ingevuld."
 
-#: app/templates/issues/new.html:35
+#: app/templates/issues/new.html:36
 msgid "Start empty"
 msgstr "Leeg beginnen"
 
-#: app/templates/issues/new.html:38
+#: app/templates/issues/new.html:39
 msgid "The issue"
 msgstr "Het vraagstuk"
 
-#: app/templates/issues/new.html:41
+#: app/templates/issues/new.html:42
 msgid "Online or event"
 msgstr "Online of event"
 
-#: app/templates/issues/new.html:45
+#: app/templates/issues/new.html:46
 msgid "Fully online, with a fixed schedule per phase."
 msgstr "Volledig online, met een vaste planning per fase."
 
-#: app/templates/issues/new.html:49
+#: app/templates/issues/new.html:50
 msgid "Linked to a meeting. You move the phases on yourself in the cockpit."
 msgstr "Gekoppeld aan een bijeenkomst. Je zet de fasen zelf door in de cockpit."
 
-#: app/templates/issues/new.html:52
+#: app/templates/issues/new.html:53
 msgid "Choose online or event."
 msgstr "Kies online of event."
 
-#: app/templates/issues/new.html:59
+#: app/templates/issues/new.html:60
 msgid "Phrase the question this issue is about"
 msgstr "Formuleer de vraag waar dit vraagstuk over gaat"
 
-#: app/templates/issues/new.html:64
+#: app/templates/issues/new.html:65
 msgid "Introduction"
 msgstr "Toelichting"
 
-#: app/templates/issues/new.html:66
+#: app/templates/issues/new.html:67
 msgid "Explain the question. Give context and why it matters."
 msgstr "Licht de vraag toe. Geef context en waarom het ertoe doet."
 
-#: app/templates/issues/new.html:67
+#: app/templates/issues/new.html:68
 msgid "Write an introduction."
 msgstr "Schrijf een toelichting."
 
-#: app/templates/issues/new.html:74
+#: app/templates/issues/new.html:75
 msgid "Schedule per phase"
 msgstr "Planning per fase"
 
-#: app/templates/issues/new.html:75
+#: app/templates/issues/new.html:76
 msgid "Times are in Dutch time."
 msgstr "De tijden zijn in Nederlandse tijd."
 
-#: app/templates/issues/new.html:77
+#: app/templates/issues/new.html:78
 msgid "Facts and discussion start"
 msgstr "Feiten en discussie beginnen"
 
-#: app/templates/issues/new.html:77
+#: app/templates/issues/new.html:78
 msgid "Revising starts"
 msgstr "Bijstellen begint"
 
-#: app/templates/issues/new.html:78
+#: app/templates/issues/new.html:79
 msgid "Voting starts"
 msgstr "Stemmen begint"
 
-#: app/templates/issues/new.html:78
+#: app/templates/issues/new.html:79
 msgid "Voting closes"
 msgstr "Stemmen sluit"
 
-#: app/templates/issues/new.html:85
+#: app/templates/issues/new.html:86
 msgid "time"
 msgstr "tijd"
 
-#: app/templates/issues/new.html:87
+#: app/templates/issues/new.html:88
 msgid "This moment has to come after the previous one."
 msgstr "Dit moment moet na het vorige komen."
 
-#: app/templates/issues/new.html:88
+#: app/templates/issues/new.html:89
 msgid "Voting has to close in the future."
 msgstr "Het stemmen moet in de toekomst sluiten."
 
-#: app/templates/issues/new.html:89
+#: app/templates/issues/new.html:90
 msgid "Enter a valid date and time."
 msgstr "Vul een geldige datum en tijd in."
 
-#: app/templates/issues/new.html:99
-msgid "Name of the event"
-msgstr "Naam van het event"
+#. label of the list of events an event issue can belong to.
+#: app/templates/issues/new.html:105
+msgid "Which event?"
+msgstr "Bij welk event?"
 
-#: app/templates/issues/new.html:102
+#. the empty first option of the list of events.
+#: app/templates/issues/new.html:108
+msgid "Choose an event"
+msgstr "Kies een event"
+
+#. in the issue form when there is no event to choose; followed by the link
+#. "New event".
+#: app/templates/issues/new.html:117
+msgid "You do not have an event yet. Create an event first."
+msgstr "Je hebt nog geen event. Maak eerst een event."
+
+#. error when no event (or one you may not add to) is chosen.
+#: app/templates/issues/new.html:120
+msgid "Choose an event."
+msgstr "Kies een event."
+
+#: app/templates/issues/new.html:130
 msgid "Give the event a name."
 msgstr "Geef het event een naam."
 
-#: app/templates/issues/new.html:109
-msgid "Days"
-msgstr "Dagen"
-
-#: app/templates/issues/new.html:110
-msgid "Per day the times the platform is open, in Dutch time."
-msgstr "Per dag de tijden dat het platform open is, in Nederlandse tijd."
-
-#: app/templates/issues/new.html:116
-msgid "from"
-msgstr "van"
-
-#: app/templates/issues/new.html:117 app/templates/issues/show.html:71
-msgid "to"
-msgstr "tot"
-
-#: app/templates/issues/new.html:118
-msgid "Remove this day"
-msgstr "Deze dag weghalen"
-
-#: app/templates/issues/new.html:122
-msgid "Add a day"
-msgstr "Dag toevoegen"
-
-#: app/templates/issues/new.html:123
-msgid "Enter at least one day."
-msgstr "Vul minstens één dag in."
-
-#: app/templates/issues/new.html:124
-msgid "Each day needs a date, and the end time after the start time."
-msgstr "Elke dag heeft een datum nodig, en de eindtijd na de begintijd."
-
-#: app/templates/issues/new.html:128
-msgid "Online contributions open between the first and the last day"
-msgstr "Online bijdragen open tussen de eerste en laatste dag"
-
-#: app/templates/issues/new.html:131
-msgid "Location"
-msgstr "Locatie"
-
-#: app/templates/issues/new.html:141
+#: app/templates/issues/new.html:155
 msgid "Support needed for a proposal"
 msgstr "Steun nodig voor een voorstel"
 
-#: app/templates/issues/new.html:146
+#: app/templates/issues/new.html:160
 msgid "supporters"
 msgstr "steunbetuigingen"
 
-#: app/templates/issues/new.html:148
+#: app/templates/issues/new.html:162
 msgid "A proposal goes to the vote once it has this many supporters. With 0 it goes to the vote straight away."
 msgstr "Een voorstel gaat naar de stemming zodra het zoveel steunbetuigingen heeft. Bij 0 gaat het meteen naar de stemming."
 
-#: app/templates/issues/new.html:149
+#: app/templates/issues/new.html:163
 msgid "Enter a whole number from 0 to 1000."
 msgstr "Vul een geheel getal van 0 tot en met 1000 in."
 
-#: app/templates/issues/new.html:164
+#: app/templates/issues/new.html:178
 msgid "Show the interim result during voting"
 msgstr "Tussenstand tonen tijdens het stemmen"
 
-#: app/templates/issues/new.html:168
+#: app/templates/issues/new.html:182
 msgid "End with a summary proposal"
 msgstr "Afsluiten met een samenvattend voorstel"
 
-#: app/templates/issues/new.html:175
+#: app/templates/issues/new.html:189
 msgid "Facts, research and media"
 msgstr "Feiten, onderzoek en media"
 
-#: app/templates/issues/new.html:176
+#: app/templates/issues/new.html:190
 msgid "You can already add facts that the discussion can build on."
 msgstr "Je kunt al feiten toevoegen waarop de discussie kan voortbouwen."
 
-#: app/templates/issues/new.html:186
+#: app/templates/issues/new.html:200
 msgid "Add another fact"
 msgstr "Nog een feit toevoegen"
 
-#: app/templates/issues/new.html:192
+#: app/templates/issues/new.html:206
 msgid "Start issue"
 msgstr "Vraagstuk starten"
 
-#: app/templates/issues/proposal.html:35 app/templates/issues/show.html:108
-#: app/templates/issues/show.html:137 app/templates/issues/show.html:154
+#: app/templates/issues/proposal.html:35 app/templates/issues/show.html:123
+#: app/templates/issues/show.html:152 app/templates/issues/show.html:169
 msgid "Enlarge"
 msgstr "Vergroten"
 
-#: app/templates/issues/proposal.html:36 app/templates/issues/show.html:109
-#: app/templates/issues/show.html:138 app/templates/issues/show.html:155
+#: app/templates/issues/proposal.html:36 app/templates/issues/show.html:124
+#: app/templates/issues/show.html:153 app/templates/issues/show.html:170
 msgid "Reduce"
 msgstr "Verkleinen"
 
@@ -6096,9 +6304,9 @@ msgstr "Ontkoppelen"
 
 #: app/templates/issues/proposal.html:104
 #: app/templates/issues/proposal.html:138
-#: app/templates/issues/proposal.html:336 app/templates/issues/show.html:126
-#: app/templates/issues/show.html:127 app/templates/issues/show.html:194
-#: app/templates/issues/show.html:195
+#: app/templates/issues/proposal.html:336 app/templates/issues/show.html:141
+#: app/templates/issues/show.html:142 app/templates/issues/show.html:209
+#: app/templates/issues/show.html:210
 msgid "Show more"
 msgstr "Toon meer"
 
@@ -6227,7 +6435,7 @@ msgstr "Voorstel intrekken"
 msgid "You can withdraw your own proposal as long as nobody has reacted yet."
 msgstr "Je kunt je eigen voorstel intrekken zolang er nog geen reacties zijn."
 
-#: app/templates/issues/proposal.html:322 app/templates/issues/show.html:153
+#: app/templates/issues/proposal.html:322 app/templates/issues/show.html:168
 msgid "New proposal"
 msgstr "Nieuw voorstel"
 
@@ -6299,46 +6507,46 @@ msgstr "Toelichting in- of uitklappen"
 msgid "No introduction yet."
 msgstr "Nog geen toelichting."
 
-#: app/templates/issues/show.html:74
+#: app/templates/issues/show.html:76 app/templates/issues/show.html:89
 msgid "Online contributions are open between the first and the last day."
 msgstr "Online bijdragen staan open tussen de eerste en de laatste dag."
 
-#: app/templates/issues/show.html:84
+#: app/templates/issues/show.html:99
 #, python-format
 msgid "The platform opens for contributions on %(date)s."
 msgstr "Het platform gaat open voor bijdragen op %(date)s."
 
-#: app/templates/issues/show.html:84
+#: app/templates/issues/show.html:99
 msgid "The platform is not open for contributions right now. See the days of the event in the introduction."
 msgstr "Het platform is nu niet open voor bijdragen. Zie de dagen van het event in de toelichting."
 
-#: app/templates/issues/show.html:100 app/templates/issues/show.html:136
-#: app/templates/issues/show.html:137 app/templates/issues/show.html:138
+#: app/templates/issues/show.html:115 app/templates/issues/show.html:151
+#: app/templates/issues/show.html:152 app/templates/issues/show.html:153
 msgid "Discussion"
 msgstr "Discussie"
 
-#: app/templates/issues/show.html:143
+#: app/templates/issues/show.html:158
 msgid "This issue has no discussion yet."
 msgstr "Dit vraagstuk heeft nog geen discussie."
 
-#: app/templates/issues/show.html:207
+#: app/templates/issues/show.html:222
 msgid "Your right to vote"
 msgstr "Jouw stemrecht"
 
-#: app/templates/issues/show.html:212
+#: app/templates/issues/show.html:227
 msgid "You have the right to vote."
 msgstr "Je hebt stemrecht."
 
-#: app/templates/issues/show.html:214
+#: app/templates/issues/show.html:229
 #, python-format
 msgid "%(count)s of %(needed)s quality marks for the right to vote"
 msgstr "%(count)s van %(needed)s keurmerken voor stemrecht"
 
-#: app/templates/issues/show.html:217
+#: app/templates/issues/show.html:232
 msgid "You earn a quality mark with a well argued contribution to a discussion."
 msgstr "Een keurmerk verdien je met een goed onderbouwde bijdrage aan een discussie."
 
-#: app/templates/issues/show.html:220
+#: app/templates/issues/show.html:235
 msgid "to see your right to vote."
 msgstr "om je stemrecht te zien."
 

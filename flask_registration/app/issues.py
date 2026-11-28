@@ -257,8 +257,11 @@ def parse_event_days(form, errors):
     return sorted(days)
 
 
-def parse_form(form):
-    """De velden uit het startformulier: (waarden, fouten)."""
+def parse_form(form, user=None):
+    """De velden uit het startformulier: (waarden, fouten). Events step 1c:
+    with EVENTS on an event issue chooses an existing event (event_id) that
+    `user` may add to, and has no event fields of its own."""
+    from app import events
     values, errors = {}, {}
     values['title'] = (form.get('title') or '').strip()
     values['intro'] = (form.get('intro') or '').strip()
@@ -279,7 +282,18 @@ def parse_form(form):
     for name, _default in SCHEDULE_FIELDS:
         values[name] = None
     days = dict(DAY_FIELDS)
-    if kind == 'event':
+    if kind == 'event' and events.enabled():
+        values['event_location'] = None
+        event = None
+        raw = (form.get('event_id') or '').strip()
+        if raw.isdigit():
+            from app.models import Event
+            event = db.session.get(Event, int(raw))
+        if event is None or not events.can_add_issue(event, user):
+            errors['event'] = 'invalid'
+        else:
+            values['event_id'] = event.id
+    elif kind == 'event':
         values['event_name'] = (form.get('event_name') or '').strip()[:NAME_MAX] or None
         if not values['event_name']:
             errors['event_name'] = 'invalid'
@@ -331,6 +345,11 @@ def create(values, user, lang=None, now=None):
     values = {**dict(DAY_FIELDS), **values}  # de planning is nodig vóór de flush
     event_days = values.pop('event_days', None) or []
     issue = Issue(created_by_id=user.id, created_at=now, lang=lang, phase='feiten', **values)
+    if issue.event_id is not None:
+        # Events step 1c: at the bottom of the event's list.
+        from app import events
+        from app.models import Event
+        issue.event_position = events.next_position(db.session.get(Event, issue.event_id))
     if issue.kind == 'online' and issue.starts_at is not None:
         issue.phase_started_at = issue.starts_at
         issue.phase_deadline = issue.adjust_starts_at

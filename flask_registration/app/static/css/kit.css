@@ -3962,7 +3962,28 @@ select[size="0"]:not([multiple]) {
 .gu-newissue__section .gu-newtype legend { margin-bottom: 8px; }
 .gu-newtype__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .gu-newtype__grid .gu-newtype__option { margin: 0; height: 100%; }
+/* Events step 1c: three formats of an event side by side. */
+.gu-newtype__grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media (max-width: 559px) { .gu-newtype__grid { grid-template-columns: 1fr; } }
+/* Events step 1c: the form "New event" and the event settings
+   (docs/design/event-formulier.html). */
+.gu-forum__newfield[hidden] { display: none; }
+.gu-forum__topbuttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.gu-eventform__fieldhint { margin: 0; }
+.gu-eventform__locked { margin: 0; font-size: 13px; color: var(--gu-fg-3); }
+.gu-eventform__check > span { display: flex; flex-direction: column; gap: 4px; }
+.gu-eventform__check strong { font-weight: 500; }
+.gu-eventform__issues { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.gu-eventform__issue { display: flex; align-items: center; gap: 12px; padding-block: 10px; border-block-start: 1px solid var(--gu-border); }
+.gu-eventform__issue:first-child { border-block-start: 0; }
+.gu-eventform__pos { inline-size: 18px; color: var(--gu-fg-3); font-size: 13px; }
+.gu-eventform__issuebody { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; gap: 4px; }
+.gu-eventform__moves { display: flex; gap: 6px; }
+.gu-eventform__moves form { margin: 0; }
+@media (max-width: 559px) {
+  .gu-newtype__grid--3 { grid-template-columns: 1fr; }
+  .gu-forum__topbuttons { justify-content: flex-start; }
+}
 .gu-newissue__section .gu-schedule { margin: 0; }
 .gu-newissue__section .gu-schedule__row:last-child { margin-bottom: 0; }
 /* De standaardtijd stond per rij; dat is weg. Leeg is 00:00 (eerste) of 24:00. */

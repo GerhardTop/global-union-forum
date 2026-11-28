@@ -61,7 +61,22 @@
         {% else %}
         <p class="gu-composer__hint">{{ _('No introduction yet.') }}</p>
         {% endif %}
-        {% if issue.kind == 'event' and (issue.event_note or issue.event_days) %}
+        {% if issue.kind == 'event' and events_on and issue.event %}
+        {# Events step 1c: the data of the event (until step 1e removes this block). #}
+        {% set ev = issue.event %}
+        <div class="gu-cockpit__event">
+          <p class="gu-cockpit__eventname">{{ mt_inline(ev, 'name') }}</p>
+          {% if ev.note %}{{ mt(ev, 'note', 'div', 'gu-cockpit__intro', rich=true) }}{% endif %}
+          {% if ev.days %}
+          <ul class="gu-cockpit__eventdays">
+            {% for day in ev.days %}
+            <li>{{ day.starts_at | local | datetimeformat('EEEE d MMMM y, HH:mm') }} {{ _('to') }} {{ day.ends_at | local | datetimeformat('HH:mm') }}</li>
+            {% endfor %}
+          </ul>
+          {% if ev.online_between %}<p class="gu-composer__hint">{{ _('Online contributions are open between the first and the last day.') }}</p>{% endif %}
+          {% endif %}
+        </div>
+        {% elif issue.kind == 'event' and (issue.event_note or issue.event_days) %}
         <div class="gu-cockpit__event">
           {% if issue.event_name %}<p class="gu-cockpit__eventname">{{ issue.event_name }}</p>{% endif %}
           {% if issue.event_note %}<div class="gu-cockpit__intro">{{ issue.event_note | linkify }}</div>{% endif %}
