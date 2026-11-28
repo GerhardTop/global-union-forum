@@ -1,0 +1,191 @@
+<!doctype html>
+<!--
+  Design-referentie: de nieuwe indeling van het profiel (/profile), canvas
+  "Profielpagina, nieuwe indeling", 28 november 2026. Statisch, alleen om naar te
+  kijken en naartoe te bouwen; geen app-code. VOORBEELDDATA. Leidend zijn de
+  volgorde, de teksten en de vormgeving; de bestaande markup en formulieren van
+  profile.html blijven de basis.
+  - Volgorde: Account (met "Hoe verschijn je in het forum?"), Optioneel (Over
+    mij), Instellingen (taal, automatisch vertalen, samenvatting per e-mail),
+    Wachtwoord wijzigen, Gevarenzone.
+  - Status en Verdiend zijn één rij; geen statusladder meer in het profiel.
+    "Hoe werkt dit?" linkt naar de FAQ-vraag over stemrecht. Zonder stemrecht
+    staat de voortgangsbalk onder de status.
+  - "Onder mijn echte naam" klapt open met voornaam, achternaam, LinkedIn
+    (optioneel) en een vinkje ter bevestiging; hier open getoond. Standaard
+    staat "Onder mijn gebruikersnaam" aan en is de kaart dicht. Zonder
+    JavaScript staan de velden open.
+  - Keuzelijsten: eigen pijltje, 14 px van de rand, 40 px ruimte, logische
+    eigenschappen (gespiegeld in rtl). Geldt voor alle keuzelijsten.
+  - Een woord: "gebruikersnaam", nergens "pseudoniem".
+-->
+<html lang="nl">
+<head>
+<meta charset="utf-8"><title>Mijn profiel, nieuwe indeling</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
+<style>
+body{margin:0;background:#f5f7f9}
+a{color:#1b74b8}a:hover{color:#155e96}
+.eyebrow{margin:0;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#6c7683}
+.h2{margin:0;font-size:20px;font-weight:600;color:#141b22}
+.h3{margin:0;font-size:16px;font-weight:600;color:#141b22}
+.hint{margin:0;font-size:13px;line-height:1.5;color:#525c69}
+.row{display:grid;grid-template-columns:180px minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid #eef1f5;font-size:14px}
+.row span:first-child{color:#525c69}
+.divider{border:0;border-top:1px solid #e4e9ef;margin:0}
+.field{display:flex;flex-direction:column;gap:6px}
+.label{font-size:14px;font-weight:600;color:#141b22}
+.input{box-sizing:border-box;inline-size:100%;max-inline-size:420px;min-block-size:44px;padding:10px 12px;border:1px solid #d3dae2;border-radius:8px;background:#fff;font:400 14px Inter,system-ui,sans-serif;color:#141b22}
+.selectwrap{position:relative;display:inline-block;inline-size:100%;max-inline-size:320px}
+.selectwrap select{appearance:none;-webkit-appearance:none;box-sizing:border-box;inline-size:100%;min-block-size:44px;padding-block:10px;padding-inline:12px 40px;border:1px solid #d3dae2;border-radius:8px;background:#fff;font:400 14px Inter,system-ui,sans-serif;color:#141b22}
+.selectwrap svg{position:absolute;inset-inline-end:14px;top:50%;margin-top:-8px;pointer-events:none;color:#6c7683}
+.opt{position:relative;display:inline-flex}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.opt span{display:inline-flex;align-items:center;min-height:40px;box-sizing:border-box;padding:8px 14px;border:1px solid #d3dae2;border-radius:999px;background:#fff;color:#141b22;font-size:14px;font-weight:500;cursor:pointer}
+.opt input:checked + span{background:#eaf2fb;border-color:#1b74b8;color:#1b5e9a}
+.opt input:focus-visible + span{outline:2px solid #3ab0f0;outline-offset:2px}
+.edu span{flex-direction:column;align-items:flex-start;border-radius:10px;padding:10px 14px;gap:2px;inline-size:100%}
+.edu small{font-size:12px;font-weight:400;color:#525c69}
+.choice{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid #e4e9ef;border-radius:10px;background:#fff;font-size:14px}
+.choice input{margin-top:3px}
+.btn{min-height:40px;padding:8px 16px;border-radius:8px;font:500 14px Inter,system-ui,sans-serif;cursor:pointer}
+.btn--primary{border:0;background:#1b74b8;color:#fff}
+.btn--plain{border:1px solid #d3dae2;background:#fff;color:#141b22}
+.pill{display:inline-flex;padding:2px 9px;border:1px solid #e4e9ef;border-radius:999px;background:#eef1f5;color:#525c69;font-size:12px;font-weight:500}
+.sub{display:flex;flex-direction:column;gap:16px;padding:20px 22px;border:1px solid #e4e9ef;border-radius:12px;background:#fbfcfd}
+</style>
+</head>
+<body>
+<div style="width:760px;box-sizing:border-box;padding:32px 24px 48px;font-family:Inter,system-ui,sans-serif;color:#141b22;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:6px">
+<p class="eyebrow">Global Union</p>
+<h1 style="margin:0;font-size:32px;font-weight:600;letter-spacing:-0.02em">Mijn profiel</h1>
+</div>
+
+<div style="background:#fff;border:1px solid #e4e9ef;border-radius:14px;box-shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05);padding:28px 32px;display:flex;flex-direction:column;gap:32px">
+
+<section aria-labelledby="accTitle" style="display:flex;flex-direction:column;gap:12px">
+<p class="eyebrow" id="accTitle">Account</p>
+<div>
+<div class="row"><span>Gebruikersnaam</span><span>@gerhard</span></div>
+<div class="row"><span>E-mailadres</span><span>[e-mailadres]</span></div>
+<div class="row"><span>Status</span><span style="display:flex;flex-direction:column;gap:4px"><span>Stemmer · stemrecht</span><span style="font-size:13px;color:#525c69">12 kwaliteitsbijdragen in 4 onderwerpen. <a href="#faq-stemrecht">Hoe werkt dit?</a></span></span></div>
+</div>
+<fieldset style="margin:8px 0 0;padding:0;border:0;display:flex;flex-direction:column;gap:8px">
+<legend class="h3" style="margin-bottom:6px">Hoe verschijn je in het forum?</legend>
+<p class="hint" style="font-size:14px;color:#3a434e;margin-bottom:4px">De meeste mensen doen mee onder hun gebruikersnaam. Dat is prima. Ben je expert of ervaringsdeskundige? Dan ligt het voor de hand om je echte naam te gebruiken. Terugzetten kan altijd.</p>
+<label class="choice"><input type="radio" name="name"><span><strong>Onder mijn gebruikersnaam (@gerhard)</strong></span></label>
+<div class="choice" style="flex-direction:column;align-items:stretch;gap:14px;border-color:#1b74b8">
+<label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input type="radio" name="name" checked style="margin-top:3px"><span><strong>Onder mijn echte naam</strong></span></label>
+<div style="display:flex;flex-direction:column;gap:14px;padding-inline-start:26px">
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+<div class="field"><label class="label" for="fn">Voornaam</label><input class="input" id="fn" type="text" value="Gerhard"></div>
+<div class="field"><label class="label" for="ln">Achternaam</label><input class="input" id="ln" type="text" value="Top"></div>
+</div>
+<div class="field">
+<label class="label" for="li">LinkedIn-profiel <span style="font-weight:400;color:#525c69">(optioneel)</span></label>
+<input class="input" id="li" type="url" placeholder="https://www.linkedin.com/in/jouw-naam">
+</div>
+<label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5"><input type="checkbox" style="margin-top:4px"><span>Ik begrijp dat mijn echte naam dan zichtbaar is bij al mijn bijdragen in het forum.</span></label>
+</div>
+</div>
+<div><button type="button" class="btn btn--primary">Opslaan</button></div>
+</fieldset>
+</section>
+
+<hr class="divider">
+
+<section aria-labelledby="optTitle" style="display:flex;flex-direction:column;gap:18px">
+<p class="eyebrow" id="optTitle">Optioneel</p>
+
+
+<div class="sub" aria-labelledby="whoTitle" id="over-mij">
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+<h2 class="h2" id="whoTitle">Wie stemt er mee?</h2>
+<span class="pill">Vrijwillig</span>
+</div>
+<p class="hint" style="font-size:14px;color:#3a434e">Bij de uitslag laten we zien hoe de groep stemmers is samengesteld, alleen in groepen van minstens 10 mensen. Nooit wie wat stemde. <a href="#privacy">Waarom we dit vragen</a></p>
+<div class="field">
+<label class="label" for="by">In welk jaar ben je geboren?</label>
+<span class="selectwrap">
+<select id="by" aria-describedby="byHint"><option>Kies een jaar</option><option>Zeg ik liever niet</option><option selected>1966</option></select>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</span>
+<p class="hint" id="byHint">We tonen nooit je leeftijd, alleen groepen zoals "25 tot en met 44".</p>
+</div>
+<fieldset style="margin:0;padding:0;border:0;display:flex;flex-direction:column;gap:8px">
+<legend class="label" style="margin-bottom:8px">Wat is je geslacht?</legend>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<label class="opt"><input type="radio" name="g"><span>Vrouw</span></label>
+<label class="opt"><input type="radio" name="g" checked><span>Man</span></label>
+<label class="opt"><input type="radio" name="g"><span>Anders</span></label>
+<label class="opt"><input type="radio" name="g"><span>Zeg ik liever niet</span></label>
+</div>
+</fieldset>
+<fieldset style="margin:0;padding:0;border:0;display:flex;flex-direction:column;gap:8px">
+<legend class="label" style="margin-bottom:8px">Wat is de hoogste opleiding die je hebt afgerond of nu volgt?</legend>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+<label class="opt edu"><input type="radio" name="e"><span>Basis<small>Lagere school of het eerste deel van de middelbare school</small></span></label>
+<label class="opt edu"><input type="radio" name="e"><span>Middelbaar<small>Middelbare school afgerond, of een beroepsopleiding zoals het mbo</small></span></label>
+<label class="opt edu"><input type="radio" name="e" checked><span>Hoger<small>Hbo of universiteit</small></span></label>
+<label class="opt edu"><input type="radio" name="e"><span>Zeg ik liever niet<small>&#160;</small></span></label>
+</div>
+</fieldset>
+<div class="field">
+<label class="label" for="ct">In welk land woon je?</label>
+<span class="selectwrap">
+<select id="ct"><option>Kies een land</option><option>Zeg ik liever niet</option><option selected>Nederland</option></select>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><button type="button" class="btn btn--primary">Opslaan</button><button type="button" class="btn btn--plain">Antwoorden wissen</button></div>
+</div>
+</section>
+
+<hr class="divider">
+
+<section aria-labelledby="setTitle" style="display:flex;flex-direction:column;gap:16px">
+<p class="eyebrow" id="setTitle">Instellingen</p>
+<div class="field">
+<h2 class="h3">Taal</h2>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<span class="pill" style="padding:6px 12px;font-size:13px;background:#1b74b8;color:#fff;border-color:#1b74b8">Nederlands</span>
+<span class="pill" style="padding:6px 12px;font-size:13px">English</span>
+<span class="pill" style="padding:6px 12px;font-size:13px">Deutsch</span>
+<span class="pill" style="padding:6px 12px;font-size:13px">Español</span>
+<span class="pill" style="padding:6px 12px;font-size:13px">Français</span>
+</div>
+</div>
+<div class="field">
+<h2 class="h3">Automatisch vertalen</h2>
+<label style="display:flex;gap:10px;align-items:center;font-size:14px"><input type="checkbox" checked> Berichten automatisch vertalen naar het Nederlands</label>
+<p class="hint">Berichten in een andere taal worden automatisch vertaald als je een gesprek opent.</p>
+</div>
+<div class="field">
+<h2 class="h3">Samenvatting per e-mail</h2>
+<p class="hint"><a href="#meldingen">Bekijk je samenvattingen</a> · <a href="#notificaties">Meldingen</a>, kies waarover je bericht krijgt</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<section aria-labelledby="pwTitle" style="display:flex;flex-direction:column;gap:12px">
+<p class="eyebrow" id="pwTitle">Wachtwoord wijzigen</p>
+<input class="input" type="password" placeholder="Huidig wachtwoord" aria-label="Huidig wachtwoord">
+<input class="input" type="password" placeholder="Nieuw wachtwoord" aria-label="Nieuw wachtwoord">
+<input class="input" type="password" placeholder="Herhaal nieuw wachtwoord" aria-label="Herhaal nieuw wachtwoord">
+<div><button type="button" class="btn btn--primary">Wachtwoord wijzigen</button></div>
+</section>
+
+<hr class="divider">
+
+<section aria-labelledby="dzTitle" style="display:flex;flex-direction:column;gap:10px">
+<p class="eyebrow" id="dzTitle" style="color:#b42318">Gevarenzone</p>
+<h2 class="h2">Account verwijderen</h2>
+<div><button type="button" class="btn" style="border:1px solid #b42318;background:#fff;color:#b42318">Account verwijderen</button></div>
+</section>
+
+</div>
+</div>
+</body>
+</html>
