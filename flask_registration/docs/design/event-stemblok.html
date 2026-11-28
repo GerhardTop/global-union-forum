@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+  Design-referentie (artboard "3. Het stemblok bij een event: aan en uit").
+  Statisch; geen app-code. VOORBEELDDATA.
+  Spec: docs/events.md (K6, K8).
+  - A: Iedereen mag stemmen aan. Een nieuw account ziet gewoon het bestaande
+    stemblok (issues/_ip_vote.html), zonder extra regel of melding.
+  - B: Iedereen mag stemmen uit. Hetzelfde account ziet de bestaande tekst
+    "Je hebt nog geen stemrecht" met de uitleg over 3 kwaliteitsbijdragen.
+  - Voorstellen doen en steun geven blijft in beide gevallen voor iedereen
+    die mag bijdragen.
+-->
+<html lang="nl">
+<head>
+<meta charset="utf-8"><title>Stemblok bij een event</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#eef1f5}
+a{color:#1b74b8}a:hover{color:#155e96}
+.card{background:#fff;border:1px solid #e4e9ef;border-radius:14px;box-shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05);padding:22px 24px;display:flex;flex-direction:column;gap:12px}
+.lbl{margin:0;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#6c7683}
+.vbtn{flex:1;min-height:44px;border-radius:8px;border:1px solid #d3dae2;background:#fff;font:500 14px Inter,system-ui,sans-serif;color:#141b22}
+.hint{margin:0;font-size:13px;color:#525c69}
+.stmt{margin:0;font-size:16px;line-height:1.5;font-weight:500}
+</style>
+</head>
+<body>
+<div style="width:760px;box-sizing:border-box;padding:24px;font-family:Inter,system-ui,sans-serif;color:#141b22;display:flex;flex-direction:column;gap:18px">
+
+<p class="lbl">A. Iedereen mag stemmen aan: een nieuw account ziet gewoon de knoppen</p>
+<section class="card" aria-labelledby="voteA">
+<h2 id="voteA" style="margin:0;font-size:18px;font-weight:600">Stemmen</h2>
+<p class="stmt">De EU besluit over sancties met een gekwalificeerde meerderheid. Eén lidstaat kan een besluit dan niet meer alleen tegenhouden.</p>
+<form style="display:flex;gap:10px" action="#stemming">
+<button type="button" class="vbtn">Voor</button>
+<button type="button" class="vbtn">Tegen</button>
+<button type="button" class="vbtn">Onthouding</button>
+</form>
+<p class="hint">Je kunt je stem wijzigen tot het stemmen sluit.</p>
+<p class="hint">Nog niemand heeft gestemd. De tussenstand verschijnt als het stemmen sluit.</p>
+</section>
+
+<p class="lbl">B. Iedereen mag stemmen uit: hetzelfde nieuwe account (bestaande tekst)</p>
+<section class="card" aria-labelledby="voteB">
+<h2 id="voteB" style="margin:0;font-size:18px;font-weight:600">Stemmen</h2>
+<p class="stmt">De EU besluit over sancties met een gekwalificeerde meerderheid. Eén lidstaat kan een besluit dan niet meer alleen tegenhouden.</p>
+<div style="display:flex;flex-direction:column;gap:4px;background:#f5f7f9;border:1px solid #e4e9ef;border-radius:10px;padding:12px 14px">
+<p style="margin:0;font-size:14px;font-weight:500">Je hebt nog geen stemrecht</p>
+<p class="hint">Je mag stemmen na 3 kwaliteitsbijdragen: bijdragen die het keurmerk krijgen. <a href="#kwaliteitsrichtlijnen">Kwaliteitsrichtlijnen</a></p>
+</div>
+<p class="hint">Nog niemand heeft gestemd. De tussenstand verschijnt als het stemmen sluit.</p>
+</section>
+
+<p style="margin:0;font-size:13px;color:#525c69">In beide gevallen geen melding over de instelling. Voorstellen doen en steun geven kan altijd met een account.</p>
+</div>
+</body>
+</html>

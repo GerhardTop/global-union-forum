@@ -24,6 +24,11 @@ De artboards staan als statische referentie-HTML in deze map (`docs/design/`). B
 | Vragen bij de eerste stem (representativiteit, stap 1c) | /vraagstuk/<id>/voorstel/<pid> (stemblok, direct na de eerste stem) | docs/design/representativiteit-vragen.html |
 | Wie stemde mee, bij de uitslag (representativiteit, stap 1d) | /vraagstuk/<id> (cockpit, bij de uitslag) | docs/design/representativiteit-uitslag.html |
 | Mijn profiel, nieuwe indeling | /profile | docs/design/profiel.html |
+| Eventpagina met de balk, en een vraagstuk binnen het event (events, stap 1d en 1e) | /e/<code> en /vraagstuk/<id> binnen een event | docs/design/event-pagina.html |
+| Stemblok bij een event, Iedereen mag stemmen aan en uit (events, stap 1f) | /vraagstuk/<id>/voorstel/<pid> (stemblok) | docs/design/event-stemblok.html |
+| Formulier Nieuw event en de eventinstellingen (events, stap 1c) | nieuwe route, wordt in stap 1c bepaald | docs/design/event-formulier.html |
+| Denk mee met Jouw events en het veld voor de eventcode (events, stap 1d) | /gesprekken | docs/design/event-overzicht.html |
+| Na afloop delen met alle deelnemers (events, stap 1d) | /e/<code> (kaart voor de organisator) | docs/design/event-delen.html |
 
 Main.html toont nu ook de ingang naar het vraagstukbeheer: in de rechterkolom "Vraagstukken beheren" staat per vraagstuk een Beheer-link naar docs/design/beheer.html. Toegang.html is niet het rollenbeheer, maar de ingang van de verwijder-flow: het Beheer-menu op het vraagstuk (fasen beheren, archiveren, verwijderen). Gebruiker.html (gebruikersmoderatie: waarschuwingen, schorsingen, account verwijderen) is een geplande functie en nog niet gebouwd.
 

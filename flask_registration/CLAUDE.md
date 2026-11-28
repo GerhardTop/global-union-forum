@@ -12,6 +12,10 @@
 
 `docs/representativiteit.md` is de bouw-specificatie voor de representativiteit van deelnemers (vrijwillige vragen bij de eerste stem, alleen totalen bij de uitslag; later mogelijk wegen en loten) en is bij elke bouwstap van dat spoor leidend. Het ontwerp staat in `docs/design/representativiteit-vragen.html` (de vragen bij de eerste stem) en `docs/design/representativiteit-uitslag.html` (het blok "Wie stemde mee" bij de uitslag).
 
+## Events
+
+`docs/events.md` is de bouw-specificatie voor events (een eigen ruimte per bijeenkomst, op een locatie of online, met een link, eventcode en QR-code die niet te raden zijn; alleen zichtbaar voor de deelnemers tot de organisator het na afloop deelt; met de instellingen "Iedereen mag stemmen" en "Deelnemers mogen vraagstukken toevoegen") en is bij elke bouwstap van dat spoor leidend. Het ontwerp staat in `docs/design/event-pagina.html` (de eventpagina met de balk, en een vraagstuk binnen het event), `docs/design/event-stemblok.html`, `docs/design/event-formulier.html`, `docs/design/event-overzicht.html` (Denk mee met Jouw events) en `docs/design/event-delen.html`.
+
 ## Communicatie
 
 Wanneer een taak vereist dat de gebruiker zelf iets buiten de chat doet (een wachtwoord of credential aanleveren, een commando met de hand draaien, of iets uitvoeren in een externe omgeving zoals de Neon- of Render-console), zet dat als allereerste zin van je antwoord, duidelijk zichtbaar. De gebruiker leest niet altijd het volledige antwoord.

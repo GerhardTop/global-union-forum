@@ -1,0 +1,197 @@
+<!doctype html>
+<!--
+  Design-referentie (artboards "1. De eventpagina met de balk" en "2. Een
+  vraagstuk binnen het event" op het canvas "Events, eventpagina met de balk en
+  Iedereen mag stemmen"). Statisch, alleen om naar te kijken en naartoe te
+  bouwen; geen app-code. VOORBEELDDATA: namen, aantallen en de code zijn niet echt.
+  Spec: docs/events.md (K2, K4, K8, K9, K10, K13, Weergave). Leidend zijn de
+  vormgeving, de volgorde, de teksten en de regels hieronder.
+  - Het menu is het bestaande (_header.html). Binnen een niet gedeeld event staat
+    Denk mee actief en wijst het naar de eventpagina (sessie, K9).
+  - De balk "Je bent bij: <event> · Terug naar het event" en "Bekijk de
+    vraagstukken buiten dit event" (haalt het event uit de sessie). Geen
+    kruimelpad op de eventpagina en de cockpit van een eventvraagstuk.
+  - Adres /e/<code>, code van 8 tekens die niet te raden is (K2).
+  - Deelnemers zien geen melding over stemrecht (K8). De knoppen "Nieuw
+    vraagstuk bij dit event" en "Instellingen" en de grijze strook "Alleen
+    zichtbaar voor jou als organisator" zie je alleen als organisator of
+    moderator ("Nieuw vraagstuk bij dit event" ook als deelnemer wanneer
+    "Deelnemers mogen vraagstukken toevoegen" aanstaat, K4).
+  - De strook: de link met een kopieerknop (alleen een icoon, aria-label en
+    tooltip "Link kopiëren", twee seconden een vinkje), de eventcode, "Nieuwe
+    link maken", de QR-code (door de eigen server gemaakt, hier een
+    plaatshouder) met icoonknoppen kopiëren en downloaden.
+  - Artboard 2: de balk boven de bestaande cockpit; in het label boven de
+    titel is de naam van het event een link. Geen regel "Onderdeel van het
+    event" en geen blok met eventgegevens in de toelichting.
+  - Op mobiel staan de twee links van de balk onder elkaar en de knoppen van
+    de organisator onder de kop. Werkt zonder JavaScript (kopiëren: de tekst
+    in het veld selecteren).
+-->
+<html lang="nl">
+<head>
+<meta charset="utf-8"><title>Eventpagina met de balk</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#eef1f5}
+a{color:#1b74b8}a:hover{color:#155e96}
+.row{display:flex;align-items:flex-start;gap:16px;padding:16px 20px;border-top:1px solid #eef1f5;text-decoration:none;color:#141b22}
+.phase{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid #e4e9ef;background:#eef1f5;color:#525c69;white-space:nowrap}
+.phase.vote{background:#eaf2fb;border-color:#c5dcf4;color:#1b5e9a}
+.meta{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:#525c69}
+.step{flex:1;display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:8px;border:1px solid #e4e9ef;background:#f5f7f9;font-size:13px;color:#525c69}
+.step.on{background:#eaf2fb;border-color:#c5dcf4;color:#1b5e9a;font-weight:500}
+</style>
+</head>
+<body>
+<div style="width:1200px;box-sizing:border-box;font-family:Inter,system-ui,sans-serif;color:#141b22;background:#f5f7f9">
+
+<header style="height:64px;background:#fff;border-bottom:1px solid #e4e9ef;display:flex;align-items:center;justify-content:space-between;padding-inline:40px">
+<a href="#home" style="text-decoration:none;color:#141b22;font-size:15px;letter-spacing:.14em"><span style="font-weight:500">GLOBAL</span> <span style="font-weight:300">UNION</span></a>
+<nav aria-label="Navigatie" style="display:flex;gap:28px;font-size:14px">
+<a href="#event" aria-current="page" style="color:#141b22;font-weight:500;text-decoration:none;border-bottom:2px solid #1b74b8;padding-bottom:4px">Denk mee</a>
+<a href="#manifest" style="color:#525c69;text-decoration:none">Manifest</a>
+<a href="#faq" style="color:#525c69;text-decoration:none">FAQ</a>
+<a href="#over" style="color:#525c69;text-decoration:none">Over</a>
+</nav>
+<div style="display:flex;align-items:center;gap:14px">
+<button type="button" aria-label="Taal kiezen" style="background:none;border:0;font:500 13px Inter,system-ui,sans-serif;color:#525c69;display:inline-flex;align-items:center;gap:4px;min-height:36px">NL <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+<button type="button" title="Sanne Bakker" aria-label="Menu van Sanne Bakker" style="width:36px;height:36px;border-radius:50%;border:0;background:#1b74b8;color:#fff;font:600 13px Inter,system-ui,sans-serif">SB</button>
+</div>
+</header>
+
+<div role="region" aria-label="Je bent bij een event" style="background:#eaf2fb;border-bottom:1px solid #c5dcf4;padding:10px 40px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;font-size:14px;color:#1b5e9a">
+<p style="margin:0">Je bent bij: <strong style="font-weight:600;color:#141b22">Global Union Avond Groningen</strong> <span aria-hidden="true">·</span> <a href="#event">Terug naar het event</a></p>
+<a href="event-overzicht.html" style="display:inline-flex;align-items:center;gap:6px">Bekijk de vraagstukken buiten dit event <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
+</div>
+
+<main style="max-width:1040px;margin:0 auto;padding:28px 40px 48px;display:flex;flex-direction:column;gap:22px">
+
+
+<section aria-labelledby="eventTitle" style="background:#fff;border:1px solid #e4e9ef;border-radius:14px;box-shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05);padding:28px 32px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:8px;flex:1 1 480px">
+<p style="margin:0;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#1b74b8">Event</p>
+<h1 id="eventTitle" style="margin:0;font-size:34px;font-weight:500;letter-spacing:-.02em;line-height:1.15">Global Union Avond Groningen</h1>
+<p style="margin:0;font-size:15px;color:#3a434e">Zaterdag 12 december 2026, 19:00 tot 22:00 <span aria-hidden="true">·</span> Forum, Groningen, en online</p>
+<p style="margin:0;font-size:14px"><a href="#videolink" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"></rect><path d="M16 10l5-3v10l-5-3"></path></svg>Meedoen via het videogesprek</a></p>
+<p style="margin:0;font-size:13px;color:#6c7683">Organisator: Sanne Bakker</p>
+</div>
+
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<a href="#nieuw" style="display:inline-flex;align-items:center;gap:6px;background:#1b74b8;color:#fff;text-decoration:none;font-size:13px;font-weight:500;padding:10px 16px;border-radius:8px"><span aria-hidden="true">+</span> Nieuw vraagstuk bij dit event</a>
+<a href="event-formulier.html" style="display:inline-flex;align-items:center;background:#fff;color:#141b22;text-decoration:none;font-size:13px;font-weight:500;padding:10px 16px;border-radius:8px;border:1px solid #d3dae2">Instellingen</a>
+</div>
+
+</div>
+
+<p style="margin:0;font-size:15px;line-height:1.6;max-width:64ch">Een avond over de vraag hoe democratieën beter kunnen samenwerken. We bespreken drie vraagstukken, van de EU tot de VN, en stemmen aan het eind van de avond over de voorstellen. Je kunt meedoen in de zaal of online.</p>
+
+
+<div style="display:flex;flex-direction:column;gap:14px;background:#f5f7f9;border:1px solid #e4e9ef;border-radius:10px;padding:16px 18px">
+<p style="margin:0;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#6c7683">Alleen zichtbaar voor jou als organisator</p>
+<div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:10px;flex:1 1 420px;min-width:0">
+<label for="eventLink" style="font-size:14px;font-weight:500">Link naar dit event</label>
+<div style="display:flex;gap:8px">
+<input id="eventLink" type="text" readonly value="globalunionforum.org/e/K7M2QXPA" style="flex:1;min-width:0;box-sizing:border-box;min-height:42px;border:1px solid #d3dae2;border-radius:8px;padding:9px 12px;font:500 15px Inter,system-ui,sans-serif;color:#141b22;background:#fff;letter-spacing:.02em">
+<button type="button" aria-label="Link kopiëren" title="Link kopiëren" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;flex:none;border-radius:8px;border:1px solid #d3dae2;background:#fff;color:#1b74b8;cursor:pointer"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
+</div>
+<p style="margin:0;font-size:13px;line-height:1.5;color:#525c69">Deel de link of de QR-code met de deelnemers, bijvoorbeeld op een dia of in de uitnodiging. Dit event is alleen zichtbaar voor de deelnemers aan dit event.</p>
+<p style="margin:0;font-size:14px;color:#3a434e">Eventcode: <strong style="font-weight:600;letter-spacing:.06em;color:#141b22">K7M2QXPA</strong> <span style="color:#6c7683">(om in te typen bij Denk mee)</span></p>
+<p style="margin:0;font-size:13px"><a href="#nieuwe-link">Nieuwe link maken</a></p>
+<ul style="margin:0;padding-inline-start:18px;font-size:14px;line-height:1.6;color:#3a434e">
+<li>Na afloop kies je of je het event deelt met alle deelnemers van Global Union.</li>
+<li>Iedereen mag stemmen: aan. <a href="event-formulier.html">Wijzigen</a></li>
+</ul>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+<div role="img" aria-label="QR-code van de link (voorbeeld)" style="width:132px;height:132px;box-sizing:border-box;border:1px solid #e4e9ef;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6c7683;text-align:center">QR-code<br>(gemaakt door de server)</div>
+<span style="font-size:12px;color:#6c7683">Scan om mee te doen</span>
+<div style="display:flex;gap:8px"><button type="button" aria-label="QR-code kopiëren" title="QR-code kopiëren" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;flex:none;border-radius:8px;border:1px solid #d3dae2;background:#fff;color:#1b74b8;cursor:pointer"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button><a href="#qr-download" aria-label="QR-code downloaden" title="QR-code downloaden" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;box-sizing:border-box;border-radius:8px;border:1px solid #d3dae2;background:#fff;color:#1b74b8"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"></path><path d="M7 11l5 5 5-5"></path><path d="M5 20h14"></path></svg></a></div>
+</div>
+</div>
+</div>
+
+</section>
+
+<section aria-labelledby="listTitle" style="background:#fff;border:1px solid #e4e9ef;border-radius:14px;box-shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05);overflow:hidden">
+<div style="display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid #e4e9ef">
+<h2 id="listTitle" style="margin:0;font-size:16px;font-weight:600">Vraagstukken van dit event</h2>
+<span style="display:inline-flex;padding:2px 9px;border-radius:999px;background:#eaf2fb;border:1px solid #c5dcf4;color:#1b5e9a;font-size:12px;font-weight:600">3</span>
+</div>
+<ol style="list-style:none;margin:0;padding:0">
+<li><a class="row" href="#vraagstuk" style="border-top:0">
+<span style="font-size:13px;color:#6c7683;width:18px;padding-top:2px">1</span>
+<span style="display:flex;flex-direction:column;gap:6px;flex:1">
+<span><span class="phase vote">Stemmen</span></span>
+<span style="font-size:16px;font-weight:500;color:#141b22">Moet de EU over buitenlands beleid met een meerderheid besluiten in plaats van unaniem?</span>
+<span class="meta"><span>ingediend door Sanne Bakker</span><span>4 voorstellen</span><span>38 deelnemers</span></span>
+</span></a></li>
+<li><a class="row" href="#v2">
+<span style="font-size:13px;color:#6c7683;width:18px;padding-top:2px">2</span>
+<span style="display:flex;flex-direction:column;gap:6px;flex:1">
+<span><span class="phase">Bijstellen</span></span>
+<span style="font-size:16px;font-weight:500;color:#141b22">Welke democratiescore moet een land halen om lid te worden van een Global Union?</span>
+<span class="meta"><span>ingediend door Sanne Bakker</span><span>6 voorstellen</span><span>41 deelnemers</span></span>
+</span></a></li>
+<li><a class="row" href="#v3">
+<span style="font-size:13px;color:#6c7683;width:18px;padding-top:2px">3</span>
+<span style="display:flex;flex-direction:column;gap:6px;flex:1">
+<span><span class="phase">Feiten</span></span>
+<span style="font-size:16px;font-weight:500;color:#141b22">Moet het vetorecht in de Veiligheidsraad van de VN verdwijnen?</span>
+<span class="meta"><span>ingediend door Sanne Bakker</span><span>1 voorstel</span><span>12 deelnemers</span></span>
+</span></a></li>
+</ol>
+</section>
+
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:4px 4px 0;font-size:14px;color:#525c69">
+<p style="margin:0">Hier staan alleen de vraagstukken van dit event.</p>
+<a href="event-overzicht.html" style="display:inline-flex;align-items:center;gap:6px">Bekijk de vraagstukken buiten dit event <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
+</div>
+
+</main>
+</div>
+
+<div id="vraagstuk" style="height:48px"></div>
+<p style="margin:0 0 12px 24px;font:600 12px Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#6c7683">Artboard 2: een vraagstuk binnen het event</p>
+<div style="width:1200px;box-sizing:border-box;font-family:Inter,system-ui,sans-serif;color:#141b22;background:#f5f7f9">
+
+<header style="height:64px;background:#fff;border-bottom:1px solid #e4e9ef;display:flex;align-items:center;justify-content:space-between;padding-inline:40px">
+<a href="#home" style="text-decoration:none;color:#141b22;font-size:15px;letter-spacing:.14em"><span style="font-weight:500">GLOBAL</span> <span style="font-weight:300">UNION</span></a>
+<nav aria-label="Navigatie" style="display:flex;gap:28px;font-size:14px">
+<a href="event-pagina.html" aria-current="page" style="color:#141b22;font-weight:500;text-decoration:none;border-bottom:2px solid #1b74b8;padding-bottom:4px">Denk mee</a>
+<a href="#manifest" style="color:#525c69;text-decoration:none">Manifest</a>
+<a href="#faq" style="color:#525c69;text-decoration:none">FAQ</a>
+<a href="#over" style="color:#525c69;text-decoration:none">Over</a>
+</nav>
+<div style="display:flex;align-items:center;gap:14px">
+<button type="button" aria-label="Taal kiezen" style="background:none;border:0;font:500 13px Inter,system-ui,sans-serif;color:#525c69;display:inline-flex;align-items:center;gap:4px;min-height:36px">NL <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+<button type="button" title="Sanne Bakker" aria-label="Menu van Sanne Bakker" style="width:36px;height:36px;border-radius:50%;border:0;background:#1b74b8;color:#fff;font:600 13px Inter,system-ui,sans-serif">SB</button>
+</div>
+</header>
+
+<div role="region" aria-label="Je bent bij een event" style="background:#eaf2fb;border-bottom:1px solid #c5dcf4;padding:10px 40px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;font-size:14px;color:#1b5e9a">
+<p style="margin:0">Je bent bij: <strong style="font-weight:600;color:#141b22">Global Union Avond Groningen</strong> <span aria-hidden="true">·</span> <a href="event-pagina.html">Terug naar het event</a></p>
+<a href="event-overzicht.html" style="display:inline-flex;align-items:center;gap:6px">Bekijk de vraagstukken buiten dit event <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
+</div>
+
+<main style="max-width:1120px;margin:0 auto;padding:24px 40px 40px;display:flex;flex-direction:column;gap:18px">
+
+<section style="background:#fff;border:1px solid #e4e9ef;border-radius:14px;box-shadow:0 1px 2px rgba(15,25,35,.04),0 6px 20px rgba(15,25,35,.05);padding:24px 28px;display:flex;flex-direction:column;gap:14px">
+<p style="margin:0;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6c7683">Event · <a href="event-pagina.html" style="color:#1b74b8;text-decoration:none">Global Union Avond Groningen</a> · 12 dec 2026 19:00, Forum, Groningen, en online</p>
+<h1 style="margin:0;font-size:28px;font-weight:500;letter-spacing:-.02em">Moet de EU over buitenlands beleid met een meerderheid besluiten in plaats van unaniem?</h1>
+<p style="margin:0;font-size:13px;color:#525c69">Sanne Bakker</p>
+<p style="margin:0;font-size:15px;line-height:1.6;max-width:70ch">Nu kan één lidstaat een besluit over sancties of buitenlands beleid tegenhouden. Wat win je met besluiten bij meerderheid, en wat verliezen kleine landen?</p>
+<div style="display:flex;gap:8px">
+<div class="step"><span>1</span><span>Feiten</span></div>
+<div class="step"><span>2</span><span>Bijstellen</span></div>
+<div class="step on"><span>3</span><span>Stemmen</span></div>
+<div class="step"><span>4</span><span>Vervolg</span></div>
+</div>
+</section>
+<p style="margin:0;font-size:13px;color:#6c7683">Hieronder de bestaande cockpit (feiten, discussie, voorstellen), ongewijzigd.</p>
+</main>
+</div>
+</body>
+</html>
