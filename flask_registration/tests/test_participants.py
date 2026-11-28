@@ -332,7 +332,7 @@ def test_migration_twice_adds_users_country(app, db):
 # ── Step 1c: the card after the first vote ───────────────────────────────
 
 CARD = 'class="gu-ppcard"'
-THANKS = 'Dank je. Je antwoorden staan in je profiel onder Over mij.'
+THANKS = 'Dank je. Je antwoorden staan in je profiel, bij &#34;Wie stemt er mee?&#34;.'
 
 
 @pytest.fixture

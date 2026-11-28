@@ -1888,6 +1888,7 @@ select[size="0"]:not([multiple]) {
 .gu-profile__hint { font-size: 13px; line-height: 1.5; color: var(--gu-fg-3); margin: 8px 0 0; }
 .gu-profile__status { display: flex; flex-direction: column; gap: 4px; }
 .gu-profile__status-meta { font-size: 13px; font-weight: 400; color: var(--gu-fg-2); }
+.gu-profile__progress-note { margin-top: 4px; }
 .gu-profile__progress { display: block; max-inline-size: 320px; margin: 4px 0 0; }
 .gu-profile__card { padding: 20px 22px; border: 1px solid #e4e9ef; border-radius: 12px; background: #fbfcfd; scroll-margin-top: 96px; }
 

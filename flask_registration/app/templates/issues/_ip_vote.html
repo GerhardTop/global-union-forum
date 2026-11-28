@@ -80,11 +80,11 @@
         <button type="submit" name="action" value="save" class="gu-btn gu-btn--primary gu-pp__btn">{{ _('Save') }}</button>
         <button type="submit" name="action" value="skip" class="gu-btn gu-btn--ghost gu-pp__btn">{# TRANSLATORS: a button on the card after the first vote: do not answer the voluntary questions. #}{{ _('Skip') }}</button>
       </div>
-      {% set about_me_link %}<a href="{{ url_for('profile.profile') }}#over-mij">{{ _('About me') }}</a>{% endset %}
-      <p class="gu-pp__hint">{# TRANSLATORS: the card after the first vote; %(about_me)s is a link to the profile section "About me". #}{% trans about_me=about_me_link %}We only ask this once. You can always fill it in, change it or clear it in your profile, under {{ about_me }}.{% endtrans %}</p>
+      {% set about_me_link %}"<a href="{{ url_for('profile.profile') }}#over-mij">{{ _('Who votes?') }}</a>"{% endset %}
+      <p class="gu-pp__hint">{# TRANSLATORS: the card after the first vote; %(about_me)s is a link, in quotes, to the card "Who votes?" in the profile (a heading, so: "in your profile, at <heading>"). #}{% trans about_me=about_me_link %}We only ask this once. You can always fill it in, change it or clear it in your profile, under {{ about_me }}.{% endtrans %}</p>
     </form>
     {% elif vote.participant_saved %}
-    <p class="gu-ppcard__saved" role="status">{# TRANSLATORS: after saving the voluntary questions from the card after the first vote. #}{{ _('Thank you. Your answers are in your profile under About me.') }}</p>
+    <p class="gu-ppcard__saved" role="status">{# TRANSLATORS: after saving the voluntary questions from the card after the first vote; %(section)s is the heading of the card in the profile ("Who votes?"). #}{{ _('Thank you. Your answers are in your profile, under "%(section)s".', section=_('Who votes?')) }}</p>
     {% endif %}
     {% elif current_user.is_authenticated %}
     <div class="gu-vote__norights">

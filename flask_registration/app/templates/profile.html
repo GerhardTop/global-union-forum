@@ -35,7 +35,8 @@
           <span class="gu-profile__status-meta">{% set topics = ngettext('%(num)d topic', '%(num)d topics', quality_topics) %}{% trans count=quality_count, topics=topics %}{{ count }} quality contribution in {{ topics }}{% pluralize %}{{ count }} quality contributions in {{ topics }}{% endtrans %}. <a href="{{ url_for('main.faq', _anchor='faq-3-5') }}" id="guStatusHow">{# TRANSLATORS: profile, a link next to your status to the FAQ question about the right to vote. #}{{ _('How does this work?') }}</a></span>
           {% if not current_user.can_vote() %}
           {% set needed = thresholds.voter_min %}
-          <span class="gu-cockpit__progress gu-profile__progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ needed }}" aria-valuenow="{{ [quality_count, needed] | min }}"
+          <span class="gu-profile__status-meta gu-profile__progress-note" id="guVoteProgress">{% trans quality_count=quality_count, needed=needed %}On the way to the right to vote: {{ quality_count }} of {{ needed }} quality contributions.{% endtrans %}</span>
+          <span class="gu-cockpit__progress gu-profile__progress" aria-describedby="guVoteProgress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ needed }}" aria-valuenow="{{ [quality_count, needed] | min }}"
                aria-label="{{ _('Progress to the right to vote') }}"><span style="width: {{ (100 * ([quality_count, needed] | min) / needed) | round | int if needed else 100 }}%"></span></span>
           {% endif %}
         </span>

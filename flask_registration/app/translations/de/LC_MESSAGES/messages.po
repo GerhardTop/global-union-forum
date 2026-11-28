@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-28 12:15+0100\n"
+"POT-Creation-Date: 2026-11-28 12:37+0100\n"
 "PO-Revision-Date: 2026-11-20 22:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -305,12 +305,12 @@ msgid "Your contributions stay, but are no longer linked to your name. That way,
 msgstr "Deine Beiträge bleiben stehen, aber ohne Verbindung zu deinem Namen. So bleiben die Diskussionen und Abstimmungen, an denen andere teilgenommen haben, verständlich. Nur die Verbindung zu dir verschwindet."
 
 #: app/forms.py:12 app/templates/aanmelden/aanmelden.html:68
-#: app/templates/profile.html:238 app/templates/wachtwoord_reset.html:47
+#: app/templates/profile.html:239 app/templates/wachtwoord_reset.html:47
 msgid "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
 msgstr "Passwort: 8 bis 72 Zeichen, mit mindestens einem Großbuchstaben, einer Ziffer und einem Sonderzeichen."
 
 #: app/forms.py:27 app/templates/aanmelden/aanmelden.html:87
-#: app/templates/profile.html:257 app/templates/wachtwoord_reset.html:67
+#: app/templates/profile.html:258 app/templates/wachtwoord_reset.html:67
 msgid "Passwords do not match."
 msgstr "Die Passwörter stimmen nicht überein."
 
@@ -1995,7 +1995,7 @@ msgstr "Aktivität"
 #. profile, the eyebrow of the section with language, automatic translation and
 #. the summary by email.
 #: app/templates/landing.html:33 app/templates/meldingen.html:17
-#: app/templates/notificaties.html:20 app/templates/profile.html:160
+#: app/templates/notificaties.html:20 app/templates/profile.html:161
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -2017,8 +2017,8 @@ msgstr "Passwort"
 
 #: app/templates/aanmelden/aanmelden.html:62
 #: app/templates/aanmelden/aanmelden.html:82 app/templates/login.html:36
-#: app/templates/profile.html:215 app/templates/profile.html:232
-#: app/templates/profile.html:252 app/templates/wachtwoord_reset.html:41
+#: app/templates/profile.html:216 app/templates/profile.html:233
+#: app/templates/profile.html:253 app/templates/wachtwoord_reset.html:41
 #: app/templates/wachtwoord_reset.html:62
 msgid "Show password"
 msgstr "Passwort anzeigen"
@@ -2636,7 +2636,7 @@ msgstr "Das ist eine Schreibübung, ein erster Entwurf. Kein Bauplan, kein Parte
 
 #: app/templates/meldingen.html:9 app/templates/meldingen.html:15
 #: app/templates/notificaties.html:18 app/templates/notificaties.html:21
-#: app/templates/profile.html:195
+#: app/templates/profile.html:196
 msgid "Notifications"
 msgstr "Benachrichtigungen"
 
@@ -2810,7 +2810,7 @@ msgstr "Moderation"
 msgid "for moderators"
 msgstr "für Moderatoren"
 
-#: app/templates/notificaties.html:63 app/templates/profile.html:194
+#: app/templates/notificaties.html:63 app/templates/profile.html:195
 msgid "Summary by email"
 msgstr "Zusammenfassung per E-Mail"
 
@@ -2844,7 +2844,7 @@ msgstr "Wöchentlich"
 #: app/templates/issues/_ip_vote.html:80
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
-#: app/templates/profile.html:98 app/templates/profile.html:148
+#: app/templates/profile.html:99 app/templates/profile.html:149
 msgid "Save"
 msgstr "Speichern"
 
@@ -2887,10 +2887,11 @@ msgid "Your username, which is public. Your email address, which is private and 
 msgstr "Dein Benutzername, der öffentlich ist. Deine E-Mail-Adresse, die privat ist und die andere nicht sehen. Dein Passwort, das wir verschlüsselt speichern. Wenn du sie selbst ausfüllst: dein Vor- und Nachname und deine LinkedIn-Adresse, die privat bleiben, außer du entscheidest dich in deinem Profil dafür, deinen echten Namen zu zeigen. Was du im Forum schreibst, deine Antworten und deine Stimmen für Zustimmen und Nicht zustimmen; deine Beiträge sind unter deinem Benutzernamen öffentlich. Und deine IP-Adresse und technische Protokolldaten, die wir nutzen, um Missbrauch zu verhindern."
 
 #. privacy, alinea 4b (representativeness: the voluntary questions after the
-#. first vote; "About me" is the section in the profile)
+#. first vote; "Who votes?" is the heading of the card in the profile,
+#. translate it as that heading)
 #: app/templates/privacy.html:32
-msgid "If you fill it in yourself: your year of birth, your gender, your level of education and the country you live in. This is voluntary. We ask once, after your first vote. You can change or clear it at any time in your profile, under About me. Nobody else sees your answers, not even a moderator."
-msgstr "Wenn du es selbst ausfüllst: dein Geburtsjahr, dein Geschlecht, deine Bildung und das Land, in dem du wohnst. Das ist freiwillig. Wir fragen einmal, nach deiner ersten Stimme. Du kannst es jederzeit in deinem Profil unter Über mich ändern oder löschen. Niemand sonst sieht deine Antworten, auch kein Moderator."
+msgid "If you fill it in yourself: your year of birth, your gender, your level of education and the country you live in. This is voluntary. We ask once, after your first vote. You can change or clear it at any time in your profile, under \"Who votes?\". Nobody else sees your answers, not even a moderator."
+msgstr "Wenn du es selbst ausfüllst: dein Geburtsjahr, dein Geschlecht, deine Bildung und das Land, in dem du wohnst. Das ist freiwillig. Wir fragen einmal, nach deiner ersten Stimme. Du kannst es jederzeit in deinem Profil bei \"Wer stimmt mit ab?\" ändern oder löschen. Niemand sonst sieht deine Antworten, auch kein Moderator."
 
 #. privacy, kop 5
 #: app/templates/privacy.html:37
@@ -3041,182 +3042,188 @@ msgstr[1] "%(count)s Qualitätsbeiträge in %(topics)s"
 msgid "How does this work?"
 msgstr "Wie funktioniert das?"
 
-#: app/templates/issues/show.html:216 app/templates/profile.html:39
+#: app/templates/profile.html:38
+#, python-format
+msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
+msgstr "Auf dem Weg zum Stimmrecht: %(quality_count)s von %(needed)s Qualitätsbeiträgen."
+
+#: app/templates/issues/show.html:216 app/templates/profile.html:40
 msgid "Progress to the right to vote"
 msgstr "Fortschritt zum Stimmrecht"
 
-#: app/templates/profile.html:53
+#: app/templates/profile.html:54
 msgid "How do you appear in the forum?"
 msgstr "Wie erscheinst du im Forum?"
 
 #. profile, the explanation above the choice between username and real name.
-#: app/templates/profile.html:54
+#: app/templates/profile.html:55
 msgid "Most people take part under their username. That is fine. Are you an expert or someone with lived experience? Then it makes sense to use your real name. You can always switch back."
 msgstr "Die meisten machen unter ihrem Benutzernamen mit. Das ist völlig in Ordnung. Bist du Fachperson oder sprichst du aus eigener Erfahrung? Dann liegt es nahe, deinen echten Namen zu verwenden. Du kannst jederzeit zurückwechseln."
 
 #. profile, a choice: take part under your username; %(username)s is the
 #. username.
-#: app/templates/profile.html:57
+#: app/templates/profile.html:58
 #, python-format
 msgid "Under my username (@%(username)s)"
 msgstr "Unter meinem Benutzernamen (@%(username)s)"
 
 #. profile, a choice: take part under your real name (first and last name).
-#: app/templates/profile.html:62
+#: app/templates/profile.html:63
 msgid "Under my real name"
 msgstr "Unter meinem echten Namen"
 
-#: app/templates/aanmelden/aanmelden.html:101 app/templates/profile.html:67
+#: app/templates/aanmelden/aanmelden.html:101 app/templates/profile.html:68
 msgid "First name"
 msgstr "Vorname"
 
 #. profile, an error under the first name field (real name chosen).
-#: app/templates/profile.html:71
+#: app/templates/profile.html:72
 msgid "Enter your first name."
 msgstr "Gib deinen Vornamen ein."
 
-#: app/templates/aanmelden/aanmelden.html:107 app/templates/profile.html:74
+#: app/templates/aanmelden/aanmelden.html:107 app/templates/profile.html:75
 msgid "Last name"
 msgstr "Nachname"
 
 #. profile, an error under the last name field (real name chosen).
-#: app/templates/profile.html:78
+#: app/templates/profile.html:79
 msgid "Enter your last name."
 msgstr "Gib deinen Nachnamen ein."
 
-#: app/templates/admin/dashboard.html:87 app/templates/profile.html:82
+#: app/templates/admin/dashboard.html:87 app/templates/profile.html:83
 msgid "LinkedIn profile"
 msgstr "LinkedIn-Profil"
 
 #: app/templates/issues/new.html:105 app/templates/issues/new.html:175
-#: app/templates/issues/proposal_new.html:31 app/templates/profile.html:82
+#: app/templates/issues/proposal_new.html:31 app/templates/profile.html:83
 msgid "optional"
 msgstr "optional"
 
-#: app/templates/aanmelden/aanmelden.html:125 app/templates/profile.html:86
+#: app/templates/aanmelden/aanmelden.html:125 app/templates/profile.html:87
 msgid "https://www.linkedin.com/in/your-name"
 msgstr "https://www.linkedin.com/in/dein-name"
 
-#: app/templates/aanmelden/aanmelden.html:133 app/templates/profile.html:87
+#: app/templates/aanmelden/aanmelden.html:133 app/templates/profile.html:88
 msgid "Enter a valid LinkedIn URL (https://www.linkedin.com/in/…)."
 msgstr "Gib eine gültige LinkedIn-URL ein (https://www.linkedin.com/in/…)."
 
 #. profile, the checkbox before you take part under your real name.
-#: app/templates/profile.html:92
+#: app/templates/profile.html:93
 msgid "I understand that my real name will then be visible on all my contributions in the forum."
 msgstr "Ich verstehe, dass mein echter Name dann bei allen meinen Beiträgen im Forum sichtbar ist."
 
-#: app/templates/profile.html:94
+#: app/templates/profile.html:95
 msgid "Please first confirm that your real name may become visible."
 msgstr "Bitte bestätige zuerst, dass dein echter Name sichtbar werden darf."
 
 #. profile, the eyebrow of the section with what you may fill in but do not
 #. have to.
-#: app/templates/aanmelden/aanmelden.html:92 app/templates/profile.html:136
+#: app/templates/aanmelden/aanmelden.html:92 app/templates/profile.html:137
 msgid "Optional"
 msgstr "Optional"
 
 #. profile, About me: the title of the voluntary questions (who takes part in
 #. the votes).
-#: app/templates/issues/_ip_vote.html:74 app/templates/profile.html:139
+#: app/templates/issues/_ip_vote.html:74 app/templates/issues/_ip_vote.html:83
+#: app/templates/issues/_ip_vote.html:87 app/templates/profile.html:140
 msgid "Who votes?"
 msgstr "Wer stimmt mit ab?"
 
 #. a small label: answering is voluntary.
-#: app/templates/issues/_ip_vote.html:74 app/templates/profile.html:140
+#: app/templates/issues/_ip_vote.html:74 app/templates/profile.html:141
 msgid "Voluntary"
 msgstr "Freiwillig"
 
 #. profile, About me: why we ask. "results": the outcome of the votes of an
 #. issue.
-#: app/templates/issues/_ip_vote.html:75 app/templates/profile.html:142
+#: app/templates/issues/_ip_vote.html:75 app/templates/profile.html:143
 msgid "When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what."
 msgstr "Beim Ergebnis zeigen wir, wie sich die Gruppe der Abstimmenden zusammensetzt, nur in Gruppen von mindestens 10 Personen. Nie, wer wie abgestimmt hat."
 
 #. a link to the privacy statement.
 #: app/templates/issues/_ip_vote.html:76
 #: app/templates/issues/_participation.html:18
-#: app/templates/issues/_participation.html:69 app/templates/profile.html:143
+#: app/templates/issues/_participation.html:69 app/templates/profile.html:144
 msgid "Why we ask this"
 msgstr "Warum wir das fragen"
 
 #. profile, About me: a button that removes the answers.
-#: app/templates/profile.html:149
+#: app/templates/profile.html:150
 msgid "Clear answers"
 msgstr "Antworten löschen"
 
 #. profile, Settings: the heading above the language buttons.
 #: app/templates/admin/language_monitor.html:31
-#: app/templates/admin/language_monitor.html:70 app/templates/profile.html:163
+#: app/templates/admin/language_monitor.html:70 app/templates/profile.html:164
 msgid "Language"
 msgstr "Sprache"
 
 #. profile, Settings: the heading above the switch for automatic translation.
-#: app/templates/profile.html:174
+#: app/templates/profile.html:175
 msgid "Automatic translation"
 msgstr "Automatisch übersetzen"
 
-#: app/templates/profile.html:185
+#: app/templates/profile.html:186
 msgid "Automatically translate posts to English"
 msgstr "Beiträge automatisch ins Deutsche übersetzen"
 
-#: app/templates/profile.html:188
+#: app/templates/profile.html:189
 msgid "Posts in another language are automatically translated when you open a conversation."
 msgstr "Beiträge in einer anderen Sprache werden automatisch übersetzt, wenn du ein Gespräch öffnest."
 
-#: app/templates/profile.html:195
+#: app/templates/profile.html:196
 msgid "View your daily summaries"
 msgstr "Deine täglichen Zusammenfassungen ansehen"
 
-#: app/templates/profile.html:195
+#: app/templates/profile.html:196
 msgid "choose what you hear about, and where"
 msgstr "wähle, worüber du Nachricht bekommst und wo"
 
-#: app/templates/profile.html:201
+#: app/templates/profile.html:202
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: app/templates/profile.html:203
+#: app/templates/profile.html:204
 msgid "Update your password."
 msgstr "Aktualisiere dein Passwort."
 
-#: app/templates/profile.html:213
+#: app/templates/profile.html:214
 msgid "Current password"
 msgstr "Aktuelles Passwort"
 
-#: app/templates/profile.html:221
+#: app/templates/profile.html:222
 msgid "Enter your current password."
 msgstr "Gib dein aktuelles Passwort ein."
 
-#: app/templates/profile.html:230 app/templates/wachtwoord_reset.html:27
+#: app/templates/profile.html:231 app/templates/wachtwoord_reset.html:27
 #: app/templates/wachtwoord_reset.html:35
 msgid "New password"
 msgstr "Neues Passwort"
 
-#: app/templates/profile.html:250 app/templates/wachtwoord_reset.html:56
+#: app/templates/profile.html:251 app/templates/wachtwoord_reset.html:56
 msgid "Confirm new password"
 msgstr "Neues Passwort bestätigen"
 
-#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:263
+#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:264
 msgid "Save changes"
 msgstr "Änderungen speichern"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:340
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:341
 #: app/templates/wachtwoord_reset.html:112
 msgid "Weak"
 msgstr "Schwach"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:340
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:341
 #: app/templates/wachtwoord_reset.html:112
 msgid "Fair"
 msgstr "Mittel"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:340
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:341
 #: app/templates/wachtwoord_reset.html:112
 msgid "Strong"
 msgstr "Stark"
 
-#: app/templates/profile.html:371
+#: app/templates/profile.html:372
 msgid "Danger zone"
 msgstr "Gefahrenzone"
 
@@ -3224,11 +3231,11 @@ msgstr "Gefahrenzone"
 #: app/templates/moderator/gebruiker.html:200
 #: app/templates/moderator/gebruiker.html:207
 #: app/templates/moderator/gebruiker_verwijderen.html:2
-#: app/templates/profile.html:374
+#: app/templates/profile.html:375
 msgid "Delete account"
 msgstr "Konto löschen"
 
-#: app/templates/profile.html:378
+#: app/templates/profile.html:379
 msgid ""
 "This permanently deletes your account, all your forum posts, and all your likes.\n"
 "        This cannot be undone."
@@ -3236,7 +3243,7 @@ msgstr ""
 "Damit werden dein Konto, alle deine Forumsbeiträge und alle deine Likes endgültig gelöscht.\n"
 "        Das lässt sich nicht rückgängig machen."
 
-#: app/templates/profile.html:384
+#: app/templates/profile.html:385
 msgid "Delete my account"
 msgstr "Mein Konto löschen"
 
@@ -3250,15 +3257,15 @@ msgstr "Mein Konto löschen"
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
-#: app/templates/profile.html:397 app/templates/profile.html:419
+#: app/templates/profile.html:398 app/templates/profile.html:420
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: app/templates/profile.html:406
+#: app/templates/profile.html:407
 msgid "Are you sure?"
 msgstr "Bist du sicher?"
 
-#: app/templates/profile.html:410
+#: app/templates/profile.html:411
 msgid ""
 "This permanently deletes your account and all associated data.\n"
 "        This <strong>cannot</strong> be undone."
@@ -3266,7 +3273,7 @@ msgstr ""
 "Damit werden dein Konto und alle zugehörigen Daten endgültig gelöscht.\n"
 "        Das lässt sich <strong>nicht</strong> rückgängig machen."
 
-#: app/templates/profile.html:423
+#: app/templates/profile.html:424
 msgid "Yes, delete my account"
 msgstr "Ja, mein Konto löschen"
 
@@ -5417,21 +5424,20 @@ msgstr "Deine Stimme zählt so oder so."
 msgid "Skip"
 msgstr "Überspringen"
 
-#: app/templates/issues/_ip_vote.html:83
-msgid "About me"
-msgstr "Über mich"
-
-#. the card after the first vote; %(about_me)s is a link to the profile section
-#. "About me".
+#. the card after the first vote; %(about_me)s is a link, in quotes, to the
+#. card "Who votes?" in the profile (a heading, so: "in your profile, at
+#. <heading>").
 #: app/templates/issues/_ip_vote.html:84
 #, python-format
 msgid "We only ask this once. You can always fill it in, change it or clear it in your profile, under %(about_me)s."
-msgstr "Wir fragen das nur einmal. Du kannst es jederzeit in deinem Profil unter %(about_me)s ausfüllen, ändern oder löschen."
+msgstr "Wir fragen das nur einmal. Du kannst es jederzeit in deinem Profil bei %(about_me)s ausfüllen, ändern oder löschen."
 
-#. after saving the voluntary questions from the card after the first vote.
+#. after saving the voluntary questions from the card after the first vote;
+#. %(section)s is the heading of the card in the profile ("Who votes?").
 #: app/templates/issues/_ip_vote.html:87
-msgid "Thank you. Your answers are in your profile under About me."
-msgstr "Danke. Deine Antworten stehen in deinem Profil unter Über mich."
+#, python-format
+msgid "Thank you. Your answers are in your profile, under \"%(section)s\"."
+msgstr "Danke. Deine Antworten stehen in deinem Profil bei \"%(section)s\"."
 
 #: app/templates/issues/_ip_vote.html:92 app/templates/issues/_ip_vote.html:96
 #, python-format

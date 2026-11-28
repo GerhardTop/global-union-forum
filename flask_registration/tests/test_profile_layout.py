@@ -122,3 +122,62 @@ def test_no_pseudonym_in_the_catalog(lang):
     hits = [m.id for m in catalog if m.id and PSEUDONYM.search(
         ' '.join(m.string) if isinstance(m.string, tuple) else (m.string or ''))]
     assert hits == []
+
+
+# ── The progress line to the right to vote ───────────────────────────────
+
+def test_progress_line_above_the_bar_without_the_right_to_vote(app, make_user):
+    row = _page(app, make_user()).split('id="guStatus"')[1].split('id="guNameDisplay"')[0]
+    line = '<span class="gu-profile__status-meta gu-profile__progress-note" id="guVoteProgress">' \
+           'Op weg naar stemrecht: 0 van 3 kwaliteitsbijdragen.</span>'
+    assert line in row
+    assert row.index(line) < row.index('role="progressbar"')
+    assert 'aria-describedby="guVoteProgress"' in row
+
+
+def test_no_progress_line_with_the_right_to_vote(app, make_user):
+    row = _page(app, make_user('voter')).split('id="guStatus"')[1].split('id="guNameDisplay"')[0]
+    assert 'Op weg naar stemrecht' not in row and 'progressbar' not in row and 'guVoteProgress' not in row
+
+
+# ── "Who votes?" instead of "About me" ───────────────────────────────────
+
+ABOUT_ME = re.compile(r'About me|Over mij|Über mich|Sobre mí|À propos de moi', re.I)
+WHO_VOTES = {'nl': 'Wie stemt er mee?', 'en': 'Who votes?', 'de': 'Wer stimmt mit ab?', 'es': '¿Quién vota?',
+             'fr': 'Qui vote ?'}
+
+
+@pytest.mark.parametrize('lang', ['nl', 'en', 'de', 'es', 'fr'])
+def test_card_after_the_first_vote_and_privacy_refer_to_who_votes(app, db, make_user, monkeypatch, lang):
+    import html
+    import uuid
+    from app import issue_proposals as ip, issues
+    monkeypatch.setitem(app.config, 'PARTICIPANT_PROFILE', True)
+    author, backer, voter = make_user(), make_user('voter'), make_user('voter')
+    issue = issues.create({'title': f'Q{uuid.uuid4().hex[:6]}', 'intro': f'I{uuid.uuid4().hex[:6]}',
+                           'kind': 'online', 'support_threshold': 1}, author, lang='nl')
+    db.session.flush()
+    proposal = ip.create(issue, author, f'S{uuid.uuid4().hex[:6]}', f'E{uuid.uuid4().hex[:6]}', lang='nl')
+    db.session.flush()
+    ip.support(proposal, backer)
+    issue.phase = 'stemmen'
+    db.session.commit()
+    path = f'/vraagstuk/{issue.id}/voorstel/{proposal.id}'
+    who = WHO_VOTES[lang]
+    try:
+        client = _client(app, voter, lang)
+        _req(client, 'POST', path + '/stemmen', data={'choice': 'voor'})
+        page = _req(client, 'GET', path).get_data(as_text=True)
+        start = page.index('class="gu-ppcard"')
+        card = html.unescape(page[start:page.index('</form>', start)])
+        assert not ABOUT_ME.search(card)
+        assert f'"<a href="/profile#over-mij">{who}</a>"' in card
+        _req(client, 'POST', '/profiel/over-mij', data={'action': 'save', 'next': path + '#stemming', 'gender': 'f'})
+        saved = _req(client, 'GET', path).get_data(as_text=True)
+        start = saved.index('gu-ppcard__saved')
+        line = html.unescape(saved[start:saved.index('</p>', start)])
+        assert not ABOUT_ME.search(line) and f'"{who}"' in line
+    finally:
+        _cleanup(issue.id)
+    privacy = html.unescape(_page(app, None, lang, '/privacy'))
+    assert not ABOUT_ME.search(privacy) and f'"{who}"' in privacy
