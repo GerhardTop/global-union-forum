@@ -147,7 +147,7 @@
         <h2 class="gu-user__h2" id="maatregelTitle">{{ _('Measure') }}</h2>
 
         {% if user.is_deleted %}
-        <p class="gu-user__measuretext gu-user__dim">{{ _('This account has been deleted') }}{% if user.deleted_reason %}: "{{ user.deleted_reason }}"{% endif %}.</p>
+        <p class="gu-user__measuretext gu-user__dim">{% if user.deleted_reason == 'self' %}{# TRANSLATORS: moderator, a user's page: the account was deleted by its owner. #}{{ _('This account has been deleted by the user.') }}{% else %}{{ _('This account has been deleted') }}{% if user.deleted_reason %}: "{{ user.deleted_reason }}"{% endif %}.{% endif %}</p>
         {% else %}
         <section class="gu-mod-card gu-user__measure" id="waarschuwing">
           <div class="gu-user__measurehead">

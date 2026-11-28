@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 12:56+0100\n"
+"POT-Creation-Date: 2026-11-28 13:36+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -314,41 +314,46 @@ msgstr "Password: 8 to 72 characters, with at least one capital letter, one numb
 msgid "Passwords do not match."
 msgstr "Passwords do not match."
 
-#: app/models.py:248
+#. TRANSLATORS: shown instead of the author's name when an account was deleted.
+#: app/models.py:44
+msgid "Deleted account"
+msgstr "Deleted account"
+
+#: app/models.py:267
 msgid "Forum · conversation"
 msgstr "Forum · conversation"
 
-#: app/models.py:249
+#: app/models.py:268
 msgid "Forum · proposal"
 msgstr "Forum · proposal"
 
 # Herontwerp stap 1: vraagstukken (Issue)
-#: app/models.py:250 app/templates/issues/new.html:23
+#: app/models.py:269 app/templates/issues/new.html:23
 #: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:98
 #: app/templates/moderator/melding_beoordelen.html:68
 msgid "Issue"
 msgstr "Issue"
 
-#: app/models.py:408
+#: app/models.py:429
 #, python-format
 msgid "%(num)d day ago"
 msgid_plural "%(num)d days ago"
 msgstr[0] "%(num)d day ago"
 msgstr[1] "%(num)d days ago"
 
-#: app/models.py:411
+#: app/models.py:432
 #, python-format
 msgid "%(num)d hour ago"
 msgid_plural "%(num)d hours ago"
 msgstr[0] "%(num)d hour ago"
 msgstr[1] "%(num)d hours ago"
 
-#: app/models.py:414
+#: app/models.py:435
 #, python-format
 msgid "%(num)d min ago"
 msgstr "%(num)d min ago"
 
-#: app/models.py:415
+#: app/models.py:436
 msgid "just now"
 msgstr "just now"
 
@@ -915,41 +920,43 @@ msgstr "@%(username)s has been suspended for %(days)s days."
 msgid "The username does not match. Nothing was deleted."
 msgstr "The username does not match. Nothing was deleted."
 
-#: app/routes/admin.py:493
+#. TRANSLATORS: after deleting an account; %(label)s is the label shown instead
+#. of the name ("Deleted account").
+#: app/routes/admin.py:495
 #, python-format
-msgid "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
-msgstr "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
+msgid "The account @%(username)s has been deleted. Its contributions now show as \"%(label)s\"."
+msgstr "The account @%(username)s has been deleted. Its contributions now show as \"%(label)s\"."
 
-#: app/routes/admin.py:540
+#: app/routes/admin.py:543
 msgid "Choose what to do with this report."
 msgstr "Choose what to do with this report."
 
-#: app/routes/admin.py:543
+#: app/routes/admin.py:546
 msgid "The report has been handled."
 msgstr "The report has been handled."
 
-#: app/routes/admin.py:662
+#: app/routes/admin.py:665
 msgid "Thresholds saved."
 msgstr "Thresholds saved."
 
-#: app/routes/admin.py:693
+#: app/routes/admin.py:696
 msgid "Maximum durations saved."
 msgstr "Maximum durations saved."
 
-#: app/routes/admin.py:715 app/templates/admin/proposal_limits.html:25
+#: app/routes/admin.py:718 app/templates/admin/proposal_limits.html:25
 msgid "Enter a whole number from 1 to 365."
 msgstr "Enter a whole number from 1 to 365."
 
-#: app/routes/admin.py:718 app/routes/profile.py:98 app/routes/profile.py:174
+#: app/routes/admin.py:721 app/routes/profile.py:98 app/routes/profile.py:174
 msgid "Saved."
 msgstr "Saved."
 
-#: app/routes/admin.py:744 app/templates/issues/index.html:17
+#: app/routes/admin.py:747 app/templates/issues/index.html:17
 #: app/templates/issues/show.html:25 app/templates/issues/verwijderen.html:29
 msgid "Issues"
 msgstr "Issues"
 
-#: app/routes/admin.py:745 app/templates/issues/final_new.html:19
+#: app/routes/admin.py:748 app/templates/issues/final_new.html:19
 #: app/templates/issues/proposal.html:46 app/templates/issues/proposal.html:63
 #: app/templates/issues/proposal.html:321
 #: app/templates/issues/proposal.html:323
@@ -960,28 +967,28 @@ msgstr "Issues"
 msgid "Proposals"
 msgstr "Proposals"
 
-#: app/routes/admin.py:746
+#: app/routes/admin.py:749
 msgid "Versions of a proposal"
 msgstr "Versions of a proposal"
 
-#: app/routes/admin.py:747
+#: app/routes/admin.py:750
 msgid "Follow-up updates"
 msgstr "Follow-up updates"
 
-#: app/routes/admin.py:748 app/templates/forum/_facts.html:19
+#: app/routes/admin.py:751 app/templates/forum/_facts.html:19
 #: app/templates/moderator/gebruiker.html:71
 msgid "Facts"
 msgstr "Facts"
 
-#: app/routes/admin.py:785 app/templates/admin/translations.html:61
+#: app/routes/admin.py:788 app/templates/admin/translations.html:61
 msgid "There is no AI key here, so nothing can be translated."
 msgstr "There is no AI key here, so nothing can be translated."
 
-#: app/routes/admin.py:787
+#: app/routes/admin.py:790
 msgid "Started: the backlog is being translated in the background."
 msgstr "Started: the backlog is being translated in the background."
 
-#: app/routes/admin.py:789
+#: app/routes/admin.py:792
 msgid "A run is already busy."
 msgstr "A run is already busy."
 
@@ -7048,6 +7055,11 @@ msgstr "The aim is constructive: start by steering with a warning. Suspending an
 msgid "Measure"
 msgstr "Measure"
 
+#. moderator, a user's page: the account was deleted by its owner.
+#: app/templates/moderator/gebruiker.html:150
+msgid "This account has been deleted by the user."
+msgstr "This account has been deleted by the user."
+
 #: app/templates/moderator/gebruiker.html:150
 msgid "This account has been deleted"
 msgstr "This account has been deleted"
@@ -7140,9 +7152,12 @@ msgstr "You are about to delete the account <strong>@%(username)s</strong>."
 msgid "What happens"
 msgstr "What happens"
 
+#. moderator, deleting an account; %(label)s is the label shown instead of the
+#. name ("Deleted account").
 #: app/templates/moderator/gebruiker_verwijderen.html:41
-msgid "The account becomes <b>@verwijderd</b> and can no longer log in. Name, email address and password are erased."
-msgstr "The account becomes <b>@verwijderd</b> and can no longer log in. Name, email address and password are erased."
+#, python-format
+msgid "The account then shows as <b>%(label)s</b> and can no longer log in. Name, email address and password are erased."
+msgstr "The account then shows as <b>%(label)s</b> and can no longer log in. Name, email address and password are erased."
 
 #: app/templates/moderator/gebruiker_verwijderen.html:45
 msgctxt "delete count"

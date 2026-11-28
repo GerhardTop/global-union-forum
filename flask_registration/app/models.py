@@ -27,8 +27,27 @@ def status_rank(status):
     return STATUS_LADDER.index(status) if status in STATUS_LADDER else 0
 
 
-# A deleted account is anonymised, not removed: it shows as @verwijderd.
+# A deleted account is anonymised, not removed: it shows as deleted_label().
 DELETED_HANDLE = 'verwijderd'
+# Stored author codes of a deleted or removed author (posts.author_username):
+# 'verwijderd' (anonymised account) and 'deleted_user' (a removed post, the
+# old backfill). Storage stays as it is; on screen they all become one
+# translated label (deleted_label).
+DELETED_AUTHOR_CODES = (DELETED_HANDLE, 'deleted_user')
+
+
+def deleted_label():
+    """The translated label shown instead of a name when an account was
+    deleted. Without @: it is no username."""
+    from flask_babel import gettext
+    # TRANSLATORS: shown instead of the author's name when an account was deleted.
+    return gettext('Deleted account')
+
+
+def is_deleted_author_code(username):
+    """Whether a stored posts.author_username stands for a deleted author."""
+    return (not username or username in DELETED_AUTHOR_CODES
+            or username.startswith(DELETED_HANDLE + '_'))
 
 
 class User(UserMixin, db.Model):
@@ -186,15 +205,15 @@ class User(UserMixin, db.Model):
     @property
     def public_name(self):
         """Hoe deze gebruiker publiek verschijnt: echte naam of @pseudoniem.
-        A deleted (anonymised) account is '@verwijderd'."""
+        A deleted (anonymised) account shows deleted_label()."""
         if self.is_deleted:
-            return '@' + DELETED_HANDLE
+            return deleted_label()
         return self.real_name if self.shows_real_name else '@' + self.username
 
     @property
     def handle(self):
-        """The @handle for moderator screens: '@verwijderd' for a deleted account."""
-        return '@' + (DELETED_HANDLE if self.is_deleted else self.username)
+        """The @handle for moderator screens; deleted_label() for a deleted account."""
+        return deleted_label() if self.is_deleted else '@' + self.username
 
     def set_role(self, role):
         """Zet de contentrol en houd het oude is_moderator-vlag synchroon."""
@@ -359,7 +378,9 @@ class Post(db.Model):
         a = self.author
         if self.is_system:
             return self.author_name
-        return a.public_name if a is not None else '@' + self.author_username
+        if a is not None:
+            return a.public_name
+        return deleted_label() if is_deleted_author_code(self.author_username) else '@' + self.author_username
 
     def public_author_initial(self):
         return self.public_author_name().lstrip('@')[:1].upper()

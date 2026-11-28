@@ -1,7 +1,8 @@
 """
 Deleting your own account (POST /account/verwijderen) anonymises it instead of
 wiping it, as the privacy statement says: the row stays without anything
-personal, so posts, likes and votes keep working under "@verwijderd"; name,
+personal, so posts, likes and votes keep working under the label "Deleted
+account"; name,
 email, LinkedIn, password, the answers of "Who votes?" and users.country go.
 Login is impossible and the username and email address are free again. The
 text in the danger zone says so, in all five languages.
@@ -111,7 +112,7 @@ def test_self_delete_anonymises(app, db, world):
     # Posts, likes and the vote stay, under the anonymised author.
     own = db.session.get(Post, world['own'])
     assert own is not None and own.user_id == uid and own.author_username == DELETED_HANDLE
-    assert own.public_author_name() == '@' + DELETED_HANDLE and 'Dora' not in own.public_author_name()
+    assert own.public_author_name() == 'Verwijderd account' and 'Dora' not in own.public_author_name()
     assert PostLike.query.filter_by(post_id=world['theirs'], user_id=uid).count() == 1
     assert PostLike.query.filter_by(post_id=world['own']).count() == 1
     assert IssueProposalVote.query.filter_by(proposal_id=world['proposal'].id).count() == 1
@@ -154,3 +155,55 @@ def test_danger_zone_text(app, make_user, lang):
     assert page.count(NEW_TEXT[lang]) == 2  # the danger zone and the confirmation window
     for old in OLD_TEXT:
         assert old not in page
+
+
+# ── One translated label for a deleted author ────────────────────────────
+
+LABEL = {'nl': 'Verwijderd account', 'en': 'Deleted account', 'de': 'Gelöschtes Konto', 'es': 'Cuenta eliminada',
+         'fr': 'Compte supprimé'}
+
+
+@pytest.mark.parametrize('lang', ['nl', 'en', 'de', 'es', 'fr'])
+def test_deleted_author_shows_the_label(app, db, world, make_user, lang):
+    import html
+    from app import users
+    from app.models import IssueProposal
+    user, issue, proposal = world['user'], world['issue'], world['proposal']
+    users.anonymise(user, user, 'self')
+    # A removed post keeps the old stored code 'deleted_user'.
+    removed = Post(thread_id=world['thread'], user_id=None, author_name='', author_username='deleted_user',
+                   body=f'Weg {world["name"]}', source_lang='nl')
+    db.session.add(removed)
+    # A proposal whose maker is gone.
+    orphan = IssueProposal(issue_id=issue.id, statement=f'Zonder maker {world["name"]}', created_by_id=None)
+    db.session.add(orphan)
+    db.session.commit()
+    viewer = make_user()
+    thread_page = html.unescape(_req(_client(app, viewer, lang), 'GET', f'/forum/{world["thread"]}').get_data(as_text=True))
+    proposal_page = html.unescape(_req(_client(app, viewer, lang), 'GET',
+                                       f'/vraagstuk/{issue.id}/voorstel/{orphan.id}').get_data(as_text=True))
+    for page in (thread_page, proposal_page):
+        assert LABEL[lang] in page
+        assert '@verwijderd' not in page and '@deleted_user' not in page and '@' + DELETED_HANDLE not in page
+    assert thread_page.count(LABEL[lang]) >= 2  # the anonymised author and the removed post
+
+
+@pytest.mark.parametrize('lang,sentence', [
+    ('nl', 'Dit account is door de gebruiker zelf verwijderd.'),
+    ('en', 'This account has been deleted by the user.'),
+])
+def test_moderator_page_shows_self_deletion(app, db, world, make_user, lang, sentence):
+    user = world['user']
+    _req(_client(app, user), 'POST', '/account/verwijderen')
+    page = _req(_client(app, make_user(admin=True), lang), 'GET', f'/moderator/gebruiker/{user.id}').get_data(as_text=True)
+    assert sentence in page and '"self"' not in page and '&#34;self&#34;' not in page
+    assert f'<h1 class="gu-user__name">{LABEL[lang]}</h1>' in page
+
+
+def test_moderator_page_keeps_a_free_reason(app, db, world, make_user):
+    from app import users
+    user = world['user']
+    users.anonymise(user, user, 'Onveilig gedrag.')
+    db.session.commit()
+    page = _req(_client(app, make_user(admin=True)), 'GET', f'/moderator/gebruiker/{user.id}').get_data(as_text=True)
+    assert 'Dit account is verwijderd: &#34;Onveilig gedrag.&#34;.' in page or 'Dit account is verwijderd: "Onveilig gedrag."' in page

@@ -106,7 +106,7 @@
             {% for r in m.reports %}
             <div class="gu-mrow">
               <div class="gu-mrow__body">
-                <div class="gu-modrev__who"><strong>{{ user_link(r.reporter_id, r.reporter.public_name if r.reporter else '@deleted_user') }}</strong>{% if r.created_at %} <span class="gu-mod__dim">{{ r.created_at.strftime('%d-%m-%Y %H:%M') }}</span>{% endif %}</div>
+                <div class="gu-modrev__who"><strong>{{ user_link(r.reporter_id, r.reporter.public_name if r.reporter else deleted_label()) }}</strong>{% if r.created_at %} <span class="gu-mod__dim">{{ r.created_at.strftime('%d-%m-%Y %H:%M') }}</span>{% endif %}</div>
                 {{ rep_line(activity.get(r.reporter.id) if r.reporter else None) }}
                 <p class="gu-mrow__reason">"{{ r.reason }}"</p>
               </div>

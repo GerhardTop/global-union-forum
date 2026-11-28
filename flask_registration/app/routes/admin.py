@@ -490,7 +490,10 @@ def gebruiker_verwijderen(user_id):
         old = user.username
         users.anonymise(user, current_user, reason or None)
         db.session.commit()
-        flash(gettext('The account @%(username)s has been deleted. Its contributions now show as @verwijderd.', username=old),
+        from app.models import deleted_label
+        # TRANSLATORS: after deleting an account; %(label)s is the label shown instead of the name ("Deleted account").
+        flash(gettext('The account @%(username)s has been deleted. Its contributions now show as "%(label)s".',
+                      username=old, label=deleted_label()),
               'success')
         return redirect(url_for('admin.moderator_dashboard'))
     return render_template('moderator/gebruiker_verwijderen.html', user=user, reason=reason,

@@ -368,15 +368,15 @@ def test_account_delete_anonymises_and_keeps_contributions(app, db):
         assert user.deleted_reason == 'Onveilig.' and user.is_deleted
         assert old_name not in (user.username, user.email) and user.username.startswith('verwijderd_')
         assert user.first_name is None and user.last_name is None and not user.verified
-        assert user.public_name == '@verwijderd' and user.handle == '@verwijderd'
+        assert user.public_name == 'Verwijderd account' and user.handle == 'Verwijderd account'
         # Own warnings went, the one given as a moderator stays without a name.
         assert Warning.query.filter_by(user_id=user_id).count() == 0
         assert Warning.query.filter_by(user_id=other.id).one().by_id is None
 
-        # Contributions stay and show as @verwijderd.
+        # Contributions stay and show as the label "Verwijderd account".
         assert db.session.get(Post, post_id) is not None and db.session.get(Post, fact.id) is not None
         page = _req(_client(app, other), 'GET', f'/forum/{thread_id}').get_data(as_text=True)
-        assert 'Een bijdrage die moet blijven staan.' in page and '@verwijderd' in page
+        assert 'Een bijdrage die moet blijven staan.' in page and 'Verwijderd account' in page and '@verwijderd' not in page
         assert old_name not in page and 'Hofman' not in page
 
         # Login is impossible and an old session is gone.
@@ -388,7 +388,7 @@ def test_account_delete_anonymises_and_keeps_contributions(app, db):
             assert '_user_id' not in s
 
         dossier = _req(c, 'GET', f'/moderator/gebruiker/{user_id}').get_data(as_text=True)
-        assert '<h1 class="gu-user__name">@verwijderd</h1>' in dossier and 'Verwijderd op' in dossier
+        assert '<h1 class="gu-user__name">Verwijderd account</h1>' in dossier and 'Verwijderd op' in dossier
         assert 'id="waarschuwing"' not in dossier
         assert _req(c, 'GET', url).status_code == 404
     finally:

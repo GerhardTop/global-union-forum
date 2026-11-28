@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 12:56+0100\n"
+"POT-Creation-Date: 2026-11-28 13:36+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -314,41 +314,46 @@ msgstr "Wachtwoord: 8 tot 72 tekens, met minstens een hoofdletter, een cijfer en
 msgid "Passwords do not match."
 msgstr "Wachtwoorden komen niet overeen."
 
-#: app/models.py:248
+#. TRANSLATORS: shown instead of the author's name when an account was deleted.
+#: app/models.py:44
+msgid "Deleted account"
+msgstr "Verwijderd account"
+
+#: app/models.py:267
 msgid "Forum · conversation"
 msgstr "Forum · gesprek"
 
-#: app/models.py:249
+#: app/models.py:268
 msgid "Forum · proposal"
 msgstr "Forum · voorstel"
 
 # Herontwerp stap 1: vraagstukken (Issue)
-#: app/models.py:250 app/templates/issues/new.html:23
+#: app/models.py:269 app/templates/issues/new.html:23
 #: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:98
 #: app/templates/moderator/melding_beoordelen.html:68
 msgid "Issue"
 msgstr "Vraagstuk"
 
-#: app/models.py:408
+#: app/models.py:429
 #, python-format
 msgid "%(num)d day ago"
 msgid_plural "%(num)d days ago"
 msgstr[0] "%(num)d dag geleden"
 msgstr[1] "%(num)d dagen geleden"
 
-#: app/models.py:411
+#: app/models.py:432
 #, python-format
 msgid "%(num)d hour ago"
 msgid_plural "%(num)d hours ago"
 msgstr[0] "%(num)d uur geleden"
 msgstr[1] "%(num)d uur geleden"
 
-#: app/models.py:414
+#: app/models.py:435
 #, python-format
 msgid "%(num)d min ago"
 msgstr "%(num)d min geleden"
 
-#: app/models.py:415
+#: app/models.py:436
 msgid "just now"
 msgstr "zojuist"
 
@@ -915,41 +920,43 @@ msgstr "@%(username)s is geschorst voor %(days)s dagen."
 msgid "The username does not match. Nothing was deleted."
 msgstr "De gebruikersnaam klopt niet. Er is niets verwijderd."
 
-#: app/routes/admin.py:493
+#. TRANSLATORS: after deleting an account; %(label)s is the label shown instead
+#. of the name ("Deleted account").
+#: app/routes/admin.py:495
 #, python-format
-msgid "The account @%(username)s has been deleted. Its contributions now show as @verwijderd."
-msgstr "Het account @%(username)s is verwijderd. De bijdragen staan nu onder @verwijderd."
+msgid "The account @%(username)s has been deleted. Its contributions now show as \"%(label)s\"."
+msgstr "Het account @%(username)s is verwijderd. De bijdragen staan nu onder \"%(label)s\"."
 
-#: app/routes/admin.py:540
+#: app/routes/admin.py:543
 msgid "Choose what to do with this report."
 msgstr "Kies wat je met deze melding doet."
 
-#: app/routes/admin.py:543
+#: app/routes/admin.py:546
 msgid "The report has been handled."
 msgstr "De melding is behandeld."
 
-#: app/routes/admin.py:662
+#: app/routes/admin.py:665
 msgid "Thresholds saved."
 msgstr "Drempels opgeslagen."
 
-#: app/routes/admin.py:693
+#: app/routes/admin.py:696
 msgid "Maximum durations saved."
 msgstr "Maximale doorlooptijden opgeslagen."
 
-#: app/routes/admin.py:715 app/templates/admin/proposal_limits.html:25
+#: app/routes/admin.py:718 app/templates/admin/proposal_limits.html:25
 msgid "Enter a whole number from 1 to 365."
 msgstr "Vul een geheel getal van 1 tot en met 365 in."
 
-#: app/routes/admin.py:718 app/routes/profile.py:98 app/routes/profile.py:174
+#: app/routes/admin.py:721 app/routes/profile.py:98 app/routes/profile.py:174
 msgid "Saved."
 msgstr "Opgeslagen."
 
-#: app/routes/admin.py:744 app/templates/issues/index.html:17
+#: app/routes/admin.py:747 app/templates/issues/index.html:17
 #: app/templates/issues/show.html:25 app/templates/issues/verwijderen.html:29
 msgid "Issues"
 msgstr "Vraagstukken"
 
-#: app/routes/admin.py:745 app/templates/issues/final_new.html:19
+#: app/routes/admin.py:748 app/templates/issues/final_new.html:19
 #: app/templates/issues/proposal.html:46 app/templates/issues/proposal.html:63
 #: app/templates/issues/proposal.html:321
 #: app/templates/issues/proposal.html:323
@@ -960,28 +967,28 @@ msgstr "Vraagstukken"
 msgid "Proposals"
 msgstr "Voorstellen"
 
-#: app/routes/admin.py:746
+#: app/routes/admin.py:749
 msgid "Versions of a proposal"
 msgstr "Versies van een voorstel"
 
-#: app/routes/admin.py:747
+#: app/routes/admin.py:750
 msgid "Follow-up updates"
 msgstr "Vervolgupdates"
 
-#: app/routes/admin.py:748 app/templates/forum/_facts.html:19
+#: app/routes/admin.py:751 app/templates/forum/_facts.html:19
 #: app/templates/moderator/gebruiker.html:71
 msgid "Facts"
 msgstr "Feiten"
 
-#: app/routes/admin.py:785 app/templates/admin/translations.html:61
+#: app/routes/admin.py:788 app/templates/admin/translations.html:61
 msgid "There is no AI key here, so nothing can be translated."
 msgstr "Er is hier geen AI-sleutel, dus er kan niets vertaald worden."
 
-#: app/routes/admin.py:787
+#: app/routes/admin.py:790
 msgid "Started: the backlog is being translated in the background."
 msgstr "Gestart: de achterstand wordt op de achtergrond vertaald."
 
-#: app/routes/admin.py:789
+#: app/routes/admin.py:792
 msgid "A run is already busy."
 msgstr "Er loopt al een run."
 
@@ -7048,6 +7055,11 @@ msgstr "De bedoeling is opbouwend: begin bij bijsturen met een waarschuwing. Sch
 msgid "Measure"
 msgstr "Maatregel"
 
+#. moderator, a user's page: the account was deleted by its owner.
+#: app/templates/moderator/gebruiker.html:150
+msgid "This account has been deleted by the user."
+msgstr "Dit account is door de gebruiker zelf verwijderd."
+
 #: app/templates/moderator/gebruiker.html:150
 msgid "This account has been deleted"
 msgstr "Dit account is verwijderd"
@@ -7140,9 +7152,12 @@ msgstr "Je staat op het punt het account <strong>@%(username)s</strong> te verwi
 msgid "What happens"
 msgstr "Wat er gebeurt"
 
+#. moderator, deleting an account; %(label)s is the label shown instead of the
+#. name ("Deleted account").
 #: app/templates/moderator/gebruiker_verwijderen.html:41
-msgid "The account becomes <b>@verwijderd</b> and can no longer log in. Name, email address and password are erased."
-msgstr "Het account wordt <b>@verwijderd</b> en kan niet meer inloggen. Naam, e-mailadres en wachtwoord worden gewist."
+#, python-format
+msgid "The account then shows as <b>%(label)s</b> and can no longer log in. Name, email address and password are erased."
+msgstr "Het account staat daarna als <b>%(label)s</b> en kan niet meer inloggen. Naam, e-mailadres en wachtwoord worden gewist."
 
 #: app/templates/moderator/gebruiker_verwijderen.html:45
 msgctxt "delete count"

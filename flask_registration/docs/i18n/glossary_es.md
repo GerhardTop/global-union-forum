@@ -66,6 +66,7 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 | follow / unfollow | volgen / ontvolgen | seguir / dejar de seguir | Gangbaar op platforms. |
 | online / event | online / event | en línea / evento | "En línea" is neutraal internationaal; "evento" voor een bijeenkomst op een plek. |
 | username | gebruikersnaam | nombre de usuario | Het ene woord voor de naam waaronder je meedoet (@naam); nergens "seudónimo". Met het voorzetsel "con": "con tu nombre de usuario". |
+| Deleted account | Verwijderd account | Cuenta eliminada | Het label dat bij een verwijderd account in plaats van de naam staat; zonder @, het is geen gebruikersnaam. |
 | initiator | initiatiefnemer | Promotor | Vaste label voor wie een cuestión start; de gangbare term bij burgerinitiatieven. |
 | think tank | denktank | laboratorio de ideas | De door de RAE aanbevolen term. |
 | moderation | moderatie | moderación | Zelfde woord. |

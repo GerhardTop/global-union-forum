@@ -494,7 +494,7 @@ def account_verwijderen():
 
     # Anonymise instead of wiping (privacy statement): the account row stays
     # without anything personal, so contributions, facts, proposals, votes and
-    # likes keep working under "@verwijderd". Login becomes impossible.
+    # likes keep working under deleted_label(). Login becomes impossible.
     try:
         from app import users
         user = db.session.get(User, current_user.id)

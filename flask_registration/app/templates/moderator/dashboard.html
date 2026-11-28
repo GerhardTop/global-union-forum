@@ -151,7 +151,7 @@
               <div class="gu-mrow">
                 <div class="gu-mrow__body">
                   <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }} {{ excerpt(post.body, post_url(post)) }}</div>
-                  <p class="gu-mrow__reason">{{ r.award.criterion }} {{ quality_labels[r.award.criterion] if r.award.criterion in quality_labels else '' }} · {{ _('Reported by') }} {{ r.reporter.public_name if r.reporter else '@deleted_user' }}</p>
+                  <p class="gu-mrow__reason">{{ r.award.criterion }} {{ quality_labels[r.award.criterion] if r.award.criterion in quality_labels else '' }} · {{ _('Reported by') }} {{ r.reporter.public_name if r.reporter else deleted_label() }}</p>
                   {% if current_user.id == post.user_id %}
                   <p class="gu-mrow__note">{{ _('Your own contribution: another moderator decides.') }}</p>
                   {% endif %}
@@ -198,7 +198,7 @@
                   <div class="gu-mrow__line"><strong>{{ user_link(post.user_id, post.public_author_name()) }}</strong> <span class="gu-mrow__dot">·</span> {{ post_ctx(post) }}{% if url %} <a class="gu-mrow__open" href="{{ url }}">{{ _('View in context') }}</a>{% endif %}</div>
                   {#- Multilingual phase 2: the fact in the moderator's language with the label, the original one click away. -#}
                   <div class="gu-mrow__fact">{{ mt_fact(post) }}</div>
-                  <p class="gu-mrow__reason">{{ reason_labels.get(row.reason, row.reason) }} · {{ _('by') }} {{ row.user.public_name if row.user else '@deleted_user' }}{% if row.note %} · {{ _('Explanation') }}:{% endif %}</p>
+                  <p class="gu-mrow__reason">{{ reason_labels.get(row.reason, row.reason) }} · {{ _('by') }} {{ row.user.public_name if row.user else deleted_label() }}{% if row.note %} · {{ _('Explanation') }}:{% endif %}</p>
                   {#- The note is ordinary user text: translated on request, with the same label. -#}
                   {% if row.note %}{{ mt(row, 'note', 'p', 'gu-mrow__notetext', on_request=true,
                                        request_url=url_for('forum.fact_dispute_translate', dispute_id=row.id),

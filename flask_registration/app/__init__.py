@@ -965,6 +965,8 @@ def create_app():
         from app import notifications
         return notifications.unread_count(current_user)
     app.jinja_env.globals['unread_notifications'] = unread_notifications
+    from app.models import deleted_label
+    app.jinja_env.globals['deleted_label'] = deleted_label
 
     @app.context_processor
     def inject_babel():
