@@ -58,7 +58,7 @@ De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` 
 | follow / unfollow | volgen / ontvolgen | folgen / nicht mehr folgen | Gangbaar op platforms; "entfolgen" is spreektaal. |
 | online / event | online / event | Online / Veranstaltung | "Online" is ook in het Duits gewoon; voor een event is "Veranstaltung" het neutrale woord. |
 | username | gebruikersnaam | Benutzername | Het ene woord voor de naam waaronder je meedoet (@naam); nergens "Pseudonym". "Unter meinem Benutzernamen", "unter deinem Benutzernamen" (n-declinatie). |
-| Deleted account | Verwijderd account | Gelöschtes Konto | Het label dat bij een verwijderd account in plaats van de naam staat; zonder @, het is geen gebruikersnaam. |
+| Former account | Voormalig account | Ehemaliges Konto | Het label dat bij een account dat er niet meer is in plaats van de naam staat; zonder @, het is geen gebruikersnaam. Zegt niet wie het account verwijderde, en is genderneutraal. |
 | initiator | initiatiefnemer | Initiator | Vaste label voor de rol van wie een vraagstuk start. |
 | think tank | denktank | Denkfabrik | Gangbaar Duits woord. |
 | moderation | moderatie | Moderation | Zelfde woord. |

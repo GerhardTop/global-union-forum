@@ -80,7 +80,7 @@
               <td>{{ (a.post.source_lang or '?') | upper }}</td>
               <td>{% if a.ai_criterion %}{{ _('awarded') }} {{ a.ai_criterion }}{% else %}{{ _('declined') }}{% endif %}</td>
               <td>{% if a.status == 'toegekend' %}{{ _('awarded') }} {{ a.criterion }}{% else %}{{ _('declined') }}{% endif %}</td>
-              <td><a href="{{ url_for('forum.forum_quality_page', post_id=a.post_id) }}" class="gu-admin-table__threadlink">{{ (a.post.body or '')[:80] }}{% if (a.post.body or '')|length > 80 %}…{% endif %}</a></td>
+              <td><a href="{{ url_for('forum.forum_quality_page', post_id=a.post_id) }}" class="gu-admin-table__threadlink">{{ (a.post.shown_body or '')[:80] }}{% if (a.post.body or '')|length > 80 %}…{% endif %}</a></td>
               <td class="gu-admin-table__date">{{ a.created_at.strftime('%d-%m-%Y') if a.created_at else '' }}</td>
             </tr>
             {% endfor %}

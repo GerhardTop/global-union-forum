@@ -293,7 +293,7 @@ def judge_post(post_id):
         lang = target_lang(post)  # geantwoord wordt in de taal van de bijdrage
         earlier = (Post.query.filter(Post.thread_id == post.thread_id, Post.id != post.id,
                                      Post.created_at <= post.created_at,
-                                     Post.body != '[bericht verwijderd]')
+                                     Post.body != Post.DELETED_BODY)
                    .order_by(Post.created_at.desc()).limit(_MAX_EARLIER_POSTS).all())
         from app import content_i18n
         content_i18n.preload(earlier, 'body')

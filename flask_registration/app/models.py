@@ -36,12 +36,17 @@ DELETED_HANDLE = 'verwijderd'
 DELETED_AUTHOR_CODES = (DELETED_HANDLE, 'deleted_user')
 
 
+# The stored body of a post its author deleted. Storage stays as it is (no
+# migration); on screen it becomes a translated text (Post.shown_body).
+DELETED_BODY = '[bericht verwijderd]'
+
+
 def deleted_label():
     """The translated label shown instead of a name when an account was
     deleted. Without @: it is no username."""
     from flask_babel import gettext
-    # TRANSLATORS: shown instead of the author's name when an account was deleted.
-    return gettext('Deleted account')
+    # TRANSLATORS: shown instead of the author's name when the account no longer exists (deleted by the person or by moderation). Neutral: it does not say who deleted it.
+    return gettext('Former account')
 
 
 def is_deleted_author_code(username):
@@ -384,6 +389,23 @@ class Post(db.Model):
 
     def public_author_initial(self):
         return self.public_author_name().lstrip('@')[:1].upper()
+
+    DELETED_BODY = DELETED_BODY
+
+    @property
+    def is_deleted_body(self):
+        """Whether the author deleted this post (the stored code DELETED_BODY)."""
+        return self.body == DELETED_BODY
+
+    @property
+    def shown_body(self):
+        """The body for display: a translated text for a deleted post, else
+        the stored body (the original; translations go via content_i18n)."""
+        if self.is_deleted_body:
+            from flask_babel import gettext
+            # TRANSLATORS: shown, between square brackets, instead of the text of a post its author deleted.
+            return '[' + gettext('Message deleted') + ']'
+        return self.body
 
     def public_linkedin_url(self):
         a = self.author

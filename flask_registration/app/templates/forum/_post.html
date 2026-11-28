@@ -8,9 +8,9 @@
            conduct_cases (fase D; alleen de auteur en moderators krijgen hier
            een verplaatste of verborgen bijdrage, voor anderen is er een placeholder)
 #}
-{% if post.body == '[bericht verwijderd]' %}
+{% if post.is_deleted_body %}
   {% set is_deleted = true %}
-  {% set display_body = '[bericht verwijderd]' %}
+  {% set display_body = post.shown_body %}
   {% set is_pretranslated = false %}
   {% set is_foreign = false %}
 {% else %}
@@ -40,7 +40,7 @@
 {# Gedragsregels (fase D): een verplaatste of verborgen bijdrage heeft geen keurmerk. #}
 {% set case = (conduct_cases or {}).get(post.id) %}
 {% set c_removed = case is not none and case.removes_from_thread %}
-{% set q_awarded = qa and qa.status == 'toegekend' and post.body != '[bericht verwijderd]' and not c_removed %}
+{% set q_awarded = qa and qa.status == 'toegekend' and not post.is_deleted_body and not c_removed %}
 {% set can_edit = not is_deleted and is_own and not has_replies and not c_removed %}
 {% set author_linkedin = post.public_linkedin_url() %}
 

@@ -998,7 +998,7 @@ def _thread_context(thread, branch_root_id=None):
         # Ook na een bewerking (edited_at): dan loopt de beoordeling opnieuw.
         poll_ids = {p.id for p in everything
                     if p.user_id == current_user.id and p.id not in quality_awards and not p.is_demo
-                    and p.body != '[bericht verwijderd]'
+                    and not p.is_deleted_body
                     and (p.edited_at or p.created_at) and (p.edited_at or p.created_at) >= fresh}
     return dict(
         thread=thread,
@@ -1049,6 +1049,8 @@ def forum_translate(post_id):
     post = Post.query.get_or_404(post_id)
     if conduct.is_removed_for(post, current_user):
         abort(404)
+    if post.is_deleted_body:   # the stored code is never machine translated
+        return jsonify({'error': 'no content'}), 400
     return _translate_json(post, 'body')
 
 
@@ -1241,7 +1243,7 @@ def _has_replies(post):
 def _edit_refusal(post):
     """None als de huidige gebruiker dit bericht mag bewerken, anders de
     reden: 'forbidden', 'removed' of 'replies'."""
-    if (post.user_id is None or post.user_id != current_user.id or post.body == '[bericht verwijderd]'
+    if (post.user_id is None or post.user_id != current_user.id or post.is_deleted_body
             or post.is_fact):
         return 'forbidden'
     case = post.conduct_case
@@ -1357,7 +1359,7 @@ def forum_post_verwijderen(post_id):
     if post.is_op:
         _delete_thread(post.thread)
         return redirect(url_for('forum.forum'))
-    post.body = '[bericht verwijderd]'
+    post.body = Post.DELETED_BODY
     content_i18n.invalidate(post)
     post.user_id = None
     # Gedeelde placeholder i.p.v. per-post gok — zelfde principe als de
@@ -1494,7 +1496,7 @@ def forum_quality_status(post_id):
     is_own = post.user_id == current_user.id
     case = post.conduct_case
     removed = case is not None and case.removes_from_thread
-    q_awarded = qa.status == 'toegekend' and post.body != '[bericht verwijderd]' and not removed
+    q_awarded = qa.status == 'toegekend' and not post.is_deleted_body and not removed
     reported = {qa.id} if QualityReport.query.filter_by(
         award_id=qa.id, reporter_id=current_user.id, decision=None).first() else set()
     html = render_template('forum/_quality_block.html', post=post, qa=qa, q_awarded=q_awarded,
@@ -1627,7 +1629,7 @@ def conduct_move(post_id):
     post = Post.query.get_or_404(post_id)
     _moderator_for(post)
     rule, note = request.form.get('rule'), _moderator_note()
-    if rule not in ('respect', 'onderwerp') or not note or post.body == '[bericht verwijderd]':
+    if rule not in ('respect', 'onderwerp') or not note or post.is_deleted_body:
         abort(400)
     conduct.move(post, rule, note, i18n.current(), actor=current_user)
     db.session.commit()

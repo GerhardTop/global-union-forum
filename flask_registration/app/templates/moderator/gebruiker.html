@@ -112,7 +112,7 @@
             {% set p = c.post %}
             {% set case = p.conduct_case %}
             {% set snapshot = case.body_snapshot if case and case.body_snapshot and c.status in ('verplaatst', 'verborgen') else None %}
-            {% set text = (snapshot or (p.fact_title if p.is_fact and p.fact_title else p.body) or '')|replace('\n', ' ') %}
+            {% set text = (snapshot or (p.fact_title if p.is_fact and p.fact_title else p.shown_body) or '')|replace('\n', ' ') %}
             {% set text = text[:120] ~ ('…' if text|length > 120 else '') %}
             {% set label = (((_('Fact: ')) if p.is_fact else '') ~ '"' ~ text ~ '"') %}
             {#- Multilingual phase 2: a fact is translated right away, so it shows in the moderator's language (or with its language code). -#}

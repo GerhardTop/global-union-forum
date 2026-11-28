@@ -39,7 +39,7 @@
       </div>
       <p class="gu-background__meta">{% if case.source == 'ai' %}{{ _('Automatically by the AI') }}{% else %}{{ _('By a moderator') }}{% endif %} · {{ case.acted_ago }}</p>
       <blockquote class="gu-background__text" lang="{{ case.post.source_lang }}">
-        {% for para in (case.body_snapshot or case.post.body or '').split('\n\n') %}<p>{{ para }}</p>{% endfor %}
+        {% for para in (case.body_snapshot or case.post.shown_body or '').split('\n\n') %}<p>{{ para }}</p>{% endfor %}
       </blockquote>
       {% if case.explanation %}
       <div class="gu-background__why">

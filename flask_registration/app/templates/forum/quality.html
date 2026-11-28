@@ -52,7 +52,7 @@
       <h1 class="gu-forum__title">{{ _('Quality judgement') }}</h1>
       <blockquote class="gu-qthread__post">
         <p class="gu-quality__meta">{{ post.public_author_name() }} · {{ post.time_ago }}</p>
-        <p>{{ (post.body or '')[:600] }}{% if (post.body or '')|length > 600 %}…{% endif %}</p>
+        <p>{{ (post.shown_body or '')[:600] }}{% if (post.shown_body or '')|length > 600 %}…{% endif %}</p>
       </blockquote>
     </header>
 

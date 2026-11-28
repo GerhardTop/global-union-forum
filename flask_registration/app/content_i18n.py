@@ -227,6 +227,9 @@ def view(obj, field, lang):
     if not hasattr(obj, '__tablename__'):
         text = getattr(obj, field)
         return View(text, text, None, 'own')
+    if field == 'body' and getattr(obj, 'is_deleted_body', False):
+        # A deleted post: the stored code becomes a translated text, never a translation.
+        return View(obj.shown_body, obj.shown_body, None, 'own')
     orig = original(obj, field)
     src = source_lang(obj)
     if lang == src:

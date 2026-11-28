@@ -60,7 +60,7 @@ class Melding:
 
     @property
     def snippet(self):
-        text = self.item.body if self.kind == 'post' else self.item.statement
+        text = self.item.shown_body if self.kind == 'post' else self.item.statement
         text = (text or '').strip().replace('\n', ' ')
         return text if len(text) <= 120 else text[:117] + '...'
 

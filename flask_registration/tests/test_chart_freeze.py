@@ -135,7 +135,7 @@ def test_a_link_of_a_deleted_account_is_no_ai_link(app, db, make_user, made, sta
     db.session.commit()
     assert link.by_ai is False
     page = _req(_client(app, owner), 'GET', f'/vraagstuk/{issue.id}/voorstel/{proposal.id}').get_data(as_text=True)
-    assert 'Gekoppeld door Verwijderd account' in page and '@deleted_user' not in page
+    assert 'Gekoppeld door Voormalig account' in page and '@deleted_user' not in page
     assert 'Gekoppeld door AI' not in page
     assert not ip.can_unlink(link, owner)
     moderator = make_user(role='moderator')

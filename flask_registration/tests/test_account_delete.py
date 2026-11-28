@@ -1,7 +1,7 @@
 """
 Deleting your own account (POST /account/verwijderen) anonymises it instead of
 wiping it, as the privacy statement says: the row stays without anything
-personal, so posts, likes and votes keep working under the label "Deleted
+personal, so posts, likes and votes keep working under the label "Former
 account"; name,
 email, LinkedIn, password, the answers of "Who votes?" and users.country go.
 Login is impossible and the username and email address are free again. The
@@ -112,7 +112,7 @@ def test_self_delete_anonymises(app, db, world):
     # Posts, likes and the vote stay, under the anonymised author.
     own = db.session.get(Post, world['own'])
     assert own is not None and own.user_id == uid and own.author_username == DELETED_HANDLE
-    assert own.public_author_name() == 'Verwijderd account' and 'Dora' not in own.public_author_name()
+    assert own.public_author_name() == 'Voormalig account' and 'Dora' not in own.public_author_name()
     assert PostLike.query.filter_by(post_id=world['theirs'], user_id=uid).count() == 1
     assert PostLike.query.filter_by(post_id=world['own']).count() == 1
     assert IssueProposalVote.query.filter_by(proposal_id=world['proposal'].id).count() == 1
@@ -159,8 +159,8 @@ def test_danger_zone_text(app, make_user, lang):
 
 # ── One translated label for a deleted author ────────────────────────────
 
-LABEL = {'nl': 'Verwijderd account', 'en': 'Deleted account', 'de': 'Gelöschtes Konto', 'es': 'Cuenta eliminada',
-         'fr': 'Compte supprimé'}
+LABEL = {'nl': 'Voormalig account', 'en': 'Former account', 'de': 'Ehemaliges Konto', 'es': 'Cuenta antigua',
+         'fr': 'Ancien compte'}
 
 
 @pytest.mark.parametrize('lang', ['nl', 'en', 'de', 'es', 'fr'])
@@ -207,3 +207,51 @@ def test_moderator_page_keeps_a_free_reason(app, db, world, make_user):
     db.session.commit()
     page = _req(_client(app, make_user(admin=True)), 'GET', f'/moderator/gebruiker/{user.id}').get_data(as_text=True)
     assert 'Dit account is verwijderd: &#34;Onveilig gedrag.&#34;.' in page or 'Dit account is verwijderd: "Onveilig gedrag."' in page
+
+
+OLD_LABELS = ('Deleted account', 'Verwijderd account', 'Gelöschtes Konto', 'Cuenta eliminada', 'Compte supprimé',
+              '@verwijderd', '@deleted_user')
+
+
+@pytest.mark.parametrize('lang', ['nl', 'en', 'de', 'es', 'fr'])
+def test_no_old_labels_for_a_former_account(app, db, world, make_user, lang):
+    import html
+    from app import users
+    users.anonymise(world['user'], world['user'], 'self')
+    db.session.commit()
+    page = html.unescape(_req(_client(app, make_user(), lang), 'GET', f'/forum/{world["thread"]}').get_data(as_text=True))
+    assert LABEL[lang] in page
+    for old in OLD_LABELS:
+        assert old not in page, old
+
+
+# ── A deleted post: the stored code, a translated text on screen ─────────
+
+MESSAGE_DELETED = {'nl': '[Bericht verwijderd]', 'en': '[Message deleted]', 'de': '[Beitrag gelöscht]',
+                   'es': '[Mensaje eliminado]', 'fr': '[Message supprimé]'}
+
+
+@pytest.mark.parametrize('lang', ['nl', 'en', 'de', 'es', 'fr'])
+def test_deleted_post_shows_a_translated_text(app, db, world, make_user, lang):
+    import html
+    from app.models import DELETED_BODY
+    user = world['user']
+    reply = Post(thread_id=world['thread'], user_id=user.id, author_name='', author_username=world['name'],
+                 parent_id=world['theirs'], body=f'Weg te halen {world["name"]}', source_lang='nl')
+    db.session.add(reply)
+    db.session.commit()
+    r = _req(_client(app, user), 'POST', f'/forum/post/{reply.id}/verwijderen')
+    assert r.status_code in (302, 303)
+    db.session.expire_all()
+    stored = db.session.get(Post, reply.id)
+    assert stored.body == DELETED_BODY and stored.is_deleted_body  # storage unchanged
+    for viewer in (make_user(), make_user(admin=True)):
+        page = html.unescape(_req(_client(app, viewer, lang), 'GET', f'/forum/{world["thread"]}').get_data(as_text=True))
+        assert MESSAGE_DELETED[lang] in page and DELETED_BODY not in page
+    # The moderator page of the author lists it with the translated text too.
+    dossier = html.unescape(_req(_client(app, make_user(admin=True), lang), 'GET',
+                                 f'/moderator/gebruiker/{user.id}').get_data(as_text=True))
+    assert DELETED_BODY not in dossier
+    # Never machine translated.
+    r = _req(_client(app, make_user(), 'en'), 'POST', f'/forum/translate/{reply.id}')
+    assert r.status_code == 400

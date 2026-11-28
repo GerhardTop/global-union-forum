@@ -32,7 +32,7 @@
            'nothing': _('Do nothing, the contribution stays')},
 }[kind_code] %}
 {% set is_own = (m.kind == 'post' and m.item.user_id == current_user.id) or (m.kind == 'proposal' and m.item.created_by_id == current_user.id) %}
-{% set body = m.item.body if m.kind == 'post' else m.item.statement %}
+{% set body = m.item.shown_body if m.kind == 'post' else m.item.statement %}
 {% set parent = m.item.parent if m.kind == 'post' else None %}
 <div class="gu-mod gu-modrev" lang="{{ lang }}">
   <div class="gu-mod__wrap">
@@ -75,7 +75,7 @@
           {% if parent %}
           <div class="gu-modrev__msg gu-modrev__msg--dim">
             <div class="gu-modrev__who"><strong>{{ user_link(parent.user_id, parent.public_author_name()) }}</strong> <span class="gu-mod__dim">{{ _('parent message') }}</span></div>
-            <p class="gu-modrev__body">{{ parent.body }}</p>
+            <p class="gu-modrev__body">{{ parent.shown_body }}</p>
           </div>
           {% endif %}
 
@@ -91,7 +91,7 @@
           {% if reply %}
           <div class="gu-modrev__msg gu-modrev__msg--dim gu-modrev__msg--reply">
             <div class="gu-modrev__who"><strong>{{ user_link(reply.user_id, reply.public_author_name()) }}</strong> <span class="gu-mod__dim">{{ _('reply below') }}</span></div>
-            <p class="gu-modrev__body">{{ reply.body }}</p>
+            <p class="gu-modrev__body">{{ reply.shown_body }}</p>
           </div>
           {% endif %}
         </section>

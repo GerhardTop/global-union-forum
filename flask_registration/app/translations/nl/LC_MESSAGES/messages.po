@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 13:36+0100\n"
+"POT-Creation-Date: 2026-11-28 13:54+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -314,46 +314,54 @@ msgstr "Wachtwoord: 8 tot 72 tekens, met minstens een hoofdletter, een cijfer en
 msgid "Passwords do not match."
 msgstr "Wachtwoorden komen niet overeen."
 
-#. TRANSLATORS: shown instead of the author's name when an account was deleted.
-#: app/models.py:44
-msgid "Deleted account"
-msgstr "Verwijderd account"
+#. TRANSLATORS: shown instead of the author's name when the account no longer
+#. exists (deleted by the person or by moderation). Neutral: it does not say
+#. who deleted it.
+#: app/models.py:49
+msgid "Former account"
+msgstr "Voormalig account"
 
-#: app/models.py:267
+#: app/models.py:272
 msgid "Forum · conversation"
 msgstr "Forum · gesprek"
 
-#: app/models.py:268
+#: app/models.py:273
 msgid "Forum · proposal"
 msgstr "Forum · voorstel"
 
 # Herontwerp stap 1: vraagstukken (Issue)
-#: app/models.py:269 app/templates/issues/new.html:23
+#: app/models.py:274 app/templates/issues/new.html:23
 #: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:98
 #: app/templates/moderator/melding_beoordelen.html:68
 msgid "Issue"
 msgstr "Vraagstuk"
 
-#: app/models.py:429
+#. TRANSLATORS: shown, between square brackets, instead of the text of a post
+#. its author deleted.
+#: app/models.py:407
+msgid "Message deleted"
+msgstr "Bericht verwijderd"
+
+#: app/models.py:451
 #, python-format
 msgid "%(num)d day ago"
 msgid_plural "%(num)d days ago"
 msgstr[0] "%(num)d dag geleden"
 msgstr[1] "%(num)d dagen geleden"
 
-#: app/models.py:432
+#: app/models.py:454
 #, python-format
 msgid "%(num)d hour ago"
 msgid_plural "%(num)d hours ago"
 msgstr[0] "%(num)d uur geleden"
 msgstr[1] "%(num)d uur geleden"
 
-#: app/models.py:435
+#: app/models.py:457
 #, python-format
 msgid "%(num)d min ago"
 msgstr "%(num)d min geleden"
 
-#: app/models.py:436
+#: app/models.py:458
 msgid "just now"
 msgstr "zojuist"
 
@@ -921,7 +929,7 @@ msgid "The username does not match. Nothing was deleted."
 msgstr "De gebruikersnaam klopt niet. Er is niets verwijderd."
 
 #. TRANSLATORS: after deleting an account; %(label)s is the label shown instead
-#. of the name ("Deleted account").
+#. of the name ("Former account").
 #: app/routes/admin.py:495
 #, python-format
 msgid "The account @%(username)s has been deleted. Its contributions now show as \"%(label)s\"."
@@ -1085,41 +1093,41 @@ msgstr "Je kunt niet reageren op je eigen bericht."
 msgid "Invalid reply: the post you are replying to does not exist in this conversation."
 msgstr "Ongeldige reactie: het bericht waarop je reageert bestaat niet in dit gesprek."
 
-#: app/routes/forum.py:1257
+#: app/routes/forum.py:1259
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "De stelling van een voorstel kan alleen in de bijstelfase worden aangepast."
 
-#: app/routes/forum.py:1259
+#: app/routes/forum.py:1261
 msgid "This post already has replies, so it can no longer be edited."
 msgstr "Dit bericht heeft al reacties en kan daarom niet meer worden bewerkt."
 
-#: app/routes/forum.py:1260
+#: app/routes/forum.py:1262
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "Een verplaatst of verborgen bericht kun je niet bewerken. Je kunt wel bezwaar maken."
 
-#: app/routes/forum.py:1337 app/templates/forum/_post.html:70
+#: app/routes/forum.py:1339 app/templates/forum/_post.html:70
 #, python-format
 msgid "edited %(when)s"
 msgstr "bewerkt %(when)s"
 
 # Polijststap P7: volledige pagina vanuit de grote weergave
-#: app/routes/forum.py:1529 app/routes/issues.py:365
+#: app/routes/forum.py:1531 app/routes/issues.py:365
 msgid "Give a reason for your report."
 msgstr "Geef een reden voor je melding."
 
-#: app/routes/forum.py:1538 app/routes/issues.py:371
+#: app/routes/forum.py:1540 app/routes/issues.py:371
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Bedankt, je melding is doorgegeven aan een moderator."
 
-#: app/routes/forum.py:1943
+#: app/routes/forum.py:1945
 msgid "Choose a reason (and keep the note under 500 characters)."
 msgstr "Kies een reden (en houd de toelichting onder 500 tekens)."
 
-#: app/routes/forum.py:1945
+#: app/routes/forum.py:1947
 msgid "You already disputed this fact; a moderator will look at it."
 msgstr "Je hebt dit feit al betwist; een moderator kijkt ernaar."
 
-#: app/routes/forum.py:1949
+#: app/routes/forum.py:1951
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 msgstr "Dank je. Een moderator kijkt naar je bezwaar; het feit blijft zolang zichtbaar."
 
@@ -7153,11 +7161,11 @@ msgid "What happens"
 msgstr "Wat er gebeurt"
 
 #. moderator, deleting an account; %(label)s is the label shown instead of the
-#. name ("Deleted account").
+#. name ("Former account").
 #: app/templates/moderator/gebruiker_verwijderen.html:41
 #, python-format
 msgid "The account then shows as <b>%(label)s</b> and can no longer log in. Name, email address and password are erased."
-msgstr "Het account staat daarna als <b>%(label)s</b> en kan niet meer inloggen. Naam, e-mailadres en wachtwoord worden gewist."
+msgstr "Het account wordt daarna getoond als <b>%(label)s</b> en kan niet meer inloggen. Naam, e-mailadres en wachtwoord worden gewist."
 
 #: app/templates/moderator/gebruiker_verwijderen.html:45
 msgctxt "delete count"

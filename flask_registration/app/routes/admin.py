@@ -126,7 +126,7 @@ def moderator_dashboard():
     # Kwaliteit (alleen een beloning): open meldingen "geen kwaliteit" door
     # anderen, en recente bijdragen zonder oordeel (bijvoorbeeld omdat de AI
     # faalde). Er is geen bezwaarstroom meer.
-    live = Post.body != '[bericht verwijderd]'
+    live = Post.body != Post.DELETED_BODY
     open_reports = (QualityReport.query.filter(QualityReport.decision.is_(None))
                     .order_by(QualityReport.created_at).all())
     # Fase 2c: een verplaatste of verborgen bijdrage hoort hier niet (geen
@@ -491,7 +491,7 @@ def gebruiker_verwijderen(user_id):
         users.anonymise(user, current_user, reason or None)
         db.session.commit()
         from app.models import deleted_label
-        # TRANSLATORS: after deleting an account; %(label)s is the label shown instead of the name ("Deleted account").
+        # TRANSLATORS: after deleting an account; %(label)s is the label shown instead of the name ("Former account").
         flash(gettext('The account @%(username)s has been deleted. Its contributions now show as "%(label)s".',
                       username=old, label=deleted_label()),
               'success')
@@ -563,7 +563,7 @@ def melding_beoordelen(kind, item_id):
                            ConductCase.action.in_(('verplaatst', 'verborgen')))
                    .exists())
         reply = (Post.query.filter(Post.parent_id == melding.item.id,
-                                   Post.body != '[bericht verwijderd]', ~removed)
+                                   Post.body != Post.DELETED_BODY, ~removed)
                  .order_by(Post.created_at, Post.id).first())
     author = melding.item.author if melding.kind == 'post' else melding.item.created_by
     activity = {}

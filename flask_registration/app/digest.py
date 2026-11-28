@@ -146,7 +146,7 @@ def _thread_activity(thread_id, user, since):
     rows = (db.session.query(Post.kind, func.count(Post.id))
             .filter(Post.thread_id == thread_id, Post.created_at > since,
                     Post.is_op.isnot(True), or_(Post.user_id.is_(None), Post.user_id != user.id),
-                    Post.body != '[bericht verwijderd]', Post.id.notin_(removed))
+                    Post.body != Post.DELETED_BODY, Post.id.notin_(removed))
             .group_by(Post.kind).all())
     posts = sum(n for kind, n in rows if kind != FACT_KIND)
     facts = sum(n for kind, n in rows if kind == FACT_KIND)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-28 13:36+0100\n"
+"POT-Creation-Date: 2026-11-28 13:54+0100\n"
 "PO-Revision-Date: 2026-11-22 14:15+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -314,45 +314,53 @@ msgstr "Contraseña: de 8 a 72 caracteres, con al menos una mayúscula, un núme
 msgid "Passwords do not match."
 msgstr "Las contraseñas no coinciden."
 
-#. TRANSLATORS: shown instead of the author's name when an account was deleted.
-#: app/models.py:44
-msgid "Deleted account"
-msgstr "Cuenta eliminada"
+#. TRANSLATORS: shown instead of the author's name when the account no longer
+#. exists (deleted by the person or by moderation). Neutral: it does not say
+#. who deleted it.
+#: app/models.py:49
+msgid "Former account"
+msgstr "Cuenta antigua"
 
-#: app/models.py:267
+#: app/models.py:272
 msgid "Forum · conversation"
 msgstr "Foro · conversación"
 
-#: app/models.py:268
+#: app/models.py:273
 msgid "Forum · proposal"
 msgstr "Foro · propuesta"
 
-#: app/models.py:269 app/templates/issues/new.html:23
+#: app/models.py:274 app/templates/issues/new.html:23
 #: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:98
 #: app/templates/moderator/melding_beoordelen.html:68
 msgid "Issue"
 msgstr "Cuestión"
 
-#: app/models.py:429
+#. TRANSLATORS: shown, between square brackets, instead of the text of a post
+#. its author deleted.
+#: app/models.py:407
+msgid "Message deleted"
+msgstr "Mensaje eliminado"
+
+#: app/models.py:451
 #, python-format
 msgid "%(num)d day ago"
 msgid_plural "%(num)d days ago"
 msgstr[0] "hace %(num)d día"
 msgstr[1] "hace %(num)d días"
 
-#: app/models.py:432
+#: app/models.py:454
 #, python-format
 msgid "%(num)d hour ago"
 msgid_plural "%(num)d hours ago"
 msgstr[0] "hace %(num)d hora"
 msgstr[1] "hace %(num)d horas"
 
-#: app/models.py:435
+#: app/models.py:457
 #, python-format
 msgid "%(num)d min ago"
 msgstr "hace %(num)d min"
 
-#: app/models.py:436
+#: app/models.py:458
 msgid "just now"
 msgstr "ahora mismo"
 
@@ -919,7 +927,7 @@ msgid "The username does not match. Nothing was deleted."
 msgstr "El nombre de usuario no coincide. No se ha eliminado nada."
 
 #. TRANSLATORS: after deleting an account; %(label)s is the label shown instead
-#. of the name ("Deleted account").
+#. of the name ("Former account").
 #: app/routes/admin.py:495
 #, python-format
 msgid "The account @%(username)s has been deleted. Its contributions now show as \"%(label)s\"."
@@ -1083,40 +1091,40 @@ msgstr "No puedes responder a tu propio mensaje."
 msgid "Invalid reply: the post you are replying to does not exist in this conversation."
 msgstr "Respuesta no válida: el mensaje al que respondes no existe en esta conversación."
 
-#: app/routes/forum.py:1257
+#: app/routes/forum.py:1259
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "La afirmación de una propuesta solo se puede cambiar en la fase de revisión."
 
-#: app/routes/forum.py:1259
+#: app/routes/forum.py:1261
 msgid "This post already has replies, so it can no longer be edited."
 msgstr "Este mensaje ya tiene respuestas, así que ya no se puede editar."
 
-#: app/routes/forum.py:1260
+#: app/routes/forum.py:1262
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "Un mensaje movido u oculto no se puede editar. Lo que sí puedes es presentar una objeción."
 
-#: app/routes/forum.py:1337 app/templates/forum/_post.html:70
+#: app/routes/forum.py:1339 app/templates/forum/_post.html:70
 #, python-format
 msgid "edited %(when)s"
 msgstr "editado %(when)s"
 
-#: app/routes/forum.py:1529 app/routes/issues.py:365
+#: app/routes/forum.py:1531 app/routes/issues.py:365
 msgid "Give a reason for your report."
 msgstr "Indica un motivo para tu reporte."
 
-#: app/routes/forum.py:1538 app/routes/issues.py:371
+#: app/routes/forum.py:1540 app/routes/issues.py:371
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Gracias, tu reporte se ha enviado a un moderador."
 
-#: app/routes/forum.py:1943
+#: app/routes/forum.py:1945
 msgid "Choose a reason (and keep the note under 500 characters)."
 msgstr "Elige un motivo (y escribe una explicación de menos de 500 caracteres)."
 
-#: app/routes/forum.py:1945
+#: app/routes/forum.py:1947
 msgid "You already disputed this fact; a moderator will look at it."
 msgstr "Ya has puesto en duda este hecho; un moderador lo revisará."
 
-#: app/routes/forum.py:1949
+#: app/routes/forum.py:1951
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 msgstr "Gracias. Un moderador revisará tu objeción; mientras tanto, el hecho sigue visible."
 
@@ -7139,7 +7147,7 @@ msgid "What happens"
 msgstr "Qué ocurre"
 
 #. moderator, deleting an account; %(label)s is the label shown instead of the
-#. name ("Deleted account").
+#. name ("Former account").
 #: app/templates/moderator/gebruiker_verwijderen.html:41
 #, python-format
 msgid "The account then shows as <b>%(label)s</b> and can no longer log in. Name, email address and password are erased."

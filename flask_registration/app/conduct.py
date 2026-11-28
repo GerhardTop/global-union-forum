@@ -223,5 +223,5 @@ def background_cases():
     return (ConductCase.query.join(Post, ConductCase.post_id == Post.id)
             .filter(ConductCase.on_background.is_(True),
                     ConductCase.action.in_(('verplaatst', 'teruggeplaatst')),
-                    Post.body != '[bericht verwijderd]')
+                    Post.body != Post.DELETED_BODY)
             .order_by(ConductCase.acted_at.desc(), ConductCase.id.desc()).all())
