@@ -77,6 +77,10 @@ def wrap(proposal):
     )
     db.session.add(issue)
     proposal.issue = issue
+    # Events step 1b: an event issue always has an event (kind 'event'
+    # exactly when event_id is set).
+    from app import events
+    events.attach_legacy(issue)
     return issue
 
 
@@ -151,7 +155,10 @@ def delete_wrappers(issue_ids):
         from app import participants
         for issue_id in empty:
             participants.delete_for_issue(issue_id)
+        event_ids = {i for (i,) in db.session.query(Issue.event_id).filter(Issue.id.in_(empty))}
         Issue.query.filter(Issue.id.in_(empty)).delete(synchronize_session=False)
+        from app import events
+        events.delete_empty(event_ids)  # an event without issues goes along
 
 
 # ── Een nieuw vraagstuk ──────────────────────────────────────────────────
@@ -339,6 +346,12 @@ def create(values, user, lang=None, now=None):
     _open_thread(issue, user)
     from app import content_jobs
     content_jobs.schedule(issue)  # translated into the other languages after the commit
+    # Events step 1b: until the form "New event" exists (step 1c) the issue
+    # form is the source; an event issue gets its own event right away.
+    from app import events
+    event = events.attach_legacy(issue, now=now)
+    if event is not None:
+        content_jobs.schedule(event)
     from app import background_figures
     background_figures.schedule(issue, trigger='issue')  # behind BACKGROUND_FIGURES
     return issue
@@ -352,10 +365,17 @@ def is_open_now(issue, now=None):
     now = now or datetime.utcnow()
     if issue.kind == 'online':
         return issue.starts_at is None or now >= issue.starts_at
-    days = list(issue.event_days) if issue.id is not None else []
+    # Events step 1b: with an event, its days and online_between (the
+    # transition copies them, so the outcome is the same as before).
+    event = issue.event if issue.event_id is not None else None
+    if event is not None:
+        days, online_between = list(event.days), event.online_between
+    else:
+        days = list(issue.event_days) if issue.id is not None else []
+        online_between = issue.event_online_between
     if not days:
         return True
-    if issue.event_online_between and days[0].starts_at <= now <= days[-1].ends_at:
+    if online_between and days[0].starts_at <= now <= days[-1].ends_at:
         return True
     return any(day.starts_at <= now <= day.ends_at for day in days)
 
@@ -684,12 +704,14 @@ def purge(issue):
     # voorstel dat dit gesprek deelt, gaat via delete_for_threads mee weg.
     Proposal.query.filter(Proposal.issue_id == issue.id, Proposal.thread_id != thread_id) \
         .update({Proposal.issue_id: None}, synchronize_session=False)
-    issue_id = issue.id
+    issue_id, event_id = issue.id, issue.event_id
     issue.thread_id = None
     db.session.flush()
     if thread_id:
         proposals.delete_for_threads([thread_id])
     Issue.query.filter_by(id=issue_id).delete(synchronize_session=False)
+    from app import events
+    events.delete_empty([event_id])  # the last issue of an event takes the event along
     if thread_id:
         content_i18n.delete_for('threads', [thread_id])   # a bulk delete passes the ORM cleanup
         Thread.query.filter_by(id=thread_id).delete(synchronize_session=False)

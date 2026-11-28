@@ -62,7 +62,7 @@ MAX_FAILED = 20
 
 
 def _models():
-    from app.models import Issue, IssueFollowup, IssueProposal, IssueProposalVersion, Post
+    from app.models import Event, Issue, IssueFollowup, IssueProposal, IssueProposalVersion, Post
     return {
         # Only facts among the posts (see _only): ordinary posts are translated on request.
         'posts': (Post, ('fact_title', 'body')),
@@ -70,6 +70,7 @@ def _models():
         'issue_proposals': (IssueProposal, ('statement', 'explanation')),
         'issue_proposal_versions': (IssueProposalVersion, ('statement', 'explanation')),
         'issue_followups': (IssueFollowup, ('body',)),
+        'events': (Event, ('name', 'note')),   # events step 1b
     }
 
 
@@ -293,7 +294,7 @@ def backfill(limit=MAX_PER_TICK, client=None, tally=None, name='tick', max_faile
 
 # The types of content on the admin page, in this order (the conversation
 # title of an issue counts with the issue).
-BACKLOG_KINDS = ('issues', 'issue_proposals', 'issue_proposal_versions', 'issue_followups', 'posts')
+BACKLOG_KINDS = ('issues', 'issue_proposals', 'issue_proposal_versions', 'issue_followups', 'posts', 'events')
 
 
 def backlog():

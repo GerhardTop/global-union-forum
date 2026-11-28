@@ -458,7 +458,10 @@ def _remove_demo(db):
     from app import participants
     for issue in issues:
         participants.delete_for_issue(issue.id)
+    event_ids = [i.event_id for i in issues]
     Issue.query.filter(Issue.id.in_([i.id for i in issues])).delete(synchronize_session=False)
+    from app import events
+    events.delete_empty(event_ids)  # events step 1b: an event without issues goes along
     if thread_ids:
         from app import content_i18n
         content_i18n.delete_for('threads', thread_ids)   # a bulk delete passes the ORM cleanup

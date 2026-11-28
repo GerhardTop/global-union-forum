@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 13:54+0100\n"
+"POT-Creation-Date: 2026-11-28 16:43+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:886
+#: app/__init__.py:894
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Too many attempts. Please try again in a minute."
 
-#: app/__init__.py:916
+#: app/__init__.py:924
 msgid "Your session has expired. Please log in again."
 msgstr "Your session has expired. Please log in again."
 
@@ -988,15 +988,21 @@ msgstr "Follow-up updates"
 msgid "Facts"
 msgstr "Facts"
 
-#: app/routes/admin.py:788 app/templates/admin/translations.html:61
+#. TRANSLATORS: a row on the translation backlog page: the names and
+#. explanations of events.
+#: app/routes/admin.py:753
+msgid "Events"
+msgstr "Events"
+
+#: app/routes/admin.py:790 app/templates/admin/translations.html:61
 msgid "There is no AI key here, so nothing can be translated."
 msgstr "There is no AI key here, so nothing can be translated."
 
-#: app/routes/admin.py:790
+#: app/routes/admin.py:792
 msgid "Started: the backlog is being translated in the background."
 msgstr "Started: the backlog is being translated in the background."
 
-#: app/routes/admin.py:792
+#: app/routes/admin.py:794
 msgid "A run is already busy."
 msgstr "A run is already busy."
 

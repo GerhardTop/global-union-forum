@@ -253,7 +253,7 @@ SAME_IN_DUTCH = {
     'Freedom for all': 'slogan, niet vertalen',
     'Dashboard': 'leenwoord', 'Privacy': 'leenwoord', 'Cookies': 'leenwoord', 'Spam': 'leenwoord',
     'Respect': 'leenwoord', 'Media': 'leenwoord', 'Podcast': 'leenwoord', 'Video': 'leenwoord',
-    'Online': 'leenwoord', 'Experts': 'leenwoord', 'Event': 'leenwoord', 'event': 'leenwoord',
+    'Online': 'leenwoord', 'Experts': 'leenwoord', 'Event': 'leenwoord', 'event': 'leenwoord', 'Events': 'leenwoord',
     'Contact': 'leenwoord', 'Forum': 'leenwoord', 'Status': 'leenwoord', 'Menu': 'leenwoord',
     'Account': 'leenwoord',
     'Download Excel': 'leenwoord en merknaam', 'Download PDF': 'leenwoord en merknaam',

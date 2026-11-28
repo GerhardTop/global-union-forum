@@ -417,21 +417,22 @@ def test_facts_can_be_added_when_starting(app, db, make_user):
 
 
 def test_event_platform_is_open_only_on_the_days(app, db, make_user):
-    from app.models import IssueEventDay
+    # Events step 1b: the days and online_between of the event decide.
+    from app.models import EventDay
     host, anna = make_user(), make_user()
     issue = issues.create({'title': 'Eventvraag', 'intro': 'Uitleg.', 'kind': 'event', 'event_name': 'Avond'}, host)
     db.session.flush()
     now = datetime.utcnow()
-    issue.event_days.append(IssueEventDay(starts_at=now + timedelta(days=1), ends_at=now + timedelta(days=1, hours=3)))
-    issue.event_days.append(IssueEventDay(starts_at=now + timedelta(days=3), ends_at=now + timedelta(days=3, hours=3)))
+    issue.event.days.append(EventDay(starts_at=now + timedelta(days=1), ends_at=now + timedelta(days=1, hours=3)))
+    issue.event.days.append(EventDay(starts_at=now + timedelta(days=3), ends_at=now + timedelta(days=3, hours=3)))
     db.session.commit()
     assert not issues.is_open_now(issue)
     assert issues.is_open_now(issue, now + timedelta(days=1, hours=1))
     assert not issues.is_open_now(issue, now + timedelta(days=2))
-    issue.event_online_between = True
+    issue.event.online_between = True
     db.session.commit()
     assert issues.is_open_now(issue, now + timedelta(days=2))
-    issue.event_online_between = False
+    issue.event.online_between = False
     db.session.commit()
     # Dicht: geen bericht, geen feit, geen voorstel; de cockpit zegt het.
     r = _req(_client(app, anna), 'POST', f'/forum/{issue.thread_id}', data={'body': 'Te vroeg.'})

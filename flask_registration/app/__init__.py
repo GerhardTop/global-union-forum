@@ -173,6 +173,11 @@ def _migrate_columns():
     # Na alle kolommigraties: de backfill gebruikt de ORM op Proposal en Thread.
     from app import issues
     issues.backfill()
+    # Events step 1b: every event issue of before gets its own event (K12; idempotent).
+    from app import events
+    made = events.attach_all_legacy()
+    if made:
+        events.log.info('Events made for existing event issues: %d', made)
     # Polijstronde P6: een lopende stemming over een samenvattend voorstel
     # uit de vervolgfase naar de eigen fase samenvatten (idempotent).
     from app import issue_lifecycle
@@ -361,7 +366,9 @@ _POLISH_COLUMNS = {
                ('event_online_between', 'BOOLEAN NULL'),
                # Archiving (delete flow step 1). Production already has it
                # (added by hand); this is a no-op there, but covers other DBs.
-               ('archived_at', 'TIMESTAMP NULL')),
+               ('archived_at', 'TIMESTAMP NULL'),
+               # Events step 1b (the tables events and event_days come from db.create_all()).
+               ('event_id', 'INTEGER NULL REFERENCES events(id)'), ('event_position', 'INTEGER NULL')),
     # Delete rights step 1: a proposal can be soft-hidden (the table
     # moderation_actions comes from db.create_all()).
     'issue_proposals': (('hidden_at', 'TIMESTAMP NULL'),
@@ -463,6 +470,7 @@ _INDEXES = (
     ('proposals', 'issue_id'),
     ('issues', 'created_by_id'),
     ('issues', 'thread_id'),
+    ('issues', 'event_id'),  # events step 1b
     ('posts', 'issue_proposal_id'),  # polijstronde P5
     ('notifications', ('user_id', 'event_key')),  # notifications step 3a-2: the tick's de-dup lookup
 )

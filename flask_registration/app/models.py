@@ -955,6 +955,10 @@ class Issue(db.Model):
     event_name             = db.Column(db.String(200), nullable=True)
     event_note             = db.Column(db.Text, nullable=True)
     event_online_between   = db.Column(db.Boolean, nullable=True)
+    # Events step 1b (docs/events.md, K1): the event this issue belongs to
+    # (none for an issue for everyone) and its place in the event's list.
+    event_id               = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=True, index=True)
+    event_position         = db.Column(db.Integer, nullable=True)
     # Archived (Toegang.dc.html, delete flow step 1): hidden from the public
     # listings, still reachable by its URL; archiving also closes the issue.
     archived_at            = db.Column(db.DateTime, nullable=True)
@@ -1010,6 +1014,53 @@ class IssueEventDay(db.Model):
 
     issue = db.relationship('Issue', backref=db.backref('event_days', lazy=True, order_by='IssueEventDay.starts_at',
                                                         cascade='all, delete-orphan'))
+
+
+# Events (docs/events.md): the stored codes of the format; the label is
+# translated when shown.
+EVENT_FORMATS = ('location', 'online', 'hybrid')
+
+
+class Event(db.Model):
+    """Events step 1b (docs/events.md, K1): a gathering with its own space.
+    The issues of the event point to it (Issue.event_id). Name and note are
+    user content in `lang`, translated via content_i18n and content_jobs."""
+    __tablename__ = "events"
+
+    id                       = db.Column(db.Integer, primary_key=True)
+    code                     = db.Column(db.String(8), nullable=False, unique=True)
+    name                     = db.Column(db.String(200), nullable=False)
+    note                     = db.Column(db.Text, nullable=True)
+    format                   = db.Column(db.String(10), nullable=False, default='location')
+    location                 = db.Column(db.String(200), nullable=True)
+    online_url               = db.Column(db.String(500), nullable=True)
+    online_between           = db.Column(db.Boolean, nullable=False, default=False)
+    everyone_votes           = db.Column(db.Boolean, nullable=False, default=True)
+    everyone_votes_locked_at = db.Column(db.DateTime, nullable=True)
+    open_for_issues          = db.Column(db.Boolean, nullable=False, default=False)
+    shared_at                = db.Column(db.DateTime, nullable=True)
+    shared_by_id             = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    created_by_id            = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    created_at               = db.Column(db.DateTime, default=datetime.utcnow)
+    lang                     = db.Column(db.String(5), nullable=True)
+    archived_at              = db.Column(db.DateTime, nullable=True)
+
+    created_by = db.relationship('User', foreign_keys=[created_by_id])
+    days       = db.relationship('EventDay', lazy=True, order_by='EventDay.starts_at',
+                                 cascade='all, delete-orphan', backref='event')
+    issues     = db.relationship('Issue', lazy=True, order_by='(Issue.event_position, Issue.id)',
+                                 backref=db.backref('event', lazy=True))
+
+
+class EventDay(db.Model):
+    """A day of an event, with the times (UTC) the platform is open for
+    contributions, as IssueEventDay."""
+    __tablename__ = "event_days"
+
+    id         = db.Column(db.Integer, primary_key=True)
+    event_id   = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False, index=True)
+    starts_at  = db.Column(db.DateTime, nullable=False)
+    ends_at    = db.Column(db.DateTime, nullable=False)
 
 
 class IssueFollow(db.Model):

@@ -749,6 +749,8 @@ _BACKLOG_KIND_LABELS = {
     'issue_proposal_versions': lambda: gettext('Versions of a proposal'),
     'issue_followups': lambda: gettext('Follow-up updates'),
     'posts': lambda: gettext('Facts'),
+    # TRANSLATORS: a row on the translation backlog page: the names and explanations of events.
+    'events': lambda: gettext('Events'),
 }
 
 

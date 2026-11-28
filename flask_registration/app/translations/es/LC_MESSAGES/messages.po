@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-28 13:54+0100\n"
+"POT-Creation-Date: 2026-11-28 16:43+0100\n"
 "PO-Revision-Date: 2026-11-22 14:15+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:886
+#: app/__init__.py:894
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Demasiados intentos. Vuelve a intentarlo dentro de un minuto."
 
-#: app/__init__.py:916
+#: app/__init__.py:924
 msgid "Your session has expired. Please log in again."
 msgstr "Tu sesión ha caducado. Vuelve a iniciar sesión."
 
@@ -986,15 +986,21 @@ msgstr "Actualizaciones de seguimiento"
 msgid "Facts"
 msgstr "Hechos"
 
-#: app/routes/admin.py:788 app/templates/admin/translations.html:61
+#. TRANSLATORS: a row on the translation backlog page: the names and
+#. explanations of events.
+#: app/routes/admin.py:753
+msgid "Events"
+msgstr "Eventos"
+
+#: app/routes/admin.py:790 app/templates/admin/translations.html:61
 msgid "There is no AI key here, so nothing can be translated."
 msgstr "Aquí no hay clave de IA, así que no se puede traducir nada."
 
-#: app/routes/admin.py:790
+#: app/routes/admin.py:792
 msgid "Started: the backlog is being translated in the background."
 msgstr "Iniciado: el retraso se está traduciendo en segundo plano."
 
-#: app/routes/admin.py:792
+#: app/routes/admin.py:794
 msgid "A run is already busy."
 msgstr "Ya hay una ejecución en curso."
 

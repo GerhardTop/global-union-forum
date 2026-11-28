@@ -57,6 +57,8 @@ _SOURCE_ATTR = {
     'fact_charts': lambda chart: 'en',
     # ... and so do the definition and the unit of a snapshot.
     'chart_snapshots': lambda snapshot: 'en',
+    # Events step 1b: the name and the note, in the language of the organiser.
+    'events': 'lang',
 }
 
 
@@ -298,6 +300,7 @@ SHORT_FIELDS = {
     ('threads', 'title_prefix'), ('threads', 'title_accent'), ('threads', 'title_suffix'),
     ('fact_charts', 'average_name'),
     ('chart_snapshots', 'unit'),
+    ('events', 'name'),
 }
 
 
@@ -449,11 +452,11 @@ def register_cleanup(*models):
 
 
 def _register_models():
-    from app.models import (ChartSnapshot, FactChart, FactDispute, Issue, IssueFollowup, IssueProposal,
+    from app.models import (ChartSnapshot, Event, FactChart, FactDispute, Issue, IssueFollowup, IssueProposal,
                             IssueProposalVersion, Post, QualityAward, QualityObjection, Thread)
     register_cleanup(Post, Thread, QualityAward, QualityObjection,
                      Issue, IssueProposal, IssueProposalVersion, IssueFollowup, FactDispute,
-                     FactChart, ChartSnapshot)
+                     FactChart, ChartSnapshot, Event)
     event.listen(db.session, 'after_commit', clear_cache)
     event.listen(db.session, 'after_rollback', clear_cache)
 

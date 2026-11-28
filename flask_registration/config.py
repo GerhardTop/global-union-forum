@@ -130,6 +130,10 @@ class Config:
     # the first vote) and the frozen totals. Off by default; on only after the
     # DPIA and the new privacy statement.
     PARTICIPANT_PROFILE = os.environ.get("PARTICIPANT_PROFILE", "") == "1"
+    # Events (docs/events.md): "1" switches on the event pages, the settings
+    # and "Everyone may vote" (steps 1c to 1f). Off by default; the data model
+    # and the migration of existing event issues (step 1b) run either way.
+    EVENTS = os.environ.get("EVENTS", "") == "1"
 
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
