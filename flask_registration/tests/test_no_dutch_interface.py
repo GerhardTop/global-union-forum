@@ -380,6 +380,8 @@ def test_no_dutch_on_the_event_pages(app, db, make_user, monkeypatch, lang):
         page = resp.get_data(as_text=True)
         if path == f'/e/{event.code}':
             assert 'shareTitle' in page and 'organiserStrip' in page   # the card and the strip are checked too
+        if path in (f'/e/{event.code}', f'/vraagstuk/{issue.id}'):
+            assert 'class="gu-eventbar"' in page   # step 1e: the bar is checked too
         for text in _interface_texts(page, content):
             if WORD.search(text):
                 found.setdefault(path, []).append(text)

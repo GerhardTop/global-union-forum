@@ -81,6 +81,7 @@ De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` 
 | Make a new link | Nieuwe link maken | Neuen Link erstellen | De oude link en QR-code werken daarna niet meer. |
 | Share with all participants | Delen met alle deelnemers | Mit allen Teilnehmenden teilen | Na afloop, alleen de organisator. |
 | Join via the video call | Meedoen via het videogesprek | Über den Videoanruf mitmachen | De link naar het videogesprek op de eventpagina. |
+| You are at: … | Je bent bij: … | Du bist bei: … | De balk bovenaan de pagina's van een event; daarna de naam van het event. |
 | initiator | initiatiefnemer | Initiator | Vaste label voor de rol van wie een vraagstuk start. |
 | think tank | denktank | Denkfabrik | Gangbaar Duits woord. |
 | moderation | moderatie | Moderation | Zelfde woord. |

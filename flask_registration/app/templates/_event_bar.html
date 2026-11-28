@@ -1,0 +1,19 @@
+{#
+  Partial: _event_bar.html (events step 1e, docs/events.md K9, built to
+  docs/design/event-pagina.html). The bar under the header on the event
+  page and on every page of an issue of an event that is not shared:
+  "You are at: <event> · Back to the event", and on the other side "See the
+  issues outside this event" (the session forgets the event). Context: bar
+  (the event). On mobile the two links are below each other.
+#}
+{% from '_mt.html' import mt_inline with context %}
+{# TRANSLATORS: aria-label of the bar at the top of the pages of an event. #}
+<div class="gu-eventbar" role="region" aria-label="{{ _('You are at an event') }}">
+  <div class="gu-eventbar__inner">
+    {% set bar_name %}<strong class="gu-eventbar__name">{{ mt_inline(bar, 'name') }}</strong>{% endset %}
+    {# TRANSLATORS: the bar at the top of an event's pages; %(event)s is the name of the event. #}
+    <p class="gu-eventbar__where">{% trans event=bar_name %}You are at: {{ event }}{% endtrans %} <span aria-hidden="true">·</span>
+      <a href="{{ url_for('events.page', code=bar.code) }}">{{ _('Back to the event') }}</a></p>
+    <a href="{{ url_for('events.leave') }}" class="gu-eventbar__out">{{ _('See the issues outside this event') }} <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+  </div>
+</div>

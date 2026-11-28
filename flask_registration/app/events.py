@@ -348,11 +348,22 @@ def refuse():
 
 
 def check_view(issue, user):
-    """can_view, else refuse(); marks the page noindex for an event that is not shared."""
+    """can_view, else refuse(); marks the page noindex for an event that is
+    not shared. Step 1e: such an event becomes the current event of the
+    session, with the bar on the page. The event is loaded with its days in
+    one query (the only extra query of an issue page)."""
+    if issue is not None and issue.event_id is not None and enabled():
+        from sqlalchemy.orm import joinedload
+        from sqlalchemy.orm.attributes import set_committed_value
+        from app.models import Event
+        event = db.session.query(Event).options(joinedload(Event.days)) \
+            .filter(Event.id == issue.event_id).one_or_none()
+        set_committed_value(issue, 'event', event)   # no lazy load later, no change to flush
     if not can_view(issue, user):
         refuse()
     if noindex(issue):
         mark_noindex()
+        enter(issue.event)
 
 
 def mark_noindex():
@@ -546,3 +557,63 @@ def qr(url, kind):
     else:
         code.save(out, kind='png', scale=10, border=2)
     return out.getvalue()
+
+
+# ── Step 1e: the current event of the session and the bar (K9) ──────────
+
+CURRENT_KEY = 'current_event'
+_BAR = 'guf.event_bar'
+_CURRENT = 'guf.current_event'
+
+
+def enter(event):
+    """The event becomes the current one of this session and gets the bar on
+    this page. Not for a shared or archived event (K10): no bar, no session."""
+    from flask import request, session
+    if not enabled() or event is None or is_shared(event) or event.archived_at is not None:
+        return
+    session[CURRENT_KEY] = event.id
+    request.environ[_BAR] = event
+    request.environ[_CURRENT] = event
+
+
+def leave():
+    """"See the issues outside this event": the session forgets the current
+    event; the access of K2b (event_access) stays."""
+    from flask import session
+    session.pop(CURRENT_KEY, None)
+
+
+def current_event():
+    """The current event of the session, only when it exists, is not shared
+    and not archived; otherwise None (and the key goes). Once per request."""
+    from flask import has_request_context, request, session
+    if not enabled() or not has_request_context():
+        return None
+    if _CURRENT in request.environ:
+        return request.environ[_CURRENT]
+    event = None
+    event_id = session.get(CURRENT_KEY)
+    if event_id is not None:
+        from app.models import Event
+        event = db.session.get(Event, event_id)
+        if event is None or is_shared(event) or event.archived_at is not None:
+            session.pop(CURRENT_KEY, None)
+            event = None
+    request.environ[_CURRENT] = event
+    return event
+
+
+def bar_event():
+    """The event of the bar on this page, or None."""
+    from flask import has_request_context, request
+    if not has_request_context():
+        return None
+    return request.environ.get(_BAR)
+
+
+def inside(issue):
+    """An issue of an event that is not shared, with EVENTS on: no breadcrumb
+    from Have your say; the bar takes its place."""
+    return (enabled() and issue is not None and issue.event_id is not None
+            and issue.event is not None and not is_shared(issue.event))

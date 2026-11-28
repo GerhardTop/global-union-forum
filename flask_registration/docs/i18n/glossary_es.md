@@ -89,6 +89,7 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 | Make a new link | Nieuwe link maken | Crear un enlace nuevo | De oude link en QR-code werken daarna niet meer. |
 | Share with all participants | Delen met alle deelnemers | Compartir con todos los participantes | Na afloop, alleen de organisator. |
 | Join via the video call | Meedoen via het videogesprek | Participar por videollamada | De link naar het videogesprek op de eventpagina. |
+| You are at: … | Je bent bij: … | Estás en: … | De balk bovenaan de pagina's van een event; daarna de naam van het event. |
 | initiator | initiatiefnemer | Promotor | Vaste label voor wie een cuestión start; de gangbare term bij burgerinitiatieven. |
 | think tank | denktank | laboratorio de ideas | De door de RAE aanbevolen term. |
 | moderation | moderatie | moderación | Zelfde woord. |

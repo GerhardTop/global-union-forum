@@ -6,10 +6,12 @@
            {{ crumbs(issue, [(_('Proposals'), url), (_('New'), None)]) }}
 #}
 {% macro crumbs(issue=None, trail=()) %}
+{#- Events step 1e: inside an event that is not shared the breadcrumb starts at the issue (the bar leads back). -#}
+{% set inside = issue and event_inside(issue) %}
 <nav class="gu-forum__crumbs gu-issue-crumbs" aria-label="{{ _('Breadcrumb') }}">
-  <a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a>
+  {% if not inside %}<a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a>{% endif %}
   {% if issue %}
-  <span aria-hidden="true">›</span>
+  {% if not inside %}<span aria-hidden="true">›</span>{% endif %}
   {% from '_mt.html' import mt_inline with context %}
   {% if trail %}<a href="{{ url_for('issues.show', issue_id=issue.id) }}" class="gu-issue-crumbs__issue">{{ mt_inline(issue, 'title') }}</a>
   {% else %}<span class="gu-issue-crumbs__issue" aria-current="page">{{ mt_inline(issue, 'title') }}</span>{% endif %}

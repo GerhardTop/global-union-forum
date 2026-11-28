@@ -1003,6 +1003,9 @@ def create_app():
             # Events (docs/events.md): the switch EVENTS, for the templates.
             events_on=_events.enabled(app),
             event_where=_events.where,
+            # Step 1e: the bar "You are at", the current event for the menu,
+            # and whether an issue is inside an event that is not shared.
+            event_bar=_events.bar_event, header_event=_events.current_event, event_inside=_events.inside,
         )
 
     @app.context_processor

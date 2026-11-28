@@ -151,6 +151,18 @@ def preload(objs, *fields):
         for oid in ids:
             for field in fields:
                 cache[(kind, oid, field)] = {}
+    # Several types with few objects (an issue page with its event): one query.
+    if len(by_type) > 1 and sum(len(ids) for ids in by_type.values()) <= 500:
+        from sqlalchemy import and_, or_
+        rows = ContentTranslation.query.filter(or_(*[
+            and_(ContentTranslation.object_type == kind, ContentTranslation.object_id.in_(sorted(ids)))
+            for kind, ids in by_type.items()]), ContentTranslation.field.in_(fields)).all()
+        for row in rows:
+            key = (row.object_type, row.object_id, row.field)
+            if key in cache:
+                cache[key].update({row.lang: _cached(row)})
+        return
+    for kind, ids in by_type.items():
         for chunk in _chunks(sorted(ids), 500):
             rows = ContentTranslation.query.filter(ContentTranslation.object_type == kind,
                                                    ContentTranslation.object_id.in_(chunk),

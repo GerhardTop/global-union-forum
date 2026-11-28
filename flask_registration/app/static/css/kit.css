@@ -5008,3 +5008,17 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
 .gu-eventcode__label { display: flex; flex-direction: column; gap: 6px; font-size: .875rem; font-weight: 500; flex: 1 1 260px; }
 .gu-eventcode__input { text-transform: uppercase; letter-spacing: .04em; }
 .gu-eventcode__input::placeholder { text-transform: none; letter-spacing: 0; }
+
+/* Events step 1e: the bar "You are at" under the header (docs/design/event-pagina.html). */
+.gu-eventbar { background: #eaf2fb; border-block-end: 1px solid #c5dcf4; color: #1b5e9a; font-size: .875rem; }
+.gu-eventbar__inner { max-inline-size: 1200px; margin-inline: auto; padding-block: 10px; padding-inline: 40px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; box-sizing: border-box; }
+.gu-eventbar__where { margin: 0; }
+.gu-eventbar__name { font-weight: 600; color: var(--gu-fg-1); }
+.gu-eventbar a { color: #1b74b8; }
+.gu-eventbar__out { display: inline-flex; align-items: center; gap: 6px; }
+.gu-cockpit__eventlabel a { color: var(--gu-globe); text-decoration: none; }
+.gu-cockpit__eventlabel a:hover { text-decoration: underline; }
+@media (max-width: 559px) {
+  .gu-eventbar__inner { flex-direction: column; align-items: flex-start; padding-inline: 16px; }
+}

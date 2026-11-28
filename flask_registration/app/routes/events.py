@@ -145,6 +145,14 @@ def _gone():
     return render_template('events/notice.html', message=message), 404
 
 
+@events_bp.route('/e/verlaten')
+def leave():
+    """K9: "See the issues outside this event": the session forgets the
+    current event (the access to its issues stays) and Have your say opens."""
+    events.leave()
+    return redirect(url_for('issues.index'))
+
+
 @events_bp.route('/e/<code>')
 def page(code):
     from app import issue_lifecycle  # noqa: F401  (participants in the counts)
@@ -159,6 +167,7 @@ def page(code):
     events.grant(event)
     if not events.is_shared(event):
         events.mark_noindex()
+    events.enter(event)   # step 1e: the bar and the current event (not for a shared or archived event)
     rows = Issue.query.options(selectinload(Issue.created_by)).filter(Issue.event_id == event.id) \
         .order_by(Issue.event_position, Issue.id).all()
     content_i18n.preload([event], 'name', 'note')

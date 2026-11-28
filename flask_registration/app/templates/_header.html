@@ -7,8 +7,9 @@
   </a>
 
   <nav class="gu-header__nav" id="siteNav" aria-label="{{ _('Navigation') }}">
-    <a href="{{ url_for('issues.index') }}"
-       {% if request.endpoint and request.endpoint.startswith('issues.') %}class="is-active"{% endif %}>{{ _('Have your say') }}</a>
+    {%- set here_event = header_event() %}
+    <a href="{{ url_for('events.page', code=here_event.code) if here_event else url_for('issues.index') }}"
+       {% if request.endpoint and (request.endpoint.startswith('issues.') or (here_event and request.endpoint == 'events.page')) %}class="is-active"{% endif %}>{{ _('Have your say') }}</a>
     <a href="{{ url_for('main.manifest') }}"
        {% if request.endpoint == 'main.manifest' %}class="is-active"{% endif %}>{{ _('Manifesto') }}</a>
     <a href="{{ url_for('main.faq') }}"

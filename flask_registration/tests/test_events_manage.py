@@ -385,7 +385,9 @@ def test_the_label_and_the_cockpit_read_the_event(app, make_user, on):
     row = overview.split(issue.title)[0].rsplit('<li', 1)[1]
     assert event.name in row and 'Buurthuis De Kroon' in row and '15 jan 2027 19:00' in row
     cockpit = _page(_client(app, user), f'/vraagstuk/{issue.id}')
-    assert event.name in cockpit and 'vrijdag 15 januari 2027, 19:00' in cockpit
+    # Step 1e: no event block in the cockpit; the label above the title reads the event.
+    label = cockpit.split('gu-cockpit__eventlabel')[1].split('</p>')[0]
+    assert event.name in label and '15 jan 2027 19:00' in label and 'gu-cockpit__eventname' not in cockpit
     overview_en = _page(_client(app, user, 'en'), '/gesprekken')
     assert 'Nieuw event' not in overview_en and 'New event' in overview_en
 

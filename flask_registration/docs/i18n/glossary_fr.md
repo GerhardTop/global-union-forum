@@ -88,6 +88,7 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 | Make a new link | Nieuwe link maken | Créer un nouveau lien | De oude link en QR-code werken daarna niet meer. |
 | Share with all participants | Delen met alle deelnemers | Partager avec tous les participants | Na afloop, alleen de organisator. |
 | Join via the video call | Meedoen via het videogesprek | Participer par appel vidéo | De link naar het videogesprek op de eventpagina. |
+| You are at: … | Je bent bij: … | Vous êtes à : … | De balk bovenaan de pagina's van een event; daarna de naam van het event. |
 | initiator | initiatiefnemer | Initiateur | Vaste label voor wie een dossier start. |
 | think tank | denktank | laboratoire d'idées | De aanbevolen Franse term (FranceTerme). |
 | moderation | moderatie | modération | Zelfde woord. |

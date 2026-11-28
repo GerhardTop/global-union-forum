@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 17:28+0100\n"
+"POT-Creation-Date: 2026-11-28 17:43+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Te veel pogingen. Probeer het over een minuut opnieuw."
 
-#: app/__init__.py:926
+#: app/__init__.py:927
 msgid "Your session has expired. Please log in again."
 msgstr "Je sessie is verlopen. Log opnieuw in."
 
@@ -62,13 +62,13 @@ msgstr "Dit vraagstuk hoort bij een event. Open de link van het event om mee te 
 
 #. TRANSLATORS: where an online event takes place, in a short label ("Event · 9
 #. Jan 2027 14:00 · online").
-#: app/events.py:471
+#: app/events.py:487
 msgid "online"
 msgstr "online"
 
 #. TRANSLATORS: where a hybrid event takes place: the location, then "and
 #. online" ("Forum, Groningen, and online").
-#: app/events.py:474
+#: app/events.py:490
 #, python-format
 msgid "%(place)s, and online"
 msgstr "%(place)s, en online"
@@ -146,7 +146,7 @@ msgid "Create an account and read the ground rules. Then you can start: add fact
 msgstr "Maak een account aan en lees de spelregels. Daarna kun je beginnen: voeg feiten toe, geef je mening of start zelf een vraagstuk. Wat dit wordt, bepalen de mensen die meedoen."
 
 #. TRANSLATORS: faq, thema 2
-#: app/faq.py:69 app/templates/_footer.html:18 app/templates/_header.html:13
+#: app/faq.py:69 app/templates/_footer.html:18 app/templates/_header.html:14
 msgid "Manifesto"
 msgstr "Manifest"
 
@@ -350,7 +350,7 @@ msgstr "Forum · voorstel"
 
 # Herontwerp stap 1: vraagstukken (Issue)
 #: app/models.py:274 app/templates/issues/new.html:24
-#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:113
+#: app/templates/issues/proposal_new.html:16 app/templates/issues/show.html:102
 #: app/templates/moderator/melding_beoordelen.html:68
 msgid "Issue"
 msgstr "Vraagstuk"
@@ -788,7 +788,7 @@ msgstr "Bijdrager"
 msgid "Voter"
 msgstr "Stemmer"
 
-#: app/status.py:51 app/templates/_header.html:57
+#: app/status.py:51 app/templates/_header.html:58
 #: app/templates/admin/dashboard.html:75 app/templates/moderator/beheer.html:25
 #: app/templates/moderator/dashboard.html:4
 #: app/templates/moderator/dashboard.html:76
@@ -988,9 +988,9 @@ msgstr "Vraagstukken"
 #: app/templates/issues/proposal.html:46 app/templates/issues/proposal.html:63
 #: app/templates/issues/proposal.html:321
 #: app/templates/issues/proposal.html:323
-#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:116
-#: app/templates/issues/show.html:167 app/templates/issues/show.html:169
-#: app/templates/issues/show.html:170 app/templates/issues/show.html:209
+#: app/templates/issues/proposal_new.html:10 app/templates/issues/show.html:105
+#: app/templates/issues/show.html:156 app/templates/issues/show.html:158
+#: app/templates/issues/show.html:159 app/templates/issues/show.html:198
 #: app/templates/moderator/beheer.html:84
 msgid "Proposals"
 msgstr "Voorstellen"
@@ -1114,23 +1114,23 @@ msgid "This link no longer works. Ask the organiser for the new link."
 msgstr "Deze link werkt niet meer. Vraag de organisator om de nieuwe link."
 
 #. TRANSLATORS: after typing an event code that does not exist.
-#: app/routes/events.py:192
+#: app/routes/events.py:200
 msgid "We do not know this event code. Check the code or ask the organiser."
 msgstr "Deze eventcode kennen we niet. Controleer de code of vraag de organisator."
 
 #. TRANSLATORS: after "Make a new link": the old link and QR code no longer
 #. work.
-#: app/routes/events.py:225
+#: app/routes/events.py:233
 msgid "There is a new link. The old link and QR code no longer work."
 msgstr "Er is een nieuwe link. De oude link en QR-code werken niet meer."
 
 #. TRANSLATORS: after sharing an event with all participants of Global Union.
-#: app/routes/events.py:245
+#: app/routes/events.py:253
 msgid "The event is shared with all participants of Global Union."
 msgstr "Het event is gedeeld met alle deelnemers van Global Union."
 
 #. TRANSLATORS: after undoing the sharing of an event.
-#: app/routes/events.py:251
+#: app/routes/events.py:259
 msgid "The event is only visible to its participants again."
 msgstr "Het event is weer alleen zichtbaar voor de deelnemers."
 
@@ -1173,11 +1173,11 @@ msgid "edited %(when)s"
 msgstr "bewerkt %(when)s"
 
 # Polijststap P7: volledige pagina vanuit de grote weergave
-#: app/routes/forum.py:1554 app/routes/issues.py:391
+#: app/routes/forum.py:1554 app/routes/issues.py:396
 msgid "Give a reason for your report."
 msgstr "Geef een reden voor je melding."
 
-#: app/routes/forum.py:1563 app/routes/issues.py:397
+#: app/routes/forum.py:1563 app/routes/issues.py:402
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Bedankt, je melding is doorgegeven aan een moderator."
 
@@ -1201,60 +1201,60 @@ msgstr "Voorstellen maken"
 msgid "Adjust the proposals"
 msgstr "Voorstellen aanpassen"
 
-#: app/routes/issues.py:643
+#: app/routes/issues.py:648
 msgid "You already support this proposal."
 msgstr "Je steunt dit voorstel al."
 
-#: app/routes/issues.py:704
+#: app/routes/issues.py:709
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Kies minstens één feit dat nog niet gekoppeld is."
 
-#: app/routes/issues.py:840
+#: app/routes/issues.py:845
 msgid "The issue is now in the next phase."
 msgstr "Het vraagstuk staat nu in de volgende fase."
 
-#: app/routes/issues.py:856 app/routes/issues.py:876
+#: app/routes/issues.py:861 app/routes/issues.py:881
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "De tekst kan hooguit %(n)s tekens zijn."
 
-#: app/routes/issues.py:908
+#: app/routes/issues.py:913
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Vink het vakje aan om te bevestigen dat je het vraagstuk opnieuw wilt openstellen."
 
-#: app/routes/issues.py:913
+#: app/routes/issues.py:918
 msgid "The issue is open again for discussion."
 msgstr "Het vraagstuk staat weer open voor discussie."
 
-#: app/routes/issues.py:935
+#: app/routes/issues.py:940
 msgid "The issue has been archived."
 msgstr "Het vraagstuk is gearchiveerd."
 
-#: app/routes/issues.py:950
+#: app/routes/issues.py:955
 msgid "The issue is back from the archive."
 msgstr "Het vraagstuk is terug uit het archief."
 
-#: app/routes/issues.py:969
+#: app/routes/issues.py:974
 msgid "Type the exact title to confirm."
 msgstr "Typ de titel precies over om te bevestigen."
 
-#: app/routes/issues.py:975
+#: app/routes/issues.py:980
 msgid "The issue has been deleted."
 msgstr "Het vraagstuk is verwijderd."
 
-#: app/routes/issues.py:997
+#: app/routes/issues.py:1002
 msgid "Type the exact text to confirm."
 msgstr "Typ de tekst precies over om te bevestigen."
 
-#: app/routes/issues.py:1004
+#: app/routes/issues.py:1009
 msgid "The proposal has been deleted."
 msgstr "Het voorstel is verwijderd."
 
-#: app/routes/issues.py:1124
+#: app/routes/issues.py:1129
 msgid "The proposal is hidden."
 msgstr "Het voorstel is verborgen."
 
-#: app/routes/issues.py:1124
+#: app/routes/issues.py:1129
 msgid "The proposal is visible again."
 msgstr "Het voorstel is weer zichtbaar."
 
@@ -1383,6 +1383,29 @@ msgstr "Er is iets misgegaan<br><em>aan onze kant</em>"
 msgid "We've been notified and will fix this as soon as possible. Head back to the homepage and try again in a few minutes."
 msgstr "We zijn op de hoogte gesteld en lossen het zo snel mogelijk op. Ga terug naar de homepage en probeer het over een paar minuten opnieuw."
 
+#. aria-label of the bar at the top of the pages of an event.
+#: app/templates/_event_bar.html:11
+msgid "You are at an event"
+msgstr "Je bent bij een event"
+
+#. the bar at the top of an event's pages; %(event)s is the name of the event.
+#: app/templates/_event_bar.html:15
+#, python-format
+msgid "You are at: %(event)s"
+msgstr "Je bent bij: %(event)s"
+
+#. button in "Your events": back to an event you already opened, or to an event
+#. you have not opened yet.
+#: app/templates/_event_bar.html:16
+#: app/templates/issues/_overview_events.html:35
+msgid "Back to the event"
+msgstr "Terug naar het event"
+
+#. link from an event to the overview of all other issues.
+#: app/templates/_event_bar.html:17 app/templates/events/page.html:188
+msgid "See the issues outside this event"
+msgstr "Bekijk de vraagstukken buiten dit event"
+
 #: app/templates/_event_days.html:11
 msgid "Days"
 msgstr "Dagen"
@@ -1401,7 +1424,7 @@ msgid "from"
 msgstr "van"
 
 #: app/templates/_event_days.html:19 app/templates/events/page.html:37
-#: app/templates/issues/show.html:73 app/templates/issues/show.html:86
+#: app/templates/issues/show.html:75
 msgid "to"
 msgstr "tot"
 
@@ -1478,22 +1501,22 @@ msgid "Navigation"
 msgstr "Navigatie"
 
 # Polijstronde P1: Denk mee, overzicht, kruimelpad, termen
-#: app/templates/_header.html:11 app/templates/events/notice.html:15
-#: app/templates/issues/_crumbs.html:10 app/templates/issues/index.html:2
+#: app/templates/_header.html:12 app/templates/events/notice.html:15
+#: app/templates/issues/_crumbs.html:12 app/templates/issues/index.html:2
 #: app/templates/issues/index.html:18 app/templates/issues/proposal.html:45
 msgid "Have your say"
 msgstr "Denk mee"
 
 #. about, tekst 1
-#: app/templates/_header.html:17 app/templates/about.html:2
+#: app/templates/_header.html:18 app/templates/about.html:2
 msgid "About"
 msgstr "Over ons"
 
-#: app/templates/_header.html:55 app/templates/notificaties.html:16
+#: app/templates/_header.html:56 app/templates/notificaties.html:16
 msgid "Profile"
 msgstr "Profiel"
 
-#: app/templates/_header.html:60 app/templates/admin/dashboard.html:77
+#: app/templates/_header.html:61 app/templates/admin/dashboard.html:77
 #: app/templates/admin/dashboard.html:122
 #: app/templates/admin/proposal_limits.html:10
 #: app/templates/admin/thresholds.html:9
@@ -1502,17 +1525,17 @@ msgstr "Profiel"
 msgid "Admin"
 msgstr "Admin"
 
-#: app/templates/_header.html:63
+#: app/templates/_header.html:64
 msgid "Log out"
 msgstr "Uitloggen"
 
-#: app/templates/_header.html:68 app/templates/login.html:2
+#: app/templates/_header.html:69 app/templates/login.html:2
 #: app/templates/login.html:13 app/templates/login.html:64
 #: app/templates/success.html:11
 msgid "Log in"
 msgstr "Inloggen"
 
-#: app/templates/_header.html:73
+#: app/templates/_header.html:74
 msgid "Menu"
 msgstr "Menu"
 
@@ -2406,7 +2429,7 @@ msgid "We adopt legislation in phases. Simple, technical rules come first; polit
 msgstr "Wetgeving nemen we gefaseerd over. Eenvoudige, technische regels komen eerst; politiek gevoelige onderwerpen volgen later en vragen een bredere meerderheid."
 
 #. manifest, tekst 26
-#: app/templates/issues/show.html:96 app/templates/manifest.html:177
+#: app/templates/issues/show.html:85 app/templates/manifest.html:177
 #: app/templates/moderator/beheer.html:34
 msgid "Phase"
 msgstr "Fase"
@@ -2890,7 +2913,7 @@ msgstr "Mede-indienen of steunen"
 msgid "Notification settings"
 msgstr "Meldingen instellen"
 
-#: app/templates/issues/_crumbs.html:9 app/templates/issues/chart.html:17
+#: app/templates/issues/_crumbs.html:11 app/templates/issues/chart.html:17
 #: app/templates/issues/proposal.html:42
 #: app/templates/issues/verwijderen.html:28
 #: app/templates/moderator/beheer.html:24
@@ -3170,7 +3193,7 @@ msgstr "Hoe werkt dit?"
 msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
 msgstr "Op weg naar stemrecht: %(quality_count)s van %(needed)s kwaliteitsbijdragen."
 
-#: app/templates/issues/show.html:231 app/templates/profile.html:40
+#: app/templates/issues/show.html:220 app/templates/profile.html:40
 msgid "Progress to the right to vote"
 msgstr "Voortgang naar stemrecht"
 
@@ -4064,7 +4087,7 @@ msgstr "Vraagstukken van dit event"
 #: app/templates/forum/closed.html:13 app/templates/forum/closed.html:31
 #: app/templates/forum/index.html:48 app/templates/forum/thread.html:49
 #: app/templates/issues/_overview_events.html:78
-#: app/templates/issues/index.html:68 app/templates/issues/show.html:27
+#: app/templates/issues/index.html:68 app/templates/issues/show.html:29
 #: app/templates/moderator/beheer.html:34
 #: app/templates/moderator/dashboard.html:427
 #: app/templates/moderator/dashboard.html:457
@@ -4115,7 +4138,7 @@ msgstr "Nieuwe link maken"
 msgid "The old link and QR code then no longer work. Printed QR codes neither."
 msgstr "De oude link en QR-code werken dan niet meer. Ook geprinte QR-codes niet."
 
-#: app/templates/events/page.html:24 app/templates/issues/show.html:43
+#: app/templates/events/page.html:24 app/templates/issues/show.html:45
 #: app/templates/moderator/beheer.html:35
 msgid "Archived"
 msgstr "Gearchiveerd"
@@ -4288,11 +4311,6 @@ msgstr "Er zijn nog geen vraagstukken bij dit event."
 #: app/templates/events/page.html:186
 msgid "Only the issues of this event are shown here."
 msgstr "Hier staan alleen de vraagstukken van dit event."
-
-#. link from an event to the overview of all other issues.
-#: app/templates/events/page.html:188
-msgid "See the issues outside this event"
-msgstr "Bekijk de vraagstukken buiten dit event"
 
 #: app/templates/forum/_conduct_mod.html:18
 #: app/templates/forum/_conduct_mod.html:58
@@ -4606,7 +4624,7 @@ msgstr "Tegen"
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:48 app/templates/issues/chart.html:25
-#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:127
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:116
 msgid "Neutral"
 msgstr "Neutraal"
 
@@ -5749,13 +5767,13 @@ msgstr "minder"
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23
 #: app/templates/issues/_facts_big.html:47 app/templates/issues/chart.html:25
-#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:127
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:116
 msgid "Argues for"
 msgstr "Pleit voor"
 
 #: app/templates/issues/_fact_choices.html:9
 #: app/templates/issues/_facts_big.html:23 app/templates/issues/chart.html:25
-#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:127
+#: app/templates/issues/proposal.html:75 app/templates/issues/show.html:116
 msgid "Argues against"
 msgstr "Pleit tegen"
 
@@ -5804,7 +5822,7 @@ msgid "No facts with this direction."
 msgstr "Geen feiten met deze richting."
 
 #: app/templates/issues/_facts_big.html:77
-#: app/templates/issues/proposal.html:140 app/templates/issues/show.html:137
+#: app/templates/issues/proposal.html:140 app/templates/issues/show.html:126
 msgid "No facts yet."
 msgstr "Nog geen feiten."
 
@@ -6060,12 +6078,6 @@ msgid_plural "%(num)d issues"
 msgstr[0] "%(num)d vraagstuk"
 msgstr[1] "%(num)d vraagstukken"
 
-#. button in "Your events": back to an event you already opened, or to an event
-#. you have not opened yet.
-#: app/templates/issues/_overview_events.html:35
-msgid "Back to the event"
-msgstr "Terug naar het event"
-
 #. button to an event you have not opened yet (also after typing an event
 #. code).
 #: app/templates/issues/_overview_events.html:37
@@ -6212,7 +6224,7 @@ msgid "No proposals with this status."
 msgstr "Geen voorstellen met deze status."
 
 #: app/templates/issues/_proposals_big.html:57
-#: app/templates/issues/show.html:204 app/templates/moderator/beheer.html:137
+#: app/templates/issues/show.html:193 app/templates/moderator/beheer.html:137
 msgid "No proposals yet."
 msgstr "Nog geen voorstellen."
 
@@ -6304,9 +6316,9 @@ msgstr "Terug naar het vraagstuk"
 
 #: app/templates/issues/chart.html:20 app/templates/issues/proposal.html:61
 #: app/templates/issues/proposal.html:69 app/templates/issues/proposal.html:71
-#: app/templates/issues/show.html:114 app/templates/issues/show.html:121
-#: app/templates/issues/show.html:123 app/templates/issues/show.html:124
-#: app/templates/issues/show.html:141
+#: app/templates/issues/show.html:103 app/templates/issues/show.html:110
+#: app/templates/issues/show.html:112 app/templates/issues/show.html:113
+#: app/templates/issues/show.html:130
 msgid "Facts and background"
 msgstr "Feiten en achtergrond"
 
@@ -6595,13 +6607,13 @@ msgstr "Nog een feit toevoegen"
 msgid "Start issue"
 msgstr "Vraagstuk starten"
 
-#: app/templates/issues/proposal.html:35 app/templates/issues/show.html:123
-#: app/templates/issues/show.html:152 app/templates/issues/show.html:169
+#: app/templates/issues/proposal.html:35 app/templates/issues/show.html:112
+#: app/templates/issues/show.html:141 app/templates/issues/show.html:158
 msgid "Enlarge"
 msgstr "Vergroten"
 
-#: app/templates/issues/proposal.html:36 app/templates/issues/show.html:124
-#: app/templates/issues/show.html:153 app/templates/issues/show.html:170
+#: app/templates/issues/proposal.html:36 app/templates/issues/show.html:113
+#: app/templates/issues/show.html:142 app/templates/issues/show.html:159
 msgid "Reduce"
 msgstr "Verkleinen"
 
@@ -6628,9 +6640,9 @@ msgstr "Ontkoppelen"
 
 #: app/templates/issues/proposal.html:104
 #: app/templates/issues/proposal.html:138
-#: app/templates/issues/proposal.html:336 app/templates/issues/show.html:141
-#: app/templates/issues/show.html:142 app/templates/issues/show.html:209
-#: app/templates/issues/show.html:210
+#: app/templates/issues/proposal.html:336 app/templates/issues/show.html:130
+#: app/templates/issues/show.html:131 app/templates/issues/show.html:198
+#: app/templates/issues/show.html:199
 msgid "Show more"
 msgstr "Toon meer"
 
@@ -6759,7 +6771,7 @@ msgstr "Voorstel intrekken"
 msgid "You can withdraw your own proposal as long as nobody has reacted yet."
 msgstr "Je kunt je eigen voorstel intrekken zolang er nog geen reacties zijn."
 
-#: app/templates/issues/proposal.html:322 app/templates/issues/show.html:168
+#: app/templates/issues/proposal.html:322 app/templates/issues/show.html:157
 msgid "New proposal"
 msgstr "Nieuw voorstel"
 
@@ -6799,74 +6811,74 @@ msgid "New proposals can only be made during the facts phase. After that the vot
 msgstr "Nieuwe voorstellen kun je alleen in de feitenfase doen. Daarna ligt de stemlijst vast."
 
 # Polijstronde P3: cockpit
-#: app/templates/issues/show.html:34 app/templates/issues/show.html:35
+#: app/templates/issues/show.html:36 app/templates/issues/show.html:37
 msgid "Following"
 msgstr "Volgend"
 
-#: app/templates/issues/show.html:34 app/templates/issues/show.html:35
+#: app/templates/issues/show.html:36 app/templates/issues/show.html:37
 msgid "Follow"
 msgstr "Volgen"
 
-#: app/templates/issues/show.html:35
+#: app/templates/issues/show.html:37
 msgid "Followers get the updates of this issue in their daily summary."
 msgstr "Volgers krijgen de meldingen van dit vraagstuk in hun dagelijkse samenvatting."
 
-#: app/templates/issues/show.html:44
+#: app/templates/issues/show.html:46
 msgid "This issue is archived: it is closed and no longer listed publicly."
 msgstr "Dit vraagstuk staat in het archief: het is gesloten en niet meer te vinden in de openbare lijsten."
 
-#: app/templates/issues/show.html:48 app/templates/moderator/beheer.html:63
+#: app/templates/issues/show.html:50 app/templates/moderator/beheer.html:63
 msgid "Restore from archive"
 msgstr "Terug uit archief"
 
-#: app/templates/issues/show.html:57
+#: app/templates/issues/show.html:59
 msgid "Show or hide the introduction"
 msgstr "Toelichting in- of uitklappen"
 
-#: app/templates/issues/show.html:62
+#: app/templates/issues/show.html:64
 msgid "No introduction yet."
 msgstr "Nog geen toelichting."
 
-#: app/templates/issues/show.html:76 app/templates/issues/show.html:89
+#: app/templates/issues/show.html:78
 msgid "Online contributions are open between the first and the last day."
 msgstr "Online bijdragen staan open tussen de eerste en de laatste dag."
 
-#: app/templates/issues/show.html:99
+#: app/templates/issues/show.html:88
 #, python-format
 msgid "The platform opens for contributions on %(date)s."
 msgstr "Het platform gaat open voor bijdragen op %(date)s."
 
-#: app/templates/issues/show.html:99
+#: app/templates/issues/show.html:88
 msgid "The platform is not open for contributions right now. See the days of the event in the introduction."
 msgstr "Het platform is nu niet open voor bijdragen. Zie de dagen van het event in de toelichting."
 
-#: app/templates/issues/show.html:115 app/templates/issues/show.html:151
-#: app/templates/issues/show.html:152 app/templates/issues/show.html:153
+#: app/templates/issues/show.html:104 app/templates/issues/show.html:140
+#: app/templates/issues/show.html:141 app/templates/issues/show.html:142
 msgid "Discussion"
 msgstr "Discussie"
 
-#: app/templates/issues/show.html:158
+#: app/templates/issues/show.html:147
 msgid "This issue has no discussion yet."
 msgstr "Dit vraagstuk heeft nog geen discussie."
 
-#: app/templates/issues/show.html:222
+#: app/templates/issues/show.html:211
 msgid "Your right to vote"
 msgstr "Jouw stemrecht"
 
-#: app/templates/issues/show.html:227
+#: app/templates/issues/show.html:216
 msgid "You have the right to vote."
 msgstr "Je hebt stemrecht."
 
-#: app/templates/issues/show.html:229
+#: app/templates/issues/show.html:218
 #, python-format
 msgid "%(count)s of %(needed)s quality marks for the right to vote"
 msgstr "%(count)s van %(needed)s keurmerken voor stemrecht"
 
-#: app/templates/issues/show.html:232
+#: app/templates/issues/show.html:221
 msgid "You earn a quality mark with a well argued contribution to a discussion."
 msgstr "Een keurmerk verdien je met een goed onderbouwde bijdrage aan een discussie."
 
-#: app/templates/issues/show.html:235
+#: app/templates/issues/show.html:224
 msgid "to see your right to vote."
 msgstr "om je stemrecht te zien."
 

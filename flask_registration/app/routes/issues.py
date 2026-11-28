@@ -107,7 +107,12 @@ def _preload_translations(issue, proposal=None):
     conversation) too: they are translated right away."""
     proposals = IssueProposal.query.filter_by(issue_id=issue.id).all()
     _preload_facts(issue)
-    content_i18n.preload([issue], 'title', 'intro')
+    from app import events
+    if events.enabled() and issue.event_id is not None and issue.event is not None:
+        # Events step 1e: the name of the event (bar and label) in the same query.
+        content_i18n.preload([issue, issue.event], 'title', 'intro', 'name')
+    else:
+        content_i18n.preload([issue], 'title', 'intro')
     content_i18n.preload(proposals, 'statement', 'explanation')
     content_i18n.preload(list(issue.followups), 'body')
     if proposal is not None:

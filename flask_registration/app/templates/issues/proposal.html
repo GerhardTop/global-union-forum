@@ -42,7 +42,7 @@
       <nav class="gu-pv__crumbs" aria-label="{{ _('Breadcrumb') }}">
         <a class="gu-pv__back" href="{{ url_for('issues.show', issue_id=issue.id) }}">&lsaquo; {{ _('Back to the issue') }}</a>
         <span class="gu-pv__crumbsep" aria-hidden="true">|</span>
-        <a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a><span aria-hidden="true">/</span>
+        {% if not event_inside(issue) %}<a href="{{ url_for('issues.index') }}">{{ _('Have your say') }}</a><span aria-hidden="true">/</span>{% endif %}
         <a href="{{ url_for('issues.show', issue_id=issue.id, vergroot='voorstellen', _anchor='panel-proposals') }}">{{ _('Proposals') }}</a><span aria-hidden="true">/</span>
         <span aria-current="page">{{ _('Proposal') }}</span>
       </nav>

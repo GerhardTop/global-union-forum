@@ -22,7 +22,9 @@
 
     {# Teruglink naar het overzicht boven de titel; geen volledig kruimelpad. #}
     <header class="gu-cockpit__head">
-      <a class="gu-backlink" href="{{ url_for('issues.index') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6"/></svg>{{ _('Issues') }}</a>
+      {% if not event_inside(issue) %}<a class="gu-backlink" href="{{ url_for('issues.index') }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6"/></svg>{{ _('Issues') }}</a>{% endif %}{% if events_on and issue.event %}
+      {# Events step 1e (artboard 2): the label with the event's name as a link; no back link inside an event that is not shared. #}
+      <p class="gu-eyebrow gu-cockpit__eventlabel">{% include 'issues/_kind.html' %}</p>{% endif %}
       <div class="gu-cockpit__titlerow">
         {% call mt(issue, 'title', 'h1', 'gu-forum__title') %}{% if issue.is_closed %} <span class="gu-forum__closed-badge">{{ _('Closed') }}</span>{% endif %}{% endcall %}
         <div class="gu-cockpit__actions">
@@ -62,20 +64,7 @@
         <p class="gu-composer__hint">{{ _('No introduction yet.') }}</p>
         {% endif %}
         {% if issue.kind == 'event' and events_on and issue.event %}
-        {# Events step 1c: the data of the event (until step 1e removes this block). #}
-        {% set ev = issue.event %}
-        <div class="gu-cockpit__event">
-          <p class="gu-cockpit__eventname">{{ mt_inline(ev, 'name') }}</p>
-          {% if ev.note %}{{ mt(ev, 'note', 'div', 'gu-cockpit__intro', rich=true) }}{% endif %}
-          {% if ev.days %}
-          <ul class="gu-cockpit__eventdays">
-            {% for day in ev.days %}
-            <li>{{ day.starts_at | local | datetimeformat('EEEE d MMMM y, HH:mm') }} {{ _('to') }} {{ day.ends_at | local | datetimeformat('HH:mm') }}</li>
-            {% endfor %}
-          </ul>
-          {% if ev.online_between %}<p class="gu-composer__hint">{{ _('Online contributions are open between the first and the last day.') }}</p>{% endif %}
-          {% endif %}
-        </div>
+        {# Events step 1e: no event block; the event page has the data (the label links to it). #}
         {% elif issue.kind == 'event' and (issue.event_note or issue.event_days) %}
         <div class="gu-cockpit__event">
           {% if issue.event_name %}<p class="gu-cockpit__eventname">{{ issue.event_name }}</p>{% endif %}

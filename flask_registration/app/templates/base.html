@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="page-wrapper">
-        {% include '_header.html' %}
+        {% include '_header.html' %}{% set bar = event_bar() %}{% if bar %}{% include '_event_bar.html' %}{% endif %}
 
         <main class="main-content">
             {% with messages = get_flashed_messages(with_categories=true) %}
