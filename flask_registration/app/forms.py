@@ -150,11 +150,6 @@ class AanmeldenForm(FlaskForm):
     pass
 
 
-class LinkedInForm(FlaskForm):
-    """Leeg form — alleen voor CSRF-validatie bij het bijwerken van LinkedIn in profielinstellingen."""
-    pass
-
-
 class AdminActionForm(FlaskForm):
     """Leeg form — alleen voor CSRF-validatie bij admin-acties (rol wijzigen, account verwijderen)."""
     pass

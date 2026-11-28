@@ -12,6 +12,9 @@
 
   <div class="gu-join__panel">
 
+    {# ── Account (docs/design/profiel.html) ── #}
+    <section class="gu-profile__section" aria-labelledby="guAccountTitle">
+    <p class="gu-eyebrow" id="guAccountTitle">{# TRANSLATORS: profile, the eyebrow of the first section (username, email address, status). #}{{ _('Account') }}</p>
     <div class="gu-profile__info">
       <div class="gu-profile__info-row">
         <span class="gu-profile__info-label">{{ _('Username') }}</span>
@@ -21,223 +24,177 @@
         <span class="gu-profile__info-label">{{ _('Email address') }}</span>
         <span class="gu-profile__info-value gu-profile__info-value--literal">{{ current_user.email }}</span>
       </div>
-      {# Fase C2: status, verdiend met kwaliteitsbijdragen (alleen omhoog). #}
+      {# Status: the shown status (earned or granted, the higher of the two),
+         the quality contributions behind it and a link to the FAQ question
+         about the right to vote. Without the right: the progress bar. #}
       {% set st = current_user.effective_status %}
       <div class="gu-profile__info-row" id="guStatus">
         <span class="gu-profile__info-label">{{ _('Status') }}</span>
-        <span class="gu-profile__info-value">
-          <span class="gu-status-badge gu-status-badge--{{ st }}">{{ status_labels[st] }}</span>
-          {% if current_user.can_vote() %}<span class="gu-quality__meta">· {{ _('right to vote') }}</span>{% endif %}
+        <span class="gu-profile__info-value gu-profile__status">
+          <span><span class="gu-status-badge gu-status-badge--{{ st }}">{{ status_labels[st] }}</span>{% if current_user.can_vote() %} <span class="gu-quality__meta">· {{ _('right to vote') }}</span>{% endif %}</span>
+          <span class="gu-profile__status-meta">{% set topics = ngettext('%(num)d topic', '%(num)d topics', quality_topics) %}{% trans count=quality_count, topics=topics %}{{ count }} quality contribution in {{ topics }}{% pluralize %}{{ count }} quality contributions in {{ topics }}{% endtrans %}. <a href="{{ url_for('main.faq', _anchor='faq-3-5') }}" id="guStatusHow">{# TRANSLATORS: profile, a link next to your status to the FAQ question about the right to vote. #}{{ _('How does this work?') }}</a></span>
+          {% if not current_user.can_vote() %}
+          {% set needed = thresholds.voter_min %}
+          <span class="gu-cockpit__progress gu-profile__progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ needed }}" aria-valuenow="{{ [quality_count, needed] | min }}"
+               aria-label="{{ _('Progress to the right to vote') }}"><span style="width: {{ (100 * ([quality_count, needed] | min) / needed) | round | int if needed else 100 }}%"></span></span>
+          {% endif %}
         </span>
       </div>
-      <div class="gu-profile__info-row">
-        <span class="gu-profile__info-label">{{ _('Earned') }}</span>
-        <span class="gu-profile__info-value">
-          {{ status_labels[current_user.earned_status] }}:
-          {% set topics = ngettext('%(num)d topic', '%(num)d topics', quality_topics) %}{% trans count=quality_count, topics=topics %}{{ count }} quality contribution in {{ topics }}{% pluralize %}{{ count }} quality contributions in {{ topics }}{% endtrans %}
-          <span class="gu-quality__meta" style="display:block;">
-            {% set e = current_user.earned_status %}
-            {% if e == 'reader' %}{{ _('With your first quality contribution you become a Contributor.') }}
-            {% elif e == 'contributor' %}{% trans voter_min=thresholds.voter_min %}Voter (with the right to vote) from {{ voter_min }} quality contributions.{% endtrans %}
-            {% elif e == 'voter' %}{% trans moderator_min=thresholds.moderator_min, moderator_min_topics=thresholds.moderator_min_topics %}Moderator (status) with more than {{ moderator_min }} quality contributions in at least {{ moderator_min_topics }} topics.{% endtrans %}
-            {% elif e == 'moderator' %}{% trans senior_min=thresholds.senior_min %}Senior with more than {{ senior_min }} quality contributions.{% endtrans %}
-            {% endif %}
-          </span>
-        </span>
-      </div>
-      {# Polijststap P7: de hele statusladder met je plek erop, en zonder stemrecht de voortgang ernaartoe. #}
-      <div class="gu-statusladder" aria-label="{{ _('Status ladder') }}">
-        <ol class="gu-statusladder__steps">
-          {% for key in ['reader', 'contributor', 'voter', 'moderator', 'senior'] %}
-          {% set reached = loop.index0 <= ['reader', 'contributor', 'voter', 'moderator', 'senior'].index(st) %}
-          <li class="gu-statusladder__step{% if key == st %} is-current{% elif reached %} is-done{% endif %}"{% if key == st %} aria-current="step"{% endif %}>
-            <span class="gu-statusladder__dot" aria-hidden="true"></span>
-            <span class="gu-statusladder__label">{{ status_labels[key] }}</span>
-          </li>
-          {% endfor %}
-        </ol>
-        {% if current_user.can_vote() %}
-        <p class="gu-statusladder__note">{{ _('You have the right to vote.') }}</p>
-        {% else %}
-        {% set needed = thresholds.voter_min %}
-        <p class="gu-statusladder__note">{% trans quality_count=quality_count, needed=needed %}On the way to the right to vote: {{ quality_count }} of {{ needed }} quality contributions.{% endtrans %}</p>
-        <div class="gu-cockpit__progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ needed }}" aria-valuenow="{{ [quality_count, needed] | min }}"
-             aria-label="{{ _('Progress to the right to vote') }}"><span style="width: {{ (100 * ([quality_count, needed] | min) / needed) | round | int if needed else 100 }}%"></span></div>
-        {% endif %}
-      </div>
     </div>
 
-    <hr class="gu-auth__divider" style="margin: 32px 0;">
-
-    <p class="gu-eyebrow">{{ _('Not required') }}</p>
-
-    <div class="gu-profile__info" style="margin-bottom: 24px;">
-      <div class="gu-profile__info-row">
-        <span class="gu-profile__info-label">{{ _('First name') }}</span>
-        <span class="gu-profile__info-value">{{ current_user.first_name if current_user.first_name else _('Not provided') }}</span>
-      </div>
-      <div class="gu-profile__info-row">
-        <span class="gu-profile__info-label">{{ _('Last name') }}</span>
-        <span class="gu-profile__info-value">{{ current_user.last_name if current_user.last_name else _('Not provided') }}</span>
-      </div>
-    </div>
-
-    {# ── Naamweergave in het forum: pseudoniem (standaard) of echte naam ── #}
-    <div id="guNameDisplay" class="gu-namechoice">
-      <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 8px;">
-        {{ _('How do you appear in the forum?') }}
-      </h2>
-      <p class="gu-namechoice__intro">
-        {{ _('By default you take part under your pseudonym. You can also choose to take part under your real name, and switch back at any time.') }}
-      </p>
-      <form id="guNameForm" method="POST" action="{{ url_for('profile.profiel_naamweergave') }}" novalidate>
-        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-        <label class="gu-namechoice__option">
-          <input type="radio" name="show_real_name" value="0"{% if not current_user.shows_real_name %} checked{% endif %}>
-          <span>
-            <strong>{{ _('Pseudonym') }} (@{{ current_user.username }})</strong>
-            <span class="gu-join__badge">{{ _('default') }}</span>
-          </span>
-        </label>
-        <label class="gu-namechoice__option{% if not current_user.real_name %} gu-namechoice__option--disabled{% endif %}">
-          <input type="radio" name="show_real_name" value="1"{% if current_user.shows_real_name %} checked{% endif %}{% if not current_user.real_name %} disabled{% endif %}>
-          <span>
-            <strong>{{ _('My real name') }}{% if current_user.real_name %} ({{ current_user.real_name }}){% endif %}</strong>
-            {% if not current_user.real_name %}
-            <span class="gu-namechoice__hint">{{ _('No real name is known for your account.') }}</span>
-            {% endif %}
-          </span>
-        </label>
-        <noscript>
-          <label class="gu-join__check" style="margin-top: 8px;">
-            <input type="checkbox" name="confirm" value="1">
-            <span>{{ _('I understand that my real name will then be visible on all my contributions in the forum, including earlier ones.') }}</span>
-          </label>
-          <button type="submit" class="gu-btn gu-btn--primary" style="margin-top: 8px;">{{ _('Save') }} <span class="gu-arrow"></span></button>
-        </noscript>
-        <p class="gu-join__formError" id="guNameError"{% if not name_display_error %} style="display:none;"{% endif %}>
-          {% if name_display_error == 'no_name' %}{{ _('No real name is known for your account.') }}
-          {% else %}{{ _('Please first confirm that your real name may become visible.') }}{% endif %}
-        </p>
-        <span id="guNameSaved" class="gu-namechoice__saved" style="display:none;">{{ _('Saved!') }}</span>
-      </form>
-
-      {# LinkedIn hoort bij de echte naam: alleen dan getoond en publiek. #}
-      <p id="guLinkedInPseudoNote" class="gu-namechoice__hint"{% if current_user.shows_real_name %} hidden{% endif %}>
-        {{ _('As long as you use your pseudonym, your LinkedIn profile is not shown publicly in the forum.') }}
-      </p>
-      <div id="guLinkedInSection"{% if not current_user.shows_real_name %} hidden{% endif %}>
-    <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 24px 0 8px;">
-      {{ _('Your LinkedIn profile.') }}
-    </h3>
-    <p class="gu-namechoice__hint" style="margin-bottom: 16px;">
-      {{ _('Your LinkedIn profile is shown publicly next to your name in the forum.') }}
-    </p>
-    <p id="guLinkedInDisplay" style="margin-bottom: 16px; font-size: 14px;{% if not current_user.linkedin_url %} display: none;{% endif %}">
-      <a id="guLinkedInLink" href="{{ current_user.linkedin_url or '' }}" target="_blank" rel="noopener noreferrer"
-         style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">
-        {{ current_user.linkedin_url or '' }}
-      </a>
-    </p>
-    <form id="guLinkedInForm" method="POST" action="{{ url_for('profile.profile') }}" novalidate>
-      {{ linkedin_form.hidden_tag() }}
-      <input type="hidden" name="action" value="linkedin">
-      <div class="gu-join__field">
-        <label for="linkedin_url">
-          {{ _('LinkedIn profile URL') }} <span class="gu-join__badge">{{ _('optional') }}</span>
-        </label>
-        <input id="linkedin_url" name="linkedin_url" type="url"
-               class="gu-input{% if linkedin_error %} gu-input--error{% endif %}"
-               value="{{ current_user.linkedin_url or '' }}"
-               placeholder="{{ _('https://www.linkedin.com/in/your-name') }}">
-        <p id="guLinkedInErrorMsg" class="gu-join__formError"{% if not linkedin_error %} style="display:none;"{% endif %}>
-          {{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}
-        </p>
-      </div>
-      <button type="submit" class="gu-btn gu-btn--primary" style="margin-top: 8px;">
-        {{ _('Save') }} <span class="gu-arrow"></span>
-      </button>
-      <span id="guLinkedInSuccess" style="display:none; margin-inline-start: 12px; font-size: 0.875rem; color: var(--gu-success);">
-        {{ _('Saved!') }}
-      </span>
-    </form>
-      </div>
-    </div>
-
-    <hr class="gu-auth__divider" style="margin: 32px 0;">
-
-    <p class="gu-eyebrow">{% trans %}Language & Translations{% endtrans %}</p>
-    <h2 class="gu-join__h2" style="font-size: 1.25rem; margin-bottom: 16px;">
-      {{ _('Language preference.') }}
-    </h2>
-    <div class="gu-lang-switch" style="margin-bottom: 24px;">
-      {% for language in languages %}
-      <a href="{{ url_for('main.set_lang', code=language.code) }}"
-         class="gu-lang-switch__btn{% if language.code == lang %} is-active{% endif %}" lang="{{ language.code }}" hreflang="{{ language.code }}"
-         onclick="guSaveScroll()">{{ language.name }}</a>
-      {% endfor %}
-    </div>
-
-    <h3 style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">
-      {{ _('Automatic translation.') }}
-    </h3>
-    {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else auto_translate_default(lang) %}
-    <form id="guTranslateForm" method="POST" action="{{ url_for('profile.profiel_vertaalvoorkeur') }}" style="margin-bottom: 4px;">
+    {# ── How you appear in the forum: under your username (the default) or
+       under your real name, with name and LinkedIn in the same form. Without
+       JavaScript the fields are open; with it the card opens when chosen. ── #}
+    {% set nd = name_data or {} %}
+    {% set want_real = (nd.get('show_real_name') == '1') if nd else current_user.shows_real_name %}
+    <form id="guNameDisplay" class="gu-namechoice" method="POST" action="{{ url_for('profile.profiel_naamweergave') }}" novalidate>
       {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-      <label class="gu-toggle-label">
-        <span class="gu-toggle">
-          <input type="checkbox" name="auto_translate" value="1" class="gu-toggle__input"
-                 {% if effective_auto %}checked{% endif %}>
-          <span class="gu-toggle__track"></span>
-          <span class="gu-toggle__thumb"></span>
-        </span>
-        <span class="gu-toggle__text">
-          
-            {{ _('Automatically translate posts to English') }}
-          
-        </span>
-      </label>
+      <fieldset class="gu-namechoice__set">
+        <legend class="gu-profile__h3">{{ _('How do you appear in the forum?') }}</legend>
+        <p class="gu-namechoice__intro">{# TRANSLATORS: profile, the explanation above the choice between username and real name. #}{{ _('Most people take part under their username. That is fine. Are you an expert or someone with lived experience? Then it makes sense to use your real name. You can always switch back.') }}</p>
+        <label class="gu-namechoice__option">
+          <input type="radio" name="show_real_name" value="0"{% if not want_real %} checked{% endif %}>
+          <span><strong>{# TRANSLATORS: profile, a choice: take part under your username; %(username)s is the username. #}{{ _('Under my username (@%(username)s)', username=current_user.username) }}</strong></span>
+        </label>
+        <div class="gu-namechoice__option gu-namechoice__option--real" id="guRealNameCard">
+          <label class="gu-namechoice__pick">
+            <input type="radio" name="show_real_name" value="1"{% if want_real %} checked{% endif %}>
+            <span><strong>{# TRANSLATORS: profile, a choice: take part under your real name (first and last name). #}{{ _('Under my real name') }}</strong></span>
+          </label>
+          <div class="gu-namechoice__fields" id="guRealNameFields">
+            <div class="gu-namechoice__names">
+              <div class="gu-join__field">
+                <label for="first_name">{{ _('First name') }}</label>
+                <input id="first_name" name="first_name" type="text" maxlength="50" autocomplete="given-name"
+                       class="gu-input{% if 'first_name' in name_errors %} gu-input--error{% endif %}"
+                       value="{{ nd.get('first_name', current_user.first_name or '') }}"{% if 'first_name' in name_errors %} aria-invalid="true" aria-describedby="guFirstNameError"{% endif %}>
+                {% if 'first_name' in name_errors %}<p class="gu-join__formError" id="guFirstNameError">{# TRANSLATORS: profile, an error under the first name field (real name chosen). #}{{ _('Enter your first name.') }}</p>{% endif %}
+              </div>
+              <div class="gu-join__field">
+                <label for="last_name">{{ _('Last name') }}</label>
+                <input id="last_name" name="last_name" type="text" maxlength="50" autocomplete="family-name"
+                       class="gu-input{% if 'last_name' in name_errors %} gu-input--error{% endif %}"
+                       value="{{ nd.get('last_name', current_user.last_name or '') }}"{% if 'last_name' in name_errors %} aria-invalid="true" aria-describedby="guLastNameError"{% endif %}>
+                {% if 'last_name' in name_errors %}<p class="gu-join__formError" id="guLastNameError">{# TRANSLATORS: profile, an error under the last name field (real name chosen). #}{{ _('Enter your last name.') }}</p>{% endif %}
+              </div>
+            </div>
+            <div class="gu-join__field">
+              <label for="linkedin_url">{{ _('LinkedIn profile') }} <span class="gu-namechoice__optional">({{ _('optional') }})</span></label>
+              <input id="linkedin_url" name="linkedin_url" type="url" maxlength="255"
+                     class="gu-input{% if 'linkedin' in name_errors %} gu-input--error{% endif %}"
+                     value="{{ nd.get('linkedin_url', current_user.linkedin_url or '') }}"
+                     placeholder="{{ _('https://www.linkedin.com/in/your-name') }}"{% if 'linkedin' in name_errors %} aria-invalid="true" aria-describedby="guLinkedInError"{% endif %}>
+              {% if 'linkedin' in name_errors %}<p class="gu-join__formError" id="guLinkedInError">{{ _('Enter a valid LinkedIn URL (https://www.linkedin.com/in/…).') }}</p>{% endif %}
+            </div>
+            {% if not current_user.shows_real_name %}
+            <label class="gu-join__check">
+              <input type="checkbox" name="confirm" value="1"{% if 'not_confirmed' in name_errors %} aria-invalid="true" aria-describedby="guConfirmError"{% endif %}>
+              <span>{# TRANSLATORS: profile, the checkbox before you take part under your real name. #}{{ _('I understand that my real name will then be visible on all my contributions in the forum.') }}</span>
+            </label>
+            {% if 'not_confirmed' in name_errors %}<p class="gu-join__formError" id="guConfirmError">{{ _('Please first confirm that your real name may become visible.') }}</p>{% endif %}
+            {% endif %}
+          </div>
+        </div>
+        <div><button type="submit" class="gu-btn gu-btn--primary">{{ _('Save') }}</button></div>
+      </fieldset>
     </form>
-    <p style="font-size: 13px; color: var(--gu-fg-3); margin-bottom: 0;">
-      
-        {{ _('Posts in another language are automatically translated when you open a conversation.') }}
-      
-    </p>
+    {% if name_errors %}
+    <script nonce="{{ csp_nonce() }}">
+      /* After a validation error (a full page load), the red fields are in view. */
+      (function () {
+        var el = document.querySelector('#guNameDisplay .gu-input--error, #guNameDisplay [aria-invalid="true"]');
+        if (el) { el.scrollIntoView({ block: 'center' }); el.focus({ preventScroll: true }); }
+      })();
+    </script>
+    {% endif %}
+    <script nonce="{{ csp_nonce() }}">
+      /* The real name card opens when chosen and closes for the username.
+         Without JavaScript the fields stay open. The hidden fields are still
+         sent; the server only stores them with the real name. */
+      (function () {
+        var form = document.getElementById('guNameDisplay');
+        var fields = document.getElementById('guRealNameFields');
+        if (!form || !fields) return;
+        var radios = form.querySelectorAll('input[name="show_real_name"]');
+        function apply() {
+          var real = form.querySelector('input[name="show_real_name"][value="1"]').checked;
+          fields.hidden = !real;
+        }
+        radios.forEach(function (r) { r.addEventListener('change', apply); });
+        apply();
+      })();
+    </script>
+    </section>
 
     {% if about_me %}
-    {# Representativeness 1b (docs/representativiteit.md): About me, the
-       voluntary questions. Only with PARTICIPANT_PROFILE on. #}
+    {# Representativeness 1b (docs/representativiteit.md): the voluntary
+       questions, under Optional. Only with PARTICIPANT_PROFILE on; without
+       it the whole section goes. #}
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
-    <section id="over-mij" class="gu-pp" aria-labelledby="over-mij-title">
-      <p class="gu-eyebrow">{# TRANSLATORS: profile, the eyebrow of the section with the voluntary questions about yourself. #}{{ _('About me') }}</p>
-      <h2 class="gu-join__h2 gu-pp__title" id="over-mij-title" style="font-size: 1.25rem;">
-        <span>{# TRANSLATORS: profile, About me: the title of the voluntary questions (who takes part in the votes). #}{{ _('Who votes?') }}</span>
-        <span class="gu-pp__pill">{# TRANSLATORS: a small label: answering is voluntary. #}{{ _('Voluntary') }}</span>
-      </h2>
-      <p class="gu-pp__intro">{# TRANSLATORS: profile, About me: why we ask. "results": the outcome of the votes of an issue. #}{{ _('When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what.') }}
-        <a href="{{ url_for('main.privacy', _anchor='wie-stemde-mee') }}">{# TRANSLATORS: a link to the privacy statement. #}{{ _('Why we ask this') }}</a></p>
-      <form method="POST" action="{{ url_for('profile.over_mij') }}" class="gu-pp__form" novalidate>
-        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
-        {% with q = about_me %}{% include "participants/_questions.html" %}{% endwith %}
-        {% if about_me.answered_at %}
-        <p class="gu-pp__hint">{# TRANSLATORS: profile, About me: when the answers were saved; %(date)s is a date. #}{{ _('Filled in on %(date)s', date=about_me.answered_at | dateformat('d MMMM y')) }}</p>
-        {% endif %}
-        <div class="gu-pp__actions">
-          <button type="submit" name="action" value="save" class="gu-btn gu-btn--primary gu-pp__btn">{{ _('Save') }}</button>
-          <button type="submit" name="action" value="clear" class="gu-btn gu-btn--ghost gu-pp__btn">{# TRANSLATORS: profile, About me: a button that removes the answers. #}{{ _('Clear answers') }}</button>
-        </div>
-      </form>
+    <section class="gu-profile__section" aria-labelledby="guOptionalTitle">
+      <p class="gu-eyebrow" id="guOptionalTitle">{# TRANSLATORS: profile, the eyebrow of the section with what you may fill in but do not have to. #}{{ _('Optional') }}</p>
+      <div id="over-mij" class="gu-pp gu-profile__card" role="group" aria-labelledby="over-mij-title">
+        <h2 class="gu-join__h2 gu-pp__title" id="over-mij-title" style="font-size: 1.25rem;">
+          <span>{# TRANSLATORS: profile, About me: the title of the voluntary questions (who takes part in the votes). #}{{ _('Who votes?') }}</span>
+          <span class="gu-pp__pill">{# TRANSLATORS: a small label: answering is voluntary. #}{{ _('Voluntary') }}</span>
+        </h2>
+        <p class="gu-pp__intro">{# TRANSLATORS: profile, About me: why we ask. "results": the outcome of the votes of an issue. #}{{ _('When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what.') }}
+          <a href="{{ url_for('main.privacy', _anchor='wie-stemde-mee') }}">{# TRANSLATORS: a link to the privacy statement. #}{{ _('Why we ask this') }}</a></p>
+        <form method="POST" action="{{ url_for('profile.over_mij') }}" class="gu-pp__form" novalidate>
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          {% with q = about_me %}{% include "participants/_questions.html" %}{% endwith %}
+          <div class="gu-pp__actions">
+            <button type="submit" name="action" value="save" class="gu-btn gu-btn--primary gu-pp__btn">{{ _('Save') }}</button>
+            <button type="submit" name="action" value="clear" class="gu-btn gu-btn--ghost gu-pp__btn">{# TRANSLATORS: profile, About me: a button that removes the answers. #}{{ _('Clear answers') }}</button>
+          </div>
+        </form>
+      </div>
     </section>
     {% endif %}
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
-    {# The summary of what you follow. How often (off/daily/weekly) is set on
-       /profiel/meldingen (notifications step 2); the old on/off toggle is gone. #}
-    <h3 id="samenvatting" style="font-size: 1rem; font-weight: 600; color: var(--gu-fg-1); margin: 0 0 12px;">{{ _('Summary by email') }}</h3>
-    <p style="font-size: 13px; color: var(--gu-fg-3); margin: 8px 0 0;"><a href="{{ url_for('profile.meldingen') }}">{{ _('View your daily summaries') }}</a></p>
-    <p style="font-size: 13px; color: var(--gu-fg-3); margin: 8px 0 0;"><a href="{{ url_for('profile.notificaties') }}" id="notificatiesLink">{{ _('Notifications') }}</a> &middot; {{ _('choose what you hear about, and where') }}</p>
+    {# ── Settings: language, automatic translation, summary by email ── #}
+    <section class="gu-profile__section" aria-labelledby="guSettingsTitle">
+      <p class="gu-eyebrow" id="guSettingsTitle">{# TRANSLATORS: profile, the eyebrow of the section with language, automatic translation and the summary by email. #}{{ _('Settings') }}</p>
+
+      <div class="gu-profile__setting">
+        <h2 class="gu-profile__h3">{# TRANSLATORS: profile, Settings: the heading above the language buttons. #}{{ _('Language') }}</h2>
+        <div class="gu-lang-switch">
+          {% for language in languages %}
+          <a href="{{ url_for('main.set_lang', code=language.code) }}"
+             class="gu-lang-switch__btn{% if language.code == lang %} is-active{% endif %}" lang="{{ language.code }}" hreflang="{{ language.code }}"
+             onclick="guSaveScroll()">{{ language.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="gu-profile__setting">
+        <h2 class="gu-profile__h3">{# TRANSLATORS: profile, Settings: the heading above the switch for automatic translation. #}{{ _('Automatic translation') }}</h2>
+        {% set effective_auto = current_user.auto_translate if current_user.auto_translate is not none else auto_translate_default(lang) %}
+        <form id="guTranslateForm" method="POST" action="{{ url_for('profile.profiel_vertaalvoorkeur') }}">
+          {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+          <label class="gu-toggle-label">
+            <span class="gu-toggle">
+              <input type="checkbox" name="auto_translate" value="1" class="gu-toggle__input"
+                     {% if effective_auto %}checked{% endif %}>
+              <span class="gu-toggle__track"></span>
+              <span class="gu-toggle__thumb"></span>
+            </span>
+            <span class="gu-toggle__text">{{ _('Automatically translate posts to English') }}</span>
+          </label>
+        </form>
+        <p class="gu-profile__hint">{{ _('Posts in another language are automatically translated when you open a conversation.') }}</p>
+      </div>
+
+      {# The summary of what you follow. How often (off/daily/weekly) is set on
+         /profiel/meldingen (notifications step 2). #}
+      <div class="gu-profile__setting">
+        <h2 class="gu-profile__h3" id="samenvatting">{{ _('Summary by email') }}</h2>
+        <p class="gu-profile__hint"><a href="{{ url_for('profile.meldingen') }}">{{ _('View your daily summaries') }}</a> &middot; <a href="{{ url_for('profile.notificaties') }}" id="notificatiesLink">{{ _('Notifications') }}</a>, {{ _('choose what you hear about, and where') }}</p>
+      </div>
+    </section>
 
     <hr class="gu-auth__divider" style="margin: 32px 0;">
 
@@ -309,7 +266,7 @@
 
     {% if password_weak or password_mismatch or current_password_empty %}
     <script nonce="{{ csp_nonce() }}">
-      /* Deze pagina is lang (profiel → LinkedIn → taal → wachtwoord →
+      /* Deze pagina is lang (account → optioneel → instellingen → wachtwoord →
          gevarenzone); een gewone form-POST herlaadt de hele pagina en de
          browser scrollt standaard naar boven, waardoor de rode velden hier
          buiten beeld vallen. Bij een validatiefout scrollen we daarom
@@ -329,42 +286,6 @@
           sessionStorage.removeItem('guProfileScrollY');
           window.scrollTo(0, parseInt(y, 10));
         }
-      })();
-
-      /* ── LinkedIn form AJAX ── */
-      (function () {
-        var form       = document.getElementById('guLinkedInForm');
-        var display    = document.getElementById('guLinkedInDisplay');
-        var link       = document.getElementById('guLinkedInLink');
-        var errorMsg   = document.getElementById('guLinkedInErrorMsg');
-        var successMsg = document.getElementById('guLinkedInSuccess');
-        var input      = document.getElementById('linkedin_url');
-        if (!form) return;
-        form.addEventListener('submit', function (e) {
-          e.preventDefault();
-          fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-          })
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
-            if (data.ok) {
-              // LinkedIn is optioneel: een leeg veld wist het profiel.
-              link.href        = data.linkedin_url;
-              link.textContent = data.linkedin_url;
-              display.style.display = data.linkedin_url ? '' : 'none';
-              errorMsg.style.display  = 'none';
-              successMsg.style.display = '';
-              input.classList.remove('gu-input--error');
-              setTimeout(function () { successMsg.style.display = 'none'; }, 3000);
-            } else {
-              errorMsg.style.display   = '';
-              successMsg.style.display = 'none';
-              input.classList.add('gu-input--error');
-            }
-          });
-        });
       })();
 
       /* ── Auto-translate toggle AJAX ── */
@@ -468,110 +389,6 @@
 
 </div>
 
-
-{# ── Bevestiging: echte naam publiek maken ─────────────────── #}
-<div class="gu-modal-overlay" id="guRealNameModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="guRealNameTitle">
-  <div class="gu-modal">
-    <button type="button" class="gu-modal__close" id="guRealNameClose" aria-label="{{ _('Cancel') }}">✕</button>
-    <h2 class="gu-modal__title" id="guRealNameTitle">
-      {{ _('Show your real name?') }}
-    </h2>
-    <p class="gu-modal__body">
-      {% trans value=current_user.real_name or '' %}Your real name ({{ value }}) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym.{% endtrans %}
-    </p>
-    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
-      <button type="button" id="guRealNameCancel" class="gu-btn gu-btn--ghost">
-        {{ _('Cancel') }}
-      </button>
-      <button type="button" id="guRealNameConfirm" class="gu-btn gu-btn--primary">
-        {{ _('Yes, show my name') }}
-      </button>
-    </div>
-  </div>
-</div>
-<script nonce="{{ csp_nonce() }}">
-  (function () {
-    var form = document.getElementById('guNameForm');
-    if (!form) return;
-    var radios = form.querySelectorAll('input[name="show_real_name"]');
-    var modal = document.getElementById('guRealNameModal');
-    var errorEl = document.getElementById('guNameError');
-    var savedEl = document.getElementById('guNameSaved');
-    var section = document.getElementById('guLinkedInSection');
-    var pseudoNote = document.getElementById('guLinkedInPseudoNote');
-    var lang = {{ lang | tojson }};
-    var current = form.querySelector('input[name="show_real_name"]:checked').value;
-
-    function select(value) {
-      radios.forEach(function (r) { r.checked = (r.value === value); });
-    }
-    function applyUi(value) {
-      current = value;
-      select(value);
-      section.hidden = value !== '1';
-      pseudoNote.hidden = value === '1';
-    }
-    function showError(text) {
-      errorEl.textContent = text;
-      errorEl.style.display = '';
-    }
-    function save(value, confirmed) {
-      var fd = new FormData();
-      var token = form.querySelector('input[name="csrf_token"]');
-      if (token) fd.append('csrf_token', token.value);
-      fd.append('show_real_name', value);
-      if (confirmed) fd.append('confirm', '1');
-      errorEl.style.display = 'none';
-      fetch(form.action, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-        .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
-        .then(function (data) {
-          if (!data.ok) {
-            select(current);
-            showError({{ _('Saving failed, please try again.') | tojson }});
-            return;
-          }
-          applyUi(data.show_real_name ? '1' : '0');
-          savedEl.style.display = '';
-          setTimeout(function () { savedEl.style.display = 'none'; }, 2500);
-        })
-        .catch(function () {
-          select(current);
-          showError({{ _('Saving failed, please try again.') | tojson }});
-        });
-    }
-    function openModal() {
-      modal.style.display = 'flex';
-      document.getElementById('guRealNameConfirm').focus();
-    }
-    function closeModal() {
-      modal.style.display = 'none';
-      form.querySelector('input[value="1"]').focus();
-    }
-
-    radios.forEach(function (radio) {
-      radio.addEventListener('change', function () {
-        if (radio.value === current) return;
-        if (radio.value === '1') {
-          // Pas na bevestiging toepassen: tot dan blijft het pseudoniem staan.
-          select(current);
-          openModal();
-        } else {
-          save('0', false);
-        }
-      });
-    });
-    document.getElementById('guRealNameConfirm').addEventListener('click', function () {
-      modal.style.display = 'none';
-      save('1', true);
-    });
-    document.getElementById('guRealNameCancel').addEventListener('click', closeModal);
-    document.getElementById('guRealNameClose').addEventListener('click', closeModal);
-    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
-    });
-  })();
-</script>
 
 {# ── Delete account confirmation modal ─────────────────── #}
 {% if not current_user.is_admin %}

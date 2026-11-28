@@ -15,7 +15,7 @@ from flask_babel import lazy_gettext
 from markupsafe import Markup
 
 # TRANSLATORS: faq, antwoord met een link naar de privacy-pagina
-_PRIVACY = lazy_gettext('As little as possible. Your pseudonym, your email address for recovery and what you post '
+_PRIVACY = lazy_gettext('As little as possible. Your username, your email address for recovery and what you post '
                         'yourself. Extra profile details only if you fill them in yourself. The details are on the <a '
                         'href="%(url)s">privacy page</a>.')
 
@@ -26,6 +26,16 @@ _PARTICIPANTS_Q = lazy_gettext('Why do you ask about my age and education after 
 _PARTICIPANTS = lazy_gettext('So that we can show with the result how diverse the group of voters is. It is voluntary '
                              'and your vote counts either way. We only show totals of groups of at least 10 people, '
                              'never who voted what. There is more on the <a href="%(url)s">privacy page</a>.')
+
+# The steps of the status ladder; the thresholds are placeholders, filled in
+# from status.get_thresholds() (the admin sets them), never fixed in the text.
+# TRANSLATORS: faq, antwoord 3.5. The statuses Reader, Contributor, Voter, Moderator and Senior in lower case; %(voter_min)s, %(moderator_min)s, %(moderator_min_topics)s and %(senior_min)s are numbers.
+_VOTING_RIGHT = lazy_gettext('By contributing quality. Everyone starts as a reader. After your first quality '
+                             'contribution you are a contributor. With %(voter_min)s quality contributions you become '
+                             'a voter, and then you may vote. With more than %(moderator_min)s quality contributions in '
+                             'at least %(moderator_min_topics)s topics you become a moderator. With more than '
+                             '%(senior_min)s you become a senior. That way, what you bring in counts, not just having '
+                             'an account.')
 
 FAQ = [
     # TRANSLATORS: faq, thema 1
@@ -110,8 +120,7 @@ FAQ = [
                        'language skills do not count.')),
         # TRANSLATORS: faq, vraag 3.5 en antwoord 3.5
         (lazy_gettext('How do I earn the right to vote?'),
-         lazy_gettext('By contributing quality. After three contributions with a quality mark, you may vote. That way, '
-                       'what you bring in counts, not just having an account.')),
+         _VOTING_RIGHT),
         # TRANSLATORS: faq, vraag 3.6 en antwoord 3.6
         (lazy_gettext('Which ground rules apply, and what happens when they are broken?'),
          lazy_gettext('There are conduct rules: stay respectful, stay on topic and one account per person. These are '
@@ -133,9 +142,9 @@ FAQ = [
                        'shown. Accept the ground rules and you can start. You do not have to pay and you do not need to '
                        'show any ID.')),
         # TRANSLATORS: faq, vraag 4.2 en antwoord 4.2
-        (lazy_gettext('Why is a pseudonym the default?'),
+        (lazy_gettext('Why can I take part under a username?'),
          lazy_gettext('We want you to be able to join the discussion freely, without having to answer to anyone here. A'
-                       ' pseudonym makes that possible. In many countries, political participation can bring risks. An '
+                       ' username makes that possible. In many countries, political participation can bring risks. An '
                        'identity barrier would shut out exactly the people we want to reach.')),
         # TRANSLATORS: faq, vraag 4.3 en antwoord 4.3
         (lazy_gettext('Which data do you keep, and what for?'),
@@ -143,7 +152,7 @@ FAQ = [
         (_PARTICIPANTS_Q, _PARTICIPANTS),
         # TRANSLATORS: faq, vraag 4.4 en antwoord 4.4
         (lazy_gettext('Who can see what I write?'),
-         lazy_gettext('Your contributions are public and visible under your pseudonym. Anyone can read them. Your email'
+         lazy_gettext('Your contributions are public and visible under your username. Anyone can read them. Your email'
                        ' address and any private details stay private.')),
         # TRANSLATORS: faq, vraag 4.5 en antwoord 4.5
         (lazy_gettext('What is the minimum age?'),
@@ -173,6 +182,9 @@ def themes(participants=False):
                 continue
             if answer is _PRIVACY:
                 answer = Markup(str(answer) % {'url': '/privacy'})
+            elif answer is _VOTING_RIGHT:
+                from app import status
+                answer = str(answer) % status.get_thresholds()
             elif answer is _PARTICIPANTS:
                 from flask import url_for
                 answer = Markup(str(answer) % {'url': url_for('main.privacy', _anchor='wie-stemde-mee')})

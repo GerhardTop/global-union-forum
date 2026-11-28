@@ -341,7 +341,10 @@ class TestDisplay:
         world['awards'](u, 2, topics=2)
         page = _req(_client(app, u), 'GET', '/profile').get_data(as_text=True)
         assert 'id="guStatus"' in page and 'Bijdrager' in page
-        assert '2 kwaliteitsbijdragen in 2 onderwerpen' in page and 'Stemmer (met stemrecht) vanaf 3' in page
+        # The ladder text moved to the FAQ (docs/design/profiel.html); the
+        # progress bar to the right to vote stays.
+        assert '2 kwaliteitsbijdragen in 2 onderwerpen' in page and 'href="/faq#faq-3-5"' in page
+        assert 'aria-valuenow="2"' in page and 'aria-valuemax="3"' in page
 
 
 # ── Taal-monitor ─────────────────────────────────────────────────────────

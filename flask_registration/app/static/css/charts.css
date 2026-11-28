@@ -337,7 +337,7 @@
 .gu-chartpage__actions { display: flex; flex-direction: column; gap: 12px; }
 .gu-chartpage__link { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
 .gu-chartpage__link label { font-weight: 500; }
-.gu-chartpage__select { max-inline-size: 100%; min-block-size: 40px; padding: 6px 10px; border: 1px solid #d3dae2; border-radius: 8px; font: inherit; background: #fff; }
+.gu-chartpage__select { max-inline-size: 100%; min-block-size: 40px; padding-block: 6px; padding-inline-start: 10px; border: 1px solid #d3dae2; border-radius: 8px; font: inherit; background-color: #fff; }
 .gu-chartpage__link .gu-btn { align-self: flex-start; }
 .gu-chartpage__row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 

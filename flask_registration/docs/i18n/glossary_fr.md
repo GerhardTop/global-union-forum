@@ -64,7 +64,7 @@ De Franse vertaling is een machinevertaling (fase 1). `docs/i18n/review_fr.csv` 
 | right to vote | stemrecht | droit de vote | Het gewone woord. |
 | follow / unfollow | volgen / ontvolgen | suivre / ne plus suivre | Gangbaar op platforms. |
 | online / event | online / event | en ligne / événement | "En ligne" is het gewone woord; "événement" voor een bijeenkomst op een plek. |
-| pseudonym | pseudoniem | pseudonyme | Zelfde woord. |
+| username | gebruikersnaam | nom d'utilisateur | Het ene woord voor de naam waaronder je meedoet (@naam); nergens "pseudonyme". Met het voorzetsel "sous": "sous votre nom d'utilisateur". |
 | initiator | initiatiefnemer | Initiateur | Vaste label voor wie een dossier start. |
 | think tank | denktank | laboratoire d'idées | De aanbevolen Franse term (FranceTerme). |
 | moderation | moderatie | modération | Zelfde woord. |

@@ -21,7 +21,7 @@ Dekt per onderdeel:
 - P7: de rustiger cockpit (geen kruimelpad of detailregel, de toelichting
   met een pijltje, geen tekst over de vroege sluiting, volgen met een
   belletje, "toon meer" alleen als er meer is), stemrecht alleen zonder
-  stemrecht, de statusladder in het profiel, "Fasen beheren" alleen voor de
+  stemrecht, de statusrij in het profiel, "Fasen beheren" alleen voor de
   initiatiefnemer (moderators via hun weergave) en niet reageren op je eigen
   bericht. ("Bekijk als deelnemer" en de markering bij moderators zijn in
   fase 2c vervallen: moderators beoordelen via het moderator-overzicht.)
@@ -194,11 +194,13 @@ def test_summary_proposal_wording(app, db, make_user):
 
 def test_linkedin_is_optional_in_profile(app, db, make_user):
     user = make_user()
+    user.first_name, user.last_name, user.show_real_name = 'Iemand', 'Anders', True
     user.linkedin_url = 'https://www.linkedin.com/in/iemand'
     db.session.commit()
     page = _get(app, '/profile', user)
-    assert 'LinkedIn' in page and 'optioneel' in page.split('for="linkedin_url"')[1].split('</label>')[0]
-    r = _req(_client(app, user), 'POST', '/profile', data={'action': 'linkedin', 'linkedin_url': ''},
+    assert 'LinkedIn-profiel' in page and '(optioneel)' in page.split('for="linkedin_url"')[1].split('</label>')[0]
+    r = _req(_client(app, user), 'POST', '/profiel/naamweergave',
+             data={'show_real_name': '1', 'first_name': 'Iemand', 'last_name': 'Anders', 'linkedin_url': ''},
              headers={'X-Requested-With': 'XMLHttpRequest'})
     assert r.status_code == 200 and r.get_json()['ok']
     db.session.refresh(user)
@@ -667,15 +669,19 @@ def test_voting_right_block_only_without_the_right(app, db, make_user):
     assert 'Jouw stemrecht' not in _get(app, f'/vraagstuk/{issue.id}', voter)
 
 
-def test_profile_shows_status_ladder_and_progress(app, db, make_user):
+def test_profile_shows_status_in_one_row_with_progress(app, db, make_user):
     newbie, voter = make_user(), make_user('voter')
     page = _get(app, '/profile', newbie)
-    ladder = page.split('gu-statusladder"')[1].split('</div>\n    </div>')[0]
-    for label in ('Lezer', 'Bijdrager', 'Stemmer', 'Moderator', 'Senior'):
-        assert label in ladder
-    assert 'aria-current="step"' in ladder and 'Op weg naar stemrecht: 0 van 3' in ladder and 'progressbar' in ladder
-    voter_page = _get(app, '/profile', voter)
-    assert 'Je hebt stemrecht.' in voter_page and 'Op weg naar stemrecht' not in voter_page
+    row = page.split('id="guStatus"')[1].split('id="guNameDisplay"')[0]
+    # No ladder any more; the shown status, the contributions and the link to the FAQ.
+    assert 'gu-statusladder' not in page and 'Verdiend' not in page
+    assert 'Lezer' in row and 'stemrecht' not in row.split('gu-profile__status-meta')[0]
+    assert '0 kwaliteitsbijdragen in 0 onderwerpen' in row
+    assert 'href="/faq#faq-3-5"' in row and 'Hoe werkt dit?' in row
+    assert 'progressbar' in row and 'aria-valuemax="3"' in row
+    voter_row = _get(app, '/profile', voter).split('id="guStatus"')[1].split('id="guNameDisplay"')[0]
+    assert 'Stemmer' in voter_row and '· stemrecht' in voter_row and 'progressbar' not in voter_row
+    assert '0 kwaliteitsbijdragen in 0 onderwerpen' in voter_row
 
 
 def test_manage_phases_only_for_the_initiator(app, db, make_user):

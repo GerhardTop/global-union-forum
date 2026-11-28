@@ -30,4 +30,20 @@
   {% endfor %}
 
 </div>
+<script nonce="{{ csp_nonce() }}">
+  /* A link to one question (/faq#faq-3-5, from the profile) opens it.
+     Without JavaScript the link only scrolls there. */
+  (function () {
+    function openFromHash() {
+      var id = decodeURIComponent(location.hash.slice(1));
+      var item = id && document.getElementById(id);
+      if (item && item.tagName === 'DETAILS') {
+        item.open = true;
+        item.scrollIntoView({ block: 'start' });
+      }
+    }
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+  })();
+</script>
 {% endblock %}

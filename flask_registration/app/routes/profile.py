@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from flask_babel import gettext, gettext as _, get_locale
 
 from app import db, bcrypt
-from app.forms import ForumActionForm, LinkedInForm
+from app.forms import ForumActionForm
 from app.utils import _password_strong, _stash_form_state, _pop_form_state, safe_next
 
 profile_bp = Blueprint("profile", __name__)
@@ -24,37 +24,7 @@ def profile():
     form = ChangePasswordForm()
 
     if request.method == "POST":
-        action = request.form.get("action")
-        is_xhr = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-
-        if action == "linkedin":
-            linkedin_form = LinkedInForm()
-            if not linkedin_form.validate_on_submit():
-                if is_xhr:
-                    return jsonify({'ok': False}), 400
-                abort(400)
-            linkedin_url = request.form.get("linkedin_url", "").strip()
-            if linkedin_url and not linkedin_url.startswith("https://www.linkedin.com/"):
-                if is_xhr:
-                    # XHR krijgt nooit een redirect — 422 zodat de JS-fetch-
-                    # afhandeling (zie profile.html) dit als fout herkent.
-                    return jsonify({'ok': False}), 422
-                # Non-AJAX fallback (JS uitgeschakeld): zelfde PRG-patroon als
-                # de andere formulieren, één gedeelde form_state-sleutel voor
-                # deze hele route (zie 'kind' hieronder bij het poppen).
-                _stash_form_state("profile", {"kind": "linkedin", "linkedin_error": True})
-                return redirect(url_for("profile.profile"), code=303)
-            current_user.linkedin_url = linkedin_url or None
-            db.session.commit()
-            if is_xhr:
-                return jsonify({'ok': True, 'linkedin_url': linkedin_url})
-            flash(
-                gettext('LinkedIn profile saved.'),
-                "success"
-            )
-            return redirect(url_for("profile.profile"))
-
-        elif form.validate_on_submit():
+        if form.validate_on_submit():
             if not bcrypt.check_password_hash(current_user.password_hash, form.current_password.data):
                 flash(_('Current password is incorrect.'), "error")
                 return redirect(url_for("profile.profile"))
@@ -84,19 +54,16 @@ def profile():
             })
             return redirect(url_for("profile.profile"), code=303)
 
-    # GET (of de PRG-redirect hierboven): één gedeelde form_state-sleutel voor
-    # de hele route, want linkedin- en wachtwoord-formulier posten allebei
-    # naar dezelfde URL. Welke van de twee foutsets van toepassing is, volgt
-    # vanzelf uit welke keys er in `errors` zitten — de andere blijven op hun
-    # default (False) staan.
-    errors, _unused = _pop_form_state("profile")
+    # GET (or the PRG redirect above): one shared form_state key for the
+    # page; the password form and the name form (profiel_naamweergave) both
+    # come back here. Which error set applies follows from the keys.
+    errors, data = _pop_form_state("profile")
     return render_template(
-        "profile.html", form=form, linkedin_form=LinkedInForm(),
-        linkedin_error=errors.get("linkedin_error", False),
+        "profile.html", form=form,
+        name_errors=errors.get("name_errors", []), name_data=data if errors.get("name_errors") else {},
         password_weak=errors.get("password_weak", False),
         password_mismatch=errors.get("password_mismatch", False),
         current_password_empty=errors.get("current_password_empty", False),
-        name_display_error=errors.get("name_display_error"),
         about_me=_about_me_context(),
         **_status_context(),
     )
@@ -154,32 +121,58 @@ def _status_context():
     return {'quality_count': count, 'quality_topics': topics, 'thresholds': status.get_thresholds()}
 
 
+NAME_MAX = 50        # users.first_name / users.last_name (String(50))
+LINKEDIN_MAX = 255   # users.linkedin_url (String(255))
+LINKEDIN_PREFIX = "https://www.linkedin.com/"
+
+
+def _linkedin_valid(url):
+    return not url or (url.startswith(LINKEDIN_PREFIX) and len(url) <= LINKEDIN_MAX)
+
+
 @profile_bp.route("/profiel/naamweergave", methods=["POST"])
 @login_required
 def profiel_naamweergave():
-    """Kies hoe je in het forum verschijnt: pseudoniem (standaard) of je echte
-    naam. Aanzetten vereist een bevestiging (confirm=1): de modal op de
-    profielpagina stuurt die mee, zonder JavaScript een vinkje. Terugzetten
-    naar pseudoniem kan altijd direct."""
+    """How you appear in the forum (docs/design/profiel.html): under your
+    username (the default) or under your real name, with first name, last
+    name and LinkedIn in the same form. The real name needs a first and a
+    last name, and the checkbox (confirm=1) when you now still appear under
+    your username; who already shows the real name can change name and
+    LinkedIn without it. Back to the username is always possible: name and
+    LinkedIn stay stored and are not shown."""
     if not ForumActionForm().validate_on_submit():
         abort(400)
     is_xhr = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     want_real = request.form.get("show_real_name") == "1"
-    error = None
-    if want_real and current_user.real_name is None:
-        error = "no_name"
-    elif want_real and not current_user.show_real_name and request.form.get("confirm") != "1":
-        error = "not_confirmed"
-    if error:
+    first = (request.form.get("first_name") or "").strip()[:NAME_MAX]
+    last = (request.form.get("last_name") or "").strip()[:NAME_MAX]
+    linkedin = (request.form.get("linkedin_url") or "").strip()
+    errors = []
+    if want_real:
+        if not first:
+            errors.append("first_name")
+        if not last:
+            errors.append("last_name")
+        if not _linkedin_valid(linkedin):
+            errors.append("linkedin")
+        if not current_user.shows_real_name and request.form.get("confirm") != "1":
+            errors.append("not_confirmed")
+    if errors:
         if is_xhr:
-            return jsonify({'ok': False, 'error': error}), 422
-        _stash_form_state("profile", {"kind": "name_display", "name_display_error": error})
+            return jsonify({'ok': False, 'errors': errors}), 422
+        _stash_form_state("profile", {"kind": "name_display", "name_errors": errors},
+                          {"show_real_name": "1", "first_name": first, "last_name": last,
+                           "linkedin_url": linkedin})
         return redirect(url_for("profile.profile") + "#guNameDisplay", code=303)
+    if want_real:
+        current_user.first_name, current_user.last_name = first, last
+        current_user.linkedin_url = linkedin or None
     current_user.show_real_name = want_real
     db.session.commit()
     if is_xhr:
         return jsonify({'ok': True, 'show_real_name': want_real})
-    return redirect(url_for("profile.profile") + "#guNameDisplay")
+    flash(gettext('Saved.'), "success")
+    return redirect(url_for("profile.profile") + "#guNameDisplay", code=303)
 
 
 @profile_bp.route("/profiel/promotie-gezien", methods=["POST"])

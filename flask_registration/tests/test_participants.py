@@ -53,13 +53,14 @@ def test_switch_on_section_with_four_questions(app, db, make_user, switch_on):
     user = make_user()
     page = _req(_client(app, user), 'GET', '/profile').get_data(as_text=True)
     section = _section(page)
-    assert 'Over mij' in section and 'Wie stemt er mee?' in section and 'Vrijwillig' in section
+    assert 'Wie stemt er mee?' in section and 'Vrijwillig' in section
     for name in ('name="birth_year"', 'name="gender"', 'name="education"', 'name="country"'):
         assert name in section
     assert 'Hbo of universiteit' in section and 'Antwoorden wissen' in section
     assert 'Ingevuld op' not in section
-    # The section sits after Language & translations, before the summary by email.
-    assert page.index('guTranslateForm') < page.index('id="over-mij"') < page.index('id="samenvatting"')
+    # Under Optional, after Account and before Settings (docs/design/profiel.html).
+    assert page.index('id="guNameDisplay"') < page.index('>Optioneel</p>') < page.index('id="over-mij"') \
+        < page.index('>Instellingen</p>') < page.index('guTranslateForm')
 
 
 # ── Saving ────────────────────────────────────────────────────────────────
@@ -78,7 +79,7 @@ def test_save_valid_values(app, db, make_user, switch_on):
     section = _section(page)
     assert '<option value="1987" selected>1987</option>' in section
     assert 'value="higher" checked' in section and '<option value="NL" selected>' in section
-    assert 'Ingevuld op' in section
+    assert 'Ingevuld op' not in section  # the line "Filled in on" is gone (docs/design/profiel.html)
 
 
 def test_prefer_not_to_say(app, db, make_user, switch_on):
@@ -175,7 +176,7 @@ def test_sensitive_area_with_own_name_in_german(app, db, make_user, switch_on):
     section = _section(_req(_client(app, user, 'de'), 'GET', '/profile').get_data(as_text=True))
     assert '<option value="PS">Palästina</option>' in section
     assert 'Autonomiegebiete' not in section
-    assert 'Über mich' in section and 'Möchte ich nicht sagen' in section
+    assert 'Wer stimmt mit ab?' in section and 'Möchte ich nicht sagen' in section
 
 
 @pytest.mark.parametrize('lang', ['nl', 'de', 'fr'])

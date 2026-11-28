@@ -6,8 +6,8 @@ volgens de HUIDIGE instelling van de auteur.
 Dekt: Post.public_author_name / public_author_initial / public_linkedin_url,
 de weergave op de threadpagina (naam, avatar-initiaal, LinkedIn, "in
 antwoord op"), wisselen van de instelling, een verwijderde auteur, de
-profielroute /profiel/naamweergave (bevestiging vereist bij aanzetten), de
-profielpagina, en de migratie (bestaande gebruikers pseudoniem, demo's naam).
+profielroute /profiel/naamweergave (naam, LinkedIn en het vinkje in een
+formulier), de profielpagina, en de migratie (bestaande gebruikers pseudoniem, demo's naam).
 
 Gedeelde conftest-app (CSRF uit): _req() wist vóór elk request de in `g`
 gecachte current_user en Babel-locale (zie de Babel/g-test-gotcha).
@@ -192,77 +192,122 @@ class TestThreadPage:
         assert '(demo)' in html
 
 
-# ── Profiel: de keuze maken ──────────────────────────────────────────────
+# ── Profiel: de keuze maken (docs/design/profiel.html) ────────────────────
+
+def _db_user(db, user_id):
+    db.session.expire_all()
+    return db.session.get(User, user_id)
+
 
 class TestProfileChoice:
     XHR = {'X-Requested-With': 'XMLHttpRequest'}
+    REAL = {'show_real_name': '1', 'first_name': 'Anna', 'last_name': 'de Vries', 'linkedin_url': LINKEDIN}
 
-    def test_enabling_requires_confirmation(self, app, db, make_user):
-        anna = make_user()
+    def test_real_name_without_checkbox_changes_nothing(self, app, db, make_user):
+        anna = make_user(first='Oud', last='Naam', linkedin=None)
         client = _client(app, anna)
-        resp = _req(client, 'POST', '/profiel/naamweergave', data={'show_real_name': '1'}, headers=self.XHR)
-        assert resp.status_code == 422 and resp.get_json()['error'] == 'not_confirmed'
-        db.session.expire_all()
-        assert db.session.get(User, anna.id).show_real_name is False
+        resp = _req(client, 'POST', '/profiel/naamweergave', data=self.REAL, headers=self.XHR)
+        assert resp.status_code == 422 and resp.get_json()['errors'] == ['not_confirmed']
+        u = _db_user(db, anna.id)
+        assert (u.show_real_name, u.first_name, u.last_name, u.linkedin_url) == (False, 'Oud', 'Naam', None)
 
-        resp = _req(client, 'POST', '/profiel/naamweergave', data={'show_real_name': '1', 'confirm': '1'},
+    def test_real_name_without_name_changes_nothing(self, app, db, make_user):
+        nameless = make_user(first=None, last=None, linkedin=None)
+        resp = _req(_client(app, nameless), 'POST', '/profiel/naamweergave',
+                    data={'show_real_name': '1', 'first_name': '  ', 'last_name': '', 'confirm': '1'}, headers=self.XHR)
+        assert resp.status_code == 422 and resp.get_json()['errors'] == ['first_name', 'last_name']
+        u = _db_user(db, nameless.id)
+        assert u.show_real_name is False and u.first_name is None
+
+    def test_real_name_with_name_and_checkbox(self, app, db, make_user):
+        nameless = make_user(first=None, last=None, linkedin=None)
+        resp = _req(_client(app, nameless), 'POST', '/profiel/naamweergave',
+                    data={**self.REAL, 'first_name': '  Anna ', 'last_name': ' de Vries', 'confirm': '1'})
+        assert resp.status_code == 303 and resp.headers['Location'].endswith('/profile#guNameDisplay')
+        u = _db_user(db, nameless.id)
+        assert (u.show_real_name, u.first_name, u.last_name, u.linkedin_url) == (True, 'Anna', 'de Vries', LINKEDIN)
+        assert u.public_name == 'Anna de Vries'
+
+    def test_names_are_cut_to_the_column_length(self, app, db, make_user):
+        anna = make_user()
+        _req(_client(app, anna), 'POST', '/profiel/naamweergave',
+             data={**self.REAL, 'first_name': 'A' * 80, 'confirm': '1'})
+        assert _db_user(db, anna.id).first_name == 'A' * 50
+
+    def test_change_name_and_linkedin_under_real_name_without_checkbox(self, app, db, make_user):
+        anna = make_user(show=True)
+        other = 'https://www.linkedin.com/in/anna-nieuw'
+        resp = _req(_client(app, anna), 'POST', '/profiel/naamweergave',
+                    data={'show_real_name': '1', 'first_name': 'Annie', 'last_name': 'de Vries', 'linkedin_url': other},
                     headers=self.XHR)
         assert resp.get_json() == {'ok': True, 'show_real_name': True}
-        db.session.expire_all()
-        assert db.session.get(User, anna.id).show_real_name is True
+        u = _db_user(db, anna.id)
+        assert (u.first_name, u.linkedin_url) == ('Annie', other)
 
-    def test_switching_back_is_direct(self, app, db, make_user):
+    def test_clearing_linkedin_under_real_name(self, app, db, make_user):
         anna = make_user(show=True)
-        resp = _req(_client(app, anna), 'POST', '/profiel/naamweergave', data={'show_real_name': '0'},
+        _req(_client(app, anna), 'POST', '/profiel/naamweergave', data={**self.REAL, 'linkedin_url': ''})
+        assert _db_user(db, anna.id).linkedin_url is None
+
+    def test_back_to_username_keeps_name_and_linkedin(self, app, db, make_user):
+        anna = make_user(show=True)
+        resp = _req(_client(app, anna), 'POST', '/profiel/naamweergave',
+                    data={'show_real_name': '0', 'first_name': '', 'last_name': '', 'linkedin_url': ''},
                     headers=self.XHR)
         assert resp.get_json() == {'ok': True, 'show_real_name': False}
-        db.session.expire_all()
-        assert db.session.get(User, anna.id).show_real_name is False
+        u = _db_user(db, anna.id)
+        assert (u.show_real_name, u.first_name, u.last_name, u.linkedin_url) == (False, 'Anna', 'de Vries', LINKEDIN)
+        assert u.public_name == '@' + u.username
 
-    def test_no_real_name_cannot_enable(self, app, db, make_user):
-        nameless = make_user(first=None, last=None)
-        resp = _req(_client(app, nameless), 'POST', '/profiel/naamweergave',
-                    data={'show_real_name': '1', 'confirm': '1'}, headers=self.XHR)
-        assert resp.status_code == 422 and resp.get_json()['error'] == 'no_name'
-
-    def test_without_js_form_post_redirects_back(self, app, db, make_user):
-        anna = make_user()
+    def test_invalid_linkedin_gives_the_existing_error(self, app, db, make_user):
+        anna = make_user(show=True)
         client = _client(app, anna)
-        resp = _req(client, 'POST', '/profiel/naamweergave', data={'show_real_name': '1'})
+        resp = _req(client, 'POST', '/profiel/naamweergave', data={**self.REAL, 'linkedin_url': 'https://example.com/x'})
+        assert resp.status_code == 303
+        page = _req(client, 'GET', '/profile').get_data(as_text=True)
+        assert 'Vul een geldig LinkedIn-profiel in (https://www.linkedin.com/in/…).' in page
+        assert 'value="https://example.com/x"' in page  # what you typed stays
+        assert _db_user(db, anna.id).linkedin_url == LINKEDIN
+
+    def test_without_js_errors_show_at_the_fields(self, app, db, make_user):
+        nameless = make_user(first=None, last=None)
+        client = _client(app, nameless)
+        resp = _req(client, 'POST', '/profiel/naamweergave', data={'show_real_name': '1', 'first_name': 'Anna'})
         assert resp.status_code == 303 and resp.headers['Location'].endswith('/profile#guNameDisplay')
         page = _req(client, 'GET', '/profile').get_data(as_text=True)
+        assert 'Vul je achternaam in.' in page and 'Vul je voornaam in.' not in page
         assert 'Bevestig eerst dat je echte naam zichtbaar mag worden.' in page
-        resp = _req(client, 'POST', '/profiel/naamweergave', data={'show_real_name': '1', 'confirm': '1'})
-        assert resp.status_code == 302
-        db.session.expire_all()
-        assert db.session.get(User, anna.id).show_real_name is True
+        assert re.search(r'name="show_real_name" value="1" checked', page)
+        assert 'value="Anna"' in page
+        assert _db_user(db, nameless.id).show_real_name is False
 
     def test_anonymous_cannot_change(self, app):
         resp = _req(_client(app), 'POST', '/profiel/naamweergave', data={'show_real_name': '1', 'confirm': '1'})
         assert resp.status_code == 302 and '/login' in resp.headers['Location']
 
-    @pytest.mark.parametrize('lang,question,pseudo', [
-        ('nl', 'Hoe verschijn je in het forum?', 'Pseudoniem'),
-        ('en', 'How do you appear in the forum?', 'Pseudonym'),
+    @pytest.mark.parametrize('lang,question,choice,real', [
+        ('nl', 'Hoe verschijn je in het forum?', 'Onder mijn gebruikersnaam', 'Onder mijn echte naam'),
+        ('en', 'How do you appear in the forum?', 'Under my username', 'Under my real name'),
     ])
-    def test_profile_page_shows_choice(self, app, make_user, lang, question, pseudo):
+    def test_profile_page_shows_choice(self, app, make_user, lang, question, choice, real):
         anna = make_user()
         page = _req(_client(app, anna, lang), 'GET', '/profile').get_data(as_text=True)
-        assert question in page and f'{pseudo} (@{anna.username})' in page
-        assert 'id="guRealNameModal"' in page
-        # Pseudoniem: LinkedIn-blok verborgen, de uitleg zichtbaar.
-        assert re.search(r'id="guLinkedInSection" hidden', page)
-        assert re.search(r'id="guLinkedInPseudoNote" class="gu-namechoice__hint">', page)
+        assert question in page and f'{choice} (@{anna.username})' in page and f'<strong>{real}</strong>' in page
+        # One form, no confirmation window, no separate LinkedIn form.
+        assert 'guRealNameModal' not in page and 'guLinkedInForm' not in page and 'name="action" value="linkedin"' not in page
+        form = page.split('id="guNameDisplay"')[1].split('</form>')[0]
+        # Without JavaScript the fields are in the html and open (no hidden attribute).
+        for field in ('name="first_name"', 'name="last_name"', 'name="linkedin_url"', 'name="confirm"'):
+            assert field in form
+        assert 'id="guRealNameFields">' in form
+        assert 'value="Anna"' in form and 'value="de Vries"' in form and f'value="{LINKEDIN}"' in form
+        assert 'standaard' not in form and 'default' not in form
 
-    def test_profile_page_real_name_mode_shows_linkedin(self, app, make_user):
+    def test_no_checkbox_when_already_under_real_name(self, app, make_user):
         page = _req(_client(app, make_user(show=True)), 'GET', '/profile').get_data(as_text=True)
-        assert re.search(r'id="guLinkedInSection">', page)
-        assert 'Je LinkedIn-profiel staat publiek bij je naam in het forum.' in page
-
-    def test_nameless_user_sees_disabled_real_name_option(self, app, make_user):
-        page = _req(_client(app, make_user(first=None, last=None)), 'GET', '/profile').get_data(as_text=True)
-        assert 'value="1" disabled' in page
-        assert 'Er is geen echte naam bekend bij je account.' in page
+        form = page.split('id="guNameDisplay"')[1].split('</form>')[0]
+        assert 'name="confirm"' not in form and 'name="first_name"' in form
+        assert re.search(r'name="show_real_name" value="1" checked', form)
 
 
 # ── Migratie ─────────────────────────────────────────────────────────────

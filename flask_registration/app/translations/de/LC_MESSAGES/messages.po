@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 23:23+0100\n"
+"POT-Creation-Date: 2026-11-28 12:15+0100\n"
 "PO-Revision-Date: 2026-11-20 22:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -57,8 +57,8 @@ msgstr "Deine tägliche Zusammenfassung"
 #. TRANSLATORS: faq, antwoord met een link naar de privacy-pagina
 #: app/faq.py:18
 #, python-format
-msgid "As little as possible. Your pseudonym, your email address for recovery and what you post yourself. Extra profile details only if you fill them in yourself. The details are on the <a href=\"%(url)s\">privacy page</a>."
-msgstr "So wenig wie möglich. Dein Pseudonym, deine E-Mail-Adresse zur Wiederherstellung und was du selbst veröffentlichst. Weitere Profilangaben nur, wenn du sie selbst ausfüllst. Die Einzelheiten stehen auf der <a href=\"%(url)s\">Datenschutzseite</a>."
+msgid "As little as possible. Your username, your email address for recovery and what you post yourself. Extra profile details only if you fill them in yourself. The details are on the <a href=\"%(url)s\">privacy page</a>."
+msgstr "So wenig wie möglich. Dein Benutzername, deine E-Mail-Adresse zur Wiederherstellung und was du selbst veröffentlichst. Weitere Profilangaben nur, wenn du sie selbst ausfüllst. Die Einzelheiten stehen auf der <a href=\"%(url)s\">Datenschutzseite</a>."
 
 #. TRANSLATORS: faq, vraag 4.3b (the voluntary questions about age, gender,
 #. education and country after the first vote)
@@ -72,241 +72,245 @@ msgstr "Warum fragt ihr nach meiner ersten Stimme nach meinem Alter und meiner B
 msgid "So that we can show with the result how diverse the group of voters is. It is voluntary and your vote counts either way. We only show totals of groups of at least 10 people, never who voted what. There is more on the <a href=\"%(url)s\">privacy page</a>."
 msgstr "Damit wir beim Ergebnis zeigen können, wie vielfältig die Gruppe der Abstimmenden ist. Es ist freiwillig, und deine Stimme zählt so oder so. Wir zeigen nur Summen von Gruppen mit mindestens 10 Personen, nie, wer wie abgestimmt hat. Mehr steht auf der <a href=\"%(url)s\">Datenschutzseite</a>."
 
+#. TRANSLATORS: faq, antwoord 3.5. The statuses Reader, Contributor, Voter,
+#. Moderator and Senior in lower case; %(voter_min)s, %(moderator_min)s,
+#. %(moderator_min_topics)s and %(senior_min)s are numbers.
+#: app/faq.py:33
+#, python-format
+msgid "By contributing quality. Everyone starts as a reader. After your first quality contribution you are a contributor. With %(voter_min)s quality contributions you become a voter, and then you may vote. With more than %(moderator_min)s quality contributions in at least %(moderator_min_topics)s topics you become a moderator. With more than %(senior_min)s you become a senior. That way, what you bring in counts, not just having an account."
+msgstr "Indem du Qualität beiträgst. Alle fangen als Leser an. Nach deinem ersten Qualitätsbeitrag bist du Mitwirkender. Mit %(voter_min)s Qualitätsbeiträgen wirst du Stimmberechtigter, und dann darfst du abstimmen. Mit mehr als %(moderator_min)s Qualitätsbeiträgen in mindestens %(moderator_min_topics)s Themen wirst du Moderator. Mit mehr als %(senior_min)s wirst du Senior. So zählt, was du einbringst, und nicht nur, dass du ein Konto hast."
+
 #. TRANSLATORS: faq, thema 1
 #. TRANSLATORS: faq, vraag 1.1 en antwoord 1.1
-#: app/faq.py:34
+#: app/faq.py:44
 msgid "What is Global Union?"
 msgstr "Was ist Global Union?"
 
-#: app/faq.py:35
+#: app/faq.py:45
 msgid "Global Union is the idea of a partnership of functioning democracies worldwide. It is built on attraction instead of force, following the example of the European Union. It is open to countries that respect the rule of law, human rights, the fight against corruption, sustainability and the international legal order."
 msgstr "Global Union ist die Idee einer Partnerschaft funktionierender Demokratien weltweit. Sie beruht auf Anziehungskraft statt auf Zwang, nach dem Vorbild der Europäischen Union. Sie steht Ländern offen, die den Rechtsstaat, die Menschenrechte, die Korruptionsbekämpfung, die Nachhaltigkeit und die internationale Rechtsordnung achten."
 
 #. TRANSLATORS: faq, vraag 1.2 en antwoord 1.2
-#: app/faq.py:40
+#: app/faq.py:50
 msgid "What is the difference between Global Union and the Global Union Forum?"
 msgstr "Was ist der Unterschied zwischen Global Union und dem Global Union Forum?"
 
-#: app/faq.py:41
+#: app/faq.py:51
 msgid "Global Union is the idea and the movement. The Global Union Forum is the place where that idea is developed and discussed. Here you think along, bring in facts and vote. Experts and beginners do this side by side."
 msgstr "Global Union ist die Idee und die Bewegung. Das Global Union Forum ist der Ort, an dem diese Idee entwickelt und diskutiert wird. Hier denkst du mit, bringst Fakten ein und stimmst ab. Fachleute und Neulinge machen das Seite an Seite."
 
 #. TRANSLATORS: faq, vraag 1.3 en antwoord 1.3
-#: app/faq.py:45
+#: app/faq.py:55
 msgid "Who is behind the platform?"
 msgstr "Wer steht hinter der Plattform?"
 
-#: app/faq.py:46
+#: app/faq.py:56
 msgid "It is an independent initiative, set up by founder Gerhard Top. With enough momentum, this initiative will be placed in a foundation. The idea is to involve co-initiators first, and then a growing group of participants and experts, to develop it further together."
 msgstr "Es ist eine unabhängige Initiative, gegründet von Gerhard Top. Wenn genug Schwung da ist, kommt diese Initiative in eine Stiftung. Die Idee ist, zuerst weitere Initiatoren einzubinden und danach eine wachsende Gruppe von Teilnehmenden und Fachleuten, um sie gemeinsam weiterzuentwickeln."
 
 #. TRANSLATORS: faq, vraag 1.4 en antwoord 1.4
-#: app/faq.py:50
+#: app/faq.py:60
 msgid "Is this linked to a political party or a government?"
 msgstr "Ist das mit einer Partei oder einer Regierung verbunden?"
 
-#: app/faq.py:51
+#: app/faq.py:61
 msgid "No. The forum is independent and not linked to a party, a government or a company. It is reformist and it is not tied to a political colour."
 msgstr "Nein. Das Forum ist unabhängig und nicht mit einer Partei, einer Regierung oder einem Unternehmen verbunden. Es ist reformorientiert und an keine politische Richtung gebunden."
 
 #. TRANSLATORS: faq, vraag 1.5 en antwoord 1.5
-#: app/faq.py:54
+#: app/faq.py:64
 msgid "How can I take part or contribute?"
 msgstr "Wie kann ich mitmachen oder beitragen?"
 
-#: app/faq.py:55
+#: app/faq.py:65
 msgid "Create an account and read the ground rules. Then you can start: add facts, give your opinion or start an issue yourself. What this becomes is decided by the people who take part."
 msgstr "Leg ein Konto an und lies die Spielregeln. Dann kannst du loslegen: Fakten hinzufügen, deine Meinung sagen oder selbst eine Fragestellung starten. Was daraus wird, entscheiden die Menschen, die mitmachen."
 
 #. TRANSLATORS: faq, thema 2
-#: app/faq.py:59 app/templates/_footer.html:18 app/templates/_header.html:13
+#: app/faq.py:69 app/templates/_footer.html:18 app/templates/_header.html:13
 msgid "Manifesto"
 msgstr "Manifest"
 
 #. TRANSLATORS: faq, vraag 2.1 en antwoord 2.1
-#: app/faq.py:61
+#: app/faq.py:71
 msgid "What is in the manifesto?"
 msgstr "Was steht im Manifest?"
 
-#: app/faq.py:62
+#: app/faq.py:72
 msgid "The manifesto from March 2026 is a personal essay by the founder. In it he sets out the idea of a global union of functioning democracies: why it is needed, how it could work and why it is worth trying. See it as the start of the discussion."
 msgstr "Das Manifest vom März 2026 ist ein persönlicher Essay des Gründers. Darin legt er die Idee einer globalen Union funktionierender Demokratien dar: warum sie nötig ist, wie sie funktionieren könnte und warum es sich lohnt, es zu versuchen. Sieh es als Anfang der Diskussion."
 
 #. TRANSLATORS: faq, vraag 2.2 en antwoord 2.2
-#: app/faq.py:66
+#: app/faq.py:76
 msgid "What does \"a union of functioning democracies\" mean?"
 msgstr "Was bedeutet \"eine Union funktionierender Demokratien\"?"
 
-#: app/faq.py:67
+#: app/faq.py:77
 msgid "A partnership of countries that truly uphold democracy and the rule of law. Countries from all over the world can join. What counts is whether a country meets those values."
 msgstr "Eine Partnerschaft von Ländern, die Demokratie und Rechtsstaat wirklich leben. Länder aus der ganzen Welt können mitmachen. Entscheidend ist, ob ein Land diese Werte erfüllt."
 
 #. TRANSLATORS: faq, vraag 2.3 en antwoord 2.3
-#: app/faq.py:70
+#: app/faq.py:80
 msgid "Why the example of the European Union?"
 msgstr "Warum das Vorbild der Europäischen Union?"
 
-#: app/faq.py:71
+#: app/faq.py:81
 msgid "The EU shows that countries can work together voluntarily, based on shared rules. They attract each other instead of forcing each other. We want to apply that principle on a world scale."
 msgstr "Die EU zeigt, dass Länder freiwillig zusammenarbeiten können, auf Grundlage gemeinsamer Regeln. Sie ziehen einander an, statt einander zu zwingen. Dieses Prinzip wollen wir weltweit anwenden."
 
 #. TRANSLATORS: faq, vraag 2.4 en antwoord 2.4
-#: app/faq.py:74
+#: app/faq.py:84
 msgid "Which countries could join, and on what basis?"
 msgstr "Welche Länder könnten mitmachen, und auf welcher Grundlage?"
 
-#: app/faq.py:75
+#: app/faq.py:85
 msgid "Countries that meet standards such as the rule of law, human rights, the fight against corruption and the international legal order. Membership is based on democratic performance. Not only wealthy Western countries, but also, and especially, model countries from Africa and South America."
 msgstr "Länder, die Maßstäbe wie Rechtsstaat, Menschenrechte, Korruptionsbekämpfung und internationale Rechtsordnung erfüllen. Die Mitgliedschaft richtet sich nach der demokratischen Leistung. Nicht nur wohlhabende westliche Länder, sondern auch und gerade Vorbildländer aus Afrika und Südamerika."
 
 #. TRANSLATORS: faq, vraag 2.5 en antwoord 2.5
-#: app/faq.py:80
+#: app/faq.py:90
 msgid "Is this not too grand or too idealistic?"
 msgstr "Ist das nicht zu groß oder zu idealistisch?"
 
-#: app/faq.py:81
+#: app/faq.py:91
 msgid "It is a grand idea. Perhaps hard to achieve, but worth it. You start small and build it up together, step by step."
 msgstr "Es ist eine große Idee. Vielleicht schwer zu erreichen, aber es lohnt sich. Man fängt klein an und baut es gemeinsam auf, Schritt für Schritt."
 
 #. TRANSLATORS: faq, thema 3
-#: app/faq.py:85
+#: app/faq.py:95
 msgid "How it works"
 msgstr "So funktioniert es"
 
 #. TRANSLATORS: faq, vraag 3.1 en antwoord 3.1
-#: app/faq.py:87
+#: app/faq.py:97
 msgid "How does an issue go, from discussion to vote?"
 msgstr "Wie läuft eine Fragestellung ab, von der Diskussion bis zur Abstimmung?"
 
-#: app/faq.py:88
+#: app/faq.py:98
 msgid "Someone starts an issue with a question or problem. In the first phase, facts and discussion, you bring in facts, research and media and discuss it together. Proposals come out of that. After that, the proposer can revise a proposal. Then there is a vote. If the initiator chose so, a summary proposal follows, with a new vote. Finally there is the follow-up phase: what happens with it, such as lobbying, media or implementation."
 msgstr "Jemand startet eine Fragestellung mit einer Frage oder einem Problem. In der ersten Phase, Fakten und Diskussion, bringst du Fakten, Studien und Medien ein und ihr diskutiert gemeinsam. Daraus entstehen Vorschläge. Danach kann die Person, die einen Vorschlag gemacht hat, ihn überarbeiten. Dann wird abgestimmt. Wenn der Initiator das gewählt hat, folgt ein zusammenfassender Vorschlag mit einer neuen Abstimmung. Zum Schluss kommt die Phase Weiteres Vorgehen: was damit passiert, zum Beispiel Lobbyarbeit, Medien oder Umsetzung."
 
 #. TRANSLATORS: faq, vraag 3.2 en antwoord 3.2
-#: app/faq.py:94
+#: app/faq.py:104
 msgid "What are facts, research and media, and how do they count?"
 msgstr "Was sind Fakten, Studien und Medien, und wie zählen sie?"
 
-#: app/faq.py:95
+#: app/faq.py:105
 msgid "Facts, research and media are well-founded contributions with a source. Media are news items, podcasts or videos. Each fact has a direction: argues for, argues against or neutral. A fact gets a green quality mark when the AI finds a source, a findable link, where in the source it is, that it is on the topic and that it is new. The mark does not judge how reliable the source is."
 msgstr "Fakten, Studien und Medien sind begründete Beiträge mit einer Quelle. Medien sind Nachrichten, Podcasts oder Videos. Jeder Fakt hat eine Richtung: spricht dafür, spricht dagegen oder neutral. Ein Fakt bekommt ein grünes Gütesiegel, wenn die KI eine Quelle findet, einen auffindbaren Link, die Stelle in der Quelle, dass es zum Thema gehört und dass es neu ist. Das Siegel sagt nichts darüber, wie zuverlässig die Quelle ist."
 
 #. TRANSLATORS: faq, vraag 3.3 en antwoord 3.3
-#: app/faq.py:101
+#: app/faq.py:111
 msgid "How do proposals come about, and how is the vote held?"
 msgstr "Wie entstehen Vorschläge, und wie wird abgestimmt?"
 
-#: app/faq.py:102
+#: app/faq.py:112
 msgid "Proposals come out of the discussion. A proposal goes on the voting list as soon as enough people support it. Each proposal is voted on with for, against or abstain. Based on all proposals and the discussion, the initiator can adjust the issue and make a summary proposal. The participants can then vote on that again."
 msgstr "Vorschläge entstehen aus der Diskussion. Ein Vorschlag kommt auf die Abstimmungsliste, sobald genug Leute ihn unterstützen. Über jeden Vorschlag wird mit dafür, dagegen oder Enthaltung abgestimmt. Auf Grundlage aller Vorschläge und der Diskussion kann der Initiator die Fragestellung anpassen und einen zusammenfassenden Vorschlag machen. Darüber können die Teilnehmenden dann noch einmal abstimmen."
 
 #. TRANSLATORS: faq, vraag 3.4 en antwoord 3.4
-#: app/faq.py:107
+#: app/faq.py:117
 msgid "What is the quality mark?"
 msgstr "Was ist das Gütesiegel?"
 
-#: app/faq.py:108
+#: app/faq.py:118
 msgid "A medal that is given automatically to a contribution that moves the discussion forward. That can be a new argument or support with a source. No quality mark is not a punishment. Style and language skills do not count."
 msgstr "Eine Auszeichnung, die automatisch an einen Beitrag vergeben wird, der die Diskussion weiterbringt. Das kann ein neues Argument sein oder eine Begründung mit Quelle. Kein Gütesiegel ist keine Strafe. Stil und Sprachkenntnisse zählen nicht."
 
 #. TRANSLATORS: faq, vraag 3.5 en antwoord 3.5
-#: app/faq.py:112
+#: app/faq.py:122
 msgid "How do I earn the right to vote?"
 msgstr "Wie bekomme ich Stimmrecht?"
 
-#: app/faq.py:113
-msgid "By contributing quality. After three contributions with a quality mark, you may vote. That way, what you bring in counts, not just having an account."
-msgstr "Indem du Qualität beiträgst. Nach drei Beiträgen mit Gütesiegel darfst du abstimmen. So zählt, was du einbringst, und nicht nur, dass du ein Konto hast."
-
 #. TRANSLATORS: faq, vraag 3.6 en antwoord 3.6
-#: app/faq.py:116
+#: app/faq.py:125
 msgid "Which ground rules apply, and what happens when they are broken?"
 msgstr "Welche Spielregeln gelten, und was passiert bei einem Verstoß?"
 
-#: app/faq.py:117
+#: app/faq.py:126
 msgid "There are conduct rules: stay respectful, stay on topic and one account per person. These are enforced. There are also quality guidelines, such as well-founded and concrete. These are rewarded and not enforced. When a rule is clearly broken, a contribution moves to a public background page with an explanation. You can object to that there. Nothing is removed for good. Only pure spam and gross abuse are hidden completely."
 msgstr "Es gibt Verhaltensregeln: respektvoll bleiben, beim Thema bleiben und ein Konto pro Person. Diese werden durchgesetzt. Außerdem gibt es Qualitätsrichtlinien, zum Beispiel belegt und konkret. Diese werden belohnt, nicht erzwungen. Bei einem klaren Verstoß kommt ein Beitrag mit einer Erklärung auf eine öffentliche Hintergrundseite. Dort kannst du Einspruch einlegen. Nichts wird endgültig entfernt. Nur reiner Spam und grober Missbrauch werden ganz verborgen."
 
 #. TRANSLATORS: faq, vraag 3.7 en antwoord 3.7
-#: app/faq.py:123
+#: app/faq.py:132
 msgid "How do you prevent double voting or fake accounts?"
 msgstr "Wie verhindert ihr doppeltes Abstimmen oder falsche Konten?"
 
-#: app/faq.py:124
+#: app/faq.py:133
 msgid "It cannot be prevented completely. A new account starts at zero and has to earn the right to vote first, with quality contributions. One account per person is a rule, and moderation steps in when there is abuse. This makes mass fake voting a lot of work for little gain."
 msgstr "Ganz verhindern lässt es sich nicht. Ein neues Konto fängt bei null an und muss sich das Stimmrecht erst mit Qualitätsbeiträgen verdienen. Ein Konto pro Person ist eine Regel, und die Moderation greift bei Missbrauch ein. Dadurch ist massenhaftes Abstimmen mit falschen Konten viel Arbeit und bringt wenig."
 
 #. TRANSLATORS: faq, thema 4
-#: app/faq.py:129
+#: app/faq.py:138
 msgid "Account and privacy"
 msgstr "Konto und Datenschutz"
 
 #. TRANSLATORS: faq, vraag 4.1 en antwoord 4.1
-#: app/faq.py:131
+#: app/faq.py:140
 msgid "How do I create an account?"
 msgstr "Wie lege ich ein Konto an?"
 
-#: app/faq.py:132
+#: app/faq.py:141
 msgid "Choose a name and enter an email address. That email address is only for recovery and is never shown. Accept the ground rules and you can start. You do not have to pay and you do not need to show any ID."
 msgstr "Wähle einen Namen und gib eine E-Mail-Adresse ein. Diese E-Mail-Adresse dient nur der Wiederherstellung und wird nie gezeigt. Akzeptiere die Spielregeln und du kannst loslegen. Du musst nichts bezahlen und keinen Ausweis zeigen."
 
 #. TRANSLATORS: faq, vraag 4.2 en antwoord 4.2
-#: app/faq.py:136
-msgid "Why is a pseudonym the default?"
-msgstr "Warum ist ein Pseudonym der Standard?"
+#: app/faq.py:145
+msgid "Why can I take part under a username?"
+msgstr "Warum kann ich unter einem Benutzernamen mitmachen?"
 
-#: app/faq.py:137
-msgid "We want you to be able to join the discussion freely, without having to answer to anyone here. A pseudonym makes that possible. In many countries, political participation can bring risks. An identity barrier would shut out exactly the people we want to reach."
-msgstr "Wir wollen, dass du frei an der Diskussion teilnehmen kannst, ohne dich hier vor irgendwem rechtfertigen zu müssen. Ein Pseudonym macht das möglich. In vielen Ländern kann politische Beteiligung Risiken bringen. Eine Hürde beim Nachweis der Identität würde gerade die Menschen ausschließen, die wir erreichen wollen."
+#: app/faq.py:146
+msgid "We want you to be able to join the discussion freely, without having to answer to anyone here. A username makes that possible. In many countries, political participation can bring risks. An identity barrier would shut out exactly the people we want to reach."
+msgstr "Wir wollen, dass du frei an der Diskussion teilnehmen kannst, ohne dich hier vor irgendwem rechtfertigen zu müssen. Ein Benutzername macht das möglich. In vielen Ländern kann politische Beteiligung Risiken bringen. Eine Hürde beim Nachweis der Identität würde gerade die Menschen ausschließen, die wir erreichen wollen."
 
 #. TRANSLATORS: faq, vraag 4.3 en antwoord 4.3
-#: app/faq.py:141
+#: app/faq.py:150
 msgid "Which data do you keep, and what for?"
 msgstr "Welche Daten speichert ihr, und wofür?"
 
 #. TRANSLATORS: faq, vraag 4.4 en antwoord 4.4
-#: app/faq.py:145
+#: app/faq.py:154
 msgid "Who can see what I write?"
 msgstr "Wer kann sehen, was ich schreibe?"
 
-#: app/faq.py:146
-msgid "Your contributions are public and visible under your pseudonym. Anyone can read them. Your email address and any private details stay private."
-msgstr "Deine Beiträge sind öffentlich und unter deinem Pseudonym sichtbar. Alle können sie lesen. Deine E-Mail-Adresse und eventuelle private Angaben bleiben privat."
+#: app/faq.py:155
+msgid "Your contributions are public and visible under your username. Anyone can read them. Your email address and any private details stay private."
+msgstr "Deine Beiträge sind öffentlich und unter deinem Benutzernamen sichtbar. Alle können sie lesen. Deine E-Mail-Adresse und eventuelle private Angaben bleiben privat."
 
 #. TRANSLATORS: faq, vraag 4.5 en antwoord 4.5
-#: app/faq.py:149
+#: app/faq.py:158
 msgid "What is the minimum age?"
 msgstr "Wie alt muss man mindestens sein?"
 
-#: app/faq.py:150
+#: app/faq.py:159
 msgid "Sixteen."
 msgstr "Sechzehn Jahre."
 
 #. TRANSLATORS: faq, vraag 4.6 en antwoord 4.6
-#: app/faq.py:152
+#: app/faq.py:161
 msgid "How do I delete my account or my data?"
 msgstr "Wie lösche ich mein Konto oder meine Daten?"
 
-#: app/faq.py:153
+#: app/faq.py:162
 msgid "You can do that in your account settings or on request. Your personal data, such as your email address and profile, is then erased."
 msgstr "Das geht in deinen Kontoeinstellungen oder auf Anfrage. Deine persönlichen Daten, etwa deine E-Mail-Adresse und dein Profil, werden dann gelöscht."
 
 #. TRANSLATORS: faq, vraag 4.7 en antwoord 4.7
-#: app/faq.py:156
+#: app/faq.py:165
 msgid "What happens to my contributions after I delete my account?"
 msgstr "Was passiert mit meinen Beiträgen, wenn ich mein Konto gelöscht habe?"
 
-#: app/faq.py:157
+#: app/faq.py:166
 msgid "Your contributions stay, but are no longer linked to your name. That way, the discussions and votes others took part in keep their coherence. Only the link to you disappears."
 msgstr "Deine Beiträge bleiben stehen, aber ohne Verbindung zu deinem Namen. So bleiben die Diskussionen und Abstimmungen, an denen andere teilgenommen haben, verständlich. Nur die Verbindung zu dir verschwindet."
 
 #: app/forms.py:12 app/templates/aanmelden/aanmelden.html:68
-#: app/templates/profile.html:281 app/templates/wachtwoord_reset.html:47
+#: app/templates/profile.html:238 app/templates/wachtwoord_reset.html:47
 msgid "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
 msgstr "Passwort: 8 bis 72 Zeichen, mit mindestens einem Großbuchstaben, einer Ziffer und einem Sonderzeichen."
 
 #: app/forms.py:27 app/templates/aanmelden/aanmelden.html:87
-#: app/templates/profile.html:300 app/templates/wachtwoord_reset.html:67
+#: app/templates/profile.html:257 app/templates/wachtwoord_reset.html:67
 msgid "Passwords do not match."
 msgstr "Die Passwörter stimmen nicht überein."
 
@@ -934,7 +938,7 @@ msgstr "Maximale Laufzeiten gespeichert."
 msgid "Enter a whole number from 1 to 365."
 msgstr "Gib eine ganze Zahl von 1 bis 365 ein."
 
-#: app/routes/admin.py:718 app/routes/profile.py:131
+#: app/routes/admin.py:718 app/routes/profile.py:98 app/routes/profile.py:174
 msgid "Saved."
 msgstr "Gespeichert."
 
@@ -1212,24 +1216,20 @@ msgstr "eigener Status"
 msgid "Thank you! You can now join the conversation."
 msgstr "Danke! Du kannst jetzt beim Gespräch mitmachen."
 
-#: app/routes/profile.py:52
-msgid "LinkedIn profile saved."
-msgstr "LinkedIn-Profil gespeichert."
-
-#: app/routes/profile.py:59
+#: app/routes/profile.py:29
 msgid "Current password is incorrect."
 msgstr "Das aktuelle Passwort ist falsch."
 
-#: app/routes/profile.py:66
+#: app/routes/profile.py:36
 msgid "Password changed successfully."
 msgstr "Passwort erfolgreich geändert."
 
 #. TRANSLATORS: profile, About me: the message after "Clear answers".
-#: app/routes/profile.py:135
+#: app/routes/profile.py:102
 msgid "Your answers have been cleared."
 msgstr "Deine Antworten wurden gelöscht."
 
-#: app/routes/profile.py:224
+#: app/routes/profile.py:217
 msgid "Saved"
 msgstr "Gespeichert"
 
@@ -1464,8 +1464,8 @@ msgid "One account per person"
 msgstr "Ein Konto pro Person"
 
 #: app/templates/_rules_list.html:35
-msgid "Everyone speaks with one voice. More than one account per person is not allowed, not even under another pseudonym."
-msgstr "Alle sprechen mit einer Stimme. Mehrere Konten pro Person sind nicht erlaubt, auch nicht unter einem anderen Pseudonym."
+msgid "Everyone speaks with one voice. More than one account per person is not allowed, not even under another username."
+msgstr "Alle sprechen mit einer Stimme. Mehrere Konten pro Person sind nicht erlaubt, auch nicht unter einem anderen Benutzernamen."
 
 #: app/templates/_rules_list.html:41 app/templates/forum/_proposal_vote.html:58
 #: app/templates/issues/_ip_vote.html:93
@@ -1782,7 +1782,7 @@ msgstr "Jemanden einladen"
 
 #: app/templates/aanmelden/aanmelden.html:46 app/templates/index.html:252
 #: app/templates/index.html:318 app/templates/login.html:20
-#: app/templates/profile.html:21 app/templates/wachtwoord_vergeten.html:35
+#: app/templates/profile.html:24 app/templates/wachtwoord_vergeten.html:35
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
@@ -1869,7 +1869,7 @@ msgid "This is how other participants will see you in the conversation."
 msgstr "So sehen dich andere Teilnehmende im Gespräch."
 
 #: app/templates/aanmelden/aanmelden.html:28
-#: app/templates/kies_gebruikersnaam.html:26 app/templates/profile.html:17
+#: app/templates/kies_gebruikersnaam.html:26 app/templates/profile.html:20
 msgid "Username"
 msgstr "Benutzername"
 
@@ -1992,8 +1992,10 @@ msgstr "Dies ist ein Platzhalter für künftige Inhalte."
 msgid "Activity"
 msgstr "Aktivität"
 
+#. profile, the eyebrow of the section with language, automatic translation and
+#. the summary by email.
 #: app/templates/landing.html:33 app/templates/meldingen.html:17
-#: app/templates/notificaties.html:20
+#: app/templates/notificaties.html:20 app/templates/profile.html:160
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -2015,8 +2017,8 @@ msgstr "Passwort"
 
 #: app/templates/aanmelden/aanmelden.html:62
 #: app/templates/aanmelden/aanmelden.html:82 app/templates/login.html:36
-#: app/templates/profile.html:258 app/templates/profile.html:275
-#: app/templates/profile.html:295 app/templates/wachtwoord_reset.html:41
+#: app/templates/profile.html:215 app/templates/profile.html:232
+#: app/templates/profile.html:252 app/templates/wachtwoord_reset.html:41
 #: app/templates/wachtwoord_reset.html:62
 msgid "Show password"
 msgstr "Passwort anzeigen"
@@ -2634,7 +2636,7 @@ msgstr "Das ist eine Schreibübung, ein erster Entwurf. Kein Bauplan, kein Parte
 
 #: app/templates/meldingen.html:9 app/templates/meldingen.html:15
 #: app/templates/notificaties.html:18 app/templates/notificaties.html:21
-#: app/templates/profile.html:240
+#: app/templates/profile.html:195
 msgid "Notifications"
 msgstr "Benachrichtigungen"
 
@@ -2808,7 +2810,7 @@ msgstr "Moderation"
 msgid "for moderators"
 msgstr "für Moderatoren"
 
-#: app/templates/notificaties.html:63 app/templates/profile.html:238
+#: app/templates/notificaties.html:63 app/templates/profile.html:194
 msgid "Summary by email"
 msgstr "Zusammenfassung per E-Mail"
 
@@ -2842,8 +2844,7 @@ msgstr "Wöchentlich"
 #: app/templates/issues/_ip_vote.html:80
 #: app/templates/issues/_lifecycle.html:50
 #: app/templates/moderator/rechten.html:43 app/templates/notificaties.html:75
-#: app/templates/profile.html:116 app/templates/profile.html:158
-#: app/templates/profile.html:227
+#: app/templates/profile.html:98 app/templates/profile.html:148
 msgid "Save"
 msgstr "Speichern"
 
@@ -2882,8 +2883,8 @@ msgstr "Welche Daten wir erheben"
 
 #. privacy, alinea 4
 #: app/templates/privacy.html:30
-msgid "Your username (pseudonym), which is public. Your email address, which is private and not visible to other users. Your password, which we store encrypted. If you fill them in yourself: your first and last name and your LinkedIn address, which stay private unless you choose in your profile to show your real name. What you write on the forum, your replies, and your agree and disagree votes; your contributions are public under your pseudonym. And your IP address and technical log data, which we use to prevent abuse."
-msgstr "Dein Benutzername (Pseudonym), der öffentlich ist. Deine E-Mail-Adresse, die privat ist und die andere nicht sehen. Dein Passwort, das wir verschlüsselt speichern. Wenn du sie selbst ausfüllst: dein Vor- und Nachname und deine LinkedIn-Adresse, die privat bleiben, außer du entscheidest dich in deinem Profil dafür, deinen echten Namen zu zeigen. Was du im Forum schreibst, deine Antworten und deine Stimmen für Zustimmen und Nicht zustimmen; deine Beiträge sind unter deinem Pseudonym öffentlich. Und deine IP-Adresse und technische Protokolldaten, die wir nutzen, um Missbrauch zu verhindern."
+msgid "Your username, which is public. Your email address, which is private and not visible to other users. Your password, which we store encrypted. If you fill them in yourself: your first and last name and your LinkedIn address, which stay private unless you choose in your profile to show your real name. What you write on the forum, your replies, and your agree and disagree votes; your contributions are public under your username. And your IP address and technical log data, which we use to prevent abuse."
+msgstr "Dein Benutzername, der öffentlich ist. Deine E-Mail-Adresse, die privat ist und die andere nicht sehen. Dein Passwort, das wir verschlüsselt speichern. Wenn du sie selbst ausfüllst: dein Vor- und Nachname und deine LinkedIn-Adresse, die privat bleiben, außer du entscheidest dich in deinem Profil dafür, deinen echten Namen zu zeigen. Was du im Forum schreibst, deine Antworten und deine Stimmen für Zustimmen und Nicht zustimmen; deine Beiträge sind unter deinem Benutzernamen öffentlich. Und deine IP-Adresse und technische Protokolldaten, die wir nutzen, um Missbrauch zu verhindern."
 
 #. privacy, alinea 4b (representativeness: the voluntary questions after the
 #. first vote; "About me" is the section in the profile)
@@ -3007,263 +3008,215 @@ msgstr "Wir können diese Erklärung ändern. Das Datum oben zeigt, wann wir das
 msgid "My profile"
 msgstr "Mein Profil"
 
-#: app/templates/profile.html:27
+#. profile, the eyebrow of the first section (username, email address, status).
+#: app/templates/profile.html:17
+msgid "Account"
+msgstr "Konto"
+
+#: app/templates/profile.html:32
 msgid "Status"
 msgstr "Status"
 
-#: app/templates/profile.html:30
+#: app/templates/profile.html:34
 msgid "right to vote"
 msgstr "Stimmrecht"
 
-#: app/templates/profile.html:34
-msgid "Earned"
-msgstr "Erworben"
-
-#: app/templates/profile.html:37
+#. profile, a link next to your status to the FAQ question about the right to
+#. vote.
+#: app/templates/profile.html:35
 #, python-format
 msgid "%(num)d topic"
 msgid_plural "%(num)d topics"
 msgstr[0] "%(num)d Thema"
 msgstr[1] "%(num)d Themen"
 
-#: app/templates/profile.html:37
+#: app/templates/profile.html:35
 #, python-format
 msgid "%(count)s quality contribution in %(topics)s"
 msgid_plural "%(count)s quality contributions in %(topics)s"
 msgstr[0] "%(count)s Qualitätsbeitrag in %(topics)s"
 msgstr[1] "%(count)s Qualitätsbeiträge in %(topics)s"
 
-#: app/templates/profile.html:40
-msgid "With your first quality contribution you become a Contributor."
-msgstr "Mit deinem ersten Qualitätsbeitrag wirst du Mitwirkender."
+#: app/templates/profile.html:35
+msgid "How does this work?"
+msgstr "Wie funktioniert das?"
 
-#: app/templates/profile.html:41
-#, python-format
-msgid "Voter (with the right to vote) from %(voter_min)s quality contributions."
-msgstr "Stimmberechtigter (mit Stimmrecht) ab %(voter_min)s Qualitätsbeiträgen."
-
-#: app/templates/profile.html:42
-#, python-format
-msgid "Moderator (status) with more than %(moderator_min)s quality contributions in at least %(moderator_min_topics)s topics."
-msgstr "Moderator (Status) bei mehr als %(moderator_min)s Qualitätsbeiträgen in mindestens %(moderator_min_topics)s Themen."
-
-#: app/templates/profile.html:43
-#, python-format
-msgid "Senior with more than %(senior_min)s quality contributions."
-msgstr "Senior bei mehr als %(senior_min)s Qualitätsbeiträgen."
-
-#: app/templates/profile.html:49
-msgid "Status ladder"
-msgstr "Statusleiter"
-
-#: app/templates/issues/show.html:212 app/templates/profile.html:60
-msgid "You have the right to vote."
-msgstr "Du hast Stimmrecht."
-
-#: app/templates/profile.html:63
-#, python-format
-msgid "On the way to the right to vote: %(quality_count)s of %(needed)s quality contributions."
-msgstr "Auf dem Weg zum Stimmrecht: %(quality_count)s von %(needed)s Qualitätsbeiträgen."
-
-#: app/templates/issues/show.html:216 app/templates/profile.html:65
+#: app/templates/issues/show.html:216 app/templates/profile.html:39
 msgid "Progress to the right to vote"
 msgstr "Fortschritt zum Stimmrecht"
 
-#: app/templates/profile.html:72
-msgid "Not required"
-msgstr "Freiwillig"
-
-#: app/templates/aanmelden/aanmelden.html:101 app/templates/profile.html:76
-msgid "First name"
-msgstr "Vorname"
-
-#: app/templates/profile.html:77 app/templates/profile.html:81
-msgid "Not provided"
-msgstr "Nicht angegeben"
-
-#: app/templates/aanmelden/aanmelden.html:107 app/templates/profile.html:80
-msgid "Last name"
-msgstr "Nachname"
-
-#: app/templates/profile.html:88
+#: app/templates/profile.html:53
 msgid "How do you appear in the forum?"
 msgstr "Wie erscheinst du im Forum?"
 
-#: app/templates/profile.html:91
-msgid "By default you take part under your pseudonym. You can also choose to take part under your real name, and switch back at any time."
-msgstr "Standardmäßig machst du unter deinem Pseudonym mit. Du kannst auch unter deinem echten Namen mitmachen und das später jederzeit wieder ändern."
+#. profile, the explanation above the choice between username and real name.
+#: app/templates/profile.html:54
+msgid "Most people take part under their username. That is fine. Are you an expert or someone with lived experience? Then it makes sense to use your real name. You can always switch back."
+msgstr "Die meisten machen unter ihrem Benutzernamen mit. Das ist völlig in Ordnung. Bist du Fachperson oder sprichst du aus eigener Erfahrung? Dann liegt es nahe, deinen echten Namen zu verwenden. Du kannst jederzeit zurückwechseln."
 
-#: app/templates/profile.html:98
-msgid "Pseudonym"
-msgstr "Pseudonym"
+#. profile, a choice: take part under your username; %(username)s is the
+#. username.
+#: app/templates/profile.html:57
+#, python-format
+msgid "Under my username (@%(username)s)"
+msgstr "Unter meinem Benutzernamen (@%(username)s)"
 
-#: app/templates/profile.html:99
-msgid "default"
-msgstr "Standard"
+#. profile, a choice: take part under your real name (first and last name).
+#: app/templates/profile.html:62
+msgid "Under my real name"
+msgstr "Unter meinem echten Namen"
 
-#: app/templates/profile.html:105
-msgid "My real name"
-msgstr "Mein echter Name"
+#: app/templates/aanmelden/aanmelden.html:101 app/templates/profile.html:67
+msgid "First name"
+msgstr "Vorname"
 
-#: app/templates/profile.html:107 app/templates/profile.html:119
-msgid "No real name is known for your account."
-msgstr "Für dein Konto ist kein echter Name bekannt."
+#. profile, an error under the first name field (real name chosen).
+#: app/templates/profile.html:71
+msgid "Enter your first name."
+msgstr "Gib deinen Vornamen ein."
 
-#: app/templates/profile.html:114
-msgid "I understand that my real name will then be visible on all my contributions in the forum, including earlier ones."
-msgstr "Ich verstehe, dass mein echter Name dann bei allen meinen Beiträgen im Forum sichtbar wird, auch bei früheren."
+#: app/templates/aanmelden/aanmelden.html:107 app/templates/profile.html:74
+msgid "Last name"
+msgstr "Nachname"
 
-#: app/templates/profile.html:120
-msgid "Please first confirm that your real name may become visible."
-msgstr "Bitte bestätige zuerst, dass dein echter Name sichtbar werden darf."
+#. profile, an error under the last name field (real name chosen).
+#: app/templates/profile.html:78
+msgid "Enter your last name."
+msgstr "Gib deinen Nachnamen ein."
 
-#: app/templates/profile.html:122 app/templates/profile.html:161
-msgid "Saved!"
-msgstr "Gespeichert!"
-
-#: app/templates/profile.html:127
-msgid "As long as you use your pseudonym, your LinkedIn profile is not shown publicly in the forum."
-msgstr "Solange du dein Pseudonym benutzt, wird dein LinkedIn-Profil im Forum nicht öffentlich gezeigt."
-
-#: app/templates/profile.html:131
-msgid "Your LinkedIn profile."
-msgstr "Dein LinkedIn-Profil."
-
-#: app/templates/profile.html:134
-msgid "Your LinkedIn profile is shown publicly next to your name in the forum."
-msgstr "Dein LinkedIn-Profil wird im Forum öffentlich neben deinem Namen gezeigt."
-
-#: app/templates/aanmelden/aanmelden.html:119 app/templates/profile.html:147
-msgid "LinkedIn profile URL"
-msgstr "URL deines LinkedIn-Profils"
+#: app/templates/admin/dashboard.html:87 app/templates/profile.html:82
+msgid "LinkedIn profile"
+msgstr "LinkedIn-Profil"
 
 #: app/templates/issues/new.html:105 app/templates/issues/new.html:175
-#: app/templates/issues/proposal_new.html:31 app/templates/profile.html:147
+#: app/templates/issues/proposal_new.html:31 app/templates/profile.html:82
 msgid "optional"
 msgstr "optional"
 
-#: app/templates/aanmelden/aanmelden.html:125 app/templates/profile.html:152
+#: app/templates/aanmelden/aanmelden.html:125 app/templates/profile.html:86
 msgid "https://www.linkedin.com/in/your-name"
 msgstr "https://www.linkedin.com/in/dein-name"
 
-#: app/templates/aanmelden/aanmelden.html:133 app/templates/profile.html:154
+#: app/templates/aanmelden/aanmelden.html:133 app/templates/profile.html:87
 msgid "Enter a valid LinkedIn URL (https://www.linkedin.com/in/…)."
 msgstr "Gib eine gültige LinkedIn-URL ein (https://www.linkedin.com/in/…)."
 
-#: app/templates/profile.html:169
-msgid "Language & Translations"
-msgstr "Sprache und Übersetzungen"
+#. profile, the checkbox before you take part under your real name.
+#: app/templates/profile.html:92
+msgid "I understand that my real name will then be visible on all my contributions in the forum."
+msgstr "Ich verstehe, dass mein echter Name dann bei allen meinen Beiträgen im Forum sichtbar ist."
 
-#: app/templates/profile.html:171
-msgid "Language preference."
-msgstr "Bevorzugte Sprache."
+#: app/templates/profile.html:94
+msgid "Please first confirm that your real name may become visible."
+msgstr "Bitte bestätige zuerst, dass dein echter Name sichtbar werden darf."
 
-#: app/templates/profile.html:182
-msgid "Automatic translation."
-msgstr "Automatisch übersetzen."
-
-#: app/templates/profile.html:196
-msgid "Automatically translate posts to English"
-msgstr "Beiträge automatisch ins Deutsche übersetzen"
-
-#: app/templates/profile.html:203
-msgid "Posts in another language are automatically translated when you open a conversation."
-msgstr "Beiträge in einer anderen Sprache werden automatisch übersetzt, wenn du ein Gespräch öffnest."
-
-#. profile, the eyebrow of the section with the voluntary questions about
-#. yourself.
-#: app/templates/issues/_ip_vote.html:83 app/templates/profile.html:213
-msgid "About me"
-msgstr "Über mich"
+#. profile, the eyebrow of the section with what you may fill in but do not
+#. have to.
+#: app/templates/aanmelden/aanmelden.html:92 app/templates/profile.html:136
+msgid "Optional"
+msgstr "Optional"
 
 #. profile, About me: the title of the voluntary questions (who takes part in
 #. the votes).
-#: app/templates/issues/_ip_vote.html:74 app/templates/profile.html:215
+#: app/templates/issues/_ip_vote.html:74 app/templates/profile.html:139
 msgid "Who votes?"
 msgstr "Wer stimmt mit ab?"
 
 #. a small label: answering is voluntary.
-#: app/templates/issues/_ip_vote.html:74 app/templates/profile.html:216
+#: app/templates/issues/_ip_vote.html:74 app/templates/profile.html:140
 msgid "Voluntary"
 msgstr "Freiwillig"
 
 #. profile, About me: why we ask. "results": the outcome of the votes of an
 #. issue.
-#: app/templates/issues/_ip_vote.html:75 app/templates/profile.html:218
+#: app/templates/issues/_ip_vote.html:75 app/templates/profile.html:142
 msgid "When results are shown, we show how the group of voters is made up, only in groups of at least 10 people. Never who voted what."
 msgstr "Beim Ergebnis zeigen wir, wie sich die Gruppe der Abstimmenden zusammensetzt, nur in Gruppen von mindestens 10 Personen. Nie, wer wie abgestimmt hat."
 
 #. a link to the privacy statement.
 #: app/templates/issues/_ip_vote.html:76
 #: app/templates/issues/_participation.html:18
-#: app/templates/issues/_participation.html:69 app/templates/profile.html:219
+#: app/templates/issues/_participation.html:69 app/templates/profile.html:143
 msgid "Why we ask this"
 msgstr "Warum wir das fragen"
 
-#. profile, About me: when the answers were saved; %(date)s is a date.
-#: app/templates/profile.html:224
-#, python-format
-msgid "Filled in on %(date)s"
-msgstr "Ausgefüllt am %(date)s"
-
 #. profile, About me: a button that removes the answers.
-#: app/templates/profile.html:228
+#: app/templates/profile.html:149
 msgid "Clear answers"
 msgstr "Antworten löschen"
 
-#: app/templates/profile.html:239
+#. profile, Settings: the heading above the language buttons.
+#: app/templates/admin/language_monitor.html:31
+#: app/templates/admin/language_monitor.html:70 app/templates/profile.html:163
+msgid "Language"
+msgstr "Sprache"
+
+#. profile, Settings: the heading above the switch for automatic translation.
+#: app/templates/profile.html:174
+msgid "Automatic translation"
+msgstr "Automatisch übersetzen"
+
+#: app/templates/profile.html:185
+msgid "Automatically translate posts to English"
+msgstr "Beiträge automatisch ins Deutsche übersetzen"
+
+#: app/templates/profile.html:188
+msgid "Posts in another language are automatically translated when you open a conversation."
+msgstr "Beiträge in einer anderen Sprache werden automatisch übersetzt, wenn du ein Gespräch öffnest."
+
+#: app/templates/profile.html:195
 msgid "View your daily summaries"
 msgstr "Deine täglichen Zusammenfassungen ansehen"
 
-#: app/templates/profile.html:240
+#: app/templates/profile.html:195
 msgid "choose what you hear about, and where"
 msgstr "wähle, worüber du Nachricht bekommst und wo"
 
-#: app/templates/profile.html:244
+#: app/templates/profile.html:201
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: app/templates/profile.html:246
+#: app/templates/profile.html:203
 msgid "Update your password."
 msgstr "Aktualisiere dein Passwort."
 
-#: app/templates/profile.html:256
+#: app/templates/profile.html:213
 msgid "Current password"
 msgstr "Aktuelles Passwort"
 
-#: app/templates/profile.html:264
+#: app/templates/profile.html:221
 msgid "Enter your current password."
 msgstr "Gib dein aktuelles Passwort ein."
 
-#: app/templates/profile.html:273 app/templates/wachtwoord_reset.html:27
+#: app/templates/profile.html:230 app/templates/wachtwoord_reset.html:27
 #: app/templates/wachtwoord_reset.html:35
 msgid "New password"
 msgstr "Neues Passwort"
 
-#: app/templates/profile.html:293 app/templates/wachtwoord_reset.html:56
+#: app/templates/profile.html:250 app/templates/wachtwoord_reset.html:56
 msgid "Confirm new password"
 msgstr "Neues Passwort bestätigen"
 
-#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:306
+#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:263
 msgid "Save changes"
 msgstr "Änderungen speichern"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:419
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:340
 #: app/templates/wachtwoord_reset.html:112
 msgid "Weak"
 msgstr "Schwach"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:419
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:340
 #: app/templates/wachtwoord_reset.html:112
 msgid "Fair"
 msgstr "Mittel"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:419
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:340
 #: app/templates/wachtwoord_reset.html:112
 msgid "Strong"
 msgstr "Stark"
 
-#: app/templates/profile.html:450
+#: app/templates/profile.html:371
 msgid "Danger zone"
 msgstr "Gefahrenzone"
 
@@ -3271,11 +3224,11 @@ msgstr "Gefahrenzone"
 #: app/templates/moderator/gebruiker.html:200
 #: app/templates/moderator/gebruiker.html:207
 #: app/templates/moderator/gebruiker_verwijderen.html:2
-#: app/templates/profile.html:453
+#: app/templates/profile.html:374
 msgid "Delete account"
 msgstr "Konto löschen"
 
-#: app/templates/profile.html:457
+#: app/templates/profile.html:378
 msgid ""
 "This permanently deletes your account, all your forum posts, and all your likes.\n"
 "        This cannot be undone."
@@ -3283,7 +3236,7 @@ msgstr ""
 "Damit werden dein Konto, alle deine Forumsbeiträge und alle deine Likes endgültig gelöscht.\n"
 "        Das lässt sich nicht rückgängig machen."
 
-#: app/templates/profile.html:463
+#: app/templates/profile.html:384
 msgid "Delete my account"
 msgstr "Mein Konto löschen"
 
@@ -3297,33 +3250,15 @@ msgstr "Mein Konto löschen"
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
-#: app/templates/profile.html:475 app/templates/profile.html:484
-#: app/templates/profile.html:580 app/templates/profile.html:602
+#: app/templates/profile.html:397 app/templates/profile.html:419
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: app/templates/profile.html:477
-msgid "Show your real name?"
-msgstr "Deinen echten Namen zeigen?"
-
-#: app/templates/profile.html:480
-#, python-format
-msgid "Your real name (%(value)s) will then be visible on all your contributions in the forum, including earlier ones. You can always switch back to your pseudonym."
-msgstr "Dein echter Name (%(value)s) wird dann bei allen deinen Beiträgen im Forum sichtbar, auch bei früheren. Du kannst jederzeit zu deinem Pseudonym zurückwechseln."
-
-#: app/templates/profile.html:487
-msgid "Yes, show my name"
-msgstr "Ja, meinen Namen zeigen"
-
-#: app/templates/profile.html:530 app/templates/profile.html:539
-msgid "Saving failed, please try again."
-msgstr "Speichern fehlgeschlagen, bitte versuche es noch einmal."
-
-#: app/templates/profile.html:589
+#: app/templates/profile.html:406
 msgid "Are you sure?"
 msgstr "Bist du sicher?"
 
-#: app/templates/profile.html:593
+#: app/templates/profile.html:410
 msgid ""
 "This permanently deletes your account and all associated data.\n"
 "        This <strong>cannot</strong> be undone."
@@ -3331,7 +3266,7 @@ msgstr ""
 "Damit werden dein Konto und alle zugehörigen Daten endgültig gelöscht.\n"
 "        Das lässt sich <strong>nicht</strong> rückgängig machen."
 
-#: app/templates/profile.html:606
+#: app/templates/profile.html:423
 msgid "Yes, delete my account"
 msgstr "Ja, mein Konto löschen"
 
@@ -3437,9 +3372,10 @@ msgstr "Mach mit"
 msgid "Join the conversation."
 msgstr "Mach mit beim Gespräch."
 
+#. sign-up, the line under the heading.
 #: app/templates/aanmelden/aanmelden.html:22
-msgid "Expert or layperson, 16 or 96, under a username (pseudonym) and optionally under your own name with LinkedIn."
-msgstr "Fachleute oder Laien, 16 oder 96, unter einem Benutzernamen (Pseudonym) und auf Wunsch unter deinem eigenen Namen mit LinkedIn."
+msgid "Expert or layperson, 16 or 96, under a username and optionally under your own name with LinkedIn."
+msgstr "Fachleute oder Laien, 16 oder 96, unter einem Benutzernamen und auf Wunsch unter deinem eigenen Namen mit LinkedIn."
 
 #: app/templates/aanmelden/aanmelden.html:24
 msgid "You must be at least 16 years old."
@@ -3453,10 +3389,6 @@ msgstr "Diese E-Mail-Adresse wird schon verwendet."
 msgid "Confirm password"
 msgstr "Passwort bestätigen"
 
-#: app/templates/aanmelden/aanmelden.html:92
-msgid "Optional"
-msgstr "Optional"
-
 #: app/templates/aanmelden/aanmelden.html:95
 msgid "These details stay private. In your profile you can later choose to show your real name and LinkedIn; only then are they visible to others."
 msgstr "Diese Angaben bleiben privat. In deinem Profil kannst du später festlegen, dass dein echter Name und LinkedIn gezeigt werden; erst dann sind sie für andere sichtbar."
@@ -3464,6 +3396,10 @@ msgstr "Diese Angaben bleiben privat. In deinem Profil kannst du später festleg
 #: app/templates/aanmelden/aanmelden.html:114
 msgid "Fill in both first and last name, or leave both empty."
 msgstr "Füll Vor- und Nachnamen aus oder lass beide leer."
+
+#: app/templates/aanmelden/aanmelden.html:119
+msgid "LinkedIn profile URL"
+msgstr "URL deines LinkedIn-Profils"
 
 #: app/templates/aanmelden/aanmelden.html:129
 msgid "Find my profile"
@@ -3590,10 +3526,6 @@ msgstr "Senior-Moderator"
 msgid "No conduct rules acceptance yet"
 msgstr "Noch keine Zustimmung zu den Verhaltensregeln"
 
-#: app/templates/admin/dashboard.html:87
-msgid "LinkedIn profile"
-msgstr "LinkedIn-Profil"
-
 #: app/templates/admin/dashboard.html:107
 msgid "Change role"
 msgstr "Rolle ändern"
@@ -3641,11 +3573,6 @@ msgstr "Vergibt die KI in einer Sprache systematisch öfter als in der anderen? 
 #: app/templates/issues/_chart_block.html:29
 msgid "Period"
 msgstr "Zeitraum"
-
-#: app/templates/admin/language_monitor.html:31
-#: app/templates/admin/language_monitor.html:70
-msgid "Language"
-msgstr "Sprache"
 
 #: app/templates/admin/language_monitor.html:32
 msgid "Judged"
@@ -5490,6 +5417,10 @@ msgstr "Deine Stimme zählt so oder so."
 msgid "Skip"
 msgstr "Überspringen"
 
+#: app/templates/issues/_ip_vote.html:83
+msgid "About me"
+msgstr "Über mich"
+
 #. the card after the first vote; %(about_me)s is a link to the profile section
 #. "About me".
 #: app/templates/issues/_ip_vote.html:84
@@ -6362,6 +6293,10 @@ msgstr "Diese Fragestellung hat noch keine Diskussion."
 #: app/templates/issues/show.html:207
 msgid "Your right to vote"
 msgstr "Dein Stimmrecht"
+
+#: app/templates/issues/show.html:212
+msgid "You have the right to vote."
+msgstr "Du hast Stimmrecht."
 
 #: app/templates/issues/show.html:214
 #, python-format
