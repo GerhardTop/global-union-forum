@@ -244,15 +244,20 @@ def _answered(db, user):
     db.session.commit()
 
 
-def test_self_delete_removes_the_row(app, db):
+def test_self_delete_removes_the_row_and_the_country(app, db):
+    # Deleting your own account anonymises it (the account row stays); the
+    # answers and the country go (tests/test_account_delete.py).
     user = _lone_user(db)
     _answered(db, user)
     uid = user.id
     r = _req(_client(app, user), 'POST', '/account/verwijderen')
     assert r.status_code in (200, 302)
     db.session.expire_all()
-    assert db.session.get(User, uid) is None
+    u = db.session.get(User, uid)
+    assert u.is_deleted and u.country is None
     assert _profile(uid) is None
+    db.session.delete(u)
+    db.session.commit()
 
 
 def test_admin_hard_delete_removes_the_row(app, db, make_user):

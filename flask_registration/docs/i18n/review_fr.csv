@@ -329,8 +329,8 @@ app/routes/auth.py:407,,,This verification link has expired. Request a new one.,
 app/routes/auth.py:413,,,Invalid verification link.,,Ongeldige verificatielink.,,Lien de vérification non valide.,
 app/routes/auth.py:446,,,Verification email resent: check your inbox.,,Verificatiemail opnieuw verzonden: check je inbox.,,E-mail de vérification renvoyé : consultez votre boîte de réception.,
 app/routes/auth.py:490,,,Admin accounts cannot be deleted.,,Adminaccounts kunnen niet worden verwijderd.,,Les comptes d'administration ne peuvent pas être supprimés.,
-app/routes/auth.py:517,,,An error occurred. Please try again.,,Er is een fout opgetreden. Probeer het opnieuw.,,Une erreur s'est produite. Réessayez.,
-app/routes/auth.py:527,,,Your account has been deleted.,,Je account is verwijderd.,,Votre compte a été supprimé.,
+app/routes/auth.py:506,,,An error occurred. Please try again.,,Er is een fout opgetreden. Probeer het opnieuw.,,Une erreur s'est produite. Réessayez.,
+app/routes/auth.py:516,,,Your account has been deleted.,,Je account is verwijderd.,,Votre compte a été supprimé.,
 app/routes/forum.py:72,,,"You are suspended until %(until)s. You can read, but not contribute or vote.",,"Je bent geschorst tot %(until)s. Je kunt lezen, maar niet bijdragen of stemmen.",,"Votre compte est suspendu jusqu'au %(until)s. Vous pouvez lire, mais pas contribuer ni voter.",
 app/routes/forum.py:121,,,Accept the conduct rules first to take part.,,Accepteer eerst de gedragsregels om mee te doen.,,Acceptez d'abord les règles de conduite pour participer.,
 app/routes/forum.py:651,,,The platform is not open for contributions to this issue right now.,,Het platform is nu niet open voor bijdragen aan dit vraagstuk.,,La plateforme n'accepte pas de contributions à ce dossier pour le moment.,
@@ -508,7 +508,7 @@ app/templates/admin/dashboard.html:107,,,Change role,,Rol wijzigen,,Changer le r
 app/templates/admin/dashboard.html:128,,,Conduct rules not accepted yet,,Gedragsregels nog niet geaccepteerd,,Règles de conduite pas encore acceptées,
 app/templates/admin/dashboard.html:142,,,Delete the account of %(name)s,,Verwijder account van %(name)s,,Supprimer le compte de %(name)s,
 app/templates/admin/dashboard.html:143 app/templates/admin/dashboard.html:179,,,Delete this account,,Verwijder account,,Supprimer ce compte,
-app/templates/admin/dashboard.html:170 app/templates/admin/dashboard.html:178 app/templates/forum/_post.html:218 app/templates/forum/_post.html:246 app/templates/forum/edit_thread.html:58 app/templates/forum/new_thread.html:128 app/templates/issues/_facts_big.html:41 app/templates/issues/final_new.html:57 app/templates/issues/new.html:190 app/templates/issues/proposal.html:215 app/templates/issues/proposal_new.html:46 app/templates/issues/verwijderen.html:81 app/templates/moderator/gebruiker_verwijderen.html:73 app/templates/profile.html:398 app/templates/profile.html:420,,,Cancel,,Annuleren,,Annuler,
+app/templates/admin/dashboard.html:170 app/templates/admin/dashboard.html:178 app/templates/forum/_post.html:218 app/templates/forum/_post.html:246 app/templates/forum/edit_thread.html:58 app/templates/forum/new_thread.html:128 app/templates/issues/_facts_big.html:41 app/templates/issues/final_new.html:57 app/templates/issues/new.html:190 app/templates/issues/proposal.html:215 app/templates/issues/proposal_new.html:46 app/templates/issues/verwijderen.html:81 app/templates/moderator/gebruiker_verwijderen.html:73 app/templates/profile.html:397 app/templates/profile.html:418,,,Cancel,,Annuleren,,Annuler,
 app/templates/admin/dashboard.html:171 app/templates/moderator/gebruiker.html:200 app/templates/moderator/gebruiker.html:207 app/templates/moderator/gebruiker_verwijderen.html:2 app/templates/profile.html:375,,,Delete account,,Account verwijderen,,Supprimer le compte,
 app/templates/admin/dashboard.html:173,,,Are you sure you want to delete the account of %(name)s? This cannot be undone.,,Weet je zeker dat je het account van %(name)s wilt verwijderen? Dit kan niet ongedaan worden gemaakt.,,Voulez-vous vraiment supprimer le compte de %(name)s ? Cette action est irréversible.,
 app/templates/admin/dashboard.html:174,,,Are you sure you want to delete this account? This cannot be undone.,,Weet je zeker dat je dit account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.,,Voulez-vous vraiment supprimer ce compte ? Cette action est irréversible.,
@@ -1559,17 +1559,10 @@ app/templates/profile.html:222,,,Enter your current password.,,Vul je huidige wa
 app/templates/profile.html:231 app/templates/wachtwoord_reset.html:27 app/templates/wachtwoord_reset.html:35,,,New password,,Nieuw wachtwoord,,Nouveau mot de passe,
 app/templates/profile.html:251 app/templates/wachtwoord_reset.html:56,,,Confirm new password,,Bevestig nieuw wachtwoord,,Confirmer le nouveau mot de passe,
 app/templates/profile.html:372,,,Danger zone,,Gevarenzone,,Zone de danger,
-app/templates/profile.html:379,,,"This permanently deletes your account, all your forum posts, and all your likes.
-        This cannot be undone.",,"Dit verwijdert je account, al je forumberichten en al je likes permanent.
-        Dit kan niet ongedaan worden gemaakt.",,"Cette action supprime définitivement votre compte, tous vos messages du forum et tous vos « j'aime ».
-        Elle est irréversible.",
-app/templates/profile.html:385,,,Delete my account,,Verwijder mijn account,,Supprimer mon compte,
-app/templates/profile.html:407,,,Are you sure?,,Weet je het zeker?,,Vous confirmez ?,
-app/templates/profile.html:411,,,"This permanently deletes your account and all associated data.
-        This <strong>cannot</strong> be undone.",,"Dit verwijdert je account en alle bijbehorende data permanent.
-        Dit kan <strong>niet</strong> ongedaan worden gemaakt.",,"Cette action supprime définitivement votre compte et toutes les données associées.
-        Elle <strong>ne peut pas</strong> être annulée.",
-app/templates/profile.html:424,,,"Yes, delete my account",,"Ja, verwijder mijn account",,"Oui, supprimer mon compte",
+app/templates/profile.html:379 app/templates/profile.html:410,"profile, Danger zone and the confirmation window: what deleting your account does. Contributions stay under a placeholder name, without yours.",,"This deletes your account and your personal data. Your contributions stay, without your name, so the conversations remain readable. This cannot be undone.",,"Dit verwijdert je account en je persoonsgegevens. Je bijdragen blijven staan, zonder je naam, zodat de gesprekken leesbaar blijven. Dit kan niet ongedaan worden gemaakt.",,"Cela supprime votre compte et vos données personnelles. Vos contributions restent, sans votre nom, afin que les conversations restent lisibles. Cette action est irréversible.",
+app/templates/profile.html:384,,,Delete my account,,Verwijder mijn account,,Supprimer mon compte,
+app/templates/profile.html:406,,,Are you sure?,,Weet je het zeker?,,Vous confirmez ?,
+app/templates/profile.html:422,,,"Yes, delete my account",,"Ja, verwijder mijn account",,"Oui, supprimer mon compte",
 app/templates/success.html:3 app/templates/success.html:8,,,"Welcome,",,"Welkom,",,"Bienvenue,",
 app/templates/success.html:9,,,Your account has been created successfully. You can now log in.,,Je account is succesvol aangemaakt. Je kunt nu inloggen.,,Votre compte a bien été créé. Vous pouvez maintenant vous connecter.,
 app/templates/success.html:12,,,Create another account,,Nog een account aanmaken,,Créer un autre compte,

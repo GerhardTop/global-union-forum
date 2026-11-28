@@ -376,8 +376,7 @@
     </h2>
     <p style="font-size: 14px; color: var(--gu-fg-2); margin-bottom: 20px;">
       
-        {% trans %}This permanently deletes your account, all your forum posts, and all your likes.
-        This cannot be undone.{% endtrans %}
+        {# TRANSLATORS: profile, Danger zone and the confirmation window: what deleting your account does. Contributions stay under a placeholder name, without yours. #}{{ _('This deletes your account and your personal data. Your contributions stay, without your name, so the conversations remain readable. This cannot be undone.') }}
       
     </p>
     <button type="button" id="guDeleteBtn"
@@ -408,8 +407,7 @@
     </h2>
     <p class="gu-modal__body">
       
-        {% trans %}This permanently deletes your account and all associated data.
-        This <strong>cannot</strong> be undone.{% endtrans %}
+        {# TRANSLATORS: profile, Danger zone and the confirmation window: what deleting your account does. Contributions stay under a placeholder name, without yours. #}{{ _('This deletes your account and your personal data. Your contributions stay, without your name, so the conversations remain readable. This cannot be undone.') }}
       
     </p>
     <form method="POST" action="{{ url_for('auth.account_verwijderen') }}" style="margin-top: 24px;">

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-28 12:37+0100\n"
+"POT-Creation-Date: 2026-11-28 12:56+0100\n"
 "PO-Revision-Date: 2026-11-22 14:15+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -1047,11 +1047,11 @@ msgstr "Correo de verificación reenviado: revisa tu bandeja de entrada."
 msgid "Admin accounts cannot be deleted."
 msgstr "Las cuentas de administración no se pueden eliminar."
 
-#: app/routes/auth.py:517
+#: app/routes/auth.py:506
 msgid "An error occurred. Please try again."
 msgstr "Se ha producido un error. Vuelve a intentarlo."
 
-#: app/routes/auth.py:527
+#: app/routes/auth.py:516
 msgid "Your account has been deleted."
 msgstr "Tu cuenta se ha eliminado."
 
@@ -3235,15 +3235,13 @@ msgstr "Zona de peligro"
 msgid "Delete account"
 msgstr "Eliminar cuenta"
 
-#: app/templates/profile.html:379
-msgid ""
-"This permanently deletes your account, all your forum posts, and all your likes.\n"
-"        This cannot be undone."
-msgstr ""
-"Esto elimina para siempre tu cuenta, todos tus mensajes del foro y todos tus «me gusta».\n"
-"        No se puede deshacer."
+#. profile, Danger zone and the confirmation window: what deleting your account
+#. does. Contributions stay under a placeholder name, without yours.
+#: app/templates/profile.html:379 app/templates/profile.html:410
+msgid "This deletes your account and your personal data. Your contributions stay, without your name, so the conversations remain readable. This cannot be undone."
+msgstr "Esto elimina tu cuenta y tus datos personales. Tus contribuciones se mantienen, sin tu nombre, para que las conversaciones sigan siendo legibles. No se puede deshacer."
 
-#: app/templates/profile.html:385
+#: app/templates/profile.html:384
 msgid "Delete my account"
 msgstr "Eliminar mi cuenta"
 
@@ -3257,23 +3255,15 @@ msgstr "Eliminar mi cuenta"
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
-#: app/templates/profile.html:398 app/templates/profile.html:420
+#: app/templates/profile.html:397 app/templates/profile.html:418
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: app/templates/profile.html:407
+#: app/templates/profile.html:406
 msgid "Are you sure?"
 msgstr "¿Seguro?"
 
-#: app/templates/profile.html:411
-msgid ""
-"This permanently deletes your account and all associated data.\n"
-"        This <strong>cannot</strong> be undone."
-msgstr ""
-"Esto elimina para siempre tu cuenta y todos los datos asociados.\n"
-"        Esto <strong>no</strong> se puede deshacer."
-
-#: app/templates/profile.html:424
+#: app/templates/profile.html:422
 msgid "Yes, delete my account"
 msgstr "Sí, eliminar mi cuenta"
 

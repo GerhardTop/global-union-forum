@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-28 12:37+0100\n"
+"POT-Creation-Date: 2026-11-28 12:56+0100\n"
 "PO-Revision-Date: 2026-11-22 15:18+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -1047,11 +1047,11 @@ msgstr "E-mail de vérification renvoyé : consultez votre boîte de réception
 msgid "Admin accounts cannot be deleted."
 msgstr "Les comptes d'administration ne peuvent pas être supprimés."
 
-#: app/routes/auth.py:517
+#: app/routes/auth.py:506
 msgid "An error occurred. Please try again."
 msgstr "Une erreur s'est produite. Réessayez."
 
-#: app/routes/auth.py:527
+#: app/routes/auth.py:516
 msgid "Your account has been deleted."
 msgstr "Votre compte a été supprimé."
 
@@ -3235,15 +3235,13 @@ msgstr "Zone de danger"
 msgid "Delete account"
 msgstr "Supprimer le compte"
 
-#: app/templates/profile.html:379
-msgid ""
-"This permanently deletes your account, all your forum posts, and all your likes.\n"
-"        This cannot be undone."
-msgstr ""
-"Cette action supprime définitivement votre compte, tous vos messages du forum et tous vos « j'aime ».\n"
-"        Elle est irréversible."
+#. profile, Danger zone and the confirmation window: what deleting your account
+#. does. Contributions stay under a placeholder name, without yours.
+#: app/templates/profile.html:379 app/templates/profile.html:410
+msgid "This deletes your account and your personal data. Your contributions stay, without your name, so the conversations remain readable. This cannot be undone."
+msgstr "Cela supprime votre compte et vos données personnelles. Vos contributions restent, sans votre nom, afin que les conversations restent lisibles. Cette action est irréversible."
 
-#: app/templates/profile.html:385
+#: app/templates/profile.html:384
 msgid "Delete my account"
 msgstr "Supprimer mon compte"
 
@@ -3257,23 +3255,15 @@ msgstr "Supprimer mon compte"
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
-#: app/templates/profile.html:398 app/templates/profile.html:420
+#: app/templates/profile.html:397 app/templates/profile.html:418
 msgid "Cancel"
 msgstr "Annuler"
 
-#: app/templates/profile.html:407
+#: app/templates/profile.html:406
 msgid "Are you sure?"
 msgstr "Vous confirmez ?"
 
-#: app/templates/profile.html:411
-msgid ""
-"This permanently deletes your account and all associated data.\n"
-"        This <strong>cannot</strong> be undone."
-msgstr ""
-"Cette action supprime définitivement votre compte et toutes les données associées.\n"
-"        Elle <strong>ne peut pas</strong> être annulée."
-
-#: app/templates/profile.html:424
+#: app/templates/profile.html:422
 msgid "Yes, delete my account"
 msgstr "Oui, supprimer mon compte"
 

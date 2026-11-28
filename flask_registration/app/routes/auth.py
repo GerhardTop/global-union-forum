@@ -14,7 +14,7 @@ from app.forms import (LoginForm, WachtwoordVergetenForm, WachtwoordResetForm,
                        KiesGebruikersnaamForm, DeleteAccountForm,
                        VerifyResendForm)
 from app.mail import send_email
-from app.models import User, Post, PostLike
+from app.models import User
 from app.utils import (real_client_ip, MAIL_GLOBAL_RATE_LIMIT, MAIL_GLOBAL_SCOPE, _send_verify_email,
                        _password_strong, _stash_form_state, _pop_form_state, mail_global_key,
                        is_username_valid_format, is_username_blacklisted, is_username_available,
@@ -492,24 +492,13 @@ def account_verwijderen():
         )
         return redirect(url_for("profile.profile"))
 
-    user_id = current_user.id
-
+    # Anonymise instead of wiping (privacy statement): the account row stays
+    # without anything personal, so contributions, facts, proposals, votes and
+    # likes keep working under "@verwijderd". Login becomes impossible.
     try:
-        from app import quality
-        quality.detach_user(user_id)
-        PostLike.query.filter_by(user_id=user_id).delete()
-        user_post_ids = [p.id for p in Post.query.filter_by(user_id=user_id).with_entities(Post.id).all()]
-        if user_post_ids:
-            PostLike.query.filter(PostLike.post_id.in_(user_post_ids)).delete(synchronize_session=False)
-            Post.query.filter(Post.parent_id.in_(user_post_ids)).update(
-                {Post.parent_id: None}, synchronize_session=False
-            )
-            quality.delete_for_posts(user_post_ids)
-            Post.query.filter_by(user_id=user_id).delete(synchronize_session=False)
-        from app import participants
-        participants.delete_for_user(user_id)
-        user = db.session.get(User, user_id)
-        db.session.delete(user)
+        from app import users
+        user = db.session.get(User, current_user.id)
+        users.anonymise(user, actor=user, reason='self')
         db.session.commit()
     except Exception:
         db.session.rollback()

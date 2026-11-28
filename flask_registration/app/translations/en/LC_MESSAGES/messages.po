@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 12:37+0100\n"
+"POT-Creation-Date: 2026-11-28 12:56+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -1049,11 +1049,11 @@ msgstr "Verification email resent: check your inbox."
 msgid "Admin accounts cannot be deleted."
 msgstr "Admin accounts cannot be deleted."
 
-#: app/routes/auth.py:517
+#: app/routes/auth.py:506
 msgid "An error occurred. Please try again."
 msgstr "An error occurred. Please try again."
 
-#: app/routes/auth.py:527
+#: app/routes/auth.py:516
 msgid "Your account has been deleted."
 msgstr "Your account has been deleted."
 
@@ -3239,15 +3239,13 @@ msgstr "Danger zone"
 msgid "Delete account"
 msgstr "Delete account"
 
-#: app/templates/profile.html:379
-msgid ""
-"This permanently deletes your account, all your forum posts, and all your likes.\n"
-"        This cannot be undone."
-msgstr ""
-"This permanently deletes your account, all your forum posts, and all your likes.\n"
-"        This cannot be undone."
+#. profile, Danger zone and the confirmation window: what deleting your account
+#. does. Contributions stay under a placeholder name, without yours.
+#: app/templates/profile.html:379 app/templates/profile.html:410
+msgid "This deletes your account and your personal data. Your contributions stay, without your name, so the conversations remain readable. This cannot be undone."
+msgstr "This deletes your account and your personal data. Your contributions stay, without your name, so the conversations remain readable. This cannot be undone."
 
-#: app/templates/profile.html:385
+#: app/templates/profile.html:384
 msgid "Delete my account"
 msgstr "Delete my account"
 
@@ -3261,23 +3259,15 @@ msgstr "Delete my account"
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
-#: app/templates/profile.html:398 app/templates/profile.html:420
+#: app/templates/profile.html:397 app/templates/profile.html:418
 msgid "Cancel"
 msgstr "Cancel"
 
-#: app/templates/profile.html:407
+#: app/templates/profile.html:406
 msgid "Are you sure?"
 msgstr "Are you sure?"
 
-#: app/templates/profile.html:411
-msgid ""
-"This permanently deletes your account and all associated data.\n"
-"        This <strong>cannot</strong> be undone."
-msgstr ""
-"This permanently deletes your account and all associated data.\n"
-"        This <strong>cannot</strong> be undone."
-
-#: app/templates/profile.html:424
+#: app/templates/profile.html:422
 msgid "Yes, delete my account"
 msgstr "Yes, delete my account"
 
