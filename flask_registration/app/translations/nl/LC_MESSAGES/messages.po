@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 17:43+0100\n"
+"POT-Creation-Date: 2026-11-28 17:54+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: nl\n"
@@ -99,227 +99,239 @@ msgstr "Zodat we bij de uitslag kunnen laten zien hoe divers de groep stemmers i
 msgid "By contributing quality. Everyone starts as a reader. After your first quality contribution you are a contributor. With %(voter_min)s quality contributions you become a voter, and then you may vote. With more than %(moderator_min)s quality contributions in at least %(moderator_min_topics)s topics you become a moderator. With more than %(senior_min)s you become a senior. That way, what you bring in counts, not just having an account."
 msgstr "Door kwaliteit bij te dragen. Iedereen begint als lezer. Na je eerste kwaliteitsbijdrage ben je bijdrager. Met %(voter_min)s kwaliteitsbijdragen word je stemmer, en dan mag je stemmen. Met meer dan %(moderator_min)s kwaliteitsbijdragen in minstens %(moderator_min_topics)s onderwerpen word je moderator. Met meer dan %(senior_min)s word je senior. Zo telt wat je inbrengt en niet alleen dat je een account hebt."
 
+#. TRANSLATORS: faq, added to answer 3.5 (how to earn the right to vote) when
+#. events are on.
+#: app/faq.py:43
+msgid "At an event the organiser can give every participant the right to vote on the issues of that event."
+msgstr "Bij een event kan de organisator iedere deelnemer stemrecht geven voor de vraagstukken van dat event."
+
+#. TRANSLATORS: faq, added to answer 3.7 (double voting and fake accounts) when
+#. events are on; "Everyone may vote" is the setting of an event.
+#: app/faq.py:46
+msgid "At an event with Everyone may vote a new account can vote too; such an event is only visible to those who have the link."
+msgstr "Bij een event met Iedereen mag stemmen kan ook een nieuw account stemmen; zo'n event is alleen zichtbaar voor wie de link heeft."
+
+#: app/faq.py:48
+msgid "It cannot be prevented completely. A new account starts at zero and has to earn the right to vote first, with quality contributions. One account per person is a rule, and moderation steps in when there is abuse. This makes mass fake voting a lot of work for little gain."
+msgstr "Helemaal te voorkomen is het niet. Een nieuw account begint op nul en moet stemrecht eerst verdienen met kwaliteitsbijdragen. Eén account per persoon is een regel en moderatie grijpt in bij misbruik. Daardoor is massaal nepstemmen veel werk en levert het weinig op."
+
 #. TRANSLATORS: faq, thema 1
 #. TRANSLATORS: faq, vraag 1.1 en antwoord 1.1
-#: app/faq.py:44
+#: app/faq.py:57
 msgid "What is Global Union?"
 msgstr "Wat is Global Union?"
 
-#: app/faq.py:45
+#: app/faq.py:58
 msgid "Global Union is the idea of a partnership of functioning democracies worldwide. It is built on attraction instead of force, following the example of the European Union. It is open to countries that respect the rule of law, human rights, the fight against corruption, sustainability and the international legal order."
 msgstr "Global Union is het idee van een samenwerkingsverband van functionerende democratieën wereldwijd. Het is gebouwd op aantrekkingskracht in plaats van dwang, naar het voorbeeld van de Europese Unie. Het staat open voor landen die de rechtsstaat, mensenrechten, de aanpak van corruptie, duurzaamheid en de internationale rechtsorde respecteren."
 
 #. TRANSLATORS: faq, vraag 1.2 en antwoord 1.2
-#: app/faq.py:50
+#: app/faq.py:63
 msgid "What is the difference between Global Union and the Global Union Forum?"
 msgstr "Wat is het verschil tussen Global Union en het Global Union Forum?"
 
-#: app/faq.py:51
+#: app/faq.py:64
 msgid "Global Union is the idea and the movement. The Global Union Forum is the place where that idea is developed and discussed. Here you think along, bring in facts and vote. Experts and beginners do this side by side."
 msgstr "Global Union is het idee en de beweging. Het Global Union Forum is de plek waar dat idee wordt ontwikkeld en besproken. Hier denk je mee, breng je feiten in en stem je mee. Experts en beginners doen dat naast elkaar."
 
 #. TRANSLATORS: faq, vraag 1.3 en antwoord 1.3
-#: app/faq.py:55
+#: app/faq.py:68
 msgid "Who is behind the platform?"
 msgstr "Wie zit er achter het platform?"
 
-#: app/faq.py:56
+#: app/faq.py:69
 msgid "It is an independent initiative, set up by founder Gerhard Top. With enough momentum, this initiative will be placed in a foundation. The idea is to involve co-initiators first, and then a growing group of participants and experts, to develop it further together."
 msgstr "Het is een onafhankelijk initiatief, opgezet door oprichter Gerhard Top. Bij voldoende momentum wordt dit initiatief ondergebracht in een stichting. Het idee is om eerst mede-initiatiefnemers te betrekken en daarna een groeiende groep deelnemers en experts, om het samen verder uit te werken."
 
 #. TRANSLATORS: faq, vraag 1.4 en antwoord 1.4
-#: app/faq.py:60
+#: app/faq.py:73
 msgid "Is this linked to a political party or a government?"
 msgstr "Is dit verbonden aan een politieke partij of een overheid?"
 
-#: app/faq.py:61
+#: app/faq.py:74
 msgid "No. The forum is independent and not linked to a party, a government or a company. It is reformist and it is not tied to a political colour."
 msgstr "Nee. Het forum is onafhankelijk en niet verbonden aan een partij, een regering of een bedrijf. Het is reformistisch en het is niet gebonden aan een politieke kleur."
 
 #. TRANSLATORS: faq, vraag 1.5 en antwoord 1.5
-#: app/faq.py:64
+#: app/faq.py:77
 msgid "How can I take part or contribute?"
 msgstr "Hoe kan ik meedoen of bijdragen?"
 
-#: app/faq.py:65
+#: app/faq.py:78
 msgid "Create an account and read the ground rules. Then you can start: add facts, give your opinion or start an issue yourself. What this becomes is decided by the people who take part."
 msgstr "Maak een account aan en lees de spelregels. Daarna kun je beginnen: voeg feiten toe, geef je mening of start zelf een vraagstuk. Wat dit wordt, bepalen de mensen die meedoen."
 
 #. TRANSLATORS: faq, thema 2
-#: app/faq.py:69 app/templates/_footer.html:18 app/templates/_header.html:14
+#: app/faq.py:82 app/templates/_footer.html:18 app/templates/_header.html:14
 msgid "Manifesto"
 msgstr "Manifest"
 
 #. TRANSLATORS: faq, vraag 2.1 en antwoord 2.1
-#: app/faq.py:71
+#: app/faq.py:84
 msgid "What is in the manifesto?"
 msgstr "Wat staat er in het manifest?"
 
-#: app/faq.py:72
+#: app/faq.py:85
 msgid "The manifesto from March 2026 is a personal essay by the founder. In it he sets out the idea of a global union of functioning democracies: why it is needed, how it could work and why it is worth trying. See it as the start of the discussion."
 msgstr "Het manifest uit maart 2026 is een persoonlijk essay van de oprichter. Daarin zet hij het idee van een globale unie van functionerende democratieën uiteen: waarom het nodig is, hoe het zou kunnen werken en waarom het de moeite waard is om te proberen. Zie het als een begin van de discussie."
 
 #. TRANSLATORS: faq, vraag 2.2 en antwoord 2.2
-#: app/faq.py:76
+#: app/faq.py:89
 msgid "What does \"a union of functioning democracies\" mean?"
 msgstr "Wat betekent \"een unie van functionerende democratieën\"?"
 
-#: app/faq.py:77
+#: app/faq.py:90
 msgid "A partnership of countries that truly uphold democracy and the rule of law. Countries from all over the world can join. What counts is whether a country meets those values."
 msgstr "Een samenwerking van landen die de democratie en de rechtsstaat echt naleven. Landen uit de hele wereld kunnen meedoen. Wat telt is of een land aan die waarden voldoet."
 
 #. TRANSLATORS: faq, vraag 2.3 en antwoord 2.3
-#: app/faq.py:80
+#: app/faq.py:93
 msgid "Why the example of the European Union?"
 msgstr "Waarom het voorbeeld van de Europese Unie?"
 
-#: app/faq.py:81
+#: app/faq.py:94
 msgid "The EU shows that countries can work together voluntarily, based on shared rules. They attract each other instead of forcing each other. We want to apply that principle on a world scale."
 msgstr "De EU laat zien dat landen vrijwillig kunnen samenwerken op basis van gedeelde regels. Ze trekken elkaar aan in plaats van elkaar te dwingen. Dat principe willen we toepassen op wereldschaal."
 
 #. TRANSLATORS: faq, vraag 2.4 en antwoord 2.4
-#: app/faq.py:84
+#: app/faq.py:97
 msgid "Which countries could join, and on what basis?"
 msgstr "Welke landen zouden kunnen meedoen en op basis waarvan?"
 
-#: app/faq.py:85
+#: app/faq.py:98
 msgid "Countries that meet standards such as the rule of law, human rights, the fight against corruption and the international legal order. Membership is based on democratic performance. Not only wealthy Western countries, but also, and especially, model countries from Africa and South America."
 msgstr "Landen die voldoen aan maatstaven als de rechtsstaat, mensenrechten, de aanpak van corruptie en de internationale rechtsorde. Toetreding gaat op democratische prestatie. Niet alleen welvarende westerse landen, maar juist ook voorbeeldlanden uit Afrika en Zuid-Amerika."
 
 #. TRANSLATORS: faq, vraag 2.5 en antwoord 2.5
-#: app/faq.py:90
+#: app/faq.py:103
 msgid "Is this not too grand or too idealistic?"
 msgstr "Is dit niet te groots of te idealistisch?"
 
-#: app/faq.py:91
+#: app/faq.py:104
 msgid "It is a grand idea. Perhaps hard to achieve, but worth it. You start small and build it up together, step by step."
 msgstr "Het is een groots idee. Misschien moeilijk haalbaar, maar wel de moeite waard. Je begint klein en bouwt het samen op, stap voor stap."
 
 #. TRANSLATORS: faq, thema 3
-#: app/faq.py:95
+#: app/faq.py:108
 msgid "How it works"
 msgstr "Hoe het werkt"
 
 #. TRANSLATORS: faq, vraag 3.1 en antwoord 3.1
-#: app/faq.py:97
+#: app/faq.py:110
 msgid "How does an issue go, from discussion to vote?"
 msgstr "Hoe verloopt een vraagstuk, van discussie tot stemming?"
 
-#: app/faq.py:98
+#: app/faq.py:111
 msgid "Someone starts an issue with a question or problem. In the first phase, facts and discussion, you bring in facts, research and media and discuss it together. Proposals come out of that. After that, the proposer can revise a proposal. Then there is a vote. If the initiator chose so, a summary proposal follows, with a new vote. Finally there is the follow-up phase: what happens with it, such as lobbying, media or implementation."
 msgstr "Iemand start een vraagstuk met een vraag of probleem. In de eerste fase, feiten en discussie, breng je feiten, onderzoek en media in en bespreek je het samen. Daar komen voorstellen uit voort. Daarna kan de inbrenger een voorstel bijstellen. Vervolgens wordt er gestemd. Als de initiatiefnemer dat koos, volgt een samenvattend voorstel met een nieuwe stemming. Tot slot volgt de vervolgfase: wat gebeurt ermee, zoals lobby, media of uitvoering."
 
 #. TRANSLATORS: faq, vraag 3.2 en antwoord 3.2
-#: app/faq.py:104
+#: app/faq.py:117
 msgid "What are facts, research and media, and how do they count?"
 msgstr "Wat zijn feiten, onderzoek en media en hoe tellen ze mee?"
 
-#: app/faq.py:105
+#: app/faq.py:118
 msgid "Facts, research and media are well-founded contributions with a source. Media are news items, podcasts or videos. Each fact has a direction: argues for, argues against or neutral. A fact gets a green quality mark when the AI finds a source, a findable link, where in the source it is, that it is on the topic and that it is new. The mark does not judge how reliable the source is."
 msgstr "Feiten, onderzoek en media zijn onderbouwde bijdragen met een bron. Media zijn nieuwsberichten, podcasts of video's. Elk feit heeft een richting: pleit voor, pleit tegen of neutraal. Een feit krijgt een groen kwaliteitsmerk als de AI een bron vindt, een vindbare link, waar in de bron het staat, dat het over het onderwerp gaat en dat het nieuw is. Het merk zegt niets over hoe betrouwbaar de bron is."
 
 #. TRANSLATORS: faq, vraag 3.3 en antwoord 3.3
-#: app/faq.py:111
+#: app/faq.py:124
 msgid "How do proposals come about, and how is the vote held?"
 msgstr "Hoe ontstaan voorstellen en hoe wordt erover gestemd?"
 
-#: app/faq.py:112
+#: app/faq.py:125
 msgid "Proposals come out of the discussion. A proposal goes on the voting list as soon as enough people support it. Each proposal is voted on with for, against or abstain. Based on all proposals and the discussion, the initiator can adjust the issue and make a summary proposal. The participants can then vote on that again."
 msgstr "Voorstellen komen voort uit de discussie. Een voorstel komt op de stemlijst zodra genoeg mensen het steunen. Er wordt per voorstel gestemd met voor, tegen of onthouding. Op basis van alle voorstellen en de discussie kan de initiatiefnemer het vraagstuk aanpassen en een samenvattend voorstel doen. Daarover kunnen de deelnemers dan opnieuw stemmen."
 
 #. TRANSLATORS: faq, vraag 3.4 en antwoord 3.4
-#: app/faq.py:117
+#: app/faq.py:130
 msgid "What is the quality mark?"
 msgstr "Wat is het kwaliteitskeurmerk?"
 
-#: app/faq.py:118
+#: app/faq.py:131
 msgid "A medal that is given automatically to a contribution that moves the discussion forward. That can be a new argument or support with a source. No quality mark is not a punishment. Style and language skills do not count."
 msgstr "Een medaille die automatisch wordt toegekend aan een bijdrage die de discussie verder brengt. Dat kan met een nieuw argument of met een onderbouwing met een bron. Geen keurmerk is geen straf. Stijl en taalvaardigheid tellen niet mee."
 
 #. TRANSLATORS: faq, vraag 3.5 en antwoord 3.5
-#: app/faq.py:122
+#: app/faq.py:135
 msgid "How do I earn the right to vote?"
 msgstr "Hoe verdien ik stemrecht?"
 
 #. TRANSLATORS: faq, vraag 3.6 en antwoord 3.6
-#: app/faq.py:125
+#: app/faq.py:138
 msgid "Which ground rules apply, and what happens when they are broken?"
 msgstr "Welke spelregels gelden er en wat gebeurt er bij een overtreding?"
 
-#: app/faq.py:126
+#: app/faq.py:139
 msgid "There are conduct rules: stay respectful, stay on topic and one account per person. These are enforced. There are also quality guidelines, such as well-founded and concrete. These are rewarded and not enforced. When a rule is clearly broken, a contribution moves to a public background page with an explanation. You can object to that there. Nothing is removed for good. Only pure spam and gross abuse are hidden completely."
 msgstr "Er zijn gedragsregels: respectvol blijven, bij het onderwerp blijven en één account per persoon. Die worden gehandhaafd. Daarnaast zijn er kwaliteitsrichtlijnen zoals onderbouwd en concreet. Die worden beloond en niet afgedwongen. Bij een duidelijke overtreding gaat een bijdrage naar een openbare achtergrondpagina met uitleg. Je kunt daar bezwaar tegen maken. Niets wordt definitief verwijderd. Alleen pure spam en grof misbruik worden volledig verborgen."
 
 #. TRANSLATORS: faq, vraag 3.7 en antwoord 3.7
-#: app/faq.py:132
+#: app/faq.py:145
 msgid "How do you prevent double voting or fake accounts?"
 msgstr "Hoe voorkomen jullie dubbel stemmen of nepaccounts?"
 
-#: app/faq.py:133
-msgid "It cannot be prevented completely. A new account starts at zero and has to earn the right to vote first, with quality contributions. One account per person is a rule, and moderation steps in when there is abuse. This makes mass fake voting a lot of work for little gain."
-msgstr "Helemaal te voorkomen is het niet. Een nieuw account begint op nul en moet stemrecht eerst verdienen met kwaliteitsbijdragen. Eén account per persoon is een regel en moderatie grijpt in bij misbruik. Daardoor is massaal nepstemmen veel werk en levert het weinig op."
-
 #. TRANSLATORS: faq, thema 4
-#: app/faq.py:138
+#: app/faq.py:149
 msgid "Account and privacy"
 msgstr "Account en privacy"
 
 #. TRANSLATORS: faq, vraag 4.1 en antwoord 4.1
-#: app/faq.py:140
+#: app/faq.py:151
 msgid "How do I create an account?"
 msgstr "Hoe maak ik een account aan?"
 
-#: app/faq.py:141
+#: app/faq.py:152
 msgid "Choose a name and enter an email address. That email address is only for recovery and is never shown. Accept the ground rules and you can start. You do not have to pay and you do not need to show any ID."
 msgstr "Kies een naam en vul een e-mailadres in. Dat e-mailadres is alleen voor herstel en wordt nooit getoond. Accepteer de spelregels en je kunt beginnen. Je hoeft niet te betalen en geen identiteitsbewijs te geven."
 
 #. TRANSLATORS: faq, vraag 4.2 en antwoord 4.2
-#: app/faq.py:145
+#: app/faq.py:156
 msgid "Why can I take part under a username?"
 msgstr "Waarom kan ik meedoen onder een gebruikersnaam?"
 
-#: app/faq.py:146
+#: app/faq.py:157
 msgid "We want you to be able to join the discussion freely, without having to answer to anyone here. A username makes that possible. In many countries, political participation can bring risks. An identity barrier would shut out exactly the people we want to reach."
 msgstr "We willen dat je vrijuit mee kunt doen aan de discussie, zonder dat je hier aan wie dan ook verantwoording moet afleggen. Een gebruikersnaam maakt dat mogelijk. Politieke deelname kan in veel landen risico's meebrengen. Een identiteitsdrempel sluit juist mensen uit die we willen bereiken."
 
 #. TRANSLATORS: faq, vraag 4.3 en antwoord 4.3
-#: app/faq.py:150
+#: app/faq.py:161
 msgid "Which data do you keep, and what for?"
 msgstr "Welke gegevens bewaren jullie en waarvoor?"
 
 #. TRANSLATORS: faq, vraag 4.4 en antwoord 4.4
-#: app/faq.py:154
+#: app/faq.py:165
 msgid "Who can see what I write?"
 msgstr "Wie kan zien wat ik schrijf?"
 
-#: app/faq.py:155
+#: app/faq.py:166
 msgid "Your contributions are public and visible under your username. Anyone can read them. Your email address and any private details stay private."
 msgstr "Je bijdragen zijn openbaar en zichtbaar onder je gebruikersnaam. Iedereen kan ze lezen. Je e-mailadres en eventuele privégegevens blijven privé."
 
 #. TRANSLATORS: faq, vraag 4.5 en antwoord 4.5
-#: app/faq.py:158
+#: app/faq.py:169
 msgid "What is the minimum age?"
 msgstr "Wat is de minimumleeftijd?"
 
-#: app/faq.py:159
+#: app/faq.py:170
 msgid "Sixteen."
 msgstr "Zestien jaar."
 
 #. TRANSLATORS: faq, vraag 4.6 en antwoord 4.6
-#: app/faq.py:161
+#: app/faq.py:172
 msgid "How do I delete my account or my data?"
 msgstr "Hoe verwijder ik mijn account of mijn gegevens?"
 
-#: app/faq.py:162
+#: app/faq.py:173
 msgid "You can do that in your account settings or on request. Your personal data, such as your email address and profile, is then erased."
 msgstr "Dat kan via je accountinstellingen of op verzoek. Je persoonlijke gegevens zoals je e-mailadres en profiel worden dan gewist."
 
 #. TRANSLATORS: faq, vraag 4.7 en antwoord 4.7
-#: app/faq.py:165
+#: app/faq.py:176
 msgid "What happens to my contributions after I delete my account?"
 msgstr "Wat gebeurt er met mijn inbreng nadat ik mijn account heb verwijderd?"
 
-#: app/faq.py:166
+#: app/faq.py:177
 msgid "Your contributions stay, but are no longer linked to your name. That way, the discussions and votes others took part in keep their coherence. Only the link to you disappears."
 msgstr "Je bijdragen blijven staan, maar losgekoppeld van je naam. Zo houden de discussies en stemmingen waaraan anderen hebben meegedaan hun samenhang. Alleen de koppeling met jou verdwijnt."
 
@@ -1292,7 +1304,7 @@ msgstr "n.v.t."
 msgid "separate status"
 msgstr "aparte status"
 
-#: app/routes/main.py:213
+#: app/routes/main.py:214
 msgid "Thank you! You can now join the conversation."
 msgstr "Bedankt! Je kunt nu meedoen aan het gesprek."
 

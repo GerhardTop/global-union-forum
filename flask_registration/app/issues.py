@@ -422,16 +422,19 @@ def remaining(issue, now=None):
     return max(1, int(left.total_seconds() // 60)), 'minutes'
 
 
-def voting_right(user):
+def voting_right(user, issue=None):
     """Jouw stemrecht voor de rechterkolom: de bestaande verdiende status en
-    de voortgang naar stemrecht (aantal keurmerken tegen de drempel)."""
+    de voortgang naar stemrecht (aantal keurmerken tegen de drempel). Events
+    step 1f: with the right to vote through the event, can_vote and 100 for
+    this issue; the status itself stays the earned one."""
     if not getattr(user, 'is_authenticated', False):
         return None
-    from app import status
+    from app import events, status
     count, _topics = status.quality_counts(user.id)
     needed = status.get_thresholds()['voter_min']
-    return {'status': user.effective_status, 'can_vote': user.can_vote(), 'count': count, 'needed': needed,
-            'pct': 100 if user.can_vote() else min(100, round(100 * count / needed)) if needed else 100}
+    right = events.has_vote_right(issue, user) if issue is not None else user.can_vote()
+    return {'status': user.effective_status, 'can_vote': right, 'count': count, 'needed': needed,
+            'pct': 100 if right else min(100, round(100 * count / needed)) if needed else 100}
 
 
 # ── Het overzicht achter "Denk mee" (polijstronde P1) ────────────────────

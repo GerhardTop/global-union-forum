@@ -103,6 +103,10 @@ def set_phase(issue, phase, start):
     issue.phase_deadline = _deadline(issue, phase, start)
     if phase == 'stemmen' and issue.phase_deadline is not None:
         issue.voting_deadline = issue.phase_deadline.date()
+    if phase in ('stemmen', 'samenvatten'):
+        # Events step 1f (K7): "Everyone may vote" is fixed from the first vote on.
+        from app import events
+        events.lock_votes(issue, start)
     if phase == 'stemmen':
         # Background figures: everyone votes on the same figures.
         from app import background_figures

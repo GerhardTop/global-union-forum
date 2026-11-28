@@ -225,7 +225,7 @@ def show(issue_id):
                            vote_tallies=_vote_tallies([p for p, _c in proposal_rows] + ([final] if final else [])),
                            big_facts=_enlarged_facts(visible),
                            top_facts=top, facts_shown=FACTS_SHOWN, fact_total=len(visible),
-                           remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user),
+                           remaining=issues.remaining(issue), voting_right=issues.voting_right(current_user, issue),
                            proposal_rows=proposal_rows, proposals_shown=COCKPIT_PROPOSALS,
                            reaction_counts=reaction_counts, new_discussion=new_discussion, big=big,
                            proposal_total=ip.regular_query(issue).count(),

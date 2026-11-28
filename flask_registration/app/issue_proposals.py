@@ -383,7 +383,11 @@ def voting_over(proposal, now=None):
 
 
 def can_vote(proposal, user, count=None):
-    return getattr(user, 'is_authenticated', False) and user.can_vote() and voting_open(proposal, count)
+    """Events step 1f: the right to vote comes from events.has_vote_right
+    (with EVENTS off exactly user.can_vote())."""
+    from app import events
+    return (getattr(user, 'is_authenticated', False) and events.has_vote_right(proposal.issue, user)
+            and voting_open(proposal, count))
 
 
 def cast_vote(proposal, user, choice):

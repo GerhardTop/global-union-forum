@@ -37,6 +37,19 @@ _VOTING_RIGHT = lazy_gettext('By contributing quality. Everyone starts as a read
                              '%(senior_min)s you become a senior. That way, what you bring in counts, not just having '
                              'an account.')
 
+# Events step 1f (K8): one sentence each, added to two answers with EVENTS
+# on, so the existing translations of those answers stay as they are.
+# TRANSLATORS: faq, added to answer 3.5 (how to earn the right to vote) when events are on.
+_EVENT_VOTE_RIGHT = lazy_gettext('At an event the organiser can give every participant the right to vote on the '
+                                 'issues of that event.')
+# TRANSLATORS: faq, added to answer 3.7 (double voting and fake accounts) when events are on; "Everyone may vote" is the setting of an event.
+_EVENT_DOUBLE_VOTING = lazy_gettext('At an event with Everyone may vote a new account can vote too; such an event is '
+                                    'only visible to those who have the link.')
+_DOUBLE_VOTING = lazy_gettext('It cannot be prevented completely. A new account starts at zero and has to earn the '
+                              'right to vote first, with quality contributions. One account per person is a rule, and '
+                              'moderation steps in when there is abuse. This makes mass fake voting a lot of work for '
+                              'little gain.')
+
 FAQ = [
     # TRANSLATORS: faq, thema 1
     ('Global Union Forum', [
@@ -130,9 +143,7 @@ FAQ = [
                        'Only pure spam and gross abuse are hidden completely.')),
         # TRANSLATORS: faq, vraag 3.7 en antwoord 3.7
         (lazy_gettext('How do you prevent double voting or fake accounts?'),
-         lazy_gettext('It cannot be prevented completely. A new account starts at zero and has to earn the right to '
-                       'vote first, with quality contributions. One account per person is a rule, and moderation steps '
-                       'in when there is abuse. This makes mass fake voting a lot of work for little gain.')),
+         _DOUBLE_VOTING),
     ]),
     # TRANSLATORS: faq, thema 4
     (lazy_gettext('Account and privacy'), [
@@ -169,11 +180,12 @@ FAQ = [
 ]
 
 
-def themes(participants=False):
+def themes(participants=False, events=False):
     """The FAQ in the current language: [(theme, [(question, answer)])]. The
     answers with a link are Markup; everything else is plain text. The
     question about the voluntary questions only with participants (the switch
-    PARTICIPANT_PROFILE)."""
+    PARTICIPANT_PROFILE). With events (the switch EVENTS) one sentence more
+    in the answers about the right to vote and about double voting."""
     out = []
     for theme, questions in FAQ:
         rows = []
@@ -185,9 +197,13 @@ def themes(participants=False):
             elif answer is _VOTING_RIGHT:
                 from app import status
                 answer = str(answer) % status.get_thresholds()
+                if events:
+                    answer += ' ' + str(_EVENT_VOTE_RIGHT)
             elif answer is _PARTICIPANTS:
                 from flask import url_for
                 answer = Markup(str(answer) % {'url': url_for('main.privacy', _anchor='wie-stemde-mee')})
+            elif answer is _DOUBLE_VOTING and events:
+                answer = str(answer) + ' ' + str(_EVENT_DOUBLE_VOTING)
             else:
                 answer = str(answer)
             rows.append((str(question), answer))

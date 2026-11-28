@@ -391,3 +391,13 @@ def test_no_dutch_on_the_event_pages(app, db, make_user, monkeypatch, lang):
         if WORD.search(text):
             found.setdefault('/e/AAAAAAAA', []).append(text)
     assert found == {}, found
+
+
+@pytest.mark.parametrize('lang', ['en', 'de', 'es', 'fr'])
+def test_no_dutch_on_the_faq_with_events(app, db, monkeypatch, lang):
+    """Events step 1f: the FAQ with the two sentences about events (EVENTS on)."""
+    monkeypatch.setitem(app.config, 'EVENTS', True)
+    content = _content(db)
+    page = _req(_client(app, None, lang), 'GET', '/faq').get_data(as_text=True)
+    found = [t for t in _interface_texts(page, content) if WORD.search(t)]
+    assert found == []

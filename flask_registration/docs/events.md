@@ -156,7 +156,7 @@ Op mobiel staan in de balk "Terug naar het event" en "Bekijk de vraagstukken bui
 1b. Datamodel (events, event_days, issues.event_id en event_position), migratie van bestaande eventvraagstukken (K12), is_open_now via het event, naam en toelichting via content_i18n en content_jobs. Achter EVENTS; niets zichtbaars met de schakelaar uit (page_snapshot.py) (klaar, 28 november 2026, 0f40730).
 1c. Event maken en beheren: het formulier "Nieuw event" met de vorm, de eventinstellingen (gegevens, volgorde, Iedereen mag stemmen, Deelnemers mogen vraagstukken toevoegen), het vraagstukformulier met "Bij welk event?" (K3, K4, K5, K13) (klaar, 28 november 2026, c6a86d3).
 1d. De eventpagina op /e/<code> met de strook voor de organisator (link en QR-code met kopieer- en downloadknop, de eventcode, Nieuwe link maken), het veld "Heb je een eventcode?", de toegang tot de vraagstukken (K2b), zichtbaarheid alleen voor de deelnemers, de kaart "Delen", de vraagstukken van gedeelde events in "Denk mee", het filter Van events, het blok "Jouw events" (meedoen en organiseren), het label Voor iedereen (K2, K10), met de querytest (klaar, 28 november 2026, 3c708bb).
-1e. De balk, het kruimelpad (weg op de eventpagina en de cockpit van een eventvraagstuk) en de sessie (K9).
+1e. De balk, het kruimelpad (weg op de eventpagina en de cockpit van een eventvraagstuk) en de sessie (K9) (klaar, 28 november 2026, 93efb66).
 1f. Iedereen mag stemmen: has_vote_right, vastleggen bij de eerste stemfase, FAQ (K6, K7, K8).
 Daarna: EVENTS=1 op Render, en een opruimstap voor de oude eventkolommen op het vraagstuk.
 

@@ -617,3 +617,31 @@ def inside(issue):
     from Have your say; the bar takes its place."""
     return (enabled() and issue is not None and issue.event_id is not None
             and issue.event is not None and not is_shared(issue.event))
+
+
+# ── Step 1f: Everyone may vote (K6, K7) ──────────────────────────────────
+
+def has_vote_right(issue, user):
+    """The one rule for the right to vote on an issue. Not logged in,
+    suspended or a former account: no. The earned or granted right
+    (user.can_vote()): yes. With EVENTS on and an issue of an event with
+    "Everyone may vote" on: whoever may contribute. Otherwise no. With EVENTS
+    off exactly user.can_vote()."""
+    if not _active(user) or getattr(user, 'is_suspended', False):
+        return False
+    if user.can_vote():
+        return True
+    if not enabled() or issue is None or issue.event_id is None:
+        return False
+    event = issue.event
+    return event is not None and bool(event.everyone_votes) and user.can_contribute()
+
+
+def lock_votes(issue, start):
+    """K7: the first time an issue of the event reaches the vote, "Everyone
+    may vote" is fixed for the whole event. Not again on a reopen."""
+    if not enabled() or issue.event_id is None:
+        return
+    event = issue.event
+    if event is not None and event.everyone_votes_locked_at is None:
+        event.everyone_votes_locked_at = start
