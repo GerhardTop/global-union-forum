@@ -29,6 +29,9 @@ from app.models import Post, QualityAward, QualityReport
 
 # Vertaling: zelfde model en opzet als de vertaalknop (zie forum_translate).
 TRANSLATION_MODEL = 'claude-haiku-4-5-20251001'
+# Short fields (titles, labels, names, units) stand out most and cost little:
+# a stronger model for them (kind 'short' in translate_text).
+SHORT_TRANSLATION_MODEL = 'claude-sonnet-5-5'
 # Bewust Haiku 4.5 voor het oordeel (testfase).
 JUDGE_MODEL = 'claude-haiku-4-5'
 
@@ -243,7 +246,7 @@ def translate_text(source, target_lang, client=None, kind='text'):
         raise RuntimeError('translation unavailable')
     kind = kind if kind in TRANSLATE_KINDS else 'text'
     message = client.messages.create(
-        model=TRANSLATION_MODEL,
+        model=SHORT_TRANSLATION_MODEL if kind == 'short' else TRANSLATION_MODEL,
         max_tokens=1024 if kind == 'text' else 200,
         system=_TRANSLATE_SYSTEM[kind].format(language=language),
         messages=[{'role': 'user', 'content': f'<source>\n{source}\n</source>'}],

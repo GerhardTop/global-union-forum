@@ -37,6 +37,7 @@ def register_cli(app):
     app.cli.add_command(background_figures_example)
     app.cli.add_command(eurostat_catalog_refresh)
     app.cli.add_command(check_translations)
+    app.cli.add_command(redo_short_translations)
 
 
 @click.command('seed-demo-issues')
@@ -415,3 +416,26 @@ def check_translations(verwijderen):
     if verwijderen:
         db.session.commit()
     click.echo(f'{len(bad)} bad translation(s) found' + (f', {removed} removed.' if verwijderen else '.'))
+
+
+@click.command('vertalingen-kort-opnieuw')
+@click.option('--uitvoeren', is_flag=True, help='Translate them again with the short model (otherwise only count).')
+def redo_short_translations(uitvoeren):
+    """The machine translations of short fields (titles, labels, names,
+    units) made again with quality.SHORT_TRANSLATION_MODEL. Without
+    --uitvoeren it only counts them per language. With --uitvoeren the old
+    text is replaced only when the new one passes the checks of the
+    translation route; otherwise it stays. Handwritten translations are never
+    touched. Commits per fifty."""
+    from app import content_i18n, quality
+    result = content_i18n.redo_short(execute=uitvoeren, echo=click.echo)
+    total = sum(result['counts'].values())
+    click.echo(f'Machine translations of short fields: {total}')
+    for lang, n in sorted(result['counts'].items()):
+        click.echo(f'  {lang}: {n}')
+    if not uitvoeren:
+        click.echo(f'Nothing changed. With --uitvoeren they are translated again with {quality.SHORT_TRANSLATION_MODEL}.')
+        return
+    click.echo(f"Replaced: {result['replaced']}, the same: {result['same']}, failed (old text kept): {result['failed']}")
+    for lang, old, new in result['examples']:
+        click.echo(f'  {lang}: {old!r} -> {new!r}')

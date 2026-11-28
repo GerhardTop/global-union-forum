@@ -325,6 +325,87 @@ def kind_for(kind, field):
     return 'short' if (kind, field) in SHORT_FIELDS or field.startswith(LABEL_PREFIX) else 'text'
 
 
+def _originals(kind, field):
+    """{object_id: original text} of one field of one table (a label field:
+    from the JSON column labels), or None when the table or field is gone."""
+    from sqlalchemy import select
+    target = db.metadata.tables.get(kind)
+    if field.startswith(LABEL_PREFIX) and target is not None and 'labels' in target.c:
+        name = field[len(LABEL_PREFIX):]
+        originals = {}
+        for oid, raw in db.session.execute(select(target.c.id, target.c.labels)).all():
+            try:
+                value = json.loads(raw) if raw else {}
+            except ValueError:
+                value = {}
+            if isinstance(value, dict) and name in value:
+                originals[oid] = value[name]
+        return originals
+    if target is None or field not in target.c or 'id' not in target.c:
+        return None
+    return dict(db.session.execute(select(target.c.id, target.c[field])).all())
+
+
+def short_machine_rows():
+    """[(row, original)]: the machine translations (is_machine) of short
+    fields whose object still exists, oldest first. Handwritten ones never."""
+    from sqlalchemy import select
+    table = ContentTranslation.__table__
+    out = []
+    pairs = db.session.execute(select(table.c.object_type, table.c.field)
+                               .where(table.c.is_machine.is_(True)).distinct()).all()
+    for kind, field in sorted(pairs):
+        if kind_for(kind, field) != 'short':
+            continue
+        originals = _originals(kind, field)
+        if not originals:
+            continue
+        rows = ContentTranslation.query.filter_by(object_type=kind, field=field, is_machine=True) \
+            .order_by(ContentTranslation.id)
+        out += [(row, originals[row.object_id]) for row in rows
+                if (originals.get(row.object_id) or '').strip()]
+    return out
+
+
+REDO_BATCH = 50
+
+
+def redo_short(execute=False, client=None, echo=print):
+    """flask vertalingen-kort-opnieuw: count the machine translations of
+    short fields per language, and with execute translate them again with
+    the short model. The old text is replaced only when the new one passes
+    the checks of the translation route; otherwise it stays (one line in the
+    output). Commits per REDO_BATCH. Returns {'counts', 'replaced', 'same',
+    'failed', 'examples'}."""
+    from app import quality
+    rows = short_machine_rows()
+    counts = {}
+    for row, _source in rows:
+        counts[row.lang] = counts.get(row.lang, 0) + 1
+    out = {'counts': counts, 'replaced': 0, 'same': 0, 'failed': 0, 'examples': []}
+    if not execute:
+        return out
+    for n, (row, source) in enumerate(rows, start=1):
+        try:
+            new = quality.translate_text(source, row.lang, client=client, kind='short')
+        except Exception as exc:   # a refused answer (TranslationRejected) or an API error: keep the old text
+            out['failed'] += 1
+            echo(f'kept {row.object_type} {row.object_id} {row.field} {row.lang}: {exc}')
+        else:
+            if new == row.text:
+                out['same'] += 1
+            else:
+                if len(out['examples']) < 8:
+                    out['examples'].append((row.lang, row.text, new))
+                row.text, row.source_hash = new, source_hash(source)
+                row.created_at = datetime.utcnow()
+                out['replaced'] += 1
+        if n % REDO_BATCH == 0:
+            db.session.commit()
+    db.session.commit()
+    return out
+
+
 def bad_translations():
     """[(row, problem)]: stored translations that fail the checks of the
     translation route (quality.translation_problem) against their original.
@@ -335,21 +416,9 @@ def bad_translations():
     out = []
     pairs = db.session.execute(select(table.c.object_type, table.c.field).distinct()).all()
     for kind, field in sorted(pairs):
-        target = db.metadata.tables.get(kind)
-        if field.startswith(LABEL_PREFIX) and target is not None and 'labels' in target.c:
-            name = field[len(LABEL_PREFIX):]
-            originals = {}
-            for oid, raw in db.session.execute(select(target.c.id, target.c.labels)).all():
-                try:
-                    value = json.loads(raw) if raw else {}
-                except ValueError:
-                    value = {}
-                if isinstance(value, dict) and name in value:
-                    originals[oid] = value[name]
-        elif target is None or field not in target.c or 'id' not in target.c:
+        originals = _originals(kind, field)
+        if originals is None:
             continue
-        else:
-            originals = dict(db.session.execute(select(target.c.id, target.c[field])).all())
         rows = ContentTranslation.query.filter_by(object_type=kind, field=field).order_by(ContentTranslation.id)
         for row in rows:
             if row.object_id not in originals:
