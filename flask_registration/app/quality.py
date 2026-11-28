@@ -16,6 +16,7 @@ de prompt sluit stijl, spelling en vlotheid expliciet uit. De taal van de
 bijdrage wordt bewaard (QualityAward.post_lang) zodat fase C2 het
 toekenningspercentage per taal kan tonen.
 """
+import logging
 import json
 import re
 import threading
@@ -27,11 +28,24 @@ from flask_babel import lazy_gettext
 from app import db, i18n
 from app.models import Post, QualityAward, QualityReport
 
+log = logging.getLogger(__name__)
+
 # Vertaling: zelfde model en opzet als de vertaalknop (zie forum_translate).
 TRANSLATION_MODEL = 'claude-haiku-4-5-20251001'
 # Short fields (titles, labels, names, units) stand out most and cost little:
 # a stronger model for them (kind 'short' in translate_text).
 SHORT_TRANSLATION_MODEL = 'claude-sonnet-5-5'
+# No thinking for translations (kort en lang). claude-sonnet-5-5 thinks by
+# default (adaptive) and the thinking tokens count within max_tokens: on a
+# harder title the 200 tokens of a short field went to thinking, with
+# stop_reason max_tokens and no text block, or a cut-off text. On this model
+# {'type': 'disabled'} is a 400; {'type': 'between_tools'} turns thinking off
+# (only at effort high or below, the default). Haiku 4.5 (TRANSLATION_MODEL)
+# does not think unless asked, so it gets nothing. Per model, so a model swap
+# looks here first.
+TRANSLATION_THINKING = {
+    'claude-sonnet-5-5': {'type': 'between_tools'},
+}
 # Bewust Haiku 4.5 voor het oordeel (testfase).
 JUDGE_MODEL = 'claude-haiku-4-5'
 
@@ -254,15 +268,24 @@ def translate_text(source, target_lang, client=None, kind='text'):
     if client is None:
         raise RuntimeError('translation unavailable')
     kind = kind if kind in TRANSLATE_KINDS else 'text'
+    model = SHORT_TRANSLATION_MODEL if kind == 'short' else TRANSLATION_MODEL
+    extra = {'thinking': TRANSLATION_THINKING[model]} if model in TRANSLATION_THINKING else {}
     message = client.messages.create(
-        model=SHORT_TRANSLATION_MODEL if kind == 'short' else TRANSLATION_MODEL,
+        model=model,
         max_tokens=1024 if kind == 'text' else 200,
         system=_TRANSLATE_SYSTEM[kind].format(language=language),
         messages=[{'role': 'user', 'content': f'<source>\n{source}\n</source>'}],
+        **extra,
     )
     answer = response_text(message).strip()
-    problem = translation_problem(source, answer, kind)
+    stop = getattr(message, 'stop_reason', None)
+    # Cut off by max_tokens: never a whole translation, even when some text came.
+    problem = 'cut off (max_tokens)' if stop == 'max_tokens' else translation_problem(source, answer, kind)
     if problem:
+        if stop == 'max_tokens' or not answer:
+            # Why it failed, without the content: the stop reason and the kinds of blocks.
+            log.warning('Translation refused (%s): model %s, stop_reason %s, blocks %s', problem, model, stop,
+                        [getattr(block, 'type', '?') for block in (getattr(message, 'content', None) or [])])
         raise TranslationRejected(f'{problem}: {answer[:80]!r}')
     return answer
 
