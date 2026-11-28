@@ -117,7 +117,7 @@ def test_making_a_valid_event(app, make_user, on, scheduled):
                  event_day=['2027-01-15', '2027-01-16'], event_from=['19:00', '10:00'], event_to=['22:00', '12:00'])
     resp = _req(_client(app, user), 'POST', '/events/nieuw', data=data)
     event = Event.query.filter_by(name=data['name']).one()
-    assert resp.status_code == 303 and resp.location.endswith(f'/e/{event.code}/instellingen')
+    assert resp.status_code == 303 and resp.location.endswith(f'/e/{event.code}')   # step 1d: the event page
     assert len(event.code) == 8 and set(event.code) <= set(events.CODE_ALPHABET)
     assert (event.lang, event.created_by_id, event.format) == ('nl', user.id, 'hybrid')
     assert (event.location, event.online_url, event.note) == ('Forum, Groningen', 'https://meet.example.org/abc', 'Een avond.')
@@ -379,6 +379,8 @@ def test_the_label_and_the_cockpit_read_the_event(app, make_user, on):
     user = make_user()
     event = _event(user, location='Buurthuis De Kroon')
     issue = _issue_in(event, user)
+    events.share(event, user)   # step 1d: only a shared event is in the overview
+    _db.session.commit()
     overview = _page(_client(app, user), '/gesprekken')
     row = overview.split(issue.title)[0].rsplit('<li', 1)[1]
     assert event.name in row and 'Buurthuis De Kroon' in row and '15 jan 2027 19:00' in row

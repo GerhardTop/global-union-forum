@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 16:59+0100\n"
+"POT-Creation-Date: 2026-11-28 17:28+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app/__init__.py:894
+#: app/__init__.py:896
 msgid "Too many attempts. Please try again in a minute."
 msgstr "Too many attempts. Please try again in a minute."
 
-#: app/__init__.py:924
+#: app/__init__.py:926
 msgid "Your session has expired. Please log in again."
 msgstr "Your session has expired. Please log in again."
 
@@ -53,6 +53,25 @@ msgstr "Your weekly summary"
 #: app/digest.py:222 app/templates/email/digest.html:3
 msgid "Your daily summary"
 msgstr "Your daily summary"
+
+#. TRANSLATORS: shown instead of an issue of an event that is not shared, to
+#. someone without its link.
+#: app/events.py:344
+msgid "This issue belongs to an event. Open the link of the event to take part."
+msgstr "This issue belongs to an event. Open the link of the event to take part."
+
+#. TRANSLATORS: where an online event takes place, in a short label ("Event · 9
+#. Jan 2027 14:00 · online").
+#: app/events.py:471
+msgid "online"
+msgstr "online"
+
+#. TRANSLATORS: where a hybrid event takes place: the location, then "and
+#. online" ("Forum, Groningen, and online").
+#: app/events.py:474
+#, python-format
+msgid "%(place)s, and online"
+msgstr "%(place)s, and online"
 
 #. TRANSLATORS: faq, antwoord met een link naar de privacy-pagina
 #: app/faq.py:18
@@ -1080,71 +1099,97 @@ msgid "Your account has been deleted."
 msgstr "Your account has been deleted."
 
 #. TRANSLATORS: message after making a new event.
-#: app/routes/events.py:83
+#: app/routes/events.py:89
 msgid "Event created."
 msgstr "Event created."
 
 #. TRANSLATORS: message after saving the settings of an event.
-#: app/routes/events.py:113
+#: app/routes/events.py:118
 msgid "Event saved."
 msgstr "Event saved."
+
+#. TRANSLATORS: shown for an event link or code that does not exist (any more).
+#: app/routes/events.py:144
+msgid "This link no longer works. Ask the organiser for the new link."
+msgstr "This link no longer works. Ask the organiser for the new link."
+
+#. TRANSLATORS: after typing an event code that does not exist.
+#: app/routes/events.py:192
+msgid "We do not know this event code. Check the code or ask the organiser."
+msgstr "We do not know this event code. Check the code or ask the organiser."
+
+#. TRANSLATORS: after "Make a new link": the old link and QR code no longer
+#. work.
+#: app/routes/events.py:225
+msgid "There is a new link. The old link and QR code no longer work."
+msgstr "There is a new link. The old link and QR code no longer work."
+
+#. TRANSLATORS: after sharing an event with all participants of Global Union.
+#: app/routes/events.py:245
+msgid "The event is shared with all participants of Global Union."
+msgstr "The event is shared with all participants of Global Union."
+
+#. TRANSLATORS: after undoing the sharing of an event.
+#: app/routes/events.py:251
+msgid "The event is only visible to its participants again."
+msgstr "The event is only visible to its participants again."
 
 #: app/routes/forum.py:72
 #, python-format
 msgid "You are suspended until %(until)s. You can read, but not contribute or vote."
 msgstr "You are suspended until %(until)s. You can read, but not contribute or vote."
 
-#: app/routes/forum.py:122
+#: app/routes/forum.py:141
 msgid "Accept the conduct rules first to take part."
 msgstr "Accept the conduct rules first to take part."
 
-#: app/routes/forum.py:652
+#: app/routes/forum.py:674
 msgid "The platform is not open for contributions to this issue right now."
 msgstr "The platform is not open for contributions to this issue right now."
 
-#: app/routes/forum.py:674
+#: app/routes/forum.py:696
 msgid "You cannot reply to your own post."
 msgstr "You cannot reply to your own post."
 
-#: app/routes/forum.py:682
+#: app/routes/forum.py:704
 msgid "Invalid reply: the post you are replying to does not exist in this conversation."
 msgstr "Invalid reply: the post you are replying to does not exist in this conversation."
 
-#: app/routes/forum.py:1260
+#: app/routes/forum.py:1282
 msgid "The statement of a proposal can only be changed in the revision phase."
 msgstr "The statement of a proposal can only be changed in the revision phase."
 
-#: app/routes/forum.py:1262
+#: app/routes/forum.py:1284
 msgid "This post already has replies, so it can no longer be edited."
 msgstr "This post already has replies, so it can no longer be edited."
 
-#: app/routes/forum.py:1263
+#: app/routes/forum.py:1285
 msgid "A moved or hidden post cannot be edited. You can object instead."
 msgstr "A moved or hidden post cannot be edited. You can object instead."
 
-#: app/routes/forum.py:1340 app/templates/forum/_post.html:70
+#: app/routes/forum.py:1362 app/templates/forum/_post.html:70
 #, python-format
 msgid "edited %(when)s"
 msgstr "edited %(when)s"
 
 # Polijststap P7: volledige pagina vanuit de grote weergave
-#: app/routes/forum.py:1532 app/routes/issues.py:386
+#: app/routes/forum.py:1554 app/routes/issues.py:391
 msgid "Give a reason for your report."
 msgstr "Give a reason for your report."
 
-#: app/routes/forum.py:1541 app/routes/issues.py:392
+#: app/routes/forum.py:1563 app/routes/issues.py:397
 msgid "Thanks, your report has been sent to a moderator."
 msgstr "Thanks, your report has been sent to a moderator."
 
-#: app/routes/forum.py:1946
+#: app/routes/forum.py:1968
 msgid "Choose a reason (and keep the note under 500 characters)."
 msgstr "Choose a reason (and keep the note under 500 characters)."
 
-#: app/routes/forum.py:1948
+#: app/routes/forum.py:1970
 msgid "You already disputed this fact; a moderator will look at it."
 msgstr "You already disputed this fact; a moderator will look at it."
 
-#: app/routes/forum.py:1952
+#: app/routes/forum.py:1974
 msgid "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 msgstr "Thank you. A moderator will look at your objection; the fact stays visible meanwhile."
 
@@ -1156,60 +1201,60 @@ msgstr "Making proposals"
 msgid "Adjust the proposals"
 msgstr "Adjust the proposals"
 
-#: app/routes/issues.py:638
+#: app/routes/issues.py:643
 msgid "You already support this proposal."
 msgstr "You already support this proposal."
 
-#: app/routes/issues.py:699
+#: app/routes/issues.py:704
 msgid "Choose at least one fact that is not linked yet."
 msgstr "Choose at least one fact that is not linked yet."
 
-#: app/routes/issues.py:835
+#: app/routes/issues.py:840
 msgid "The issue is now in the next phase."
 msgstr "The issue is now in the next phase."
 
-#: app/routes/issues.py:851 app/routes/issues.py:871
+#: app/routes/issues.py:856 app/routes/issues.py:876
 #, python-format
 msgid "The text can be at most %(n)s characters."
 msgstr "The text can be at most %(n)s characters."
 
-#: app/routes/issues.py:903
+#: app/routes/issues.py:908
 msgid "Tick the box to confirm that you want to reopen the issue."
 msgstr "Tick the box to confirm that you want to reopen the issue."
 
-#: app/routes/issues.py:908
+#: app/routes/issues.py:913
 msgid "The issue is open again for discussion."
 msgstr "The issue is open again for discussion."
 
-#: app/routes/issues.py:930
+#: app/routes/issues.py:935
 msgid "The issue has been archived."
 msgstr "The issue has been archived."
 
-#: app/routes/issues.py:945
+#: app/routes/issues.py:950
 msgid "The issue is back from the archive."
 msgstr "The issue is back from the archive."
 
-#: app/routes/issues.py:964
+#: app/routes/issues.py:969
 msgid "Type the exact title to confirm."
 msgstr "Type the exact title to confirm."
 
-#: app/routes/issues.py:970
+#: app/routes/issues.py:975
 msgid "The issue has been deleted."
 msgstr "The issue has been deleted."
 
-#: app/routes/issues.py:992
+#: app/routes/issues.py:997
 msgid "Type the exact text to confirm."
 msgstr "Type the exact text to confirm."
 
-#: app/routes/issues.py:999
+#: app/routes/issues.py:1004
 msgid "The proposal has been deleted."
 msgstr "The proposal has been deleted."
 
-#: app/routes/issues.py:1119
+#: app/routes/issues.py:1124
 msgid "The proposal is hidden."
 msgstr "The proposal is hidden."
 
-#: app/routes/issues.py:1119
+#: app/routes/issues.py:1124
 msgid "The proposal is visible again."
 msgstr "The proposal is visible again."
 
@@ -1355,8 +1400,8 @@ msgstr "Date"
 msgid "from"
 msgstr "from"
 
-#: app/templates/_event_days.html:19 app/templates/issues/show.html:73
-#: app/templates/issues/show.html:86
+#: app/templates/_event_days.html:19 app/templates/events/page.html:37
+#: app/templates/issues/show.html:73 app/templates/issues/show.html:86
 msgid "to"
 msgstr "to"
 
@@ -1433,9 +1478,9 @@ msgid "Navigation"
 msgstr "Navigation"
 
 # Polijstronde P1: Denk mee, overzicht, kruimelpad, termen
-#: app/templates/_header.html:11 app/templates/issues/_crumbs.html:10
-#: app/templates/issues/index.html:2 app/templates/issues/index.html:18
-#: app/templates/issues/proposal.html:45
+#: app/templates/_header.html:11 app/templates/events/notice.html:15
+#: app/templates/issues/_crumbs.html:10 app/templates/issues/index.html:2
+#: app/templates/issues/index.html:18 app/templates/issues/proposal.html:45
 msgid "Have your say"
 msgstr "Have your say"
 
@@ -1658,52 +1703,52 @@ msgstr "Facts from a neutral point of view."
 msgid "Content freely available to everyone."
 msgstr "Content freely available to everyone."
 
-#: app/templates/base.html:30 app/templates/index.html:72
+#: app/templates/base.html:31 app/templates/index.html:72
 #: app/templates/index.html:235 app/templates/index.html:291
 #: app/templates/issues/_facts_big.html:31 app/templates/login.html:96
 msgid "Close"
 msgstr "Close"
 
-#: app/templates/base.html:68
+#: app/templates/base.html:69
 msgid "Confirm your email address (check your inbox)."
 msgstr "Confirm your email address (check your inbox)."
 
-#: app/templates/base.html:71
+#: app/templates/base.html:72
 msgid "Resend"
 msgstr "Resend"
 
-#: app/templates/base.html:82
+#: app/templates/base.html:83
 #, python-format
 msgid "You have %(num)d new notification."
 msgid_plural "You have %(num)d new notifications."
 msgstr[0] "You have %(num)d new notification."
 msgstr[1] "You have %(num)d new notifications."
 
-#: app/templates/base.html:82
+#: app/templates/base.html:83
 msgid "You have a new daily summary."
 msgstr "You have a new daily summary."
 
-#: app/templates/base.html:83 app/templates/issues/_chart_block.html:25
+#: app/templates/base.html:84 app/templates/issues/_chart_block.html:25
 msgid "View"
 msgstr "View"
 
-#: app/templates/base.html:91
+#: app/templates/base.html:92
 msgid "You are suspended until"
 msgstr "You are suspended until"
 
-#: app/templates/base.html:92
+#: app/templates/base.html:93
 msgid "You can read, but not contribute or vote."
 msgstr "You can read, but not contribute or vote."
 
-#: app/templates/base.html:101
+#: app/templates/base.html:102
 msgid "Congratulations! Based on your quality contributions you now have the status"
 msgstr "Congratulations! Based on your quality contributions you now have the status"
 
-#: app/templates/base.html:102
+#: app/templates/base.html:103
 msgid ", with the right to vote"
 msgstr ", with the right to vote"
 
-#: app/templates/base.html:107
+#: app/templates/base.html:108
 msgid "Dismiss"
 msgstr "Dismiss"
 
@@ -2069,9 +2114,9 @@ msgstr "Activity"
 #. profile, the eyebrow of the section with language, automatic translation and
 #. the summary by email.
 #: app/templates/events/form.html:2 app/templates/events/form.html:20
-#: app/templates/events/form.html:30 app/templates/landing.html:33
-#: app/templates/meldingen.html:17 app/templates/notificaties.html:20
-#: app/templates/profile.html:161
+#: app/templates/events/form.html:30 app/templates/events/page.html:56
+#: app/templates/landing.html:33 app/templates/meldingen.html:17
+#: app/templates/notificaties.html:20 app/templates/profile.html:161
 msgid "Settings"
 msgstr "Settings"
 
@@ -2916,7 +2961,7 @@ msgstr "Weekly"
 #. the button under the form "New event" (Save in the settings).
 #: app/templates/admin/proposal_limits.html:28
 #: app/templates/admin/proposal_limits.html:43
-#: app/templates/admin/thresholds.html:31 app/templates/events/form.html:150
+#: app/templates/admin/thresholds.html:31 app/templates/events/form.html:164
 #: app/templates/forum/_facts.html:62 app/templates/forum/_post.html:224
 #: app/templates/issues/_fact_card.html:111
 #: app/templates/issues/_ip_vote.html:80
@@ -3325,9 +3370,9 @@ msgid "Delete my account"
 msgstr "Delete my account"
 
 #: app/templates/admin/dashboard.html:170
-#: app/templates/admin/dashboard.html:178 app/templates/events/form.html:147
-#: app/templates/forum/_post.html:218 app/templates/forum/_post.html:246
-#: app/templates/forum/edit_thread.html:58
+#: app/templates/admin/dashboard.html:178 app/templates/events/form.html:161
+#: app/templates/events/new_link.html:24 app/templates/forum/_post.html:218
+#: app/templates/forum/_post.html:246 app/templates/forum/edit_thread.html:58
 #: app/templates/forum/new_thread.html:128
 #: app/templates/issues/_facts_big.html:41
 #: app/templates/issues/final_new.html:57 app/templates/issues/new.html:204
@@ -3831,11 +3876,15 @@ msgstr "You receive this email because you turned on email for this. You can tur
 msgid "New event"
 msgstr "New event"
 
-#: app/templates/events/form.html:27 app/templates/forum/new_thread.html:66
-#: app/templates/forum/thread.html:59 app/templates/issues/_kind.html:15
-#: app/templates/issues/_kind.html:19 app/templates/issues/index.html:51
-#: app/templates/issues/new.html:50 app/templates/issues/new.html:100
-#: app/templates/issues/new.html:125 app/templates/moderator/beheer.html:35
+#: app/templates/events/form.html:27 app/templates/events/new_link.html:14
+#: app/templates/events/notice.html:2 app/templates/events/notice.html:12
+#: app/templates/events/page.html:33 app/templates/forum/new_thread.html:66
+#: app/templates/forum/thread.html:59 app/templates/issues/_kind.html:17
+#: app/templates/issues/_kind.html:21
+#: app/templates/issues/_overview_events.html:24
+#: app/templates/issues/index.html:51 app/templates/issues/new.html:50
+#: app/templates/issues/new.html:100 app/templates/issues/new.html:125
+#: app/templates/moderator/beheer.html:35
 #: app/templates/moderator/dashboard.html:458
 #: app/templates/moderator/melding_beoordelen.html:53
 msgid "Event"
@@ -3877,7 +3926,7 @@ msgstr "At a location"
 msgid "At a location and online"
 msgstr "At a location and online"
 
-#: app/templates/events/form.html:65 app/templates/issues/_kind.html:21
+#: app/templates/events/form.html:65 app/templates/issues/_kind.html:23
 #: app/templates/issues/index.html:51 app/templates/issues/new.html:46
 #: app/templates/moderator/beheer.html:35
 #: app/templates/moderator/dashboard.html:458
@@ -3970,33 +4019,51 @@ msgstr "You can change this until voting starts on the first issue of this event
 msgid "Visibility"
 msgstr "Visibility"
 
+#. in the organiser's strip after the event was shared.
+#: app/templates/events/form.html:141 app/templates/events/page.html:87
+msgid "This event is shared with all participants of Global Union."
+msgstr "This event is shared with all participants of Global Union."
+
 #. section Visibility in the event form; participants are those who have the
 #. link.
-#: app/templates/events/form.html:141
+#: app/templates/events/form.html:144
 msgid "This event is only visible to the participants of this event. You invite them with the link or the QR code."
 msgstr "This event is only visible to the participants of this event. You invite them with the link or the QR code."
 
 #. section Visibility in the event form; "share" means: show the event in the
 #. overview for everyone.
-#: app/templates/events/form.html:143
+#: app/templates/events/form.html:148
 msgid "After saving you get your own link to the event and a QR code, to copy and share. Afterwards you choose whether to share the event with all participants of Global Union."
 msgstr "After saving you get your own link to the event and a QR code, to copy and share. Afterwards you choose whether to share the event with all participants of Global Union."
 
+#. button in the event settings: the event is visible only to its participants
+#. again.
+#: app/templates/events/form.html:153
+msgid "Undo sharing"
+msgstr "Undo sharing"
+
+#. button on the share card and in the settings.
+#: app/templates/events/form.html:155 app/templates/events/page.html:146
+msgid "Share with all participants"
+msgstr "Share with all participants"
+
 #. the button under the form "New event".
-#: app/templates/events/form.html:152
+#: app/templates/events/form.html:166
 msgid "Create event"
 msgstr "Create event"
 
 #. section head in the event settings: the issues of this event, in their
 #. order.
-#: app/templates/events/form.html:161
+#. heading of the list of issues on the event page.
+#: app/templates/events/form.html:181 app/templates/events/page.html:158
 msgid "Issues of this event"
 msgstr "Issues of this event"
 
-#: app/templates/events/form.html:169
+#: app/templates/events/form.html:189 app/templates/events/page.html:167
 #: app/templates/forum/_proposal_status.html:15
 #: app/templates/forum/closed.html:13 app/templates/forum/closed.html:31
 #: app/templates/forum/index.html:48 app/templates/forum/thread.html:49
+#: app/templates/issues/_overview_events.html:78
 #: app/templates/issues/index.html:68 app/templates/issues/show.html:27
 #: app/templates/moderator/beheer.html:34
 #: app/templates/moderator/dashboard.html:427
@@ -4005,36 +4072,227 @@ msgid "Closed"
 msgstr "Closed"
 
 #. button to move an issue one place up in the list of an event.
-#: app/templates/events/form.html:174
+#: app/templates/events/form.html:194
 msgid "Up"
 msgstr "Up"
 
 #. button to move an issue one place down in the list of an event.
-#: app/templates/events/form.html:176
+#: app/templates/events/form.html:196
 msgid "Down"
 msgstr "Down"
 
 #. label for screen readers of the button Up; %(title)s is the issue.
-#: app/templates/events/form.html:178
+#: app/templates/events/form.html:198
 #, python-format
 msgid "Move up: %(title)s"
 msgstr "Move up: %(title)s"
 
 #. label for screen readers of the button Down; %(title)s is the issue.
-#: app/templates/events/form.html:180
+#: app/templates/events/form.html:200
 #, python-format
 msgid "Move down: %(title)s"
 msgstr "Move down: %(title)s"
 
 #. in the event settings, when the event has no issues.
-#: app/templates/events/form.html:195
+#: app/templates/events/form.html:215
 msgid "This event has no issues yet."
 msgstr "This event has no issues yet."
 
 #. button in the event settings: a new issue that belongs to this event.
-#: app/templates/events/form.html:198
+#: app/templates/events/form.html:218 app/templates/events/page.html:53
 msgid "New issue for this event"
 msgstr "New issue for this event"
+
+#. link to make a new code, so the old link and QR code stop working.
+#: app/templates/events/new_link.html:2 app/templates/events/new_link.html:12
+#: app/templates/events/new_link.html:15 app/templates/events/new_link.html:25
+#: app/templates/events/page.html:97
+msgid "Make a new link"
+msgstr "Make a new link"
+
+#. the warning before making a new link to an event.
+#: app/templates/events/new_link.html:21
+msgid "The old link and QR code then no longer work. Printed QR codes neither."
+msgstr "The old link and QR code then no longer work. Printed QR codes neither."
+
+#: app/templates/events/page.html:24 app/templates/issues/show.html:43
+#: app/templates/moderator/beheer.html:35
+msgid "Archived"
+msgstr "Archived"
+
+#. on the page of an archived event.
+#: app/templates/events/page.html:26
+msgid "This event is archived: it is no longer listed."
+msgstr "This event is archived: it is no longer listed."
+
+#. link on the event page to the video call or livestream of the event.
+#: app/templates/events/page.html:43
+msgid "Join via the video call"
+msgstr "Join via the video call"
+
+#. on the event page: who organises the event.
+#: app/templates/events/page.html:47
+#, python-format
+msgid "Organiser: %(name)s"
+msgstr "Organiser: %(name)s"
+
+#. on the event page when the platform is closed outside the days of the event.
+#: app/templates/events/page.html:65
+msgid "The platform is not open for contributions right now. See the days of the event."
+msgstr "The platform is not open for contributions right now. See the days of the event."
+
+#. heading of the grey strip on the event page that only the organiser (and
+#. moderators) see.
+#: app/templates/events/page.html:71
+msgid "Only visible to you as organiser"
+msgstr "Only visible to you as organiser"
+
+#. label of the field with the link to the event page.
+#: app/templates/events/page.html:75
+msgid "Link to this event"
+msgstr "Link to this event"
+
+#. icon button that copies the link to the event.
+#: app/templates/events/page.html:80
+msgid "Copy link"
+msgstr "Copy link"
+
+#. read out by screen readers for two seconds after copying the link.
+#: app/templates/events/page.html:82
+msgid "Link copied"
+msgstr "Link copied"
+
+#. in the organiser's strip on the event page; participants are those who have
+#. the link.
+#: app/templates/events/page.html:90
+msgid "Share the link or the QR code with the participants, for example on a slide or in the invitation. This event is only visible to the participants of this event."
+msgstr "Share the link or the QR code with the participants, for example on a slide or in the invitation. This event is only visible to the participants of this event."
+
+#. in the organiser's strip: the event code, which people can type in "Have
+#. your say".
+#: app/templates/events/page.html:93
+#, python-format
+msgid "Event code: <strong>%(code)s</strong>"
+msgstr "Event code: <strong>%(code)s</strong>"
+
+#. after the event code: where people type it in.
+#: app/templates/events/page.html:95
+msgid "(to type in at Have your say)"
+msgstr "(to type in at Have your say)"
+
+#. in the organiser's strip, before the event is shared.
+#: app/templates/events/page.html:101
+msgid "Afterwards you choose whether to share the event with all participants of Global Union."
+msgstr "Afterwards you choose whether to share the event with all participants of Global Union."
+
+#. in the organiser's strip: the setting "Everyone may vote" is on or off;
+#. followed by the link "Change".
+#: app/templates/events/page.html:104
+msgid "Everyone may vote: on."
+msgstr "Everyone may vote: on."
+
+#. in the organiser's strip: the setting "Everyone may vote" is off.
+#: app/templates/events/page.html:106
+msgid "Everyone may vote: off."
+msgstr "Everyone may vote: off."
+
+#. link to the event settings.
+#: app/templates/events/page.html:108
+msgid "Change"
+msgstr "Change"
+
+#. alternative text of the QR code image.
+#: app/templates/events/page.html:114
+msgid "QR code of the link to this event"
+msgstr "QR code of the link to this event"
+
+#. under the QR code on the event page.
+#: app/templates/events/page.html:116
+msgid "Scan to take part"
+msgstr "Scan to take part"
+
+#. icon button that copies the QR code image to the clipboard.
+#: app/templates/events/page.html:120
+msgid "Copy QR code"
+msgstr "Copy QR code"
+
+#. read out by screen readers for two seconds after copying the QR code.
+#: app/templates/events/page.html:122
+msgid "QR code copied"
+msgstr "QR code copied"
+
+#. icon button that downloads the QR code as an image.
+#: app/templates/events/page.html:125
+msgid "Download QR code"
+msgstr "Download QR code"
+
+#. heading of the card for the organiser after the last day of the event.
+#: app/templates/events/page.html:136
+msgid "The event is over. Do you want to share it with all participants of Global Union?"
+msgstr "The event is over. Do you want to share it with all participants of Global Union?"
+
+#. on the share card; "Have your say" is the overview of all issues.
+#: app/templates/events/page.html:138
+msgid "The issues of the event then appear in the overview Have your say, with the name of the event. Everyone can read them, with the results and the follow-up."
+msgstr "The issues of the event then appear in the overview Have your say, with the name of the event. Everyone can read them, with the results and the follow-up."
+
+#. on the share card; %(phases)s are the phases of the issues that are not
+#. finished.
+#: app/templates/events/page.html:141
+#, python-format
+msgid "One issue is not finished yet (%(phases)s). After sharing, everyone can take part there."
+msgid_plural "%(num)d issues are not finished yet (%(phases)s). After sharing, everyone can take part there."
+msgstr[0] "One issue is not finished yet (%(phases)s). After sharing, everyone can take part there."
+msgstr[1] "%(num)d issues are not finished yet (%(phases)s). After sharing, everyone can take part there."
+
+#. button on the share card: do not share now.
+#: app/templates/events/page.html:148
+msgid "Not now"
+msgstr "Not now"
+
+#. under the buttons of the share card.
+#: app/templates/events/page.html:151
+msgid "With Not now the event stays visible only to its participants. You can still share it later in the settings, and undo it there too."
+msgstr "With Not now the event stays visible only to its participants. You can still share it later in the settings, and undo it there too."
+
+#: app/templates/events/page.html:170
+#: app/templates/issues/_overview_events.html:75
+#: app/templates/issues/index.html:65
+msgid "submitted by"
+msgstr "submitted by"
+
+#: app/templates/events/page.html:171
+#: app/templates/issues/_overview_events.html:80
+#: app/templates/issues/index.html:70 app/templates/moderator/beheer.html:53
+#, python-format
+msgid "%(num)d proposal"
+msgid_plural "%(num)d proposals"
+msgstr[0] "%(num)d proposal"
+msgstr[1] "%(num)d proposals"
+
+#: app/templates/events/page.html:172
+#: app/templates/issues/_overview_events.html:81
+#: app/templates/issues/index.html:71
+#, python-format
+msgid "%(num)d participant"
+msgid_plural "%(num)d participants"
+msgstr[0] "%(num)d participant"
+msgstr[1] "%(num)d participants"
+
+#. on the event page when the event has no issues yet.
+#: app/templates/events/page.html:180
+msgid "There are no issues for this event yet."
+msgstr "There are no issues for this event yet."
+
+#. under the list on the event page.
+#: app/templates/events/page.html:186
+msgid "Only the issues of this event are shown here."
+msgstr "Only the issues of this event are shown here."
+
+#. link from an event to the overview of all other issues.
+#: app/templates/events/page.html:188
+msgid "See the issues outside this event"
+msgstr "See the issues outside this event"
 
 #: app/templates/forum/_conduct_mod.html:18
 #: app/templates/forum/_conduct_mod.html:58
@@ -5514,6 +5772,7 @@ msgid "Add"
 msgstr "Add"
 
 #: app/templates/issues/_facts_big.html:47
+#: app/templates/issues/_overview_events.html:62
 #: app/templates/issues/_proposals_big.html:22
 #: app/templates/issues/index.html:51 app/templates/issues/proposal.html:82
 #: app/templates/moderator/dashboard.html:97
@@ -5704,12 +5963,20 @@ msgstr "You may vote after %(n)s quality contributions: contributions that recei
 msgid "Voting on proposals on the voting list opens in the voting phase."
 msgstr "Voting on proposals on the voting list opens in the voting phase."
 
-#: app/templates/issues/_kind.html:15 app/templates/issues/_kind.html:19
+#: app/templates/issues/_kind.html:17 app/templates/issues/_kind.html:21
 #, python-format
 msgid "%(num)s days"
 msgstr "%(num)s days"
 
-#: app/templates/issues/_kind.html:21
+#. the kind of issue anyone can join (not of an event); a filter and the label
+#. above such an issue.
+#: app/templates/issues/_kind.html:23
+#: app/templates/issues/_overview_events.html:61
+#: app/templates/moderator/beheer.html:35
+msgid "For everyone"
+msgstr "For everyone"
+
+#: app/templates/issues/_kind.html:23
 #, python-format
 msgid "voting closes %(date)s"
 msgstr "voting closes %(date)s"
@@ -5756,6 +6023,101 @@ msgstr "by %(name)s"
 #: app/templates/issues/_lifecycle.html:54
 msgid "Delete this update?"
 msgstr "Delete this update?"
+
+#. the state of an event in "Your events": the first day has not begun yet.
+#: app/templates/issues/_overview_events.html:12
+msgid "Planned"
+msgstr "Planned"
+
+#: app/templates/issues/_overview_events.html:13
+#: app/templates/issues/_overview_events.html:62
+#: app/templates/issues/index.html:51
+msgid "Ongoing"
+msgstr "Ongoing"
+
+#: app/templates/issues/_overview_events.html:13
+#: app/templates/issues/_overview_events.html:62
+#: app/templates/issues/index.html:51
+msgid "Finished"
+msgstr "Finished"
+
+#. heading of the block in "Have your say" with the events you take part in or
+#. organise.
+#: app/templates/issues/_overview_events.html:17
+msgid "Your events"
+msgstr "Your events"
+
+#. pill in "Your events" on an event you organise.
+#: app/templates/issues/_overview_events.html:28
+msgid "Organiser"
+msgstr "Organiser"
+
+#. number of issues of an event in "Your events".
+#: app/templates/issues/_overview_events.html:31
+#, python-format
+msgid "%(num)d issue"
+msgid_plural "%(num)d issues"
+msgstr[0] "%(num)d issue"
+msgstr[1] "%(num)d issues"
+
+#. button in "Your events": back to an event you already opened, or to an event
+#. you have not opened yet.
+#: app/templates/issues/_overview_events.html:35
+msgid "Back to the event"
+msgstr "Back to the event"
+
+#. button to an event you have not opened yet (also after typing an event
+#. code).
+#: app/templates/issues/_overview_events.html:37
+#: app/templates/issues/_overview_events.html:52
+msgid "Go to the event"
+msgstr "Go to the event"
+
+#. under the block "Your events".
+#: app/templates/issues/_overview_events.html:42
+msgid "Events you take part in or organise. Only you see this block."
+msgstr "Events you take part in or organise. Only you see this block."
+
+#. label of the field in "Have your say" to type an event code.
+#: app/templates/issues/_overview_events.html:48
+msgid "Do you have an event code?"
+msgstr "Do you have an event code?"
+
+#. example in the field for an event code; keep the code K7M2QXPA as it is.
+#: app/templates/issues/_overview_events.html:51
+msgid "For example K7M2QXPA"
+msgstr "For example K7M2QXPA"
+
+#. heading above the list of issues in "Have your say", under "Your events".
+#: app/templates/issues/_overview_events.html:56
+#: app/templates/moderator/dashboard.html:436
+msgid "All issues"
+msgstr "All issues"
+
+#: app/templates/issues/_overview_events.html:57
+#: app/templates/issues/index.html:50
+msgid "Filter issues"
+msgstr "Filter issues"
+
+#. filter in "Have your say": the issues of shared events.
+#: app/templates/issues/_overview_events.html:59
+msgid "From events"
+msgstr "From events"
+
+#. under the list in "Have your say".
+#: app/templates/issues/_overview_events.html:88
+msgid "Issues for everyone and issues of shared events, each on its own row. Issues of events that are not shared yet are not listed here."
+msgstr "Issues for everyone and issues of shared events, each on its own row. Issues of events that are not shared yet are not listed here."
+
+#: app/templates/issues/_overview_events.html:90
+#: app/templates/issues/index.html:78
+msgid "No issues match this filter."
+msgstr "No issues match this filter."
+
+#: app/templates/issues/_overview_events.html:92
+#: app/templates/issues/index.html:80
+msgid "No issues yet. Start the first one."
+msgstr "No issues yet. Start the first one."
 
 #. the block "Who voted" with fewer than 30 voters.
 #: app/templates/issues/_participation.html:17
@@ -6078,44 +6440,6 @@ msgstr "Submit the summary proposal"
 #: app/templates/issues/new.html:2 app/templates/issues/new.html:21
 msgid "New issue"
 msgstr "New issue"
-
-#: app/templates/issues/index.html:50
-msgid "Filter issues"
-msgstr "Filter issues"
-
-#: app/templates/issues/index.html:51
-msgid "Ongoing"
-msgstr "Ongoing"
-
-#: app/templates/issues/index.html:51
-msgid "Finished"
-msgstr "Finished"
-
-#: app/templates/issues/index.html:65
-msgid "submitted by"
-msgstr "submitted by"
-
-#: app/templates/issues/index.html:70 app/templates/moderator/beheer.html:53
-#, python-format
-msgid "%(num)d proposal"
-msgid_plural "%(num)d proposals"
-msgstr[0] "%(num)d proposal"
-msgstr[1] "%(num)d proposals"
-
-#: app/templates/issues/index.html:71
-#, python-format
-msgid "%(num)d participant"
-msgid_plural "%(num)d participants"
-msgstr[0] "%(num)d participant"
-msgstr[1] "%(num)d participants"
-
-#: app/templates/issues/index.html:78
-msgid "No issues match this filter."
-msgstr "No issues match this filter."
-
-#: app/templates/issues/index.html:80
-msgid "No issues yet. Start the first one."
-msgstr "No issues yet. Start the first one."
 
 #: app/templates/issues/new.html:25
 msgid "Start a new issue"
@@ -6487,10 +6811,6 @@ msgstr "Follow"
 msgid "Followers get the updates of this issue in their daily summary."
 msgstr "Followers get the updates of this issue in their daily summary."
 
-#: app/templates/issues/show.html:43 app/templates/moderator/beheer.html:35
-msgid "Archived"
-msgstr "Archived"
-
 #: app/templates/issues/show.html:44
 msgid "This issue is archived: it is closed and no longer listed publicly."
 msgstr "This issue is archived: it is closed and no longer listed publicly."
@@ -6742,7 +7062,7 @@ msgid "Visible"
 msgstr "Visible"
 
 #: app/templates/moderator/beheer.html:108
-#: app/templates/moderator/beheer.html:183
+#: app/templates/moderator/beheer.html:185
 msgid "deleted account"
 msgstr "deleted account"
 
@@ -6828,31 +7148,51 @@ msgstr "A senior moderator may delete all proposals. An admin may do everything.
 msgid "Log"
 msgstr "Log"
 
-#: app/templates/moderator/beheer.html:183
+#: app/templates/moderator/beheer.html:185
 msgid "You"
 msgstr "You"
 
-#: app/templates/moderator/beheer.html:188
+#: app/templates/moderator/beheer.html:190
 #, python-format
 msgid "hid \"%(snap)s\""
 msgstr "hid \"%(snap)s\""
 
-#: app/templates/moderator/beheer.html:189
+#: app/templates/moderator/beheer.html:191
 #, python-format
 msgid "made \"%(snap)s\" visible again"
 msgstr "made \"%(snap)s\" visible again"
 
-#: app/templates/moderator/beheer.html:190
+#: app/templates/moderator/beheer.html:192
 #, python-format
 msgid "deleted \"%(snap)s\""
 msgstr "deleted \"%(snap)s\""
 
-#: app/templates/moderator/beheer.html:191
+#. log of the issue management: the organiser shared the event "snap" with
+#. everyone.
+#: app/templates/moderator/beheer.html:194
+#, python-format
+msgid "shared the event \"%(snap)s\" with all participants"
+msgstr "shared the event \"%(snap)s\" with all participants"
+
+#. log of the issue management: the organiser undid sharing the event "snap".
+#: app/templates/moderator/beheer.html:196
+#, python-format
+msgid "made the event \"%(snap)s\" visible only to its participants again"
+msgstr "made the event \"%(snap)s\" visible only to its participants again"
+
+#. log of the issue management: a new link (code) was made for the event
+#. "snap".
+#: app/templates/moderator/beheer.html:198
+#, python-format
+msgid "made a new link for the event \"%(snap)s\""
+msgstr "made a new link for the event \"%(snap)s\""
+
+#: app/templates/moderator/beheer.html:199
 #, python-format
 msgid "deleted the issue \"%(snap)s\""
 msgstr "deleted the issue \"%(snap)s\""
 
-#: app/templates/moderator/beheer.html:195
+#: app/templates/moderator/beheer.html:203
 msgid "Nothing hidden or deleted yet."
 msgstr "Nothing hidden or deleted yet."
 
@@ -7116,10 +7456,6 @@ msgstr "archived"
 #: app/templates/moderator/dashboard.html:433
 msgid "No open issues to manage."
 msgstr "No open issues to manage."
-
-#: app/templates/moderator/dashboard.html:436
-msgid "All issues"
-msgstr "All issues"
 
 #: app/templates/moderator/dashboard.html:437
 msgid "Set the rights"

@@ -112,6 +112,25 @@ def _suspended_back():
 forum_bp.before_request(refuse_if_suspended)
 
 
+@forum_bp.before_request
+def _event_access():
+    """Events step 1d (K2b): the conversation of an issue of an event that is
+    not shared, and every post in it, only with access. Nothing with EVENTS off."""
+    from app import events
+    if not events.enabled() or not request.view_args:
+        return None
+    from app import facts
+    thread_id = request.view_args.get('thread_id')
+    post_id = request.view_args.get('post_id')
+    if thread_id is None and post_id is not None:
+        post = db.session.get(Post, post_id)
+        thread_id = post.thread_id if post is not None else None
+    if thread_id is None:
+        return None
+    events.check_view(facts.issue_for_thread(thread_id), current_user)
+    return None
+
+
 def _rules_first_redirect():
     """Ingelogd maar (nog) geen akkoord op de gedragsregels: eerst naar de
     spelregelpagina (daar staat de akkoordknop). A suspended user gets the
@@ -595,6 +614,9 @@ def _thread_list(closed=False):
     # One query for the translated titles and eyebrows of the whole list.
     content_i18n.preload([thread for thread, _ in rows], 'eyebrow', *Thread.TITLE_FIELDS)
     result = []
+    # Events step 1d: the conversations of issues of an event that is not shared stay out of the list.
+    from app import events
+    hidden_threads = set(hidden_threads) | events.hidden_thread_ids()
     for thread, _ in rows:
         if thread.id in hidden_threads:
             continue

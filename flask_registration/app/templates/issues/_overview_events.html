@@ -1,0 +1,93 @@
+{#
+  Partial: issues/_overview_events.html (events step 1d, docs/events.md K10,
+  built to docs/design/event-overzicht.html). Denk mee with EVENTS on: Your
+  events (only for yourself, only with events), the field "Do you have an
+  event code?", and All issues with the filters All, For everyone, From
+  events, Ongoing, Finished. The issues of a shared event each on their own
+  row with the event above it; the event name and the title are separate
+  links. Context: rows, which, your_events.
+#}
+{% from '_mt.html' import mt_inline with context %}
+{# TRANSLATORS: the state of an event in "Your events": the first day has not begun yet. #}
+{% set planned = _('Planned') %}
+{% set state_labels = {'planned': planned, 'running': _('Ongoing'), 'finished': _('Finished')} %}
+{% if your_events %}
+<section class="gu-yourevents" aria-labelledby="yourEvents">
+  {# TRANSLATORS: heading of the block in "Have your say" with the events you take part in or organise. #}
+  <h2 class="gu-yourevents__head" id="yourEvents">{{ _('Your events') }}</h2>
+  <ul class="gu-yourevents__list">
+    {% for ev, organiser, was_there, st, n_issues in your_events %}
+    {% set first = ev.days[0].starts_at | local if ev.days else none %}
+    {% set place = event_where(ev) %}
+    <li class="gu-yourevents__item">
+      <div class="gu-yourevents__body">
+        <p class="gu-yourevents__eyebrow">{{ _('Event') }}{% if first %} · {{ first | datetimeformat('d MMM y HH:mm') }}{% endif %}{% if place %}{{ ', ' if first else ' · ' }}{{ place }}{% endif %}</p>
+        <span class="gu-yourevents__name">{{ mt_inline(ev, 'name') }}</span>
+        <span class="gu-yourevents__meta">
+          {# TRANSLATORS: pill in "Your events" on an event you organise. #}
+          {% if organiser %}<span class="gu-yourevents__pill">{{ _('Organiser') }}</span>{% endif %}
+          <span class="gu-yourevents__state">{{ state_labels[st] }}</span>
+          {# TRANSLATORS: number of issues of an event in "Your events". #}
+          <span>{{ ngettext('%(num)d issue', '%(num)d issues', n_issues) }}</span>
+        </span>
+      </div>
+      {# TRANSLATORS: button in "Your events": back to an event you already opened, or to an event you have not opened yet. #}
+      <a class="gu-btn gu-btn--ghost gu-btn--sm" href="{{ url_for('events.page', code=ev.code) }}">{% if was_there %}{{ _('Back to the event') }}{% else %}
+        {# TRANSLATORS: button to an event you have not opened yet (also after typing an event code). #}
+        {{ _('Go to the event') }}{% endif %}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {# TRANSLATORS: under the block "Your events". #}
+  <p class="gu-composer__hint">{{ _('Events you take part in or organise. Only you see this block.') }}</p>
+</section>
+{% endif %}
+
+<form method="GET" action="{{ url_for('events.lookup') }}" class="gu-eventcode" id="eventcode">
+  {# TRANSLATORS: label of the field in "Have your say" to type an event code. #}
+  <label for="evCode" class="gu-eventcode__label">{{ _('Do you have an event code?') }}
+    {# TRANSLATORS: example in the field for an event code; keep the code K7M2QXPA as it is. #}
+    <input id="evCode" name="code" type="text" class="gu-input gu-eventcode__input" autocomplete="off" maxlength="20"
+           placeholder="{{ _('For example K7M2QXPA') }}"></label>
+  <button type="submit" class="gu-btn gu-btn--primary">{{ _('Go to the event') }}</button>
+</form>
+
+{# TRANSLATORS: heading above the list of issues in "Have your say", under "Your events". #}
+<h2 class="gu-yourevents__head">{{ _('All issues') }}</h2>
+<nav class="gu-factspage__filter gu-issuelist__filter" aria-label="{{ _('Filter issues') }}">
+  {# TRANSLATORS: filter in "Have your say": the issues of shared events. #}
+  {% set from_events = _('From events') %}
+  {# TRANSLATORS: the kind of issue anyone can join (not of an event); a filter and the label above such an issue. #}
+  {% set for_everyone = _('For everyone') %}
+  {% for key, label in [('alle', _('All')), ('online', for_everyone), ('event', from_events), ('lopend', _('Ongoing')), ('afgerond', _('Finished'))] %}
+  <a href="{{ url_for('issues.index', filter=None if key == 'alle' else key) }}"
+     class="gu-factspage__chip{% if which == key %} is-active{% endif %}"{% if which == key %} aria-current="true"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</nav>
+
+{% if rows %}
+<ul class="gu-threadlist gu-issuelist">
+  {% for issue, n_proposals, n_people in rows %}
+  <li class="gu-threadlist__row">
+    <div class="gu-threadlist__link gu-issuelist__card">
+      <span class="gu-threadlist__eyebrow">{% include 'issues/_kind.html' %}</span>
+      <a class="gu-threadlist__title gu-issuelist__titlelink" href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ mt_inline(issue, 'title') }}</a>
+      {% if issue.created_by %}<span class="gu-issuelist__by">{{ _('submitted by') }} {{ issue.created_by.public_name }}</span>{% endif %}
+      <span class="gu-threadlist__meta gu-issuelist__meta">
+        <span class="gu-issuelist__phase{% if issue.is_closed %} is-closed{% endif %}">
+          {%- if issue.is_closed -%}{{ _('Closed') }}{%- else -%}{{ phase_labels.get(issue.phase, issue.phase) }}{%- endif -%}
+        </span>
+        <span>{{ ngettext('%(num)d proposal', '%(num)d proposals', n_proposals) }}</span>
+        <span>{{ ngettext('%(num)d participant', '%(num)d participants', n_people) }}</span>
+      </span>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{# TRANSLATORS: under the list in "Have your say". #}
+<p class="gu-composer__hint">{{ _('Issues for everyone and issues of shared events, each on its own row. Issues of events that are not shared yet are not listed here.') }}</p>
+{% elif which != 'alle' %}
+<p class="gu-threadlist__empty">{{ _('No issues match this filter.') }}</p>
+{% else %}
+<p class="gu-threadlist__empty">{{ _('No issues yet. Start the first one.') }}</p>
+{% endif %}

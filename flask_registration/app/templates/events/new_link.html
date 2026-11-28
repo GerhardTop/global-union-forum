@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Make a new link') }} · Global Union{% endblock %}
+{#
+  Events step 1d (K2): confirm a new code for the event. The old link and QR
+  code stop working, also printed ones. Only for whoever manages the event.
+#}
+{% block content_outer %}{% block content %}
+{% from 'issues/_crumbs.html' import crumbs with context %}
+{% from '_mt.html' import mt_inline with context %}
+<main class="gu-forum gu-forum--soft" lang="{{ lang }}">
+  <div class="gu-forum__inner">
+    {{ crumbs(None, [(mt_inline(event, 'name'), url_for('events.page', code=event.code)), (_('Make a new link'), None)]) }}
+    <header class="gu-forum__threadhead">
+      <p class="gu-eyebrow">{{ _('Event') }}</p>
+      <h1 class="gu-forum__title">{{ _('Make a new link') }}</h1>
+    </header>
+    <form method="POST" action="{{ url_for('events.new_link', code=event.code) }}" class="gu-forum__newform gu-newissue">
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <div class="gu-newissue__section">
+        {# TRANSLATORS: the warning before making a new link to an event. #}
+        <p>{{ _('The old link and QR code then no longer work. Printed QR codes neither.') }}</p>
+      </div>
+      <div class="gu-forum__newactions">
+        <a href="{{ url_for('events.page', code=event.code) }}" class="gu-btn gu-btn--ghost">{{ _('Cancel') }}</a>
+        <button type="submit" class="gu-btn gu-btn--primary">{{ _('Make a new link') }}</button>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}{% endblock %}

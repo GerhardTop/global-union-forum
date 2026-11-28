@@ -67,6 +67,20 @@ De Duitse vertaling is een machinevertaling (fase 1). `docs/i18n/review_de.csv` 
 | At a location / Online / At a location and online | Op een locatie / Online / Op een locatie en online | An einem Ort / Online / An einem Ort und online | De drie vormen van een event (codes location, online, hybrid). |
 | Link to the video call or the livestream | Link naar het videogesprek of de livestream | Link zum Videoanruf oder zum Livestream | Niet de link naar het event zelf; vandaar de volledige naam. |
 | Fixed since voting began. | Vastgelegd sinds het stemmen begon. | Festgelegt, seit die Abstimmung begonnen hat. | Onder het uitgeschakelde vinkje Iedereen mag stemmen. |
+| For everyone | Voor iedereen | Für alle | De soort vraagstuk waar iedereen aan meedoet (niet van een event); vervangt het label "Online". |
+| From events | Van events | Aus Veranstaltungen | Het filter in Denk mee. |
+| Planned | Gepland | Geplant | Toestand van een event: de eerste dag is nog niet begonnen. |
+| Your events | Jouw events | Deine Veranstaltungen | Het blok bovenaan Denk mee. |
+| Back to the event / Go to the event | Terug naar het event / Naar het event | Zurück zur Veranstaltung / Zur Veranstaltung | De knoppen in Jouw events. |
+| event code | eventcode | Veranstaltungscode | De code van 8 tekens in de link. |
+| Do you have an event code? | Heb je een eventcode? | Hast du einen Veranstaltungscode? | Het veld in Denk mee. |
+| Link to this event | Link naar dit event | Link zu dieser Veranstaltung | In de strook voor de organisator. |
+| Copy link | Link kopiëren | Link kopieren | Icoonknop. |
+| Copy QR code / Download QR code | QR-code kopiëren / QR-code downloaden | QR-Code kopieren / QR-Code herunterladen | Icoonknoppen. |
+| Scan to take part | Scan om mee te doen | Scannen zum Mitmachen | Onder de QR-code. |
+| Make a new link | Nieuwe link maken | Neuen Link erstellen | De oude link en QR-code werken daarna niet meer. |
+| Share with all participants | Delen met alle deelnemers | Mit allen Teilnehmenden teilen | Na afloop, alleen de organisator. |
+| Join via the video call | Meedoen via het videogesprek | Über den Videoanruf mitmachen | De link naar het videogesprek op de eventpagina. |
 | initiator | initiatiefnemer | Initiator | Vaste label voor de rol van wie een vraagstuk start. |
 | think tank | denktank | Denkfabrik | Gangbaar Duits woord. |
 | moderation | moderatie | Moderation | Zelfde woord. |

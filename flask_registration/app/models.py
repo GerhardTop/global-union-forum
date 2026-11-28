@@ -1040,6 +1040,8 @@ class Event(db.Model):
     open_for_issues          = db.Column(db.Boolean, nullable=False, default=False)
     shared_at                = db.Column(db.DateTime, nullable=True)
     shared_by_id             = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    # Step 1d: the organiser chose "Not now" on the card after the last day.
+    share_dismissed_at       = db.Column(db.DateTime, nullable=True)
     created_by_id            = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
     created_at               = db.Column(db.DateTime, default=datetime.utcnow)
     lang                     = db.Column(db.String(5), nullable=True)
@@ -1161,7 +1163,9 @@ class IssueProposalVersion(db.Model):
                                                                    cascade='all, delete-orphan'))
 
 
-MODERATION_ACTIONS = ('hide', 'unhide', 'delete_proposal', 'delete_issue', 'delete_chart')
+MODERATION_ACTIONS = ('hide', 'unhide', 'delete_proposal', 'delete_issue', 'delete_chart',
+                      # Events step 1d: sharing an event, undoing it, a new link (one row per issue).
+                      'share_event', 'unshare_event', 'event_new_link')
 
 
 class ModerationAction(db.Model):

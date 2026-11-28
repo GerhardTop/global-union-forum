@@ -4,7 +4,8 @@
   sluit; event: de naam, de eerste dag (Nederlandse tijd) en de plaats. Een
   event van vóór P4 heeft alleen event_date (zoals ingevoerd). Context: issue.
   Events step 1c: with EVENTS on the name (translated content), the days and
-  the location come from issue.event.
+  the location come from issue.event. Step 1d: the name links to the event
+  page, and an issue without an event is "For everyone" instead of "Online".
 #}
 <span class="gu-issue-kind gu-issue-kind--{{ issue.kind }}">
   {%- if issue.kind == 'event' and events_on and issue.event -%}
@@ -12,12 +13,13 @@
     {%- set ev = issue.event -%}
     {%- set days = ev.days -%}
     {%- set when = (days[0].starts_at | local) if days else none -%}
-    {{ _('Event') }} · {{ mt_inline(ev, 'name') }}{% if when %} · {{ when | datetimeformat('d MMM y HH:mm') }}{% if days | length > 1 %} ({{ _('%(num)s days', num=days | length) }}){% endif %}{% endif %}{% if ev.location %}{{ ', ' if when else ' · ' }}{{ ev.location }}{% endif %}
+    {%- set place = event_where(ev) -%}
+    {{ _('Event') }} · <a href="{{ url_for('events.page', code=ev.code) }}" class="gu-issue-kind__event">{{ mt_inline(ev, 'name') }}</a>{% if when %} · {{ when | datetimeformat('d MMM y HH:mm') }}{% if days | length > 1 %} ({{ _('%(num)s days', num=days | length) }}){% endif %}{% endif %}{% if place %}{{ ', ' if when else ' · ' }}{{ place }}{% endif %}
   {%- elif issue.kind == 'event' -%}
     {%- set days = issue.event_days if issue.id else [] -%}
     {%- set when = (days[0].starts_at | local) if days else issue.event_date -%}
     {{ _('Event') }}{% if issue.event_name %} · {{ issue.event_name }}{% endif %}{% if when %} · {{ when | datetimeformat('d MMM y HH:mm') }}{% if days | length > 1 %} ({{ _('%(num)s days', num=days | length) }}){% endif %}{% endif %}{% if issue.event_location %}{{ ', ' if when else ' · ' }}{{ issue.event_location }}{% endif %}
   {%- else -%}
-    {{ _('Online') }}{% if issue.voting_deadline %} · {{ _('voting closes %(date)s', date=issue.voting_deadline | dateformat('d MMM y')) }}{% endif %}
+    {{ _('For everyone') if events_on else _('Online') }}{% if issue.voting_deadline %} · {{ _('voting closes %(date)s', date=issue.voting_deadline | dateformat('d MMM y')) }}{% endif %}
   {%- endif -%}
 </span>

@@ -136,9 +136,14 @@ def index():
         from app.models import Event
         from sqlalchemy.orm import selectinload
         ids = {row[0].event_id for row in rows if row[0].event_id is not None}
-        if ids:
-            content_i18n.preload(Event.query.options(selectinload(Event.days)).filter(Event.id.in_(ids)).all(), 'name')
-    return render_template('issues/index.html', rows=rows, which=which)
+        # Kept in a variable: the session's identity map holds objects weakly.
+        loaded = Event.query.options(selectinload(Event.days)).filter(Event.id.in_(ids)).all() if ids else []
+        content_i18n.preload(loaded, 'name')
+    else:
+        loaded = []
+    your_events = events.your_events(current_user) if events.enabled() else []
+    return render_template('issues/index.html', rows=rows, which=which, your_events=your_events,
+                           loaded_events=loaded)
 
 
 @issues_bp.route('/gesprekken/nieuw', methods=['GET', 'POST'])
@@ -188,9 +193,7 @@ def new():
 
 @issues_bp.route('/vraagstuk/<int:issue_id>')
 def show(issue_id):
-    issue = db.session.get(Issue, issue_id)
-    if issue is None:
-        abort(404)
+    issue = _issue_or_404(issue_id)
     # De middenkolom hergebruikt de discussie van de gesprekspagina, met
     # dezelfde context (boom, keurmerken, eens/oneens, handhaving, feiten).
     discussion = _thread_context(issue.thread) if issue.thread is not None else {}
@@ -332,6 +335,8 @@ def _issue_or_404(issue_id):
     issue = db.session.get(Issue, issue_id)
     if issue is None:
         abort(404)
+    from app import events
+    events.check_view(issue, current_user)  # events step 1d (K2b)
     return issue
 
 

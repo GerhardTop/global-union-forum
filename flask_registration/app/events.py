@@ -289,3 +289,260 @@ def choices_for(user, code=None):
     if extra is not None and extra not in own and can_add_issue(extra, user):
         own.insert(0, extra)
     return [event for event in own if can_add_issue(event, user)]
+
+
+# ── Step 1d: the event page, access, sharing, Your events ────────────────
+
+ACCESS_KEY = 'event_access'
+ACCESS_MAX = 20
+
+
+def grant(event, sess=None):
+    """Opening /e/<code> gives this session access to the issues of the
+    event (K2b); at most ACCESS_MAX events, the oldest drop off."""
+    from flask import session
+    sess = session if sess is None else sess
+    ids = [i for i in (sess.get(ACCESS_KEY) or []) if i != event.id]
+    ids.append(event.id)
+    sess[ACCESS_KEY] = ids[-ACCESS_MAX:]
+
+
+def has_access(event, sess=None):
+    from flask import session
+    sess = session if sess is None else sess
+    return event.id in (sess.get(ACCESS_KEY) or [])
+
+
+def is_shared(event):
+    return event is not None and event.shared_at is not None
+
+
+def can_view(issue, user, sess=None):
+    """K2b: may this reader open the issue (or anything under it)? Yes without
+    an event, for a shared event, or with EVENTS off. Otherwise: the link of
+    the event was opened in this session, or the reader took part in or
+    follows the issue, or manages the event."""
+    if issue is None or issue.event_id is None or not enabled():
+        return True
+    event = issue.event
+    if event is None or is_shared(event):
+        return True
+    if has_access(event, sess) or can_manage(event, user):
+        return True
+    if not _active(user):
+        return False
+    from app import issue_lifecycle
+    return user.id in issue_lifecycle.participants(issue) or issue_lifecycle.is_following(issue, user)
+
+
+def refuse():
+    """Abort with 404 and the message of K2b (an issue of an event that is
+    not shared, without access)."""
+    from flask import abort, make_response, render_template, request
+    from flask_babel import gettext
+    # TRANSLATORS: shown instead of an issue of an event that is not shared, to someone without its link.
+    message = gettext('This issue belongs to an event. Open the link of the event to take part.')
+    if request.is_json or request.accept_mimetypes.best == 'application/json':
+        abort(make_response({'error': 'event', 'message': message}, 404))
+    abort(make_response(render_template('events/notice.html', message=message), 404))
+
+
+def check_view(issue, user):
+    """can_view, else refuse(); marks the page noindex for an event that is not shared."""
+    if not can_view(issue, user):
+        refuse()
+    if noindex(issue):
+        mark_noindex()
+
+
+def mark_noindex():
+    """meta robots noindex on this response (base.html), per request."""
+    from flask import request
+    request.environ['guf.noindex'] = True
+
+
+def noindex(issue):
+    """Pages of an issue of an event that is not shared stay out of search engines."""
+    return enabled() and issue is not None and issue.event_id is not None and not is_shared(issue.event)
+
+
+def listed_filter(query):
+    """The one filter for every public list of issues (K10): no issues of an
+    event that is not shared, or archived. Only with EVENTS on."""
+    from app.models import Event, Issue
+    if not enabled():
+        return query
+    listed = db.session.query(Event.id).filter(Event.shared_at.isnot(None), Event.archived_at.is_(None))
+    return query.filter(db.or_(Issue.event_id.is_(None), Issue.event_id.in_(listed)))
+
+
+def hidden_thread_ids():
+    """The conversations of issues that are not listed (for /forum)."""
+    from app.models import Event, Issue
+    if not enabled():
+        return set()
+    hidden = db.session.query(Event.id).filter(db.or_(Event.shared_at.is_(None), Event.archived_at.isnot(None)))
+    return {t for (t,) in db.session.query(Issue.thread_id).filter(Issue.event_id.in_(hidden),
+                                                                   Issue.thread_id.isnot(None))}
+
+
+def open_now(event, now=None):
+    """Is the platform open for contributions to this event now: during a
+    day, between the first and the last day when that is on; without days always."""
+    now = now or datetime.utcnow()
+    days = list(event.days)
+    if not days:
+        return True
+    if event.online_between and days[0].starts_at <= now <= days[-1].ends_at:
+        return True
+    return any(day.starts_at <= now <= day.ends_at for day in days)
+
+
+def first_start(event):
+    return event.days[0].starts_at if event.days else None
+
+
+def last_end(event):
+    return max(day.ends_at for day in event.days) if event.days else None
+
+
+def state(event, issues=None, now=None):
+    """'planned', 'running' or 'finished' (derived, never stored). Planned:
+    the first day has not begun. Finished: the last day is over, or without
+    days every issue is finished. Otherwise running."""
+    from app import issues as issues_mod
+    now = now or datetime.utcnow()
+    if event.days:
+        if now < first_start(event):
+            return 'planned'
+        if now > last_end(event):
+            return 'finished'
+        return 'running'
+    rows = event.issues if issues is None else issues
+    if rows and all(issues_mod.is_finished(i) for i in rows):
+        return 'finished'
+    return 'running'
+
+
+def can_share(event, user):
+    """Sharing and undoing it: only the organiser (no moderator)."""
+    return _active(user) and event.created_by_id == user.id and event.archived_at is None
+
+
+def share_card(event, user, now=None):
+    """The card "The event is over" for the organiser: not shared, not
+    dismissed, the last day over."""
+    now = now or datetime.utcnow()
+    return (can_share(event, user) and event.shared_at is None and event.share_dismissed_at is None
+            and event.days and now > last_end(event))
+
+
+def _log(event, user, action):
+    from app import issues
+    for issue in event.issues:
+        issues.log_action(user, action, 'event', event.id, snapshot=event.name, issue_id=issue.id)
+
+
+def share(event, user, now=None):
+    event.shared_at = now or datetime.utcnow()
+    event.shared_by_id = user.id
+    _log(event, user, 'share_event')
+
+
+def unshare(event, user):
+    event.shared_at = None
+    event.shared_by_id = None
+    _log(event, user, 'unshare_event')
+
+
+def dismiss_share(event, now=None):
+    event.share_dismissed_at = now or datetime.utcnow()
+
+
+def renew_code(event, user):
+    """Nieuwe link maken (K2): a new code; the old one is not kept, so it
+    gives the message for an unknown code."""
+    event.code = new_code()
+    _log(event, user, 'event_new_link')
+    return event.code
+
+
+def where(event):
+    """Where, short, in the reader's language: the location, ", and online"
+    for hybrid, "online" for online. The location itself is not translated."""
+    from flask_babel import gettext
+    if event.format == 'online':
+        # TRANSLATORS: where an online event takes place, in a short label ("Event · 9 Jan 2027 14:00 · online").
+        return gettext('online')
+    if event.format == 'hybrid':
+        # TRANSLATORS: where a hybrid event takes place: the location, then "and online" ("Forum, Groningen, and online").
+        return gettext('%(place)s, and online', place=event.location or '')
+    return event.location or ''
+
+
+def issue_rows(issues_list):
+    """[(issue, proposals, participants)] for a list of issues, in a fixed
+    number of queries (as issues.overview)."""
+    from app import issues
+    return issues.with_counts(issues_list)
+
+
+def your_events(user, sess=None, now=None):
+    """Your events (K10) for the overview: planned and running events you
+    take part in (logged in and took part or follow, or opened the link in
+    this session) and the events you organise that are not shared. Returns
+    [(event, organiser, was_there, state, n_issues)], in a fixed number of
+    queries."""
+    from flask import session
+    from sqlalchemy.orm import selectinload
+    from app.models import (Event, Issue, IssueFollow, IssueProposal, IssueProposalSupport, IssueProposalVote,
+                            Post)
+    sess = session if sess is None else sess
+    seen = set(sess.get(ACCESS_KEY) or [])
+    took_part, own = set(), set()
+    if _active(user):
+        uid = user.id
+        posts = db.session.query(Post.thread_id).filter(Post.user_id == uid)
+        proposals = db.session.query(IssueProposal.issue_id).filter(IssueProposal.created_by_id == uid)
+        supports = db.session.query(IssueProposal.issue_id).join(
+            IssueProposalSupport, IssueProposalSupport.proposal_id == IssueProposal.id).filter(
+            IssueProposalSupport.user_id == uid)
+        votes = db.session.query(IssueProposal.issue_id).join(
+            IssueProposalVote, IssueProposalVote.proposal_id == IssueProposal.id).filter(
+            IssueProposalVote.user_id == uid)
+        follows = db.session.query(IssueFollow.issue_id).filter(IssueFollow.user_id == uid)
+        took_part = {e for (e,) in db.session.query(Issue.event_id).filter(
+            Issue.event_id.isnot(None),
+            db.or_(Issue.created_by_id == uid, Issue.thread_id.in_(posts), Issue.id.in_(proposals),
+                   Issue.id.in_(supports), Issue.id.in_(votes), Issue.id.in_(follows))).distinct()}
+        own = {e for (e,) in db.session.query(Event.id).filter(
+            Event.created_by_id == uid, Event.shared_at.is_(None), Event.archived_at.is_(None))}
+    ids = (seen | took_part | own)
+    if not ids:
+        return []
+    found = Event.query.options(selectinload(Event.days), selectinload(Event.issues)) \
+        .filter(Event.id.in_(ids), Event.archived_at.is_(None)).all()
+    from app import content_i18n
+    content_i18n.preload(found, 'name')
+    out = []
+    for event in found:
+        organiser = event.id in own
+        st = state(event, now=now)
+        if not organiser and st == 'finished':
+            continue
+        out.append((event, organiser, event.id in seen or organiser, st, len(event.issues)))
+    out.sort(key=lambda row: (first_start(row[0]) is None, first_start(row[0]) or datetime.max, -row[0].id))
+    return out
+
+
+def qr(url, kind):
+    """The QR code of `url` made here (segno, no network): SVG or PNG bytes."""
+    import io
+    import segno
+    code = segno.make(url, error='m')
+    out = io.BytesIO()
+    if kind == 'svg':
+        code.save(out, kind='svg', scale=6, border=2, xmldecl=False, svgns=True)
+    else:
+        code.save(out, kind='png', scale=10, border=2)
+    return out.getvalue()

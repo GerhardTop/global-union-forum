@@ -137,10 +137,24 @@
       <div class="gu-newissue__section">
         {# TRANSLATORS: section head in the event form. #}
         <p class="gu-newissue__sectionhead">{{ _('Visibility') }}</p>
+        {% if event and event.shared_at %}
+        <p>{{ _('This event is shared with all participants of Global Union.') }}</p>
+        {% else %}
         {# TRANSLATORS: section Visibility in the event form; participants are those who have the link. #}
         <p>{{ _('This event is only visible to the participants of this event. You invite them with the link or the QR code.') }}</p>
+        {% endif %}
+        {% if not event %}
         {# TRANSLATORS: section Visibility in the event form; "share" means: show the event in the overview for everyone. #}
         <p class="gu-composer__hint">{{ _('After saving you get your own link to the event and a QR code, to copy and share. Afterwards you choose whether to share the event with all participants of Global Union.') }}</p>
+        {% elif can_share %}
+        {# Step 1d (K10): only the organiser shares or undoes it; the buttons belong to the form shareForm below. #}
+        {% if event.shared_at %}
+        {# TRANSLATORS: button in the event settings: the event is visible only to its participants again. #}
+        <p><button type="submit" form="shareForm" name="action" value="unshare" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Undo sharing') }}</button></p>
+        {% else %}
+        <p><button type="submit" form="shareForm" name="action" value="share" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Share with all participants') }}</button></p>
+        {% endif %}
+        {% endif %}
       </div>
 
       <div class="gu-forum__newactions">
@@ -153,6 +167,12 @@
         </button>
       </div>
     </form>
+    {% if event and can_share %}
+    <form method="POST" action="{{ url_for('events.share', code=event.code) }}" id="shareForm" hidden>
+      {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+      <input type="hidden" name="back" value="settings">
+    </form>
+    {% endif %}
 
     {% if event %}
     <section class="gu-forum__newform gu-newissue" id="vraagstukken" aria-labelledby="eventIssuesHead">

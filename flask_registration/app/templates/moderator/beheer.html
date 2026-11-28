@@ -32,7 +32,7 @@
       <h1 class="gu-mgmt__title" lang="{{ issue.lang or lang }}">{{ issue.title }}</h1>
       <div class="gu-mgmt__pills">
         <span class="gu-pill gu-mgmt__pill--phase">{% if issue.is_closed and not issue.is_archived %}{{ _('Closed') }}{% else %}{{ _('Phase') }} {{ phase_labels_all.get(issue.phase, issue.phase) }}{% endif %}</span>
-        <span class="gu-pill">{% if issue.is_archived %}{{ _('Archived') }}{% elif issue.kind == 'event' %}{{ _('Event') }}{% else %}{{ _('Online') }}{% endif %}</span>
+        <span class="gu-pill">{% if issue.is_archived %}{{ _('Archived') }}{% elif issue.kind == 'event' %}{{ _('Event') }}{% else %}{{ _('For everyone') if events_on else _('Online') }}{% endif %}</span>
         {% if rights.own %}<span class="gu-pill">{{ _('Your issue') }}</span>{% endif %}
         {% if open_count %}<span class="gu-pill gu-mgmt__pill--count">{{ ngettext('%(num)d open report', '%(num)d open reports', open_count) }}</span>{% endif %}
       </div>
@@ -177,7 +177,9 @@
           <div class="gu-mgmt__log">
             {% set log_icons = {'hide': (i_eyeoff, 'gu-mgmt__logico--hide'), 'unhide': (i_eye, 'gu-mgmt__logico--show'),
                                 'delete_proposal': (i_bin, 'gu-mgmt__logico--del'), 'delete_issue': (i_bin, 'gu-mgmt__logico--del'),
-                                'delete_chart': (i_bin, 'gu-mgmt__logico--del')} %}
+                                'delete_chart': (i_bin, 'gu-mgmt__logico--del'),
+                                'share_event': (i_eye, 'gu-mgmt__logico--show'), 'unshare_event': (i_eyeoff, 'gu-mgmt__logico--hide'),
+                                'event_new_link': (i_eye, 'gu-mgmt__logico--show')} %}
             {% for a in log %}
             {% set actor = people.get(a.actor_id) %}
             {% set who = (_('You')) if a.actor_id == current_user.id else (actor.public_name if actor and not actor.is_deleted else (_('deleted account'))) %}
@@ -188,6 +190,12 @@
                 {% if a.action == 'hide' %}{% trans snap=snap %}hid "{{ snap }}"{% endtrans %}
                 {% elif a.action == 'unhide' %}{% trans snap=snap %}made "{{ snap }}" visible again{% endtrans %}
                 {% elif a.action in ('delete_proposal', 'delete_chart') %}{% trans snap=snap %}deleted "{{ snap }}"{% endtrans %}
+                {# TRANSLATORS: log of the issue management: the organiser shared the event "snap" with everyone. #}
+                {% elif a.action == 'share_event' %}{% trans snap=snap %}shared the event "{{ snap }}" with all participants{% endtrans %}
+                {# TRANSLATORS: log of the issue management: the organiser undid sharing the event "snap". #}
+                {% elif a.action == 'unshare_event' %}{% trans snap=snap %}made the event "{{ snap }}" visible only to its participants again{% endtrans %}
+                {# TRANSLATORS: log of the issue management: a new link (code) was made for the event "snap". #}
+                {% elif a.action == 'event_new_link' %}{% trans snap=snap %}made a new link for the event "{{ snap }}"{% endtrans %}
                 {% else %}{% trans snap=snap %}deleted the issue "{{ snap }}"{% endtrans %}{% endif %}
                 <span class="gu-mgmt__logtime">{{ ago(a.created_at) }}</span></div>
             </div>

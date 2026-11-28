@@ -75,6 +75,20 @@ De Spaanse vertaling is een machinevertaling (fase 1). `docs/i18n/review_es.csv`
 | At a location / Online / At a location and online | Op een locatie / Online / Op een locatie en online | En un lugar / En línea / En un lugar y en línea | De drie vormen van een event (codes location, online, hybrid). |
 | Link to the video call or the livestream | Link naar het videogesprek of de livestream | Enlace a la videollamada o a la transmisión en directo | Niet de link naar het event zelf; vandaar de volledige naam. |
 | Fixed since voting began. | Vastgelegd sinds het stemmen begon. | Fijado desde que empezó la votación. | Onder het uitgeschakelde vinkje Iedereen mag stemmen. |
+| For everyone | Voor iedereen | Para todos | De soort vraagstuk waar iedereen aan meedoet (niet van een event); vervangt het label "Online". |
+| From events | Van events | De eventos | Het filter in Denk mee. |
+| Planned | Gepland | Previsto | Toestand van een event: de eerste dag is nog niet begonnen. |
+| Your events | Jouw events | Tus eventos | Het blok bovenaan Denk mee. |
+| Back to the event / Go to the event | Terug naar het event / Naar het event | Volver al evento / Ir al evento | De knoppen in Jouw events. |
+| event code | eventcode | código del evento | De code van 8 tekens in de link. |
+| Do you have an event code? | Heb je een eventcode? | ¿Tienes un código de evento? | Het veld in Denk mee. |
+| Link to this event | Link naar dit event | Enlace a este evento | In de strook voor de organisator. |
+| Copy link | Link kopiëren | Copiar enlace | Icoonknop. |
+| Copy QR code / Download QR code | QR-code kopiëren / QR-code downloaden | Copiar código QR / Descargar código QR | Icoonknoppen. |
+| Scan to take part | Scan om mee te doen | Escanea para participar | Onder de QR-code. |
+| Make a new link | Nieuwe link maken | Crear un enlace nuevo | De oude link en QR-code werken daarna niet meer. |
+| Share with all participants | Delen met alle deelnemers | Compartir con todos los participantes | Na afloop, alleen de organisator. |
+| Join via the video call | Meedoen via het videogesprek | Participar por videollamada | De link naar het videogesprek op de eventpagina. |
 | initiator | initiatiefnemer | Promotor | Vaste label voor wie een cuestión start; de gangbare term bij burgerinitiatieven. |
 | think tank | denktank | laboratorio de ideas | De door de RAE aanbevolen term. |
 | moderation | moderatie | moderación | Zelfde woord. |

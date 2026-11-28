@@ -363,6 +363,30 @@ def recipients(issue):
     return participants(issue) | followers(issue)
 
 
+def participant_counts(issues):
+    """{issue_id: number of participants} for many issues at once, the same
+    people as participants() (initiator, posts in the conversation,
+    proposals, support, votes), in four queries however many issues."""
+    issues = [i for i in issues if i.id is not None]
+    people = {i.id: {i.created_by_id} for i in issues}
+    if not issues:
+        return {}
+    by_thread = {i.thread_id: i.id for i in issues if i.thread_id is not None}
+    if by_thread:
+        for thread_id, user_id in db.session.query(Post.thread_id, Post.user_id) \
+                .filter(Post.thread_id.in_(list(by_thread))).distinct():
+            people[by_thread[thread_id]].add(user_id)
+    ids = list(people)
+    for issue_id, user_id in db.session.query(IssueProposal.issue_id, IssueProposal.created_by_id) \
+            .filter(IssueProposal.issue_id.in_(ids)):
+        people[issue_id].add(user_id)
+    for model in (IssueProposalSupport, IssueProposalVote):
+        for issue_id, user_id in db.session.query(IssueProposal.issue_id, model.user_id) \
+                .join(model, model.proposal_id == IssueProposal.id).filter(IssueProposal.issue_id.in_(ids)).distinct():
+            people[issue_id].add(user_id)
+    return {issue_id: len(users - {None}) for issue_id, users in people.items()}
+
+
 def is_following(issue, user):
     return (getattr(user, 'is_authenticated', False)
             and IssueFollow.query.filter_by(issue_id=issue.id, user_id=user.id).first() is not None)

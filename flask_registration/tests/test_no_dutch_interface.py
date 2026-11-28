@@ -350,3 +350,42 @@ def test_no_dutch_on_privacy_and_faq_with_participant_profile(app, db, monkeypat
             if WORD.search(text):
                 found.setdefault(path, []).append(text)
     assert found == {}, found
+
+
+@pytest.mark.parametrize('lang', ['en', 'de', 'es', 'fr'])
+def test_no_dutch_on_the_event_pages(app, db, make_user, monkeypatch, lang):
+    """Events steps 1c and 1d with EVENTS on: the form "New event", the event
+    page with the organiser's strip and the share card, the settings, a new
+    link, Have your say with Your events and the event code, the issue form
+    with "Which event?", an issue of the event, and the message for an
+    unknown code. The user content (event and issue) is skipped."""
+    from datetime import datetime, timedelta
+    from tests.test_events_manage import _event, _issue_in
+    monkeypatch.setitem(app.config, 'EVENTS', True)
+    organiser = make_user()
+    event = _event(organiser, name=f'E{uuid.uuid4().hex[:6]}', format='hybrid', online_url='https://x.example.org',
+                   note=f'N{uuid.uuid4().hex[:6]}')
+    event.days[0].starts_at = datetime.utcnow() - timedelta(days=2, hours=3)
+    event.days[0].ends_at = datetime.utcnow() - timedelta(days=2)
+    issue = _issue_in(event, organiser, title=f'Q{uuid.uuid4().hex[:6]}')
+    db.session.commit()
+    content = _content(db)
+    client = _client(app, organiser, lang)
+    pages = ['/events/nieuw', f'/e/{event.code}', f'/e/{event.code}/instellingen', f'/e/{event.code}/nieuwe-link',
+             '/gesprekken', f'/gesprekken/nieuw?event={event.code}', f'/vraagstuk/{issue.id}']
+    found = {}
+    for path in pages:
+        resp = _req(client, 'GET', path)
+        assert resp.status_code == 200, (lang, path, resp.status_code)
+        page = resp.get_data(as_text=True)
+        if path == f'/e/{event.code}':
+            assert 'shareTitle' in page and 'organiserStrip' in page   # the card and the strip are checked too
+        for text in _interface_texts(page, content):
+            if WORD.search(text):
+                found.setdefault(path, []).append(text)
+    gone = _req(_client(app, None, lang), 'GET', '/e/AAAAAAAA')
+    assert gone.status_code == 404
+    for text in _interface_texts(gone.get_data(as_text=True), content):
+        if WORD.search(text):
+            found.setdefault('/e/AAAAAAAA', []).append(text)
+    assert found == {}, found

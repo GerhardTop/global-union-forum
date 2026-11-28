@@ -4918,3 +4918,93 @@ a.gu-user__browtitle:hover { color:var(--mod-accent); }
   .gu-pstats__traits, .gu-pstats__tables { grid-template-columns:1fr; }
   .gu-pstats__group { grid-template-columns:minmax(0, 8em) minmax(0, 1fr) 3.2em 2.6em; }
 }
+
+/* Events step 1d: the event page (docs/design/event-pagina.html, artboard 1)
+   and "Your events" with the event code in Have your say
+   (docs/design/event-overzicht.html). Logical properties throughout. */
+.gu-eventpage { display: flex; flex-direction: column; gap: 22px; }
+.gu-eventpage__card { background: var(--gu-paper); border: 1px solid var(--gu-border); border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(15,25,35,.04), 0 6px 20px rgba(15,25,35,.05); padding: 28px 32px;
+  display: flex; flex-direction: column; gap: 16px; }
+.gu-eventpage__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+.gu-eventpage__intro { display: flex; flex-direction: column; gap: 8px; flex: 1 1 420px; min-inline-size: 0; }
+.gu-eventpage__intro .gu-eyebrow { margin: 0; }
+.gu-eventpage__title { margin: 0; font-size: 2.125rem; font-weight: 500; letter-spacing: -.02em; line-height: 1.15; }
+.gu-eventpage__when { margin: 0; font-size: .9375rem; color: var(--gu-fg-2); }
+.gu-eventpage__video { margin: 0; font-size: .875rem; }
+.gu-eventpage__video a { display: inline-flex; align-items: center; gap: 6px; }
+.gu-eventpage__by { margin: 0; font-size: .8125rem; color: var(--gu-fg-3); }
+.gu-eventpage__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.gu-eventpage__note { font-size: .9375rem; line-height: 1.6; max-inline-size: 64ch; }
+.gu-eventpage__strip { display: flex; flex-direction: column; gap: 14px; background: var(--gu-bg-soft);
+  border: 1px solid var(--gu-border); border-radius: 10px; padding: 16px 18px; }
+.gu-eventpage__striphead { margin: 0; font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gu-fg-3); }
+.gu-eventpage__stripbody { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+.gu-eventpage__linkcol { display: flex; flex-direction: column; gap: 10px; flex: 1 1 380px; min-inline-size: 0; }
+.gu-eventpage__label { font-size: .875rem; font-weight: 500; }
+.gu-eventpage__linkrow { display: flex; gap: 8px; }
+.gu-eventpage__link { flex: 1; min-inline-size: 0; font-weight: 500; letter-spacing: .02em; }
+.gu-eventpage__iconbtn { display: inline-flex; align-items: center; justify-content: center; inline-size: 42px; block-size: 42px;
+  flex: none; box-sizing: border-box; border-radius: 8px; border: 1px solid var(--gu-border); background: var(--gu-paper);
+  color: var(--gu-globe); cursor: pointer; }
+.gu-eventpage__iconbtn[hidden] { display: none; }
+.gu-eventpage__ico, .gu-eventpage__check { display: inline-flex; }
+.gu-eventpage__ico[hidden], .gu-eventpage__check[hidden] { display: none; }
+.gu-eventpage__issuebody .gu-issuelist__phase, .gu-eventform__issuebody .gu-issuelist__phase { font-size: .75rem; font-weight: 500; }
+.gu-eventpage__code { margin: 0; font-size: .875rem; }
+.gu-eventpage__code strong { font-weight: 600; letter-spacing: .06em; }
+.gu-eventpage__muted { color: var(--gu-fg-3); font-size: .8125rem; }
+.gu-eventpage__small { margin: 0; font-size: .8125rem; }
+.gu-eventpage__facts { margin: 0; padding-inline-start: 18px; font-size: .875rem; line-height: 1.6; }
+.gu-eventpage__qrcol { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.gu-eventpage__qr { inline-size: 132px; block-size: 132px; border: 1px solid var(--gu-border); border-radius: 8px; background: #fff; }
+.gu-eventpage__qrbtns { display: flex; gap: 8px; }
+.gu-eventpage__share { border-color: var(--gu-globe); }
+.gu-eventpage__share p { margin: 0; }
+.gu-eventpage__h2 { margin: 0; font-size: 1rem; font-weight: 600; }
+.gu-eventpage__share .gu-eventpage__h2 { font-size: 1.125rem; }
+.gu-eventpage__sharebtns { display: flex; gap: 10px; flex-wrap: wrap; }
+.gu-eventpage__list { padding: 0; gap: 0; overflow: hidden; }
+.gu-eventpage__listhead { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-block-end: 1px solid var(--gu-border); }
+.gu-eventpage__count { display: inline-flex; padding: 2px 9px; border-radius: 999px; background: var(--gu-bg-soft);
+  border: 1px solid var(--gu-border); font-size: .75rem; font-weight: 600; }
+.gu-eventpage__issues { list-style: none; margin: 0; padding: 0; }
+.gu-eventpage__issue { display: flex; align-items: flex-start; gap: 16px; padding: 16px 20px; border-block-start: 1px solid var(--gu-border); }
+.gu-eventpage__issue:first-child { border-block-start: 0; }
+.gu-eventpage__pos { inline-size: 18px; padding-block-start: 2px; color: var(--gu-fg-3); font-size: .8125rem; }
+.gu-eventpage__issuebody { display: flex; flex-direction: column; gap: 6px; flex: 1; min-inline-size: 0; }
+.gu-eventpage__issuetitle { font-size: 1rem; font-weight: 500; color: var(--gu-fg-1); text-decoration: none; }
+.gu-eventpage__issuetitle:hover { text-decoration: underline; }
+.gu-eventpage__empty { padding: 16px 20px; margin: 0; }
+.gu-eventpage__foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  font-size: .875rem; color: var(--gu-fg-3); }
+.gu-eventpage__foot p { margin: 0; }
+.gu-eventpage__out { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 559px) {
+  .gu-eventpage__card { padding: 20px; }
+  .gu-eventpage__title { font-size: 1.75rem; }
+  .gu-eventpage__actions { inline-size: 100%; }
+}
+.gu-issue-kind__event { color: var(--gu-globe); text-decoration: none; }
+.gu-issue-kind__event:hover { text-decoration: underline; }
+.gu-issuelist__titlelink { color: var(--gu-fg-1); text-decoration: none; }
+.gu-issuelist__titlelink:hover { text-decoration: underline; }
+.gu-forum--soft .gu-issuelist .gu-issuelist__card:hover { border-color: var(--gu-border); box-shadow: none; }
+.gu-yourevents { display: flex; flex-direction: column; gap: 8px; margin-block-end: 16px; }
+.gu-yourevents__head { margin: 0 0 8px; font-size: .875rem; font-weight: 600; }
+.gu-yourevents__list { list-style: none; margin: 0; padding: 0; background: var(--gu-paper); border: 1px solid var(--gu-border);
+  border-radius: 14px; overflow: hidden; }
+.gu-yourevents__item { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 18px;
+  flex-wrap: wrap; border-block-start: 1px solid var(--gu-border); }
+.gu-yourevents__item:first-child { border-block-start: 0; }
+.gu-yourevents__body { display: flex; flex-direction: column; gap: 4px; min-inline-size: 0; }
+.gu-yourevents__eyebrow { margin: 0; font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gu-globe); }
+.gu-yourevents__name { font-size: 1rem; font-weight: 500; }
+.gu-yourevents__meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: .8125rem; color: var(--gu-fg-3); }
+.gu-yourevents__pill { display: inline-flex; padding: 1px 9px; border-radius: 999px; background: var(--gu-bg-soft);
+  border: 1px solid var(--gu-border); color: var(--gu-globe); font-weight: 500; }
+.gu-yourevents__state { font-weight: 500; color: var(--gu-fg-2); }
+.gu-eventcode { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-block-end: 20px; }
+.gu-eventcode__label { display: flex; flex-direction: column; gap: 6px; font-size: .875rem; font-weight: 500; flex: 1 1 260px; }
+.gu-eventcode__input { text-transform: uppercase; letter-spacing: .04em; }
+.gu-eventcode__input::placeholder { text-transform: none; letter-spacing: 0; }

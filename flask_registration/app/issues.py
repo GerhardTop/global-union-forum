@@ -388,10 +388,10 @@ def is_open_now(issue, now=None):
     # transition copies them, so the outcome is the same as before).
     event = issue.event if issue.event_id is not None else None
     if event is not None:
-        days, online_between = list(event.days), event.online_between
-    else:
-        days = list(issue.event_days) if issue.id is not None else []
-        online_between = issue.event_online_between
+        from app import events
+        return events.open_now(event, now)
+    days = list(issue.event_days) if issue.id is not None else []
+    online_between = issue.event_online_between
     if not days:
         return True
     if online_between and days[0].starts_at <= now <= days[-1].ends_at:
@@ -445,10 +445,14 @@ def is_finished(issue):
 
 
 def overview(which='alle'):
-    """[(vraagstuk, aantal voorstellen, aantal deelnemers)], nieuwste eerst."""
-    from app import issue_lifecycle
-    from app.models import IssueProposal
-    query = Issue.query.filter(Issue.archived_at.is_(None))  # archived: not listed publicly
+    """[(vraagstuk, aantal voorstellen, aantal deelnemers)], nieuwste eerst.
+    Events step 1d: with EVENTS on no issues of an event that is not shared
+    (events.listed_filter). A fixed number of queries."""
+    from sqlalchemy.orm import selectinload
+    from app import events
+    query = Issue.query.options(selectinload(Issue.created_by)) \
+        .filter(Issue.archived_at.is_(None))  # archived: not listed publicly
+    query = events.listed_filter(query)
     if which in ISSUE_KINDS:
         query = query.filter(Issue.kind == which)
     found = query.order_by(Issue.created_at.desc(), Issue.id.desc()).all()
@@ -456,13 +460,25 @@ def overview(which='alle'):
         found = [i for i in found if not is_finished(i)]
     elif which == 'afgerond':
         found = [i for i in found if is_finished(i)]
-    counts = {}
+    return with_counts(found)
+
+
+def with_counts(found):
+    """[(issue, proposals, participants)]: the visible proposals (new and
+    old) and the participants, in a fixed number of queries."""
+    from app import issue_lifecycle
+    from app.models import IssueProposal
+    counts, old, people = {}, {}, {}
     if found:
+        ids = [i.id for i in found]
         counts = dict(db.session.query(IssueProposal.issue_id, db.func.count(IssueProposal.id))
-                      .filter(IssueProposal.issue_id.in_([i.id for i in found]),
+                      .filter(IssueProposal.issue_id.in_(ids),
                               IssueProposal.hidden_at.is_(None))  # hidden proposals are not public
                       .group_by(IssueProposal.issue_id).all())
-    return [(i, counts.get(i.id, 0) + len(i.proposals), len(issue_lifecycle.participants(i))) for i in found]
+        old = dict(db.session.query(Proposal.issue_id, db.func.count(Proposal.id))
+                   .filter(Proposal.issue_id.in_(ids)).group_by(Proposal.issue_id).all())
+        people = issue_lifecycle.participant_counts(found)
+    return [(i, counts.get(i.id, 0) + old.get(i.id, 0), people.get(i.id, 0)) for i in found]
 
 
 # ── Delete rights (step 1): settings, permissions, hiding, audit log ─────

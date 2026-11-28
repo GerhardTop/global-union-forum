@@ -330,6 +330,8 @@ def _migrate_issues(existing):
 # Polijstronde van het vraagstuk-model: nullable kolommen per tabel. Op een
 # verse database maakt db.create_all() ze aan; nieuwe tabellen ook.
 _POLISH_COLUMNS = {
+    # Events step 1d: the organiser chose "Not now" on the share card.
+    'events': (('share_dismissed_at', 'TIMESTAMP NULL'),),
     # User moderation step 1: suspension end and the anonymising fields (the
     # tables user_warnings and user_suspensions come from db.create_all()).
     'users': (('suspended_until', 'TIMESTAMP NULL'), ('deleted_at', 'TIMESTAMP NULL'),
@@ -902,6 +904,7 @@ def create_app():
             '/wachtwoord-vergeten': 'auth.wachtwoord_vergeten',
             '/feedback': 'main.index',
             '/uitnodiging': 'main.index',
+            '/e': 'issues.index',   # events step 1d: the field for an event code
         }
         return redirect(url_for(_path_map.get(request.path, 'auth.login')))
 
@@ -999,6 +1002,7 @@ def create_app():
             content_i18n=content_i18n,
             # Events (docs/events.md): the switch EVENTS, for the templates.
             events_on=_events.enabled(app),
+            event_where=_events.where,
         )
 
     @app.context_processor

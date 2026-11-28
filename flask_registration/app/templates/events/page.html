@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}{{ content_i18n.text_for(event, 'name', lang) or event.name }} · Global Union{% endblock %}
+
+{#
+  Events step 1d (docs/events.md, K2, K4, K8, K10, K13), built to
+  docs/design/event-pagina.html (artboard 1, without the bar: step 1e) and
+  docs/design/event-delen.html (the card after the last day). For everyone
+  with the link; the strip "Only visible to you as organiser" and the
+  buttons only for whoever may. No message about the right to vote (K8).
+  Works without JavaScript (copy: select the text in the field).
+#}
+{% block content_outer %}{% block content %}
+{% from '_mt.html' import mt, mt_inline with context %}
+{% set i_copy %}<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{% endset %}
+{% set i_check %}<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l5 5L20 7"/></svg>{% endset %}
+{% set i_download %}<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>{% endset %}
+{% set i_video %}<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg>{% endset %}
+{% set i_arrow %}<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>{% endset %}
+<main class="gu-forum gu-forum--soft" lang="{{ lang }}">
+  <div class="gu-forum__inner gu-eventpage">
+
+    {% if archived %}
+    <div class="gu-archived" role="status">
+      <p class="gu-archived__text"><strong>{{ _('Archived') }}</strong> ·
+        {# TRANSLATORS: on the page of an archived event. #}
+        {{ _('This event is archived: it is no longer listed.') }}</p>
+    </div>
+    {% endif %}
+
+    <section class="gu-eventpage__card gu-eventpage__head" aria-labelledby="eventTitle">
+      <div class="gu-eventpage__top">
+        <div class="gu-eventpage__intro">
+          <p class="gu-eyebrow">{{ _('Event') }}</p>
+          {{ mt(event, 'name', 'h1', 'gu-eventpage__title', id='eventTitle') }}
+          {% for day in event.days %}
+          {% set start = day.starts_at | local | datetimeformat('EEEE d MMMM y, HH:mm') %}
+          <p class="gu-eventpage__when">{{ start[:1] | upper }}{{ start[1:] }} {{ _('to') }} {{ day.ends_at | local | datetimeformat('HH:mm') }}{% if where %} <span aria-hidden="true">·</span> {{ where }}{% endif %}</p>
+          {% else %}
+          {% if where %}<p class="gu-eventpage__when">{{ where }}</p>{% endif %}
+          {% endfor %}
+          {% if event.online_url %}
+          {# TRANSLATORS: link on the event page to the video call or livestream of the event. #}
+          <p class="gu-eventpage__video"><a href="{{ event.online_url }}" target="_blank" rel="noopener nofollow">{{ i_video }}{{ _('Join via the video call') }}</a></p>
+          {% endif %}
+          {% if event.created_by %}
+          {# TRANSLATORS: on the event page: who organises the event. #}
+          <p class="gu-eventpage__by">{{ _('Organiser: %(name)s', name=event.created_by.public_name) }}</p>
+          {% endif %}
+        </div>
+        {% if not archived and (add_issue or manage) %}
+        <div class="gu-eventpage__actions">
+          {% if add_issue %}
+          <a href="{{ url_for('issues.new', event=event.code) }}" class="gu-btn gu-btn--primary gu-btn--sm"><span aria-hidden="true">+</span> {{ _('New issue for this event') }}</a>
+          {% endif %}
+          {% if manage %}
+          <a href="{{ url_for('events.settings', code=event.code) }}" class="gu-btn gu-btn--ghost gu-btn--sm">{{ _('Settings') }}</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      {% if event.note %}{{ mt(event, 'note', 'div', 'gu-eventpage__note', rich=true) }}{% endif %}
+      {% if not open_now and not archived %}
+      {# TRANSLATORS: on the event page when the platform is closed outside the days of the event. #}
+      <p class="gu-cockpit__closednote">{{ _('The platform is not open for contributions right now. See the days of the event.') }}</p>
+      {% endif %}
+
+      {% if manage %}
+      <div class="gu-eventpage__strip" id="organiserStrip">
+        {# TRANSLATORS: heading of the grey strip on the event page that only the organiser (and moderators) see. #}
+        <p class="gu-eventpage__striphead">{{ _('Only visible to you as organiser') }}</p>
+        <div class="gu-eventpage__stripbody">
+          <div class="gu-eventpage__linkcol">
+            {# TRANSLATORS: label of the field with the link to the event page. #}
+            <label for="eventLink" class="gu-eventpage__label">{{ _('Link to this event') }}</label>
+            <div class="gu-eventpage__linkrow">
+              <input id="eventLink" type="text" readonly value="{{ link }}" class="gu-input gu-eventpage__link">
+              {# TRANSLATORS: icon button that copies the link to the event. #}
+              <button type="button" class="gu-eventpage__iconbtn" id="copyLink" hidden
+                      aria-label="{{ _('Copy link') }}" title="{{ _('Copy link') }}"
+                      {# TRANSLATORS: read out by screen readers for two seconds after copying the link. #}
+                      data-copied="{{ _('Link copied') }}"><span class="gu-eventpage__ico">{{ i_copy }}</span><span class="gu-eventpage__check" hidden>{{ i_check }}</span></button>
+            </div>
+            <p class="gu-sr-only" id="copyStatus" aria-live="polite"></p>
+            {% if event.shared_at %}
+            {# TRANSLATORS: in the organiser's strip after the event was shared. #}
+            <p class="gu-composer__hint">{{ _('This event is shared with all participants of Global Union.') }}</p>
+            {% else %}
+            {# TRANSLATORS: in the organiser's strip on the event page; participants are those who have the link. #}
+            <p class="gu-composer__hint">{{ _('Share the link or the QR code with the participants, for example on a slide or in the invitation. This event is only visible to the participants of this event.') }}</p>
+            {% endif %}
+            {# TRANSLATORS: in the organiser's strip: the event code, which people can type in "Have your say". #}
+            <p class="gu-eventpage__code">{% trans code=event.code %}Event code: <strong>{{ code }}</strong>{% endtrans %}
+              {# TRANSLATORS: after the event code: where people type it in. #}
+              <span class="gu-eventpage__muted">{{ _('(to type in at Have your say)') }}</span></p>
+            {# TRANSLATORS: link to make a new code, so the old link and QR code stop working. #}
+            <p class="gu-eventpage__small"><a href="{{ url_for('events.new_link', code=event.code) }}">{{ _('Make a new link') }}</a></p>
+            <ul class="gu-eventpage__facts">
+              {% if not event.shared_at %}
+              {# TRANSLATORS: in the organiser's strip, before the event is shared. #}
+              <li>{{ _('Afterwards you choose whether to share the event with all participants of Global Union.') }}</li>
+              {% endif %}
+              {# TRANSLATORS: in the organiser's strip: the setting "Everyone may vote" is on or off; followed by the link "Change". #}
+              <li>{% if event.everyone_votes %}{{ _('Everyone may vote: on.') }}{% else %}
+                {# TRANSLATORS: in the organiser's strip: the setting "Everyone may vote" is off. #}
+                {{ _('Everyone may vote: off.') }}{% endif %}
+                {# TRANSLATORS: link to the event settings. #}
+                <a href="{{ url_for('events.settings', code=event.code) }}">{{ _('Change') }}</a></li>
+            </ul>
+          </div>
+          <div class="gu-eventpage__qrcol">
+            {# TRANSLATORS: alternative text of the QR code image. #}
+            <img src="{{ url_for('events.qr_svg', code=event.code) }}" width="132" height="132" class="gu-eventpage__qr"
+                 alt="{{ _('QR code of the link to this event') }}">
+            {# TRANSLATORS: under the QR code on the event page. #}
+            <span class="gu-eventpage__muted">{{ _('Scan to take part') }}</span>
+            <div class="gu-eventpage__qrbtns">
+              {# TRANSLATORS: icon button that copies the QR code image to the clipboard. #}
+              <button type="button" class="gu-eventpage__iconbtn" id="copyQr" hidden data-src="{{ url_for('events.qr_png', code=event.code) }}"
+                      aria-label="{{ _('Copy QR code') }}" title="{{ _('Copy QR code') }}"
+                      {# TRANSLATORS: read out by screen readers for two seconds after copying the QR code. #}
+                      data-copied="{{ _('QR code copied') }}"><span class="gu-eventpage__ico">{{ i_copy }}</span><span class="gu-eventpage__check" hidden>{{ i_check }}</span></button>
+              {# TRANSLATORS: icon button that downloads the QR code as an image. #}
+              <a href="{{ url_for('events.qr_png', code=event.code) }}" download="event-{{ event.code }}.png" class="gu-eventpage__iconbtn"
+                 aria-label="{{ _('Download QR code') }}" title="{{ _('Download QR code') }}">{{ i_download }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </section>
+
+    {% if share_card %}
+    <section class="gu-eventpage__card gu-eventpage__share" aria-labelledby="shareTitle">
+      {# TRANSLATORS: heading of the card for the organiser after the last day of the event. #}
+      <h2 id="shareTitle" class="gu-eventpage__h2">{{ _('The event is over. Do you want to share it with all participants of Global Union?') }}</h2>
+      {# TRANSLATORS: on the share card; "Have your say" is the overview of all issues. #}
+      <p>{{ _('The issues of the event then appear in the overview Have your say, with the name of the event. Everyone can read them, with the results and the follow-up.') }}</p>
+      {% if unfinished %}
+      {# TRANSLATORS: on the share card; %(phases)s are the phases of the issues that are not finished. #}
+      <p class="gu-composer__hint">{{ ngettext('One issue is not finished yet (%(phases)s). After sharing, everyone can take part there.', '%(num)d issues are not finished yet (%(phases)s). After sharing, everyone can take part there.', unfinished | length, phases=unfinished_phases) }}</p>
+      {% endif %}
+      <form method="POST" action="{{ url_for('events.share', code=event.code) }}" class="gu-eventpage__sharebtns">
+        {% if forum_action_form.meta.csrf %}{{ forum_action_form.csrf_token(id=False) }}{% endif %}
+        {# TRANSLATORS: button on the share card and in the settings. #}
+        <button type="submit" name="action" value="share" class="gu-btn gu-btn--primary">{{ _('Share with all participants') }}</button>
+        {# TRANSLATORS: button on the share card: do not share now. #}
+        <button type="submit" name="action" value="later" class="gu-btn gu-btn--ghost">{{ _('Not now') }}</button>
+      </form>
+      {# TRANSLATORS: under the buttons of the share card. #}
+      <p class="gu-composer__hint">{{ _('With Not now the event stays visible only to its participants. You can still share it later in the settings, and undo it there too.') }}</p>
+    </section>
+    {% endif %}
+
+    <section class="gu-eventpage__card gu-eventpage__list" aria-labelledby="listTitle">
+      <div class="gu-eventpage__listhead">
+        {# TRANSLATORS: heading of the list of issues on the event page. #}
+        <h2 id="listTitle" class="gu-eventpage__h2">{{ _('Issues of this event') }}</h2>
+        <span class="gu-eventpage__count">{{ rows | length }}</span>
+      </div>
+      {% if rows %}
+      <ol class="gu-eventpage__issues">
+        {% for issue, n_proposals, n_people in rows %}
+        <li class="gu-eventpage__issue">
+          <span class="gu-eventpage__pos">{{ loop.index }}</span>
+          <span class="gu-eventpage__issuebody">
+            <span><span class="gu-issuelist__phase{% if issue.is_closed %} is-closed{% endif %}">{% if issue.is_closed %}{{ _('Closed') }}{% else %}{{ phase_labels.get(issue.phase, issue.phase) }}{% endif %}</span></span>
+            <a class="gu-eventpage__issuetitle" href="{{ url_for('issues.show', issue_id=issue.id) }}">{{ mt_inline(issue, 'title') }}</a>
+            <span class="gu-threadlist__meta gu-issuelist__meta">
+              {% if issue.created_by %}<span>{{ _('submitted by') }} {{ issue.created_by.public_name }}</span>{% endif %}
+              <span>{{ ngettext('%(num)d proposal', '%(num)d proposals', n_proposals) }}</span>
+              <span>{{ ngettext('%(num)d participant', '%(num)d participants', n_people) }}</span>
+            </span>
+          </span>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      {# TRANSLATORS: on the event page when the event has no issues yet. #}
+      <p class="gu-composer__hint gu-eventpage__empty">{{ _('There are no issues for this event yet.') }}</p>
+      {% endif %}
+    </section>
+
+    <div class="gu-eventpage__foot">
+      {# TRANSLATORS: under the list on the event page. #}
+      <p>{{ _('Only the issues of this event are shown here.') }}</p>
+      {# TRANSLATORS: link from an event to the overview of all other issues. #}
+      <a href="{{ url_for('issues.index') }}" class="gu-eventpage__out">{{ _('See the issues outside this event') }} {{ i_arrow }}</a>
+    </div>
+
+  </div>
+</main>
+{% endblock %}
+
+{% if manage %}
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var status = document.getElementById('copyStatus');
+    function done(btn) {
+      var ico = btn.querySelector('.gu-eventpage__ico'), check = btn.querySelector('.gu-eventpage__check');
+      ico.hidden = true; check.hidden = false;
+      status.textContent = btn.dataset.copied;
+      setTimeout(function () { ico.hidden = false; check.hidden = true; status.textContent = ''; }, 2000);
+    }
+    var copyLink = document.getElementById('copyLink');
+    var field = document.getElementById('eventLink');
+    field.addEventListener('focus', function () { field.select(); });
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      copyLink.hidden = false;
+      copyLink.addEventListener('click', function () {
+        navigator.clipboard.writeText(field.value).then(function () { done(copyLink); }, function () { field.select(); });
+      });
+    }
+    var copyQr = document.getElementById('copyQr');
+    if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+      copyQr.hidden = false;
+      copyQr.addEventListener('click', function () {
+        var item = new ClipboardItem({'image/png': fetch(copyQr.dataset.src).then(function (r) { return r.blob(); })});
+        navigator.clipboard.write([item]).then(function () { done(copyQr); }, function () {});
+      });
+    }
+  })();
+</script>
+{% endif %}
+{% endblock %}
