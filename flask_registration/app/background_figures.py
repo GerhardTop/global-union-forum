@@ -323,7 +323,8 @@ def _parse_json(text):
 def _ask(client, model, system, user_msg, max_tokens):
     response = client.messages.create(model=model, max_tokens=max_tokens, system=system,
                                       messages=[{'role': 'user', 'content': user_msg}])
-    return ''.join(getattr(block, 'text', '') for block in response.content)
+    from app import quality
+    return quality.response_text(response)   # text blocks only, thinking blocks skipped
 
 
 # ── Gathering ────────────────────────────────────────────────────────────

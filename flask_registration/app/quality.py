@@ -230,6 +230,15 @@ def translation_problem(source, answer, kind='text'):
     return None
 
 
+def response_text(response):
+    """The text of an AI answer: every block of type 'text' joined, other
+    blocks (thinking, redacted_thinking and the like) skipped. A model may
+    send a thinking block first, so never read content[0]. No text block
+    gives '' (the checks then refuse it)."""
+    return ''.join(getattr(block, 'text', '') or '' for block in (getattr(response, 'content', None) or [])
+                   if getattr(block, 'type', 'text') == 'text')
+
+
 class TranslationRejected(ValueError):
     """The AI answered, but not with a usable translation (translation_problem)."""
 
@@ -251,7 +260,7 @@ def translate_text(source, target_lang, client=None, kind='text'):
         system=_TRANSLATE_SYSTEM[kind].format(language=language),
         messages=[{'role': 'user', 'content': f'<source>\n{source}\n</source>'}],
     )
-    answer = message.content[0].text.strip()
+    answer = response_text(message).strip()
     problem = translation_problem(source, answer, kind)
     if problem:
         raise TranslationRejected(f'{problem}: {answer[:80]!r}')
@@ -361,7 +370,7 @@ def judge_post(post_id):
         if response.stop_reason == 'refusal':
             current_app.logger.warning('Kwaliteitsbeoordeling geweigerd voor post %s', post_id)
             return None
-        data = json.loads(next(b.text for b in response.content if b.type == 'text'))
+        data = json.loads(response_text(response))
         criterion = data['suggested_criterion'] if data['suggested_criterion'] in ('K1', 'K2') else None
         if post.is_fact:
             criterion = None  # geen keurmerk voor feiten, wat de AI ook zegt
