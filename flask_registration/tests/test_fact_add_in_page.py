@@ -71,7 +71,7 @@ def test_fact_plus_opens_the_add_form_in_the_page(app, db, world):
         assert box and box.group(1) == ' hidden', key
         # The no-script link: enlarged, form open, at the top above the filter bar.
         opened = _get(app, path + '?vergroot=feiten&nieuw-feit=1', host)
-        assert re.search(r'<main class="[^"]*gu-cockpit--expanded', opened) and 'data-expanded="facts"' in opened, key
+        assert re.search(r'<div class="gu-forum gu-cockpit[^"]*gu-cockpit--expanded', opened) and 'data-expanded="facts"' in opened, key
         box = _box(opened)
         assert box and box.group(1) is None, key
         assert f'action="/forum/{issue.thread_id}/feiten"' in box.group(2), key

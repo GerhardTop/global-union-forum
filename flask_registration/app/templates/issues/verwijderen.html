@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Delete') }} · Global Union{% endblock %}
+{% block title %}{{ _('Delete') }} · {{ content_i18n.display(issue, 'title', lang) }} · Global Union{% endblock %}
 
 {#
   Delete confirmation (Verwijderen.dc.html, docs/design/README.md): a red

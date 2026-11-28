@@ -7,7 +7,7 @@
 {% block content_outer %}{% block content %}
 {# Sjabloon voor het kwaliteitskeurmerk, gebruikt door de statuspoll (punt 8). #}
 <template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>
-<main class="gu-forum" lang="{{ lang }}">
+<div class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     {# Breadcrumbs + "Nieuw gesprek" toolbar #}
@@ -182,7 +182,7 @@
     {% include 'forum/_discussion.html' %}
 
   </div>
-</main>
+</div>
 {% endblock %}
 
 {% include 'forum/_thread_script.html' %}

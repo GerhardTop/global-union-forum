@@ -2,7 +2,7 @@
 {% block title %}{{ _('Join us') }} · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
-<main class="gu-join-page">
+<div class="gu-join-page">
   <div class="gu-join-page__inner">
 
     <form class="gu-join__panel" method="POST" action="{{ url_for('social.aanmelden') }}" novalidate>
@@ -15,9 +15,9 @@
         <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
       </div>
 
-      <h2 class="gu-join__h2">
+      <h1 class="gu-join__h2">
         {{ _('Join the conversation.') }}
-      </h2>
+      </h1>
       <p class="gu-join__sub">
         {# TRANSLATORS: sign-up, the line under the heading. #}{{ _('Expert or layperson, 16 or 96, under a username and optionally under your own name with LinkedIn.') }}
       </p>
@@ -180,7 +180,7 @@
 
     </form>
   </div>
-</main>
+</div>
 {% if errors.rules %}
 <script nonce="{{ csp_nonce() }}">
   // Fout bij het spelregel-vinkje: in beeld brengen (het staat onderaan het

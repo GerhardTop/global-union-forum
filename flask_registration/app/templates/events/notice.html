@@ -6,7 +6,7 @@
   link"), or an issue of an event that is not shared without access (K2b).
 #}
 {% block content_outer %}{% block content %}
-<main class="gu-forum gu-forum--soft" lang="{{ lang }}">
+<div class="gu-forum gu-forum--soft" lang="{{ lang }}">
   <div class="gu-forum__inner">
     <header class="gu-forum__threadhead">
       <p class="gu-eyebrow">{{ _('Event') }}</p>
@@ -14,5 +14,5 @@
     </header>
     <p><a href="{{ url_for('issues.index') }}" class="gu-btn gu-btn--ghost">{{ _('Have your say') }}</a></p>
   </div>
-</main>
+</div>
 {% endblock %}{% endblock %}

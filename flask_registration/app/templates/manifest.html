@@ -3,7 +3,7 @@
 
 {% block content_outer %}
 {% block content %}
-<main class="gu-manifest" lang="{{ lang }}">
+<div class="gu-manifest" lang="{{ lang }}">
 
   {# ── HERO ──────────────────────────────────────────────── #}
   <section class="gu-manifest__hero">
@@ -104,7 +104,7 @@
 
           <div class="gu-manifest__numbered">
             <span class="gu-manifest__numberedN">01</span>
-            <h4 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 17 #}{{ _('A values-driven trade system') }}</h4>
+            <h3 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 17 #}{{ _('A values-driven trade system') }}</h3>
           </div>
           <p>{# TRANSLATORS: manifest, tekst 18 #}{{ _('The GU operates with a single system of trade tariffs based on a scorecard per country, measured on:') }}</p>
           <ul>
@@ -122,7 +122,7 @@
 
           <div class="gu-manifest__numbered">
             <span class="gu-manifest__numberedN">02</span>
-            <h4 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 19 #}{{ _('Peaceful but firm foreign policy') }}</h4>
+            <h3 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 19 #}{{ _('Peaceful but firm foreign policy') }}</h3>
           </div>
           
             <p>{# TRANSLATORS: manifest, alinea 11 #}{% trans %}The GU invests in strategic independence for all members: raw materials, energy, defence and its own AI capabilities. The GU must urgently stand on its own two feet in these areas.{% endtrans %}</p>
@@ -131,13 +131,13 @@
 
           <div class="gu-manifest__numbered">
             <span class="gu-manifest__numberedN">03</span>
-            <h4 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 20 #}{{ _('Information freedom as a strategic instrument') }}</h4>
+            <h3 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 20 #}{{ _('Information freedom as a strategic instrument') }}</h3>
           </div>
           <p>{# TRANSLATORS: manifest, tekst 21 #}{{ _('The GU extends its influence through high-quality independent journalism in all local languages - by analogy to the BBC, reinforced with GU resources - and by making protected technology available that frees people from state-controlled internet access.') }}</p>
 
           <div class="gu-manifest__numbered">
             <span class="gu-manifest__numberedN">04</span>
-            <h4 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 22 #}{{ _('A single trade zone, limited free movement of people') }}</h4>
+            <h3 class="gu-manifest__numberedTitle">{# TRANSLATORS: manifest, tekst 22 #}{{ _('A single trade zone, limited free movement of people') }}</h3>
           </div>
           
             <p>{# TRANSLATORS: manifest, alinea 13 #}{% trans %}The GU does not function as a single market with full free movement of people, to avoid unwanted migration flows toward wealthier areas. Uniform trade tariffs based on the scorecard do apply.{% endtrans %}</p>
@@ -318,7 +318,7 @@
           <h2>{# TRANSLATORS: manifest, kop #}{{ pgettext('manifest heading', 'Long-term perspective') }}</h2>
           <p>{# TRANSLATORS: manifest, tekst 35 #}{{ _('The Global Union encompasses countries from across the world, grows strongly, and is a driving force for a growing number of functioning democracies. The GU works constructively together with other countries that want to keep the world safe and clean for future generations.') }}</p>
           <aside class="gu-manifest__pullquote">
-            <span class="gu-manifest__pullquote-mark">"</span>Middle powers must act together, because if we're not at the table, we're on the menu.<span class="gu-manifest__pullquote-mark">"</span>
+            <span class="gu-manifest__pullquote-mark" aria-hidden="true">"</span>Middle powers must act together, because if we're not at the table, we're on the menu.<span class="gu-manifest__pullquote-mark">"</span>
             <footer class="gu-manifest__pullquote-cite">Mark Carney, Davos, {# TRANSLATORS: manifest, tekst 36 #}{{ _('20 January 2026') }}</footer>
           </aside>
         </section>
@@ -348,7 +348,7 @@
     </div>
   </section>
 
-</main>
+</div>
 {% endblock %}
 
 <script nonce="{{ csp_nonce() }}">

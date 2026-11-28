@@ -16,6 +16,10 @@
 
 `docs/events.md` is de bouw-specificatie voor events (een eigen ruimte per bijeenkomst, op een locatie of online, met een link, eventcode en QR-code die niet te raden zijn; alleen zichtbaar voor de deelnemers tot de organisator het na afloop deelt; met de instellingen "Iedereen mag stemmen" en "Deelnemers mogen vraagstukken toevoegen") en is bij elke bouwstap van dat spoor leidend. Het ontwerp staat in `docs/design/event-pagina.html` (de eventpagina met de balk, en een vraagstuk binnen het event), `docs/design/event-stemblok.html`, `docs/design/event-formulier.html`, `docs/design/event-overzicht.html` (Denk mee met Jouw events) en `docs/design/event-delen.html`.
 
+## Toegankelijkheid
+
+`docs/toegankelijkheid.md` is leidend voor kleuren, focus en toegankelijkheid op de hele site (WCAG 2.2 AA: de tokens voor knoppen, links, secundaire tekst en veldranden, de focuslijn, onderstreepte links, paginatitels, de sprong naar de inhoud, meldingen) en geldt voor elk nieuw artboard en elke bouwstap met schermen. Artboards in `docs/design/` zijn leidend voor de indeling en de teksten; maten en kleuren komen altijd uit de klassen en tokens in `app/static/css/kit.css` en `app/static/css/colors_and_type.css`. tests/test_contrast.py en tests/test_accessibility.py bewaken de regels die automatisch te controleren zijn.
+
 ## Communicatie
 
 Wanneer een taak vereist dat de gebruiker zelf iets buiten de chat doet (een wachtwoord of credential aanleveren, een commando met de hand draaien, of iets uitvoeren in een externe omgeving zoals de Neon- of Render-console), zet dat als allereerste zin van je antwoord, duidelijk zichtbaar. De gebruiker leest niet altijd het volledige antwoord.

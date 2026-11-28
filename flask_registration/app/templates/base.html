@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MijnApp{% endblock %}</title>{% if request.environ.get('guf.noindex') %}
+    <title>{% block title %}Global Union{% endblock %}</title>{% if request.environ.get('guf.noindex') %}
     <meta name="robots" content="noindex">{% endif %}
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
@@ -16,17 +16,21 @@
     <link rel="stylesheet" href="{{ static_v('css/style.css') }}">{% block extra_css %}{% endblock %}
 </head>
 <body>
+    {# TRANSLATORS: the first link on every page, visible on keyboard focus: jumps past the menu to the main content. #}
+    <a href="#inhoud" class="gu-skiplink">{{ _('Skip to the content') }}</a>
     <div class="page-wrapper">
         {% include '_header.html' %}{% set bar = event_bar() %}{% if bar %}{% include '_event_bar.html' %}{% endif %}
 
-        <main class="main-content">
+        <main class="main-content" id="inhoud" tabindex="-1">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
+                    {# Accessibility (docs/toegankelijkheid.md): a success message is read out
+                       without taking over the page and stays at least 6 seconds; an error
+                       stays until it is closed. Both pause on hover and focus. #}
                     <div class="gu-modal-overlay gu-flash-modal"
                          id="guFlash{{ loop.index }}"
-                         data-delay="{{ '6000' if category == 'error' else '2500' }}"
-                         role="dialog" aria-modal="true" aria-live="assertive">
+                         {% if category == 'error' %}role="alert"{% else %}data-delay="6000" role="status" aria-live="polite"{% endif %}>
                       <div class="gu-modal gu-modal--{{ category if category in ('success', 'error') else 'success' }}">
                         <button type="button" class="gu-modal__close" aria-label="{{ _('Close') }}">✕</button>
                         {% if category == 'success' %}
@@ -53,11 +57,27 @@
                       (function () {
                         document.querySelectorAll('.gu-flash-modal').forEach(function (overlay) {
                           var btn = overlay.querySelector('.gu-modal__close');
-                          var delay = parseInt(overlay.dataset.delay) || 2500;
-                          function close() { overlay.style.display = 'none'; }
+                          var box = overlay.querySelector('.gu-modal');
+                          var left = parseInt(overlay.dataset.delay, 10);
+                          var timer = null, started = 0, hover = false, focus = false;
+                          function close() { clearTimeout(timer); overlay.style.display = 'none'; }
+                          function run() {
+                            if (!left || hover || focus || timer) return;
+                            started = Date.now();
+                            timer = setTimeout(close, Math.max(left, 0));
+                          }
+                          function pause() {
+                            if (!timer) return;
+                            clearTimeout(timer); timer = null;
+                            left -= Date.now() - started;
+                          }
                           btn.addEventListener('click', close);
                           overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
-                          setTimeout(close, delay);
+                          box.addEventListener('mouseenter', function () { hover = true; pause(); });
+                          box.addEventListener('mouseleave', function () { hover = false; run(); });
+                          box.addEventListener('focusin', function () { focus = true; pause(); });
+                          box.addEventListener('focusout', function () { focus = false; run(); });
+                          run();
                         });
                       })();
                     </script>
@@ -116,5 +136,7 @@
         {% include '_footer.html' %}
     </div>
     {% include '_mt_script.html' %}
+    {# Accessibility: fields with an error are linked to their error text (static/js/field_errors.js). #}
+    <script src="{{ static_v('js/field_errors.js') }}" nonce="{{ csp_nonce() }}" defer></script>
 </body>
 </html>

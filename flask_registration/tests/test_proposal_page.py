@@ -35,7 +35,8 @@ def _main(page):
 
 
 def _proposals_col(page):
-    return page.split('id="panel-proposals"')[1].split('</main>')[0]
+    # Up to the shared cockpit script right after the page (the page has one main, in base.html).
+    return page.split('id="panel-proposals"')[1].split('/static/js/cockpit.js')[0]
 
 
 def _css(app):
@@ -345,7 +346,7 @@ def test_new_discussion_marker_like_unread_email(app, db, make_user):
     css = _css(app)
     new_rule = css.split('.gu-rcount--new {')[1].split('}')[0]
     dot_rule = css.split('.gu-rcount__dot {')[1].split('}')[0]
-    assert 'color: var(--gu-globe-deep)' in new_rule and 'font-weight: 600' in new_rule
+    assert 'color: var(--gu-link)' in new_rule and 'font-weight: 600' in new_rule
     assert 'width: 7px; height: 7px' in dot_rule and 'background: var(--gu-globe-deep)' in dot_rule
 
 

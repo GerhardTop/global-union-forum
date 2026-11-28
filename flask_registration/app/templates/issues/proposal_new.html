@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Make a new proposal') }} · Global Union{% endblock %}
+{% block title %}{{ _('Make a new proposal') }} · {{ content_i18n.display(issue, 'title', lang) }} · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
 {% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'issues/_ip_fields.html' import ip_fields with context %}
-<main class="gu-forum" lang="{{ lang }}">
+<div class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     {{ crumbs(issue, [(_('Proposals'), url_for('issues.show', issue_id=issue.id, vergroot='voorstellen', _anchor='panel-proposals')), (_('New'), None)]) }}
@@ -55,5 +55,5 @@
     {% endif %}
 
   </div>
-</main>
+</div>
 {% endblock %}{% endblock %}

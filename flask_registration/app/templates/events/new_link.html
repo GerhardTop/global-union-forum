@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Make a new link') }} · Global Union{% endblock %}
+{% block title %}{{ _('Make a new link') }} · {{ content_i18n.text_for(event, 'name', lang) or event.name }} · Global Union{% endblock %}
 {#
   Events step 1d (K2): confirm a new code for the event. The old link and QR
   code stop working, also printed ones. Only for whoever manages the event.
@@ -7,7 +7,7 @@
 {% block content_outer %}{% block content %}
 {% from 'issues/_crumbs.html' import crumbs with context %}
 {% from '_mt.html' import mt_inline with context %}
-<main class="gu-forum gu-forum--soft" lang="{{ lang }}">
+<div class="gu-forum gu-forum--soft" lang="{{ lang }}">
   <div class="gu-forum__inner">
     {{ crumbs(None, [(mt_inline(event, 'name'), url_for('events.page', code=event.code)), (_('Make a new link'), None)]) }}
     <header class="gu-forum__threadhead">
@@ -26,5 +26,5 @@
       </div>
     </form>
   </div>
-</main>
+</div>
 {% endblock %}{% endblock %}

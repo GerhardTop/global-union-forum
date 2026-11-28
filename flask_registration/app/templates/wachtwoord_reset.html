@@ -13,7 +13,7 @@
     {% if token_invalid %}
 
       <p class="gu-eyebrow">{{ _('Link expired') }}</p>
-      <h2 class="gu-join__h2">{{ _('This link is no longer valid.') }}</h2>
+      <h1 class="gu-join__h2">{{ _('This link is no longer valid.') }}</h1>
       <p style="color: var(--gu-fg-2); font-size: 0.9375rem; margin: 16px 0 24px; line-height: 1.6;">
         {{ _('The reset link has expired or is invalid. Request a new one below.') }}
       </p>
@@ -25,7 +25,7 @@
     {% else %}
 
       <p class="gu-eyebrow">{{ _('New password') }}</p>
-      <h2 class="gu-join__h2">{{ _('Choose a new password.') }}</h2>
+      <h1 class="gu-join__h2">{{ _('Choose a new password.') }}</h1>
 
       <form method="POST" action="{{ url_for('auth.wachtwoord_reset', token=token) }}"
             novalidate style="margin-top: 24px;">

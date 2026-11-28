@@ -16,7 +16,7 @@
 {% set i_download %}<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>{% endset %}
 {% set i_video %}<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg>{% endset %}
 {% set i_arrow %}<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>{% endset %}
-<main class="gu-forum gu-forum--soft" lang="{{ lang }}">
+<div class="gu-forum gu-forum--soft" lang="{{ lang }}">
   <div class="gu-forum__inner gu-eventpage">
 
     {% if archived %}
@@ -189,7 +189,7 @@
     </div>
 
   </div>
-</main>
+</div>
 {% endblock %}
 
 {% if manage %}

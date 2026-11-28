@@ -88,11 +88,11 @@ def test_noscript_more_link_opens_the_enlarged_view_server_side(app, db, make_us
         # The server marks the enlarged state itself, so it also works without JavaScript.
         for path in (f'/vraagstuk/{issue.id}', f'/vraagstuk/{issue.id}/voorstel/{IssueProposal.query.filter_by(issue_id=issue.id).first().id}'):
             enlarged = _get(app, path + '?vergroot=voorstellen', host)
-            assert re.search(r'<main class="[^"]*gu-cockpit--expanded', enlarged), path
+            assert re.search(r'<div class="gu-forum gu-cockpit[^"]*gu-cockpit--expanded', enlarged), path
             assert re.search(r'<section class="gu-cockpit__panel gu-cockpit__proposals[^"]* is-expanded" id="panel-proposals"', enlarged), path
             assert 'gu-bigp__bar' in enlarged, path
             plain = _get(app, path, host)
-            assert 'gu-cockpit--expanded' not in plain.split('<main')[1].split('>')[0] and ' is-expanded"' not in plain, path
+            assert 'gu-cockpit--expanded' not in plain.split('<div class="gu-forum gu-cockpit')[1].split('>')[0] and ' is-expanded"' not in plain, path
     finally:
         _cleanup(issue.id)
 

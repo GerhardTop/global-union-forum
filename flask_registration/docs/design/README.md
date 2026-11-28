@@ -1,5 +1,7 @@
 # Design-referentie
 
+Artboards in `docs/design/` zijn leidend voor de indeling en de teksten; maten en kleuren komen altijd uit de klassen en tokens in `app/static/css/kit.css` en `app/static/css/colors_and_type.css`. Voor kleuren, focus en toegankelijkheid is `docs/toegankelijkheid.md` leidend.
+
 Als er een afgerond design-artboard is, is dat leidend voor de vormgeving van dat scherm. Bouw het scherm naar het artboard; hergebruik niet standaard de bestaande markup. De forum-design-tokens staan hieronder (ze komen uit de .gu-stijl van de artboards), niet uit een generieke design-systeem-referentie.
 
 ## Moderatorschermen en hun artboard

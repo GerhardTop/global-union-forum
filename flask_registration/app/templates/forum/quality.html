@@ -38,7 +38,7 @@
 {% endmacro %}
 
 {% block content_outer %}{% block content %}
-<main class="gu-forum" lang="{{ lang }}">
+<div class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     <nav class="gu-forum__crumbs" aria-label="breadcrumb">
@@ -105,7 +105,7 @@
     </ol>
 
   </div>
-</main>
+</div>
 <script nonce="{{ csp_nonce() }}">
   (function () {
     var csrfToken = {{ (forum_action_form.csrf_token.current_token if forum_action_form.meta.csrf else '') | tojson }};

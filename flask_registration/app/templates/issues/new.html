@@ -15,7 +15,7 @@
 {% from 'issues/_crumbs.html' import crumbs with context %}
 {% from 'forum/_fact_fields.html' import fact_fields with context %}
 {% from '_event_days.html' import event_days with context %}
-<main class="gu-forum gu-forum--soft" lang="{{ lang }}">
+<div class="gu-forum gu-forum--soft" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     {{ crumbs(None, [(_('New issue'), None)]) }}
@@ -209,7 +209,7 @@
     </form>
 
   </div>
-</main>
+</div>
 {% endblock %}
 
 {% include '_event_days_script.html' %}

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Edit conversation') }} · Global Union{% endblock %}
+{% block title %}{%- set tp, ta, ts = thread.title(lang) -%}{{ _('Edit conversation') }} · {{ tp }}{% if ta %} {{ ta }}{% endif %}{{ ts }} · Global Union{% endblock %}
 
 {% block content_outer %}{% block content %}
-<main class="gu-forum" lang="{{ lang }}">
+<div class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     <nav class="gu-forum__crumbs" aria-label="breadcrumb">
@@ -65,7 +65,7 @@
     </form>
 
   </div>
-</main>
+</div>
 {% endblock %}
 
 <script nonce="{{ csp_nonce() }}">

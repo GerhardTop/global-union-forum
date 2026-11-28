@@ -3,7 +3,7 @@
 
 {% block content_outer %}
 {% block content %}
-<main class="gu-about" lang="{{ lang }}">
+<div class="gu-about" lang="{{ lang }}">
 
   {# ── 1. Hero (incl. "wat we nu doen", samengevoegd tot één blok) ── #}
   <section class="gu-about__section gu-about__hero">
@@ -19,7 +19,7 @@
       </p>
       <p class="gu-lead gu-about__leadwide">
         {# TRANSLATORS: about, tekst 4 #}
-          {% trans value=url_for('main.initiatiefnemer') %}No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href="{{ value }}" style="color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed.{% endtrans %}
+          {% trans value=url_for('main.initiatiefnemer') %}No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href="{{ value }}">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed.{% endtrans %}
         
       </p>
 
@@ -28,7 +28,7 @@
         <div class="gu-about__looking">
           <div class="gu-about__lookingHead">
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
-            <h3 class="gu-about__lookingTitle">{# TRANSLATORS: about, tekst 5 #}{{ _('Co-thinkers') }}</h3>
+            <h2 class="gu-about__lookingTitle">{# TRANSLATORS: about, tekst 5 #}{{ _('Co-thinkers') }}</h2>
           </div>
           <p class="gu-about__lookingBody">{# TRANSLATORS: about, tekst 6 #}{{ _('Everyone who wants to join in, even without expertise, every argument can matter.') }}</p>
         </div>
@@ -36,7 +36,7 @@
         <div class="gu-about__looking">
           <div class="gu-about__lookingHead">
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
-            <h3 class="gu-about__lookingTitle">{# TRANSLATORS: about, tekst 7 #}{{ _('Experts') }}</h3>
+            <h2 class="gu-about__lookingTitle">{# TRANSLATORS: about, tekst 7 #}{{ _('Experts') }}</h2>
           </div>
           <p class="gu-about__lookingBody">{# TRANSLATORS: about, tekst 8 #}{{ _('Share knowledge, highlight interesting developments, proposals and critical questions.') }}</p>
         </div>
@@ -44,7 +44,7 @@
         <div class="gu-about__looking">
           <div class="gu-about__lookingHead">
             <span class="gu-arrow gu-arrow--lg" style="background:var(--gu-globe)"></span>
-            <h3 class="gu-about__lookingTitle">{# TRANSLATORS: about, tekst 9 #}{{ _('Moderators') }}</h3>
+            <h2 class="gu-about__lookingTitle">{# TRANSLATORS: about, tekst 9 #}{{ _('Moderators') }}</h2>
           </div>
           <p class="gu-about__lookingBody">{# TRANSLATORS: about, tekst 10 #}{% trans value=url_for('forum.achtergrond') %}Keep the conversation flowing and oversee the conduct rules. A violation is not deleted but moved to the public <a href="{{ value }}">background page</a>; spam or abuse is hidden completely. The author can object, and a moderator decides.{% endtrans %}</p>
         </div>
@@ -112,5 +112,5 @@
     </div>
   </section>
 
-</main>
+</div>
 {% endblock %}{% endblock %}

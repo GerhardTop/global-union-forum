@@ -211,7 +211,8 @@
         <div class="gu-pw-wrap">
           {{ form.current_password(
               class="gu-input" ~ (" gu-input--error" if current_password_empty else ""),
-              placeholder=(_('Current password'))
+              placeholder=(_('Current password')),
+              aria_label=(_('Current password'))
           ) }}
           <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
             <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -228,7 +229,8 @@
           <div class="gu-pw-wrap">
             {{ form.new_password(
                 class="gu-input" ~ (" gu-input--error" if (password_weak or password_mismatch) else ""),
-                placeholder=(_('New password'))
+                placeholder=(_('New password')),
+                aria_label=(_('New password'))
             ) }}
             <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
               <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -248,7 +250,8 @@
           <div class="gu-pw-wrap">
             {{ form.confirm_new_password(
                 class="gu-input" ~ (" gu-input--error" if password_mismatch else ""),
-                placeholder=(_('Confirm new password'))
+                placeholder=(_('Confirm new password')),
+                aria_label=(_('Confirm new password'))
             ) }}
             <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
               <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>

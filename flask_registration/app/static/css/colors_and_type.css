@@ -1,28 +1,28 @@
 /* ============================================================
-   GLOBAL UNION — Colors & Type
+   GLOBAL UNION: Colors & Type
    Foundation tokens. Import this file first.
    ============================================================ */
 
-/* Inter — Google Fonts (Light 300 / Regular 400 / Medium 500 / SemiBold 600) */
+/* Inter: Google Fonts (Light 300 / Regular 400 / Medium 500 / SemiBold 600) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
   /* ---------- BRAND CORE -------------------------------------------------- */
-  --gu-globe:        #3ab0f0;   /* Aardbol / globe blue — hero accent */
+  --gu-globe:        #3ab0f0;   /* Globe blue: accent only (logo, illustrations), never text */
   --gu-globe-deep:   #0077cc;   /* Deeper blue, used for Europe arrow */
-  --gu-ink:          #1a1a1a;   /* GLOBAL wordmark — near-black ink */
-  --gu-night:        #0f1923;   /* Donkere achtergrond — deep navy */
+  --gu-ink:          #1a1a1a;   /* GLOBAL wordmark: near-black ink */
+  --gu-night:        #0f1923;   /* Donkere achtergrond: deep navy */
   --gu-paper:        #ffffff;   /* Paper white */
-  --gu-payoff:       #aaaaaa;   /* Payoff & secondary text grey */
+  --gu-payoff:       #aaaaaa;   /* Payoff grey: only the payoff by the logo, never interface text */
 
   /* ---------- CONTINENT ACCENTS ------------------------------------------ */
   /* Five-flag system. Each arrow stands for one continent. Use sparingly,  */
-  /* together they form the full set — never invent a sixth.                */
-  --gu-europe:       #0077cc;   /* Europe   — blue   */
-  --gu-asia:         #ff8c42;   /* Asia     — orange */
-  --gu-americas:     #ee1c25;   /* Americas — red    */
-  --gu-africa:       #ffd60a;   /* Africa   — yellow */
-  --gu-oceania:      #00a551;   /* Oceania  — green  */
+  /* together they form the full set: never invent a sixth.                */
+  --gu-europe:       #0077cc;   /* Europe: blue   */
+  --gu-asia:         #ff8c42;   /* Asia: orange */
+  --gu-americas:     #ee1c25;   /* Americas: red    */
+  --gu-africa:       #ffd60a;   /* Africa: yellow */
+  --gu-oceania:      #00a551;   /* Oceania: green  */
 
   /* ---------- NEUTRAL SCALE ---------------------------------------------- */
   /* Cool slate scale, anchored on --gu-night.                              */
@@ -44,16 +44,22 @@
 
   --gu-fg-1:         var(--gu-ink);          /* primary text */
   --gu-fg-2:         var(--gu-n-600);        /* secondary text */
-  --gu-fg-3:         var(--gu-payoff);       /* tertiary / payoff */
+  --gu-fg-3:         var(--gu-n-500);        /* tertiary text: hints, eyebrows (5.1 to 5.6 to 1); --gu-payoff only for the logo payoff */
   --gu-fg-on-night:  var(--gu-paper);
   --gu-fg-on-night-2:#cbd3dd;
 
   --gu-border:       var(--gu-n-200);
   --gu-border-strong:var(--gu-n-300);
+  --gu-border-field: var(--gu-n-400);        /* fields, selects, textareas, white buttons (3.0 to 1, docs/toegankelijkheid.md) */
   --gu-border-night: rgba(255,255,255,0.12);
 
-  --gu-link:         var(--gu-globe-deep);
-  --gu-link-hover:   #005ea3;
+  /* Accessibility (docs/toegankelijkheid.md, WCAG 2.2 AA): white text on
+     --gu-action 4.7 to 1; --gu-link 6.0 to 6.7 to 1 on white and grey.
+     --gu-globe is an accent only, never text or a text background. */
+  --gu-action:       #0077cc;
+  --gu-action-hover: #005ea3;
+  --gu-link:         #005ea3;
+  --gu-link-hover:   #004a80;
 
   --gu-success:      var(--gu-oceania);
   --gu-warning:      #f5a800;   /* losgekoppeld van --gu-africa: blijft amber, te fel als knalgeel voor waarschuwingen */
@@ -65,13 +71,13 @@
   --gu-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   --gu-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  /* Weights — the wordmark mixes 500 (GLOBAL) + 300 (UNION). Honor that.  */
+  /* Weights: the wordmark mixes 500 (GLOBAL) + 300 (UNION). Honor that.  */
   --gu-w-light:    300;
   --gu-w-regular:  400;
   --gu-w-medium:   500;
   --gu-w-semibold: 600;
 
-  /* Display sizes — pair light + medium for the GLOBAL/UNION rhythm.       */
+  /* Display sizes: pair light + medium for the GLOBAL/UNION rhythm.       */
   --gu-fs-display: 88px;   --gu-lh-display: 0.95;
   --gu-fs-h1:      56px;   --gu-lh-h1: 1.05;
   --gu-fs-h2:      40px;   --gu-lh-h2: 1.1;
@@ -103,7 +109,7 @@
   --gu-radius-lg: 14px;
   --gu-radius-pill: 999px;
 
-  /* Hoogte van de vaste site-header (.gu-header, sticky top:0) — als
+  /* Hoogte van de vaste site-header (.gu-header, sticky top:0): als
      top-offset voor andere sticky elementen (bijv. sticky tabelkoppen)
      zodat ze er precies onder blijven hangen i.p.v. eroverheen of
      erachter te verdwijnen. Empirisch gemeten (niet uit min-height
@@ -112,7 +118,7 @@
      mobile media query in kit.css. */
   --gu-header-height: 77px;
 
-  /* Shadows — restrained. The brand is editorial, not material. */
+  /* Shadows: restrained. The brand is editorial, not material. */
   --gu-shadow-sm: 0 1px 2px rgba(15, 25, 35, 0.06);
   --gu-shadow-md: 0 4px 14px rgba(15, 25, 35, 0.08);
   --gu-shadow-lg: 0 18px 40px -12px rgba(15, 25, 35, 0.18);
@@ -193,11 +199,12 @@
 
 .gu a {
   color: var(--gu-link);
-  text-decoration: none;
-  border-bottom: 1px solid currentColor;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
   transition: color var(--gu-dur) var(--gu-ease);
 }
-.gu a:hover { color: var(--gu-link-hover); }
+.gu a:hover { color: var(--gu-link-hover); text-decoration-thickness: 2px; }
 
 .gu code, .gu kbd, .gu pre {
   font-family: var(--gu-font-mono);
@@ -205,7 +212,7 @@
 }
 .gu code { background: var(--gu-n-100); padding: 0.1em 0.35em; border-radius: 4px; }
 
-/* Dark surface modifier — flip foreground tokens. */
+/* Dark surface modifier: flip foreground tokens. */
 .gu--night {
   background: var(--gu-bg-night);
   color: var(--gu-fg-on-night);

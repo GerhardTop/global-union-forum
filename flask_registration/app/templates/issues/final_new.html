@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Make the summary proposal') }} · Global Union{% endblock %}
+{% block title %}{{ _('Make the summary proposal') }} · {{ content_i18n.display(issue, 'title', lang) }} · Global Union{% endblock %}
 
 {#
   Het samenvattende voorstel (herontwerp stap 6, polijstronde P6): de
@@ -13,7 +13,7 @@
 {% from 'issues/_ip_fields.html' import ip_fields with context %}
 {% set fd = form_data or {} %}
 {% set errs = errors or {} %}
-<main class="gu-forum" lang="{{ lang }}">
+<div class="gu-forum" lang="{{ lang }}">
   <div class="gu-forum__inner">
 
     {{ crumbs(issue, [(_('Proposals'), url_for('issues.show', issue_id=issue.id, vergroot='voorstellen', _anchor='panel-proposals')), (_('Summary proposal'), None)]) }}
@@ -60,5 +60,5 @@
     </form>
 
   </div>
-</main>
+</div>
 {% endblock %}{% endblock %}

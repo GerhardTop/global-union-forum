@@ -8,8 +8,10 @@
   je ze daar in één keer leest zonder weg te navigeren.
   Context: lang, compact (true voor de compacte variant).
 #}
-{% set hg = 'h3' if compact else 'h2' %}
-{% set ht = 'h4' if compact else 'h3' %}
+{# Headings h2 and h3 in both variants: the page around them has one h1
+   (accessibility, docs/toegankelijkheid.md); the compact look comes from the classes. #}
+{% set hg = 'h2' %}
+{% set ht = 'h3' %}
 <section class="gu-rules-group{% if compact %} gu-rules-group--compact{% endif %}" id="gedragsregels" aria-labelledby="gedragsregels-title">
   <{{ hg }} class="gu-rules-group__title" id="gedragsregels-title">{{ _('Conduct rules') }}</{{ hg }}>
   <p class="gu-rules-group__intro">{{ _('These rules apply to everyone in the forum.') }}</p>

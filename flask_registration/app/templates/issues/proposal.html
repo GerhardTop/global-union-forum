@@ -35,7 +35,7 @@
 <button type="button" class="gu-iconbtn gu-cockpit__expand" data-expand="{{ name }}" title="{{ _('Enlarge') }}" aria-label="{{ _('Enlarge') }}: {{ label }}" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
 <button type="button" class="gu-iconbtn gu-cockpit__shrink" data-collapse title="{{ _('Reduce') }}" aria-label="{{ _('Reduce') }}: {{ label }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button>
 {%- endmacro %}
-<main class="gu-forum gu-cockpit gu-ipdetail gu-pv{% if big.expanded %} gu-cockpit--expanded{% endif %}" lang="{{ lang }}" id="voorstel"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
+<div class="gu-forum gu-cockpit gu-ipdetail gu-pv{% if big.expanded %} gu-cockpit--expanded{% endif %}" lang="{{ lang }}" id="voorstel"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
   <div class="gu-cockpit__inner">
 
     <header class="gu-pv__head">
@@ -341,7 +341,7 @@
 
     </div>
   </div>
-</main>
+</div>
 <script src="{{ static_v('js/cockpit.js') }}" nonce="{{ csp_nonce() }}"></script>
 <script nonce="{{ csp_nonce() }}">
   (function () {

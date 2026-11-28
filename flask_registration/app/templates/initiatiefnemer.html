@@ -3,7 +3,7 @@
 
 {% block content_outer %}
 {% block content %}
-<main class="gu-about" lang="{{ lang }}">
+<div class="gu-about" lang="{{ lang }}">
 
   {# ── Founder ─────────────────────────────────────────── #}
   <section class="gu-about__section gu-about__section--soft">
@@ -16,7 +16,7 @@
 
       <div class="gu-about__founderText">
         <p class="gu-eyebrow">{# TRANSLATORS: initiatiefnemer, tekst 2 #}{{ _('The initiator') }}</p>
-        <h2 class="gu-about__founderName">Gerhard Top</h2>
+        <h1 class="gu-about__founderName">Gerhard Top</h1>
         <p class="gu-about__founderRole">{# TRANSLATORS: initiatiefnemer, tekst 3 #}{{ _('Initiator · Global Union Forum') }}</p>
 
         
@@ -28,12 +28,12 @@
         
 
         <blockquote class="gu-about__founderQuote">
-          <span class="gu-about__quoteMark">"</span>{# TRANSLATORS: initiatiefnemer, tekst 4 #}{{ _('Absurdly grand, many people will think. I believe we can work it out together.') }}<span class="gu-about__quoteMark">"</span>
+          <span class="gu-about__quoteMark" aria-hidden="true">"</span>{# TRANSLATORS: initiatiefnemer, tekst 4 #}{{ _('Absurdly grand, many people will think. I believe we can work it out together.') }}<span class="gu-about__quoteMark">"</span>
         </blockquote>
       </div>
 
     </div>
   </section>
 
-</main>
+</div>
 {% endblock %}{% endblock %}

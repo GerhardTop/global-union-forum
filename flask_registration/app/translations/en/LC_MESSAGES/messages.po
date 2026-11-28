@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Union Forum 1.0\n"
 "Report-Msgid-Bugs-To: info@globalunionforum.org\n"
-"POT-Creation-Date: 2026-11-28 17:54+0100\n"
+"POT-Creation-Date: 2026-11-28 22:32+0100\n"
 "PO-Revision-Date: 2026-06-10 12:00+0000\n"
 "Last-Translator: Gerhard Top <info@globalunionforum.org>\n"
 "Language: en\n"
@@ -30,7 +30,7 @@ msgstr "Your session has expired. Please log in again."
 msgid "Respect"
 msgstr "Respect"
 
-#: app/conduct.py:43 app/conduct.py:52 app/templates/_rules_list.html:27
+#: app/conduct.py:43 app/conduct.py:52 app/templates/_rules_list.html:29
 msgid "On topic"
 msgstr "On topic"
 
@@ -38,7 +38,7 @@ msgstr "On topic"
 msgid "Spam"
 msgstr "Spam"
 
-#: app/conduct.py:50 app/templates/_rules_list.html:20
+#: app/conduct.py:50 app/templates/_rules_list.html:22
 msgid "About the idea, not the person"
 msgstr "About the idea, not the person"
 
@@ -336,12 +336,12 @@ msgid "Your contributions stay, but are no longer linked to your name. That way,
 msgstr "Your contributions stay, but are no longer linked to your name. That way, the discussions and votes others took part in keep their coherence. Only the link to you disappears."
 
 #: app/forms.py:12 app/templates/aanmelden/aanmelden.html:68
-#: app/templates/profile.html:239 app/templates/wachtwoord_reset.html:47
+#: app/templates/profile.html:241 app/templates/wachtwoord_reset.html:47
 msgid "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
 msgstr "Password: 8 to 72 characters, with at least one capital letter, one number and one special character."
 
 #: app/forms.py:27 app/templates/aanmelden/aanmelden.html:87
-#: app/templates/profile.html:258 app/templates/wachtwoord_reset.html:67
+#: app/templates/profile.html:261 app/templates/wachtwoord_reset.html:67
 msgid "Passwords do not match."
 msgstr "Passwords do not match."
 
@@ -746,15 +746,15 @@ msgstr "Smaller groups combined"
 msgid "Other countries combined"
 msgstr "Other countries combined"
 
-#: app/quality.py:37 app/templates/forum/quality.html:96
+#: app/quality.py:54 app/templates/forum/quality.html:96
 msgid "New argument"
 msgstr "New argument"
 
-#: app/quality.py:38
+#: app/quality.py:55
 msgid "Substantiation with a new fact and source"
 msgstr "Substantiation with a new fact and source"
 
-#: app/quality.py:39
+#: app/quality.py:56
 msgid "Fairness"
 msgstr "Fairness"
 
@@ -804,6 +804,7 @@ msgstr "Voter"
 #: app/templates/admin/dashboard.html:75 app/templates/moderator/beheer.html:25
 #: app/templates/moderator/dashboard.html:4
 #: app/templates/moderator/dashboard.html:76
+#: app/templates/moderator/gebruiker.html:2
 #: app/templates/moderator/rechten.html:19
 msgid "Moderator"
 msgstr "Moderator"
@@ -1542,7 +1543,7 @@ msgid "Log out"
 msgstr "Log out"
 
 #: app/templates/_header.html:69 app/templates/login.html:2
-#: app/templates/login.html:13 app/templates/login.html:64
+#: app/templates/login.html:13 app/templates/login.html:65
 #: app/templates/success.html:11
 msgid "Log in"
 msgstr "Log in"
@@ -1596,53 +1597,53 @@ msgstr "Translate to English"
 msgid "Translation pending"
 msgstr "Translation pending"
 
-#: app/templates/_rules_list.html:14 app/templates/moderator/dashboard.html:301
+#: app/templates/_rules_list.html:16 app/templates/moderator/dashboard.html:301
 #: app/templates/moderator/dashboard.html:335
 msgid "Conduct rules"
 msgstr "Conduct rules"
 
-#: app/templates/_rules_list.html:15
+#: app/templates/_rules_list.html:17
 msgid "These rules apply to everyone in the forum."
 msgstr "These rules apply to everyone in the forum."
 
-#: app/templates/_rules_list.html:21
+#: app/templates/_rules_list.html:23
 msgid "Criticise arguments, not people. No personal attacks, insults or assumptions about someone's intentions."
 msgstr "Criticise arguments, not people. No personal attacks, insults or assumptions about someone's intentions."
 
-#: app/templates/_rules_list.html:28
+#: app/templates/_rules_list.html:30
 msgid "Respond to the question of the conversation. Have a different topic? Then start a new conversation."
 msgstr "Respond to the question of the conversation. Have a different topic? Then start a new conversation."
 
-#: app/templates/_rules_list.html:34
+#: app/templates/_rules_list.html:36
 msgid "One account per person"
 msgstr "One account per person"
 
-#: app/templates/_rules_list.html:35
+#: app/templates/_rules_list.html:37
 msgid "Everyone speaks with one voice. More than one account per person is not allowed, not even under another username."
 msgstr "Everyone speaks with one voice. More than one account per person is not allowed, not even under another username."
 
-#: app/templates/_rules_list.html:41 app/templates/forum/_proposal_vote.html:58
+#: app/templates/_rules_list.html:43 app/templates/forum/_proposal_vote.html:58
 #: app/templates/issues/_ip_vote.html:93
 msgid "Quality guidelines"
 msgstr "Quality guidelines"
 
-#: app/templates/_rules_list.html:42
+#: app/templates/_rules_list.html:44
 msgid "This is not an obligation. Follow them and your contribution is more likely to earn the quality mark."
 msgstr "This is not an obligation. Follow them and your contribution is more likely to earn the quality mark."
 
-#: app/templates/_rules_list.html:47
+#: app/templates/_rules_list.html:49
 msgid "Substantiated"
 msgstr "Substantiated"
 
-#: app/templates/_rules_list.html:48
+#: app/templates/_rules_list.html:50
 msgid "A fact has a source. You are always free to give your opinion, but make clear what is fact and what is opinion."
 msgstr "A fact has a source. You are always free to give your opinion, but make clear what is fact and what is opinion."
 
-#: app/templates/_rules_list.html:54
+#: app/templates/_rules_list.html:56
 msgid "Concrete"
 msgstr "Concrete"
 
-#: app/templates/_rules_list.html:55
+#: app/templates/_rules_list.html:57
 msgid "Make your point as specific as possible: an example, a figure, a proposal. One clear argument beats ten vague ones."
 msgstr "Make your point as specific as possible: an example, a figure, a proposal. One clear argument beats ten vague ones."
 
@@ -1664,8 +1665,8 @@ msgstr "The goal is clear. The idea exists in broad strokes. We want to work it 
 #. about, tekst 4
 #: app/templates/about.html:22
 #, python-format
-msgid "No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href=\"%(value)s\" style=\"color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;\">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed."
-msgstr "No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href=\"%(value)s\" style=\"color: var(--gu-globe); text-decoration: none; border-bottom: 1px solid currentColor;\">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed."
+msgid "No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href=\"%(value)s\">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed."
+msgstr "No membership. No fees. Just an online space where the thinking happens. The first site has now been set up by <a href=\"%(value)s\">Gerhard Top</a>. The next step is gathering feedback from a handful of beta users and involving a few co-initiators, both experts and other enthusiasts. After that we'll build on the discussion with an improved version, invite many more people to join, and set up a foundation with the goal of growing into a movement that makes the Global Union happen, and succeed."
 
 #. about, tekst 5
 #: app/templates/about.html:31
@@ -1738,52 +1739,58 @@ msgstr "Facts from a neutral point of view."
 msgid "Content freely available to everyone."
 msgstr "Content freely available to everyone."
 
-#: app/templates/base.html:31 app/templates/index.html:72
+#. the first link on every page, visible on keyboard focus: jumps past the menu
+#. to the main content.
+#: app/templates/base.html:20
+msgid "Skip to the content"
+msgstr "Skip to the content"
+
+#: app/templates/base.html:35 app/templates/index.html:72
 #: app/templates/index.html:235 app/templates/index.html:291
-#: app/templates/issues/_facts_big.html:31 app/templates/login.html:96
+#: app/templates/issues/_facts_big.html:31 app/templates/login.html:97
 msgid "Close"
 msgstr "Close"
 
-#: app/templates/base.html:69
+#: app/templates/base.html:89
 msgid "Confirm your email address (check your inbox)."
 msgstr "Confirm your email address (check your inbox)."
 
-#: app/templates/base.html:72
+#: app/templates/base.html:92
 msgid "Resend"
 msgstr "Resend"
 
-#: app/templates/base.html:83
+#: app/templates/base.html:103
 #, python-format
 msgid "You have %(num)d new notification."
 msgid_plural "You have %(num)d new notifications."
 msgstr[0] "You have %(num)d new notification."
 msgstr[1] "You have %(num)d new notifications."
 
-#: app/templates/base.html:83
+#: app/templates/base.html:103
 msgid "You have a new daily summary."
 msgstr "You have a new daily summary."
 
-#: app/templates/base.html:84 app/templates/issues/_chart_block.html:25
+#: app/templates/base.html:104 app/templates/issues/_chart_block.html:25
 msgid "View"
 msgstr "View"
 
-#: app/templates/base.html:92
+#: app/templates/base.html:112
 msgid "You are suspended until"
 msgstr "You are suspended until"
 
-#: app/templates/base.html:93
+#: app/templates/base.html:113
 msgid "You can read, but not contribute or vote."
 msgstr "You can read, but not contribute or vote."
 
-#: app/templates/base.html:102
+#: app/templates/base.html:122
 msgid "Congratulations! Based on your quality contributions you now have the status"
 msgstr "Congratulations! Based on your quality contributions you now have the status"
 
-#: app/templates/base.html:103
+#: app/templates/base.html:123
 msgid ", with the right to vote"
 msgstr ", with the right to vote"
 
-#: app/templates/base.html:108
+#: app/templates/base.html:128
 msgid "Dismiss"
 msgstr "Dismiss"
 
@@ -2168,66 +2175,67 @@ msgid "Enter a valid email address."
 msgstr "Enter a valid email address."
 
 #: app/templates/aanmelden/aanmelden.html:57 app/templates/login.html:34
+#: app/templates/login.html:35
 msgid "Password"
 msgstr "Password"
 
 #: app/templates/aanmelden/aanmelden.html:62
-#: app/templates/aanmelden/aanmelden.html:82 app/templates/login.html:36
-#: app/templates/profile.html:216 app/templates/profile.html:233
-#: app/templates/profile.html:253 app/templates/wachtwoord_reset.html:41
+#: app/templates/aanmelden/aanmelden.html:82 app/templates/login.html:37
+#: app/templates/profile.html:217 app/templates/profile.html:235
+#: app/templates/profile.html:256 app/templates/wachtwoord_reset.html:41
 #: app/templates/wachtwoord_reset.html:62
 msgid "Show password"
 msgstr "Show password"
 
-#: app/templates/login.html:51
+#: app/templates/login.html:52
 msgid "Invalid email or password."
 msgstr "Invalid email or password."
 
-#: app/templates/login.html:57
+#: app/templates/login.html:58
 msgid "Forgot password?"
 msgstr "Forgot password?"
 
-#: app/templates/aanmelden/aanmelden.html:162 app/templates/login.html:69
+#: app/templates/aanmelden/aanmelden.html:162 app/templates/login.html:70
 msgid "or"
 msgstr "or"
 
-#: app/templates/login.html:80
+#: app/templates/login.html:81
 msgid "Sign in with Google"
 msgstr "Sign in with Google"
 
-#: app/templates/login.html:86
+#: app/templates/login.html:87
 msgid "No account yet?"
 msgstr "No account yet?"
 
-#: app/templates/login.html:87
+#: app/templates/login.html:88
 msgid "Register here"
 msgstr "Register here"
 
-#: app/templates/login.html:99
+#: app/templates/login.html:100
 msgid "Confirm your email first"
 msgstr "Confirm your email first"
 
-#: app/templates/login.html:102
+#: app/templates/login.html:103
 msgid "Your email address is not confirmed yet. Check your inbox, or resend the confirmation email below."
 msgstr "Your email address is not confirmed yet. Check your inbox, or resend the confirmation email below."
 
-#: app/templates/login.html:109
+#: app/templates/login.html:110
 msgid "Resend confirmation email"
 msgstr "Resend confirmation email"
 
-#: app/templates/login.html:122 app/templates/login.html:185
+#: app/templates/login.html:123 app/templates/login.html:186
 msgid "Too many attempts. Please try again in an hour."
 msgstr "Too many attempts. Please try again in an hour."
 
-#: app/templates/login.html:123
+#: app/templates/login.html:124
 msgid "Confirmation email resent (check your inbox)."
 msgstr "Confirmation email resent (check your inbox)."
 
-#: app/templates/login.html:170
+#: app/templates/login.html:171
 msgid "Please enter your email address first."
 msgstr "Please enter your email address first."
 
-#: app/templates/login.html:188 app/templates/wachtwoord_vergeten.html:28
+#: app/templates/login.html:189 app/templates/wachtwoord_vergeten.html:28
 msgid "Reset link sent (check your inbox)."
 msgstr "Reset link sent (check your inbox)."
 
@@ -3346,43 +3354,45 @@ msgstr "Change password"
 msgid "Update your password."
 msgstr "Update your password."
 
-#: app/templates/profile.html:214
+#: app/templates/profile.html:214 app/templates/profile.html:215
 msgid "Current password"
 msgstr "Current password"
 
-#: app/templates/profile.html:222
+#: app/templates/profile.html:223
 msgid "Enter your current password."
 msgstr "Enter your current password."
 
-#: app/templates/profile.html:231 app/templates/wachtwoord_reset.html:27
+#: app/templates/profile.html:232 app/templates/profile.html:233
+#: app/templates/wachtwoord_reset.html:27
 #: app/templates/wachtwoord_reset.html:35
 msgid "New password"
 msgstr "New password"
 
-#: app/templates/profile.html:251 app/templates/wachtwoord_reset.html:56
+#: app/templates/profile.html:253 app/templates/profile.html:254
+#: app/templates/wachtwoord_reset.html:56
 msgid "Confirm new password"
 msgstr "Confirm new password"
 
-#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:264
+#: app/templates/forum/edit_thread.html:61 app/templates/profile.html:267
 msgid "Save changes"
 msgstr "Save changes"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:341
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:344
 #: app/templates/wachtwoord_reset.html:112
 msgid "Weak"
 msgstr "Weak"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:341
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:344
 #: app/templates/wachtwoord_reset.html:112
 msgid "Fair"
 msgstr "Fair"
 
-#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:341
+#: app/templates/aanmelden/aanmelden.html:349 app/templates/profile.html:344
 #: app/templates/wachtwoord_reset.html:112
 msgid "Strong"
 msgstr "Strong"
 
-#: app/templates/profile.html:372
+#: app/templates/profile.html:375
 msgid "Danger zone"
 msgstr "Danger zone"
 
@@ -3390,17 +3400,17 @@ msgstr "Danger zone"
 #: app/templates/moderator/gebruiker.html:200
 #: app/templates/moderator/gebruiker.html:207
 #: app/templates/moderator/gebruiker_verwijderen.html:2
-#: app/templates/profile.html:375
+#: app/templates/profile.html:378
 msgid "Delete account"
 msgstr "Delete account"
 
 #. profile, Danger zone and the confirmation window: what deleting your account
 #. does. Contributions stay under a placeholder name, without yours.
-#: app/templates/profile.html:379 app/templates/profile.html:410
+#: app/templates/profile.html:382 app/templates/profile.html:413
 msgid "This deletes your account and your personal data. Your contributions stay, without your name, so the conversations remain readable. This cannot be undone."
 msgstr "This deletes your account and your personal data. Your contributions stay, without your name, so the conversations remain readable. This cannot be undone."
 
-#: app/templates/profile.html:384
+#: app/templates/profile.html:387
 msgid "Delete my account"
 msgstr "Delete my account"
 
@@ -3415,15 +3425,15 @@ msgstr "Delete my account"
 #: app/templates/issues/proposal_new.html:46
 #: app/templates/issues/verwijderen.html:81
 #: app/templates/moderator/gebruiker_verwijderen.html:73
-#: app/templates/profile.html:397 app/templates/profile.html:418
+#: app/templates/profile.html:400 app/templates/profile.html:421
 msgid "Cancel"
 msgstr "Cancel"
 
-#: app/templates/profile.html:406
+#: app/templates/profile.html:409
 msgid "Are you sure?"
 msgstr "Are you sure?"
 
-#: app/templates/profile.html:422
+#: app/templates/profile.html:425
 msgid "Yes, delete my account"
 msgstr "Yes, delete my account"
 
@@ -4595,27 +4605,31 @@ msgstr[1] "Continue this conversation (%(count)s replies)"
 msgid "This conversation is closed."
 msgstr "This conversation is closed."
 
-#: app/templates/forum/_discussion.html:63
+#: app/templates/forum/_discussion.html:63 app/templates/forum/_post.html:166
+msgid "Reply"
+msgstr "Reply"
+
+#: app/templates/forum/_discussion.html:64
 msgid "Write your reply. Be concrete (a thought, a question, a pushback)."
 msgstr "Write your reply. Be concrete (a thought, a question, a pushback)."
 
-#: app/templates/forum/_discussion.html:68 app/templates/forum/_post.html:249
+#: app/templates/forum/_discussion.html:69 app/templates/forum/_post.html:249
 #: app/templates/issues/proposal.html:294
 msgid "Post"
 msgstr "Post"
 
-#: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:94
+#: app/templates/forum/_discussion.html:77 app/templates/forum/_facts.html:94
 #: app/templates/forum/index.html:21 app/templates/issues/_propose_hint.html:11
 #: app/templates/issues/index.html:39
 msgid "You are suspended and cannot contribute right now"
 msgstr "You are suspended and cannot contribute right now"
 
-#: app/templates/forum/_discussion.html:76 app/templates/forum/_facts.html:94
+#: app/templates/forum/_discussion.html:77 app/templates/forum/_facts.html:94
 #: app/templates/forum/index.html:24 app/templates/issues/index.html:42
 msgid "Accept the conduct rules to join in"
 msgstr "Accept the conduct rules to join in"
 
-#: app/templates/forum/_discussion.html:82 app/templates/forum/index.html:78
+#: app/templates/forum/_discussion.html:83 app/templates/forum/index.html:78
 #, python-format
 msgid "<a href=\"%(url)s\">Log in</a> to join the conversation."
 msgstr "<a href=\"%(url)s\">Log in</a> to join the conversation."
@@ -4836,10 +4850,6 @@ msgstr "Disagree"
 #: app/templates/forum/_post.html:151
 msgid "Delete conversation"
 msgstr "Delete conversation"
-
-#: app/templates/forum/_post.html:166
-msgid "Reply"
-msgstr "Reply"
 
 #: app/templates/forum/_post.html:182
 msgid "Don't always translate"

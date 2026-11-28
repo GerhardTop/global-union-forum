@@ -17,7 +17,7 @@
 {% block content_outer %}{% block content %}
 {% from '_mt.html' import mt, mt_inline with context %}
 {% if has_discussion %}<template id="gu-quality-mark-template">{% include 'forum/_quality_mark.html' %}</template>{% endif %}
-<main class="gu-forum gu-cockpit{% if big.expanded %} gu-cockpit--expanded{% endif %}" lang="{{ lang }}" id="cockpit"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
+<div class="gu-forum gu-cockpit{% if big.expanded %} gu-cockpit--expanded{% endif %}" lang="{{ lang }}" id="cockpit"{% if big.expanded %} data-expanded="{{ big.expanded }}"{% endif %}>
   <div class="gu-cockpit__inner">
 
     {# Teruglink naar het overzicht boven de titel; geen volledig kruimelpad. #}
@@ -230,7 +230,7 @@
 
     </div>
   </div>
-</main>
+</div>
 {% endblock %}
 
 {% if has_discussion %}{% include 'forum/_thread_script.html' %}{% endif %}

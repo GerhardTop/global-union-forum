@@ -11,7 +11,7 @@
     </div>
 
     <p class="gu-eyebrow">{{ _('Log in') }}</p>
-    <h2 class="gu-join__h2">{{ _('Welcome back.') }}</h2>
+    <h1 class="gu-join__h2">{{ _('Welcome back.') }}</h1>
 
     <form method="POST" action="{{ url_for('auth.login') }}" novalidate style="margin-top: 24px;">
       {{ form.hidden_tag() }}
@@ -31,7 +31,8 @@
         <div class="gu-pw-wrap">
           {{ form.password(
               class="gu-input" ~ (" gu-input--error" if login_error else ""),
-              placeholder=(_('Password'))
+              placeholder=(_('Password')),
+              aria_label=(_('Password'))
           ) }}
           <button type="button" class="gu-pw-toggle" aria-label="{{ _('Show password') }}">
             <svg class="gu-pw-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
